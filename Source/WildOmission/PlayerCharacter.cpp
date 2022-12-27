@@ -2,20 +2,34 @@
 
 
 #include "PlayerCharacter.h"
+#include "Camera/CameraComponent.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
+	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(FName("FirstPersonCamera"));
+	FirstPersonCameraComponent->SetupAttachment(RootComponent);
+	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
+	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	// Bind enhanced input Subsystem
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
 }
 
 // Called every frame
@@ -30,5 +44,27 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Cast PlayerInputComponent to UEnhancedPlayerInputComponent
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+
+	// Bind function callbacks to input actions
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
+	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Jump);
 }
 
+void APlayerCharacter::Move(const FInputActionValue& Value)
+{
+	FVector2D MoveAxis = Value.Get<FVector2D>();
+
+	AddMovementInput(FirstPersonCameraComponent->GetForwardVector(), MoveAxis.Y);
+	AddMovementInput(FirstPersonCameraComponent->GetRightVector(), MoveAxis.X);
+}
+
+void APlayerCharacter::Look(const FInputActionValue& Value)
+{
+	FVector2D LookAxis = Value.Get<FVector2D>();
+
+	AddControllerYawInput(LookAxis.X);
+	AddControllerPitchInput(LookAxis.Y);
+}
