@@ -8,7 +8,7 @@
 #include "PlayerCharacter.generated.h"
 
 class UCameraComponent;
-
+class UVitalsComponent;
 class UInputAction;
 class UInputMappingContext;
 
@@ -30,11 +30,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void Jump() override;
+
 private:
 
 	UPROPERTY(VisibleAnywhere)
 		UCameraComponent* FirstPersonCameraComponent;
-	
+	UPROPERTY(VisibleAnywhere)
+		UVitalsComponent* VitalsComponent;
+
 	//*****************************
 	// Input
 	//*****************************
