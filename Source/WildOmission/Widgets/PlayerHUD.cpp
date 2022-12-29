@@ -2,7 +2,7 @@
 
 #include "PlayerHUD.h"
 #include "Components/ProgressBar.h"
-#include "VitalsComponent.h"
+#include "../ActorComponents/VitalsComponent.h"
 
 void UPlayerHUD::SetVitals(UVitalsComponent* InVitals)
 {

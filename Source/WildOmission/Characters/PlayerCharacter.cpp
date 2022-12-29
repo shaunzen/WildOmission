@@ -3,8 +3,9 @@
 
 #include "PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
-#include "VitalsComponent.h"
-#include "PlayerHUD.h"
+#include "../ActorComponents/VitalsComponent.h"
+#include "../ActorComponents/InventoryComponent.h"
+#include "../Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -20,7 +21,9 @@ APlayerCharacter::APlayerCharacter()
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
+	// Setup player components
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 }
 
 // Called when the game starts or when spawned

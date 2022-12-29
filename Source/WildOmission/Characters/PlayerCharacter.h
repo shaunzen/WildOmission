@@ -9,6 +9,7 @@
 
 class UCameraComponent;
 class UVitalsComponent;
+class UInventoryComponent;
 class UPlayerHUD;
 class UInputAction;
 class UInputMappingContext;
@@ -39,6 +40,8 @@ private:
 		UCameraComponent* FirstPersonCameraComponent;
 	UPROPERTY(VisibleAnywhere)
 		UVitalsComponent* VitalsComponent;
+	UPROPERTY(VisibleAnywhere)
+		UInventoryComponent* InventoryComponent;
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<UPlayerHUD> PlayerHUDClass;
 	UPROPERTY()

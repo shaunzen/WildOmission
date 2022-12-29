@@ -32,3 +32,17 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	// ...
 }
 
+void UInventoryComponent::AddToInventory(FName ItemName, int32 Quantity)
+{
+	InventoryContent.Add(ItemName, Quantity);
+}
+
+void UInventoryComponent::RemoveFromInventory()
+{
+
+}
+
+void UInventoryComponent::SwapWithInventory()
+{
+
+}
