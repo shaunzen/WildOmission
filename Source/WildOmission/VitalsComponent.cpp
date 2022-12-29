@@ -68,6 +68,21 @@ void UVitalsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	}
 }
 
+float UVitalsComponent::GetMaxHealth()
+{
+	return MaxHealth;
+}
+
+float UVitalsComponent::GetMaxThirst()
+{
+	return MaxThirst;
+}
+
+float UVitalsComponent::GetMaxHunger()
+{
+	return MaxHunger;
+}
+
 float UVitalsComponent::GetHealth()
 {
 	return CurrentHealth;

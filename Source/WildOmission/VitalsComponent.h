@@ -18,6 +18,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	float GetMaxHealth();
+	float GetMaxThirst();
+	float GetMaxHunger();
+
 	float GetHealth();
 	float GetThirst();
 	float GetHunger();

@@ -4,6 +4,8 @@
 #include "PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "VitalsComponent.h"
+#include "PlayerHUD.h"
+#include "Blueprint/UserWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
@@ -25,13 +27,31 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	// Bind enhanced input Subsystem
+
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
+		// Setup input mapping context
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+		
+		// Add HUD to viewport
+		if (IsLocallyControlled() && PlayerHUDClass != nullptr)
+		{
+			PlayerHUD = CreateWidget<UPlayerHUD>(PlayerController, PlayerHUDClass);
+			PlayerHUD->AddToViewport();
+		}
+	}
+}
+
+// Called when the game ends
+void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (PlayerHUD != nullptr)
+	{
+		PlayerHUD->RemoveFromParent();
+		PlayerHUD = nullptr;
 	}
 }
 
@@ -40,6 +60,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	PlayerHUD->SetVitals(VitalsComponent);
 }
 
 // Called to bind functionality to input

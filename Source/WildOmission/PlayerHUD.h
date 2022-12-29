@@ -4,29 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "VitalsWidget.generated.h"
+#include "PlayerHUD.generated.h"
 
 class UProgressBar;
 class UVitalsComponent;
 
-UCLASS()
-class WILDOMISSION_API UVitalsWidget : public UUserWidget
+UCLASS(Abstract)
+class WILDOMISSION_API UPlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
-
 public:
-	UVitalsWidget(const FObjectInitializer& ObjectInitializer);
-
-	void Setup();
 	void SetVitals(UVitalsComponent* InVitals);
-
-protected:
-	virtual bool Initialize() override;
 private:
 	UPROPERTY(meta = (BindWidget))
-	UProgressBar* HealthBar;
+		UProgressBar* HealthBar;
 	UPROPERTY(meta = (BindWidget))
-	UProgressBar* ThirstBar;
+		UProgressBar* ThirstBar;
 	UPROPERTY(meta = (BindWidget))
-	UProgressBar* HungerBar;
+		UProgressBar* HungerBar;
 };

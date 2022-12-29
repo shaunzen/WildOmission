@@ -9,6 +9,7 @@
 
 class UCameraComponent;
 class UVitalsComponent;
+class UPlayerHUD;
 class UInputAction;
 class UInputMappingContext;
 
@@ -29,7 +30,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Jump() override;
 
 private:
@@ -38,7 +39,10 @@ private:
 		UCameraComponent* FirstPersonCameraComponent;
 	UPROPERTY(VisibleAnywhere)
 		UVitalsComponent* VitalsComponent;
-
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<UPlayerHUD> PlayerHUDClass;
+	UPROPERTY()
+		UPlayerHUD* PlayerHUD;
 	//*****************************
 	// Input
 	//*****************************
