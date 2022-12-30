@@ -10,7 +10,11 @@ UInventoryComponent::UInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Script/Engine.DataTable'/Game/Blueprints/ItemDataTable.ItemDataTable'"));
+	if (ItemDataTableObject.Succeeded())
+	{
+		ItemDataTable = ItemDataTableObject.Object;
+	}
 }
 
 
@@ -32,17 +36,27 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	// ...
 }
 
-void UInventoryComponent::AddToInventory(FName ItemName, int32 Quantity)
+void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 {
 	InventoryContent.Add(ItemName, Quantity);
 }
 
-void UInventoryComponent::RemoveFromInventory()
+void UInventoryComponent::RemoveItem()
 {
-
+	// TODO Remove item
 }
 
-void UInventoryComponent::SwapWithInventory()
+void UInventoryComponent::SwapItem()
 {
+	// TODO Swap item
+}
 
+FItem* UInventoryComponent::GetItemData(FName ItemName)
+{
+	if (ItemDataTable == nullptr)
+	{
+		return nullptr;
+	}
+	static const FString ContextString(TEXT("Item Data Context"));
+	return ItemDataTable->FindRow<FItem>(ItemName, ContextString, true);
 }

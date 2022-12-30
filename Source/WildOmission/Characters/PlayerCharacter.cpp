@@ -102,33 +102,53 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxis.Y);
 }
 
+//**************************************
+// TODO simplfy interaction code
+
 void APlayerCharacter::Interact()
 {
-	// If we are looking at an interacable item
-		// Add item to inventory
-		// Remove item from world
-		// Hide prompt?
+	UE_LOG(LogTemp, Warning, TEXT("Interaction"));
+	FHitResult HitResult;
+	// If the actor we are looking at is an interactable
+	if (InteractionComponent->InteractableItemInRange(HitResult))
+	{
+		// If the actor is a world item
+		if (AWorldItem* WorldItem = Cast<AWorldItem>(HitResult.GetActor()))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Interaction with world item with name of: %s"), *WorldItem->GetItemName().ToString());
+			// Add item to inventory
+			InventoryComponent->AddItem(WorldItem->GetItemName(), WorldItem->GetItemQuantity());
+			// Remove item from world
+			WorldItem->Destroy();
+		}
+	}
 }
 
 void APlayerCharacter::UpdateInteractionPrompt()
 {
 	FHitResult HitResult;
+	// If we are looking at an interactable item
 	if (InteractionComponent->InteractableItemInRange(HitResult))
 	{
+		// If the interactable item we are looking at is a world item
 		if (AWorldItem* WorldItem = Cast<AWorldItem>(HitResult.GetActor()))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World item cast properly"));
-			PlayerHUD->SetInteractionPrompt(FString::Printf(TEXT("Press 'E' to pickup %s"), *WorldItem->GetItemName().ToString()));
+			// Get the item data for the item we are looking at
+			FItem* ItemData = InventoryComponent->GetItemData(WorldItem->GetItemName());
+			// Return if its nullptr
+			if (ItemData == nullptr) return;
+			// Set the interaction prompt
+			PlayerHUD->SetInteractionPrompt(FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemData->DisplayName.ToString()));
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Couldn't cast properly into world item"));
+			// Clear the interaction prompt
 			PlayerHUD->SetInteractionPrompt(FString(TEXT("")));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No Interactable in range"));
+		// Clear the interaction prompt
 		PlayerHUD->SetInteractionPrompt(FString(TEXT("")));
 	}
 }

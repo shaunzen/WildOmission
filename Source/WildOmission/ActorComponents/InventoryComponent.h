@@ -45,18 +45,21 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void AddToInventory(FName ItemName, int32 Quantity);
-	void RemoveFromInventory();
-	void SwapWithInventory();
+	void AddItem(FName ItemName, int32 Quantity);
+	void RemoveItem();
+	void SwapItem();
 
+	FItem* GetItemData(FName ItemName);
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
-
-	UPROPERTY()
+	// TODO change to defaultsonly
+	UPROPERTY(EditAnywhere)
 	TMap<FName, int32> InventoryContent;
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	int32 MaxSize;
+	UPROPERTY(EditDefaultsOnly)
+	UDataTable* ItemDataTable;
 };

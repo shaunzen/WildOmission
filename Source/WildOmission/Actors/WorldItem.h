@@ -20,7 +20,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FName GetItemName();
 	UFUNCTION(BlueprintCallable)
-	int32 GetQuantity();
+	int32 GetItemQuantity();
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetItemMesh();
 protected:
@@ -32,7 +32,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	FName ItemName;
 	UPROPERTY(EditDefaultsOnly)
-	int32 Quantity;
+	int32 ItemQuantity;
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* ItemMesh;
 };

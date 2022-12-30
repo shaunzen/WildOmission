@@ -10,11 +10,11 @@ AWorldItem::AWorldItem()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	ItemName = FName(TEXT("Item"));
-	Quantity = 1;
+	ItemQuantity = 1;
 
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ItemMesh"));
 	ItemMesh->SetSimulatePhysics(true);
-
+	ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 	ItemMesh->SetupAttachment(RootComponent);
 }
 
@@ -37,9 +37,9 @@ FName AWorldItem::GetItemName()
 	return ItemName;
 }
 
-int32 AWorldItem::GetQuantity()
+int32 AWorldItem::GetItemQuantity()
 {
-	return Quantity;
+	return ItemQuantity;
 }
 
 UStaticMeshComponent* AWorldItem::GetItemMesh()
