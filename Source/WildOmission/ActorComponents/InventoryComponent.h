@@ -20,7 +20,7 @@ struct FItem : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture2D* Thumbnail;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class AWorldItem> WorldItem;
+	TSubclassOf<class AWorldItem> WorldItem;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsStackable;
 

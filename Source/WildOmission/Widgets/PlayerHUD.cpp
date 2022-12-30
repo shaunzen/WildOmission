@@ -2,7 +2,13 @@
 
 #include "PlayerHUD.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "../ActorComponents/VitalsComponent.h"
+
+void UPlayerHUD::SetInteractionPrompt(FString InString)
+{
+	InteractionPrompt->SetText(FText::FromString(InString));
+}
 
 void UPlayerHUD::SetVitals(UVitalsComponent* InVitals)
 {

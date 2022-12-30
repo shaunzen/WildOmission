@@ -10,6 +10,7 @@
 class UCameraComponent;
 class UVitalsComponent;
 class UInventoryComponent;
+class UInteractionComponent;
 class UPlayerHUD;
 class UInputAction;
 class UInputMappingContext;
@@ -20,20 +21,14 @@ class WILDOMISSION_API APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	APlayerCharacter();
-
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	virtual void Jump() override;
-
+	
 private:
 
 	UPROPERTY(VisibleAnywhere)
@@ -42,10 +37,13 @@ private:
 		UVitalsComponent* VitalsComponent;
 	UPROPERTY(VisibleAnywhere)
 		UInventoryComponent* InventoryComponent;
+	UPROPERTY(VisibleAnywhere)
+		UInteractionComponent* InteractionComponent;
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<UPlayerHUD> PlayerHUDClass;
 	UPROPERTY()
 		UPlayerHUD* PlayerHUD;
+
 	//*****************************
 	// Input
 	//*****************************
@@ -57,7 +55,12 @@ private:
 		UInputAction* LookAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 		UInputAction* JumpAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+		UInputAction* InteractAction;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void Interact();
+
+	void UpdateInteractionPrompt();
 };

@@ -5,6 +5,8 @@
 #include "Camera/CameraComponent.h"
 #include "../ActorComponents/VitalsComponent.h"
 #include "../ActorComponents/InventoryComponent.h"
+#include "../SceneComponents/InteractionComponent.h"
+#include "../Actors/WorldItem.h"
 #include "../Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "EnhancedInputComponent.h"
@@ -24,6 +26,8 @@ APlayerCharacter::APlayerCharacter()
 	// Setup player components
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));
+	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
 }
 
 // Called when the game starts or when spawned
@@ -64,6 +68,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	PlayerHUD->SetVitals(VitalsComponent);
+	UpdateInteractionPrompt();
 }
 
 // Called to bind functionality to input
@@ -78,6 +83,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayerCharacter::Jump);
+	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APlayerCharacter::Interact);
 }
 
 void APlayerCharacter::Move(const FInputActionValue& Value)
@@ -96,8 +102,33 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxis.Y);
 }
 
-void APlayerCharacter::Jump()
+void APlayerCharacter::Interact()
 {
-	Super::Jump();
-	VitalsComponent->LogVitals();
+	// If we are looking at an interacable item
+		// Add item to inventory
+		// Remove item from world
+		// Hide prompt?
+}
+
+void APlayerCharacter::UpdateInteractionPrompt()
+{
+	FHitResult HitResult;
+	if (InteractionComponent->InteractableItemInRange(HitResult))
+	{
+		if (AWorldItem* WorldItem = Cast<AWorldItem>(HitResult.GetActor()))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World item cast properly"));
+			PlayerHUD->SetInteractionPrompt(FString::Printf(TEXT("Press 'E' to pickup %s"), *WorldItem->GetItemName().ToString()));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Couldn't cast properly into world item"));
+			PlayerHUD->SetInteractionPrompt(FString(TEXT("")));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Interactable in range"));
+		PlayerHUD->SetInteractionPrompt(FString(TEXT("")));
+	}
 }

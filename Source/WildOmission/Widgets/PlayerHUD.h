@@ -7,6 +7,7 @@
 #include "PlayerHUD.generated.h"
 
 class UProgressBar;
+class UTextBlock;
 class UVitalsComponent;
 
 UCLASS(Abstract)
@@ -14,6 +15,7 @@ class WILDOMISSION_API UPlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	void SetInteractionPrompt(FString InString);
 	void SetVitals(UVitalsComponent* InVitals);
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -22,4 +24,6 @@ private:
 		UProgressBar* ThirstBar;
 	UPROPERTY(meta = (BindWidget))
 		UProgressBar* HungerBar;
+	UPROPERTY(meta = (BindWidget))
+		UTextBlock* InteractionPrompt;
 };
