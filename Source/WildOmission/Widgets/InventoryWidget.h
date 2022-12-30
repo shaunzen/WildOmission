@@ -6,12 +6,25 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryWidget.generated.h"
 
-/**
- * 
- */
+class UTextBlock;
+class UWrapBox;
+class UInventorySlotWidget;
+class UInventoryComponent;
+
 UCLASS()
 class WILDOMISSION_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void NativeConstruct() override;
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UInventorySlotWidget> InventorySlotWidgetClass;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* InventoryName;
+	UPROPERTY(meta = (BindWidget))
+	UWrapBox* InventoryContentsWrapBox;
+	UPROPERTY()
+	UInventoryComponent* InventoryComponent;
 };

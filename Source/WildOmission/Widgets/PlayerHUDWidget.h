@@ -8,10 +8,7 @@
 
 class UProgressBar;
 class UTextBlock;
-class UWrapBox;
 class UVitalsComponent;
-class UInventoryComponent;
-class UInventorySlotWidget;
 
 UCLASS(Abstract)
 class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
@@ -19,12 +16,11 @@ class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	
-	virtual void NativeConstruct() override;
-
 	void SetInteractionPrompt(FString InString);
 	void SetVitals(UVitalsComponent* InVitals);
 private:
 
+	// TODO move vitals to their own widget
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* HealthBar;
 	UPROPERTY(meta = (BindWidget))
@@ -33,15 +29,4 @@ private:
 	UProgressBar* HungerBar;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InteractionPrompt;
-
-	// Inventory
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UInventorySlotWidget> InventorySlotClass;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* InventoryName;
-	UPROPERTY(meta = (BindWidget))
-	UWrapBox* InventoryContentsWrapBox;
-	UPROPERTY()
-	UInventoryComponent* InventoryComponent;
 };
