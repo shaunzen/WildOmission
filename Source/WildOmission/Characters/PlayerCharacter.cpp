@@ -7,7 +7,7 @@
 #include "../ActorComponents/InventoryComponent.h"
 #include "../SceneComponents/InteractionComponent.h"
 #include "../Actors/WorldItem.h"
-#include "../Widgets/PlayerHUD.h"
+#include "../Widgets/PlayerHUDWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -44,10 +44,10 @@ void APlayerCharacter::BeginPlay()
 		}
 		
 		// Add HUD to viewport
-		if (IsLocallyControlled() && PlayerHUDClass != nullptr)
+		if (IsLocallyControlled() && PlayerHUDWidgetClass != nullptr)
 		{
-			PlayerHUD = CreateWidget<UPlayerHUD>(PlayerController, PlayerHUDClass);
-			PlayerHUD->AddToViewport();
+			PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
+			PlayerHUDWidget->AddToViewport();
 		}
 	}
 }
@@ -55,10 +55,10 @@ void APlayerCharacter::BeginPlay()
 // Called when the game ends
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (PlayerHUD != nullptr)
+	if (PlayerHUDWidget != nullptr)
 	{
-		PlayerHUD->RemoveFromParent();
-		PlayerHUD = nullptr;
+		PlayerHUDWidget->RemoveFromParent();
+		PlayerHUDWidget = nullptr;
 	}
 }
 
@@ -67,7 +67,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	PlayerHUD->SetVitals(VitalsComponent);
+	PlayerHUDWidget->SetVitals(VitalsComponent);
 	UpdateInteractionPrompt();
 }
 
@@ -84,6 +84,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayerCharacter::Jump);
 	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APlayerCharacter::Interact);
+	EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &APlayerCharacter::ToggleInventory);
 }
 
 void APlayerCharacter::Move(const FInputActionValue& Value)
@@ -124,6 +125,11 @@ void APlayerCharacter::Interact()
 	}
 }
 
+void APlayerCharacter::ToggleInventory()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Toggling Inventory Menu."));
+}
+
 void APlayerCharacter::UpdateInteractionPrompt()
 {
 	FHitResult HitResult;
@@ -138,17 +144,17 @@ void APlayerCharacter::UpdateInteractionPrompt()
 			// Return if its nullptr
 			if (ItemData == nullptr) return;
 			// Set the interaction prompt
-			PlayerHUD->SetInteractionPrompt(FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemData->DisplayName.ToString()));
+			PlayerHUDWidget->SetInteractionPrompt(FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemData->DisplayName.ToString()));
 		}
 		else
 		{
 			// Clear the interaction prompt
-			PlayerHUD->SetInteractionPrompt(FString(TEXT("")));
+			PlayerHUDWidget->SetInteractionPrompt(FString(TEXT("")));
 		}
 	}
 	else
 	{
 		// Clear the interaction prompt
-		PlayerHUD->SetInteractionPrompt(FString(TEXT("")));
+		PlayerHUDWidget->SetInteractionPrompt(FString(TEXT("")));
 	}
 }

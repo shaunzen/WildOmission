@@ -50,6 +50,10 @@ public:
 	void SwapItem();
 
 	FItem* GetItemData(FName ItemName);
+	int32 GetMaxSize();
+	TMap<FName, int32>* GetContent();
+
+	void SetMaxSize(int32 InMaxSize);
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

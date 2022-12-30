@@ -60,3 +60,18 @@ FItem* UInventoryComponent::GetItemData(FName ItemName)
 	static const FString ContextString(TEXT("Item Data Context"));
 	return ItemDataTable->FindRow<FItem>(ItemName, ContextString, true);
 }
+
+int32 UInventoryComponent::GetMaxSize()
+{
+	return MaxSize;
+}
+
+TMap<FName, int32>* UInventoryComponent::GetContent()
+{
+	return &InventoryContent;
+}
+
+void UInventoryComponent::SetMaxSize(int32 InMaxSize)
+{
+	MaxSize = InMaxSize;
+}

@@ -11,7 +11,7 @@ class UCameraComponent;
 class UVitalsComponent;
 class UInventoryComponent;
 class UInteractionComponent;
-class UPlayerHUD;
+class UPlayerHUDWidget;
 class UInputAction;
 class UInputMappingContext;
 
@@ -40,9 +40,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		UInteractionComponent* InteractionComponent;
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<UPlayerHUD> PlayerHUDClass;
+		TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
 	UPROPERTY()
-		UPlayerHUD* PlayerHUD;
+		UPlayerHUDWidget* PlayerHUDWidget;
 
 	//*****************************
 	// Input
@@ -57,10 +57,13 @@ private:
 		UInputAction* JumpAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 		UInputAction* InteractAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+		UInputAction* InventoryAction;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Interact();
+	void ToggleInventory();
 
 	void UpdateInteractionPrompt();
 };
