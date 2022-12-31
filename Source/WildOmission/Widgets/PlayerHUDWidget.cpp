@@ -1,10 +1,10 @@
 // (c) 2023 Telephone Studios, all rights reserved.
 
 #include "PlayerHUDWidget.h"
-#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 #include "InventoryWidget.h"
-#include "../ActorComponents/VitalsComponent.h"
+#include "VitalsWidget.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -33,6 +33,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = false;
 		// Hide inventory menu
+		BackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
 		Inventory->Close();
 	}
 	else
@@ -45,6 +46,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = true;
 		// Show inventory menu
+		BackgroundBorder->SetVisibility(ESlateVisibility::Visible);
 		Inventory->Open();
 	}
 }
@@ -56,11 +58,5 @@ void UPlayerHUDWidget::SetInteractionPrompt(FString InString)
 
 void UPlayerHUDWidget::SetVitals(UVitalsComponent* InVitals)
 {
-	if (InVitals == nullptr || HealthBar == nullptr || ThirstBar == nullptr || HungerBar == nullptr)
-	{
-		return;
-	}
-	HealthBar->SetPercent(InVitals->GetHealth() / InVitals->GetMaxHealth());
-	ThirstBar->SetPercent(InVitals->GetThirst() / InVitals->GetMaxThirst());
-	HungerBar->SetPercent(InVitals->GetHunger() / InVitals->GetMaxHunger());
+	Vitals->Set(InVitals);
 }

@@ -20,6 +20,7 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 	// Add Inventory slots to ui
 	for (int32 i = 0; i < 30; ++i)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Creating Slot index %i"), i);
 		// Create new slot widget
 		UInventorySlotWidget* NewInventorySlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
 		if (i < 6) // Slot is less than 6
@@ -37,7 +38,7 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 		// Add this slot to slot array
 		InventorySlots.Add(NewInventorySlot);
 	}
-	InventoryBackgroundBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+	// Set default visibility
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 	ToolbarWrapBox->SetVisibility(ESlateVisibility::Visible);
@@ -45,14 +46,12 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 
 void UInventoryWidget::Open()
 {
-	InventoryBackgroundBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.5f));
 	InventoryName->SetVisibility(ESlateVisibility::Visible);
 	InventoryWrapBox->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UInventoryWidget::Close()
 {
-	InventoryBackgroundBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 }

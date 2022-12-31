@@ -3,13 +3,14 @@
 
 #include "InventorySlotWidget.h"
 #include "Components/Border.h"
+#include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "InventoryWidget.h"
 #include "../ActorComponents/InventoryComponent.h"
 
 void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, bool bInToolbarSlot)
 {
-	if (InOwner == nullptr || SlotBorder == nullptr || ItemIconBorder == nullptr || QuantityText == nullptr)
+	if (InOwner == nullptr || SlotButton == nullptr || ItemIconBorder == nullptr || QuantityText == nullptr)
 	{
 		return;
 	}

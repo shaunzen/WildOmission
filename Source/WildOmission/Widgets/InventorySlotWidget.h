@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UBorder;
+class UButton;
 class UInventoryWidget;
 
 UCLASS()
@@ -24,7 +25,7 @@ public:
 private:
 
 	UPROPERTY(meta = (BindWidget))
-	UBorder* SlotBorder;
+	UButton* SlotButton;
 	UPROPERTY(meta = (BindWidget))
 	UBorder* ItemIconBorder;
 	UPROPERTY(meta = (BindWidget))

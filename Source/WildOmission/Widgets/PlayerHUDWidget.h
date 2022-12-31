@@ -8,9 +8,14 @@
 
 class UProgressBar;
 class UTextBlock;
-class UInventoryWidget;
+class UBorder;
+
 class UVitalsComponent;
 class UInventoryComponent;
+
+class UVitalsWidget;
+class UInventoryWidget;
+
 
 UCLASS(Abstract)
 class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
@@ -29,15 +34,13 @@ private:
 
 	bool bInventoryOpen;
 
-	// TODO move vitals to their own widget
-	UPROPERTY(meta = (BindWidget))
-	UProgressBar* HealthBar;
-	UPROPERTY(meta = (BindWidget))
-	UProgressBar* ThirstBar;
-	UPROPERTY(meta = (BindWidget))
-	UProgressBar* HungerBar;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InteractionPrompt;
 	UPROPERTY(meta = (BindWidget))
+	UBorder* BackgroundBorder;
+	
+	UPROPERTY(meta = (BindWidget))
 	UInventoryWidget* Inventory;
+	UPROPERTY(meta = (BindWidget))
+	UVitalsWidget* Vitals;
 };

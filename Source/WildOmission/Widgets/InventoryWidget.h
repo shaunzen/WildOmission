@@ -24,19 +24,21 @@ public:
 
 	UInventoryComponent* GetInventoryComponent();
 private:
-	
+	// Slots
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UInventorySlotWidget> InventorySlotWidgetClass;
 	UPROPERTY()
 	TArray<UInventorySlotWidget*> InventorySlots;
-	UPROPERTY(meta = (BindWidget))
-	UBorder* InventoryBackgroundBorder;
+
+	// Bind Widget Elements
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InventoryName;
 	UPROPERTY(meta = (BindWidget))
 	UWrapBox* InventoryWrapBox;
 	UPROPERTY(meta = (BindWidget))
 	UWrapBox* ToolbarWrapBox;
+
+	// Inventory to read from
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;
 };
