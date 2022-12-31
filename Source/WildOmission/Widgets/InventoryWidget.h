@@ -29,7 +29,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InventoryName;
 	UPROPERTY(meta = (BindWidget))
-	UWrapBox* InventoryContentsWrapBox;
+	UWrapBox* InventoryWrapBox;
+	UPROPERTY(meta = (BindWidget))
+	UWrapBox* ToolbarWrapBox;
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;
 };

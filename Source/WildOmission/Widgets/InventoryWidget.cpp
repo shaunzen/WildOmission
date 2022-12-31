@@ -19,11 +19,22 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 	// Add Inventory slots to ui
 	for (int32 i = 0; i < 30; ++i)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Adding slot to inventory."));
+		// Create new slot widget
 		UInventorySlotWidget* NewInventorySlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
-		NewInventorySlot->Setup(this);
+		if (i < 6) // Slot is less than 6
+		{
+			// Make it a toolbar slot
+			NewInventorySlot->Setup(this, true);
+			ToolbarWrapBox->AddChild(NewInventorySlot);
+		}
+		else
+		{
+			// Make it a standard inventory slot
+			NewInventorySlot->Setup(this, false);
+			InventoryWrapBox->AddChild(NewInventorySlot);
+		}
+		// Add this slot to slot array
 		InventorySlots.Add(NewInventorySlot);
-		InventoryContentsWrapBox->AddChild(NewInventorySlot);
 	}
 }
 

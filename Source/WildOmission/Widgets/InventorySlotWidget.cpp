@@ -7,7 +7,7 @@
 #include "InventoryWidget.h"
 #include "../ActorComponents/InventoryComponent.h"
 
-void UInventorySlotWidget::Setup(UInventoryWidget* InOwner)
+void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, bool bInToolbarSlot)
 {
 	if (InOwner == nullptr || SlotBorder == nullptr || ItemIconBorder == nullptr || QuantityText == nullptr)
 	{
@@ -17,6 +17,8 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner)
 	Owner = InOwner;
 	CurrentItemName = FName("");
 	CurrentItemQuantity = 0;
+	bToolbarSlot = bInToolbarSlot;
+	SetItem(CurrentItemName, CurrentItemQuantity);
 }
 
 // Pass in Quantity of 0 to clear item from slot
