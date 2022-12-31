@@ -66,7 +66,10 @@ void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (PlayerHUDWidget == nullptr)
+	{
+		return;
+	}
 	PlayerHUDWidget->SetVitals(VitalsComponent);
 	UpdateInteractionPrompt();
 }
@@ -127,7 +130,7 @@ void APlayerCharacter::Interact()
 
 void APlayerCharacter::ToggleInventory()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Toggling Inventory Menu."));
+	PlayerHUDWidget->ToggleInventory();
 }
 
 void APlayerCharacter::UpdateInteractionPrompt()

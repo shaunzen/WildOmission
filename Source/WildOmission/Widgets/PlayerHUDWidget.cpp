@@ -3,7 +3,26 @@
 #include "PlayerHUDWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "InventoryWidget.h"
 #include "../ActorComponents/VitalsComponent.h"
+
+UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	bInventoryOpen = false;
+}
+
+void UPlayerHUDWidget::ToggleInventory()
+{
+	bInventoryOpen = !bInventoryOpen;
+	if (bInventoryOpen == false)
+	{
+		Inventory->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		Inventory->SetVisibility(ESlateVisibility::Visible);
+	}
+}
 
 void UPlayerHUDWidget::SetInteractionPrompt(FString InString)
 {

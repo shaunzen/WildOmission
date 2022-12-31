@@ -8,6 +8,7 @@
 
 class UProgressBar;
 class UTextBlock;
+class UInventoryWidget;
 class UVitalsComponent;
 
 UCLASS(Abstract)
@@ -15,10 +16,15 @@ class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
+
+	void ToggleInventory();
 	
 	void SetInteractionPrompt(FString InString);
 	void SetVitals(UVitalsComponent* InVitals);
 private:
+
+	bool bInventoryOpen;
 
 	// TODO move vitals to their own widget
 	UPROPERTY(meta = (BindWidget))
@@ -29,4 +35,6 @@ private:
 	UProgressBar* HungerBar;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InteractionPrompt;
+	UPROPERTY(meta = (BindWidget))
+	UInventoryWidget* Inventory;
 };
