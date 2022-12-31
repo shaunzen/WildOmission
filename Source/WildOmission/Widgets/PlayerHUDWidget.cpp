@@ -14,12 +14,32 @@ UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) 
 void UPlayerHUDWidget::ToggleInventory()
 {
 	bInventoryOpen = !bInventoryOpen;
+	// Get player controller
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
 	if (bInventoryOpen == false)
 	{
+		// Set input mode to game
+		FInputModeGameOnly InputModeData;
+		PlayerController->SetInputMode(InputModeData);
+		PlayerController->bShowMouseCursor = false;
+		// Hide inventory menu
 		Inventory->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
+		// Set input mode to ui
+		FInputModeGameAndUI InputModeData;
+		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputModeData.SetHideCursorDuringCapture(false);
+		InputModeData.SetWidgetToFocus(Inventory->TakeWidget());
+		PlayerController->SetInputMode(InputModeData);
+		PlayerController->bShowMouseCursor = true;
+		// Show inventory menu
 		Inventory->SetVisibility(ESlateVisibility::Visible);
 	}
 }
