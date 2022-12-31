@@ -3,6 +3,7 @@
 
 #include "InventoryWidget.h"
 #include "InventorySlotWidget.h"
+#include "Components/Border.h"
 #include "Components/TextBlock.h"
 #include "Components/WrapBox.h"
 #include "../ActorComponents/InventoryComponent.h"
@@ -36,6 +37,24 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 		// Add this slot to slot array
 		InventorySlots.Add(NewInventorySlot);
 	}
+	InventoryBackgroundBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+	InventoryName->SetVisibility(ESlateVisibility::Hidden);
+	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
+	ToolbarWrapBox->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UInventoryWidget::Open()
+{
+	InventoryBackgroundBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.5f));
+	InventoryName->SetVisibility(ESlateVisibility::Visible);
+	InventoryWrapBox->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UInventoryWidget::Close()
+{
+	InventoryBackgroundBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+	InventoryName->SetVisibility(ESlateVisibility::Hidden);
+	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
 UInventoryComponent* UInventoryWidget::GetInventoryComponent()

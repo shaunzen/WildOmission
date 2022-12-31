@@ -33,7 +33,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = false;
 		// Hide inventory menu
-		Inventory->SetVisibility(ESlateVisibility::Hidden);
+		Inventory->Close();
 	}
 	else
 	{
@@ -45,7 +45,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = true;
 		// Show inventory menu
-		Inventory->SetVisibility(ESlateVisibility::Visible);
+		Inventory->Open();
 	}
 }
 

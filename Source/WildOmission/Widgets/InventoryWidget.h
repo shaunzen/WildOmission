@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UWrapBox;
+class UBorder;
 class UInventorySlotWidget;
 class UInventoryComponent;
 
@@ -17,6 +18,9 @@ class WILDOMISSION_API UInventoryWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	void Setup(UInventoryComponent* InInventoryComponent);
+	
+	void Open();
+	void Close();
 
 	UInventoryComponent* GetInventoryComponent();
 private:
@@ -25,7 +29,8 @@ private:
 	TSubclassOf<UInventorySlotWidget> InventorySlotWidgetClass;
 	UPROPERTY()
 	TArray<UInventorySlotWidget*> InventorySlots;
-	
+	UPROPERTY(meta = (BindWidget))
+	UBorder* InventoryBackgroundBorder;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InventoryName;
 	UPROPERTY(meta = (BindWidget))
