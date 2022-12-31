@@ -16,11 +16,16 @@ class WILDOMISSION_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	virtual void NativeConstruct() override;
+	void Setup(UInventoryComponent* InInventoryComponent);
 
+	UInventoryComponent* GetInventoryComponent();
 private:
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UInventorySlotWidget> InventorySlotWidgetClass;
+	UPROPERTY()
+	TArray<UInventorySlotWidget*> InventorySlots;
+	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InventoryName;
 	UPROPERTY(meta = (BindWidget))

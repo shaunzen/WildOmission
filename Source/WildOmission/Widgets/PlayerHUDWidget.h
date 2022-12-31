@@ -10,6 +10,7 @@ class UProgressBar;
 class UTextBlock;
 class UInventoryWidget;
 class UVitalsComponent;
+class UInventoryComponent;
 
 UCLASS(Abstract)
 class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
@@ -17,6 +18,8 @@ class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
+
+	void Setup(UInventoryComponent* InInventoryComponent);
 
 	void ToggleInventory();
 	

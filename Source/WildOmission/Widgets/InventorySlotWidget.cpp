@@ -4,19 +4,55 @@
 #include "InventorySlotWidget.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
+#include "InventoryWidget.h"
 #include "../ActorComponents/InventoryComponent.h"
 
-void UInventorySlotWidget::Setup(FName InItemName, int32 InQuantity, UInventoryComponent* InInventoryComponent)
+void UInventorySlotWidget::Setup(UInventoryWidget* InOwner)
 {
-	if (InInventoryComponent == nullptr)
+	if (InOwner == nullptr || SlotBorder == nullptr || ItemIconBorder == nullptr || QuantityText == nullptr)
 	{
 		return;
 	}
-	
-	ItemName = InItemName;
-	Quantity = InQuantity;
-	OwnerInventoryComponent = InInventoryComponent;
-	
+
+	Owner = InOwner;
+	CurrentItemName = FName("");
+	CurrentItemQuantity = 0;
+}
+
+// Pass in Quantity of 0 to clear item from slot
+void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
+{
+	CurrentItemName = ItemName;
+	CurrentItemQuantity = ItemQuantity;
+
+	FString QuantityString;
+	if (CurrentItemQuantity > 1)
+	{
+		QuantityString = FString::Printf(TEXT("%i"), CurrentItemQuantity);
+	}
+	else
+	{
+		QuantityString = FString("");
+	}
+
+	if (CurrentItemQuantity != 0)
+	{
+		FItem* SlotItemData = Owner->GetInventoryComponent()->GetItemData(CurrentItemName);
+		if (SlotItemData == nullptr)
+		{
+			return;
+		}
+		ItemIconBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
+		ItemIconBorder->SetBrushColor(FLinearColor::White);
+	}
+	else
+	{
+		ItemIconBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+	}
+	QuantityText->SetText(FText::FromString(QuantityString));
+}
+
+/*
 	//************************************
 	// Amount Text
 	FString QuantityString;
@@ -43,4 +79,4 @@ void UInventorySlotWidget::Setup(FName InItemName, int32 InQuantity, UInventoryC
 
 	SlotImageBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
 	SlotImageBorder->SetBrushColor(FLinearColor::White);
-}
+*/

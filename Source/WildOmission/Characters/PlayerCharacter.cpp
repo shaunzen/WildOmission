@@ -47,6 +47,7 @@ void APlayerCharacter::BeginPlay()
 		if (IsLocallyControlled() && PlayerHUDWidgetClass != nullptr)
 		{
 			PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
+			PlayerHUDWidget->Setup(InventoryComponent);
 			PlayerHUDWidget->AddToViewport();
 		}
 	}

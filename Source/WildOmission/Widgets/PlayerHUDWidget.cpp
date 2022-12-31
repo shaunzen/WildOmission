@@ -11,6 +11,11 @@ UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) 
 	bInventoryOpen = false;
 }
 
+void UPlayerHUDWidget::Setup(UInventoryComponent* InInventoryComponent)
+{
+	Inventory->Setup(InInventoryComponent);
+}
+
 void UPlayerHUDWidget::ToggleInventory()
 {
 	bInventoryOpen = !bInventoryOpen;

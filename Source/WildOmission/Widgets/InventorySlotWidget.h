@@ -8,26 +8,33 @@
 
 class UTextBlock;
 class UBorder;
-class UInventoryComponent;
+class UInventoryWidget;
 
 UCLASS()
 class WILDOMISSION_API UInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	// TODO toolbar?
+	void Setup(UInventoryWidget* InOwner);
+	void SetItem(FName ItemName, int32 ItemQuantity);
+	
+	// TODO getters for item and quantity
 
-	void Setup(FName InItemName, int32 InQuantity, UInventoryComponent* InInventoryComponent);
 private:
 
 	UPROPERTY(meta = (BindWidget))
-	UBorder* SlotImageBorder;
+	UBorder* SlotBorder;
+	UPROPERTY(meta = (BindWidget))
+	UBorder* ItemIconBorder;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* QuantityText;
+
 	UPROPERTY()
-	FName ItemName;
+	FName CurrentItemName;
 	UPROPERTY()
-	int32 Quantity;
-	
+	int32 CurrentItemQuantity;
+
 	UPROPERTY()
-	UInventoryComponent* OwnerInventoryComponent;
+	UInventoryWidget* Owner;
 };

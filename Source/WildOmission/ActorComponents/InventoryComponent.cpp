@@ -38,7 +38,15 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 {
-	InventoryContent.Add(ItemName, Quantity);
+	if (int32* ItemQuantity = InventoryContent.Find(ItemName))
+	{
+		int32 NewQuantity = *ItemQuantity + Quantity;
+		InventoryContent.Add(ItemName, NewQuantity);
+	}
+	else
+	{
+		InventoryContent.Add(ItemName, Quantity);
+	}
 }
 
 void UInventoryComponent::RemoveItem()
