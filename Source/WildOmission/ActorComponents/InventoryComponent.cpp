@@ -19,25 +19,10 @@ UInventoryComponent::UInventoryComponent()
 	}
 }
 
-
-// Called when the game starts
-void UInventoryComponent::BeginPlay()
+void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
 {
-	Super::BeginPlay();
-}
-
-
-// Called every frame
-void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-void UInventoryComponent::Setup(UInventoryWidget* InventoryWidgetToUse)
-{
-	InventoryWidget = InventoryWidgetToUse;
+	InventoryWidget = InInventoryWidget;
+	InventoryWidget->SetComponent(this);
 }
 
 void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)

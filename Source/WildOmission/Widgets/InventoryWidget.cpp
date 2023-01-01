@@ -8,14 +8,15 @@
 #include "Components/WrapBox.h"
 #include "../ActorComponents/InventoryComponent.h"
 
-void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
+void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 {
-	InventoryComponent = InInventoryComponent;
 	// Check for if inventory and slot are valid pointers
-	if (InventoryComponent == nullptr || InventorySlotWidgetClass == nullptr)
+	if (InInventoryComponent == nullptr || InventorySlotWidgetClass == nullptr)
 	{
 		return;
 	}
+	
+	InventoryComponent = InInventoryComponent;
 
 	// Add Inventory slots to ui
 	for (int32 i = 0; i < 30; ++i)
@@ -38,22 +39,11 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 		// Add this slot to slot array
 		InventorySlots.Add(NewInventorySlot);
 	}
+
 	// Set default visibility
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 	ToolbarWrapBox->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UInventoryWidget::Open()
-{
-	InventoryName->SetVisibility(ESlateVisibility::Visible);
-	InventoryWrapBox->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UInventoryWidget::Close()
-{
-	InventoryName->SetVisibility(ESlateVisibility::Hidden);
-	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UInventoryWidget::AddItem(FName ItemName, int32 Quantity)
@@ -83,8 +73,14 @@ void UInventoryWidget::AddItem(FName ItemName, int32 Quantity)
 	}
 }
 
-// uhh pointer pointing to a class with a pointer to this???
-UInventoryComponent* UInventoryWidget::GetInventoryComponent()
+void UInventoryWidget::Open()
 {
-	return InventoryComponent;
+	InventoryName->SetVisibility(ESlateVisibility::Visible);
+	InventoryWrapBox->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UInventoryWidget::Close()
+{
+	InventoryName->SetVisibility(ESlateVisibility::Hidden);
+	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 }

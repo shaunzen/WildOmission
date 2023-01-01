@@ -6,14 +6,12 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerHUDWidget.generated.h"
 
-class UProgressBar;
 class UTextBlock;
 class UBorder;
 
 class UVitalsComponent;
-class UInventoryComponent;
-
 class UVitalsWidget;
+
 class UInventoryWidget;
 
 
@@ -24,15 +22,14 @@ class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
 public:
 	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
 
-	void Setup(UInventoryComponent* InInventoryComponent);
-
+	// Setters
 	void ToggleInventory();
-	
 	void SetInteractionPrompt(FString InString);
 	void SetVitals(UVitalsComponent* InVitals);
 
-	bool InventoryOpen();
+	// Getters
 	UInventoryWidget* GetInventoryWidget();
+	bool InventoryOpen();
 private:
 
 	bool bInventoryOpen;

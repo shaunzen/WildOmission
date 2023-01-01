@@ -7,6 +7,8 @@
 #include "Components/TextBlock.h"
 #include "InventoryWidget.h"
 #include "../ActorComponents/InventoryComponent.h"
+#include "../Characters/PlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, bool bInToolbarSlot)
 {
@@ -42,13 +44,20 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 
 	if (CurrentItemQuantity != 0)
 	{
-		FItem* SlotItemData = Owner->GetInventoryComponent()->GetItemData(CurrentItemName);
-		if (SlotItemData == nullptr)
+		// Get the player character
+		if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
-			return;
+			// Get the item data from the player character's inventory component
+			FItem* SlotItemData = PlayerCharacter->GetInventoryComponent()->GetItemData(CurrentItemName);
+			if (SlotItemData == nullptr)
+			{
+				return;
+			}
+			// Set the item icon border to the item thumbnail
+			ItemIconBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
+			// Set the item icon color opaque white
+			ItemIconBorder->SetBrushColor(FLinearColor::White);
 		}
-		ItemIconBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
-		ItemIconBorder->SetBrushColor(FLinearColor::White);
 	}
 	else
 	{

@@ -17,14 +17,12 @@ class WILDOMISSION_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void Setup(UInventoryComponent* InInventoryComponent);
+	void SetComponent(UInventoryComponent* InInventoryComponent);
 	
-	void Open();
-	void Close();
-
 	void AddItem(FName ItemName, int32 Quantity);
 
-	UInventoryComponent* GetInventoryComponent();
+	void Open();
+	void Close();
 private:
 	// Slots
 	UPROPERTY(EditDefaultsOnly)
@@ -40,7 +38,6 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UWrapBox* ToolbarWrapBox;
 
-	// Inventory to read from
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;
 };

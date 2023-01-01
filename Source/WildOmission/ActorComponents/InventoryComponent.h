@@ -43,9 +43,8 @@ class WILDOMISSION_API UInventoryComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UInventoryComponent();
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void Setup(UInventoryWidget* InventoryWidgetToUse);
+	
+	void Setup(UInventoryWidget* InInventoryWidget);
 	void AddItem(FName ItemName, int32 Quantity);
 	void RemoveItem();
 	void SwapItem();
@@ -55,9 +54,6 @@ public:
 	TMap<FName, int32>* GetContent();
 
 	void SetMaxSize(int32 InMaxSize);
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
 
 private:
 	// TODO change to defaultsonly

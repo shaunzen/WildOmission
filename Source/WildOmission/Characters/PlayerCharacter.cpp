@@ -43,14 +43,15 @@ void APlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 		
-		// Add HUD to viewport
+		// Is this the local player and is the hud widget class specified
 		if (IsLocallyControlled() && PlayerHUDWidgetClass != nullptr)
 		{
+			// Create the player's hud
 			PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
-			PlayerHUDWidget->Setup(InventoryComponent);
 			PlayerHUDWidget->AddToViewport();
 		}
 	}
+	// Set the player's inventory component to use the player's inventory widget
 	InventoryComponent->Setup(PlayerHUDWidget->GetInventoryWidget());
 }
 
@@ -167,4 +168,9 @@ void APlayerCharacter::UpdateInteractionPrompt()
 		// Clear the interaction prompt
 		PlayerHUDWidget->SetInteractionPrompt(FString(TEXT("")));
 	}
+}
+
+UInventoryComponent* APlayerCharacter::GetInventoryComponent()
+{
+	return InventoryComponent;
 }
