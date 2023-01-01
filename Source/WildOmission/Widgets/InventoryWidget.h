@@ -19,10 +19,13 @@ class WILDOMISSION_API UInventoryWidget : public UUserWidget
 public:
 	void SetComponent(UInventoryComponent* InInventoryComponent);
 	
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 	void AddItem(FName ItemName, int32 Quantity);
 
 	void Open();
 	void Close();
+
 private:
 	// Slots
 	UPROPERTY(EditDefaultsOnly)
@@ -37,7 +40,9 @@ private:
 	UWrapBox* InventoryWrapBox;
 	UPROPERTY(meta = (BindWidget))
 	UWrapBox* ToolbarWrapBox;
-
+	UPROPERTY(meta = (BindWidget))
+	UBorder* SelectedItemBorder;
+	
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;
 };
