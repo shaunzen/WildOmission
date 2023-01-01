@@ -56,6 +56,34 @@ void UInventoryWidget::Close()
 	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void UInventoryWidget::AddItem(FName ItemName, int32 Quantity)
+{
+	bool bSlotFound = false;
+	// Loop through all slots
+	for (UInventorySlotWidget* InventorySlot : InventorySlots)
+	{
+		// If the current slot's item is the same as the item we are adding
+		if (InventorySlot->GetCurrentItemName() == ItemName)
+		{
+			InventorySlot->SetItem(InventorySlot->GetCurrentItemName(), InventorySlot->GetCurrentItemQuantity() + Quantity);
+			bSlotFound = true;
+			break;
+		}
+		// If the current slot has no item
+		if (InventorySlot->GetCurrentItemQuantity() == 0)
+		{
+			InventorySlot->SetItem(ItemName, Quantity);
+			bSlotFound = true;
+			break;
+		}
+	}
+	if (bSlotFound == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Couldn't find a good slot to put the new item in."));
+	}
+}
+
+// uhh pointer pointing to a class with a pointer to this???
 UInventoryComponent* UInventoryWidget::GetInventoryComponent()
 {
 	return InventoryComponent;

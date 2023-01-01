@@ -42,7 +42,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		FInputModeGameAndUI InputModeData;
 		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		InputModeData.SetHideCursorDuringCapture(false);
-		InputModeData.SetWidgetToFocus(Inventory->TakeWidget());
+		//InputModeData.SetWidgetToFocus(Inventory->TakeWidget());
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = true;
 		// Show inventory menu
@@ -59,4 +59,14 @@ void UPlayerHUDWidget::SetInteractionPrompt(FString InString)
 void UPlayerHUDWidget::SetVitals(UVitalsComponent* InVitals)
 {
 	Vitals->Set(InVitals);
+}
+
+bool UPlayerHUDWidget::InventoryOpen()
+{
+	return bInventoryOpen;
+}
+
+UInventoryWidget* UPlayerHUDWidget::GetInventoryWidget()
+{
+	return Inventory;
 }

@@ -30,6 +30,9 @@ public:
 	
 	void SetInteractionPrompt(FString InString);
 	void SetVitals(UVitalsComponent* InVitals);
+
+	bool InventoryOpen();
+	UInventoryWidget* GetInventoryWidget();
 private:
 
 	bool bInventoryOpen;

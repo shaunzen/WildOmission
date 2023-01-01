@@ -22,6 +22,8 @@ public:
 	void Open();
 	void Close();
 
+	void AddItem(FName ItemName, int32 Quantity);
+
 	UInventoryComponent* GetInventoryComponent();
 private:
 	// Slots

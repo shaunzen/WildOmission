@@ -16,12 +16,12 @@ class WILDOMISSION_API UInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	// TODO toolbar?
 	void Setup(UInventoryWidget* InOwner, bool bInToolbarSlot = false);
 	void SetItem(FName ItemName, int32 ItemQuantity);
 	
 	// TODO getters for item and quantity
-
+	FName GetCurrentItemName();
+	int32 GetCurrentItemQuantity();
 private:
 
 	UPROPERTY(meta = (BindWidget))
@@ -41,4 +41,7 @@ private:
 
 	UPROPERTY()
 		bool bToolbarSlot;
+
+	UFUNCTION()
+		void OnPressed();
 };

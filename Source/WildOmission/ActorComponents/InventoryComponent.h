@@ -7,6 +7,7 @@
 #include "Engine/DataTable.h"
 #include "InventoryComponent.generated.h"
 
+class UInventoryWidget;
 
 USTRUCT(BlueprintType)
 struct FItem : public FTableRowBase
@@ -44,7 +45,7 @@ public:
 	UInventoryComponent();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	void Setup(UInventoryWidget* InventoryWidgetToUse);
 	void AddItem(FName ItemName, int32 Quantity);
 	void RemoveItem();
 	void SwapItem();
@@ -66,4 +67,7 @@ private:
 	int32 MaxSize;
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* ItemDataTable;
+
+	UPROPERTY()
+	UInventoryWidget* InventoryWidget;
 };

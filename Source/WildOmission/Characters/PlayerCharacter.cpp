@@ -51,6 +51,7 @@ void APlayerCharacter::BeginPlay()
 			PlayerHUDWidget->AddToViewport();
 		}
 	}
+	InventoryComponent->Setup(PlayerHUDWidget->GetInventoryWidget());
 }
 
 // Called when the game ends
@@ -101,6 +102,11 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 
 void APlayerCharacter::Look(const FInputActionValue& Value)
 {
+	// Return early if the inventory menu is open
+	if (PlayerHUDWidget->InventoryOpen())
+	{
+		return;
+	}
 	FVector2D LookAxis = Value.Get<FVector2D>();
 
 	AddControllerYawInput(LookAxis.X);

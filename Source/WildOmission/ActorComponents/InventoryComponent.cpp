@@ -2,6 +2,8 @@
 
 
 #include "InventoryComponent.h"
+#include "../Widgets/InventoryWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -22,9 +24,6 @@ UInventoryComponent::UInventoryComponent()
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
@@ -36,8 +35,14 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	// ...
 }
 
+void UInventoryComponent::Setup(UInventoryWidget* InventoryWidgetToUse)
+{
+	InventoryWidget = InventoryWidgetToUse;
+}
+
 void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 {
+	// Add item to item list
 	if (int32* ItemQuantity = InventoryContent.Find(ItemName))
 	{
 		int32 NewQuantity = *ItemQuantity + Quantity;
@@ -47,6 +52,9 @@ void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 	{
 		InventoryContent.Add(ItemName, Quantity);
 	}
+
+	// Add item to widget
+	InventoryWidget->AddItem(ItemName, Quantity);
 }
 
 void UInventoryComponent::RemoveItem()

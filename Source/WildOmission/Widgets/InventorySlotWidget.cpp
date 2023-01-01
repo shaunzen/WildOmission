@@ -20,6 +20,8 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, bool bInToolbarSlot)
 	CurrentItemQuantity = 0;
 	bToolbarSlot = bInToolbarSlot;
 	SetItem(CurrentItemName, CurrentItemQuantity);
+	
+	SlotButton->OnPressed.AddDynamic(this, &UInventorySlotWidget::OnPressed);
 }
 
 // Pass in Quantity of 0 to clear item from slot
@@ -53,6 +55,21 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 		ItemIconBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 	}
 	QuantityText->SetText(FText::FromString(QuantityString));
+}
+
+void UInventorySlotWidget::OnPressed()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Slot pressed."));
+}
+
+FName UInventorySlotWidget::GetCurrentItemName()
+{
+	return CurrentItemName;
+}
+
+int32 UInventorySlotWidget::GetCurrentItemQuantity()
+{
+	return CurrentItemQuantity;
 }
 
 /*
