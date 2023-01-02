@@ -1,4 +1,4 @@
-// (c) 2023 Telephone Studios, all rights reserved.
+// Copyright Telephone Studios. All Rights Reserved.
 
 
 #include "PlayerCharacterController.h"
