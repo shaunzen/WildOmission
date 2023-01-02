@@ -6,7 +6,7 @@
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
 #include "Components/WrapBox.h"
-#include "Components/CanvasPanelSlot.h"
+#include "Components/CanvasPanel.h"
 #include "../ActorComponents/InventoryComponent.h"
 
 void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
@@ -45,19 +45,6 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 	ToolbarWrapBox->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UInventoryWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController == nullptr)
-	{
-		return;
-	}
-	double MouseX, MouseY;
-	PlayerController->GetMousePosition(MouseX, MouseY);
-	// Devide the mouse values by Viewport scale??
-	SelectedItemBorder->SetRenderTranslation(FVector2D(MouseX, MouseY));
 }
 
 void UInventoryWidget::AddItem(FName ItemName, int32 Quantity)

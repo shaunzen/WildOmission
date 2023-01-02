@@ -4,11 +4,38 @@
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "InventoryWidget.h"
+#include "SelectedItemWidget.h"
 #include "VitalsWidget.h"
+#include "Components/CanvasPanelSlot.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	bInventoryOpen = false;
+}
+
+void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	UCanvasPanelSlot* SelectedItemSlot = Cast<UCanvasPanelSlot>(SelectedItem->Slot);
+	if (PlayerController == nullptr || SelectedItemSlot == nullptr)
+	{
+		return;
+	}
+	double MouseX, MouseY;
+	FVector2D ViewportSize;
+	FVector2D A;
+	FVector2D Destination;
+	
+	PlayerController->GetMousePosition(MouseX, MouseY);
+	GEngine->GameViewport->GetViewportSize(ViewportSize);
+
+	// Convert mouse to normalized coordinates
+	
+	A = FVector2D(MouseX, MouseY) / ViewportSize;
+	Destination = A * ViewportSize;
+	UE_LOG(LogTemp, Warning, TEXT("Setting Selected Item to X: %f, Y: %f"), Destination.X, Destination.Y);
+	SelectedItemSlot->SetPosition(Destination);
 }
 
 void UPlayerHUDWidget::ToggleInventory()

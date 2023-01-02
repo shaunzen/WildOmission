@@ -13,7 +13,7 @@ class UVitalsComponent;
 class UVitalsWidget;
 
 class UInventoryWidget;
-
+class USelectedItemWidget;
 
 UCLASS(Abstract)
 class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
@@ -21,6 +21,7 @@ class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	// Setters
 	void ToggleInventory();
@@ -38,9 +39,11 @@ private:
 	UTextBlock* InteractionPrompt;
 	UPROPERTY(meta = (BindWidget))
 	UBorder* BackgroundBorder;
-	
+
 	UPROPERTY(meta = (BindWidget))
 	UInventoryWidget* Inventory;
+	UPROPERTY(meta = (BindWidget))
+	USelectedItemWidget* SelectedItem;
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
 };
