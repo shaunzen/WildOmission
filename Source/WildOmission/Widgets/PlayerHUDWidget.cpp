@@ -16,26 +16,8 @@ UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) 
 void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	UCanvasPanelSlot* SelectedItemSlot = Cast<UCanvasPanelSlot>(SelectedItem->Slot);
-	if (PlayerController == nullptr || SelectedItemSlot == nullptr)
-	{
-		return;
-	}
-	double MouseX, MouseY;
-	FVector2D ViewportSize;
-	FVector2D A;
-	FVector2D Destination;
 	
-	PlayerController->GetMousePosition(MouseX, MouseY);
-	GEngine->GameViewport->GetViewportSize(ViewportSize);
-
-	// Convert mouse to normalized coordinates
-	
-	A = FVector2D(MouseX, MouseY) / ViewportSize;
-	Destination = A * ViewportSize;
-	UE_LOG(LogTemp, Warning, TEXT("Setting Selected Item to X: %f, Y: %f"), Destination.X, Destination.Y);
-	SelectedItemSlot->SetPosition(Destination);
+	UpdateSelectedItemLocation();
 }
 
 void UPlayerHUDWidget::ToggleInventory()
@@ -91,4 +73,37 @@ bool UPlayerHUDWidget::InventoryOpen()
 UInventoryWidget* UPlayerHUDWidget::GetInventoryWidget()
 {
 	return Inventory;
+}
+
+void UPlayerHUDWidget::UpdateSelectedItemLocation()
+{	
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	UCanvasPanelSlot* SelectedItemSlot = Cast<UCanvasPanelSlot>(SelectedItem->Slot);
+	if (PlayerController == nullptr || SelectedItemSlot == nullptr || GEngine->GameViewport == 0)
+	{
+		return;
+	}
+
+	// Get mouse position
+	FVector2D MousePosition;
+	PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
+
+	// Get viewport size
+	FVector2D ViewportSize;
+	GEngine->GameViewport->GetViewportSize(ViewportSize);
+	
+	// Normalize the mouse position
+	FVector2D NormalizedMousePosition;
+	NormalizedMousePosition = MousePosition / ViewportSize;
+
+	// Create anchor from destination
+	FAnchors NewAnchor;
+	NewAnchor.Minimum.X = NormalizedMousePosition.X;
+	NewAnchor.Minimum.Y = NormalizedMousePosition.Y;
+	NewAnchor.Maximum.X = NormalizedMousePosition.X;
+	NewAnchor.Maximum.Y = NormalizedMousePosition.Y;
+
+	// Update slot anchor and position
+	SelectedItemSlot->SetAnchors(NewAnchor);
+	SelectedItemSlot->SetPosition(FVector2D::ZeroVector);
 }

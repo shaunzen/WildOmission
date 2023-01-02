@@ -46,4 +46,6 @@ private:
 	USelectedItemWidget* SelectedItem;
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
+
+	void UpdateSelectedItemLocation();
 };
