@@ -50,14 +50,14 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 void UInventoryWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	UCanvasPanelSlot* SelectedItemBorderSlot = Cast<UCanvasPanelSlot>(SelectedItemBorder->Slot);
-	if (PlayerController == nullptr || SelectedItemBorderSlot == nullptr)
+	if (PlayerController == nullptr)
 	{
 		return;
 	}
 	double MouseX, MouseY;
 	PlayerController->GetMousePosition(MouseX, MouseY);
-	SelectedItemBorderSlot->SetPosition(FVector2D(MouseX, MouseY));
+	// Devide the mouse values by Viewport scale??
+	SelectedItemBorder->SetRenderTranslation(FVector2D(MouseX, MouseY));
 }
 
 void UInventoryWidget::AddItem(FName ItemName, int32 Quantity)
