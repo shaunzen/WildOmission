@@ -92,3 +92,36 @@ void UInventoryWidget::Close()
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 }
+
+void UInventoryWidget::StartDragging(FName ItemName, int32 Quantity)
+{
+	FItem* ItemData = InventoryComponent->GetItemData(ItemName);
+	if (ItemData == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid Item ID: %s"), *ItemName.ToString());
+		return;
+	}
+	SelectedItem.Name = ItemName;
+	SelectedItem.Quantity = Quantity;
+	SelectedItemWidget->SetItem(ItemData->Thumbnail, Quantity);
+	SelectedItemWidget->Show();
+	bCurrentlyDragging = true;
+}
+
+void UInventoryWidget::EndDragging()
+{
+	SelectedItem.Name = FName("");
+	SelectedItem.Quantity = 0;
+	SelectedItemWidget->Hide();
+	bCurrentlyDragging = false;
+}
+
+bool UInventoryWidget::Dragging() const
+{
+	return bCurrentlyDragging;
+}
+
+FSelectedItem* UInventoryWidget::GetSelectedItem()
+{
+	return &SelectedItem;
+}

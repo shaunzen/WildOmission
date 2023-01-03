@@ -69,6 +69,48 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 void UInventorySlotWidget::OnPressed()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Slot pressed."));
+	
+	// is owner currently dragging
+	// yes
+		// we dont have an item
+			// set the current item and quantity to the selected one
+			// clear selected
+		// we have the same item as the one being dragged
+			// add the selected quantity to our quantity
+			// clear slected
+		// we have an item but its different to the one being dragged
+			// swap
+	// no
+		// we have an item
+			// set selected item and quantity to the one in this slot
+			// clear the item and quantity in this slot
+	if (Owner->Dragging())
+	{
+		if (CurrentItemQuantity == 0)
+		{
+			this->SetItem(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity);
+			Owner->EndDragging();
+		}
+		else if (CurrentItemName == Owner->GetSelectedItem()->Name)
+		{
+			int32 NewQuantity;
+			NewQuantity = CurrentItemQuantity + Owner->GetSelectedItem()->Quantity;
+			this->SetItem(Owner->GetSelectedItem()->Name, NewQuantity);
+			Owner->EndDragging();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("It's something else entirely."));
+		}
+	}
+	else
+	{
+		if (CurrentItemQuantity > 0)
+		{
+			Owner->StartDragging(CurrentItemName, CurrentItemQuantity);
+			this->SetItem(FName(""), 0);
+		}
+	}
 }
 
 FName UInventorySlotWidget::GetCurrentItemName()

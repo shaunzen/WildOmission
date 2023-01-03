@@ -13,6 +13,17 @@ class UInventorySlotWidget;
 class USelectedItemWidget;
 class UInventoryComponent;
 
+struct FSelectedItem
+{
+	FName Name;
+	int32 Quantity;
+	FSelectedItem(FName InName = FName(""), int32 InQuantity = 0)
+	{
+		Name = InName;
+		Quantity = InQuantity;
+	}
+};
+
 UCLASS()
 class WILDOMISSION_API UInventoryWidget : public UUserWidget
 {
@@ -27,6 +38,11 @@ public:
 	void Open();
 	void Close();
 
+	void StartDragging(FName ItemName, int32 Quantity);
+	void EndDragging();
+	bool Dragging() const;
+	FSelectedItem* GetSelectedItem();
+
 private:
 	// Slots
 	UPROPERTY(EditDefaultsOnly)
@@ -35,6 +51,9 @@ private:
 	TArray<UInventorySlotWidget*> InventorySlots;
 	UPROPERTY()
 	USelectedItemWidget* SelectedItemWidget;
+
+	FSelectedItem SelectedItem;
+	bool bCurrentlyDragging;
 
 	// Bind Widget Elements
 	UPROPERTY(meta = (BindWidget))
