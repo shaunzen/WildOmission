@@ -13,6 +13,12 @@ UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) 
 	bInventoryOpen = false;
 }
 
+void UPlayerHUDWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	Inventory->SetSelectedItemWidget(SelectedItem);
+}
+
 void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);

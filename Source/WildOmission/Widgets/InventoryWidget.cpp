@@ -3,11 +3,18 @@
 
 #include "InventoryWidget.h"
 #include "InventorySlotWidget.h"
+#include "SelectedItemWidget.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
 #include "Components/WrapBox.h"
 #include "Components/CanvasPanel.h"
 #include "../ActorComponents/InventoryComponent.h"
+
+void UInventoryWidget::SetSelectedItemWidget(USelectedItemWidget* InWidget)
+{
+	SelectedItemWidget = InWidget;
+	SelectedItemWidget->Hide();
+}
 
 void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 {

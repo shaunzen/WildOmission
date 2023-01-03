@@ -21,6 +21,7 @@ class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
+	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	// Setters

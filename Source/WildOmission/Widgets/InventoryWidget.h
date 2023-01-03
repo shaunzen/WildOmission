@@ -10,6 +10,7 @@ class UTextBlock;
 class UWrapBox;
 class UBorder;
 class UInventorySlotWidget;
+class USelectedItemWidget;
 class UInventoryComponent;
 
 UCLASS()
@@ -17,6 +18,8 @@ class WILDOMISSION_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	void SetSelectedItemWidget(USelectedItemWidget* InWidget);
+
 	void SetComponent(UInventoryComponent* InInventoryComponent);
 
 	void AddItem(FName ItemName, int32 Quantity);
@@ -30,6 +33,8 @@ private:
 	TSubclassOf<UInventorySlotWidget> InventorySlotWidgetClass;
 	UPROPERTY()
 	TArray<UInventorySlotWidget*> InventorySlots;
+	UPROPERTY()
+	USelectedItemWidget* SelectedItemWidget;
 
 	// Bind Widget Elements
 	UPROPERTY(meta = (BindWidget))

@@ -23,6 +23,8 @@ public:
 	int32 GetItemQuantity();
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetItemMesh();
+
+	// TODO replicated destruction
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
