@@ -23,7 +23,7 @@ AWorldItem::AWorldItem()
 void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
-
+	SetReplicateMovement(true);
 }
 
 // Called every frame

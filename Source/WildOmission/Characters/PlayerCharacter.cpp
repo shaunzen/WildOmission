@@ -3,6 +3,7 @@
 
 #include "PlayerCharacter.h"
 #include "../PlayerControllers/PlayerCharacterController.h"
+#include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "../ActorComponents/VitalsComponent.h"
 #include "../ActorComponents/InventoryComponent.h"
@@ -57,6 +58,7 @@ void APlayerCharacter::BeginPlay()
 	if (IsLocallyControlled())
 	{
 		// Hide player model?
+		GetMesh()->SetVisibility(false);
 	}
 }
 
