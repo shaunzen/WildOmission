@@ -97,7 +97,7 @@ void UPlayerHUDWidget::UpdateSelectedItemLocation()
 	// Get viewport size
 	FVector2D ViewportSize;
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
-	
+
 	// Normalize the mouse position
 	FVector2D NormalizedMousePosition;
 	NormalizedMousePosition = MousePosition / ViewportSize;
