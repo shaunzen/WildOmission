@@ -24,7 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetItemMesh();
 
-	// TODO replicated destruction
+	void Collect();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,4 +37,8 @@ private:
 	int32 ItemQuantity;
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* ItemMesh;
+
+	// Calls collection on the server
+	UFUNCTION(Server, Reliable)
+	void Server_Collect(AActor* Item);
 };

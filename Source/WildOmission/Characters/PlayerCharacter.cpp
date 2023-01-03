@@ -2,6 +2,7 @@
 
 
 #include "PlayerCharacter.h"
+#include "../PlayerControllers/PlayerCharacterController.h"
 #include "Camera/CameraComponent.h"
 #include "../ActorComponents/VitalsComponent.h"
 #include "../ActorComponents/InventoryComponent.h"
@@ -52,6 +53,10 @@ void APlayerCharacter::BeginPlay()
 			// Set the player's inventory component to use the player's inventory widget
 			InventoryComponent->Setup(PlayerHUDWidget->GetInventoryWidget());
 		}
+	}
+	if (IsLocallyControlled())
+	{
+		// Hide player model?
 	}
 }
 
@@ -131,7 +136,12 @@ void APlayerCharacter::Interact()
 			// Add item to inventory
 			InventoryComponent->AddItem(WorldItem->GetItemName(), WorldItem->GetItemQuantity());
 			// Remove item from world
-			WorldItem->Destroy();
+			APlayerCharacterController* PlayerCharacterController = Cast<APlayerCharacterController>(Controller);
+			if (PlayerCharacterController == nullptr)
+			{
+				return;
+			}
+			PlayerCharacterController->Server_DestroyActor(HitResult.GetActor());
 		}
 	}
 }
