@@ -49,10 +49,10 @@ void APlayerCharacter::BeginPlay()
 			// Create the player's hud
 			PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
 			PlayerHUDWidget->AddToViewport();
+			// Set the player's inventory component to use the player's inventory widget
+			InventoryComponent->Setup(PlayerHUDWidget->GetInventoryWidget());
 		}
 	}
-	// Set the player's inventory component to use the player's inventory widget
-	InventoryComponent->Setup(PlayerHUDWidget->GetInventoryWidget());
 }
 
 // Called when the game ends
