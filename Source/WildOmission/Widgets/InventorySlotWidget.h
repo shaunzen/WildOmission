@@ -8,7 +8,6 @@
 
 class UTextBlock;
 class UBorder;
-class UButton;
 class UInventoryWidget;
 
 UCLASS()
@@ -18,16 +17,18 @@ class WILDOMISSION_API UInventorySlotWidget : public UUserWidget
 public:
 	void Setup(UInventoryWidget* InOwner, bool bInToolbarSlot = false);
 	void SetItem(FName ItemName, int32 ItemQuantity);
-	
-	// TODO getters for item and quantity
+
 	FName GetCurrentItemName();
 	int32 GetCurrentItemQuantity();
 
+protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 private:
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* SlotButton;
+	UBorder* SlotBorder;
 	UPROPERTY(meta = (BindWidget))
 	UBorder* ItemIconBorder;
 	UPROPERTY(meta = (BindWidget))
