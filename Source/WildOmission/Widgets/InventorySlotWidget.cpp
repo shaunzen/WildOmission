@@ -66,10 +66,15 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 	QuantityText->SetText(FText::FromString(QuantityString));
 }
 
+// TODO use this for checking mouse button
+FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	Super::NativeOnMouseButtonDown(MyGeometry, MouseEvent);
+	return FReply(true);
+}
+
 void UInventorySlotWidget::OnPressed()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Slot pressed."));
-	
 	// is owner currently dragging
 	// yes
 		// we dont have an item

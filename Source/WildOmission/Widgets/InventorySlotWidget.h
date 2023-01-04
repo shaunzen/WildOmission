@@ -22,6 +22,8 @@ public:
 	// TODO getters for item and quantity
 	FName GetCurrentItemName();
 	int32 GetCurrentItemQuantity();
+
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 private:
 
 	UPROPERTY(meta = (BindWidget))
@@ -44,4 +46,5 @@ private:
 
 	UFUNCTION()
 		void OnPressed();
+
 };
