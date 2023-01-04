@@ -144,7 +144,21 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 		}
 		else // We are not dragging
 		{
-			// TODO only take half
+			// We have more than one item
+			if (CurrentItemQuantity > 1)
+			{
+				// Get half of the quantity
+				int32 HalfQuantity = CurrentItemQuantity / 2;
+				// Remove that half from the slots quantity
+				this->SetItem(CurrentItemName, CurrentItemQuantity - HalfQuantity);
+				// Start dragging with the quantity of the half
+				Owner->StartDragging(CurrentItemName, HalfQuantity);
+			}
+			else
+			{
+				Owner->StartDragging(CurrentItemName, CurrentItemQuantity);
+				this->SetItem(FName(""), 0);
+			}
 		}
 	}
 	// TODO middle click
