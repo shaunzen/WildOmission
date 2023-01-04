@@ -20,6 +20,7 @@ public:
 
 	FName GetCurrentItemName();
 	int32 GetCurrentItemQuantity();
+	bool IsFull() const;
 
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
@@ -43,7 +44,10 @@ private:
 	UInventoryWidget* Owner;
 
 	UPROPERTY()
-		bool bToolbarSlot;
+	bool bIsFull;
+
+	UPROPERTY()
+	bool bToolbarSlot;
 
 	UFUNCTION()
 		void OnPressed();

@@ -23,15 +23,15 @@ struct FItem : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class AWorldItem> WorldItem;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsStackable;
-
+	int32 StackSize;
+	
 	FItem()
 	{
 		DisplayName = FName(TEXT("Item"));
 		Description = FString(TEXT("This is an Item."));
 		Thumbnail = nullptr;
 		WorldItem = nullptr;
-		IsStackable = true;
+		StackSize = 1000;
 	}
 };
 

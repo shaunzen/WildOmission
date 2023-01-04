@@ -20,10 +20,9 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, bool bInToolbarSlot)
 	Owner = InOwner;
 	CurrentItemName = FName("");
 	CurrentItemQuantity = 0;
+	bIsFull = false;
 	bToolbarSlot = bInToolbarSlot;
 	SetItem(CurrentItemName, CurrentItemQuantity);
-	
-	//SlotButton->OnPressed.AddDynamic(this, &UInventorySlotWidget::OnPressed);
 }
 
 // Pass in Quantity of 0 to clear item from slot
@@ -57,11 +56,14 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 			ItemIconBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
 			// Set the item icon color opaque white
 			ItemIconBorder->SetBrushColor(FLinearColor::White);
+			// Check if slot is full
+			bIsFull = CurrentItemQuantity >= SlotItemData->StackSize;
 		}
 	}
 	else
 	{
 		ItemIconBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+		bIsFull = false;
 	}
 	QuantityText->SetText(FText::FromString(QuantityString));
 }
@@ -69,13 +71,18 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-
+	
 	// TODO stack size implementation
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
 		// We are currently dragging
 		if (Owner->Dragging())
 		{
+			FItem* SelectedItemData = nullptr;
+			if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+			{
+				SelectedItemData = PlayerCharacter->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
+			}
 			// This slot is empty
 			if (CurrentItemQuantity == 0)
 			{
@@ -88,12 +95,32 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 			else if (CurrentItemName == Owner->GetSelectedItem()->Name)
 			{
 				// Add the selected quantity to the current slot quantity
-				int32 NewQuantity;
-				NewQuantity = CurrentItemQuantity + Owner->GetSelectedItem()->Quantity;
-				// Set the new quantity
-				this->SetItem(Owner->GetSelectedItem()->Name, NewQuantity);
-				// Stop dragging
-				Owner->EndDragging();
+
+				// Check if we add the amount will we go over the stack size
+				
+				if (SelectedItemData && (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) <= SelectedItemData->StackSize) // We went over the stack size
+				{
+					// Set the new quantity
+					this->SetItem(Owner->GetSelectedItem()->Name, CurrentItemQuantity + Owner->GetSelectedItem()->Quantity);
+					// Stop dragging
+					Owner->EndDragging();
+					
+				}
+				else if (SelectedItemData && (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) > SelectedItemData->StackSize) // We are under stack size
+				{
+
+
+					int32 NewSelectedQuantity;
+					// Calculate leftover selected item quantity
+					NewSelectedQuantity = (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) - SelectedItemData->StackSize;
+
+					UE_LOG(LogTemp, Warning, TEXT("New Selected Quantity: %i"), NewSelectedQuantity);
+					
+					// Set the selected to new quantity
+					Owner->StartDragging(Owner->GetSelectedItem()->Name, NewSelectedQuantity);
+					// Set the quantity in this slot to the item stack size
+					this->SetItem(Owner->GetSelectedItem()->Name, SelectedItemData->StackSize);
+				}
 			}
 			else // This slots item is different to the selected item
 			{
@@ -117,19 +144,22 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 		// We are currently dragging
 		if (Owner->Dragging())
 		{
+			FItem* SelectedItemData = nullptr;
+			if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+			{
+				SelectedItemData = PlayerCharacter->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
+			}
 			// This slot is empty
 			if (CurrentItemQuantity == 0)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Current item was empty set to selected item with value of 1"));
 				// Set the item in this slot to be the selected item with a quantity of one
 				this->SetItem(Owner->GetSelectedItem()->Name, 1);
 				// Decrement the quantity of selected item
 				Owner->StartDragging(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity - 1);
 			}
-			// This slot's item is the same as the selected item and currentquantity plus one is less than the stack size
-			else if (CurrentItemName == Owner->GetSelectedItem()->Name)
+			// This slot's item is the same as the selected item and currentquantity plus one is less than or equal to the stack size
+			else if (SelectedItemData && CurrentItemName == Owner->GetSelectedItem()->Name && (CurrentItemQuantity + 1) <= SelectedItemData->StackSize)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Current item was the same, set the quantity to %i"), CurrentItemQuantity + 1);
 				// Increment the slot quantity
 				this->SetItem(Owner->GetSelectedItem()->Name, CurrentItemQuantity + 1);
 				// Decrement to quantity of selected item
@@ -161,7 +191,6 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 			}
 		}
 	}
-	// TODO middle click
 	return FReply::Handled();
 }
 
@@ -206,6 +235,10 @@ int32 UInventorySlotWidget::GetCurrentItemQuantity()
 	return CurrentItemQuantity;
 }
 
+bool UInventorySlotWidget::IsFull() const
+{
+	return bIsFull;
+}
 /*
 	//************************************
 	// Amount Text
