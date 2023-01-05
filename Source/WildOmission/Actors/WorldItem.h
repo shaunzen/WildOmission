@@ -24,21 +24,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetItemMesh();
 
-	void Collect();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	FName ItemName;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	int32 ItemQuantity;
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* ItemMesh;
-
-	// Calls collection on the server
-	UFUNCTION(Server, Reliable)
-	void Server_Collect(AActor* Item);
 };

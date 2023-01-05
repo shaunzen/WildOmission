@@ -108,8 +108,6 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 				}
 				else if (SelectedItemData && (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) > SelectedItemData->StackSize) // We are under stack size
 				{
-
-
 					int32 NewSelectedQuantity;
 					// Calculate leftover selected item quantity
 					NewSelectedQuantity = (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) - SelectedItemData->StackSize;

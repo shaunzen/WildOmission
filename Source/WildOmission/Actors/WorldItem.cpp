@@ -47,16 +47,3 @@ UStaticMeshComponent* AWorldItem::GetItemMesh()
 {
 	return ItemMesh;
 }
-
-void AWorldItem::Collect()
-{
-	// Destroy the actor locally
-	
-	//Server_Collect();
-}
-
-void AWorldItem::Server_Collect_Implementation(AActor* Item)
-{
-	// Destroy the actor server side
-	Item->Destroy();
-}

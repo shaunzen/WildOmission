@@ -27,19 +27,29 @@ void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
 
 void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 {
-	// Add item to item list
-	if (int32* ItemQuantity = InventoryContent.Find(ItemName))
+	int32 Remaining;
+	int32 AmountAdded;
+	// Tru add item to widget
+	if (InventoryWidget->AddItem(ItemName, Quantity, AmountAdded, Remaining))
 	{
-		int32 NewQuantity = *ItemQuantity + Quantity;
-		InventoryContent.Add(ItemName, NewQuantity);
+		// Add item to item list
+		if (int32* ItemQuantity = InventoryContent.Find(ItemName))
+		{
+			int32 NewQuantity = *ItemQuantity + AmountAdded;
+			UE_LOG(LogTemp, Warning, TEXT("Amount Added: %i"), AmountAdded);
+			InventoryContent.Add(ItemName, NewQuantity);
+		}
+		else
+		{
+			InventoryContent.Add(ItemName, AmountAdded);
+			UE_LOG(LogTemp, Warning, TEXT("Amount Added: %i"), AmountAdded);
+		}
 	}
-	else
+	else if (Remaining > 0)
 	{
-		InventoryContent.Add(ItemName, Quantity);
+		// Spawn a world item with remaining count
+		UE_LOG(LogTemp, Warning, TEXT("Coulnt add all items. %i were remaining to be added."), Remaining);
 	}
-
-	// Add item to widget
-	InventoryWidget->AddItem(ItemName, Quantity);
 }
 
 void UInventoryComponent::RemoveItem()

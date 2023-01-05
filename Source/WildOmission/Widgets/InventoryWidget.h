@@ -13,8 +13,11 @@ class UInventorySlotWidget;
 class USelectedItemWidget;
 class UInventoryComponent;
 
+USTRUCT()
 struct FSelectedItem
 {
+	GENERATED_BODY()
+
 	FName Name;
 	int32 Quantity;
 	FSelectedItem(FName InName = FName(""), int32 InQuantity = 0)
@@ -33,7 +36,7 @@ public:
 
 	void SetComponent(UInventoryComponent* InInventoryComponent);
 
-	void AddItem(FName ItemName, int32 Quantity);
+	bool AddItem(FName ItemName, int32 Quantity, int32& AmountAdded, int32& Remaining);
 
 	void Open();
 	void Close();

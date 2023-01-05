@@ -54,31 +54,73 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 	ToolbarWrapBox->SetVisibility(ESlateVisibility::Visible);
 }
 
-void UInventoryWidget::AddItem(FName ItemName, int32 Quantity)
+bool UInventoryWidget::AddItem(FName ItemName, int32 Quantity, int32& AmountAdded, int32& Remaining)
 {
-	bool bSlotFound = false;
+	FItem* ItemData = InventoryComponent->GetItemData(ItemName);
+	int32 QuantityToAdd = Quantity;
+	AmountAdded = 0;
+	if (ItemData == nullptr)
+	{
+		return false;
+	}
 	// Loop through all slots
 	for (UInventorySlotWidget* InventorySlot : InventorySlots)
 	{
 		// If the current slot's item is the same as the item we are adding
-		if (InventorySlot->GetCurrentItemName() == ItemName)
+		if (InventorySlot->GetCurrentItemName() == ItemName && !InventorySlot->IsFull()) 
 		{
-			InventorySlot->SetItem(InventorySlot->GetCurrentItemName(), InventorySlot->GetCurrentItemQuantity() + Quantity);
-			bSlotFound = true;
-			break;
+			if ((InventorySlot->GetCurrentItemQuantity() + QuantityToAdd) > ItemData->StackSize)
+			{
+				// Remove the amount we are going to add to the slot
+				
+				// TODO something seems fishy here
+				QuantityToAdd -= ItemData->StackSize - InventorySlot->GetCurrentItemQuantity();
+				AmountAdded += ItemData->StackSize - InventorySlot->GetCurrentItemQuantity();
+				UE_LOG(LogTemp, Warning, TEXT("Hey amount added sum: %i"), ItemData->StackSize - InventorySlot->GetCurrentItemQuantity());
+				// Set the slot quantity to the stack size
+				InventorySlot->SetItem(InventorySlot->GetCurrentItemName(), ItemData->StackSize);
+				
+				if (QuantityToAdd == 0)
+				{
+					break;
+				}
+			}
+			else
+			{
+				AmountAdded += QuantityToAdd;
+				InventorySlot->SetItem(InventorySlot->GetCurrentItemName(), InventorySlot->GetCurrentItemQuantity() + QuantityToAdd);
+				if (QuantityToAdd == 0)
+				{
+					break;
+				}
+			}
+
 		}
 		// If the current slot has no item
 		if (InventorySlot->GetCurrentItemQuantity() == 0)
 		{
-			InventorySlot->SetItem(ItemName, Quantity);
-			bSlotFound = true;
-			break;
+			if (QuantityToAdd > ItemData->StackSize)
+			{
+				// Remove the amount we are going to add to the slot
+				QuantityToAdd -= ItemData->StackSize;
+				AmountAdded += ItemData->StackSize;
+				// Set the slot quantity to the stack size
+				InventorySlot->SetItem(ItemName, ItemData->StackSize);
+				if (QuantityToAdd == 0)
+				{
+					break;
+				}
+			}
+			else
+			{
+				AmountAdded += QuantityToAdd;
+				InventorySlot->SetItem(ItemName, QuantityToAdd);
+				break;
+			}
 		}
 	}
-	if (bSlotFound == false)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Couldn't find a good slot to put the new item in."));
-	}
+	Remaining = QuantityToAdd;
+	return QuantityToAdd == 0 || AmountAdded > 0;
 }
 
 void UInventoryWidget::Open()
