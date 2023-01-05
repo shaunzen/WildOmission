@@ -36,7 +36,7 @@ public:
 
 	void SetComponent(UInventoryComponent* InInventoryComponent);
 
-	bool AddItem(FName ItemName, int32 Quantity, int32& AmountAdded, int32& Remaining);
+	bool AddItem(FName ItemName, int32 Quantity, int32& Remaining);
 
 	void Open();
 	void Close();
