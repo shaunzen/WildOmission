@@ -6,9 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerCharacterController.generated.h"
 
-/**
- * 
- */
+class UInventoryComponent;
+
 UCLASS()
 class WILDOMISSION_API APlayerCharacterController : public APlayerController
 {

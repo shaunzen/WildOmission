@@ -28,9 +28,14 @@ APlayerCharacter::APlayerCharacter()
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
-	// Setup player components
+	// Setup vitals component
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
+	
+	// Setup inventory component
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
+	InventoryComponent->SetIsReplicated(true);
+
+	// Setup interaction component
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
 }

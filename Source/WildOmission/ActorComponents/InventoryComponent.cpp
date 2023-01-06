@@ -30,10 +30,10 @@ void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 	int32 Remaining;
 	int32 AmountAdded;
 	bool AddSuccess = InventoryWidget->AddItem(ItemName, Quantity, Remaining);
-	
+
 	// Calculate how many were added
 	AmountAdded = Quantity - Remaining;
-	
+
 	// Add item to item list
 	if (int32* ItemQuantity = InventoryContent.Find(ItemName))
 	{
@@ -96,4 +96,9 @@ TMap<FName, int32>* UInventoryComponent::GetContent()
 void UInventoryComponent::SetMaxSize(int32 InMaxSize)
 {
 	MaxSize = InMaxSize;
+}
+
+UInventoryWidget* UInventoryComponent::GetWidget()
+{
+	return InventoryWidget;
 }

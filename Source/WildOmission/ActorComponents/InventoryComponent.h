@@ -56,6 +56,7 @@ public:
 	TMap<FName, int32>* GetContent();
 
 	void SetMaxSize(int32 InMaxSize);
+	UInventoryWidget* GetWidget();
 
 private:
 	// TODO change to defaultsonly

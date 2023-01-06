@@ -6,12 +6,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "WildOmissionGameMode.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 };

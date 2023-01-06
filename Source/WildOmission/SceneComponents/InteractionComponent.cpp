@@ -47,6 +47,10 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UInteractionComponent::UpdateInteractionPrompt()
 {
+	if (PlayerHUDWidget == nullptr)
+	{
+		return;
+	}
 	FHitResult HitResult;
 	// If we are looking at an interactable item
 	if (InteractableItemInRange(HitResult))

@@ -55,6 +55,11 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 
 bool UInventoryWidget::AddItem(FName ItemName, int32 Quantity, int32& Remaining)
 {
+	if (InventoryComponent == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("InventoryWidget: InventoryComponent was nullptr"));
+		return false;
+	}
 	int32 QuantityToAdd = Quantity;
 
 	FItem* ItemData = InventoryComponent->GetItemData(ItemName);

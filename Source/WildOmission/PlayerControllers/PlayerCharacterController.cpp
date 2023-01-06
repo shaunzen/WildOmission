@@ -2,6 +2,8 @@
 
 
 #include "PlayerCharacterController.h"
+#include "../Widgets/InventoryWidget.h"
+#include "../ActorComponents/InventoryComponent.h"
 
 void APlayerCharacterController::Server_DestroyActor_Implementation(AActor* ActorToDestroy)
 {
@@ -12,3 +14,5 @@ void APlayerCharacterController::Server_DestroyActor_Implementation(AActor* Acto
 	}
 	ActorToDestroy->Destroy();
 }
+
+// TODO Add item server function here with a pointer to the inventory component to add to
