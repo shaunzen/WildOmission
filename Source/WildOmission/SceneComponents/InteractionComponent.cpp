@@ -42,7 +42,7 @@ void UInteractionComponent::SetHUDWidget(UPlayerHUDWidget* WidgetToUse)
 void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	UpdateInteractionPrompt();
 }
 
 void UInteractionComponent::UpdateInteractionPrompt()

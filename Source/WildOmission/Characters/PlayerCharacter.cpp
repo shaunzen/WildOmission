@@ -96,7 +96,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 		return;
 	}
 	PlayerHUDWidget->SetVitals(VitalsComponent);
-	InteractionComponent->UpdateInteractionPrompt();
 }
 
 // Called to bind functionality to input

@@ -24,8 +24,7 @@ public:
 	
 	UFUNCTION()
 	void Interact();
-	UFUNCTION()
-	void UpdateInteractionPrompt();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -41,5 +40,6 @@ private:
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;
 	
+	void UpdateInteractionPrompt();
 	bool InteractableItemInRange(FHitResult& OutHitResult) const;
 };
