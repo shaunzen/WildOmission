@@ -49,6 +49,8 @@ public:
 	void RemoveItem();
 	void SwapItem();
 
+	void SpawnWorldItem(FName ItemName, int32 Quantity = 1);
+
 	FItem* GetItemData(FName ItemName);
 	int32 GetMaxSize();
 	TMap<FName, int32>* GetContent();

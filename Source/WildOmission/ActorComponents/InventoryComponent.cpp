@@ -51,6 +51,7 @@ void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 	if (AddSuccess == false)
 	{
 		// Spawn a world item with remaining count
+		SpawnWorldItem(ItemName, Remaining);
 		UE_LOG(LogTemp, Warning, TEXT("Coulnt add all items. %i were remaining to be added."), Remaining);
 	}
 }
@@ -63,6 +64,12 @@ void UInventoryComponent::RemoveItem()
 void UInventoryComponent::SwapItem()
 {
 	// TODO Swap item
+}
+
+void UInventoryComponent::SpawnWorldItem(FName ItemName, int32 Quantity)
+{
+	// setup world item actor
+	// spawn it
 }
 
 FItem* UInventoryComponent::GetItemData(FName ItemName)
