@@ -52,7 +52,6 @@ void UPlayerHUDWidget::ToggleInventory()
 		FInputModeGameAndUI InputModeData;
 		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		InputModeData.SetHideCursorDuringCapture(false);
-		//InputModeData.SetWidgetToFocus(Inventory->TakeWidget());
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = true;
 		// Show inventory menu

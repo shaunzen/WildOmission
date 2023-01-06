@@ -52,7 +52,7 @@ void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 	{
 		// Spawn a world item with remaining count
 		SpawnWorldItem(ItemName, Remaining);
-		UE_LOG(LogTemp, Warning, TEXT("Coulnt add all items. %i were remaining to be added."), Remaining);
+		UE_LOG(LogTemp, Warning, TEXT("Couldn't add all items. %i were remaining to be added."), Remaining);
 	}
 }
 
@@ -70,6 +70,7 @@ void UInventoryComponent::SpawnWorldItem(FName ItemName, int32 Quantity)
 {
 	// setup world item actor
 	// spawn it
+	UE_LOG(LogTemp, Warning, TEXT("Spawning world item with id: %s and quantity of: %i"), *ItemName.ToString(), Quantity);
 }
 
 FItem* UInventoryComponent::GetItemData(FName ItemName)

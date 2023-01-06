@@ -18,7 +18,7 @@ void UInventoryWidget::SetSelectedItemWidget(USelectedItemWidget* InWidget)
 
 void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 {
-	// Check for if inventory and slot are valid pointers
+	// Check if inventory and slot are valid pointers
 	if (InInventoryComponent == nullptr || InventorySlotWidgetClass == nullptr)
 	{
 		return;
@@ -29,13 +29,12 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 	// Add Inventory slots to ui
 	for (int32 i = 0; i < 30; ++i)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Creating Slot index %i"), i);
 		// Create new slot widget
 		UInventorySlotWidget* NewInventorySlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
 		if (i < 6) // Slot is less than 6
 		{
 			// Make it a toolbar slot
-			NewInventorySlot->Setup(this, true);
+			NewInventorySlot->Setup(this, true); // Instead of passing in an explicit bool value you could just pass i < 6 and it would also return the correct result
 			ToolbarWrapBox->AddChild(NewInventorySlot);
 		}
 		else

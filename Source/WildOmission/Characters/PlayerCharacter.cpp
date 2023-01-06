@@ -20,6 +20,9 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
+	// Set HUD to nullptr before its created
+	PlayerHUDWidget = nullptr;
+
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(FName("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(RootComponent);
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
@@ -36,30 +39,42 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	if (PlayerController == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter: Failed to cast Controller to a PlayerController"));
+		return;
+	}
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (Subsystem == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter: EISubsystem was nullptr"));
+		return;
+	}
+	Subsystem->AddMappingContext(DefaultMappingContext, 0);
 
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	// Return if we are not being locally controlled
+	if (!IsLocallyControlled())
 	{
-		// Setup input mapping context
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-		
-		// Is this the local player and is the hud widget class specified
-		if (IsLocallyControlled() && PlayerHUDWidgetClass != nullptr)
-		{
-			// Create the player's hud
-			PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
-			PlayerHUDWidget->AddToViewport();
-			// Set the player's inventory component to use the player's inventory widget
-			InventoryComponent->Setup(PlayerHUDWidget->GetInventoryWidget());
-		}
+		return;
 	}
-	if (IsLocallyControlled())
+	
+	// Hide player model?
+	GetMesh()->SetVisibility(false);
+
+	// Create the player's hud
+	if (PlayerHUDWidgetClass == nullptr)
 	{
-		// Hide player model?
-		GetMesh()->SetVisibility(false);
+		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter: PlayerHUDWidgetClass was nullptr"));
+		return;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Creating Player HUD Widget"));
+	PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
+	PlayerHUDWidget->AddToViewport();
+	
+	// Set the player's inventory component to use the player's inventory widget
+	InventoryComponent->Setup(PlayerHUDWidget->GetInventoryWidget());
+	InteractionComponent->SetHUDWidget(PlayerHUDWidget);
 }
 
 // Called when the game ends
@@ -81,7 +96,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		return;
 	}
 	PlayerHUDWidget->SetVitals(VitalsComponent);
-	UpdateInteractionPrompt();
+	InteractionComponent->UpdateInteractionPrompt();
 }
 
 // Called to bind functionality to input
@@ -96,7 +111,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayerCharacter::Jump);
-	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APlayerCharacter::Interact);
+	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, InteractionComponent, &UInteractionComponent::Interact);
 	EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &APlayerCharacter::ToggleInventory);
 }
 
@@ -121,65 +136,14 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxis.Y);
 }
 
-//**************************************
-// TODO simplfy interaction code
-
-void APlayerCharacter::Interact()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Interaction"));
-	FHitResult HitResult;
-	// If the actor we are looking at is an interactable
-	if (InteractionComponent->InteractableItemInRange(HitResult))
-	{
-		// If the actor is a world item
-		if (AWorldItem* WorldItem = Cast<AWorldItem>(HitResult.GetActor()))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Interaction with world item with name of: %s"), *WorldItem->GetItemName().ToString());
-			// Add item to inventory
-			InventoryComponent->AddItem(WorldItem->GetItemName(), WorldItem->GetItemQuantity());
-			// Remove item from world
-			APlayerCharacterController* PlayerCharacterController = Cast<APlayerCharacterController>(Controller);
-			if (PlayerCharacterController == nullptr)
-			{
-				return;
-			}
-			PlayerCharacterController->Server_DestroyActor(HitResult.GetActor());
-		}
-	}
-}
-
 void APlayerCharacter::ToggleInventory()
 {
+	if (PlayerHUDWidget == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter: PlayerHUDWidget was nullptr"));
+		return;
+	}
 	PlayerHUDWidget->ToggleInventory();
-}
-
-void APlayerCharacter::UpdateInteractionPrompt()
-{
-	FHitResult HitResult;
-	// If we are looking at an interactable item
-	if (InteractionComponent->InteractableItemInRange(HitResult))
-	{
-		// If the interactable item we are looking at is a world item
-		if (AWorldItem* WorldItem = Cast<AWorldItem>(HitResult.GetActor()))
-		{
-			// Get the item data for the item we are looking at
-			FItem* ItemData = InventoryComponent->GetItemData(WorldItem->GetItemName());
-			// Return if its nullptr
-			if (ItemData == nullptr) return;
-			// Set the interaction prompt
-			PlayerHUDWidget->SetInteractionPrompt(FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemData->DisplayName.ToString()));
-		}
-		else
-		{
-			// Clear the interaction prompt
-			PlayerHUDWidget->SetInteractionPrompt(FString(TEXT("")));
-		}
-	}
-	else
-	{
-		// Clear the interaction prompt
-		PlayerHUDWidget->SetInteractionPrompt(FString(TEXT("")));
-	}
 }
 
 UInventoryComponent* APlayerCharacter::GetInventoryComponent()
