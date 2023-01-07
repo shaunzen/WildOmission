@@ -14,6 +14,7 @@ AWorldItem::AWorldItem()
 	ItemQuantity = 1;
 
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ItemMesh"));
+	RootComponent = ItemMesh;
 	ItemMesh->SetSimulatePhysics(true);
 	ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 	ItemMesh->SetupAttachment(RootComponent);

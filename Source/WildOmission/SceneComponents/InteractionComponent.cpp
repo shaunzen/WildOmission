@@ -90,19 +90,9 @@ void UInteractionComponent::Interact()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Interaction with world item with name of: %s"), *WorldItem->GetItemName().ToString());
 			// Add item to inventory
-			APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
-			if (PlayerCharacter == nullptr)
-			{
-				return;
-			}
-			PlayerCharacter->GetInventoryComponent()->AddItem(WorldItem->GetItemName(), WorldItem->GetItemQuantity());
+			OwnerPlayer->GetInventoryComponent()->AddItem(WorldItem->GetItemName(), WorldItem->GetItemQuantity());
 			// Remove item from world
-			APlayerCharacterController* PlayerCharacterController = Cast<APlayerCharacterController>(PlayerCharacter->GetController());
-			if (PlayerCharacterController == nullptr)
-			{
-				return;
-			}
-			PlayerCharacterController->Server_DestroyActor(HitResult.GetActor());
+			OwnerPlayerController->Server_DestroyActor(HitResult.GetActor());
 		}
 	}
 }
