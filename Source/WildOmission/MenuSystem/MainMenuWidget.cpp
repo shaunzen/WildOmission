@@ -6,6 +6,7 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableTextBox.h"
+#include "Components/TextBlock.h"
 #include "UObject/ConstructorHelpers.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -75,7 +76,32 @@ void UMainMenuWidget::Teardown()
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
 
+	ServerList->ClearChildren();
+
+	uint32 i = 0;
+	for (const FServerData& ServerData : ServerNames)
+	{
+		UServerRowWidget* Row = CreateWidget<UServerRowWidget>(World, ServerRowWidgetClass);
+		if (Row == nullptr)
+		{
+			return;
+		}
+
+		Row->ServerName->SetText(FText::FromString(ServerData.Name));
+		Row->HostUser->SetText(FText::FromString(ServerData.HostUsername));
+		FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
+		Row->ConnectionFraction->SetText(FText::FromString(FractionString));
+		Row->Setup(this, i);
+		++i;
+
+		ServerList->AddChild(Row);
+	}
 }
 
 void UMainMenuWidget::SelectIndex(uint32 Index)
@@ -86,7 +112,15 @@ void UMainMenuWidget::SelectIndex(uint32 Index)
 
 void UMainMenuWidget::UpdateChildren()
 {
-
+	for (int32 i = 0; i < ServerList->GetChildrenCount(); ++i)
+	{
+		UServerRowWidget* Row = Cast<UServerRowWidget>(ServerList->GetChildAt(i));
+		if (Row == nullptr)
+		{
+			return;
+		}
+		Row->Selected = (SelectedIndex.IsSet() && SelectedIndex.GetValue() == i);
+	}
 }
 
 //****************************
