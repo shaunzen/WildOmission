@@ -2,10 +2,16 @@
 
 
 #include "MainMenuWidget.h"
+#include "ServerRowWidget.h"
+#include "UObject/ConstructorHelpers.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-
+	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/Blueprints/MenuSystem/WBP_ServerRow"));
+	if (ServerRowWidgetBPClass.Class)
+	{
+		ServerRowWidgetClass = ServerRowWidgetBPClass.Class;
+	}
 }
 
 bool UMainMenuWidget::Initialize()
@@ -17,6 +23,8 @@ bool UMainMenuWidget::Initialize()
 	}
 	
 	bIsFocusable = true;
+
+	// TODO bind buttons
 
 	return true;
 }
@@ -48,4 +56,20 @@ void UMainMenuWidget::Teardown()
 		PlayerController->bShowMouseCursor = false;
 		UE_LOG(LogTemp, Display, TEXT("Removed Main Menu from viewport"));
 	}
+}
+
+void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
+{
+
+}
+
+void UMainMenuWidget::SelectIndex(uint32 Index)
+{
+	SelectedIndex = Index;
+	UpdateChildren();
+}
+
+void UMainMenuWidget::UpdateChildren()
+{
+
 }

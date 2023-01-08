@@ -14,5 +14,5 @@ void UServerRowWidget::Setup(UMainMenuWidget* InParent, uint32 InIndex)
 
 void UServerRowWidget::OnClicked()
 {
-	//Parent->SelectIndex(Index);
+	Parent->SelectIndex(Index);
 }

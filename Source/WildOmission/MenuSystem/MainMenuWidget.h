@@ -17,6 +17,8 @@ struct FServerData
 	FString HostUsername;
 };
 
+class UServerRowWidget;
+
 UCLASS()
 class WILDOMISSION_API UMainMenuWidget : public UUserWidget
 {
@@ -27,6 +29,14 @@ public:
 	void Setup();
 	void Teardown();
 
+	void SetServerList(TArray<FServerData> ServerNames);
+	
+	void SelectIndex(uint32 Index);
+
 protected:
 	virtual bool Initialize() override;
+private:
+	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
+	uint32 SelectedIndex;
+	void UpdateChildren();
 };
