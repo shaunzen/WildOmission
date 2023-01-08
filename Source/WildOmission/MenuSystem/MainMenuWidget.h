@@ -103,6 +103,6 @@ private:
 	void QuitPressed();
 	
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
-	uint32 SelectedIndex;
+	TOptional<uint32> SelectedIndex;
 	void UpdateChildren();
 };
