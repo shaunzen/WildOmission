@@ -73,7 +73,7 @@ void UWildOmissionGameInstance::Host(FString ServerName)
 	{
 		return;
 	}
-	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
 	{
 		SessionInterface->DestroySession(SESSION_NAME);

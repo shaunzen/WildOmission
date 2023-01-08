@@ -36,6 +36,7 @@ void UMainMenuWidget::Setup()
 
 void UMainMenuWidget::TearDown()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Removing the MainMenuWidget"));
 	this->RemoveFromViewport();
 
 	UWorld* World = GetWorld();
@@ -70,13 +71,9 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	ServerRowWidgetClass = ServerRowWidgetBPClass.Class;
 }
 
-bool UMainMenuWidget::Initialize()
+void UMainMenuWidget::NativeConstruct()
 {
-	bool Success = Super::Initialize();
-	if (Success == false)
-	{
-		return false;
-	}
+	Super::NativeConstruct();
 	if (HostButton == nullptr
 		|| CancelHostMenuButton == nullptr
 		|| ConfirmHostMenuButton == nullptr
@@ -85,7 +82,7 @@ bool UMainMenuWidget::Initialize()
 		|| CancelJoinMenuButton == nullptr
 		|| ConfirmJoinMenuButton == nullptr)
 	{
-		return false;
+		return;
 	}
 	HostButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenHostMenu);
 	CancelHostMenuButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
@@ -94,9 +91,8 @@ bool UMainMenuWidget::Initialize()
 	QuitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::QuitPressed);
 	CancelJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 	ConfirmJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenuWidget::JoinServer);
-	
+
 	UE_LOG(LogTemp, Warning, TEXT("Main Menu Widget Init"));
-	return true;
 }
 
 void UMainMenuWidget::OpenHostMenu()

@@ -49,7 +49,8 @@ public:
 	void SetMainMenuInterface(IMainMenuInterface* InMainMenuInterface);
 
 protected:
-	virtual bool Initialize() override;
+	//virtual bool Initialize() override;
+	virtual void NativeConstruct() override;
 	IMainMenuInterface* MainMenuInterface;
 private:
 	TSubclassOf<UUserWidget> ServerRowWidgetClass;
