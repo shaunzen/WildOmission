@@ -3,6 +3,9 @@
 
 #include "MainMenuWidget.h"
 #include "ServerRowWidget.h"
+#include "Components/Button.h"
+#include "Components/WidgetSwitcher.h"
+#include "Components/EditableTextBox.h"
 #include "UObject/ConstructorHelpers.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -17,14 +20,26 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 bool UMainMenuWidget::Initialize()
 {
 	bool Success = Super::Initialize();
-	if (Success == false)
+	if (Success == false
+		|| CancelHostMenuButton == nullptr
+		|| ConfirmHostMenuButton == nullptr
+		|| JoinButton == nullptr
+		|| QuitButton == nullptr
+		|| CancelJoinMenuButton == nullptr
+		|| ConfirmJoinMenuButton == nullptr)
 	{
 		return false;
 	}
 	
 	bIsFocusable = true;
 
-	// TODO bind buttons
+	HostButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenHostMenu);
+	CancelHostMenuButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+	ConfirmHostMenuButton->OnClicked.AddDynamic(this, &UMainMenuWidget::HostServer);
+	JoinButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenJoinMenu);
+	QuitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::QuitPressed);
+	CancelJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+	ConfirmJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenuWidget::JoinServer);
 
 	return true;
 }
@@ -70,6 +85,39 @@ void UMainMenuWidget::SelectIndex(uint32 Index)
 }
 
 void UMainMenuWidget::UpdateChildren()
+{
+
+}
+
+//****************************
+// Menu Functions
+//****************************
+void UMainMenuWidget::HostServer()
+{
+
+}
+
+void UMainMenuWidget::JoinServer()
+{
+
+}
+
+void UMainMenuWidget::OpenHostMenu()
+{
+
+}
+
+void UMainMenuWidget::OpenJoinMenu()
+{
+
+}
+
+void UMainMenuWidget::OpenMainMenu()
+{
+
+}
+
+void UMainMenuWidget::QuitPressed()
 {
 
 }
