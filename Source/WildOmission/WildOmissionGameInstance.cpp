@@ -18,6 +18,7 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	ConstructorHelpers::FClassFinder<UUserWidget> MainMenuBPClass(TEXT("/Game/Blueprints/Widgets/WBP_MainMenu"));
 	if (MainMenuBPClass.Class == nullptr)
 	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to find the main menu widget blueprint."));
 		return;
 	}
 	MainMenuWidgetClass = MainMenuBPClass.Class;
