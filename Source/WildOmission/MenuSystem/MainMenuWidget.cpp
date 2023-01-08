@@ -94,30 +94,47 @@ void UMainMenuWidget::UpdateChildren()
 //****************************
 void UMainMenuWidget::HostServer()
 {
-
+	// TODO Game instance host server
 }
 
 void UMainMenuWidget::JoinServer()
 {
-
+	// TODO Game instance join server
 }
 
 void UMainMenuWidget::OpenHostMenu()
 {
-
+	if (MenuSwitcher == nullptr)
+	{
+		return;
+	}
+	MenuSwitcher->SetActiveWidget(HostMenu);
 }
 
 void UMainMenuWidget::OpenJoinMenu()
 {
-
+	if (MenuSwitcher == nullptr)
+	{
+		return;
+	}
+	MenuSwitcher->SetActiveWidget(JoinMenu);
 }
 
 void UMainMenuWidget::OpenMainMenu()
 {
-
+	if (MenuSwitcher == nullptr)
+	{
+		return;
+	}
+	MenuSwitcher->SetActiveWidget(MainMenu);
 }
 
 void UMainMenuWidget::QuitPressed()
 {
-
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+	PlayerController->ConsoleCommand("quit");
 }
