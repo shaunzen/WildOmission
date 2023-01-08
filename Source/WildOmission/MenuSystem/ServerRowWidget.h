@@ -14,7 +14,7 @@ UCLASS()
 class WILDOMISSION_API UServerRowWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
+	
 public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ServerName;
@@ -26,7 +26,7 @@ public:
 	UTextBlock* ConnectionFraction;
 
 	UPROPERTY(BlueprintReadOnly)
-	bool Selected = false;
+		bool Selected = false;
 
 	void Setup(UMainMenuWidget* InParent, uint32 InIndex);
 
@@ -36,7 +36,7 @@ private:
 
 	UPROPERTY()
 	UMainMenuWidget* Parent;
-	
+
 	uint32 Index;
 
 	UFUNCTION()

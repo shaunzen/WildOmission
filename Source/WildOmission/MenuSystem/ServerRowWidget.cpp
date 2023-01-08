@@ -1,3 +1,6 @@
+// Copyright Telephone Studios. All Rights Reserved.
+
+
 #include "ServerRowWidget.h"
 #include "Components/Button.h"
 #include "MainMenuWidget.h"
@@ -11,5 +14,5 @@ void UServerRowWidget::Setup(UMainMenuWidget* InParent, uint32 InIndex)
 
 void UServerRowWidget::OnClicked()
 {
-	Parent->SelectIndex(Index);
+	//Parent->SelectIndex(Index);
 }

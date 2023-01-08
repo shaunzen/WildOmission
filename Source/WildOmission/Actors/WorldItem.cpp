@@ -17,7 +17,6 @@ AWorldItem::AWorldItem()
 	RootComponent = ItemMesh;
 	ItemMesh->SetSimulatePhysics(true);
 	ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
-	ItemMesh->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
