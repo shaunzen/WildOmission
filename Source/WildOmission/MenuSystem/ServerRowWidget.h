@@ -26,7 +26,7 @@ public:
 	UTextBlock* ConnectionFraction;
 
 	UPROPERTY(BlueprintReadOnly)
-		bool Selected = false;
+	bool Selected = false;
 
 	void Setup(UMainMenuWidget* InParent, uint32 InIndex);
 
