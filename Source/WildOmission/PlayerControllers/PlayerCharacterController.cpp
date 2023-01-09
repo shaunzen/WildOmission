@@ -3,7 +3,27 @@
 
 #include "PlayerCharacterController.h"
 #include "../Widgets/InventoryWidget.h"
+#include "../Characters/PlayerCharacter.h"
 #include "../ActorComponents/InventoryComponent.h"
+
+void APlayerCharacterController::LogLocalInventoryContents()
+{
+	if (IsLocalController())
+	{
+		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+		if (PlayerCharacter == nullptr)
+		{
+			return;
+		}
+
+		// Get their inventory components
+		for (TPair<FName, int32>& Item : *PlayerCharacter->GetInventoryComponent()->GetContent())
+		{
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Item: %s, Quantity: %i"), *Item.Key.ToString(), Item.Value));
+		}
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: %s"), *PlayerCharacter->GetActorNameOrLabel()));
+	}
+}
 
 void APlayerCharacterController::Server_DestroyActor_Implementation(AActor* ActorToDestroy)
 {

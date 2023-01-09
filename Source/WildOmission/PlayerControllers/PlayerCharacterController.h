@@ -13,6 +13,9 @@ class WILDOMISSION_API APlayerCharacterController : public APlayerController
 {
 	GENERATED_BODY()
 public:
+	UFUNCTION(Exec)
+	void LogLocalInventoryContents();
+
 	UFUNCTION(Server, Reliable)
 	void Server_DestroyActor(AActor* ActorToDestroy);
 };

@@ -159,11 +159,13 @@ void UMainMenuWidget::OpenHostMenu()
 
 void UMainMenuWidget::OpenJoinMenu()
 {
-	if (MenuSwitcher == nullptr)
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (MenuSwitcher == nullptr || GameInstance == nullptr)
 	{
 		return;
 	}
 	MenuSwitcher->SetActiveWidget(JoinMenu);
+	GameInstance->RefreshServerList();
 }
 
 void UMainMenuWidget::OpenMainMenu()

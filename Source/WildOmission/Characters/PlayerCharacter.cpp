@@ -45,11 +45,6 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (IsLocallyControlled() && PlayerController && GEngine != 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Valid player controller on actor: %s"), *GetActorNameOrLabel());
-		//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 3.0f, FColor::Red, FString("Player controller was valid"));
-	}
 	if (PlayerController == nullptr)
 	{
 

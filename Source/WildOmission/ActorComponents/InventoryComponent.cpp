@@ -25,6 +25,8 @@ void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
 	InventoryWidget->SetComponent(this);
 }
 
+// Client side check for free slot, once this calculation has been completed call the server to add to the data
+
 void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 {
 	int32 Remaining;
@@ -35,24 +37,27 @@ void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 	AmountAdded = Quantity - Remaining;
 
 	// Add item to item list
-	if (int32* ItemQuantity = InventoryContent.Find(ItemName))
-	{
-		int32 NewQuantity = *ItemQuantity + AmountAdded;
-		UE_LOG(LogTemp, Warning, TEXT("Amount Added: %i"), AmountAdded);
-		InventoryContent.Add(ItemName, NewQuantity);
-	}
-	else
-	{
-		InventoryContent.Add(ItemName, AmountAdded);
-		UE_LOG(LogTemp, Warning, TEXT("Amount Added: %i"), AmountAdded);
-	}
-
+	Server_AddItem(ItemName, AmountAdded);
 
 	if (AddSuccess == false)
 	{
 		// Spawn a world item with remaining count
+		// Server should spawn world items
 		SpawnWorldItem(ItemName, Remaining);
 		UE_LOG(LogTemp, Warning, TEXT("Couldn't add all items. %i were remaining to be added."), Remaining);
+	}
+}
+
+void UInventoryComponent::Server_AddItem_Implementation(FName ItemName, int32 Quantity)
+{
+	if (int32* ItemQuantity = InventoryContent.Find(ItemName))
+	{
+		int32 NewQuantity = *ItemQuantity + Quantity;
+		InventoryContent.Add(ItemName, NewQuantity);
+	}
+	else
+	{
+		InventoryContent.Add(ItemName, Quantity);
 	}
 }
 

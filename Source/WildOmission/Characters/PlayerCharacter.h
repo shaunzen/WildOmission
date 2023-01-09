@@ -61,7 +61,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 		UInputAction* InventoryAction;
 
+
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+
+
 	void ToggleInventory();
 };

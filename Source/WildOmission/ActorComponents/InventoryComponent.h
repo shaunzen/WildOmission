@@ -45,6 +45,7 @@ public:
 	UInventoryComponent();
 	
 	void Setup(UInventoryWidget* InInventoryWidget);
+
 	void AddItem(FName ItemName, int32 Quantity);
 	void RemoveItem();
 	void SwapItem();
@@ -60,12 +61,16 @@ public:
 
 private:
 	// TODO change to defaultsonly
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	TMap<FName, int32> InventoryContent;
 	UPROPERTY(EditDefaultsOnly)
 	int32 MaxSize;
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* ItemDataTable;
+
+	UFUNCTION(Server, Reliable)
+	void Server_AddItem(FName ItemName, int32 Quantity = 1);
+
 
 	UPROPERTY()
 	UInventoryWidget* InventoryWidget;
