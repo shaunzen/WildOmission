@@ -8,6 +8,7 @@
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
 #include "UObject/ConstructorHelpers.h"
+#include "../WildOmissionGameInstance.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -128,12 +129,23 @@ void UMainMenuWidget::UpdateChildren()
 //****************************
 void UMainMenuWidget::HostServer()
 {
-	// TODO Game instance host server
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+	FString ServerName = ServerHostName->Text.ToString();
+	GameInstance->Host(ServerName);
 }
 
 void UMainMenuWidget::JoinServer()
 {
-	// TODO Game instance join server
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (GameInstance == nullptr || SelectedIndex.IsSet() == false)
+	{
+		return;
+	}
+	GameInstance->Join(SelectedIndex.GetValue());
 }
 
 void UMainMenuWidget::OpenHostMenu()

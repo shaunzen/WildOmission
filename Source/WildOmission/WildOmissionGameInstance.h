@@ -17,6 +17,16 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ShowMainMenuWidget();
+
+	UFUNCTION()
+	void Host(FString ServerName);
+	
+	UFUNCTION()
+	void Join(uint32 Index);
+
+	void StartSession();
+
+	void RefreshServerList();
 private:
 
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetBlueprintClass;

@@ -18,8 +18,6 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()
 {
-	// TODO show the widget when this is called
-	
 	if (MainMenuWidgetBlueprintClass == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to create the main menu widget, blueprint class was nullptr"));
@@ -33,4 +31,27 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 	}
 
 	MainMenuWidget->Setup();
+}
+
+void UWildOmissionGameInstance::StartSession()
+{
+	UE_LOG(LogTemp, Display, TEXT("Starting Session"));
+}
+
+void UWildOmissionGameInstance::RefreshServerList()
+{
+	UE_LOG(LogTemp, Display, TEXT("Refreshing Server List"));
+}
+
+//****************************
+// HOSTING/JOINING
+//****************************
+void UWildOmissionGameInstance::Host(FString ServerName)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Hosting Server Named: %s"), *ServerName);
+}
+
+void UWildOmissionGameInstance::Join(uint32 Index)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Joining Server Index: %i"), Index);
 }
