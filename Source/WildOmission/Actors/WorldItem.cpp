@@ -3,13 +3,17 @@
 
 #include "WorldItem.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
+
 // Sets default values
 AWorldItem::AWorldItem()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
-	
+
+	SetReplicates(true);
+	SetReplicateMovement(true);
+
 	ItemName = FName(TEXT("Item"));
 	ItemQuantity = 1;
 
@@ -24,8 +28,6 @@ void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	bReplicates = true;
-	SetReplicateMovement(true);
 }
 
 // Called every frame
@@ -35,17 +37,17 @@ void AWorldItem::Tick(float DeltaTime)
 
 }
 
-void AWorldItem::SetItemName(FName InName)
+void AWorldItem::SetItemName_Implementation(FName InName)
 {
 	ItemName = InName;
 }
 
-void AWorldItem::SetItemQuantity(int32 InQuantity)
+void AWorldItem::SetItemQuantity_Implementation(int32 InQuantity)
 {
 	ItemQuantity = InQuantity;
 }
 
-void AWorldItem::SetItemMesh(UStaticMesh* InMesh)
+void AWorldItem::SetItemMesh_Implementation(UStaticMesh* InMesh)
 {
 	ItemMesh->SetStaticMesh(InMesh);
 }
@@ -64,3 +66,13 @@ UStaticMeshComponent* AWorldItem::GetItemMesh()
 {
 	return ItemMesh;
 }
+/*
+void AWorldItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWorldItem, ItemName);
+	DOREPLIFETIME(AWorldItem, ItemQuantity);
+	DOREPLIFETIME(AWorldItem, ItemMesh);
+}
+*/

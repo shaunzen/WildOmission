@@ -17,13 +17,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void SetItemName(FName InName);
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void SetItemQuantity(int32 InQuantity);
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void SetItemMesh(UStaticMesh* InMesh);
 
 	UFUNCTION(BlueprintCallable)
@@ -34,6 +34,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetItemMesh();
+
+	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps);
 
 protected:
 	// Called when the game starts or when spawned
