@@ -4,6 +4,7 @@
 #include "InventoryComponent.h"
 #include "../Widgets/InventoryWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -11,6 +12,7 @@ UInventoryComponent::UInventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicated(true);
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Script/Engine.DataTable'/Game/Blueprints/ItemDataTable.ItemDataTable'"));
 	if (ItemDataTableObject.Succeeded())
@@ -75,7 +77,12 @@ void UInventoryComponent::SpawnWorldItem(FName ItemName, int32 Quantity)
 {
 	// setup world item actor
 	// spawn it
-	UE_LOG(LogTemp, Warning, TEXT("Spawning world item with id: %s and quantity of: %i"), *ItemName.ToString(), Quantity);
+	Server_SpawnWorldItem(ItemName, Quantity);
+}
+
+void UInventoryComponent::Server_SpawnWorldItem_Implementation(FName ItemName, int32 Quantity)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Spawning World Item on server"));
 }
 
 FItem* UInventoryComponent::GetItemData(FName ItemName)

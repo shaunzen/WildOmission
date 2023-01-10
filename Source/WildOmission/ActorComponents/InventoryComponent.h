@@ -60,7 +60,6 @@ public:
 	UInventoryWidget* GetWidget();
 
 private:
-	// TODO change to defaultsonly
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FName, int32> InventoryContent;
 	UPROPERTY(EditDefaultsOnly)
@@ -69,9 +68,12 @@ private:
 	UDataTable* ItemDataTable;
 
 	UFUNCTION(Server, Reliable)
-	void Server_AddItem(FName ItemName, int32 Quantity = 1);
-
+	void Server_AddItem(FName ItemName, int32 Quantity);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_SpawnWorldItem(FName ItemName, int32 Quantity);
 
 	UPROPERTY()
 	UInventoryWidget* InventoryWidget;
+
 };
