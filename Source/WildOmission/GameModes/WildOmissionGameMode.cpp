@@ -16,5 +16,15 @@ void AWildOmissionGameMode::LogPlayerInventoryComponents()
 			return;
 		}
 		
+		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(PlayerController->GetPawn());
+		if (PlayerCharacter == nullptr)
+		{
+			return;
+		}
+		for (const TPair<FName, int32>& Item : *PlayerCharacter->GetInventoryComponent()->GetContent())
+		{
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("%s: %i"), *Item.Key.ToString(), Item.Value));
+		}
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: "), *PlayerCharacter->GetActorNameOrLabel()));
 	}
 }

@@ -23,6 +23,8 @@ AWorldItem::AWorldItem()
 void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
+
+	bReplicates = true;
 	SetReplicateMovement(true);
 }
 

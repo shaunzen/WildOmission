@@ -72,7 +72,7 @@ private:
 	
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnWorldItem(FName ItemName, int32 Quantity);
-
+	
 	UPROPERTY()
 	UInventoryWidget* InventoryWidget;
 

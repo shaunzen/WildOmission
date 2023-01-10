@@ -10,7 +10,9 @@ UCLASS()
 class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
 public:
 	UFUNCTION(Exec)
 	void LogPlayerInventoryComponents();
+
 };
