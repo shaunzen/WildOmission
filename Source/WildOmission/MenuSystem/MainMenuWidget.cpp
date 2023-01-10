@@ -95,7 +95,8 @@ void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 		}
 
 		Row->ServerName->SetText(FText::FromString(ServerData.Name));
-		Row->HostUser->SetText(FText::FromString(ServerData.HostUsername));
+		FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
+		Row->HostUser->SetText(FText::FromString(HostString));
 		FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
 		Row->ConnectionFraction->SetText(FText::FromString(FractionString));
 		Row->Setup(this, i);

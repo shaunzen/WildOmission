@@ -46,34 +46,37 @@ public:
 	
 	void Setup(UInventoryWidget* InInventoryWidget);
 
+	// Checks for slot and asks the server to add the item to our contents
 	void AddItem(FName ItemName, int32 Quantity);
 	void RemoveItem();
 	void SwapItem();
 
+	// Calls an rpc on the server to spawn a world item
 	void SpawnWorldItem(FName ItemName, int32 Quantity = 1);
 
-	FItem* GetItemData(FName ItemName);
-	int32 GetMaxSize();
-	TMap<FName, int32>* GetContent();
+	// Gets the contents map for this inventory
+	TMap<FName, int32>* GetContents();
 
-	void SetMaxSize(int32 InMaxSize);
+	// Retrives the data about the item id passed in
+	FItem* GetItemData(FName ItemName);
+
+	// Gets the widget this inventory is using
 	UInventoryWidget* GetWidget();
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TMap<FName, int32> InventoryContent;
-	UPROPERTY(EditDefaultsOnly)
-	int32 MaxSize;
+	TMap<FName, int32> InventoryContents;
+
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* ItemDataTable;
 
-	UFUNCTION(Server, Reliable)
-	void Server_AddItem(FName ItemName, int32 Quantity);
-	
-	UFUNCTION(Server, Reliable)
-	void Server_SpawnWorldItem(FName ItemName, int32 Quantity);
-	
 	UPROPERTY()
 	UInventoryWidget* InventoryWidget;
 
+	UFUNCTION(Server, Reliable)
+	void Server_AddItem(FName ItemName, int32 Quantity);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SpawnWorldItem(FName ItemName, int32 Quantity);
+	
 };

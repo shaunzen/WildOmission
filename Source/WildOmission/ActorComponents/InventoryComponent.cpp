@@ -3,7 +3,6 @@
 
 #include "InventoryComponent.h"
 #include "../Widgets/InventoryWidget.h"
-#include "Kismet/GameplayStatics.h"
 #include "../Actors/WorldItem.h"
 
 // Sets default values for this component's properties
@@ -12,8 +11,11 @@ UInventoryComponent::UInventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	
+	// Make this component replicate
 	SetIsReplicated(true);
 
+	// Find the item data table
 	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Script/Engine.DataTable'/Game/Blueprints/ItemDataTable.ItemDataTable'"));
 	if (ItemDataTableObject.Succeeded())
 	{
@@ -23,11 +25,10 @@ UInventoryComponent::UInventoryComponent()
 
 void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
 {
+	// Create a link between the Widget and this component
 	InventoryWidget = InInventoryWidget;
 	InventoryWidget->SetComponent(this);
 }
-
-// Client side check for free slot, once this calculation has been completed call the server to add to the data
 
 void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 {
@@ -43,23 +44,23 @@ void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 
 	if (AddSuccess == false)
 	{
-		// Spawn a world item with remaining count
-		// Server should spawn world items
 		SpawnWorldItem(ItemName, Remaining);
-		UE_LOG(LogTemp, Warning, TEXT("Couldn't add all items. %i were remaining to be added."), Remaining);
 	}
 }
 
 void UInventoryComponent::Server_AddItem_Implementation(FName ItemName, int32 Quantity)
 {
-	if (int32* ItemQuantity = InventoryContent.Find(ItemName))
+	// If the item already exists in the contents map
+	if (int32* ItemQuantity = InventoryContents.Find(ItemName))
 	{
+		// Add the additional quantity to the existing quantity
 		int32 NewQuantity = *ItemQuantity + Quantity;
-		InventoryContent.Add(ItemName, NewQuantity);
+		InventoryContents.Add(ItemName, NewQuantity);
 	}
 	else
 	{
-		InventoryContent.Add(ItemName, Quantity);
+		// Create a new entry with that quantity
+		InventoryContents.Add(ItemName, Quantity);
 	}
 }
 
@@ -75,24 +76,23 @@ void UInventoryComponent::SwapItem()
 
 void UInventoryComponent::SpawnWorldItem(FName ItemName, int32 Quantity)
 {
+	// RPC on the server to spawn a world item of out specification
 	Server_SpawnWorldItem(ItemName, Quantity);
 }
 
 void UInventoryComponent::Server_SpawnWorldItem_Implementation(FName ItemName, int32 Quantity)
 {
+	// Get the data for this item
 	FItem* ItemData = GetItemData(ItemName);
-	if (ItemData == nullptr)
+	// Spawn a world item actor
+	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();
+	if (ItemData == nullptr || WorldItem == nullptr)
 	{
 		return;
 	}
-	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();
-	if (WorldItem)
-	{
-		WorldItem->SetItemName(ItemName);
-		WorldItem->SetItemQuantity(Quantity);
-		WorldItem->SetItemMesh(ItemData->Mesh);
-		WorldItem->SetActorLocation(GetOwner()->GetActorLocation());
-	}
+
+	// Update world items properties
+	WorldItem->Client_SetItemProperties(ItemName, Quantity, ItemData->Mesh, GetOwner()->GetActorLocation());
 }
 
 FItem* UInventoryComponent::GetItemData(FName ItemName)
@@ -105,19 +105,9 @@ FItem* UInventoryComponent::GetItemData(FName ItemName)
 	return ItemDataTable->FindRow<FItem>(ItemName, ContextString, true);
 }
 
-int32 UInventoryComponent::GetMaxSize()
+TMap<FName, int32>* UInventoryComponent::GetContents()
 {
-	return MaxSize;
-}
-
-TMap<FName, int32>* UInventoryComponent::GetContent()
-{
-	return &InventoryContent;
-}
-
-void UInventoryComponent::SetMaxSize(int32 InMaxSize)
-{
-	MaxSize = InMaxSize;
+	return &InventoryContents;
 }
 
 UInventoryWidget* UInventoryComponent::GetWidget()

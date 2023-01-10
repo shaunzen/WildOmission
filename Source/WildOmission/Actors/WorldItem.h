@@ -14,39 +14,50 @@ class WILDOMISSION_API AWorldItem : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AWorldItem();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Sets the item id name for this world item
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void SetItemName(FName InName);
-	
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void SetItemQuantity(int32 InQuantity);
-	
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void SetItemMesh(UStaticMesh* InMesh);
+	void Client_SetItemName(FName InName);
 
+	// Sets the item quantity for this world item
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void Client_SetItemQuantity(int32 InQuantity);
+	
+	// Sets the item mesh for this world item
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void Client_SetItemMesh(UStaticMesh* InMesh);
+
+	// Sets all properties for this world item in one go
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void Client_SetItemProperties(FName InName, int32 InQuanitty = 1, UStaticMesh* InMesh = nullptr, FVector InLocation = FVector::ZeroVector);
+
+	// Gets the item name
 	UFUNCTION(BlueprintCallable)
 	FName GetItemName();
 	
+	// Gets the item quantity
 	UFUNCTION(BlueprintCallable)
 	int32 GetItemQuantity();
 	
+	// Gets the items static mesh component
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetItemMesh();
-
-	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
-	
 	UPROPERTY(EditAnywhere)
 	FName ItemName;
+
 	UPROPERTY(EditAnywhere)
 	int32 ItemQuantity;
+	
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* ItemMesh;
+
 };

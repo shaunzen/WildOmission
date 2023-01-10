@@ -2,7 +2,6 @@
 
 
 #include "PlayerCharacterController.h"
-#include "../Widgets/InventoryWidget.h"
 #include "../Characters/PlayerCharacter.h"
 #include "../ActorComponents/InventoryComponent.h"
 
@@ -17,7 +16,7 @@ void APlayerCharacterController::LogLocalInventoryContents()
 		}
 
 		// Get their inventory components
-		for (TPair<FName, int32>& Item : *PlayerCharacter->GetInventoryComponent()->GetContent())
+		for (TPair<FName, int32>& Item : *PlayerCharacter->GetInventoryComponent()->GetContents())
 		{
 			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Item: %s, Quantity: %i"), *Item.Key.ToString(), Item.Value));
 		}
@@ -34,5 +33,3 @@ void APlayerCharacterController::Server_DestroyActor_Implementation(AActor* Acto
 	}
 	ActorToDestroy->Destroy();
 }
-
-// TODO Add item server function here with a pointer to the inventory component to add to

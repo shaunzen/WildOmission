@@ -21,7 +21,7 @@ void AWildOmissionGameMode::LogPlayerInventoryComponents()
 		{
 			return;
 		}
-		for (const TPair<FName, int32>& Item : *PlayerCharacter->GetInventoryComponent()->GetContent())
+		for (const TPair<FName, int32>& Item : *PlayerCharacter->GetInventoryComponent()->GetContents())
 		{
 			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("%s: %i"), *Item.Key.ToString(), Item.Value));
 		}
