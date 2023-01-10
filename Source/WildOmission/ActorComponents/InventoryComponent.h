@@ -21,7 +21,7 @@ struct FItem : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture2D* Thumbnail;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class AWorldItem> WorldItem;
+	UStaticMesh* Mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 StackSize;
 	
@@ -30,7 +30,7 @@ struct FItem : public FTableRowBase
 		DisplayName = FName(TEXT("Item"));
 		Description = FString(TEXT("This is an Item."));
 		Thumbnail = nullptr;
-		WorldItem = nullptr;
+		Mesh = nullptr;
 		StackSize = 1000;
 	}
 };

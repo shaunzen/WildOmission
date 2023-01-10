@@ -33,6 +33,21 @@ void AWorldItem::Tick(float DeltaTime)
 
 }
 
+void AWorldItem::SetItemName(FName InName)
+{
+	ItemName = InName;
+}
+
+void AWorldItem::SetItemQuantity(int32 InQuantity)
+{
+	ItemQuantity = InQuantity;
+}
+
+void AWorldItem::SetItemMesh(UStaticMesh* InMesh)
+{
+	ItemMesh->SetStaticMesh(InMesh);
+}
+
 FName AWorldItem::GetItemName()
 {
 	return ItemName;

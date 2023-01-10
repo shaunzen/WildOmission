@@ -4,6 +4,7 @@
 #include "InventoryComponent.h"
 #include "../Widgets/InventoryWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "../Actors/WorldItem.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -82,6 +83,14 @@ void UInventoryComponent::SpawnWorldItem(FName ItemName, int32 Quantity)
 
 void UInventoryComponent::Server_SpawnWorldItem_Implementation(FName ItemName, int32 Quantity)
 {
+	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();
+	FItem* ItemData = GetItemData(ItemName);
+	if (WorldItem && ItemData)
+	{
+		WorldItem->SetItemName(ItemName);
+		WorldItem->SetItemQuantity(Quantity);
+		WorldItem->SetItemMesh(ItemData->Mesh);
+	}
 	UE_LOG(LogTemp, Warning, TEXT("Spawning World Item on server"));
 }
 

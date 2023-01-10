@@ -18,9 +18,20 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
+	void SetItemName(FName InName);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetItemQuantity(int32 InQuantity);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetItemMesh(UStaticMesh* InMesh);
+
+	UFUNCTION(BlueprintCallable)
 	FName GetItemName();
+	
 	UFUNCTION(BlueprintCallable)
 	int32 GetItemQuantity();
+	
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetItemMesh();
 
