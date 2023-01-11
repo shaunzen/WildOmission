@@ -10,6 +10,7 @@
 #include "../SceneComponents/InteractionComponent.h"
 #include "../Actors/WorldItem.h"
 #include "../Widgets/PlayerHUDWidget.h"
+#include "../WildOmissionGameInstance.h"
 #include "Blueprint/UserWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -20,6 +21,8 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
+	//TODO constructor helpers to find input
+
 	// Set HUD to nullptr before its created
 	PlayerHUDWidget = nullptr;
 
@@ -97,6 +100,7 @@ void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	if (PlayerHUDWidget == nullptr)
 	{
 		return;

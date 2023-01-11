@@ -3,9 +3,15 @@
 
 #include "GameplayMenuWidget.h"
 
-void UGameplayMenuWidget::Setup()
+UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	bIsFocusable = true;
+	bOpen = false;
+}
+
+void UGameplayMenuWidget::Setup()
+{
+	bOpen = true;
 	AddToViewport();
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr)
@@ -21,6 +27,7 @@ void UGameplayMenuWidget::Setup()
 
 void UGameplayMenuWidget::Teardown()
 {
+	bOpen = false;
 	RemoveFromParent();
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr)
@@ -30,4 +37,9 @@ void UGameplayMenuWidget::Teardown()
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = false;
+}
+
+bool UGameplayMenuWidget::IsOpen() const
+{
+	return bOpen;
 }

@@ -26,6 +26,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UInventoryComponent* GetInventoryComponent();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -33,39 +34,47 @@ protected:
 private:
 
 	UPROPERTY(VisibleAnywhere)
-		UCameraComponent* FirstPersonCameraComponent;
+	UCameraComponent* FirstPersonCameraComponent;
+	
 	UPROPERTY(VisibleAnywhere)
-		UVitalsComponent* VitalsComponent;
+	UVitalsComponent* VitalsComponent;
+	
 	UPROPERTY(VisibleAnywhere)
-		UInventoryComponent* InventoryComponent;
+	UInventoryComponent* InventoryComponent;
+	
 	UPROPERTY(VisibleAnywhere)
-		UInteractionComponent* InteractionComponent;
+	UInteractionComponent* InteractionComponent;
+	
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
+	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
+	
 	UPROPERTY()
-		UPlayerHUDWidget* PlayerHUDWidget;
+	UPlayerHUDWidget* PlayerHUDWidget;
 
 	//*****************************
 	// Input
 	//*****************************
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-		UInputMappingContext* DefaultMappingContext;
+	UInputMappingContext* DefaultMappingContext;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-		UInputAction* MoveAction;
+	UInputAction* MoveAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-		UInputAction* LookAction;
+	UInputAction* LookAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-		UInputAction* JumpAction;
+	UInputAction* JumpAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-		UInputAction* InteractAction;
+	UInputAction* InteractAction;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-		UInputAction* InventoryAction;
-
-
+	UInputAction* InventoryAction;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
-
 	void ToggleInventory();
+
 };

@@ -79,7 +79,7 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	GameplayMenuWidget = CreateWidget<UGameplayMenuWidget>(this, GameplayMenuWidgetBlueprintClass);
 	if (GameplayMenuWidget == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to create the gameplay menu widget"))
+		UE_LOG(LogTemp, Error, TEXT("Failed to create gameplay menu widget"));
 		return;
 	}
 
