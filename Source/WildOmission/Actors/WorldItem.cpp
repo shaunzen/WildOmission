@@ -11,8 +11,7 @@ AWorldItem::AWorldItem()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Set this actor to replicate
-	SetReplicates(true);
-	SetReplicateMovement(true);
+	bReplicates = true;
 
 	// Setup default values
 	ItemName = FName(TEXT("Item"));
@@ -30,6 +29,7 @@ void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetReplicateMovement(true);
 }
 
 // Called every frame

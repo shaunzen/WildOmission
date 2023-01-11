@@ -14,11 +14,11 @@ const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
 	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/Blueprints/MenuSystem/WBP_MainMenu"));
-	if (MainMenuBlueprint.Class)
+	if (MainMenuBlueprint.Class == nullptr)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Found Main Menu widget blueprint"));
-		MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
+		return;
 	}
+	MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
 }
 
 void UWildOmissionGameInstance::Init()
