@@ -6,6 +6,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "OnlineSessionSettings.h"
 #include "MenuSystem/MainMenuWidget.h"
+#include "MenuSystem/GameplayMenuWidget.h"
 
 // Static session information
 const static FName SESSION_NAME = TEXT("Game");
@@ -19,6 +20,13 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 		return;
 	}
 	MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
+
+	ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/Blueprints/MenuSystem/WBP_GameplayMenu"));
+	if (GameplayMenuBlueprint.Class == nullptr)
+	{
+		return;
+	}
+	GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
 }
 
 void UWildOmissionGameInstance::Init()
@@ -59,6 +67,23 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 	}
 
 	MainMenuWidget->Setup();
+}
+
+void UWildOmissionGameInstance::ShowGameplayMenuWidget()
+{
+	if (GameplayMenuWidgetBlueprintClass == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to create the gameplay menu widget, blueprint class was nullptr"));
+		return;
+	}
+	GameplayMenuWidget = CreateWidget<UGameplayMenuWidget>(this, GameplayMenuWidgetBlueprintClass);
+	if (GameplayMenuWidget == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to create the gameplay menu widget"))
+		return;
+	}
+
+	GameplayMenuWidget->Setup();
 }
 
 void UWildOmissionGameInstance::StartSession()

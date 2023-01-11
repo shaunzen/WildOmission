@@ -9,6 +9,7 @@
 #include "WildOmissionGameInstance.generated.h"
 
 class UMainMenuWidget;
+class UGameplayMenuWidget;
 class FOnlineSessionSearch;
 
 UCLASS()
@@ -23,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowMainMenuWidget();
 
+	UFUNCTION(BlueprintCallable, Exec)
+	void ShowGameplayMenuWidget();
+
 	UFUNCTION()
 	void Host(FString ServerName);
 	
@@ -36,6 +40,9 @@ private:
 
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetBlueprintClass;
 	UMainMenuWidget* MainMenuWidget;
+
+	TSubclassOf<UGameplayMenuWidget> GameplayMenuWidgetBlueprintClass;
+	UGameplayMenuWidget* GameplayMenuWidget;
 
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
