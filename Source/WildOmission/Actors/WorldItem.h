@@ -57,7 +57,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	int32 ItemQuantity;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
 
 };
