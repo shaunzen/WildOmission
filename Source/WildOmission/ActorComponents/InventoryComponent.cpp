@@ -13,7 +13,7 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	
 	// Make this component replicate
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 
 	// Find the item data table
 	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Script/Engine.DataTable'/Game/Blueprints/ItemDataTable.ItemDataTable'"));
