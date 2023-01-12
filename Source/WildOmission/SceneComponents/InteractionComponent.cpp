@@ -2,10 +2,7 @@
 
 
 #include "InteractionComponent.h"
-#include "WildOmission/Characters/PlayerCharacter.h"
-#include "WildOmission/PlayerControllers/PlayerCharacterController.h"
-#include "WildOmission/ActorComponents/InventoryComponent.h"
-#include "WildOmission/Actors/WorldItem.h"
+#include "WildOmission/Interfaces/Interactable.h"
 #include "WildOmission/Widgets/PlayerHUDWidget.h"
 
 UInteractionComponent::UInteractionComponent()
@@ -17,20 +14,6 @@ UInteractionComponent::UInteractionComponent()
 void UInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	OwnerPlayer = Cast<APlayerCharacter>(GetOwner());
-	if (OwnerPlayer == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("InteractionComponent: Invalid Owner Player"));
-		return;
-	}
-
-	OwnerPlayerController = Cast<APlayerCharacterController>(OwnerPlayer->GetController());
-	if (OwnerPlayerController == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("InteractionComponent: Invalid Owner Controller"));
-		return;
-	}
 
 }
 

@@ -16,12 +16,16 @@ class WILDOMISSION_API USelectedItemWidget : public UUserWidget
 
 public:
 	void SetItem(UTexture2D* ItemIcon, int32 Quantity);
+	
 	void Show();
+	
 	void Hide();
+
 private:
 	UPROPERTY(meta = (BindWidget))
-		UBorder* IconBorder;
+	UBorder* IconBorder;
+	
 	UPROPERTY(meta = (BindWidget))
-		UTextBlock* QuantityText;
+	UTextBlock* QuantityText;
 	
 };

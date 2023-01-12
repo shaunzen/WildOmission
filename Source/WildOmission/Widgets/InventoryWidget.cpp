@@ -31,16 +31,13 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 	{
 		// Create new slot widget
 		UInventorySlotWidget* NewInventorySlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
-		if (i < 6) // Slot is less than 6
+		NewInventorySlot->Setup(this);
+		if (i < 6)
 		{
-			// Make it a toolbar slot
-			NewInventorySlot->Setup(this, true); // Instead of passing in an explicit bool value you could just pass i < 6 and it would also return the correct result
 			ToolbarWrapBox->AddChild(NewInventorySlot);
 		}
 		else
 		{
-			// Make it a standard inventory slot
-			NewInventorySlot->Setup(this, false);
 			InventoryWrapBox->AddChild(NewInventorySlot);
 		}
 		// Add this slot to slot array
@@ -156,4 +153,9 @@ bool UInventoryWidget::Dragging() const
 FSelectedItem* UInventoryWidget::GetSelectedItem()
 {
 	return &SelectedItem;
+}
+
+UInventoryComponent* UInventoryWidget::GetInventoryComponent()
+{
+	return InventoryComponent;
 }

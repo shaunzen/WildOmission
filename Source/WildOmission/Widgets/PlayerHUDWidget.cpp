@@ -3,10 +3,10 @@
 #include "PlayerHUDWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
+#include "Components/CanvasPanelSlot.h"
 #include "InventoryWidget.h"
 #include "SelectedItemWidget.h"
 #include "VitalsWidget.h"
-#include "Components/CanvasPanelSlot.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {

@@ -32,7 +32,6 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 private:
-
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* FirstPersonCameraComponent;
 	

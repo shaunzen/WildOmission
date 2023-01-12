@@ -20,12 +20,13 @@ struct FServerData
 class UServerRowWidget;
 class UButton;
 class UWidgetSwitcher;
-
 class UEditableTextBox;
+
 UCLASS()
 class WILDOMISSION_API UMainMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
 	UMainMenuWidget(const FObjectInitializer& ObjectInitializer);
 
@@ -38,10 +39,11 @@ public:
 
 protected:
 	virtual bool Initialize() override;
+
 private:
-	//****************************
+	//*
 	// Bind Widgets
-	//****************************
+	//*
 	UPROPERTY(meta = (BindWidget))
 	UButton* HostButton;
 	
@@ -81,9 +83,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UPanelWidget* ServerList;
 	
-	//****************************
+	//*
 	// Menu Functions
-	//****************************
+	//*
 	UFUNCTION()
 	void HostServer();
 	
@@ -105,4 +107,5 @@ private:
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
 	TOptional<uint32> SelectedIndex;
 	void UpdateChildren();
+
 };

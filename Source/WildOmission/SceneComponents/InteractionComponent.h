@@ -6,8 +6,6 @@
 #include "Components/SceneComponent.h"
 #include "InteractionComponent.generated.h"
 
-class APlayerCharacter;
-class APlayerCharacterController;
 class UPlayerHUDWidget;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -17,6 +15,7 @@ class WILDOMISSION_API UInteractionComponent : public USceneComponent
 
 public:	
 	UInteractionComponent();
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION()
@@ -32,12 +31,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float InteractionRange;
-
-	UPROPERTY()
-	APlayerCharacter* OwnerPlayer;
-
-	UPROPERTY()
-	APlayerCharacterController* OwnerPlayerController;
 
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;

@@ -15,10 +15,11 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	bIsFocusable = true;
 
 	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/Blueprints/MenuSystem/WBP_ServerRow"));
-	if (ServerRowWidgetBPClass.Class)
+	if (ServerRowWidgetBPClass.Class == nullptr)
 	{
-		ServerRowWidgetClass = ServerRowWidgetBPClass.Class;
+		return;
 	}
+	ServerRowWidgetClass = ServerRowWidgetBPClass.Class;
 }
 
 bool UMainMenuWidget::Initialize()

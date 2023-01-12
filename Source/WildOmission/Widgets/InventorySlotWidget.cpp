@@ -7,10 +7,8 @@
 #include "Components/TextBlock.h"
 #include "InventoryWidget.h"
 #include "WildOmission/ActorComponents/InventoryComponent.h"
-#include "WildOmission/Characters/PlayerCharacter.h"
-#include "Kismet/GameplayStatics.h"
 
-void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, bool bInToolbarSlot)
+void UInventorySlotWidget::Setup(UInventoryWidget* InOwner)
 {
 	if (InOwner == nullptr || SlotBorder == nullptr || ItemIconBorder == nullptr || QuantityText == nullptr)
 	{
@@ -21,7 +19,6 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, bool bInToolbarSlot)
 	CurrentItemName = FName("");
 	CurrentItemQuantity = 0;
 	bIsFull = false;
-	bToolbarSlot = bInToolbarSlot;
 	SetItem(CurrentItemName, CurrentItemQuantity);
 }
 
@@ -43,22 +40,19 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 
 	if (CurrentItemQuantity != 0)
 	{
-		// Get the player character
-		if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+		// Get the item data from the player character's inventory component
+		FItem* SlotItemData = Owner->GetInventoryComponent()->GetItemData(CurrentItemName);
+		if (SlotItemData == nullptr)
 		{
-			// Get the item data from the player character's inventory component
-			FItem* SlotItemData = PlayerCharacter->GetInventoryComponent()->GetItemData(CurrentItemName);
-			if (SlotItemData == nullptr)
-			{
-				return;
-			}
-			// Set the item icon border to the item thumbnail
-			ItemIconBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
-			// Set the item icon color opaque white
-			ItemIconBorder->SetBrushColor(FLinearColor::White);
-			// Check if slot is full
-			bIsFull = CurrentItemQuantity >= SlotItemData->StackSize;
+			return;
 		}
+
+		// Set the item icon border to the item thumbnail
+		ItemIconBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
+		// Set the item icon color opaque white
+		ItemIconBorder->SetBrushColor(FLinearColor::White);
+		// Check if slot is full
+		bIsFull = CurrentItemQuantity >= SlotItemData->StackSize;
 	}
 	else
 	{
@@ -79,10 +73,8 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 		if (Owner->Dragging())
 		{
 			FItem* SelectedItemData = nullptr;
-			if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-			{
-				SelectedItemData = PlayerCharacter->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
-			}
+			SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
+			
 			// This slot is empty
 			if (CurrentItemQuantity == 0)
 			{
@@ -143,10 +135,8 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 		if (Owner->Dragging())
 		{
 			FItem* SelectedItemData = nullptr;
-			if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-			{
-				SelectedItemData = PlayerCharacter->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
-			}
+			SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
+
 			// This slot is empty
 			if (CurrentItemQuantity == 0)
 			{
@@ -204,25 +194,6 @@ void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	// TODO set slot color to default shade
 }
 
-void UInventorySlotWidget::OnPressed()
-{
-	// is owner currently dragging
-	// yes
-		// we dont have an item
-			// set the current item and quantity to the selected one
-			// clear selected
-		// we have the same item as the one being dragged
-			// add the selected quantity to our quantity
-			// clear slected
-		// we have an item but its different to the one being dragged
-			// swap
-	// no
-		// we have an item
-			// set selected item and quantity to the one in this slot
-			// clear the item and quantity in this slot
-	
-}
-
 FName UInventorySlotWidget::GetCurrentItemName()
 {
 	return CurrentItemName;
@@ -237,31 +208,3 @@ bool UInventorySlotWidget::IsFull() const
 {
 	return bIsFull;
 }
-/*
-	//************************************
-	// Amount Text
-	FString QuantityString;
-	
-	if (Quantity > 1)
-	{
-		// Only Set the string to a number if there is more than one
-		QuantityString = FString::Printf(TEXT("%i"), Quantity);
-	}
-	else
-	{
-		QuantityString = FString("");
-	}
-	QuantityText->SetText(FText::FromString(QuantityString));
-
-	//************************************
-	// Image Icon
-	FItem* SlotItemData = OwnerInventoryComponent->GetItemData(ItemName);
-	
-	if (SlotItemData == nullptr)
-	{
-		return;
-	}
-
-	SlotImageBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
-	SlotImageBorder->SetBrushColor(FLinearColor::White);
-*/

@@ -13,6 +13,7 @@ UCLASS()
 class WILDOMISSION_API UGameplayMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
 	UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer);
 

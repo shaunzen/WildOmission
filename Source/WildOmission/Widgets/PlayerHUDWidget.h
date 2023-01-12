@@ -21,7 +21,9 @@ class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
+	
 	virtual void NativeConstruct() override;
+	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	// Setters
@@ -32,21 +34,24 @@ public:
 	// Getters
 	UInventoryWidget* GetInventoryWidget();
 	bool InventoryOpen();
+
 private:
-
-	bool bInventoryOpen;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InteractionPrompt;
+	
 	UPROPERTY(meta = (BindWidget))
 	UBorder* BackgroundBorder;
 
 	UPROPERTY(meta = (BindWidget))
 	UInventoryWidget* Inventory;
+	
 	UPROPERTY(meta = (BindWidget))
 	USelectedItemWidget* SelectedItem;
+	
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
 
+	bool bInventoryOpen;
 	void UpdateSelectedItemLocation();
+
 };

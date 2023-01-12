@@ -38,18 +38,16 @@ void UWildOmissionGameInstance::Init()
 		return;
 	}
 	SessionInterface = Subsystem->GetSessionInterface();
-	if (!SessionInterface.IsValid())
+	if (!SessionInterface.IsValid() || GEngine == 0)
 	{
 		return;
 	}
+
 	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateSessionComplete);
 	SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnDestroySessionComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
-	if (GEngine)
-	{
-		GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
-	}
+	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
 }
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()
@@ -59,7 +57,9 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 		UE_LOG(LogTemp, Error, TEXT("Failed to create the main menu widget, blueprint class was nullptr"));
 		return;
 	}
+	
 	MainMenuWidget = CreateWidget<UMainMenuWidget>(this, MainMenuWidgetBlueprintClass);
+	
 	if (MainMenuWidget == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to create the main menu widget"))
@@ -76,7 +76,9 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 		UE_LOG(LogTemp, Error, TEXT("Failed to create the gameplay menu widget, blueprint class was nullptr"));
 		return;
 	}
+	
 	GameplayMenuWidget = CreateWidget<UGameplayMenuWidget>(this, GameplayMenuWidgetBlueprintClass);
+	
 	if (GameplayMenuWidget == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to create gameplay menu widget"));

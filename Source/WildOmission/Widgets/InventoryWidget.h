@@ -32,8 +32,8 @@ class WILDOMISSION_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	// Setup
 	void SetSelectedItemWidget(USelectedItemWidget* InWidget);
-
 	void SetComponent(UInventoryComponent* InInventoryComponent);
 
 	bool AddItem(FName ItemName, int32 Quantity, int32& Remaining);
@@ -41,10 +41,14 @@ public:
 	void Open();
 	void Close();
 
+	// Dragging
 	void StartDragging(FName ItemName, int32 Quantity);
 	void EndDragging();
 	bool Dragging() const;
+	
 	FSelectedItem* GetSelectedItem();
+	
+	UInventoryComponent* GetInventoryComponent();
 
 private:
 	// Slots
@@ -68,4 +72,5 @@ private:
 	
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;
+
 };

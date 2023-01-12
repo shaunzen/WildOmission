@@ -2,24 +2,22 @@
 
 
 #include "PlayerCharacter.h"
-#include "WildOmission/PlayerControllers/PlayerCharacterController.h"
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
-#include "WildOmission/ActorComponents/VitalsComponent.h"
-#include "WildOmission/ActorComponents/InventoryComponent.h"
-#include "WildOmission/SceneComponents/InteractionComponent.h"
-#include "WildOmission/Widgets/PlayerHUDWidget.h"
-#include "Blueprint/UserWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+
+#include "WildOmission/ActorComponents/InventoryComponent.h"
+#include "WildOmission/ActorComponents/VitalsComponent.h"
+#include "WildOmission/SceneComponents/InteractionComponent.h"
+#include "WildOmission/Widgets/PlayerHUDWidget.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
-	//TODO constructor helpers to find input
 
 	// Set HUD to nullptr before its created
 	PlayerHUDWidget = nullptr;
