@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../Interfaces/Interactable.h"
 #include "WorldItem.generated.h"
 
 UCLASS()
-class WILDOMISSION_API AWorldItem : public AActor
+class WILDOMISSION_API AWorldItem : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 	
@@ -17,6 +18,11 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	//* Begin Interactable Interface implementation
+	virtual void Interact(AActor* Interactor) override;
+	virtual FString PromptText() override;
+	//* End Interactable Interface implementation
 
 	// Sets the item id name for this world item
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
@@ -33,6 +39,9 @@ public:
 	// Sets all properties for this world item in one go
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void Client_SetItemProperties(FName InName, int32 InQuanitty = 1, UStaticMesh* InMesh = nullptr, FVector InLocation = FVector::ZeroVector);
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void Client_Destroy();
 
 	// Gets the item name
 	UFUNCTION(BlueprintCallable)

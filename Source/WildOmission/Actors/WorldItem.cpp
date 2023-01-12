@@ -3,7 +3,8 @@
 
 #include "WorldItem.h"
 #include "Components/StaticMeshComponent.h"
-
+#include "../Characters/PlayerCharacter.h"
+#include "../ActorComponents/InventoryComponent.h"
 // Sets default values
 AWorldItem::AWorldItem()
 {
@@ -39,6 +40,29 @@ void AWorldItem::Tick(float DeltaTime)
 
 }
 
+void AWorldItem::Interact(AActor* Interactor)
+{
+	// add to their inventory
+	APlayerCharacter* PlayerCharacterInteractor;
+	PlayerCharacterInteractor = Cast<APlayerCharacter>(Interactor);
+	if (PlayerCharacterInteractor == nullptr)
+	{
+		return;
+	}
+	PlayerCharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
+	// destroy this item
+	if (HasAuthority())
+	{
+		this->Destroy();
+		Client_Destroy();
+	}
+}
+
+FString AWorldItem::PromptText()
+{
+	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+}
+
 // Sets the item id name for this world item
 void AWorldItem::Client_SetItemName_Implementation(FName InName)
 {
@@ -64,6 +88,11 @@ void AWorldItem::Client_SetItemProperties_Implementation(FName InName, int32 InQ
 	ItemQuantity = InQuantity;
 	ItemMesh->SetStaticMesh(InMesh);
 	SetActorLocation(InLocation);
+}
+
+void AWorldItem::Client_Destroy_Implementation()
+{
+	this->Destroy();
 }
 
 // Gets the item name

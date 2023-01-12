@@ -45,65 +45,37 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	UpdateInteractionPrompt();
 }
 
+void UInteractionComponent::Interact()
+{
+	FHitResult HitResult;
+	if (LineTraceOnInteractableChannel(HitResult))
+	{
+		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
+		{
+			Interactable->Interact(GetOwner());
+		}
+	}
+}
+
 void UInteractionComponent::UpdateInteractionPrompt()
 {
-	if (PlayerHUDWidget == nullptr)
-	{
-		return;
-	}
 	FHitResult HitResult;
-	// If we are looking at an interactable item
-	if (InteractableItemInRange(HitResult))
+	if (LineTraceOnInteractableChannel(HitResult))
 	{
-		// If the interactable item we are looking at is a world item
-		if (AWorldItem* WorldItem = Cast<AWorldItem>(HitResult.GetActor()))
+		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
 		{
-			// Get the item data for the item we are looking at
-			FItem* ItemData = OwnerPlayer->GetInventoryComponent()->GetItemData(WorldItem->GetItemName());
-			// Return if its nullptr
-			if (ItemData == nullptr) return;
-			// Set the interaction prompt
-			
-			PlayerHUDWidget->SetInteractionPrompt(FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemData->DisplayName.ToString()));
-		}
-		else
-		{
-			// Clear the interaction prompt
-			PlayerHUDWidget->SetInteractionPrompt(FString(TEXT("")));
+			PlayerHUDWidget->SetInteractionPrompt(Interactable->PromptText());
 		}
 	}
 	else
 	{
-		// Clear the interaction prompt
-		PlayerHUDWidget->SetInteractionPrompt(FString(TEXT("")));
+		PlayerHUDWidget->SetInteractionPrompt(FString(""));
 	}
 }
 
-void UInteractionComponent::Interact()
-{
-	FHitResult HitResult;
-	// If the actor we are looking at is an interactable
-	if (InteractableItemInRange(HitResult))
-	{
-		// If the actor is a world item
-		if (AWorldItem* WorldItem = Cast<AWorldItem>(HitResult.GetActor()))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Interaction with world item with name of: %s"), *WorldItem->GetItemName().ToString());
-			// Add item to inventory
-			OwnerPlayer->GetInventoryComponent()->AddItem(WorldItem->GetItemName(), WorldItem->GetItemQuantity());
-			// Remove item from world
-			OwnerPlayerController->Server_DestroyActor(HitResult.GetActor());
-		}
-	}
-}
-
-bool UInteractionComponent::InteractableItemInRange(FHitResult& OutHitResult) const
+bool UInteractionComponent::LineTraceOnInteractableChannel(FHitResult& OutHitResult) const
 {
 	FVector Start = GetComponentLocation();
 	FVector End = Start + (GetForwardVector() * InteractionRange);
-	return GetWorld()->LineTraceSingleByChannel(
-		OutHitResult,
-		Start, End,
-		ECollisionChannel::ECC_GameTraceChannel1
-	);
+	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel1);
 }

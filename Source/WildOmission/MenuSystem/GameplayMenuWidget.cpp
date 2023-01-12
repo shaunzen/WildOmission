@@ -2,6 +2,9 @@
 
 
 #include "GameplayMenuWidget.h"
+#include "Components/Button.h"
+#include "Components/TextBlock.h"
+#include "../WildOmissionGameInstance.h"
 
 UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -9,7 +12,23 @@ UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitial
 	bOpen = false;
 }
 
-void UGameplayMenuWidget::Setup()
+bool UGameplayMenuWidget::Initialize()
+{
+	bool Success = Super::Initialize();
+	if (!Success || ResumeButton == nullptr || SaveButton == nullptr || QuitToMenuButton == nullptr)
+	{
+		return false;
+	}
+
+	// Bind button delegates
+	ResumeButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::Teardown);
+	SaveButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::SaveGame);
+	QuitToMenuButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
+
+	return true;
+}
+
+void UGameplayMenuWidget::Show()
 {
 	bOpen = true;
 	AddToViewport();
@@ -23,6 +42,11 @@ void UGameplayMenuWidget::Setup()
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = true;
+}
+
+bool UGameplayMenuWidget::IsOpen() const
+{
+	return bOpen;
 }
 
 void UGameplayMenuWidget::Teardown()
@@ -39,7 +63,19 @@ void UGameplayMenuWidget::Teardown()
 	PlayerController->bShowMouseCursor = false;
 }
 
-bool UGameplayMenuWidget::IsOpen() const
+void UGameplayMenuWidget::SaveGame()
 {
-	return bOpen;
+	// TODO call save game on the game instance
+	UE_LOG(LogTemp, Warning, TEXT("Saving the game"));
+}
+
+void UGameplayMenuWidget::QuitToMenu()
+{
+	// TODO call quit to menu
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (!GameInstance)
+	{
+		return;
+	}
+	GameInstance->ReturnToMainMenu();
 }

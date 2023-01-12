@@ -35,11 +35,15 @@ private:
 
 	UPROPERTY()
 	APlayerCharacter* OwnerPlayer;
+
 	UPROPERTY()
 	APlayerCharacterController* OwnerPlayerController;
+
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;
-	
+
 	void UpdateInteractionPrompt();
-	bool InteractableItemInRange(FHitResult& OutHitResult) const;
+
+	bool LineTraceOnInteractableChannel(FHitResult& OutHitResult) const;
+	
 };

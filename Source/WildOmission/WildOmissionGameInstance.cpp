@@ -83,7 +83,7 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 		return;
 	}
 
-	GameplayMenuWidget->Setup();
+	GameplayMenuWidget->Show();
 }
 
 void UWildOmissionGameInstance::StartSession()

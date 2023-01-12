@@ -6,9 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "GameplayMenuWidget.generated.h"
 
-/**
- * 
- */
+class UTextBlock;
+class UButton;
+
 UCLASS()
 class WILDOMISSION_API UGameplayMenuWidget : public UUserWidget
 {
@@ -16,16 +16,36 @@ class WILDOMISSION_API UGameplayMenuWidget : public UUserWidget
 public:
 	UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintCallable)
-	void Setup();
-	
-	UFUNCTION(BlueprintCallable)
-	void Teardown();
+	virtual bool Initialize() override;
 
+	UFUNCTION(BlueprintCallable)
+	void Show();
+	
 	UFUNCTION(BlueprintCallable)
 	bool IsOpen() const;
 
 private:
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* SaveNameText;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* ResumeButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* SaveButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* QuitToMenuButton;
+	
 	bool bOpen;
+
+	UFUNCTION()
+	void Teardown();
+
+	UFUNCTION()
+	void SaveGame();
+	
+	UFUNCTION()
+	void QuitToMenu();
 
 };
