@@ -8,7 +8,7 @@
 #include "Components/TextBlock.h"
 #include "Components/WrapBox.h"
 #include "Components/CanvasPanel.h"
-#include "../ActorComponents/InventoryComponent.h"
+#include "WildOmission/ActorComponents/InventoryComponent.h"
 
 void UInventoryWidget::SetSelectedItemWidget(USelectedItemWidget* InWidget)
 {

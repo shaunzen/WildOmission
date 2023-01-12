@@ -6,8 +6,8 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "InventoryWidget.h"
-#include "../ActorComponents/InventoryComponent.h"
-#include "../Characters/PlayerCharacter.h"
+#include "WildOmission/ActorComponents/InventoryComponent.h"
+#include "WildOmission/Characters/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, bool bInToolbarSlot)

@@ -2,8 +2,8 @@
 
 
 #include "WildOmissionGameMode.h"
-#include "../Characters/PlayerCharacter.h"
-#include "../ActorComponents/InventoryComponent.h"
+#include "WildOmission/Characters/PlayerCharacter.h"
+#include "WildOmission/ActorComponents/InventoryComponent.h"
 
 void AWildOmissionGameMode::LogPlayerInventoryComponents()
 {

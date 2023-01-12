@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "../Interfaces/Interactable.h"
+#include "WildOmission/Interfaces/Interactable.h"
 #include "WorldItem.generated.h"
 
 UCLASS()

@@ -2,11 +2,11 @@
 
 
 #include "InteractionComponent.h"
-#include "../Characters/PlayerCharacter.h"
-#include "../PlayerControllers/PlayerCharacterController.h"
-#include "../ActorComponents/InventoryComponent.h"
-#include "../Actors/WorldItem.h"
-#include "../Widgets/PlayerHUDWidget.h"
+#include "WildOmission/Characters/PlayerCharacter.h"
+#include "WildOmission/PlayerControllers/PlayerCharacterController.h"
+#include "WildOmission/ActorComponents/InventoryComponent.h"
+#include "WildOmission/Actors/WorldItem.h"
+#include "WildOmission/Widgets/PlayerHUDWidget.h"
 
 UInteractionComponent::UInteractionComponent()
 {

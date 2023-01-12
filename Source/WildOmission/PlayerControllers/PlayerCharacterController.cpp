@@ -2,8 +2,8 @@
 
 
 #include "PlayerCharacterController.h"
-#include "../Characters/PlayerCharacter.h"
-#include "../ActorComponents/InventoryComponent.h"
+#include "WildOmission/Characters/PlayerCharacter.h"
+#include "WildOmission/ActorComponents/InventoryComponent.h"
 
 void APlayerCharacterController::LogLocalInventoryContents()
 {

@@ -2,8 +2,8 @@
 
 
 #include "InventoryComponent.h"
-#include "../Widgets/InventoryWidget.h"
-#include "../Actors/WorldItem.h"
+#include "WildOmission/Widgets/InventoryWidget.h"
+#include "WildOmission/Actors/WorldItem.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()

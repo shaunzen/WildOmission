@@ -3,7 +3,7 @@
 
 #include "VitalsWidget.h"
 #include "Components/ProgressBar.h"
-#include "../ActorComponents/VitalsComponent.h"
+#include "WildOmission/ActorComponents/VitalsComponent.h"
 
 void UVitalsWidget::Set(UVitalsComponent* InVitals)
 {

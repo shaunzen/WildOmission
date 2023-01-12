@@ -3,8 +3,9 @@
 
 #include "WorldItem.h"
 #include "Components/StaticMeshComponent.h"
-#include "../Characters/PlayerCharacter.h"
-#include "../ActorComponents/InventoryComponent.h"
+#include "WildOmission/Characters/PlayerCharacter.h"
+#include "WildOmission/ActorComponents/InventoryComponent.h"
+
 // Sets default values
 AWorldItem::AWorldItem()
 {

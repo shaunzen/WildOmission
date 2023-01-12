@@ -4,7 +4,7 @@
 #include "GameplayMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "../WildOmissionGameInstance.h"
+#include "WildOmission/WildOmissionGameInstance.h"
 
 UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
