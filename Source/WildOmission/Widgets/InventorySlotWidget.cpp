@@ -62,125 +62,156 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 	QuantityText->SetText(FText::FromString(QuantityString));
 }
 
+void UInventorySlotWidget::ClearItem()
+{
+	this->SetItem(FName(""), 0);
+}
+
 FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	
-	// TODO stack size implementation
-	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	if (!Owner->Dragging())
 	{
-		// We are currently dragging
-		if (Owner->Dragging())
+		if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 		{
-			FItem* SelectedItemData = nullptr;
-			SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
-			
-			// This slot is empty
-			if (CurrentItemQuantity == 0)
-			{
-				// Set this slot's item and quantity to the selected
-				this->SetItem(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity);
-				// Stop dragging
-				Owner->EndDragging();
-			}
-			// This slot's item is the same as the selected item
-			else if (CurrentItemName == Owner->GetSelectedItem()->Name)
-			{
-				// Add the selected quantity to the current slot quantity
-
-				// Check if we add the amount will we go over the stack size
-				
-				if (SelectedItemData && (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) <= SelectedItemData->StackSize) // We went over the stack size
-				{
-					// Set the new quantity
-					this->SetItem(Owner->GetSelectedItem()->Name, CurrentItemQuantity + Owner->GetSelectedItem()->Quantity);
-					// Stop dragging
-					Owner->EndDragging();
-					
-				}
-				else if (SelectedItemData && (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) > SelectedItemData->StackSize) // We are under stack size
-				{
-					int32 NewSelectedQuantity;
-					// Calculate leftover selected item quantity
-					NewSelectedQuantity = (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) - SelectedItemData->StackSize;
-
-					UE_LOG(LogTemp, Warning, TEXT("New Selected Quantity: %i"), NewSelectedQuantity);
-					
-					// Set the selected to new quantity
-					Owner->StartDragging(Owner->GetSelectedItem()->Name, NewSelectedQuantity);
-					// Set the quantity in this slot to the item stack size
-					this->SetItem(Owner->GetSelectedItem()->Name, SelectedItemData->StackSize);
-				}
-			}
-			else // This slots item is different to the selected item
-			{
-				UE_LOG(LogTemp, Warning, TEXT("It's something else entirely."));
-			}
+			LeftMouseDrag();
 		}
-		else // We are not currently dragging
+		else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 		{
-			// There is an item in this slot
-			if (CurrentItemQuantity > 0)
-			{
-				// Start dragging all items in this slot
-				Owner->StartDragging(CurrentItemName, CurrentItemQuantity);
-				// Clear this slot
-				this->SetItem(FName(""), 0);
-			}
+			RightMouseDrag();
 		}
 	}
-	else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
+	else
 	{
-		// We are currently dragging
-		if (Owner->Dragging())
+		if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 		{
-			FItem* SelectedItemData = nullptr;
-			SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
-
-			// This slot is empty
-			if (CurrentItemQuantity == 0)
-			{
-				// Set the item in this slot to be the selected item with a quantity of one
-				this->SetItem(Owner->GetSelectedItem()->Name, 1);
-				// Decrement the quantity of selected item
-				Owner->StartDragging(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity - 1);
-			}
-			// This slot's item is the same as the selected item and currentquantity plus one is less than or equal to the stack size
-			else if (SelectedItemData && CurrentItemName == Owner->GetSelectedItem()->Name && (CurrentItemQuantity + 1) <= SelectedItemData->StackSize)
-			{
-				// Increment the slot quantity
-				this->SetItem(Owner->GetSelectedItem()->Name, CurrentItemQuantity + 1);
-				// Decrement to quantity of selected item
-				Owner->StartDragging(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity - 1);
-			}
-			// If quantity of selected item is = 0
-			if (Owner->GetSelectedItem()->Quantity <= 0)
-			{
-				// Stop dragging
-				Owner->EndDragging();
-			}
+			LeftMouseDrop();
 		}
-		else // We are not dragging
+		else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 		{
-			// We have more than one item
-			if (CurrentItemQuantity > 1)
-			{
-				// Get half of the quantity
-				int32 HalfQuantity = CurrentItemQuantity / 2;
-				// Remove that half from the slots quantity
-				this->SetItem(CurrentItemName, CurrentItemQuantity - HalfQuantity);
-				// Start dragging with the quantity of the half
-				Owner->StartDragging(CurrentItemName, HalfQuantity);
-			}
-			else
-			{
-				Owner->StartDragging(CurrentItemName, CurrentItemQuantity);
-				this->SetItem(FName(""), 0);
-			}
+			RightMouseDrop();
 		}
 	}
 	return FReply::Handled();
 }
+
+//*
+// Drag and drop functions
+//*
+void UInventorySlotWidget::LeftMouseDrag()
+{
+	// Return early if there is no item here
+	if (CurrentItemQuantity == 0)
+	{
+		return;
+	}
+
+	// Drag all of the items in this slot
+	Owner->StartDragging(CurrentItemName, CurrentItemQuantity);
+	// Clear this slot
+	this->ClearItem();
+}
+
+void UInventorySlotWidget::LeftMouseDrop()
+{
+	// Get the item data about the item we are dragging
+	FItem* SelectedItemData = nullptr;
+	SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
+	if (SelectedItemData == nullptr)
+	{
+		return;
+	}
+
+	// This slot is empty drop all the contents we are dragging into it
+	if (CurrentItemQuantity == 0)
+	{
+		this->SetItem(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity);
+		Owner->EndDragging();
+	}
+	// This slot's item is the same as the selected item TODO denest
+	else if (CurrentItemName == Owner->GetSelectedItem()->Name)
+	{
+		// If the amount we are trying to add is within stack size
+		if ((CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) <= SelectedItemData->StackSize)
+		{
+			this->SetItem(Owner->GetSelectedItem()->Name, CurrentItemQuantity + Owner->GetSelectedItem()->Quantity);
+			Owner->EndDragging();
+		}
+		// If the amount we are trying to add is over the stack size
+		else if ((CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) > SelectedItemData->StackSize)
+		{
+			// Calculate leftover selected item quantity
+			int32 NewSelectedQuantity;
+			NewSelectedQuantity = (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) - SelectedItemData->StackSize;
+
+			Owner->StartDragging(Owner->GetSelectedItem()->Name, NewSelectedQuantity);
+			this->SetItem(Owner->GetSelectedItem()->Name, SelectedItemData->StackSize);
+		}
+	}
+	// This slot's item is different to the one we are dragging
+	else
+	{
+		// TODO swap
+		UE_LOG(LogTemp, Warning, TEXT("It's something else entirely."));
+	}
+}
+
+void UInventorySlotWidget::RightMouseDrag()
+{
+	// Early return if there is no item here
+	if (CurrentItemQuantity == 0)
+	{
+		return;
+	}
+
+	// If there is only one item
+	if (CurrentItemQuantity == 1)
+	{
+		Owner->StartDragging(CurrentItemName, CurrentItemQuantity);
+		this->ClearItem();
+		return;
+	}
+	
+	// Split the quantity
+	int32 HalfQuantity = CurrentItemQuantity / 2;
+	Owner->StartDragging(CurrentItemName, HalfQuantity);
+	this->SetItem(CurrentItemName, CurrentItemQuantity - HalfQuantity);
+}
+
+void UInventorySlotWidget::RightMouseDrop()
+{
+	// Get the item data about the item we are dragging
+	FItem* SelectedItemData = nullptr;
+	SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
+	if (SelectedItemData == nullptr)
+	{
+		return;
+	}
+
+	// Set the slot value to one and remove one from the drag if this slot has no item
+	if (CurrentItemQuantity == 0)
+	{
+		this->SetItem(Owner->GetSelectedItem()->Name, 1);
+		Owner->StartDragging(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity - 1);
+	}
+	// Add one item to this slot and remove one from the drag if this slot has the same item we are dragging and we are within stack size
+	else if (CurrentItemName == Owner->GetSelectedItem()->Name && (CurrentItemQuantity + 1) <= SelectedItemData->StackSize)
+	{
+		this->SetItem(Owner->GetSelectedItem()->Name, CurrentItemQuantity + 1);
+		Owner->StartDragging(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity - 1);
+	}
+
+	// Stop dragging if there are no more items to drop
+	if (Owner->GetSelectedItem()->Quantity <= 0)
+	{
+		Owner->EndDragging();
+	}
+}
+
+//*
+// End drag and drop functions
+//*
 
 void UInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {

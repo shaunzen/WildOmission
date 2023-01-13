@@ -17,6 +17,7 @@ class WILDOMISSION_API UInventorySlotWidget : public UUserWidget
 public:
 	void Setup(UInventoryWidget* InOwner);
 	void SetItem(FName ItemName, int32 ItemQuantity);
+	void ClearItem();
 
 	FName GetCurrentItemName();
 	int32 GetCurrentItemQuantity();
@@ -48,10 +49,10 @@ private:
 	UInventoryWidget* Owner;
 
 	bool bIsFull;
-	/*
+	
 	void LeftMouseDrag();
 	void LeftMouseDrop();
 	void RightMouseDrag();
 	void RightMouseDrop();
-	*/
+	
 };
