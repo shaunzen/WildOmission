@@ -31,6 +31,10 @@ public:
 	void SetHunger(float Value);
 
 	void LogVitals();
+
+	UFUNCTION(Server, Reliable)
+	void Server_CalculateDepletion();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

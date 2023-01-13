@@ -26,6 +26,16 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 	
 	InventoryComponent = InInventoryComponent;
 
+	CreateInventorySlots();
+
+	// Set default visibility
+	InventoryName->SetVisibility(ESlateVisibility::Hidden);
+	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
+	ToolbarWrapBox->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UInventoryWidget::CreateInventorySlots()
+{
 	// Add Inventory slots to ui
 	for (int32 i = 0; i < 30; ++i)
 	{
@@ -43,11 +53,6 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 		// Add this slot to slot array
 		InventorySlots.Add(NewInventorySlot);
 	}
-
-	// Set default visibility
-	InventoryName->SetVisibility(ESlateVisibility::Hidden);
-	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
-	ToolbarWrapBox->SetVisibility(ESlateVisibility::Visible);
 }
 
 bool UInventoryWidget::AddItem(FName ItemName, int32 Quantity, int32& Remaining)
@@ -57,56 +62,76 @@ bool UInventoryWidget::AddItem(FName ItemName, int32 Quantity, int32& Remaining)
 		UE_LOG(LogTemp, Error, TEXT("InventoryWidget: InventoryComponent was nullptr"));
 		return false;
 	}
-	int32 QuantityToAdd = Quantity;
 
+	int32 QuantityToAdd = Quantity;
 	FItem* ItemData = InventoryComponent->GetItemData(ItemName);
 	if (ItemData == nullptr)
 	{
 		return false;
 	}
 	
+	// Check for a slot that already has this item, If not than try to find a slot that is empty
+	if (!AddItemToPopulatedSlot(ItemName, ItemData, QuantityToAdd))
+	{
+		AddItemToEmptySlot(ItemName, ItemData, QuantityToAdd);
+	}
+
+	Remaining = QuantityToAdd;
+	return QuantityToAdd == 0;
+}
+
+bool UInventoryWidget::AddItemToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd)
+{
 	for (UInventorySlotWidget* InventorySlot : InventorySlots)
 	{
 		if (QuantityToAdd == 0)
 		{
 			break;
 		}
-		if (InventorySlot->IsFull())
+		if (InventorySlot->IsFull() || InventorySlot->GetCurrentItemName() != ItemName)
+		{
+			continue;
+		}
+		
+		if (InventorySlot->GetCurrentItemQuantity() + QuantityToAdd > ItemData->StackSize)
+		{
+			QuantityToAdd -= ItemData->StackSize - InventorySlot->GetCurrentItemQuantity();
+			InventorySlot->SetItem(ItemName, ItemData->StackSize);
+		}
+		else
+		{
+			InventorySlot->SetItem(ItemName, QuantityToAdd + InventorySlot->GetCurrentItemQuantity());
+			QuantityToAdd = 0;
+		}
+	}
+	return QuantityToAdd == 0;
+}
+
+bool UInventoryWidget::AddItemToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd)
+{
+	for (UInventorySlotWidget* InventorySlot : InventorySlots)
+	{
+		if (QuantityToAdd == 0)
+		{
+			break;
+		}
+		if (InventorySlot->IsFull() || InventorySlot->GetCurrentItemQuantity() > 0)
 		{
 			continue;
 		}
 
-		// Are we trying to add the same item?
-		if (InventorySlot->GetCurrentItemName() == ItemName)
+		if (QuantityToAdd > ItemData->StackSize)
 		{
-			//int32 AmountAddedToSlot;
-			if (InventorySlot->GetCurrentItemQuantity() + QuantityToAdd > ItemData->StackSize)
-			{
-				QuantityToAdd -= ItemData->StackSize - InventorySlot->GetCurrentItemQuantity();
-				InventorySlot->SetItem(ItemName, ItemData->StackSize);
-			}
-			else
-			{
-				InventorySlot->SetItem(ItemName, QuantityToAdd + InventorySlot->GetCurrentItemQuantity());
-				QuantityToAdd = 0;
-			}
+			QuantityToAdd -= ItemData->StackSize;
+			InventorySlot->SetItem(ItemName, ItemData->StackSize);
 		}
-		// Is this slot empty instead?
-		else if (InventorySlot->GetCurrentItemQuantity() == 0)
+		else
 		{
-			if (QuantityToAdd > ItemData->StackSize)
-			{
-				QuantityToAdd -= ItemData->StackSize;
-				InventorySlot->SetItem(ItemName, ItemData->StackSize);
-			}
-			else
-			{
-				InventorySlot->SetItem(ItemName, QuantityToAdd);
-				QuantityToAdd = 0;
-			}
+			InventorySlot->SetItem(ItemName, QuantityToAdd);
+			QuantityToAdd = 0;
 		}
 	}
-	Remaining = QuantityToAdd;
+
 	return QuantityToAdd == 0;
 }
 

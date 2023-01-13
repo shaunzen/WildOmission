@@ -14,9 +14,15 @@ UVitalsComponent::UVitalsComponent()
 	MaxThirst = 300.0f;
 	MaxHunger = 500.0f;
 
+	/*
 	HealthDepletionRate = 1.0f;
 	ThirstDepletionRate = 0.1f;
 	HungerDepletionRate = 0.3f;
+	*/
+
+	HealthDepletionRate = 10.0f;
+	ThirstDepletionRate = 10.0f;
+	HungerDepletionRate = 10.0f;
 
 	ThirstThreshold = 30.0f;
 	HungerThreshold = 30.0f;
@@ -40,9 +46,47 @@ void UVitalsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (GetOwner()->HasAuthority())
+	{
+		// Run Thirst and Hunger depletion calculations
+		CurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
+		CurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
+
+		// Prevent from being less than 0
+		if (CurrentThirst < 0.0f)
+		{
+			CurrentThirst = 0.0f;
+		}
+		if (CurrentHunger < 0.0f)
+		{
+			CurrentHunger = 0.0f;
+		}
+
+		// If Thirst or Hunger is below threshold start removing Health
+		if (CurrentThirst < ThirstThreshold || CurrentHunger < HungerThreshold)
+		{
+			CurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
+		}
+
+		// If Health is less than 0 kill the player
+		if (CurrentHealth < 0.0f)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
+			CurrentHealth = 0.0f;
+		}
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Red, FString("Not the server so we are asking the server to calculate vitals for us"));
+		Server_CalculateDepletion();
+	}
+}
+
+void UVitalsComponent::Server_CalculateDepletion_Implementation()
+{
 	// Run Thirst and Hunger depletion calculations
-	CurrentThirst -= ThirstDepletionRate * DeltaTime;
-	CurrentHunger -= HungerDepletionRate * DeltaTime;
+	CurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
+	CurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
 
 	// Prevent from being less than 0
 	if (CurrentThirst < 0.0f)
@@ -57,7 +101,7 @@ void UVitalsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// If Thirst or Hunger is below threshold start removing Health
 	if (CurrentThirst < ThirstThreshold || CurrentHunger < HungerThreshold)
 	{
-		CurrentHealth -= HealthDepletionRate * DeltaTime;
+		CurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
 	}
 
 	// If Health is less than 0 kill the player

@@ -129,7 +129,7 @@ void UInventorySlotWidget::LeftMouseDrop()
 		this->SetItem(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity);
 		Owner->EndDragging();
 	}
-	// This slot's item is the same as the selected item TODO denest
+	// This slot's item is the same as the selected item
 	else if (CurrentItemName == Owner->GetSelectedItem()->Name)
 	{
 		// If the amount we are trying to add is within stack size
