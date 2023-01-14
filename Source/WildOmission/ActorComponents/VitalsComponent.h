@@ -18,44 +18,69 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+
+	// Gets the local current health
+	float GetHealth();
+	// Gets the local current thirst
+	float GetThirst();
+	//Gets the local current hunger
+	float GetHunger();
+
+	// Sets the health to a new value, MUST be called from the server or else will do nothing
+	void SetHealth(float Value);
+	// Sets the thirst to a new value, MUST be called from the server or else will do nothing
+	void SetThirst(float Value);
+	// Sets the hunger to a new value, MUST be called from the server or else will do nothing
+	void SetHunger(float Value);
+
 	float GetMaxHealth();
 	float GetMaxThirst();
 	float GetMaxHunger();
-
-	float GetHealth();
-	float GetThirst();
-	float GetHunger();
-
-	void SetHealth(float Value);
-	void SetThirst(float Value);
-	void SetHunger(float Value);
-
-	void LogVitals();
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
-	
+	//*
+	// Max Values
+	//*
 	float MaxHealth;
 	float MaxThirst;
 	float MaxHunger;
 	
+	//*
+	// Start Values
+	//*
+	float StartHealth;
+	float StartThirst;
+	float StartHunger;
+
+	//*
+	// Depletion Rates
+	//*
 	float HealthDepletionRate;
 	float ThirstDepletionRate;
 	float HungerDepletionRate;
 
+	//*
+	// Threshold for health damage
+	//*
 	float ThirstThreshold;
 	float HungerThreshold;
 
+	//*
+	// Current local values
+	//*
 	float CurrentHealth;
 	float CurrentThirst;
 	float CurrentHunger;
-	
+
+	//*
 	// Replicated Values
+	//*
 	UPROPERTY(Replicated)
 	float ReplicatedCurrentHealth;
 	UPROPERTY(Replicated)
@@ -64,6 +89,5 @@ private:
 	float ReplicatedCurrentHunger;
 
 	void CalculateDepletion();
-	// TODO server add hunger/thirst/health
-
+	
 };

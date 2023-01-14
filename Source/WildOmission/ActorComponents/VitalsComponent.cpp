@@ -15,26 +15,24 @@ UVitalsComponent::UVitalsComponent()
 	MaxThirst = 300.0f;
 	MaxHunger = 500.0f;
 
-	/*
+	StartHealth = MaxHealth * 0.9f;
+	StartThirst = MaxThirst * 0.8f;
+	StartHunger = MaxHunger * 0.8f;
+
+	ReplicatedCurrentHealth = StartHealth;
+	ReplicatedCurrentThirst = StartThirst;
+	ReplicatedCurrentHunger = StartHunger;
+
+	CurrentHealth = StartHealth;
+	CurrentThirst = StartThirst;
+	CurrentHunger = StartHunger;
+
 	HealthDepletionRate = 1.0f;
 	ThirstDepletionRate = 0.1f;
 	HungerDepletionRate = 0.3f;
-	*/
-
-	HealthDepletionRate = 10.0f;
-	ThirstDepletionRate = 10.0f;
-	HungerDepletionRate = 10.0f;
 
 	ThirstThreshold = 30.0f;
 	HungerThreshold = 30.0f;
-
-	ReplicatedCurrentHealth = 100.0f;
-	ReplicatedCurrentThirst = 300.0f;
-	ReplicatedCurrentHunger = 500.0f;
-
-	CurrentHealth = 100.0f;
-	CurrentThirst = 300.0f;
-	CurrentHunger = 500.0f;
 }
 
 
@@ -43,10 +41,18 @@ void UVitalsComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GetOwner()->HasAuthority())
+	// Return if we are not on the server
+	if (!GetOwner()->HasAuthority())
 	{
-		SetIsReplicated(true);
+		return;
 	}
+
+	SetIsReplicated(true);
+
+	// Set the start values
+	SetHealth(StartHealth);
+	SetThirst(StartThirst);
+	SetHunger(StartHunger);
 }
 
 
@@ -62,11 +68,9 @@ void UVitalsComponent::CalculateDepletion()
 {
 	if (GetOwner()->HasAuthority())
 	{
-
-		// Run Thirst and Hunger depletion calculations
+		// Remove from thirst and hunger
 		ReplicatedCurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
 		ReplicatedCurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
-
 
 		// Prevent from being less than 0
 		FMath::Clamp(ReplicatedCurrentThirst, 0, MaxThirst);
@@ -84,16 +88,45 @@ void UVitalsComponent::CalculateDepletion()
 			UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
 			ReplicatedCurrentHealth = 0.0f;
 		}
-		CurrentHealth = ReplicatedCurrentHealth;
-		CurrentThirst = ReplicatedCurrentThirst;
-		CurrentHunger = ReplicatedCurrentHunger;
 	}
-	else
+	
+	// Set the local values to those created on the server
+	CurrentHealth = ReplicatedCurrentHealth;
+	CurrentThirst = ReplicatedCurrentThirst;
+	CurrentHunger = ReplicatedCurrentHunger;
+}
+
+void UVitalsComponent::SetHealth(float Value)
+{
+	if (!GetOwner()->HasAuthority())
 	{
-		CurrentHealth = ReplicatedCurrentHealth;
-		CurrentThirst = ReplicatedCurrentThirst;
-		CurrentHunger = ReplicatedCurrentHunger;
+		UE_LOG(LogTemp, Warning, TEXT("Attempt to change health on client is not allowed"));
+		return;
 	}
+	ReplicatedCurrentHealth = Value;
+	CurrentHealth = ReplicatedCurrentHealth;
+}
+
+void UVitalsComponent::SetThirst(float Value)
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Attempt to change thirst on client is not allowed"));
+		return;
+	}
+	ReplicatedCurrentThirst = Value;
+	CurrentThirst = ReplicatedCurrentThirst;
+}
+
+void UVitalsComponent::SetHunger(float Value)
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Attempt to change hunger on client is not allowed"));
+		return;
+	}
+	ReplicatedCurrentHunger = Value;
+	CurrentHunger = ReplicatedCurrentHunger;
 }
 
 float UVitalsComponent::GetMaxHealth()
@@ -124,71 +157,6 @@ float UVitalsComponent::GetThirst()
 float UVitalsComponent::GetHunger()
 {
 	return CurrentHunger;
-}
-
-void UVitalsComponent::SetHealth(float Value)
-{
-	if (GetOwner()->HasAuthority())
-	{
-		ReplicatedCurrentHealth = Value;
-		if (ReplicatedCurrentHealth > MaxHealth)
-		{
-			ReplicatedCurrentHealth = MaxHealth;
-		}
-		else if (ReplicatedCurrentHealth < 0.0f)
-		{
-			ReplicatedCurrentHealth = 0.0f;
-		}
-	}
-}
-
-void UVitalsComponent::SetThirst(float Value)
-{
-	if (GetOwner()->HasAuthority())
-	{
-		ReplicatedCurrentThirst = Value;
-		if (ReplicatedCurrentThirst > MaxThirst)
-		{
-			ReplicatedCurrentThirst = MaxThirst;
-		}
-		else if (ReplicatedCurrentThirst < 0.0f)
-		{
-			ReplicatedCurrentThirst = 0.0f;
-		}
-	}
-	else
-	{
-		CurrentHealth = ReplicatedCurrentHealth;
-		CurrentThirst = ReplicatedCurrentThirst;
-		CurrentHunger = ReplicatedCurrentHunger;
-	}
-}
-
-void UVitalsComponent::SetHunger(float Value)
-{
-	if (GetOwner()->HasAuthority())
-	{
-		ReplicatedCurrentHunger = Value;
-		if (ReplicatedCurrentHunger > MaxHunger)
-		{
-			ReplicatedCurrentHunger = MaxHunger;
-		}
-		else if (ReplicatedCurrentHunger < 0.0f)
-		{
-			ReplicatedCurrentHunger = 0.0f;
-		}
-	}
-	else
-	{
-		CurrentHealth = ReplicatedCurrentHealth;
-		CurrentThirst = ReplicatedCurrentThirst;
-		CurrentHunger = ReplicatedCurrentHunger;
-	}
-}
-
-void UVitalsComponent::LogVitals()
-{
-	UE_LOG(LogTemp, Display, TEXT("Health: %f, Thirst: %f, Hunger: %f"), CurrentHealth, CurrentThirst, CurrentHunger);
 }
 
 void UVitalsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
