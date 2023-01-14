@@ -16,32 +16,31 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner)
 	}
 
 	Owner = InOwner;
-	CurrentItemName = FName("");
-	CurrentItemQuantity = 0;
+	CurrentItem.Name = FName();
+	CurrentItem.Quantity = 0;
 	bIsFull = false;
-	SetItem(CurrentItemName, CurrentItemQuantity);
+	SetItem(CurrentItem);
 }
 
 // Pass in Quantity of 0 to clear item from slot
-void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
+void UInventorySlotWidget::SetItem(FSlotItem Item)
 {
-	CurrentItemName = ItemName;
-	CurrentItemQuantity = ItemQuantity;
+	CurrentItem = Item;
 
 	FString QuantityString;
-	if (CurrentItemQuantity > 1)
+	if (CurrentItem.Quantity > 1)
 	{
-		QuantityString = FString::Printf(TEXT("x%i"), CurrentItemQuantity);
+		QuantityString = FString::Printf(TEXT("x%i"), CurrentItem.Quantity);
 	}
 	else
 	{
 		QuantityString = FString("");
 	}
 
-	if (CurrentItemQuantity != 0)
+	if (CurrentItem.Quantity != 0)
 	{
 		// Get the item data from the player character's inventory component
-		FItem* SlotItemData = Owner->GetInventoryComponent()->GetItemData(CurrentItemName);
+		FItem* SlotItemData = Owner->GetInventoryComponent()->GetItemData(CurrentItem.Name);
 		if (SlotItemData == nullptr)
 		{
 			return;
@@ -52,7 +51,7 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 		// Set the item icon color opaque white
 		ItemIconBorder->SetBrushColor(FLinearColor::White);
 		// Check if slot is full
-		bIsFull = CurrentItemQuantity >= SlotItemData->StackSize;
+		bIsFull = CurrentItem.Quantity >= SlotItemData->StackSize;
 	}
 	else
 	{
@@ -64,7 +63,9 @@ void UInventorySlotWidget::SetItem(FName ItemName, int32 ItemQuantity)
 
 void UInventorySlotWidget::ClearItem()
 {
-	this->SetItem(FName(""), 0);
+	FSlotItem NewSlotItem;
+	NewSlotItem.Clear();
+	this->SetItem(NewSlotItem);
 }
 
 FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -102,13 +103,13 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 void UInventorySlotWidget::LeftMouseDrag()
 {
 	// Return early if there is no item here
-	if (CurrentItemQuantity == 0)
+	if (CurrentItem.Quantity == 0)
 	{
 		return;
 	}
 
 	// Drag all of the items in this slot
-	Owner->StartDragging(CurrentItemName, CurrentItemQuantity);
+	Owner->StartDragging(CurrentItem);
 	// Clear this slot
 	this->ClearItem();
 }
@@ -116,37 +117,41 @@ void UInventorySlotWidget::LeftMouseDrag()
 void UInventorySlotWidget::LeftMouseDrop()
 {
 	// Get the item data about the item we are dragging
-	FItem* SelectedItemData = nullptr;
-	SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
-	if (SelectedItemData == nullptr)
+	if (!GetSelectedItemData())
 	{
 		return;
 	}
+	FSlotItem SelectedItem = *Owner->GetSelectedItem();
 
 	// This slot is empty drop all the contents we are dragging into it
-	if (CurrentItemQuantity == 0)
+	if (CurrentItem.Quantity == 0)
 	{
-		this->SetItem(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity);
+		this->SetItem(SelectedItem);
 		Owner->EndDragging();
 	}
 	// This slot's item is the same as the selected item
-	else if (CurrentItemName == Owner->GetSelectedItem()->Name)
+	else if (CurrentItem.Name == SelectedItem.Name)
 	{
 		// If the amount we are trying to add is within stack size
-		if ((CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) <= SelectedItemData->StackSize)
+		if ((CurrentItem.Quantity + SelectedItem.Quantity) <= GetSelectedItemData()->StackSize)
 		{
-			this->SetItem(Owner->GetSelectedItem()->Name, CurrentItemQuantity + Owner->GetSelectedItem()->Quantity);
+			FSlotItem NewItem = CurrentItem;
+			NewItem.Quantity += SelectedItem.Quantity;
+			this->SetItem(NewItem);
 			Owner->EndDragging();
 		}
 		// If the amount we are trying to add is over the stack size
-		else if ((CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) > SelectedItemData->StackSize)
+		else if ((CurrentItem.Quantity + SelectedItem.Quantity) > GetSelectedItemData()->StackSize)
 		{
-			// Calculate leftover selected item quantity
-			int32 NewSelectedQuantity;
-			NewSelectedQuantity = (CurrentItemQuantity + Owner->GetSelectedItem()->Quantity) - SelectedItemData->StackSize;
-
-			Owner->StartDragging(Owner->GetSelectedItem()->Name, NewSelectedQuantity);
-			this->SetItem(Owner->GetSelectedItem()->Name, SelectedItemData->StackSize);
+			// Update the selected item
+			FSlotItem NewSelection = SelectedItem;
+			NewSelection.Quantity = (CurrentItem.Quantity + SelectedItem.Quantity) - GetSelectedItemData()->StackSize;
+			Owner->StartDragging(NewSelection);
+			
+			// Update the slot item
+			FSlotItem NewSlotItem = CurrentItem;
+			NewSlotItem.Quantity = GetSelectedItemData()->StackSize;
+			this->SetItem(NewSlotItem);
 		}
 	}
 	// This slot's item is different to the one we are dragging
@@ -160,46 +165,65 @@ void UInventorySlotWidget::LeftMouseDrop()
 void UInventorySlotWidget::RightMouseDrag()
 {
 	// Early return if there is no item here
-	if (CurrentItemQuantity == 0)
+	if (CurrentItem.Quantity == 0)
 	{
 		return;
 	}
 
 	// If there is only one item
-	if (CurrentItemQuantity == 1)
+	if (CurrentItem.Quantity == 1)
 	{
-		Owner->StartDragging(CurrentItemName, CurrentItemQuantity);
+		Owner->StartDragging(CurrentItem);
 		this->ClearItem();
 		return;
 	}
 	
 	// Split the quantity
-	int32 HalfQuantity = CurrentItemQuantity / 2;
-	Owner->StartDragging(CurrentItemName, HalfQuantity);
-	this->SetItem(CurrentItemName, CurrentItemQuantity - HalfQuantity);
+	int32 HalfQuantity = CurrentItem.Quantity / 2;
+	
+	// Update the selection
+	FSlotItem NewSelection = CurrentItem;
+	NewSelection.Quantity = HalfQuantity;
+	Owner->StartDragging(NewSelection);
+
+	// Update the slot
+	FSlotItem NewSlotItem = CurrentItem;
+	NewSlotItem.Quantity -= HalfQuantity;
+	this->SetItem(NewSlotItem);
 }
 
 void UInventorySlotWidget::RightMouseDrop()
 {
 	// Get the item data about the item we are dragging
-	FItem* SelectedItemData = nullptr;
-	SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
-	if (SelectedItemData == nullptr)
+	if (!GetSelectedItemData())
 	{
 		return;
 	}
+	FSlotItem SelectedItem = *Owner->GetSelectedItem();
 
-	// Set the slot value to one and remove one from the drag if this slot has no item
-	if (CurrentItemQuantity == 0)
+	// Set the slot value to one and remove one from the selection if this slot has no item
+	if (CurrentItem.Quantity == 0)
 	{
-		this->SetItem(Owner->GetSelectedItem()->Name, 1);
-		Owner->StartDragging(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity - 1);
+		FSlotItem NewSlotItem = SelectedItem;
+		NewSlotItem.Quantity = 1;
+		this->SetItem(NewSlotItem);
+
+		FSlotItem NewSelection = SelectedItem;
+		NewSelection.Quantity -= 1;
+		Owner->StartDragging(NewSelection);
 	}
-	// Add one item to this slot and remove one from the drag if this slot has the same item we are dragging and we are within stack size
-	else if (CurrentItemName == Owner->GetSelectedItem()->Name && (CurrentItemQuantity + 1) <= SelectedItemData->StackSize)
+	// Add one item to this slot and remove one from the selection if this slot has the same item we are dragging and we are within stack size
+	else if (CurrentItem.Name == SelectedItem.Name && (CurrentItem.Quantity + 1) <= GetSelectedItemData()->StackSize)
 	{
-		this->SetItem(Owner->GetSelectedItem()->Name, CurrentItemQuantity + 1);
-		Owner->StartDragging(Owner->GetSelectedItem()->Name, Owner->GetSelectedItem()->Quantity - 1);
+		// Update the slot item
+		FSlotItem NewSlotItem = CurrentItem;
+		NewSlotItem.Quantity += 1;
+		this->SetItem(NewSlotItem);
+
+		// Update the selection
+		FSlotItem NewSelection = SelectedItem;
+		NewSelection.Quantity -= 1;
+		Owner->StartDragging(NewSelection);
 	}
 
 	// Stop dragging if there are no more items to drop
@@ -207,6 +231,13 @@ void UInventorySlotWidget::RightMouseDrop()
 	{
 		Owner->EndDragging();
 	}
+}
+
+FItem* UInventorySlotWidget::GetSelectedItemData()
+{
+	FItem* SelectedItemData = nullptr;
+	SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
+	return SelectedItemData;
 }
 
 //*
@@ -225,14 +256,9 @@ void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	// TODO set slot color to default shade
 }
 
-FName UInventorySlotWidget::GetCurrentItemName()
+FSlotItem* UInventorySlotWidget::GetCurrentItem()
 {
-	return CurrentItemName;
-}
-
-int32 UInventorySlotWidget::GetCurrentItemQuantity()
-{
-	return CurrentItemQuantity;
+	return &CurrentItem;
 }
 
 bool UInventorySlotWidget::IsFull() const

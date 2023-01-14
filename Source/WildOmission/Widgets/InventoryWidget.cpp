@@ -88,19 +88,25 @@ bool UInventoryWidget::AddItemToPopulatedSlot(const FName& ItemName, FItem* Item
 		{
 			break;
 		}
-		if (InventorySlot->IsFull() || InventorySlot->GetCurrentItemName() != ItemName)
+		if (InventorySlot->IsFull() || InventorySlot->GetCurrentItem()->Name != ItemName)
 		{
 			continue;
 		}
 		
-		if (InventorySlot->GetCurrentItemQuantity() + QuantityToAdd > ItemData->StackSize)
+		if (InventorySlot->GetCurrentItem()->Quantity + QuantityToAdd > ItemData->StackSize)
 		{
-			QuantityToAdd -= ItemData->StackSize - InventorySlot->GetCurrentItemQuantity();
-			InventorySlot->SetItem(ItemName, ItemData->StackSize);
+			QuantityToAdd -= ItemData->StackSize - InventorySlot->GetCurrentItem()->Quantity;
+			FSlotItem NewSlotItem;
+			NewSlotItem.Name = ItemName;
+			NewSlotItem.Quantity = ItemData->StackSize;
+			InventorySlot->SetItem(NewSlotItem);
 		}
 		else
 		{
-			InventorySlot->SetItem(ItemName, QuantityToAdd + InventorySlot->GetCurrentItemQuantity());
+			FSlotItem NewSlotItem;
+			NewSlotItem.Name = ItemName;
+			NewSlotItem.Quantity = QuantityToAdd + InventorySlot->GetCurrentItem()->Quantity;
+			InventorySlot->SetItem(NewSlotItem);
 			QuantityToAdd = 0;
 		}
 	}
@@ -115,7 +121,7 @@ bool UInventoryWidget::AddItemToEmptySlot(const FName& ItemName, FItem* ItemData
 		{
 			break;
 		}
-		if (InventorySlot->IsFull() || InventorySlot->GetCurrentItemQuantity() > 0)
+		if (InventorySlot->IsFull() || InventorySlot->GetCurrentItem()->Quantity > 0)
 		{
 			continue;
 		}
@@ -123,11 +129,17 @@ bool UInventoryWidget::AddItemToEmptySlot(const FName& ItemName, FItem* ItemData
 		if (QuantityToAdd > ItemData->StackSize)
 		{
 			QuantityToAdd -= ItemData->StackSize;
-			InventorySlot->SetItem(ItemName, ItemData->StackSize);
+			FSlotItem NewSlotItem;
+			NewSlotItem.Name = ItemName;
+			NewSlotItem.Quantity = ItemData->StackSize;
+			InventorySlot->SetItem(NewSlotItem);
 		}
 		else
 		{
-			InventorySlot->SetItem(ItemName, QuantityToAdd);
+			FSlotItem NewSlotItem;
+			NewSlotItem.Name = ItemName;
+			NewSlotItem.Quantity = QuantityToAdd;
+			InventorySlot->SetItem(NewSlotItem);
 			QuantityToAdd = 0;
 		}
 	}
@@ -147,17 +159,16 @@ void UInventoryWidget::Close()
 	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UInventoryWidget::StartDragging(FName ItemName, int32 Quantity)
+void UInventoryWidget::StartDragging(FSlotItem Item)
 {
-	FItem* ItemData = InventoryComponent->GetItemData(ItemName);
+	FItem* ItemData = InventoryComponent->GetItemData(Item.Name);
 	if (ItemData == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Invalid Item ID: %s"), *ItemName.ToString());
+		UE_LOG(LogTemp, Error, TEXT("Invalid Item ID: %s"), *Item.Name.ToString());
 		return;
 	}
-	SelectedItem.Name = ItemName;
-	SelectedItem.Quantity = Quantity;
-	SelectedItemWidget->SetItem(ItemData->Thumbnail, Quantity);
+	SelectedItem.Set(Item.Name, Item.Quantity);
+	SelectedItemWidget->SetItem(ItemData->Thumbnail, SelectedItem.Quantity);
 	SelectedItemWidget->Show();
 	bCurrentlyDragging = true;
 }
@@ -175,7 +186,7 @@ bool UInventoryWidget::Dragging() const
 	return bCurrentlyDragging;
 }
 
-FSelectedItem* UInventoryWidget::GetSelectedItem()
+FSlotItem* UInventoryWidget::GetSelectedItem()
 {
 	return &SelectedItem;
 }

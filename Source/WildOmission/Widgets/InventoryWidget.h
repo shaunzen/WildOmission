@@ -4,28 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "InventorySlotWidget.h"
 #include "InventoryWidget.generated.h"
 
 class UTextBlock;
 class UWrapBox;
 class UBorder;
-class UInventorySlotWidget;
 class USelectedItemWidget;
 class UInventoryComponent;
-
-USTRUCT()
-struct FSelectedItem
-{
-	GENERATED_BODY()
-
-	FName Name;
-	int32 Quantity;
-	FSelectedItem(FName InName = FName(""), int32 InQuantity = 0)
-	{
-		Name = InName;
-		Quantity = InQuantity;
-	}
-};
 
 UCLASS()
 class WILDOMISSION_API UInventoryWidget : public UUserWidget
@@ -42,11 +28,11 @@ public:
 	void Close();
 
 	// Dragging
-	void StartDragging(FName ItemName, int32 Quantity);
+	void StartDragging(FSlotItem Item);
 	void EndDragging();
 	bool Dragging() const;
 	
-	FSelectedItem* GetSelectedItem();
+	FSlotItem* GetSelectedItem();
 	
 	UInventoryComponent* GetInventoryComponent();
 
@@ -59,7 +45,7 @@ private:
 	UPROPERTY()
 	USelectedItemWidget* SelectedItemWidget;
 
-	FSelectedItem SelectedItem;
+	FSlotItem SelectedItem;
 	bool bCurrentlyDragging;
 
 	// Bind Widget Elements
