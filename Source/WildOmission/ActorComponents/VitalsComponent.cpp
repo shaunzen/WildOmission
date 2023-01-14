@@ -2,6 +2,7 @@
 
 
 #include "VitalsComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UVitalsComponent::UVitalsComponent()
@@ -27,6 +28,10 @@ UVitalsComponent::UVitalsComponent()
 	ThirstThreshold = 30.0f;
 	HungerThreshold = 30.0f;
 
+	ReplicatedCurrentHealth = 100.0f;
+	ReplicatedCurrentThirst = 300.0f;
+	ReplicatedCurrentHunger = 500.0f;
+
 	CurrentHealth = 100.0f;
 	CurrentThirst = 300.0f;
 	CurrentHunger = 500.0f;
@@ -38,6 +43,10 @@ void UVitalsComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (GetOwner()->HasAuthority())
+	{
+		SetIsReplicated(true);
+	}
 }
 
 
@@ -46,69 +55,44 @@ void UVitalsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	CalculateDepletion();
+}
+
+void UVitalsComponent::CalculateDepletion()
+{
 	if (GetOwner()->HasAuthority())
 	{
+
 		// Run Thirst and Hunger depletion calculations
-		CurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
-		CurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
+		ReplicatedCurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
+		ReplicatedCurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
+
 
 		// Prevent from being less than 0
-		if (CurrentThirst < 0.0f)
-		{
-			CurrentThirst = 0.0f;
-		}
-		if (CurrentHunger < 0.0f)
-		{
-			CurrentHunger = 0.0f;
-		}
+		FMath::Clamp(ReplicatedCurrentThirst, 0, MaxThirst);
+		FMath::Clamp(ReplicatedCurrentHunger, 0, MaxHunger);
 
 		// If Thirst or Hunger is below threshold start removing Health
-		if (CurrentThirst < ThirstThreshold || CurrentHunger < HungerThreshold)
+		if (ReplicatedCurrentThirst < ThirstThreshold || ReplicatedCurrentHunger < HungerThreshold)
 		{
-			CurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
+			ReplicatedCurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
 		}
 
 		// If Health is less than 0 kill the player
-		if (CurrentHealth < 0.0f)
+		if (ReplicatedCurrentHealth < 0.0f)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
-			CurrentHealth = 0.0f;
+			ReplicatedCurrentHealth = 0.0f;
 		}
+		CurrentHealth = ReplicatedCurrentHealth;
+		CurrentThirst = ReplicatedCurrentThirst;
+		CurrentHunger = ReplicatedCurrentHunger;
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Red, FString("Not the server so we are asking the server to calculate vitals for us"));
-		Server_CalculateDepletion();
-	}
-}
-
-void UVitalsComponent::Server_CalculateDepletion_Implementation()
-{
-	// Run Thirst and Hunger depletion calculations
-	CurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
-	CurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
-
-	// Prevent from being less than 0
-	if (CurrentThirst < 0.0f)
-	{
-		CurrentThirst = 0.0f;
-	}
-	if (CurrentHunger < 0.0f)
-	{
-		CurrentHunger = 0.0f;
-	}
-
-	// If Thirst or Hunger is below threshold start removing Health
-	if (CurrentThirst < ThirstThreshold || CurrentHunger < HungerThreshold)
-	{
-		CurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
-	}
-
-	// If Health is less than 0 kill the player
-	if (CurrentHealth < 0.0f)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
-		CurrentHealth = 0.0f;
+		CurrentHealth = ReplicatedCurrentHealth;
+		CurrentThirst = ReplicatedCurrentThirst;
+		CurrentHunger = ReplicatedCurrentHunger;
 	}
 }
 
@@ -144,44 +128,74 @@ float UVitalsComponent::GetHunger()
 
 void UVitalsComponent::SetHealth(float Value)
 {
-	CurrentHealth = Value;
-	if (CurrentHealth > MaxHealth)
+	if (GetOwner()->HasAuthority())
 	{
-		CurrentHealth = MaxHealth;
-	}
-	else if (CurrentHealth < 0.0f)
-	{
-		CurrentHealth = 0.0f;
+		ReplicatedCurrentHealth = Value;
+		if (ReplicatedCurrentHealth > MaxHealth)
+		{
+			ReplicatedCurrentHealth = MaxHealth;
+		}
+		else if (ReplicatedCurrentHealth < 0.0f)
+		{
+			ReplicatedCurrentHealth = 0.0f;
+		}
 	}
 }
 
 void UVitalsComponent::SetThirst(float Value)
 {
-	CurrentThirst = Value;
-	if (CurrentThirst > MaxThirst)
+	if (GetOwner()->HasAuthority())
 	{
-		CurrentThirst = MaxThirst;
+		ReplicatedCurrentThirst = Value;
+		if (ReplicatedCurrentThirst > MaxThirst)
+		{
+			ReplicatedCurrentThirst = MaxThirst;
+		}
+		else if (ReplicatedCurrentThirst < 0.0f)
+		{
+			ReplicatedCurrentThirst = 0.0f;
+		}
 	}
-	else if (CurrentThirst < 0.0f)
+	else
 	{
-		CurrentThirst = 0.0f;
+		CurrentHealth = ReplicatedCurrentHealth;
+		CurrentThirst = ReplicatedCurrentThirst;
+		CurrentHunger = ReplicatedCurrentHunger;
 	}
 }
 
 void UVitalsComponent::SetHunger(float Value)
 {
-	CurrentHunger = Value;
-	if (CurrentHunger > MaxHunger)
+	if (GetOwner()->HasAuthority())
 	{
-		CurrentHunger = MaxHunger;
+		ReplicatedCurrentHunger = Value;
+		if (ReplicatedCurrentHunger > MaxHunger)
+		{
+			ReplicatedCurrentHunger = MaxHunger;
+		}
+		else if (ReplicatedCurrentHunger < 0.0f)
+		{
+			ReplicatedCurrentHunger = 0.0f;
+		}
 	}
-	else if (CurrentHunger < 0.0f)
+	else
 	{
-		CurrentHunger = 0.0f;
+		CurrentHealth = ReplicatedCurrentHealth;
+		CurrentThirst = ReplicatedCurrentThirst;
+		CurrentHunger = ReplicatedCurrentHunger;
 	}
 }
 
 void UVitalsComponent::LogVitals()
 {
 	UE_LOG(LogTemp, Display, TEXT("Health: %f, Thirst: %f, Hunger: %f"), CurrentHealth, CurrentThirst, CurrentHunger);
+}
+
+void UVitalsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UVitalsComponent, ReplicatedCurrentHealth);
+	DOREPLIFETIME(UVitalsComponent, ReplicatedCurrentThirst);
+	DOREPLIFETIME(UVitalsComponent, ReplicatedCurrentHunger);
 }

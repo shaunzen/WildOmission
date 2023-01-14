@@ -19,7 +19,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION()
-	void SetHUDWidget(UPlayerHUDWidget* WidgetToUse);
+	void Setup(APawn* InOwnerPawn, UPlayerHUDWidget* WidgetToUse);
 	
 	UFUNCTION()
 	void Interact();
@@ -34,6 +34,9 @@ private:
 
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;
+
+	UPROPERTY()
+	APawn* OwnerPawn;
 
 	void UpdateInteractionPrompt();
 

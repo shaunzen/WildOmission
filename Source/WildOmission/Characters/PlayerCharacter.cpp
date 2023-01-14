@@ -79,7 +79,7 @@ void APlayerCharacter::BeginPlay()
 	
 	// Set the player's inventory component to use the player's inventory widget
 	InventoryComponent->Setup(PlayerHUDWidget->GetInventoryWidget());
-	InteractionComponent->SetHUDWidget(PlayerHUDWidget);
+	InteractionComponent->Setup(this, PlayerHUDWidget);
 }
 
 // Called when the game ends

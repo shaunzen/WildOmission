@@ -32,8 +32,7 @@ public:
 
 	void LogVitals();
 
-	UFUNCTION(Server, Reliable)
-	void Server_CalculateDepletion();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 	// Called when the game starts
@@ -41,18 +40,12 @@ protected:
 
 private:
 	
-	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth;
-	UPROPERTY(EditDefaultsOnly)
 	float MaxThirst;
-	UPROPERTY(EditDefaultsOnly)
 	float MaxHunger;
 	
-	UPROPERTY(EditDefaultsOnly)
 	float HealthDepletionRate;
-	UPROPERTY(EditDefaultsOnly)
 	float ThirstDepletionRate;
-	UPROPERTY(EditDefaultsOnly)
 	float HungerDepletionRate;
 
 	float ThirstThreshold;
@@ -61,4 +54,16 @@ private:
 	float CurrentHealth;
 	float CurrentThirst;
 	float CurrentHunger;
+	
+	// Replicated Values
+	UPROPERTY(Replicated)
+	float ReplicatedCurrentHealth;
+	UPROPERTY(Replicated)
+	float ReplicatedCurrentThirst;
+	UPROPERTY(Replicated)
+	float ReplicatedCurrentHunger;
+
+	void CalculateDepletion();
+	// TODO server add hunger/thirst/health
+
 };

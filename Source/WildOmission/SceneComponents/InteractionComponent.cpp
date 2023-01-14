@@ -17,14 +17,19 @@ void UInteractionComponent::BeginPlay()
 
 }
 
-void UInteractionComponent::SetHUDWidget(UPlayerHUDWidget* WidgetToUse)
+void UInteractionComponent::Setup(APawn* InOwnerPawn, UPlayerHUDWidget* WidgetToUse)
 {
+	OwnerPawn = InOwnerPawn;
 	PlayerHUDWidget = WidgetToUse;
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (OwnerPawn == nullptr || OwnerPawn->IsLocallyControlled() == false)
+	{
+		return;
+	}
 	UpdateInteractionPrompt();
 }
 
