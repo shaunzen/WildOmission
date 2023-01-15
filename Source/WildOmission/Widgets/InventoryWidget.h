@@ -23,6 +23,7 @@ public:
 	void SetComponent(UInventoryComponent* InInventoryComponent);
 
 	bool AddItem(FName ItemName, int32 Quantity, int32& Remaining);
+	bool RemoveItem(FName ItemName, int32 Quantity, int32& Remaining);
 
 	void Open();
 	void Close();

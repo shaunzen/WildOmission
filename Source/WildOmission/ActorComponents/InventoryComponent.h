@@ -48,7 +48,7 @@ public:
 
 	// Checks for slot and asks the server to add the item to our contents
 	void AddItem(FName ItemName, int32 Quantity);
-	void RemoveItem();
+	void RemoveItem(FName ItemName, int32 Quantity, bool bSpawnInWorld = false);
 	void SwapItem();
 
 	// Calls an rpc on the server to spawn a world item
@@ -76,6 +76,9 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_AddItem(FName ItemName, int32 Quantity);
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RemoveItem(FName ItemName, int32 Quantity);
+	
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnWorldItem(FName ItemName, int32 Quantity);
 	

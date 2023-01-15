@@ -64,9 +64,45 @@ void UInventoryComponent::Server_AddItem_Implementation(FName ItemName, int32 Qu
 	}
 }
 
-void UInventoryComponent::RemoveItem()
+void UInventoryComponent::RemoveItem(FName ItemName, int32 Quantity, bool bSpawnInWorld)
 {
-	// TODO Remove item
+	Server_RemoveItem(ItemName, Quantity);
+	if (bSpawnInWorld == true)
+	{
+		Server_SpawnWorldItem(ItemName, Quantity);
+	}
+	else
+	{
+		int32 Remaining;
+		bool RemoveSuccess = InventoryWidget->RemoveItem(ItemName, Quantity, Remaining);
+	}
+}
+
+bool UInventoryComponent::Server_RemoveItem_Validate(FName ItemName, int32 Quantity)
+{
+	// Only valid if the player has the item they are removing
+	return InventoryContents.Find(ItemName) != nullptr;
+}
+
+void UInventoryComponent::Server_RemoveItem_Implementation(FName ItemName, int32 Quantity)
+{
+	// Find the item
+	if (int32* ItemQuantity = InventoryContents.Find(ItemName))
+	{
+		// Remove the desired amount
+		int32 NewQuantity = *ItemQuantity - Quantity;
+		
+		// If we dont have anymore after removing then remove from the our contents
+		if (NewQuantity <= 0)
+		{
+			InventoryContents.Remove(ItemName);
+		}
+		else
+		{
+			// Set the new value
+			InventoryContents.Add(ItemName, NewQuantity);
+		}
+	}
 }
 
 void UInventoryComponent::SwapItem()

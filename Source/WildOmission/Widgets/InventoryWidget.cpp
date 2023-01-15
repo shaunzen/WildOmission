@@ -80,6 +80,44 @@ bool UInventoryWidget::AddItem(FName ItemName, int32 Quantity, int32& Remaining)
 	return QuantityToAdd == 0;
 }
 
+bool UInventoryWidget::RemoveItem(FName ItemName, int32 Quantity, int32& Remaining)
+{
+	Remaining = Quantity;
+	// Loop through all slots
+	for (UInventorySlotWidget* InventorySlot : InventorySlots)
+	{
+		// if this slot doesnt have the item we are looking for move to the next
+		if (InventorySlot->GetCurrentItem()->Name != ItemName)
+		{
+			continue;
+		}
+
+		// If we are trying to remove more than is currently in this slot
+		if (InventorySlot->GetCurrentItem()->Quantity <= Remaining)
+		{
+			Remaining -= InventorySlot->GetCurrentItem()->Quantity;
+			InventorySlot->ClearItem();
+			continue;
+		}
+		else
+		{
+			// Remove just the amount we need from this slot
+			FSlotItem NewSlotItem = *InventorySlot->GetCurrentItem();
+			NewSlotItem.Quantity -= Remaining;
+			InventorySlot->SetItem(NewSlotItem);
+			Remaining = 0;
+		}
+
+		// Break if there is no more left to remove
+		if (Remaining == 0)
+		{
+			break;
+		}
+
+	}
+	return Remaining == 0;
+}
+
 bool UInventoryWidget::AddItemToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd)
 {
 	for (UInventorySlotWidget* InventorySlot : InventorySlots)
@@ -188,21 +226,30 @@ bool UInventoryWidget::Dragging() const
 
 void UInventoryWidget::DropSelectedItem(bool bDropAll)
 {
-	//TODO call world item and data side removal on the server
 	if (bDropAll == true)
 	{
+		// Remove all the selected from our inventory list
+		InventoryComponent->RemoveItem(SelectedItem.Name, SelectedItem.Quantity, true);
+
 		EndDragging();
 	}
 	else
 	{
+		// Remove a single item of the selected
+		InventoryComponent->RemoveItem(SelectedItem.Name, 1, true);
+		
+		// Calculate the new selection
 		FSlotItem NewSelection = SelectedItem;
 		NewSelection.Quantity -= 1;
+
+		// Stop dragging if there is no more selected item
 		if (NewSelection.Quantity <= 0)
 		{
 			EndDragging();
 		}
 		else
 		{
+			// Update the selection
 			StartDragging(NewSelection);
 		}
 	}
