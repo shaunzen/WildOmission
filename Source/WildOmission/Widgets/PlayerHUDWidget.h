@@ -54,4 +54,7 @@ private:
 	bool bInventoryOpen;
 	void UpdateSelectedItemLocation();
 
+	UFUNCTION()
+	void BackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
+
 };

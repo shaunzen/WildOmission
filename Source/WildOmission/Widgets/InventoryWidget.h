@@ -31,7 +31,8 @@ public:
 	void StartDragging(FSlotItem Item);
 	void EndDragging();
 	bool Dragging() const;
-	
+	void DropSelectedItem(bool bDropAll);
+
 	FSlotItem* GetSelectedItem();
 	
 	UInventoryComponent* GetInventoryComponent();

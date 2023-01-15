@@ -186,6 +186,28 @@ bool UInventoryWidget::Dragging() const
 	return bCurrentlyDragging;
 }
 
+void UInventoryWidget::DropSelectedItem(bool bDropAll)
+{
+	//TODO call world item and data side removal on the server
+	if (bDropAll == true)
+	{
+		EndDragging();
+	}
+	else
+	{
+		FSlotItem NewSelection = SelectedItem;
+		NewSelection.Quantity -= 1;
+		if (NewSelection.Quantity <= 0)
+		{
+			EndDragging();
+		}
+		else
+		{
+			StartDragging(NewSelection);
+		}
+	}
+}
+
 FSlotItem* UInventoryWidget::GetSelectedItem()
 {
 	return &SelectedItem;

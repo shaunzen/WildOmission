@@ -16,6 +16,7 @@ UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) 
 void UPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	BackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("BackgroundMouseButtonDown"));
 	Inventory->SetSelectedItemWidget(SelectedItem);
 }
 
@@ -111,4 +112,19 @@ void UPlayerHUDWidget::UpdateSelectedItemLocation()
 	// Update slot anchor and position
 	SelectedItemSlot->SetAnchors(NewAnchor);
 	SelectedItemSlot->SetPosition(FVector2D::ZeroVector);
+}
+
+void UPlayerHUDWidget::BackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
+{
+	if (Inventory->Dragging())
+	{
+		if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+		{
+			Inventory->DropSelectedItem(true);
+		}
+		else if (MouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
+		{
+			Inventory->DropSelectedItem(false);
+		}
+	}
 }
