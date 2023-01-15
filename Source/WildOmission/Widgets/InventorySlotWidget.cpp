@@ -157,8 +157,10 @@ void UInventorySlotWidget::LeftMouseDrop()
 	// This slot's item is different to the one we are dragging
 	else
 	{
-		// TODO swap
-		UE_LOG(LogTemp, Warning, TEXT("It's something else entirely."));
+		FSlotItem OldSlotItem = CurrentItem;
+
+		this->SetItem(SelectedItem);
+		Owner->StartDragging(OldSlotItem);
 	}
 }
 
