@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "WildOmissionGameMode.generated.h"
 
+class UWildOmissionSaveGame;
+
 UCLASS()
 class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase
 {
@@ -15,4 +17,12 @@ public:
 	UFUNCTION(Exec)
 	void LogPlayerInventoryComponents();
 
+	UFUNCTION(BlueprintCallable, Exec)
+		void SaveGame();
+	UFUNCTION(BlueprintCallable, Exec)
+		void LoadGame();
+private:
+	UWildOmissionSaveGame* WildOmissionSaveGame;
+	FVector GetPlayerLocation();
+	void SetPlayerLocation(FVector InLocation);
 };

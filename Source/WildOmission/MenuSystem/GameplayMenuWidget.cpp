@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "WildOmission/WildOmissionGameInstance.h"
+#include "WildOmission/GameModes/WildOmissionGameMode.h"
 
 UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -65,8 +66,15 @@ void UGameplayMenuWidget::Teardown()
 
 void UGameplayMenuWidget::SaveGame()
 {
-	// TODO call save game on the game instance
-	UE_LOG(LogTemp, Warning, TEXT("Saving the game"));
+	// Get the game mode
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to save game: not the server"));
+		return;
+	}
+
+	GameMode->SaveGame();
 }
 
 void UGameplayMenuWidget::QuitToMenu()
