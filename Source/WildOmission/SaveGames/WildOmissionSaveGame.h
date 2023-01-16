@@ -6,9 +6,16 @@
 #include "GameFramework/SaveGame.h"
 #include "WildOmissionSaveGame.generated.h"
 
-/**
- * 
- */
+USTRUCT()
+struct FWildOmissionPlayerSave
+{
+	GENERATED_BODY()
+
+	int32 ID = 0;
+	FVector WorldLocation = FVector::ZeroVector;
+
+};
+
 UCLASS()
 class WILDOMISSION_API UWildOmissionSaveGame : public USaveGame
 {
@@ -18,5 +25,5 @@ public:
 	UWildOmissionSaveGame();
 
 	UPROPERTY()
-	FVector PlayerPosition;
+	TArray<FWildOmissionPlayerSave> PlayerSaves;
 };

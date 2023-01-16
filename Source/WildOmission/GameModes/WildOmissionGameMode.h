@@ -21,8 +21,12 @@ public:
 		void SaveGame();
 	UFUNCTION(BlueprintCallable, Exec)
 		void LoadGame();
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
 private:
 	UWildOmissionSaveGame* WildOmissionSaveGame;
-	FVector GetPlayerLocation();
-	void SetPlayerLocation(FVector InLocation);
+
+	void SavePlayers(TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
+	void LoadPlayers(const TArray<struct FWildOmissionPlayerSave>& PlayerSaves);
 };

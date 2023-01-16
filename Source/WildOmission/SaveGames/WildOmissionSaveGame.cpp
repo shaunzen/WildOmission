@@ -5,5 +5,4 @@
 
 UWildOmissionSaveGame::UWildOmissionSaveGame()
 {
-	PlayerPosition = FVector::ZeroVector;
 }

@@ -5,6 +5,7 @@
 #include "WildOmission/Characters/PlayerCharacter.h"
 #include "WildOmission/ActorComponents/InventoryComponent.h"
 #include "WildOmission/SaveGames/WildOmissionSaveGame.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 void AWildOmissionGameMode::SaveGame()
@@ -22,7 +23,7 @@ void AWildOmissionGameMode::SaveGame()
 	}
 	
 	// Fill the save data
-	WildOmissionSaveGame->PlayerPosition = GetPlayerLocation();
+	SavePlayers(WildOmissionSaveGame->PlayerSaves);
 
 	// Save the data
 	UGameplayStatics::SaveGameToSlot(WildOmissionSaveGame, FString("Save01"), 0);
@@ -34,7 +35,7 @@ void AWildOmissionGameMode::LoadGame()
 	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
 	if ((WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(FString("Save01"), 0))))
 	{
-		SetPlayerLocation(WildOmissionSaveGame->PlayerPosition);
+		LoadPlayers(WildOmissionSaveGame->PlayerSaves);
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, FString("Loaded game"));
 	}
 }
@@ -63,24 +64,63 @@ void AWildOmissionGameMode::LogPlayerInventoryComponents()
 	}
 }
 
-FVector AWildOmissionGameMode::GetPlayerLocation()
+void AWildOmissionGameMode::SavePlayers(TArray<FWildOmissionPlayerSave>& OutPlayerSaves)
 {
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController == nullptr)
+	// Clear it out, later we need to overwrite elements with new info and keep old ones
+	OutPlayerSaves.Empty();
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		return FVector::ZeroVector;
-	}
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
+		{
+			return;
+		}
+		APlayerState* PlayerState = PlayerController->GetPlayerState<APlayerState>();
+		if (PlayerState == nullptr)
+		{
+			return;
+		}
 
-	return PlayerController->GetPawn()->GetActorLocation();
+		FWildOmissionPlayerSave NewPlayer;
+		NewPlayer.ID = PlayerState->GetPlayerId();
+		NewPlayer.WorldLocation = PlayerController->GetPawn()->GetActorLocation();
+
+		OutPlayerSaves.Add(NewPlayer);
+	}
 }
 
-void AWildOmissionGameMode::SetPlayerLocation(FVector InLocation)
+void AWildOmissionGameMode::LoadPlayers(const TArray<FWildOmissionPlayerSave>& PlayerSaves)
 {
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController == nullptr)
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		return;
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
+		{
+			return;
+		}
+		APlayerState* PlayerState = PlayerController->GetPlayerState<APlayerState>();
+		if (PlayerState == nullptr)
+		{
+			return;
+		}
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Red, FString::Printf(TEXT("Player save size: %i"), PlayerSaves.Num()));
+		for (const FWildOmissionPlayerSave& PlayerSave : PlayerSaves)
+		{
+
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Blue, FString::Printf(TEXT("Found player save with matching id of: %i"), PlayerSave.ID));
+			if (PlayerSave.ID != PlayerState->GetPlayerId())
+			{
+				continue;
+			}
+			PlayerController->GetPawn()->SetActorLocation(PlayerSave.WorldLocation);
+		}
 	}
-	
-	PlayerController->GetPawn()->SetActorLocation(InLocation);
+}
+
+void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+	int32 NewID = FMath::CeilToInt32(GetWorld()->GetDeltaSeconds() * GetWorld()->GetDeltaSeconds());
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("ID: %i"), NewID));
+	NewPlayer->GetPlayerState<APlayerState>()->SetPlayerId(NewID);
 }
