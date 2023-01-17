@@ -5,6 +5,7 @@
 #include "WildOmission/Characters/PlayerCharacter.h"
 #include "WildOmission/ActorComponents/InventoryComponent.h"
 #include "WildOmission/SaveGames/WildOmissionSaveGame.h"
+#include "WildOmission/PlayerControllers/PlayerCharacterController.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -72,22 +73,13 @@ void AWildOmissionGameMode::SavePlayers(TArray<FWildOmissionPlayerSave>& OutPlay
 	OutPlayerSaves.Empty();
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		APlayerController* PlayerController = Iterator->Get();
+		APlayerCharacterController* PlayerController = Cast<APlayerCharacterController>(Iterator->Get());
 		if (PlayerController == nullptr)
 		{
 			return;
 		}
-		APlayerState* PlayerState = PlayerController->GetPlayerState<APlayerState>();
-		if (PlayerState == nullptr)
-		{
-			return;
-		}
-
-		FWildOmissionPlayerSave NewPlayer;
-		NewPlayer.ID = PlayerState->GetPlayerId();
-		NewPlayer.WorldLocation = PlayerController->GetPawn()->GetActorLocation();
-		
-		OutPlayerSaves.Add(NewPlayer);
+		// TODO if the id is already in in the list remove it and replace with the new one
+		OutPlayerSaves.Add(PlayerController->SavePlayer());
 	}
 }
 
@@ -95,7 +87,7 @@ void AWildOmissionGameMode::LoadPlayers(const TArray<FWildOmissionPlayerSave>& P
 {
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		APlayerController* PlayerController = Iterator->Get();
+		APlayerCharacterController* PlayerController = Cast<APlayerCharacterController>(Iterator->Get());
 		if (PlayerController == nullptr)
 		{
 			return;
@@ -106,14 +98,14 @@ void AWildOmissionGameMode::LoadPlayers(const TArray<FWildOmissionPlayerSave>& P
 		{
 			return;
 		}
-
+		
 		for (const FWildOmissionPlayerSave& PlayerSave : PlayerSaves)
 		{
 			if (PlayerSave.ID != PlayerState->GetPlayerId())
 			{
 				continue;
 			}
-			PlayerController->GetPawn()->SetActorLocation(PlayerSave.WorldLocation);
+			PlayerController->LoadPlayerSave(PlayerSave);
 		}
 	}
 }
@@ -121,6 +113,8 @@ void AWildOmissionGameMode::LoadPlayers(const TArray<FWildOmissionPlayerSave>& P
 void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
+
+	// TODO check if this player has connected before, if they have then load their previous data
 
 	// The Player ID SHOULD be the steam id when i get steamworks implemented.
 	// This is only a temporary solution right now and wont remember the player long term

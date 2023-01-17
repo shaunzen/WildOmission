@@ -4,6 +4,31 @@
 #include "PlayerCharacterController.h"
 #include "WildOmission/Characters/PlayerCharacter.h"
 #include "WildOmission/ActorComponents/InventoryComponent.h"
+#include "GameFramework/PlayerState.h"
+
+FWildOmissionPlayerSave APlayerCharacterController::SavePlayer()
+{
+	FWildOmissionPlayerSave PlayerSave;
+	if (HasAuthority() == false)
+	{
+		return PlayerSave;
+	}
+
+	APlayerState* CurrentPlayerState = PlayerState.Get();
+	if (CurrentPlayerState == nullptr)
+	{
+		return PlayerSave;
+	}
+	PlayerSave.ID = CurrentPlayerState->GetPlayerId();
+	PlayerSave.WorldLocation = GetPawn()->GetActorLocation();
+
+	return PlayerSave;
+}
+
+void APlayerCharacterController::LoadPlayerSave(const FWildOmissionPlayerSave& PlayerSave)
+{
+	GetPawn()->SetActorLocation(PlayerSave.WorldLocation);
+}
 
 void APlayerCharacterController::LogLocalInventoryContents()
 {
