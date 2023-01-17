@@ -5,7 +5,7 @@
 #include "WildOmission/Characters/PlayerCharacter.h"
 #include "WildOmission/ActorComponents/InventoryComponent.h"
 #include "WildOmission/SaveGames/WildOmissionSaveGame.h"
-#include "WildOmission/PlayerControllers/PlayerCharacterController.h"
+#include "WildOmission/PlayerControllers/WildOmissionPlayerController.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -73,7 +73,7 @@ void AWildOmissionGameMode::SavePlayers(TArray<FWildOmissionPlayerSave>& OutPlay
 	OutPlayerSaves.Empty();
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		APlayerCharacterController* PlayerController = Cast<APlayerCharacterController>(Iterator->Get());
+		AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(Iterator->Get());
 		if (PlayerController == nullptr)
 		{
 			return;
@@ -87,7 +87,7 @@ void AWildOmissionGameMode::LoadPlayers(const TArray<FWildOmissionPlayerSave>& P
 {
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		APlayerCharacterController* PlayerController = Cast<APlayerCharacterController>(Iterator->Get());
+		AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(Iterator->Get());
 		if (PlayerController == nullptr)
 		{
 			return;

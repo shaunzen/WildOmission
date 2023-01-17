@@ -1,12 +1,12 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "PlayerCharacterController.h"
+#include "WildOmissionPlayerController.h"
 #include "WildOmission/Characters/PlayerCharacter.h"
 #include "WildOmission/ActorComponents/InventoryComponent.h"
 #include "GameFramework/PlayerState.h"
 
-FWildOmissionPlayerSave APlayerCharacterController::SavePlayer()
+FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 {
 	FWildOmissionPlayerSave PlayerSave;
 	if (HasAuthority() == false)
@@ -25,12 +25,12 @@ FWildOmissionPlayerSave APlayerCharacterController::SavePlayer()
 	return PlayerSave;
 }
 
-void APlayerCharacterController::LoadPlayerSave(const FWildOmissionPlayerSave& PlayerSave)
+void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave& PlayerSave)
 {
 	GetPawn()->SetActorLocation(PlayerSave.WorldLocation);
 }
 
-void APlayerCharacterController::LogLocalInventoryContents()
+void AWildOmissionPlayerController::LogLocalInventoryContents()
 {
 	if (!IsLocalController())
 	{
@@ -50,7 +50,7 @@ void APlayerCharacterController::LogLocalInventoryContents()
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: %s"), *PlayerCharacter->GetActorNameOrLabel()));
 }
 
-void APlayerCharacterController::Server_DestroyActor_Implementation(AActor* ActorToDestroy)
+void AWildOmissionPlayerController::Server_DestroyActor_Implementation(AActor* ActorToDestroy)
 {
 	if (ActorToDestroy == nullptr)
 	{

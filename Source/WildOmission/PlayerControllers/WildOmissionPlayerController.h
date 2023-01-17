@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "WildOmission/SaveGames/WildOmissionSaveGame.h"
-#include "PlayerCharacterController.generated.h"
+#include "WildOmissionPlayerController.generated.h"
 
 class UInventoryComponent;
 
 UCLASS()
-class WILDOMISSION_API APlayerCharacterController : public APlayerController
+class WILDOMISSION_API AWildOmissionPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
