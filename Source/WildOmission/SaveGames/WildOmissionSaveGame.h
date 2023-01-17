@@ -11,7 +11,9 @@ struct FWildOmissionPlayerSave
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	int32 ID = 0;
+	UPROPERTY()
 	FVector WorldLocation = FVector::ZeroVector;
 
 };

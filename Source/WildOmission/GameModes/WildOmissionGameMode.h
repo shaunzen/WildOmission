@@ -18,9 +18,10 @@ public:
 	void LogPlayerInventoryComponents();
 
 	UFUNCTION(BlueprintCallable, Exec)
-		void SaveGame();
+	void SaveGame();
+	
 	UFUNCTION(BlueprintCallable, Exec)
-		void LoadGame();
+	void LoadGame();
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 

@@ -22,7 +22,7 @@ void AWildOmissionGameMode::SaveGame()
 		}
 	}
 	
-	// Fill the save data
+	// Populate the save data
 	SavePlayers(WildOmissionSaveGame->PlayerSaves);
 
 	// Save the data
@@ -35,9 +35,11 @@ void AWildOmissionGameMode::LoadGame()
 	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
 	if ((WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(FString("Save01"), 0))))
 	{
+		// Set the values of all players to those found in save file
 		LoadPlayers(WildOmissionSaveGame->PlayerSaves);
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, FString("Loaded game"));
+
 	}
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, FString("Loaded game"));
 }
 
 void AWildOmissionGameMode::LogPlayerInventoryComponents()
@@ -84,7 +86,7 @@ void AWildOmissionGameMode::SavePlayers(TArray<FWildOmissionPlayerSave>& OutPlay
 		FWildOmissionPlayerSave NewPlayer;
 		NewPlayer.ID = PlayerState->GetPlayerId();
 		NewPlayer.WorldLocation = PlayerController->GetPawn()->GetActorLocation();
-
+		
 		OutPlayerSaves.Add(NewPlayer);
 	}
 }
@@ -98,16 +100,15 @@ void AWildOmissionGameMode::LoadPlayers(const TArray<FWildOmissionPlayerSave>& P
 		{
 			return;
 		}
+
 		APlayerState* PlayerState = PlayerController->GetPlayerState<APlayerState>();
 		if (PlayerState == nullptr)
 		{
 			return;
 		}
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Red, FString::Printf(TEXT("Player save size: %i"), PlayerSaves.Num()));
+
 		for (const FWildOmissionPlayerSave& PlayerSave : PlayerSaves)
 		{
-
-			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Blue, FString::Printf(TEXT("Found player save with matching id of: %i"), PlayerSave.ID));
 			if (PlayerSave.ID != PlayerState->GetPlayerId())
 			{
 				continue;
@@ -120,7 +121,10 @@ void AWildOmissionGameMode::LoadPlayers(const TArray<FWildOmissionPlayerSave>& P
 void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	int32 NewID = FMath::CeilToInt32(GetWorld()->GetDeltaSeconds() * GetWorld()->GetDeltaSeconds());
+
+	// The Player ID SHOULD be the steam id when i get steamworks implemented.
+	// This is only a temporary solution right now and wont remember the player long term
+	int32 NewID = FMath::CeilToInt32(GetWorld()->UnpausedTimeSeconds);
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("ID: %i"), NewID));
 	NewPlayer->GetPlayerState<APlayerState>()->SetPlayerId(NewID);
 }
