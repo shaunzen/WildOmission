@@ -73,8 +73,16 @@ private:
 	UButton* MultiplayerBackButton;
 
 	/*New Save Menu*/
-
+	UPROPERTY(Meta = (BindWidget))
+	UButton* NewSaveCreateButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* NewSaveBackButton;
+	
 	/*Host Menu*/
+	UPROPERTY(Meta = (BindWidget))
+	UButton* HostMenuHostButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* HostMenuBackButton;
 
 	/*Menus*/
 	UPROPERTY(Meta = (BindWidget))
@@ -108,8 +116,12 @@ private:
 	UFUNCTION()
 	void LoadSave();
 	UFUNCTION()
+	void CreateSave();
+	UFUNCTION()
 	void JoinServer();
-
+	UFUNCTION()
+	void HostServer();
+	
 	// TODO Save Row widget class
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
 	TOptional<uint32> SelectedSaveIndex;

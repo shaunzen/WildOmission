@@ -34,7 +34,11 @@ bool UMainMenuWidget::Initialize()
 		|| SingleplayerBackButton == nullptr
 		|| MultiplayerJoinButton == nullptr
 		|| MultiplayerHostButton == nullptr
-		|| MultiplayerBackButton == nullptr)
+		|| MultiplayerBackButton == nullptr
+		|| NewSaveCreateButton == nullptr
+		|| NewSaveBackButton == nullptr
+		|| HostMenuHostButton == nullptr
+		|| HostMenuBackButton == nullptr)
 	{
 		return false;
 	}
@@ -56,8 +60,12 @@ bool UMainMenuWidget::Initialize()
 	MultiplayerBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 
 	/*New Save*/
+	NewSaveCreateButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateSave);
+	NewSaveBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenSingleplayerMenu);
 
 	/*Host Server*/
+	HostMenuHostButton->OnClicked.AddDynamic(this, &UMainMenuWidget::HostServer);
+	HostMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMultiplayerMenu);
 
 	return true;
 }
@@ -209,7 +217,17 @@ void UMainMenuWidget::LoadSave()
 	// TODO Load save
 }
 
+void UMainMenuWidget::CreateSave()
+{
+	// TODO Create save
+}
+
 void UMainMenuWidget::JoinServer()
 {
 	// TODO Join server
+}
+
+void UMainMenuWidget::HostServer()
+{
+	// TODO Host server
 }
