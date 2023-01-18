@@ -25,10 +25,27 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 bool UMainMenuWidget::Initialize()
 {
 	bool Success = Super::Initialize();
-	if (Success == false)
+	if (Success == false
+		|| SingleplayerButton == nullptr
+		|| MultiplayerButton == nullptr
+		|| ExitButton == nullptr
+		|| SingleplayerSelectSaveButton == nullptr
+		|| SingleplayerNewSaveButton == nullptr
+		|| SingleplayerBackButton == nullptr)
 	{
 		return false;
 	}
+
+	// Bind button delegates
+	/*Main Menu*/
+	SingleplayerButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenSingleplayerMenu);
+	MultiplayerButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMultiplayerMenu);
+	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
+	
+	/*Singleplayer*/
+	SingleplayerSelectSaveButton->OnClicked.AddDynamic(this, &UMainMenuWidget::LoadSave);
+	SingleplayerNewSaveButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenNewSaveMenu);
+	SingleplayerBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 
 	return true;
 }
@@ -114,3 +131,58 @@ void UMainMenuWidget::UpdateServerListChildren()
 //****************************
 // Menu Functions
 //****************************
+void UMainMenuWidget::OpenMainMenu()
+{
+	if (MenuSwitcher == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(MainMenu);
+}
+
+void UMainMenuWidget::OpenSingleplayerMenu()
+{
+	if (MenuSwitcher == nullptr)
+	{
+		return;
+	}
+	
+	MenuSwitcher->SetActiveWidget(SingleplayerMenu);
+}
+
+void UMainMenuWidget::OpenMultiplayerMenu()
+{
+	if (MenuSwitcher == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(MultiplayerMenu);
+}
+
+void UMainMenuWidget::ExitGame()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	PlayerController->ConsoleCommand(FString("quit"));
+}
+
+void UMainMenuWidget::OpenNewSaveMenu()
+{
+	if (MenuSwitcher == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(NewSaveMenu);
+}
+
+void UMainMenuWidget::LoadSave()
+{
+	// TODO Load save
+}
