@@ -17,6 +17,7 @@ struct FServerData
 	FString HostUsername;
 };
 
+class USaveRowWidget;
 class UServerRowWidget;
 class UButton;
 class UWidgetSwitcher;
@@ -33,10 +34,11 @@ public:
 	void Setup();
 	void Teardown();
 
+	void SetSaveList(TArray<FString> SaveNames);
 	void SetServerList(TArray<FServerData> ServerNames);
 	
+	void SelectSaveIndex(uint32 Index);
 	void SelectServerIndex(uint32 Index);
-
 protected:
 	virtual bool Initialize() override;
 
@@ -123,9 +125,13 @@ private:
 	void HostServer();
 	
 	// TODO Save Row widget class
+	TSubclassOf<USaveRowWidget> SaveRowWidgetClass;
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
+
 	TOptional<uint32> SelectedSaveIndex;
 	TOptional<uint32> SelectedServerIndex;
+	
+	void UpdateSaveListChildren();
 	void UpdateServerListChildren();
 
 };

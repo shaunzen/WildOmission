@@ -36,6 +36,8 @@ public:
 	void StartSession();
 
 	void RefreshServerList();
+
+	static TArray<FString> GetAllSaveGameSlotNames();
 private:
 
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetBlueprintClass;

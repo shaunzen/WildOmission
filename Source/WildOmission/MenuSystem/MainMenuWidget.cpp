@@ -96,6 +96,11 @@ void UMainMenuWidget::Teardown()
 	}
 }
 
+void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
+{
+
+}
+
 void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 {
 	UWorld* World = GetWorld();
@@ -127,10 +132,20 @@ void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 	}
 }
 
+void UMainMenuWidget::SelectSaveIndex(uint32 Index)
+{
+	// TODO SelectSaveIndex
+}
+
 void UMainMenuWidget::SelectServerIndex(uint32 Index)
 {
 	SelectedServerIndex = Index;
 	UpdateServerListChildren();
+}
+
+void UMainMenuWidget::UpdateSaveListChildren()
+{
+	// TODO UpdateSaveListChildren
 }
 
 void UMainMenuWidget::UpdateServerListChildren()
