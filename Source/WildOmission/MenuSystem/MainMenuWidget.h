@@ -65,7 +65,16 @@ private:
 	UButton* SingleplayerBackButton;
 
 	/*Multiplayer Menu*/
-	// TODO
+	UPROPERTY(Meta = (BindWidget))
+	UButton* MultiplayerJoinButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* MultiplayerHostButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* MultiplayerBackButton;
+
+	/*New Save Menu*/
+
+	/*Host Menu*/
 
 	/*Menus*/
 	UPROPERTY(Meta = (BindWidget))
@@ -85,15 +94,21 @@ private:
 	UFUNCTION()
 	void OpenMainMenu();
 	UFUNCTION()
-	void OpenSingleplayerMenu();
-	UFUNCTION()
 	void OpenMultiplayerMenu();
 	UFUNCTION()
+	void OpenSingleplayerMenu();
+	UFUNCTION()
 	void ExitGame();
+
+	UFUNCTION()
+	void OpenNewSaveMenu();
+	UFUNCTION()
+	void OpenHostMenu();
+
 	UFUNCTION()
 	void LoadSave();
 	UFUNCTION()
-	void OpenNewSaveMenu();
+	void JoinServer();
 
 	// TODO Save Row widget class
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;

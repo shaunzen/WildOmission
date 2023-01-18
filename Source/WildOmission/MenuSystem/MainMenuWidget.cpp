@@ -31,7 +31,10 @@ bool UMainMenuWidget::Initialize()
 		|| ExitButton == nullptr
 		|| SingleplayerSelectSaveButton == nullptr
 		|| SingleplayerNewSaveButton == nullptr
-		|| SingleplayerBackButton == nullptr)
+		|| SingleplayerBackButton == nullptr
+		|| MultiplayerJoinButton == nullptr
+		|| MultiplayerHostButton == nullptr
+		|| MultiplayerBackButton == nullptr)
 	{
 		return false;
 	}
@@ -46,6 +49,15 @@ bool UMainMenuWidget::Initialize()
 	SingleplayerSelectSaveButton->OnClicked.AddDynamic(this, &UMainMenuWidget::LoadSave);
 	SingleplayerNewSaveButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenNewSaveMenu);
 	SingleplayerBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+
+	/*Multiplayer*/
+	MultiplayerJoinButton->OnClicked.AddDynamic(this, &UMainMenuWidget::JoinServer);
+	MultiplayerHostButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenHostMenu);
+	MultiplayerBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+
+	/*New Save*/
+
+	/*Host Server*/
 
 	return true;
 }
@@ -182,7 +194,22 @@ void UMainMenuWidget::OpenNewSaveMenu()
 	MenuSwitcher->SetActiveWidget(NewSaveMenu);
 }
 
+void UMainMenuWidget::OpenHostMenu()
+{
+	if (MenuSwitcher == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(HostMenu);
+}
+
 void UMainMenuWidget::LoadSave()
 {
 	// TODO Load save
+}
+
+void UMainMenuWidget::JoinServer()
+{
+	// TODO Join server
 }
