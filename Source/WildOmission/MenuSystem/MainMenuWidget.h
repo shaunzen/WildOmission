@@ -35,7 +35,7 @@ public:
 
 	void SetServerList(TArray<FServerData> ServerNames);
 	
-	void SelectIndex(uint32 Index);
+	void SelectServerIndex(uint32 Index);
 
 protected:
 	virtual bool Initialize() override;
@@ -44,68 +44,15 @@ private:
 	//*
 	// Bind Widgets
 	//*
-	UPROPERTY(meta = (BindWidget))
-	UButton* HostButton;
-	
-	UPROPERTY(meta = (BindWidget))
-	UButton* JoinButton;
-	
-	UPROPERTY(meta = (BindWidget))
-	UButton* QuitButton;
-	
-	UPROPERTY(meta = (BindWidget))
-	UButton* CancelJoinMenuButton;
-	
-	UPROPERTY(meta = (BindWidget))
-	UButton* ConfirmJoinMenuButton;
-	
-	UPROPERTY(meta = (BindWidget))
-	UButton* CancelHostMenuButton;
-	
-	UPROPERTY(meta = (BindWidget))
-	UButton* ConfirmHostMenuButton;
-	
-	UPROPERTY(meta = (BindWidget))
-	UWidgetSwitcher* MenuSwitcher;
-	
-	UPROPERTY(meta = (BindWidget))
-	UWidget* MainMenu;
-
-	UPROPERTY(meta = (BindWidget))
-	UWidget* JoinMenu;
-	
-	UPROPERTY(meta = (BindWidget))
-	UWidget* HostMenu;
-
-	UPROPERTY(meta = (BindWidget))
-	UEditableTextBox* ServerHostName;
-
-	UPROPERTY(meta = (BindWidget))
-	UPanelWidget* ServerList;
 	
 	//*
 	// Menu Functions
 	//*
-	UFUNCTION()
-	void HostServer();
 	
-	UFUNCTION()
-	void JoinServer();
-	
-	UFUNCTION()
-	void OpenHostMenu();
-	
-	UFUNCTION()
-	void OpenJoinMenu();
-	
-	UFUNCTION()
-	void OpenMainMenu();
-	
-	UFUNCTION()
-	void QuitPressed();
-	
+	// TODO Save Row widget class
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
-	TOptional<uint32> SelectedIndex;
-	void UpdateChildren();
+	TOptional<uint32> SelectedSaveIndex;
+	TOptional<uint32> SelectedServerIndex;
+	void UpdateServerListChildren();
 
 };
