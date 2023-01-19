@@ -25,6 +25,23 @@ struct FWildOmissionPlayerSave
 	
 	UPROPERTY()
 	TArray<class UInventorySlotWidget*> InventorySlots;
+
+};
+
+USTRUCT()
+struct FWildOmissionSaveCreationInformation
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	uint8 Day = 1;
+	
+	UPROPERTY()
+	uint8 Month = 1;
+	
+	UPROPERTY()
+	uint16 Year = 2023;
+
 };
 
 UCLASS()
@@ -36,5 +53,12 @@ public:
 	UWildOmissionSaveGame();
 
 	UPROPERTY()
+	uint32 DaysPlayed;
+	
+	UPROPERTY()
+	FWildOmissionSaveCreationInformation CreationInformation;
+
+	UPROPERTY()
 	TArray<FWildOmissionPlayerSave> PlayerSaves;
+
 };

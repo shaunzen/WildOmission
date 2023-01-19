@@ -9,6 +9,8 @@
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "WildOmission/SaveGames/WildOmissionSaveGame.h"
 #include "WildOmission/WildOmissionGameInstance.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -106,7 +108,37 @@ void UMainMenuWidget::Teardown()
 
 void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
 
+	SaveList->ClearChildren();
+
+	uint32 i = 0;
+	for (const FString& SaveName : SaveNames)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Save: %s"), *SaveName);
+		
+		UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveName, 0));
+		USaveRowWidget* Row = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
+		if (Row == nullptr || SaveGame == nullptr)
+		{
+			return;
+		}
+		
+		FString DaysPlayedString = FString::Printf(TEXT("%i Days"), SaveGame->DaysPlayed);
+		FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), SaveGame->CreationInformation.Month, SaveGame->CreationInformation.Day, SaveGame->CreationInformation.Year);
+
+		Row->SaveName->SetText(FText::FromString(SaveName));
+		Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
+		Row->DateCreated->SetText(FText::FromString(CreationString));
+		Row->Setup(this, i);
+		++i;
+
+		SaveList->AddChild(Row);
+	}
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
@@ -195,11 +227,14 @@ void UMainMenuWidget::OpenMainMenu()
 
 void UMainMenuWidget::OpenSingleplayerMenu()
 {
-	if (MenuSwitcher == nullptr)
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+
+	if (MenuSwitcher == nullptr || GameInstance == nullptr)
 	{
 		return;
 	}
 	
+	SetSaveList(GameInstance->GetAllSaveGameSlotNames());
 	MenuSwitcher->SetActiveWidget(SingleplayerMenu);
 }
 

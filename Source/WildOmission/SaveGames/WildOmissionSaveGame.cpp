@@ -5,4 +5,5 @@
 
 UWildOmissionSaveGame::UWildOmissionSaveGame()
 {
+	DaysPlayed = 0;
 }
