@@ -27,7 +27,7 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 void AWildOmissionGameMode::SaveGame()
 {
 	// Find existing save or create a new one
-	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(FString("Save01"), 0));
+	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveName, 0));
 	if (WildOmissionSaveGame == nullptr)
 	{
 		// Failed to find existing save creating a new one

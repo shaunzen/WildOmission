@@ -79,6 +79,8 @@ private:
 	
 	/*New Save Menu*/
 	UPROPERTY(Meta = (BindWidget))
+	UEditableTextBox* SaveNameInputBox;
+	UPROPERTY(Meta = (BindWidget))
 	UButton* NewSaveCreateButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* NewSaveBackButton;

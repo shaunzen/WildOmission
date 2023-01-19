@@ -303,7 +303,17 @@ void UMainMenuWidget::LoadSave()
 
 void UMainMenuWidget::CreateSave()
 {
-	// TODO Create save
+	// Get the name of the save
+	FString NewSaveName;
+	NewSaveName = SaveNameInputBox->GetText().ToString();
+
+	// Create a new save with that name
+	UWildOmissionSaveGame* NewSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewSaveName, 0);
+
+	// Start singleplayer with that new save
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	GameInstance->StartSingleplayer(NewSaveName);
 }
 
 void UMainMenuWidget::JoinServer()
