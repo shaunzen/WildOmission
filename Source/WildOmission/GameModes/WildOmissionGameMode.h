@@ -14,6 +14,8 @@ class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
 	UFUNCTION(Exec)
 	void LogPlayerInventoryComponents();
 
@@ -27,6 +29,8 @@ public:
 
 private:
 	UWildOmissionSaveGame* WildOmissionSaveGame;
+
+	FString CurrentSaveName;
 
 	void SavePlayers(TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
 	void LoadPlayers(const TArray<struct FWildOmissionPlayerSave>& PlayerSaves);

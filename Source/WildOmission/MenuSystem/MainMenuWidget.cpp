@@ -123,7 +123,8 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 		
 		UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveName, 0));
 		USaveRowWidget* Row = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
-		if (Row == nullptr || SaveGame == nullptr)
+		USaveRowWidget* HostRow = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
+		if (Row == nullptr || HostRow == nullptr || SaveGame == nullptr)
 		{
 			return;
 		}
@@ -135,9 +136,15 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 		Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
 		Row->DateCreated->SetText(FText::FromString(CreationString));
 		Row->Setup(this, i);
+
+		HostRow->SaveName->SetText(FText::FromString(SaveName));
+		HostRow->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
+		HostRow->DateCreated->SetText(FText::FromString(CreationString));
+		HostRow->Setup(this, i);
 		++i;
 
 		SaveList->AddChild(Row);
+		HostSaveList->AddChild(HostRow);
 	}
 }
 
@@ -174,7 +181,6 @@ void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 
 void UMainMenuWidget::SelectSaveIndex(uint32 Index)
 {
-	// TODO SelectSaveIndex
 	SelectedSaveIndex = Index;
 	UpdateSaveListChildren();
 }
@@ -196,7 +202,6 @@ void UMainMenuWidget::UpdateSaveListChildren()
 		}
 		Row->Selected = (SelectedSaveIndex.IsSet() && SelectedSaveIndex.GetValue() == i);
 	}
-	// TODO UpdateSaveListChildren
 }
 
 void UMainMenuWidget::UpdateServerListChildren()
@@ -283,7 +288,17 @@ void UMainMenuWidget::OpenHostMenu()
 
 void UMainMenuWidget::LoadSave()
 {
-	// TODO Load save
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	
+	if (GameInstance == nullptr || SelectedSaveIndex.IsSet() == false)
+	{
+		return;
+	}
+
+	FString SaveName;
+	SaveName = GameInstance->GetAllSaveGameSlotNames()[SelectedSaveIndex.GetValue()];
+
+	GameInstance->StartSingleplayer(SaveName);
 }
 
 void UMainMenuWidget::CreateSave()
@@ -305,12 +320,14 @@ void UMainMenuWidget::JoinServer()
 
 void UMainMenuWidget::HostServer()
 {
-	// TODO Host server
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	if (GameInstance == nullptr)
+	if (GameInstance == nullptr || SelectedSaveIndex.IsSet() == false)
 	{
 		return;
 	}
+
 	FString ServerName = FString("Test Server");
-	GameInstance->Host(ServerName);
+	FString SaveName = GameInstance->GetAllSaveGameSlotNames()[SelectedSaveIndex.GetValue()];
+
+	GameInstance->Host(ServerName, SaveName);
 }

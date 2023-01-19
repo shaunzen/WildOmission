@@ -117,7 +117,29 @@ void UWildOmissionGameInstance::RefreshServerList()
 //****************************
 // HOSTING/JOINING
 //****************************
-void UWildOmissionGameInstance::Host(FString ServerName)
+void UWildOmissionGameInstance::StartSingleplayer(FString SaveName)
+{
+	if (MainMenuWidget == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Menu Widget Missing."));
+		return;
+	}
+
+	// Remove the menu from viewport
+	MainMenuWidget->Teardown();
+
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	FString LoadString = FString::Printf(TEXT("/Game/Maps/Level_Sandbox?savegame=%s"), *SaveName);
+	// Server travel to the game level
+	World->ServerTravel(LoadString);
+}
+
+void UWildOmissionGameInstance::Host(FString ServerName, FString SaveName)
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -125,6 +147,7 @@ void UWildOmissionGameInstance::Host(FString ServerName)
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Hosting Server Named: %s"), *ServerName);
 	DesiredServerName = ServerName;
+	SaveToLoad = SaveName;
 	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
 	{
@@ -182,8 +205,9 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	{
 		return;
 	}
+	FString LoadString = FString::Printf(TEXT("/Game/Maps/Level_Sandbox?listen?savegame=%s"), *SaveToLoad);
 	// Server travel to the game level
-	World->ServerTravel("/Game/Maps/Level_Sandbox?listen");
+	World->ServerTravel(LoadString);
 }
 
 void UWildOmissionGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)

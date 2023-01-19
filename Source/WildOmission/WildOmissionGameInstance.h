@@ -28,7 +28,10 @@ public:
 	void ShowGameplayMenuWidget();
 
 	UFUNCTION()
-	void Host(FString ServerName);
+	void StartSingleplayer(FString SaveName);
+
+	UFUNCTION()
+	void Host(FString ServerName, FString SaveName);
 	
 	UFUNCTION()
 	void Join(uint32 Index);
@@ -56,5 +59,6 @@ private:
 	void OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
 
 	FString DesiredServerName;
+	FString SaveToLoad;
 	void CreateSession();
 };

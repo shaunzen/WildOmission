@@ -9,6 +9,21 @@
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
+void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	FString SaveGame = UGameplayStatics::ParseOption(Options, "SaveGame");
+
+	if (SaveGame.Len() == 0)
+	{
+		return;
+	}
+
+	CurrentSaveName = SaveGame;
+	LoadGame();
+}
+
 void AWildOmissionGameMode::SaveGame()
 {
 	// Find existing save or create a new one
@@ -27,20 +42,23 @@ void AWildOmissionGameMode::SaveGame()
 	SavePlayers(WildOmissionSaveGame->PlayerSaves);
 
 	// Save the data
-	UGameplayStatics::SaveGameToSlot(WildOmissionSaveGame, FString("Save01"), 0);
+	UGameplayStatics::SaveGameToSlot(WildOmissionSaveGame, CurrentSaveName, 0);
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, FString("Saved game"));
 }
 
 void AWildOmissionGameMode::LoadGame()
 {
 	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
-	if ((WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(FString("Save01"), 0))))
+	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveName, 0));
+	
+	if (WildOmissionSaveGame == nullptr)
 	{
-		// Set the values of all players to those found in save file
-		LoadPlayers(WildOmissionSaveGame->PlayerSaves);
-
+		return;
 	}
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, FString("Loaded game"));
+
+	LoadPlayers(WildOmissionSaveGame->PlayerSaves);
+	
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, CurrentSaveName);
 }
 
 void AWildOmissionGameMode::LogPlayerInventoryComponents()
