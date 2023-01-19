@@ -46,7 +46,6 @@ private:
 	//*
 	// Bind Widgets
 	//*
-
 	UPROPERTY(Meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
 
@@ -65,6 +64,8 @@ private:
 	UButton* SingleplayerNewSaveButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* SingleplayerBackButton;
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* SaveList;
 
 	/*Multiplayer Menu*/
 	UPROPERTY(Meta = (BindWidget))
@@ -73,7 +74,9 @@ private:
 	UButton* MultiplayerHostButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* MultiplayerBackButton;
-
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* ServerList;
+	
 	/*New Save Menu*/
 	UPROPERTY(Meta = (BindWidget))
 	UButton* NewSaveCreateButton;
@@ -85,7 +88,9 @@ private:
 	UButton* HostMenuHostButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* HostMenuBackButton;
-
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* HostSaveList;
+	
 	/*Menus*/
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* MainMenu;

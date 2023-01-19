@@ -2,6 +2,7 @@
 
 
 #include "MainMenuWidget.h"
+#include "SaveRowWidget.h"
 #include "ServerRowWidget.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
@@ -13,6 +14,13 @@
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	bIsFocusable = true;
+	
+	ConstructorHelpers::FClassFinder<USaveRowWidget> SaveRowWidgetBPClass(TEXT("/Game/Blueprints/MenuSystem/WBP_SaveRow"));
+	if (SaveRowWidgetBPClass.Class == nullptr)
+	{
+		return;
+	}
+	SaveRowWidgetClass = SaveRowWidgetBPClass.Class;
 
 	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/Blueprints/MenuSystem/WBP_ServerRow"));
 	if (ServerRowWidgetBPClass.Class == nullptr)
@@ -109,7 +117,7 @@ void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 		return;
 	}
 
-	//ServerList->ClearChildren();
+	ServerList->ClearChildren();
 
 	uint32 i = 0;
 	for (const FServerData& ServerData : ServerNames)
@@ -128,13 +136,15 @@ void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 		Row->Setup(this, i);
 		++i;
 
-		//ServerList->AddChild(Row);
+		ServerList->AddChild(Row);
 	}
 }
 
 void UMainMenuWidget::SelectSaveIndex(uint32 Index)
 {
 	// TODO SelectSaveIndex
+	SelectedSaveIndex = Index;
+	UpdateSaveListChildren();
 }
 
 void UMainMenuWidget::SelectServerIndex(uint32 Index)
@@ -145,12 +155,20 @@ void UMainMenuWidget::SelectServerIndex(uint32 Index)
 
 void UMainMenuWidget::UpdateSaveListChildren()
 {
+	for (int32 i = 0; i < SaveList->GetChildrenCount(); ++i)
+	{
+		USaveRowWidget* Row = Cast<USaveRowWidget>(SaveList->GetChildAt(i));
+		if (Row == nullptr)
+		{
+			return;
+		}
+		Row->Selected = (SelectedSaveIndex.IsSet() && SelectedSaveIndex.GetValue() == i);
+	}
 	// TODO UpdateSaveListChildren
 }
 
 void UMainMenuWidget::UpdateServerListChildren()
 {
-	/*
 	for (int32 i = 0; i < ServerList->GetChildrenCount(); ++i)
 	{
 		UServerRowWidget* Row = Cast<UServerRowWidget>(ServerList->GetChildAt(i));
@@ -158,9 +176,8 @@ void UMainMenuWidget::UpdateServerListChildren()
 		{
 			return;
 		}
-		Row->Selected = (SelectedIndex.IsSet() && SelectedIndex.GetValue() == i);
+		Row->Selected = (SelectedServerIndex.IsSet() && SelectedServerIndex.GetValue() == i);
 	}
-	*/
 }
 
 //****************************
@@ -188,12 +205,14 @@ void UMainMenuWidget::OpenSingleplayerMenu()
 
 void UMainMenuWidget::OpenMultiplayerMenu()
 {
-	if (MenuSwitcher == nullptr)
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (MenuSwitcher == nullptr || GameInstance == nullptr)
 	{
 		return;
 	}
 
 	MenuSwitcher->SetActiveWidget(MultiplayerMenu);
+	GameInstance->RefreshServerList();
 }
 
 void UMainMenuWidget::ExitGame()
@@ -239,10 +258,24 @@ void UMainMenuWidget::CreateSave()
 
 void UMainMenuWidget::JoinServer()
 {
-	// TODO Join server
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+
+	if (GameInstance == nullptr || SelectedServerIndex.IsSet() == false)
+	{
+		return;
+	}
+
+	GameInstance->Join(SelectedServerIndex.GetValue());
 }
 
 void UMainMenuWidget::HostServer()
 {
 	// TODO Host server
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+	FString ServerName = FString("Test Server");
+	GameInstance->Host(ServerName);
 }
