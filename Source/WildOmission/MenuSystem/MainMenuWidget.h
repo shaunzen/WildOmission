@@ -87,6 +87,8 @@ private:
 	
 	/*Host Menu*/
 	UPROPERTY(Meta = (BindWidget))
+	UEditableTextBox* ServerNameInputBox;
+	UPROPERTY(Meta = (BindWidget))
 	UButton* HostMenuHostButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* HostMenuBackButton;

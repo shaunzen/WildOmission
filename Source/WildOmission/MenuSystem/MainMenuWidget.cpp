@@ -115,6 +115,7 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 	}
 
 	SaveList->ClearChildren();
+	HostSaveList->ClearChildren();
 
 	uint32 i = 0;
 	for (const FString& SaveName : SaveNames)
@@ -278,11 +279,13 @@ void UMainMenuWidget::OpenNewSaveMenu()
 
 void UMainMenuWidget::OpenHostMenu()
 {
-	if (MenuSwitcher == nullptr)
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (MenuSwitcher == nullptr || GameInstance == nullptr)
 	{
 		return;
 	}
 
+	SetSaveList(GameInstance->GetAllSaveGameSlotNames());
 	MenuSwitcher->SetActiveWidget(HostMenu);
 }
 
@@ -336,7 +339,7 @@ void UMainMenuWidget::HostServer()
 		return;
 	}
 
-	FString ServerName = FString("Test Server");
+	FString ServerName = ServerNameInputBox->GetText().ToString();
 	FString SaveName = GameInstance->GetAllSaveGameSlotNames()[SelectedSaveIndex.GetValue()];
 
 	GameInstance->Host(ServerName, SaveName);
