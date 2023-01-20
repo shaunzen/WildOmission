@@ -16,15 +16,15 @@ UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitial
 bool UGameplayMenuWidget::Initialize()
 {
 	bool Success = Super::Initialize();
-	if (!Success || ResumeButton == nullptr || SaveButton == nullptr || QuitToMenuButton == nullptr)
+	
+	if (!Success || ResumeButton == nullptr || QuitButton == nullptr)
 	{
 		return false;
 	}
 
 	// Bind button delegates
 	ResumeButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::Teardown);
-	SaveButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::SaveGame);
-	QuitToMenuButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
+	QuitButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
 
 	return true;
 }
@@ -32,12 +32,18 @@ bool UGameplayMenuWidget::Initialize()
 void UGameplayMenuWidget::Show()
 {
 	bOpen = true;
+	
 	AddToViewport();
+	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	
 	if (PlayerController == nullptr)
 	{
 		return;
 	}
+	
+	SetQuitButtonText(PlayerController->HasAuthority());
+	
 	FInputModeUIOnly InputModeData;
 	InputModeData.SetWidgetToFocus(TakeWidget());
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
@@ -53,12 +59,16 @@ bool UGameplayMenuWidget::IsOpen() const
 void UGameplayMenuWidget::Teardown()
 {
 	bOpen = false;
+	
 	RemoveFromParent();
+	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	
 	if (PlayerController == nullptr)
 	{
 		return;
 	}
+	
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = false;
@@ -68,9 +78,10 @@ void UGameplayMenuWidget::SaveGame()
 {
 	// Get the game mode
 	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+
 	if (GameMode == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to save game: not the server"));
+		UE_LOG(LogTemp, Display, TEXT("Ignoring save request, player is not host."));
 		return;
 	}
 
@@ -79,11 +90,30 @@ void UGameplayMenuWidget::SaveGame()
 
 void UGameplayMenuWidget::QuitToMenu()
 {
-	// TODO call quit to menu
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	
 	if (!GameInstance)
 	{
 		return;
 	}
+	
+	SaveGame();
+	
 	GameInstance->ReturnToMainMenu();
+}
+
+void UGameplayMenuWidget::SetQuitButtonText(bool PlayerHasAuthority)
+{
+	FString ButtonText;
+	
+	if (PlayerHasAuthority)
+	{
+		ButtonText = FString("Save and quit");
+	}
+	else
+	{
+		ButtonText = FString("Leave server");
+	}
+
+	QuitButtonText->SetText(FText::FromString(ButtonText));
 }

@@ -26,17 +26,17 @@ public:
 	bool IsOpen() const;
 
 private:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* SaveNameText;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(Meta = (BindWidget))
 	UButton* ResumeButton;
 
-	UPROPERTY(meta = (BindWidget))
-	UButton* SaveButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* QuitButton;
 
-	UPROPERTY(meta = (BindWidget))
-	UButton* QuitToMenuButton;
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* QuitButtonText;
 	
 	bool bOpen;
 
@@ -48,5 +48,7 @@ private:
 	
 	UFUNCTION()
 	void QuitToMenu();
+
+	void SetQuitButtonText(bool PlayerHasAuthority);
 
 };

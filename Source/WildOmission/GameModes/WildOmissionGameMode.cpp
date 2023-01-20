@@ -142,6 +142,8 @@ void AWildOmissionGameMode::LoadPlayer(int32 ID, APlayerController* PlayerContro
 {
 	AWildOmissionPlayerController* WOPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
 	
+	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveName, 0));
+
 	if (WildOmissionSaveGame == nullptr || WOPlayerController == nullptr)
 	{
 		return;
