@@ -45,6 +45,7 @@ bool UMainMenuWidget::Initialize()
 		|| MultiplayerJoinButton == nullptr
 		|| MultiplayerHostButton == nullptr
 		|| MultiplayerBackButton == nullptr
+		|| RefreshServerListButton == nullptr
 		|| NewSaveCreateButton == nullptr
 		|| NewSaveBackButton == nullptr
 		|| HostMenuHostButton == nullptr
@@ -68,7 +69,7 @@ bool UMainMenuWidget::Initialize()
 	MultiplayerJoinButton->OnClicked.AddDynamic(this, &UMainMenuWidget::JoinServer);
 	MultiplayerHostButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenHostMenu);
 	MultiplayerBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
-
+	RefreshServerListButton->OnClicked.AddDynamic(this, &UMainMenuWidget::RefreshServerList);
 	/*New Save*/
 	NewSaveCreateButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateSave);
 	NewSaveBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenSingleplayerMenu);
@@ -178,6 +179,9 @@ void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 
 		ServerList->AddChild(Row);
 	}
+
+	FString RefreshString = FString("Refresh");
+	RefreshServerListButtonText->SetText(FText::FromString(RefreshString));
 }
 
 void UMainMenuWidget::SelectSaveIndex(uint32 Index)
@@ -251,6 +255,9 @@ void UMainMenuWidget::OpenMultiplayerMenu()
 	{
 		return;
 	}
+
+	FString WaitingString = FString("...");
+	RefreshServerListButtonText->SetText(FText::FromString(WaitingString));
 
 	MenuSwitcher->SetActiveWidget(MultiplayerMenu);
 	GameInstance->RefreshServerList();
@@ -343,4 +350,19 @@ void UMainMenuWidget::HostServer()
 	FString SaveName = GameInstance->GetAllSaveGameSlotNames()[SelectedSaveIndex.GetValue()];
 
 	GameInstance->Host(ServerName, SaveName);
+}
+
+void UMainMenuWidget::RefreshServerList()
+{
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+
+	FString WaitingString = FString("...");
+	RefreshServerListButtonText->SetText(FText::FromString(WaitingString));
+	
+	GameInstance->RefreshServerList();
 }

@@ -20,6 +20,7 @@ struct FServerData
 class USaveRowWidget;
 class UServerRowWidget;
 class UButton;
+class UTextBlock;
 class UWidgetSwitcher;
 class UEditableTextBox;
 
@@ -74,6 +75,10 @@ private:
 	UButton* MultiplayerHostButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* MultiplayerBackButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* RefreshServerListButton;
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* RefreshServerListButtonText;
 	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* ServerList;
 	
@@ -133,6 +138,9 @@ private:
 	UFUNCTION()
 	void HostServer();
 	
+	UFUNCTION()
+	void RefreshServerList();
+
 	// TODO Save Row widget class
 	TSubclassOf<USaveRowWidget> SaveRowWidgetClass;
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
