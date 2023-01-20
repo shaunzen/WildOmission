@@ -201,11 +201,17 @@ void UMainMenuWidget::UpdateSaveListChildren()
 	for (int32 i = 0; i < SaveList->GetChildrenCount(); ++i)
 	{
 		USaveRowWidget* Row = Cast<USaveRowWidget>(SaveList->GetChildAt(i));
-		if (Row == nullptr)
+		USaveRowWidget* HostRow = Cast<USaveRowWidget>(HostSaveList->GetChildAt(i));
+		
+		if (Row == nullptr || HostRow == nullptr)
 		{
 			return;
 		}
-		Row->Selected = (SelectedSaveIndex.IsSet() && SelectedSaveIndex.GetValue() == i);
+
+		bool RowSelected = (SelectedSaveIndex.IsSet() && SelectedSaveIndex.GetValue() == i);
+
+		Row->Selected = RowSelected;
+		HostRow->Selected = RowSelected;
 	}
 }
 
