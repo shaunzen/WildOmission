@@ -56,7 +56,7 @@ void AWildOmissionGameMode::LoadGame()
 		return;
 	}
 
-	LoadPlayers(WildOmissionSaveGame->PlayerSaves);
+	LoadAllPlayers(WildOmissionSaveGame->PlayerSaves);
 	
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, CurrentSaveName);
 }
