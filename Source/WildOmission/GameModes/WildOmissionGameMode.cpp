@@ -24,6 +24,28 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	LoadGame();
 }
 
+void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	// TODO use steam id instead
+
+	int32 NewID = FMath::CeilToInt32(GetWorld()->UnpausedTimeSeconds);
+
+	NewPlayer->GetPlayerState<APlayerState>()->SetPlayerId(NewID);
+
+	LoadPlayer(NewPlayer->GetPlayerState<APlayerState>()->GetPlayerId(), NewPlayer);
+
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("Given new player the id: %i"), NewID));
+}
+
+void AWildOmissionGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+
+	SaveGame();
+}
+
 void AWildOmissionGameMode::SaveGame()
 {
 	// Find existing save or create a new one
@@ -56,8 +78,11 @@ void AWildOmissionGameMode::LoadGame()
 		return;
 	}
 
-	LoadAllPlayers(WildOmissionSaveGame->PlayerSaves);
-	
+	if (WildOmissionSaveGame->CreationInformation.bLevelHasGenerated == false)
+	{
+		GenerateLevel();
+	}
+
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, CurrentSaveName);
 }
 
@@ -83,6 +108,18 @@ void AWildOmissionGameMode::LogPlayerInventoryComponents()
 		}
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: "), *PlayerCharacter->GetActorNameOrLabel()));
 	}
+}
+
+void AWildOmissionGameMode::GenerateLevel()
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("this save is brand new generating new data"));
+	//TODO run world generation and things
+}
+
+void AWildOmissionGameMode::GeneratePlayer(APlayerController* PlayerController)
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Player Hasnt joined on this save before generating new data"));
+	// TODO find location in world for player to spawn
 }
 
 void AWildOmissionGameMode::SavePlayers(TArray<FWildOmissionPlayerSave>& OutPlayerSaves)
@@ -123,21 +160,6 @@ void AWildOmissionGameMode::LoadAllPlayers(const TArray<FWildOmissionPlayerSave>
 	}
 }
 
-void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
-{
-	Super::PostLogin(NewPlayer);
-
-	// TODO check if this player has connected before, if they have then load their previous data
-
-	// The Player ID SHOULD be the steam id when i get steamworks implemented.
-	// This is only a temporary solution right now and wont remember the player long term
-	int32 NewID = FMath::CeilToInt32(GetWorld()->UnpausedTimeSeconds);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("ID: %i"), NewID));
-	NewPlayer->GetPlayerState<APlayerState>()->SetPlayerId(NewID);
-
-	LoadPlayer(NewPlayer->GetPlayerState<APlayerState>()->GetPlayerId(), NewPlayer);
-}
-
 void AWildOmissionGameMode::LoadPlayer(int32 ID, APlayerController* PlayerController)
 {
 	AWildOmissionPlayerController* WOPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
@@ -148,7 +170,7 @@ void AWildOmissionGameMode::LoadPlayer(int32 ID, APlayerController* PlayerContro
 	{
 		return;
 	}
-
+	
 	for (const FWildOmissionPlayerSave& PlayerSave : WildOmissionSaveGame->PlayerSaves)
 	{
 		if (PlayerSave.ID != WOPlayerController->GetPlayerState<APlayerState>()->GetPlayerId())
@@ -156,6 +178,8 @@ void AWildOmissionGameMode::LoadPlayer(int32 ID, APlayerController* PlayerContro
 			continue;
 		}
 		WOPlayerController->LoadPlayerSave(PlayerSave);
+		return;
 	}
 
+	GeneratePlayer(WOPlayerController);
 }

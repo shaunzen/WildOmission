@@ -16,6 +16,10 @@ class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase
 public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	virtual void Logout(AController* Exiting) override;
+
 	UFUNCTION(Exec)
 	void LogPlayerInventoryComponents();
 
@@ -25,12 +29,14 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void LoadGame();
 
-	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 private:
 	UWildOmissionSaveGame* WildOmissionSaveGame;
 
 	FString CurrentSaveName;
+
+	void GenerateLevel();
+	void GeneratePlayer(APlayerController* PlayerController);
 
 	void SavePlayers(TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
 	void LoadAllPlayers(const TArray<struct FWildOmissionPlayerSave>& PlayerSaves);

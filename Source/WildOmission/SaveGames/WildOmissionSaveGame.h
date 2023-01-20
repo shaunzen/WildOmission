@@ -13,7 +13,7 @@ struct FWildOmissionPlayerSave
 	
 	UPROPERTY()
 	bool bHost = false;
-	
+
 	UPROPERTY()
 	int32 ID = 0;
 	
