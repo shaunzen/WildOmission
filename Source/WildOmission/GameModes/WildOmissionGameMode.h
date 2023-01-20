@@ -33,7 +33,6 @@ private:
 	FString CurrentSaveName;
 
 	void SavePlayers(TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
-	void LoadPlayers(const TArray<struct FWildOmissionPlayerSave>& PlayerSaves);
-
+	void LoadAllPlayers(const TArray<struct FWildOmissionPlayerSave>& PlayerSaves);
 	void LoadPlayer(int32 PlayerID, APlayerController* PlayerController);
 };

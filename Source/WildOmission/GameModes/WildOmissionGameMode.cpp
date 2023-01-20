@@ -101,7 +101,7 @@ void AWildOmissionGameMode::SavePlayers(TArray<FWildOmissionPlayerSave>& OutPlay
 	}
 }
 
-void AWildOmissionGameMode::LoadPlayers(const TArray<FWildOmissionPlayerSave>& PlayerSaves)
+void AWildOmissionGameMode::LoadAllPlayers(const TArray<FWildOmissionPlayerSave>& PlayerSaves)
 {
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
