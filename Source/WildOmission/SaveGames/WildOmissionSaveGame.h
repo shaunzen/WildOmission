@@ -34,6 +34,9 @@ struct FWildOmissionSaveCreationInformation
 	GENERATED_BODY()
 
 	UPROPERTY()
+	bool bLevelHasGenerated = false;
+
+	UPROPERTY()
 	uint8 Day = 1;
 	
 	UPROPERTY()

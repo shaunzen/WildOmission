@@ -105,26 +105,21 @@ void AWildOmissionGameMode::LoadPlayers(const TArray<FWildOmissionPlayerSave>& P
 {
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(Iterator->Get());
+		APlayerController* PlayerController = Iterator->Get();
+		
 		if (PlayerController == nullptr)
 		{
 			return;
 		}
 
 		APlayerState* PlayerState = PlayerController->GetPlayerState<APlayerState>();
+		
 		if (PlayerState == nullptr)
 		{
 			return;
 		}
 		
-		for (const FWildOmissionPlayerSave& PlayerSave : PlayerSaves)
-		{
-			if (PlayerSave.ID != PlayerState->GetPlayerId())
-			{
-				continue;
-			}
-			PlayerController->LoadPlayerSave(PlayerSave);
-		}
+		LoadPlayer(PlayerState->GetPlayerId(), PlayerController);
 	}
 }
 
@@ -139,4 +134,26 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	int32 NewID = FMath::CeilToInt32(GetWorld()->UnpausedTimeSeconds);
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("ID: %i"), NewID));
 	NewPlayer->GetPlayerState<APlayerState>()->SetPlayerId(NewID);
+
+	LoadPlayer(NewPlayer->GetPlayerState<APlayerState>()->GetPlayerId(), NewPlayer);
+}
+
+void AWildOmissionGameMode::LoadPlayer(int32 ID, APlayerController* PlayerController)
+{
+	AWildOmissionPlayerController* WOPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
+	
+	if (WildOmissionSaveGame == nullptr || WOPlayerController == nullptr)
+	{
+		return;
+	}
+
+	for (const FWildOmissionPlayerSave& PlayerSave : WildOmissionSaveGame->PlayerSaves)
+	{
+		if (PlayerSave.ID != WOPlayerController->GetPlayerState<APlayerState>()->GetPlayerId())
+		{
+			continue;
+		}
+		WOPlayerController->LoadPlayerSave(PlayerSave);
+	}
+
 }
