@@ -2,12 +2,12 @@
 
 
 #include "WildOmissionGameMode.h"
+#include "WildOmission/Actors/SaveHandler.h"
 #include "WildOmission/Characters/PlayerCharacter.h"
-#include "WildOmission/ActorComponents/InventoryComponent.h"
-#include "WildOmission/SaveGames/WildOmissionSaveGame.h"
-#include "WildOmission/PlayerControllers/WildOmissionPlayerController.h"
-#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
+
+#include "GameFramework/PlayerState.h"
+#include "WildOmission/ActorComponents/InventoryComponent.h"
 
 void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
@@ -19,17 +19,22 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	{
 		return;
 	}
-
-	CurrentSaveName = SaveGame;
-	LoadGame();
+	
+	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>(FVector::ZeroVector, FRotator::ZeroRotator);
+	
+	if (SaveHandler == nullptr)
+	{
+		return;
+	}
+	
+	SaveHandler->LoadGame(SaveGame);
 }
 
 void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-
-	// Try and load this player previous data from the current save
-	LoadPlayer(NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId().ToString(), NewPlayer);
+	
+	SaveHandler->LoadPlayer(NewPlayer);
 
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("%s Has Joined the game"), *NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId().ToString()));
 }
@@ -41,42 +46,7 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 
 void AWildOmissionGameMode::SaveGame()
 {
-	// Find existing save or create a new one
-	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveName, 0));
-	if (WildOmissionSaveGame == nullptr)
-	{
-		// Failed to find existing save creating a new one
-		WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
-		if (WildOmissionSaveGame == nullptr)
-		{
-			return;
-		}
-	}
-	
-	// Populate the save data
-	SavePlayers(WildOmissionSaveGame->PlayerSaves);
-
-	// Save the data
-	UGameplayStatics::SaveGameToSlot(WildOmissionSaveGame, CurrentSaveName, 0);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, FString("Saved game"));
-}
-
-void AWildOmissionGameMode::LoadGame()
-{
-	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
-	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveName, 0));
-	
-	if (WildOmissionSaveGame == nullptr)
-	{
-		return;
-	}
-
-	if (WildOmissionSaveGame->CreationInformation.bLevelHasGenerated == false)
-	{
-		GenerateLevel();
-	}
-
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1.0f, FColor::Green, CurrentSaveName);
+	SaveHandler->SaveGame();
 }
 
 void AWildOmissionGameMode::LogPlayerInventoryComponents()
@@ -103,76 +73,14 @@ void AWildOmissionGameMode::LogPlayerInventoryComponents()
 	}
 }
 
-void AWildOmissionGameMode::GenerateLevel()
+TArray<APlayerController*> AWildOmissionGameMode::GetAllPlayerControllers()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("this save is brand new generating new data"));
-	//TODO run world generation and things
-}
+	TArray<APlayerController*> PlayerControllers;
 
-void AWildOmissionGameMode::GeneratePlayer(APlayerController* PlayerController)
-{
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Player Hasnt joined on this save before generating new data"));
-	// TODO find location in world for player to spawn
-}
-
-void AWildOmissionGameMode::SavePlayers(TArray<FWildOmissionPlayerSave>& OutPlayerSaves)
-{
-	// Clear it out, later we need to overwrite elements with new info and keep old ones
-	OutPlayerSaves.Empty();
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(Iterator->Get());
-		if (PlayerController == nullptr)
-		{
-			return;
-		}
-		// TODO if the id is already in in the list remove it and replace with the new one
-		OutPlayerSaves.Add(PlayerController->SavePlayer());
-	}
-}
-
-void AWildOmissionGameMode::LoadAllPlayers(const TArray<FWildOmissionPlayerSave>& PlayerSaves)
-{
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-	{
-		APlayerController* PlayerController = Iterator->Get();
-		
-		if (PlayerController == nullptr)
-		{
-			return;
-		}
-
-		APlayerState* PlayerState = PlayerController->GetPlayerState<APlayerState>();
-		
-		if (PlayerState == nullptr)
-		{
-			return;
-		}
-		
-		LoadPlayer(PlayerState->GetUniqueId().ToString(), PlayerController);
-	}
-}
-
-void AWildOmissionGameMode::LoadPlayer(FString NetID, APlayerController* PlayerController)
-{
-	AWildOmissionPlayerController* WOPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
-	
-	WildOmissionSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveName, 0));
-
-	if (WildOmissionSaveGame == nullptr || WOPlayerController == nullptr)
-	{
-		return;
-	}
-	
-	for (const FWildOmissionPlayerSave& PlayerSave : WildOmissionSaveGame->PlayerSaves)
-	{
-		if (PlayerSave.NetID != WOPlayerController->GetPlayerState<APlayerState>()->GetUniqueId().ToString())
-		{
-			continue;
-		}
-		WOPlayerController->LoadPlayerSave(PlayerSave);
-		return;
+		PlayerControllers.Add(Iterator->Get());
 	}
 
-	GeneratePlayer(WOPlayerController);
+	return PlayerControllers;
 }

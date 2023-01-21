@@ -12,10 +12,10 @@ struct FWildOmissionPlayerSave
 	GENERATED_BODY()
 	
 	UPROPERTY()
-	bool bHost = false;
+	bool IsHost = false;
 
 	UPROPERTY()
-	FString NetID = FString("");
+	FString UniqueID = FString("");
 	
 	UPROPERTY()
 	FVector WorldLocation = FVector::ZeroVector;
@@ -34,7 +34,7 @@ struct FWildOmissionSaveCreationInformation
 	GENERATED_BODY()
 
 	UPROPERTY()
-	bool bLevelHasGenerated = false;
+	bool LevelHasGenerated = false;
 
 	UPROPERTY()
 	uint8 Day = 1;

@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "WildOmissionGameMode.generated.h"
 
-class UWildOmissionSaveGame;
+class ASaveHandler;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase
@@ -26,19 +26,9 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void SaveGame();
 	
-	UFUNCTION(BlueprintCallable, Exec)
-	void LoadGame();
-
-
+	TArray<APlayerController*> GetAllPlayerControllers();
 private:
-	UWildOmissionSaveGame* WildOmissionSaveGame;
+	UPROPERTY()
+	ASaveHandler* SaveHandler;
 
-	FString CurrentSaveName;
-
-	void GenerateLevel();
-	void GeneratePlayer(APlayerController* PlayerController);
-
-	void SavePlayers(TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
-	void LoadAllPlayers(const TArray<struct FWildOmissionPlayerSave>& PlayerSaves);
-	void LoadPlayer(FString PlayerNetID, APlayerController* PlayerController);
 };
