@@ -15,7 +15,7 @@ struct FWildOmissionPlayerSave
 	bool bHost = false;
 
 	UPROPERTY()
-	int32 ID = 0;
+	FString NetID = FString("");
 	
 	UPROPERTY()
 	FVector WorldLocation = FVector::ZeroVector;

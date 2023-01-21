@@ -28,15 +28,10 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	// TODO use steam id instead
+	// Try and load this player previous data from the current save
+	LoadPlayer(NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId().ToString(), NewPlayer);
 
-	int32 NewID = FMath::CeilToInt32(GetWorld()->UnpausedTimeSeconds);
-
-	NewPlayer->GetPlayerState<APlayerState>()->SetPlayerId(NewID);
-
-	LoadPlayer(NewPlayer->GetPlayerState<APlayerState>()->GetPlayerId(), NewPlayer);
-
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("Given new player the id: %i"), NewID));
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("%s Has Joined the game"), *NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId().ToString()));
 }
 
 void AWildOmissionGameMode::Logout(AController* Exiting)
@@ -156,11 +151,11 @@ void AWildOmissionGameMode::LoadAllPlayers(const TArray<FWildOmissionPlayerSave>
 			return;
 		}
 		
-		LoadPlayer(PlayerState->GetPlayerId(), PlayerController);
+		LoadPlayer(PlayerState->GetUniqueId().ToString(), PlayerController);
 	}
 }
 
-void AWildOmissionGameMode::LoadPlayer(int32 ID, APlayerController* PlayerController)
+void AWildOmissionGameMode::LoadPlayer(FString NetID, APlayerController* PlayerController)
 {
 	AWildOmissionPlayerController* WOPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
 	
@@ -173,7 +168,7 @@ void AWildOmissionGameMode::LoadPlayer(int32 ID, APlayerController* PlayerContro
 	
 	for (const FWildOmissionPlayerSave& PlayerSave : WildOmissionSaveGame->PlayerSaves)
 	{
-		if (PlayerSave.ID != WOPlayerController->GetPlayerState<APlayerState>()->GetPlayerId())
+		if (PlayerSave.NetID != WOPlayerController->GetPlayerState<APlayerState>()->GetUniqueId().ToString())
 		{
 			continue;
 		}

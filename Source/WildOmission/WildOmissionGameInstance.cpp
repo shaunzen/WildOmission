@@ -15,29 +15,37 @@ const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
 	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/Blueprints/MenuSystem/WBP_MainMenu"));
+	
 	if (MainMenuBlueprint.Class == nullptr)
 	{
 		return;
 	}
+	
 	MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
 
 	ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/Blueprints/MenuSystem/WBP_GameplayMenu"));
+	
 	if (GameplayMenuBlueprint.Class == nullptr)
 	{
 		return;
 	}
+	
 	GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
 }
 
 void UWildOmissionGameInstance::Init()
 {
 	Super::Init();
+
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+
 	if (Subsystem == nullptr)
 	{
 		return;
 	}
+
 	SessionInterface = Subsystem->GetSessionInterface();
+
 	if (!SessionInterface.IsValid() || GEngine == 0)
 	{
 		return;
@@ -47,6 +55,7 @@ void UWildOmissionGameInstance::Init()
 	SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnDestroySessionComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
+
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
 }
 
@@ -178,7 +187,7 @@ void UWildOmissionGameInstance::CreateSession()
 		return;
 	}
 	FOnlineSessionSettings SessionSettings;
-	SessionSettings.bIsLANMatch = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";
+	SessionSettings.bIsLANMatch = (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL");
 	SessionSettings.NumPublicConnections = 5;
 	SessionSettings.bShouldAdvertise = true;
 	SessionSettings.bUsesPresence = true;

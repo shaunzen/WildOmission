@@ -40,5 +40,5 @@ private:
 
 	void SavePlayers(TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
 	void LoadAllPlayers(const TArray<struct FWildOmissionPlayerSave>& PlayerSaves);
-	void LoadPlayer(int32 PlayerID, APlayerController* PlayerController);
+	void LoadPlayer(FString PlayerNetID, APlayerController* PlayerController);
 };
