@@ -49,6 +49,8 @@ void UGameplayMenuWidget::Show()
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = true;
+
+	SaveGame();
 }
 
 bool UGameplayMenuWidget::IsOpen() const
@@ -98,7 +100,7 @@ void UGameplayMenuWidget::QuitToMenu()
 	}
 	
 	SaveGame();
-	
+
 	GameInstance->ReturnToMainMenu();
 }
 

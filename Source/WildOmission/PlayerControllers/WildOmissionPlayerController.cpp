@@ -20,6 +20,7 @@ FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 		return PlayerSave;
 	}
 	PlayerSave.NetID = CurrentPlayerState->GetUniqueId().ToString();
+
 	PlayerSave.WorldLocation = GetPawn()->GetActorLocation();
 
 	return PlayerSave;

@@ -76,6 +76,7 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 	}
 
 	MainMenuWidget->Setup();
+	OnMainMenu = true;
 }
 
 void UWildOmissionGameInstance::ShowGameplayMenuWidget()
@@ -133,6 +134,8 @@ void UWildOmissionGameInstance::StartSingleplayer(FString SaveName)
 		UE_LOG(LogTemp, Error, TEXT("Menu Widget Missing."));
 		return;
 	}
+
+	OnMainMenu = false;
 
 	// Remove the menu from viewport
 	MainMenuWidget->Teardown();
@@ -206,6 +209,8 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 		return;
 	}
 
+	OnMainMenu = false;
+
 	// Remove the menu from viewport
 	MainMenuWidget->Teardown();
 	
@@ -230,7 +235,7 @@ void UWildOmissionGameInstance::OnDestroySessionComplete(FName SessionName, bool
 
 void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 {
-	if (Success == false || SessionSearch.IsValid() == false || MainMenuWidget == nullptr)
+	if (OnMainMenu == false || Success == false || SessionSearch.IsValid() == false || MainMenuWidget == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Found sessions but they are invalid"));
 		return;

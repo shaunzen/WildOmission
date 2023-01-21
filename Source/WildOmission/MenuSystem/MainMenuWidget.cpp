@@ -153,6 +153,7 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 {
 	UWorld* World = GetWorld();
+
 	if (World == nullptr)
 	{
 		return;

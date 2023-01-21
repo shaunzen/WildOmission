@@ -37,8 +37,6 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 void AWildOmissionGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
-
-	SaveGame();
 }
 
 void AWildOmissionGameMode::SaveGame()

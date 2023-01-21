@@ -61,4 +61,7 @@ private:
 	FString DesiredServerName;
 	FString SaveToLoad;
 	void CreateSession();
+
+	bool OnMainMenu;
+
 };
