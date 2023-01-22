@@ -132,7 +132,7 @@ bool ASaveHandler::GetPlayerSaveIndex(FString PlayerUniqueID, int32& OutIndex)
 	UWildOmissionSaveGame* SaveFile = GetSaveFile();
 	if (SaveFile == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	int32 Index = 0;
