@@ -2,6 +2,7 @@
 
 
 #include "SaveHandler.h"
+#include "PlayerSaveHandler.h"
 #include "WildOmission/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/GameModes/WildOmissionGameMode.h"
 #include "WildOmission/SaveGames/WildOmissionSaveGame.h"
@@ -21,6 +22,8 @@ void ASaveHandler::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	PlayerSaveHandler = GetWorld()->SpawnActor<APlayerSaveHandler>();
+	PlayerSaveHandler->Setup(this);
 }
 
 // Called every frame
@@ -46,28 +49,11 @@ void ASaveHandler::SaveGame()
 		return;
 	}
 
-	CreatePlayerSaves(GameMode->GetAllPlayerControllers(), SaveFile->PlayerSaves);
-
+	PlayerSaveHandler->SavePendingPlayers(SaveFile->PlayerSaves);
+	
 	UpdateSaveFile(SaveFile);
 }
 
-void ASaveHandler::CreatePlayerSaves(TArray<APlayerController*> PlayerControllersToSave, TArray<FWildOmissionPlayerSave>& OutPlayerSaves)
-{
-	for (APlayerController* PlayerController : PlayerControllersToSave)
-	{
-		AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
-
-		int32 SaveIndex = 0;
-		if (GetPlayerSaveIndex(WildOmissionPlayerController->GetUniqueID(), SaveIndex))
-		{
-			OutPlayerSaves[SaveIndex] = WildOmissionPlayerController->SavePlayer();
-		}
-		else
-		{
-			OutPlayerSaves.Add(WildOmissionPlayerController->SavePlayer());
-		}
-	}
-}
 
 void ASaveHandler::LoadGame(const FString& SaveFileName)
 {
@@ -106,51 +92,6 @@ void ASaveHandler::LoadPlayer(APlayerController* PlayerController)
 
 
 	WildOmissionPlayerController->LoadPlayerSave(PlayerSave);
-}
-
-bool ASaveHandler::RetrivePlayerDataFromSave(FString PlayerUniqueID, FWildOmissionPlayerSave& OutPlayerSave)
-{
-	UWildOmissionSaveGame* SaveFile = GetSaveFile();
-	if (SaveFile == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("SaveFile was nullptr aborting player load on player %s."), *PlayerUniqueID);
-		return false;
-	}
-
-	int32 PlayerSaveIndex = 0;
-	if (!GetPlayerSaveIndex(PlayerUniqueID, PlayerSaveIndex))
-	{
-		return false;
-	}
-
-	OutPlayerSave = SaveFile->PlayerSaves[PlayerSaveIndex];
-	return true;
-}
-
-bool ASaveHandler::GetPlayerSaveIndex(FString PlayerUniqueID, int32& OutIndex)
-{
-	UWildOmissionSaveGame* SaveFile = GetSaveFile();
-	if (SaveFile == nullptr)
-	{
-		return false;
-	}
-
-	int32 Index = 0;
-	bool PlayerFound = false;
-	for (const FWildOmissionPlayerSave& PlayerSave : SaveFile->PlayerSaves)
-	{
-		if (PlayerSave.UniqueID != PlayerUniqueID)
-		{
-			++Index;
-			continue;
-		}
-
-		PlayerFound = true;
-		break;
-	}
-
-	OutIndex = Index;
-	return PlayerFound;
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()

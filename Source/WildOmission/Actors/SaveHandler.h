@@ -7,6 +7,7 @@
 #include "SaveHandler.generated.h"
 
 class UWildOmissionSaveGame;
+class APlayerSaveHandler;
 
 UCLASS()
 class WILDOMISSION_API ASaveHandler : public AActor
@@ -26,6 +27,7 @@ public:
 	
 	void LoadPlayer(APlayerController* PlayerController);
 
+	UWildOmissionSaveGame* GetSaveFile();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,12 +35,9 @@ protected:
 private:
 	FString CurrentSaveFileName;
 
-	void CreatePlayerSaves(TArray<APlayerController*> PlayerControllersToSave, TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
+	APlayerSaveHandler* PlayerSaveHandler;
 
-	bool RetrivePlayerDataFromSave(FString PlayerUniqueID, FWildOmissionPlayerSave& OutPlayerSave);
+	void SavePendingPlayers(TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
 
-	bool GetPlayerSaveIndex(FString PlayerUniqueID, int32& OutIndex);
-
-	UWildOmissionSaveGame* GetSaveFile();
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 };
