@@ -20,34 +20,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Setup(ASaveHandler* InOwnerSaveHandler);
-	
-	void SavePendingPlayers(TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
-
-	UFUNCTION(Exec)
-	void GatherAllPlayerSaves();
-
-	void GatherPlayerSave(APlayerController* PlayerControllerToSave);
-	
-
+	// LoadPlayer(APlayerController* PlayerController);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private:	
-
-	UPROPERTY()
-	ASaveHandler* OwnerSaveHandler;
-	
-	void GatherSaveDataFromConnectedPlayers(TArray<APlayerController*> PlayerControllersToSave, TArray<struct FWildOmissionPlayerSave>& OutPendingSaves);
-	
-	void GatherSaveDataFromConnectedPlayer(APlayerController* PlayerControllerToSave, TArray<struct FWildOmissionPlayerSave>& OutPendingSaves);
-
-	bool GetPlayerPendingIndex(FString PlayerUniqueID, int32& OutIndex);
-
-	bool GetPlayerSaveIndex(FString PlayerUniqueID, int32& OutIndex);
-
-	TArray<struct FWildOmissionPlayerSave> PendingPlayerSaves;
+private:
 
 };

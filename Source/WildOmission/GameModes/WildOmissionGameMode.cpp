@@ -20,7 +20,7 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 		return;
 	}
 	
-	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>(FVector::ZeroVector, FRotator::ZeroRotator);
+	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
 	
 	if (SaveHandler == nullptr)
 	{
@@ -34,7 +34,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
-	SaveHandler->LoadPlayer(NewPlayer);
+	//TODO SaveHandler->GetPlayerHandler()->LoadPlayer(NewPlayer);
 
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("%s Has Joined the game"), *NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId().ToString()));
 }

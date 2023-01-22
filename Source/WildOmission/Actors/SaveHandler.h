@@ -25,7 +25,7 @@ public:
 
 	void LoadGame(const FString& SaveFileName);
 	
-	void LoadPlayer(APlayerController* PlayerController);
+	APlayerSaveHandler* GetPlayerHandler();
 
 	UWildOmissionSaveGame* GetSaveFile();
 protected:
@@ -36,8 +36,6 @@ private:
 	FString CurrentSaveFileName;
 
 	APlayerSaveHandler* PlayerSaveHandler;
-
-	void SavePendingPlayers(TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
 
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 };
