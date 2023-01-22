@@ -37,6 +37,8 @@ private:
 
 	bool RetrivePlayerDataFromSave(FString PlayerUniqueID, FWildOmissionPlayerSave& OutPlayerSave);
 
+	bool GetPlayerSaveIndex(FString PlayerUniqueID, int32& OutIndex);
+
 	UWildOmissionSaveGame* GetSaveFile();
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 };

@@ -19,6 +19,10 @@ public:
 
 	void LoadPlayerSave(const FWildOmissionPlayerSave& PlayerSave);
 
+	void Spawn();
+
+	FString GetUniqueID();
+
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
 

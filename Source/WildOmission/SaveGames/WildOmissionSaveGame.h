@@ -15,6 +15,9 @@ struct FWildOmissionPlayerSave
 	bool IsHost = false;
 
 	UPROPERTY()
+	bool IsAlive = false;
+
+	UPROPERTY()
 	FString UniqueID = FString("");
 	
 	UPROPERTY()

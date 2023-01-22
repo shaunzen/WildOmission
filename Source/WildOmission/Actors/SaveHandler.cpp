@@ -53,12 +53,19 @@ void ASaveHandler::SaveGame()
 
 void ASaveHandler::CreatePlayerSaves(TArray<APlayerController*> PlayerControllersToSave, TArray<FWildOmissionPlayerSave>& OutPlayerSaves)
 {
-	OutPlayerSaves.Empty();
 	for (APlayerController* PlayerController : PlayerControllersToSave)
 	{
 		AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
 
-		OutPlayerSaves.Add(WildOmissionPlayerController->SavePlayer());
+		int32 SaveIndex = 0;
+		if (GetPlayerSaveIndex(WildOmissionPlayerController->GetUniqueID(), SaveIndex))
+		{
+			OutPlayerSaves[SaveIndex] = WildOmissionPlayerController->SavePlayer();
+		}
+		else
+		{
+			OutPlayerSaves.Add(WildOmissionPlayerController->SavePlayer());
+		}
 	}
 }
 
@@ -83,19 +90,20 @@ void ASaveHandler::LoadGame(const FString& SaveFileName)
 
 void ASaveHandler::LoadPlayer(APlayerController* PlayerController)
 {
-	FString PlayerUniqueID = PlayerController->GetPlayerState<APlayerState>()->GetUniqueId().ToString();
-	FWildOmissionPlayerSave PlayerSave;
-	if (!RetrivePlayerDataFromSave(PlayerUniqueID, PlayerSave))
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Player hasn't played on this save file before generating new information."));
-		// Generate new player
-	}
 	AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
 	if (WildOmissionPlayerController == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to load player, couldn't cast to AWildOmissionPlayerController."));
 		return;
 	}
+	
+	FString PlayerUniqueID = PlayerController->GetPlayerState<APlayerState>()->GetUniqueId().ToString();
+	FWildOmissionPlayerSave PlayerSave;
+	if (!RetrivePlayerDataFromSave(PlayerUniqueID, PlayerSave) || PlayerSave.IsAlive == false)
+	{
+		WildOmissionPlayerController->Spawn();
+	}
+
 
 	WildOmissionPlayerController->LoadPlayerSave(PlayerSave);
 }
@@ -109,18 +117,40 @@ bool ASaveHandler::RetrivePlayerDataFromSave(FString PlayerUniqueID, FWildOmissi
 		return false;
 	}
 
+	int32 PlayerSaveIndex = 0;
+	if (!GetPlayerSaveIndex(PlayerUniqueID, PlayerSaveIndex))
+	{
+		return false;
+	}
+
+	OutPlayerSave = SaveFile->PlayerSaves[PlayerSaveIndex];
+	return true;
+}
+
+bool ASaveHandler::GetPlayerSaveIndex(FString PlayerUniqueID, int32& OutIndex)
+{
+	UWildOmissionSaveGame* SaveFile = GetSaveFile();
+	if (SaveFile == nullptr)
+	{
+		return;
+	}
+
+	int32 Index = 0;
+	bool PlayerFound = false;
 	for (const FWildOmissionPlayerSave& PlayerSave : SaveFile->PlayerSaves)
 	{
 		if (PlayerSave.UniqueID != PlayerUniqueID)
 		{
+			++Index;
 			continue;
 		}
 
-		OutPlayerSave = PlayerSave;
-		return true;
+		PlayerFound = true;
+		break;
 	}
 
-	return false;
+	OutIndex = Index;
+	return PlayerFound;
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
