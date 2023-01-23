@@ -3,6 +3,7 @@
 
 #include "WildOmissionGameMode.h"
 #include "WildOmission/Actors/SaveHandler.h"
+#include "WildOmission/ActorComponents/PlayerSaveHandlerComponent.h"
 #include "WildOmission/Characters/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
@@ -33,7 +34,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
-	//SaveHandler->GetPlayerHandler()->LoadPlayer(NewPlayer);
+	SaveHandler->GetPlayerHandler()->LoadPlayer(NewPlayer);
 
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("%s Has Joined the game"), *NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId().ToString()));
 }

@@ -2,6 +2,7 @@
 
 
 #include "SaveHandler.h"
+#include "WildOmission/ActorComponents/PlayerSaveHandlerComponent.h"
 #include "WildOmission/SaveGames/WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -10,6 +11,8 @@ ASaveHandler::ASaveHandler()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("Player Save Handler Component"));
 
 }
 
@@ -36,7 +39,7 @@ void ASaveHandler::SaveGame()
 		return;
 	}
 
-	//PlayerSaveHandler->SavePlayers(SaveFile->PlayerSaves);
+	PlayerSaveHandlerComponent->SavePlayers(SaveFile->PlayerSaves);
 	
 	UpdateSaveFile(SaveFile);
 }
@@ -67,6 +70,11 @@ UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
 	SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveFileName, 0));
 
 	return SaveFile;
+}
+
+UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler()
+{
+	return PlayerSaveHandlerComponent;
 }
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)

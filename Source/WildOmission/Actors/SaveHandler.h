@@ -7,6 +7,7 @@
 #include "SaveHandler.generated.h"
 
 class UWildOmissionSaveGame;
+class UPlayerSaveHandlerComponent;
 
 UCLASS()
 class WILDOMISSION_API ASaveHandler : public AActor
@@ -24,6 +25,8 @@ public:
 
 	void LoadGame(const FString& SaveFileName);
 
+	UPlayerSaveHandlerComponent* GetPlayerHandler();
+
 	UWildOmissionSaveGame* GetSaveFile();
 protected:
 	// Called when the game starts or when spawned
@@ -32,6 +35,7 @@ protected:
 private:
 	FString CurrentSaveFileName;
 
+	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
 	
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 };
