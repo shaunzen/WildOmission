@@ -20,7 +20,7 @@ void ASaveHandler::BeginPlay()
 	Super::BeginPlay();
 	
 	PlayerSaveHandler = GetWorld()->SpawnActor<APlayerSaveHandler>();
-	//PlayerSaveHandler->Setup(this);
+	PlayerSaveHandler->Setup(this);
 }
 
 // Called every frame
@@ -39,7 +39,7 @@ void ASaveHandler::SaveGame()
 		return;
 	}
 
-	// TODO PlayerSaveHandler->SavePlayers(SaveFilePlayers);
+	PlayerSaveHandler->SavePlayers(SaveFile->PlayerSaves);
 	
 	UpdateSaveFile(SaveFile);
 }
