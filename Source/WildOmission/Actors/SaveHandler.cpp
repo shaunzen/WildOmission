@@ -2,7 +2,6 @@
 
 
 #include "SaveHandler.h"
-#include "PlayerSaveHandler.h"
 #include "WildOmission/SaveGames/WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -19,8 +18,6 @@ void ASaveHandler::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	PlayerSaveHandler = GetWorld()->SpawnActor<APlayerSaveHandler>();
-	PlayerSaveHandler->Setup(this);
 }
 
 // Called every frame
@@ -39,7 +36,7 @@ void ASaveHandler::SaveGame()
 		return;
 	}
 
-	PlayerSaveHandler->SavePlayers(SaveFile->PlayerSaves);
+	//PlayerSaveHandler->SavePlayers(SaveFile->PlayerSaves);
 	
 	UpdateSaveFile(SaveFile);
 }
@@ -70,11 +67,6 @@ UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
 	SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveFileName, 0));
 
 	return SaveFile;
-}
-
-APlayerSaveHandler* ASaveHandler::GetPlayerHandler()
-{
-	return PlayerSaveHandler;
 }
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
