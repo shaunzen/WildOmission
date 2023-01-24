@@ -3,8 +3,8 @@
 
 #include "WorldItem.h"
 #include "Components/StaticMeshComponent.h"
-#include "WildOmission/Characters/PlayerCharacter.h"
-#include "WildOmission/ActorComponents/InventoryComponent.h"
+#include "WildOmission/Player/WildOmissionCharacter.h"
+#include "WildOmission/Components/InventoryComponent.h"
 
 // Sets default values
 AWorldItem::AWorldItem()
@@ -44,13 +44,13 @@ void AWorldItem::Tick(float DeltaTime)
 void AWorldItem::Interact(AActor* Interactor)
 {
 	// add to their inventory
-	APlayerCharacter* PlayerCharacterInteractor;
-	PlayerCharacterInteractor = Cast<APlayerCharacter>(Interactor);
-	if (PlayerCharacterInteractor == nullptr)
+	AWildOmissionCharacter* CharacterInteractor = Cast<AWildOmissionCharacter>(Interactor);
+	if (CharacterInteractor == nullptr)
 	{
 		return;
 	}
-	PlayerCharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
+	CharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
+	
 	// destroy this item
 	if (HasAuthority())
 	{

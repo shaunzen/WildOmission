@@ -2,12 +2,12 @@
 
 
 #include "WildOmissionGameMode.h"
-#include "WildOmission/Actors/SaveHandler.h"
-#include "WildOmission/ActorComponents/PlayerSaveHandlerComponent.h"
-#include "WildOmission/Characters/PlayerCharacter.h"
+#include "WildOmission/Core/SaveSystem/SaveHandler.h"
+#include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
+#include "WildOmission/Player/WildOmissionCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
-#include "WildOmission/ActorComponents/InventoryComponent.h"
+#include "WildOmission/Components/InventoryComponent.h"
 
 void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
@@ -60,16 +60,16 @@ void AWildOmissionGameMode::LogPlayerInventoryComponents()
 			return;
 		}
 		
-		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(PlayerController->GetPawn());
-		if (PlayerCharacter == nullptr)
+		AWildOmissionCharacter* Character = Cast<AWildOmissionCharacter>(PlayerController->GetPawn());
+		if (Character == nullptr)
 		{
 			return;
 		}
-		for (const TPair<FName, int32>& Item : *PlayerCharacter->GetInventoryComponent()->GetContents())
+		for (const TPair<FName, int32>& Item : *Character->GetInventoryComponent()->GetContents())
 		{
 			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("%s: %i"), *Item.Key.ToString(), Item.Value));
 		}
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: "), *PlayerCharacter->GetActorNameOrLabel()));
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: "), *Character->GetActorNameOrLabel()));
 	}
 }
 
