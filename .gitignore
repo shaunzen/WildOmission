@@ -1,5 +1,6 @@
 # Visual Studio 2015 user specific files
 .vs/
+.vscode/
 
 # Compiled Object files
 *.slo
@@ -35,6 +36,7 @@
 *.xcodeproj
 *.xcworkspace
 *.sln
+*.code-workspace
 *.suo
 *.opensdf
 *.sdf
@@ -72,3 +74,11 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+.DS_Store
+
+# Mac specific files
+Content/.DS_Store
+Content/Blueprints/.DS_Store
+Content/Textures/.DS_Store
+Content/Textures/Icons/.DS_Store
+Source/.DS_Store
