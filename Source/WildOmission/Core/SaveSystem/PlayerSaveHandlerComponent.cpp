@@ -12,28 +12,9 @@ UPlayerSaveHandlerComponent::UPlayerSaveHandlerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
-}
+	PrimaryComponentTick.bCanEverTick = false;
 
 
-// Called when the game starts
-void UPlayerSaveHandlerComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	
-}
-
-
-// Called every frame
-void UPlayerSaveHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UPlayerSaveHandlerComponent::SavePlayers(TArray<FWildOmissionPlayerSave>& OutUpdatedPlayerSaves)
@@ -80,7 +61,7 @@ void UPlayerSaveHandlerComponent::CreatePlayerSaves(TArray<APlayerController*> P
 		}
 
 		int32 SaveIndex = 0;
-		if (GetPlayerSaveIndex(WildOmissionPlayerController->GetUniqueID(), SaveIndex))
+		if (GetPlayerIndexInList(OutPlayerSaves, WildOmissionPlayerController->GetUniqueID(), SaveIndex))
 		{
 			OutPlayerSaves[SaveIndex] = WildOmissionPlayerController->SavePlayer();
 		}
@@ -91,7 +72,7 @@ void UPlayerSaveHandlerComponent::CreatePlayerSaves(TArray<APlayerController*> P
 	}
 }
 
-bool UPlayerSaveHandlerComponent::RetrivePlayerDataFromSave(FString PlayerUniqueID, FWildOmissionPlayerSave& OutPlayerSave)
+bool UPlayerSaveHandlerComponent::RetrivePlayerDataFromSave(const FString& PlayerUniqueID, FWildOmissionPlayerSave& OutPlayerSave)
 {
 	ASaveHandler* OwnerSaveHandler = Cast<ASaveHandler>(GetOwner());
 	if (OwnerSaveHandler == nullptr)
@@ -107,7 +88,7 @@ bool UPlayerSaveHandlerComponent::RetrivePlayerDataFromSave(FString PlayerUnique
 	}
 
 	int32 PlayerSaveIndex = 0;
-	if (!GetPlayerSaveIndex(PlayerUniqueID, PlayerSaveIndex))
+	if (!GetPlayerIndexInList(SaveFile->PlayerSaves, PlayerUniqueID, PlayerSaveIndex))
 	{
 		return false;
 	}
@@ -116,26 +97,11 @@ bool UPlayerSaveHandlerComponent::RetrivePlayerDataFromSave(FString PlayerUnique
 	return true;
 }
 
-bool UPlayerSaveHandlerComponent::GetPlayerSaveIndex(FString PlayerUniqueID, int32& OutIndex)
+bool UPlayerSaveHandlerComponent::GetPlayerIndexInList(const TArray<FWildOmissionPlayerSave>& List, const FString& PlayerUniqueID, int32& OutIndex)
 {
 	int32 Index = 0;
 	bool PlayerFound = false;
-
-	ASaveHandler* OwnerSaveHandler = Cast<ASaveHandler>(GetOwner());
-	if (OwnerSaveHandler == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to get player index, OwnerSaveHandler was nullptr."));
-		return PlayerFound;
-	}
-
-	UWildOmissionSaveGame* SaveFile = OwnerSaveHandler->GetSaveFile();
-	if (SaveFile == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to get player index, save file was nullptr."));
-		return PlayerFound;
-	}
-
-	for (const FWildOmissionPlayerSave& PlayerSave : SaveFile->PlayerSaves)
+	for (const FWildOmissionPlayerSave& PlayerSave : List)
 	{
 		if (PlayerSave.UniqueID != PlayerUniqueID)
 		{
