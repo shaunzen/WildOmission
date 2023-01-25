@@ -16,13 +16,24 @@ public:
 	// Sets default values for this component's properties
 	UPlayerSaveHandlerComponent();
 
-	// this will take in the list of player saves from the save file and update and add the players from the pending list
+	// Will update the list passed in to include saves from the pending list.
 	void SavePlayers(TArray<struct FWildOmissionPlayerSave>& OutUpdatedPlayerSaves);
 
-	// this will find a players unique save data in the save file and tell it to load that data
+	// Finds the save data for the given player controller passed in, if save data is found it will automatically load.
+	// If no save data is found it will result to spawning the player with default settings and items.
 	void LoadPlayer(APlayerController* PlayerController);
+protected:
+	virtual void BeginPlay() override;
 
 private:	
+	UPROPERTY()
+	TArray<struct FWildOmissionPlayerSave> PendingSaves;
+
+	UFUNCTION()
+	void UpdatePendingList();
+
+	void AddPendingSavesToList(TArray<struct FWildOmissionPlayerSave>& OutListToAddTo);
+
 	// this will create save data for the given players passed in, then update, or add that data to the list passed in
 	void CreatePlayerSaves(TArray<APlayerController*> PlayerControllersToSave, TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
 

@@ -6,6 +6,7 @@
 #include "WildOmissionSaveGame.h"
 #include "WildOmission/Player/WildOmissionPlayerController.h"
 #include "WildOmission/GameModes/WildOmissionGameMode.h"
+#include "TimerManager.h"
 
 // Sets default values for this component's properties
 UPlayerSaveHandlerComponent::UPlayerSaveHandlerComponent()
@@ -14,7 +15,15 @@ UPlayerSaveHandlerComponent::UPlayerSaveHandlerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+}
 
+void UPlayerSaveHandlerComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	// start a timer to gather all saves
+	FTimerHandle UpdatePendingTimerHandle;
+
+	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::UpdatePendingList, 10.0f, true);
 }
 
 void UPlayerSaveHandlerComponent::SavePlayers(TArray<FWildOmissionPlayerSave>& OutUpdatedPlayerSaves)
@@ -26,7 +35,37 @@ void UPlayerSaveHandlerComponent::SavePlayers(TArray<FWildOmissionPlayerSave>& O
 		return;
 	}
 
-	CreatePlayerSaves(GameMode->GetAllPlayerControllers(), OutUpdatedPlayerSaves);
+	AddPendingSavesToList(OutUpdatedPlayerSaves);
+}
+
+void UPlayerSaveHandlerComponent::UpdatePendingList()
+{
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to create pending player saves, GameMode was nullptr."));
+		return;
+	}
+
+	CreatePlayerSaves(GameMode->GetAllPlayerControllers(), PendingSaves);
+
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Cyan, FString::Printf(TEXT("%i Players Pending to be saved."), PendingSaves.Num()));
+}
+
+void UPlayerSaveHandlerComponent::AddPendingSavesToList(TArray<FWildOmissionPlayerSave>& OutListToAddTo)
+{
+	for (FWildOmissionPlayerSave& PendingSave : PendingSaves)
+	{
+		int32 Index = 0;
+		if (GetPlayerIndexInList(OutListToAddTo, PendingSave.UniqueID, Index))
+		{
+			OutListToAddTo[Index] = PendingSave;
+		}
+		else
+		{
+			OutListToAddTo.Add(PendingSave);
+		}
+	}
 }
 
 void UPlayerSaveHandlerComponent::LoadPlayer(APlayerController* PlayerController)
