@@ -20,156 +20,108 @@ UPlayerSaveHandlerComponent::UPlayerSaveHandlerComponent()
 void UPlayerSaveHandlerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	// start a timer to gather all saves
+	
 	FTimerHandle UpdatePendingTimerHandle;
-
-	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::UpdatePendingList, 60.0f, true);
-}
-
-void UPlayerSaveHandlerComponent::SavePlayers(TArray<FWildOmissionPlayerSave>& OutUpdatedPlayerSaves)
-{
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to save players, GameMode was nullptr."));
-		return;
-	}
-
-	AddPendingSavesToList(OutUpdatedPlayerSaves);
+	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::AddAllPlayersToPending, 60.0f, true);
 }
 
 void UPlayerSaveHandlerComponent::AddPlayerToPending(APlayerController* PlayerController)
 {
-	TArray<APlayerController*> PlayerControllerList;
-	PlayerControllerList.Add(PlayerController);
-
-	CreatePlayerSaves(PlayerControllerList, PendingSaves);
-
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Cyan, FString::Printf(TEXT("%i Players Pending to be saved."), PendingSaves.Num()));
-
-}
-
-void UPlayerSaveHandlerComponent::UpdatePendingList()
-{
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode == nullptr)
+	AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
+	if (WildOmissionPlayerController == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to create pending player saves, GameMode was nullptr."));
 		return;
 	}
 
-	CreatePlayerSaves(GameMode->GetAllPlayerControllers(), PendingSaves);
-
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Cyan, FString::Printf(TEXT("%i Players Pending to be saved."), PendingSaves.Num()));
+	AddSaveToList(WildOmissionPlayerController->SavePlayer(), PendingSaves);
 }
 
-void UPlayerSaveHandlerComponent::AddPendingSavesToList(TArray<FWildOmissionPlayerSave>& OutListToAddTo)
+void UPlayerSaveHandlerComponent::SavePlayers(TArray<FWildOmissionPlayerSave>& OutUpdatedSavesList)
 {
-	for (FWildOmissionPlayerSave& PendingSave : PendingSaves)
-	{
-		int32 Index = 0;
-		if (GetPlayerIndexInList(OutListToAddTo, PendingSave.UniqueID, Index))
-		{
-			OutListToAddTo[Index] = PendingSave;
-		}
-		else
-		{
-			OutListToAddTo.Add(PendingSave);
-		}
-	}
+	AddSavesToList(PendingSaves, OutUpdatedSavesList);
 	PendingSaves.Empty();
 }
 
 void UPlayerSaveHandlerComponent::LoadPlayer(APlayerController* PlayerController)
 {
+	ASaveHandler* SaveHandlerOwner = Cast<ASaveHandler>(GetOwner());
 	AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
-	if (WildOmissionPlayerController == nullptr)
+	if (SaveHandlerOwner == nullptr || WildOmissionPlayerController == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to load player, couldn't cast PlayerController to a WildOmissionPlayerController."));
+		UE_LOG(LogTemp, Error, TEXT("Couldn't load the player, SaveHandler or PlayerController was nullptr."));
 		return;
 	}
 
+	int32 SaveIndex = 0;
 	FString PlayerUniqueID = WildOmissionPlayerController->GetUniqueID();
-	FWildOmissionPlayerSave PlayerSave;
-	int32 PlayerPendingIndex = 0;
 
 	// Does the player have a pending save that is more up to date than the save file
-	if (GetPlayerIndexInList(PendingSaves, PlayerUniqueID, PlayerPendingIndex))
+	if (GetSaveIndexInList(PendingSaves, PlayerUniqueID, SaveIndex))
 	{
-		PlayerSave = PendingSaves[PlayerPendingIndex];
+		WildOmissionPlayerController->LoadPlayerSave(PendingSaves[SaveIndex]);
 	}
-	else if (!RetrivePlayerDataFromSave(PlayerUniqueID, PlayerSave) || PlayerSave.IsAlive == false)
+	// If there is no pending saves does the player exist in the save file
+	else if (GetSaveIndexInList(SaveHandlerOwner->GetSaveFile()->PlayerSaves, PlayerUniqueID, SaveIndex))
+	{
+		WildOmissionPlayerController->LoadPlayerSave(SaveHandlerOwner->GetSaveFile()->PlayerSaves[SaveIndex]);
+	}
+	// Must be a new player just go ahead and call his spawn function
+	else
 	{
 		WildOmissionPlayerController->Spawn();
+	}
+}
+
+void UPlayerSaveHandlerComponent::AddAllPlayersToPending()
+{
+	AWildOmissionGameMode* WildOmissionGameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	if (WildOmissionGameMode == nullptr)
+	{
 		return;
 	}
 
-	WildOmissionPlayerController->LoadPlayerSave(PlayerSave);
+	for (APlayerController* PlayerController : WildOmissionGameMode->GetAllPlayerControllers())
+	{
+		AddPlayerToPending(PlayerController);
+	}
 }
 
-void UPlayerSaveHandlerComponent::CreatePlayerSaves(TArray<APlayerController*> PlayerControllersToSave, TArray<FWildOmissionPlayerSave>& OutPlayerSaves)
+void UPlayerSaveHandlerComponent::AddSavesToList(const TArray<FWildOmissionPlayerSave>& InSavesList, TArray<FWildOmissionPlayerSave>& OutSavesList)
 {
-	for (APlayerController* PlayerController : PlayerControllersToSave)
+	for (const FWildOmissionPlayerSave& InSave : InSavesList)
 	{
-		AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
-		if (WildOmissionPlayerController == nullptr)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to create player saves, could't cast PlayerController to a WildOmissionPlayerController."));
-			return;
-		}
-
-		int32 SaveIndex = 0;
-		if (GetPlayerIndexInList(OutPlayerSaves, WildOmissionPlayerController->GetUniqueID(), SaveIndex))
-		{
-			OutPlayerSaves[SaveIndex] = WildOmissionPlayerController->SavePlayer();
-		}
-		else
-		{
-			OutPlayerSaves.Add(WildOmissionPlayerController->SavePlayer());
-		}
+		AddSaveToList(InSave, OutSavesList);
 	}
 }
 
-bool UPlayerSaveHandlerComponent::RetrivePlayerDataFromSave(const FString& PlayerUniqueID, FWildOmissionPlayerSave& OutPlayerSave)
+void UPlayerSaveHandlerComponent::AddSaveToList(const FWildOmissionPlayerSave& InSave, TArray<FWildOmissionPlayerSave>& OutSavesList)
 {
-	ASaveHandler* OwnerSaveHandler = Cast<ASaveHandler>(GetOwner());
-	if (OwnerSaveHandler == nullptr)
+	int32 SaveIndex = 0;
+	if (GetSaveIndexInList(OutSavesList, InSave.UniqueID, SaveIndex))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Unable to retrive player data from save, OwnerSaveHandler was nullptr."));
-		return false;
+		OutSavesList[SaveIndex] = InSave;
 	}
-	UWildOmissionSaveGame* SaveFile = OwnerSaveHandler->GetSaveFile();
-	if (SaveFile == nullptr)
+	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to retrive player data from save, save file was a nullptr."));
-		return false;
+		OutSavesList.Add(InSave);
 	}
-
-	int32 PlayerSaveIndex = 0;
-	if (!GetPlayerIndexInList(SaveFile->PlayerSaves, PlayerUniqueID, PlayerSaveIndex))
-	{
-		return false;
-	}
-
-	OutPlayerSave = SaveFile->PlayerSaves[PlayerSaveIndex];
-	return true;
 }
 
-bool UPlayerSaveHandlerComponent::GetPlayerIndexInList(const TArray<FWildOmissionPlayerSave>& List, const FString& PlayerUniqueID, int32& OutIndex)
+bool UPlayerSaveHandlerComponent::GetSaveIndexInList(const TArray<FWildOmissionPlayerSave>& List, const FString& UniqueID, int32& OutIndex)
 {
 	int32 Index = 0;
-	bool PlayerFound = false;
-	for (const FWildOmissionPlayerSave& PlayerSave : List)
+	bool SaveFound = false;
+	for (const FWildOmissionPlayerSave& Save : List)
 	{
-		if (PlayerSave.UniqueID != PlayerUniqueID)
+		if (Save.UniqueID != UniqueID)
 		{
 			++Index;
 			continue;
 		}
-		PlayerFound = true;
+		SaveFound = true;
 		break;
 	}
 
 	OutIndex = Index;
-	return PlayerFound;
+	return SaveFound;
 }

@@ -7,6 +7,8 @@
 #include "WildOmission/Components/InventoryComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/GameModes/WildOmissionGameMode.h"
+#include "WildOmission/Core/SaveSystem/SaveHandler.h"
+#include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
 
 FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 {
@@ -105,13 +107,11 @@ void AWildOmissionPlayerController::Server_DestroyActor_Implementation(AActor* A
 
 void AWildOmissionPlayerController::Server_AddToPending_Implementation()
 {
-
 	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
 	if (GameMode == nullptr)
 	{
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Adding myself to the pending list"));
-	GameMode->AddPlayerToPending(this);
+	GameMode->GetSaveHandler()->GetPlayerHandler()->AddPlayerToPending(this);
 }

@@ -18,9 +18,6 @@ public:
 	// Sets default values for this actor's properties
 	ASaveHandler();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	void SaveGame();
 
 	void LoadGame(const FString& SaveFileName);
@@ -28,9 +25,6 @@ public:
 	UPlayerSaveHandlerComponent* GetPlayerHandler();
 
 	UWildOmissionSaveGame* GetSaveFile();
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 private:
 	FString CurrentSaveFileName;

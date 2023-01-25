@@ -17,32 +17,30 @@ public:
 	UPlayerSaveHandlerComponent();
 
 	// Will update the list passed in to include saves from the pending list.
-	void SavePlayers(TArray<struct FWildOmissionPlayerSave>& OutUpdatedPlayerSaves);
+	void SavePlayers(TArray<struct FWildOmissionPlayerSave>& OutUpdatedSavesList);
+
+	// Adds the passed in PlayerControllers Save File to the pending list
+	void AddPlayerToPending(APlayerController* PlayerController);
 
 	// Finds the save data for the given player controller passed in, if save data is found it will automatically load.
 	// If no save data is found it will result to spawning the player with default settings and items.
 	void LoadPlayer(APlayerController* PlayerController);
 
-	void AddPlayerToPending(APlayerController* PlayerController);
 protected:
 	virtual void BeginPlay() override;
 
-private:	
+private:
+
 	UPROPERTY()
 	TArray<struct FWildOmissionPlayerSave> PendingSaves;
 
 	UFUNCTION()
-	void UpdatePendingList();
+	void AddAllPlayersToPending();
 
-	void AddPendingSavesToList(TArray<struct FWildOmissionPlayerSave>& OutListToAddTo);
-
-	// this will create save data for the given players passed in, then update, or add that data to the list passed in
-	void CreatePlayerSaves(TArray<APlayerController*> PlayerControllersToSave, TArray<struct FWildOmissionPlayerSave>& OutPlayerSaves);
-
-	// this will try to find the save data for a given Player ID in the save file, will return false if fails to find
-	bool RetrivePlayerDataFromSave(const FString& PlayerUniqueID, struct FWildOmissionPlayerSave& OutPlayerSave);
-
-	// this will return the index of a players save data in the specified list, will return false if fails to find
-	bool GetPlayerIndexInList(const TArray<struct FWildOmissionPlayerSave>& List, const FString& PlayerUniqueID, int32& OutIndex);
+	void AddSavesToList(const TArray<struct FWildOmissionPlayerSave>& InSaveList, TArray<struct FWildOmissionPlayerSave>& OutSavesList);
+	
+	void AddSaveToList(const struct FWildOmissionPlayerSave& InSave, TArray<struct FWildOmissionPlayerSave>& OutSavesList);
+	
+	bool GetSaveIndexInList(const TArray<struct FWildOmissionPlayerSave>& List, const FString& UniqueID, int32& OutIndex);
 		
 };

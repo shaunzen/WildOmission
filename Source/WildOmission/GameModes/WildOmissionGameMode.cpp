@@ -49,9 +49,9 @@ void AWildOmissionGameMode::SaveGame()
 	SaveHandler->SaveGame();
 }
 
-void AWildOmissionGameMode::AddPlayerToPending(APlayerController* InPlayerController)
+ASaveHandler* AWildOmissionGameMode::GetSaveHandler()
 {
-	SaveHandler->GetPlayerHandler()->AddPlayerToPending(InPlayerController);
+	return SaveHandler;
 }
 
 void AWildOmissionGameMode::LogPlayerInventoryComponents()
