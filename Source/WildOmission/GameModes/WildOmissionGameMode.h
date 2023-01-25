@@ -26,6 +26,9 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void SaveGame();
 	
+	UFUNCTION()
+	void AddPlayerToPending(APlayerController* InPlayerController);
+
 	TArray<APlayerController*> GetAllPlayerControllers();
 private:
 	UPROPERTY()

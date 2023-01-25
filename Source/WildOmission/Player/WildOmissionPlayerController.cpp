@@ -6,6 +6,7 @@
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "GameFramework/PlayerState.h"
+#include "WildOmission/GameModes/WildOmissionGameMode.h"
 
 FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 {
@@ -31,6 +32,24 @@ FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave& PlayerSave)
 {
 	GetPawn()->SetActorLocation(PlayerSave.WorldLocation);
+}
+
+void AWildOmissionPlayerController::Save()
+{
+	Server_AddToPending();
+
+	if (HasAuthority() == false)
+	{
+		return;
+	}
+	
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr)
+	{
+		return;
+	}
+
+	GameMode->SaveGame();
 }
 
 void AWildOmissionPlayerController::Spawn()
@@ -82,4 +101,17 @@ void AWildOmissionPlayerController::Server_DestroyActor_Implementation(AActor* A
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Black, FString::Printf(TEXT("Destroying Actor Named: %s"), *ActorToDestroy->GetActorNameOrLabel()));
 
 	ActorToDestroy->Destroy();
+}
+
+void AWildOmissionPlayerController::Server_AddToPending_Implementation()
+{
+
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr)
+	{
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Adding myself to the pending list"));
+	GameMode->AddPlayerToPending(this);
 }

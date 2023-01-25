@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
-#include "WildOmission/GameModes/WildOmissionGameMode.h"
+#include "WildOmission/Player/WildOmissionPlayerController.h"
 
 UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -50,7 +50,7 @@ void UGameplayMenuWidget::Show()
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = true;
 
-	SaveGame();
+	Save();
 }
 
 bool UGameplayMenuWidget::IsOpen() const
@@ -76,18 +76,16 @@ void UGameplayMenuWidget::Teardown()
 	PlayerController->bShowMouseCursor = false;
 }
 
-void UGameplayMenuWidget::SaveGame()
+void UGameplayMenuWidget::Save()
 {
-	// Get the game mode
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-
-	if (GameMode == nullptr)
+	AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(GetOwningPlayer());
+	if (PlayerController == nullptr)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Ignoring save request, player is not host."));
+		UE_LOG(LogTemp, Warning, TEXT("Couldn't call save, PlayerController was nullptr."));
 		return;
 	}
 
-	GameMode->SaveGame();
+	PlayerController->Save();
 }
 
 void UGameplayMenuWidget::QuitToMenu()
@@ -98,8 +96,6 @@ void UGameplayMenuWidget::QuitToMenu()
 	{
 		return;
 	}
-	
-	SaveGame();
 
 	GameInstance->ReturnToMainMenu();
 }

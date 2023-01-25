@@ -49,6 +49,11 @@ void AWildOmissionGameMode::SaveGame()
 	SaveHandler->SaveGame();
 }
 
+void AWildOmissionGameMode::AddPlayerToPending(APlayerController* InPlayerController)
+{
+	SaveHandler->GetPlayerHandler()->AddPlayerToPending(InPlayerController);
+}
+
 void AWildOmissionGameMode::LogPlayerInventoryComponents()
 {
 	// Get all the players in the current world

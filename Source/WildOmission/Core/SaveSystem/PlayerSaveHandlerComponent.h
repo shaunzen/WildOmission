@@ -22,6 +22,8 @@ public:
 	// Finds the save data for the given player controller passed in, if save data is found it will automatically load.
 	// If no save data is found it will result to spawning the player with default settings and items.
 	void LoadPlayer(APlayerController* PlayerController);
+
+	void AddPlayerToPending(APlayerController* PlayerController);
 protected:
 	virtual void BeginPlay() override;
 

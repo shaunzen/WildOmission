@@ -23,7 +23,7 @@ void UPlayerSaveHandlerComponent::BeginPlay()
 	// start a timer to gather all saves
 	FTimerHandle UpdatePendingTimerHandle;
 
-	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::UpdatePendingList, 10.0f, true);
+	//GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::UpdatePendingList, 60.0f, true);
 }
 
 void UPlayerSaveHandlerComponent::SavePlayers(TArray<FWildOmissionPlayerSave>& OutUpdatedPlayerSaves)
@@ -36,6 +36,14 @@ void UPlayerSaveHandlerComponent::SavePlayers(TArray<FWildOmissionPlayerSave>& O
 	}
 
 	AddPendingSavesToList(OutUpdatedPlayerSaves);
+}
+
+void UPlayerSaveHandlerComponent::AddPlayerToPending(APlayerController* PlayerController)
+{
+	TArray<APlayerController*> PlayerControllerList;
+	PlayerControllerList.Add(PlayerController);
+
+	CreatePlayerSaves(PlayerControllerList, PendingSaves);
 }
 
 void UPlayerSaveHandlerComponent::UpdatePendingList()

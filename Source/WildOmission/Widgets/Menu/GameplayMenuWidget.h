@@ -44,7 +44,7 @@ private:
 	void Teardown();
 
 	UFUNCTION()
-	void SaveGame();
+	void Save();
 	
 	UFUNCTION()
 	void QuitToMenu();

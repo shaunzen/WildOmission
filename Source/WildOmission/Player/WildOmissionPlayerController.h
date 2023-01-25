@@ -18,6 +18,8 @@ public:
 
 	void LoadPlayerSave(const struct FWildOmissionPlayerSave& PlayerSave);
 
+	void Save();
+
 	void Spawn();
 
 	FString GetUniqueID();
@@ -28,4 +30,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_DestroyActor(AActor* ActorToDestroy);
 
+private:
+	UFUNCTION(Server, Reliable)
+	void Server_AddToPending();
 };
