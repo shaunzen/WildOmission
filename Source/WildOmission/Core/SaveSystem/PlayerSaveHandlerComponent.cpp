@@ -23,7 +23,7 @@ void UPlayerSaveHandlerComponent::BeginPlay()
 	// start a timer to gather all saves
 	FTimerHandle UpdatePendingTimerHandle;
 
-	//GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::UpdatePendingList, 60.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::UpdatePendingList, 60.0f, true);
 }
 
 void UPlayerSaveHandlerComponent::SavePlayers(TArray<FWildOmissionPlayerSave>& OutUpdatedPlayerSaves)
@@ -44,6 +44,9 @@ void UPlayerSaveHandlerComponent::AddPlayerToPending(APlayerController* PlayerCo
 	PlayerControllerList.Add(PlayerController);
 
 	CreatePlayerSaves(PlayerControllerList, PendingSaves);
+
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Cyan, FString::Printf(TEXT("%i Players Pending to be saved."), PendingSaves.Num()));
+
 }
 
 void UPlayerSaveHandlerComponent::UpdatePendingList()
@@ -74,6 +77,7 @@ void UPlayerSaveHandlerComponent::AddPendingSavesToList(TArray<FWildOmissionPlay
 			OutListToAddTo.Add(PendingSave);
 		}
 	}
+	PendingSaves.Empty();
 }
 
 void UPlayerSaveHandlerComponent::LoadPlayer(APlayerController* PlayerController)
@@ -87,7 +91,14 @@ void UPlayerSaveHandlerComponent::LoadPlayer(APlayerController* PlayerController
 
 	FString PlayerUniqueID = WildOmissionPlayerController->GetUniqueID();
 	FWildOmissionPlayerSave PlayerSave;
-	if (!RetrivePlayerDataFromSave(PlayerUniqueID, PlayerSave) || PlayerSave.IsAlive == false)
+	int32 PlayerPendingIndex = 0;
+
+	// Does the player have a pending save that is more up to date than the save file
+	if (GetPlayerIndexInList(PendingSaves, PlayerUniqueID, PlayerPendingIndex))
+	{
+		PlayerSave = PendingSaves[PlayerPendingIndex];
+	}
+	else if (!RetrivePlayerDataFromSave(PlayerUniqueID, PlayerSave) || PlayerSave.IsAlive == false)
 	{
 		WildOmissionPlayerController->Spawn();
 		return;
