@@ -1,3 +1,9 @@
+===========Key===========
+	+ = Added
+	* = Change
+	- = Removed
+=========================
+
 January 22 2023
 * Player saves list no longer cleared when saving game, instead it checks if the player is already in the save, and overwrites their
 	respective chunk of data leaving everything else alone.
@@ -7,3 +13,8 @@ January 23 2023
 
 January 24 2023
 * Organized source folder structure.
+
+January 25 2023
++ Added Pending Player Save System
+* Made UI Elements Modular classes
+
