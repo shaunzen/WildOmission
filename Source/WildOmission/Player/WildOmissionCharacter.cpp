@@ -135,8 +135,8 @@ void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MoveAxis = Value.Get<FVector2D>();
 
-	AddMovementInput(FirstPersonCameraComponent->GetForwardVector(), MoveAxis.Y);
-	AddMovementInput(FirstPersonCameraComponent->GetRightVector(), MoveAxis.X);
+	AddMovementInput(GetActorForwardVector(), MoveAxis.Y);
+	AddMovementInput(GetActorRightVector(), MoveAxis.X);
 }
 
 void AWildOmissionCharacter::Look(const FInputActionValue& Value)

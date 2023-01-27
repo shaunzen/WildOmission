@@ -27,6 +27,7 @@ January 26-27 2023
 January 27 2023
 * Made UI Slightly Transparent.
 * Fixed Movement Being slowed by looking down.
+* Updated Version Text on menu.
 ================================================
 
 ===========Version 0.1.2 Prototype==============
