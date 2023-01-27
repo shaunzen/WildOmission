@@ -4,6 +4,7 @@
 #include "SaveHandler.h"
 #include "PlayerSaveHandlerComponent.h"
 #include "WildOmissionSaveGame.h"
+#include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -26,20 +27,28 @@ void ASaveHandler::SaveGame()
 	}
 
 	PlayerSaveHandlerComponent->SavePlayers(SaveFile->PlayerSaves);
-	
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Saving the level"));
 	UpdateSaveFile(SaveFile);
 }
 
 
 void ASaveHandler::LoadGame(const FString& SaveFileName)
 {
-	CurrentSaveFileName = SaveFileName;
+	if (SaveFileName.Len() == 0)
+	{
+		CurrentSaveFileName = FString("PIE");
+	}
+	else
+	{
+		CurrentSaveFileName = SaveFileName;
+	}
 
 	UWildOmissionSaveGame* SaveFile = GetSaveFile();
 	if (SaveFile == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Save File Returned a nullptr... Aborting load"));
-		return;
+		UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+		GameInstance->CreateSave(CurrentSaveFileName);
+		SaveFile = GetSaveFile();
 	}
 
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)

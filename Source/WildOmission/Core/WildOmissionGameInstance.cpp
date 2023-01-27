@@ -7,6 +7,8 @@
 #include "OnlineSessionSettings.h"
 #include "WildOmission/Widgets/Menu/MainMenuWidget.h"
 #include "WildOmission/Widgets/Menu/GameplayMenuWidget.h"
+#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
+#include "Kismet/GameplayStatics.h"
 
 // Static session information
 const static FName SESSION_NAME = TEXT("Game");
@@ -329,4 +331,10 @@ TArray<FString> UWildOmissionGameInstance::GetAllSaveGameSlotNames()
 	}
 
 	return Saves;
+}
+
+void UWildOmissionGameInstance::CreateSave(const FString& NewSaveName)
+{
+	UWildOmissionSaveGame* NewSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewSaveName, 0);
 }

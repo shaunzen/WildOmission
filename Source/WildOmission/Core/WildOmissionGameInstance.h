@@ -41,6 +41,7 @@ public:
 	void RefreshServerList();
 
 	static TArray<FString> GetAllSaveGameSlotNames();
+	void CreateSave(const FString& NewSaveName);
 private:
 
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetBlueprintClass;

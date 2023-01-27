@@ -4,6 +4,7 @@
 #include "WildOmissionGameMode.h"
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
+#include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "WildOmission/Player/WildOmissionCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
@@ -15,11 +16,6 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 
 	FString SaveGame = UGameplayStatics::ParseOption(Options, "SaveGame");
 
-	if (SaveGame.Len() == 0)
-	{
-		return;
-	}
-	
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
 	
 	if (SaveHandler == nullptr)

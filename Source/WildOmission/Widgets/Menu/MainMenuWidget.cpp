@@ -324,12 +324,11 @@ void UMainMenuWidget::CreateSave()
 	FString NewSaveName;
 	NewSaveName = SaveNameInputBox->GetText().ToString();
 
-	// Create a new save with that name
-	UWildOmissionSaveGame* NewSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
-	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewSaveName, 0);
-
-	// Start singleplayer with that new save
+	
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	// Create a new save with that name
+	GameInstance->CreateSave(NewSaveName);
+	// Start singleplayer with that new save
 	GameInstance->StartSingleplayer(NewSaveName);
 }
 
