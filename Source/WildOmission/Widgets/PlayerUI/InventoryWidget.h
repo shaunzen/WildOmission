@@ -8,7 +8,7 @@
 #include "InventoryWidget.generated.h"
 
 class UTextBlock;
-class UWrapBox;
+class UUniformGridPanel;
 class UBorder;
 class USelectedItemWidget;
 class UInventoryComponent;
@@ -54,9 +54,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InventoryName;
 	UPROPERTY(meta = (BindWidget))
-	UWrapBox* InventoryWrapBox;
+	UUniformGridPanel* InventoryGridPanel;
 	UPROPERTY(meta = (BindWidget))
-	UWrapBox* ToolbarWrapBox;
+	UUniformGridPanel* ToolbarGridPanel;
 	
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;

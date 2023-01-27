@@ -6,7 +6,8 @@
 #include "SelectedItemWidget.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
-#include "Components/WrapBox.h"
+#include "Components/UniformGridPanel.h"
+#include "Components/UniformGridSlot.h"
 #include "Components/CanvasPanel.h"
 #include "WildOmission/Components/InventoryComponent.h"
 
@@ -30,28 +31,52 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 
 	// Set default visibility
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
-	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
-	ToolbarWrapBox->SetVisibility(ESlateVisibility::Visible);
+	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
+	ToolbarGridPanel->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UInventoryWidget::CreateInventorySlots()
 {
+	int32 Column = 0;
+	int32 Row = 0;
+
 	// Add Inventory slots to ui
 	for (int32 i = 0; i < 30; ++i)
 	{
+		if (i == 6)
+		{
+			Row = 0;
+		}
+
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 20.0f, FColor::Cyan, FString::Printf(TEXT("Column %i, Row %i"), Column, Row));
+
 		// Create new slot widget
 		UInventorySlotWidget* NewInventorySlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
 		NewInventorySlot->Setup(this);
 		if (i < 6)
 		{
-			ToolbarWrapBox->AddChild(NewInventorySlot);
+
+			ToolbarGridPanel->AddChild(NewInventorySlot);
+			UUniformGridSlot* GridSlot = Cast<UUniformGridSlot>(NewInventorySlot->Slot);
+			GridSlot->SetColumn(Column);
 		}
 		else
 		{
-			InventoryWrapBox->AddChild(NewInventorySlot);
+
+			InventoryGridPanel->AddChild(NewInventorySlot);
+			UUniformGridSlot* GridSlot = Cast<UUniformGridSlot>(NewInventorySlot->Slot);
+			GridSlot->SetRow(Row);
+			GridSlot->SetColumn(Column);
 		}
 		// Add this slot to slot array
 		InventorySlots.Add(NewInventorySlot);
+
+		++Column;
+		if (Column > 5)
+		{
+			Column = 0;
+			++Row;
+		}
 	}
 }
 
@@ -188,13 +213,13 @@ bool UInventoryWidget::AddItemToEmptySlot(const FName& ItemName, FItem* ItemData
 void UInventoryWidget::Open()
 {
 	InventoryName->SetVisibility(ESlateVisibility::Visible);
-	InventoryWrapBox->SetVisibility(ESlateVisibility::Visible);
+	InventoryGridPanel->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UInventoryWidget::Close()
 {
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
-	InventoryWrapBox->SetVisibility(ESlateVisibility::Hidden);
+	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UInventoryWidget::StartDragging(FSlotItem Item)

@@ -29,6 +29,7 @@ January 27 2023
 * Fixed Movement Being slowed by looking down.
 * Updated Version Text on menu.
 * Fixed Game Crashing in PIE.
+* Inventory Now Uses a Uniform Grid Panel
 ================================================
 
 ===========Version 0.1.2 Prototype==============
