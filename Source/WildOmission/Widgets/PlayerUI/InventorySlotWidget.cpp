@@ -8,7 +8,7 @@
 #include "InventoryWidget.h"
 #include "WildOmission/Components/InventoryComponent.h"
 
-void UInventorySlotWidget::Setup(UInventoryWidget* InOwner)
+void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, uint8 InColumn, uint8 InRow)
 {
 	if (InOwner == nullptr || SlotBorder == nullptr || ItemIconBorder == nullptr || QuantityText == nullptr)
 	{
@@ -16,6 +16,8 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner)
 	}
 
 	Owner = InOwner;
+	Column = InColumn;
+	Row = InRow;
 	CurrentItem.Name = FName();
 	CurrentItem.Quantity = 0;
 	bIsFull = false;

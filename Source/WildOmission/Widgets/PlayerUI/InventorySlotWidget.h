@@ -35,7 +35,7 @@ class WILDOMISSION_API UInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void Setup(UInventoryWidget* InOwner);
+	void Setup(UInventoryWidget* InOwner, uint8 InColumn, uint8 InRow);
 	void SetItem(FSlotItem Item);
 	void ClearItem();
 
@@ -65,6 +65,12 @@ private:
 	UPROPERTY()
 	UInventoryWidget* Owner;
 
+	UPROPERTY()
+	uint8 Column;
+
+	UPROPERTY()
+	uint8 Row;
+	
 	bool bIsFull;
 	
 	void LeftMouseDrag();

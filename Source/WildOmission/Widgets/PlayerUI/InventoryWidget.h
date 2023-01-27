@@ -61,6 +61,9 @@ private:
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;
 
+	void CreateSlots();
+
+	void CreateToolbarSlots();
 	void CreateInventorySlots();
 
 	bool AddItemToPopulatedSlot(const FName& ItemName, struct FItem* ItemData, int32& QuantityToAdd);

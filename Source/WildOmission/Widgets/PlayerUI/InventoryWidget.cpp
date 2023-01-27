@@ -27,7 +27,7 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 	
 	InventoryComponent = InInventoryComponent;
 
-	CreateInventorySlots();
+	CreateSlots();
 
 	// Set default visibility
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
@@ -35,41 +35,48 @@ void UInventoryWidget::SetComponent(UInventoryComponent* InInventoryComponent)
 	ToolbarGridPanel->SetVisibility(ESlateVisibility::Visible);
 }
 
+void UInventoryWidget::CreateSlots()
+{
+	CreateToolbarSlots();
+	CreateInventorySlots();
+}
+
+void UInventoryWidget::CreateToolbarSlots()
+{
+	for (uint8 i = 0; i < 6; ++i)
+	{
+		UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
+		NewSlot->Setup(this, i, 0);
+		
+		ToolbarGridPanel->AddChild(NewSlot);
+		
+		UUniformGridSlot* GridSlot = Cast<UUniformGridSlot>(NewSlot->Slot);
+
+		GridSlot->SetColumn(i);
+		GridSlot->SetRow(0);
+
+		InventorySlots.Add(NewSlot);
+	}
+}
+
 void UInventoryWidget::CreateInventorySlots()
 {
-	int32 Column = 0;
-	int32 Row = 0;
+	uint8 Column = 0;
+	uint8 Row = 0;
 
-	// Add Inventory slots to ui
-	for (int32 i = 0; i < 30; ++i)
+	for (uint8 i = 0; i < 24; ++i)
 	{
-		if (i == 6)
-		{
-			Row = 0;
-		}
+		UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
+		NewSlot->Setup(this, Column, Row);
+	
+		InventoryGridPanel->AddChild(NewSlot);
 
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 20.0f, FColor::Cyan, FString::Printf(TEXT("Column %i, Row %i"), Column, Row));
+		UUniformGridSlot* GridSlot = Cast<UUniformGridSlot>(NewSlot->Slot);
+		
+		GridSlot->SetColumn(Column);
+		GridSlot->SetRow(Row);
 
-		// Create new slot widget
-		UInventorySlotWidget* NewInventorySlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
-		NewInventorySlot->Setup(this);
-		if (i < 6)
-		{
-
-			ToolbarGridPanel->AddChild(NewInventorySlot);
-			UUniformGridSlot* GridSlot = Cast<UUniformGridSlot>(NewInventorySlot->Slot);
-			GridSlot->SetColumn(Column);
-		}
-		else
-		{
-
-			InventoryGridPanel->AddChild(NewInventorySlot);
-			UUniformGridSlot* GridSlot = Cast<UUniformGridSlot>(NewInventorySlot->Slot);
-			GridSlot->SetRow(Row);
-			GridSlot->SetColumn(Column);
-		}
-		// Add this slot to slot array
-		InventorySlots.Add(NewInventorySlot);
+		InventorySlots.Add(NewSlot);
 
 		++Column;
 		if (Column > 5)
