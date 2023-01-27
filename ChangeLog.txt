@@ -4,6 +4,7 @@
 	- = Removed
 =========================
 
+===========Version 0.1.0 Prototype==============
 January 22 2023
 * Player saves list no longer cleared when saving game, instead it checks if the player is already in the save, and overwrites their
 	respective chunk of data leaving everything else alone.
@@ -15,9 +16,19 @@ January 24 2023
 * Organized source folder structure.
 
 January 25 2023
-+ Added Pending Player Save System
-* Made UI Elements Modular classes
++ Added Pending Player Save System.
+* Made UI Elements Modular classes.
 
 January 26-27 2023
-* Polished the User Interface
+* Polished the User Interface.
+================================================
 
+===========Version 0.1.1 Prototype==============
+January 27 2023
+* Made UI Slightly Transparent.
+* Fixed Movement Being slowed by looking down.
+================================================
+
+===========Version 0.1.2 Prototype==============
+
+================================================
