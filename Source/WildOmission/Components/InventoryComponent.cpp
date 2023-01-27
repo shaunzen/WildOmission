@@ -16,7 +16,7 @@ UInventoryComponent::UInventoryComponent()
 	SetIsReplicatedByDefault(true);
 
 	// Find the item data table
-	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/WildOmission/Blueprints/DataTables/ItemDataTable"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/WildOmission/Blueprints/DataTables/DT_Items"));
 	if (ItemDataTableObject.Succeeded())
 	{
 		ItemDataTable = ItemDataTableObject.Object;

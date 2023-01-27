@@ -30,6 +30,8 @@ January 27 2023
 * Updated Version Text on menu.
 * Fixed Game Crashing in PIE.
 * Inventory Now Uses a Uniform Grid Panel
+* Streamlined Inventory Slot Generation
+* Tidy Data Table names
 ================================================
 
 ===========Version 0.1.2 Prototype==============
