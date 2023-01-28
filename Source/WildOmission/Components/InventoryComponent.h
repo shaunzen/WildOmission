@@ -41,7 +41,7 @@ struct FItemData
 	GENERATED_BODY()
 
 	FString Name = FString("");
-	int16 Quantity = 0;
+	int32 Quantity = 0;
 
 	static bool CompareNames(const FItemData& Item, const FString& ItemName)
 	{
@@ -57,7 +57,7 @@ struct FInventoryContents
 	TArray<FItemData> Contents;
 
 	// Returns the amount of a given item in the inventory, will return 0 if item isn't present.
-	int16 GetItemQuantity(const FString& ItemName)
+	int32 GetItemQuantity(const FString& ItemName)
 	{
 		int32 Index = GetItemIndex(ItemName);
 		if (Index == INDEX_NONE)
@@ -76,7 +76,7 @@ struct FInventoryContents
 	}
 	
 	// Will add the given item and quantity to the list, if item is already present the quantity will be added to the existing.
-	void AddItem(const FString& ItemName, const int16& QuantityToAdd)
+	void AddItem(const FString& ItemName, const int32& QuantityToAdd)
 	{
 		if (HasItem(ItemName))
 		{
@@ -92,7 +92,7 @@ struct FInventoryContents
 		}
 	}
 
-	void RemoveItem(const FString& ItemName, const int16& QuantityToRemove)
+	void RemoveItem(const FString& ItemName, const int32& QuantityToRemove)
 	{
 		if (!HasItem(ItemName))
 		{
