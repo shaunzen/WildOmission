@@ -51,17 +51,7 @@ void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 void UInventoryComponent::Server_AddItem_Implementation(FName ItemName, int32 Quantity)
 {
 	// If the item already exists in the contents map
-	if (int32* ItemQuantity = InventoryContents.Find(ItemName))
-	{
-		// Add the additional quantity to the existing quantity
-		int32 NewQuantity = *ItemQuantity + Quantity;
-		InventoryContents.Add(ItemName, NewQuantity);
-	}
-	else
-	{
-		// Create a new entry with that quantity
-		InventoryContents.Add(ItemName, Quantity);
-	}
+	Contents.AddItem(ItemName, Quantity);
 }
 
 void UInventoryComponent::RemoveItem(FName ItemName, int32 Quantity, bool bSpawnInWorld)
@@ -81,28 +71,13 @@ void UInventoryComponent::RemoveItem(FName ItemName, int32 Quantity, bool bSpawn
 bool UInventoryComponent::Server_RemoveItem_Validate(FName ItemName, int32 Quantity)
 {
 	// Only valid if the player has the item they are removing
-	return InventoryContents.Find(ItemName) != nullptr;
+	return !Contents.HasItem(ItemName);
 }
 
 void UInventoryComponent::Server_RemoveItem_Implementation(FName ItemName, int32 Quantity)
 {
 	// Find the item
-	if (int32* ItemQuantity = InventoryContents.Find(ItemName))
-	{
-		// Remove the desired amount
-		int32 NewQuantity = *ItemQuantity - Quantity;
-		
-		// If we dont have anymore after removing then remove from the our contents
-		if (NewQuantity <= 0)
-		{
-			InventoryContents.Remove(ItemName);
-		}
-		else
-		{
-			// Set the new value
-			InventoryContents.Add(ItemName, NewQuantity);
-		}
-	}
+	Contents.RemoveItem(ItemName, Quantity);
 }
 
 void UInventoryComponent::SwapItem()
@@ -141,9 +116,9 @@ FItem* UInventoryComponent::GetItemData(FName ItemName)
 	return ItemDataTable->FindRow<FItem>(ItemName, ContextString, true);
 }
 
-TMap<FName, int32>* UInventoryComponent::GetContents()
+FInventoryContents* UInventoryComponent::GetContents()
 {
-	return &InventoryContents;
+	return &Contents;
 }
 
 UInventoryWidget* UInventoryComponent::GetWidget()

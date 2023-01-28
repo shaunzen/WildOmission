@@ -40,10 +40,10 @@ struct FItemData
 {
 	GENERATED_BODY()
 
-	FString Name = FString("");
+	FName Name = FName("");
 	int32 Quantity = 0;
 
-	static bool CompareNames(const FItemData& Item, const FString& ItemName)
+	static bool CompareNames(const FItemData& Item, const FName& ItemName)
 	{
 		return Item.Name == ItemName;
 	}
@@ -57,7 +57,7 @@ struct FInventoryContents
 	TArray<FItemData> Contents;
 
 	// Returns the amount of a given item in the inventory, will return 0 if item isn't present.
-	int32 GetItemQuantity(const FString& ItemName)
+	int32 GetItemQuantity(const FName& ItemName)
 	{
 		int32 Index = GetItemIndex(ItemName);
 		if (Index == INDEX_NONE)
@@ -68,15 +68,15 @@ struct FInventoryContents
 	}
 
 	// Returns true if the specified item is present
-	bool HasItem(const FString& ItemName)
+	bool HasItem(const FName& ItemName)
 	{
 		return Contents.FindByPredicate([&ItemName](const FItemData& ItemData) {
 			return ItemData.CompareNames(ItemData, ItemName);
-		});
+		}) != nullptr;
 	}
 	
 	// Will add the given item and quantity to the list, if item is already present the quantity will be added to the existing.
-	void AddItem(const FString& ItemName, const int32& QuantityToAdd)
+	void AddItem(const FName& ItemName, const int32& QuantityToAdd)
 	{
 		if (HasItem(ItemName))
 		{
@@ -92,11 +92,11 @@ struct FInventoryContents
 		}
 	}
 
-	void RemoveItem(const FString& ItemName, const int32& QuantityToRemove)
+	void RemoveItem(const FName& ItemName, const int32& QuantityToRemove)
 	{
 		if (!HasItem(ItemName))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Cannot remove %s, item does not exist in inventory."), *ItemName);
+			UE_LOG(LogTemp, Warning, TEXT("Cannot remove %s, item does not exist in inventory."), *ItemName.ToString());
 			return;
 		}
 
@@ -112,7 +112,7 @@ struct FInventoryContents
 private:
 
 	// Returns the index in the contents list of the given item
-	int32 GetItemIndex(const FString& ItemName)
+	int32 GetItemIndex(const FName& ItemName)
 	{
 		return Contents.IndexOfByPredicate([&ItemName](const FItemData& ItemData) {
 			return ItemData.CompareNames(ItemData, ItemName);
@@ -141,7 +141,7 @@ public:
 	void SpawnWorldItem(FName ItemName, int32 Quantity = 1);
 
 	// Gets the contents map for this inventory
-	TMap<FName, int32>* GetContents();
+	FInventoryContents* GetContents();
 
 	// Retrives the data about the item id passed in
 	FItem* GetItemData(FName ItemName);
@@ -151,7 +151,7 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	TMap<FName, int32> InventoryContents;
+	FInventoryContents Contents;
 
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* ItemDataTable;
