@@ -31,5 +31,7 @@ private:
 
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
 	
+	void ValidateSave();
+
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 };

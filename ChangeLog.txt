@@ -32,6 +32,9 @@ January 27 2023
 * Inventory Now Uses a Uniform Grid Panel
 * Streamlined Inventory Slot Generation
 * Tidy Data Table names
+
+January 28 2023
+* Cleaner PIE Level Creation
 ================================================
 
 ===========Version 0.1.2 Prototype==============

@@ -34,21 +34,14 @@ void ASaveHandler::SaveGame()
 
 void ASaveHandler::LoadGame(const FString& SaveFileName)
 {
-	if (SaveFileName.Len() == 0)
-	{
-		CurrentSaveFileName = FString("PIE");
-	}
-	else
-	{
-		CurrentSaveFileName = SaveFileName;
-	}
+	CurrentSaveFileName = SaveFileName;
+	
+	ValidateSave();
 
 	UWildOmissionSaveGame* SaveFile = GetSaveFile();
 	if (SaveFile == nullptr)
 	{
-		UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-		GameInstance->CreateSave(CurrentSaveFileName);
-		SaveFile = GetSaveFile();
+		return;
 	}
 
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
@@ -70,6 +63,18 @@ UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
 UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler()
 {
 	return PlayerSaveHandlerComponent;
+}
+
+void ASaveHandler::ValidateSave()
+{
+	if (CurrentSaveFileName.Len() > 0)
+	{
+		return;
+	}
+
+	CurrentSaveFileName = FString("PIE_Save");
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	GameInstance->CreateSave(CurrentSaveFileName);
 }
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
