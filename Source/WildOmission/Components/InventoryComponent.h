@@ -40,7 +40,10 @@ struct FItemData
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	FName Name = FName("");
+
+	UPROPERTY()
 	int32 Quantity = 0;
 
 	static bool CompareNames(const FItemData& Item, const FName& ItemName)
@@ -54,6 +57,7 @@ struct FInventoryContents
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	TArray<FItemData> Contents;
 
 	// Returns the amount of a given item in the inventory, will return 0 if item isn't present.
@@ -149,8 +153,10 @@ public:
 	// Gets the widget this inventory is using
 	UInventoryWidget* GetWidget();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Replicated)
 	FInventoryContents Contents;
 
 	UPROPERTY(EditDefaultsOnly)

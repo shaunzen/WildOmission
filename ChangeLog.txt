@@ -29,12 +29,14 @@ January 27 2023
 * Fixed Movement Being slowed by looking down.
 * Updated Version Text on menu.
 * Fixed Game Crashing in PIE.
-* Inventory Now Uses a Uniform Grid Panel
-* Streamlined Inventory Slot Generation
-* Tidy Data Table names
+* Inventory Now Uses a Uniform Grid Panel.
+* Streamlined Inventory Slot Generation.
+* Tidy Data Table names.
 
 January 28 2023
-* Cleaner PIE Level Creation
+* Cleaner PIE Level Creation.
+* Improved Inventory Data Implementation.
+* Inventory Data Replicated by default.
 ================================================
 
 ===========Version 0.1.2 Prototype==============

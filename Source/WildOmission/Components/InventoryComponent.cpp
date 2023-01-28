@@ -4,6 +4,7 @@
 #include "InventoryComponent.h"
 #include "WildOmission/Widgets/PlayerUI/InventoryWidget.h"
 #include "WildOmission/Actors/WorldItem.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -21,6 +22,13 @@ UInventoryComponent::UInventoryComponent()
 	{
 		ItemDataTable = ItemDataTableObject.Object;
 	}
+}
+
+void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UInventoryComponent, Contents);
 }
 
 void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
