@@ -36,7 +36,7 @@ struct FItem : public FTableRowBase
 };
 
 USTRUCT()
-struct FItemData
+struct FInventoryItem
 {
 	GENERATED_BODY()
 
@@ -46,7 +46,7 @@ struct FItemData
 	UPROPERTY()
 	int32 Quantity = 0;
 
-	static bool CompareNames(const FItemData& Item, const FName& ItemName)
+	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName)
 	{
 		return Item.Name == ItemName;
 	}
@@ -58,7 +58,7 @@ struct FInventoryContents
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TArray<FItemData> Contents;
+	TArray<FInventoryItem> Contents;
 
 	// Returns the amount of a given item in the inventory, will return 0 if item isn't present.
 	int32 GetItemQuantity(const FName& ItemName)
@@ -74,7 +74,7 @@ struct FInventoryContents
 	// Returns true if the specified item is present
 	bool HasItem(const FName& ItemName)
 	{
-		return Contents.FindByPredicate([&ItemName](const FItemData& ItemData) {
+		return Contents.FindByPredicate([&ItemName](const FInventoryItem& ItemData) {
 			return ItemData.CompareNames(ItemData, ItemName);
 		}) != nullptr;
 	}
@@ -89,7 +89,7 @@ struct FInventoryContents
 		}
 		else
 		{
-			FItemData NewItem;
+			FInventoryItem NewItem;
 			NewItem.Name = ItemName;
 			NewItem.Quantity = QuantityToAdd;
 			Contents.Add(NewItem);
@@ -118,7 +118,7 @@ private:
 	// Returns the index in the contents list of the given item
 	int32 GetItemIndex(const FName& ItemName)
 	{
-		return Contents.IndexOfByPredicate([&ItemName](const FItemData& ItemData) {
+		return Contents.IndexOfByPredicate([&ItemName](const FInventoryItem& ItemData) {
 			return ItemData.CompareNames(ItemData, ItemName);
 		});
 	}

@@ -85,7 +85,7 @@ void AWildOmissionPlayerController::LogLocalInventoryContents()
 	}
 
 	// Get their inventory components
-	for (const FItemData& ItemData : WildOmissionCharacter->GetInventoryComponent()->GetContents()->Contents)
+	for (const FInventoryItem& ItemData : WildOmissionCharacter->GetInventoryComponent()->GetContents()->Contents)
 	{
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Item: %s, Quantity: %i"), *ItemData.Name.ToString(), ItemData.Quantity));
 	}

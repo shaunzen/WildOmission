@@ -66,7 +66,7 @@ void AWildOmissionGameMode::LogPlayerInventoryComponents()
 		{
 			return;
 		}
-		for (const FItemData& ItemData : Character->GetInventoryComponent()->GetContents()->Contents)
+		for (const FInventoryItem& ItemData : Character->GetInventoryComponent()->GetContents()->Contents)
 		{
 			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("%s: %i"), *ItemData.Name.ToString(), ItemData.Quantity));
 		}
