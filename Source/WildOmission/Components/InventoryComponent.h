@@ -35,6 +35,92 @@ struct FItem : public FTableRowBase
 	}
 };
 
+USTRUCT()
+struct FItemData
+{
+	GENERATED_BODY()
+
+	FString Name = FString("");
+	int16 Quantity = 0;
+
+	static bool CompareNames(const FItemData& Item, const FString& ItemName)
+	{
+		return Item.Name == ItemName;
+	}
+};
+
+USTRUCT()
+struct FInventoryContents
+{
+	GENERATED_BODY()
+
+	TArray<FItemData> Contents;
+
+	// Returns the amount of a given item in the inventory, will return 0 if item isn't present.
+	int16 GetItemQuantity(const FString& ItemName)
+	{
+		int32 Index = GetItemIndex(ItemName);
+		if (Index == INDEX_NONE)
+		{
+			return 0;
+		}
+		return Contents[Index].Quantity;
+	}
+
+	// Returns true if the specified item is present
+	bool HasItem(const FString& ItemName)
+	{
+		return Contents.FindByPredicate([&ItemName](const FItemData& ItemData) {
+			return ItemData.CompareNames(ItemData, ItemName);
+		});
+	}
+	
+	// Will add the given item and quantity to the list, if item is already present the quantity will be added to the existing.
+	void AddItem(const FString& ItemName, const int16& QuantityToAdd)
+	{
+		if (HasItem(ItemName))
+		{
+			int32 ItemIndex = GetItemIndex(ItemName);
+			Contents[ItemIndex].Quantity += QuantityToAdd;
+		}
+		else
+		{
+			FItemData NewItem;
+			NewItem.Name = ItemName;
+			NewItem.Quantity = QuantityToAdd;
+			Contents.Add(NewItem);
+		}
+	}
+
+	void RemoveItem(const FString& ItemName, const int16& QuantityToRemove)
+	{
+		if (!HasItem(ItemName))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Cannot remove %s, item does not exist in inventory."), *ItemName);
+			return;
+		}
+
+		int32 ItemIndex = GetItemIndex(ItemName);
+		Contents[ItemIndex].Quantity -= QuantityToRemove;
+
+		if (Contents[ItemIndex].Quantity <= 0)
+		{
+			Contents.RemoveAt(ItemIndex);
+		}
+	}
+
+private:
+
+	// Returns the index in the contents list of the given item
+	int32 GetItemIndex(const FString& ItemName)
+	{
+		return Contents.IndexOfByPredicate([&ItemName](const FItemData& ItemData) {
+			return ItemData.CompareNames(ItemData, ItemName);
+		});
+	}
+
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UInventoryComponent : public UActorComponent
 {
