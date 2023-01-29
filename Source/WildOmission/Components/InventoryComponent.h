@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
+#include "WildOmission/Structs/InventoryItem.h"
 #include "InventoryComponent.generated.h"
 
 class UInventoryWidget;
@@ -32,23 +33,6 @@ struct FItem : public FTableRowBase
 		Thumbnail = nullptr;
 		Mesh = nullptr;
 		StackSize = 1000;
-	}
-};
-
-USTRUCT()
-struct FInventoryItem
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FName Name = FName("");
-
-	UPROPERTY()
-	int32 Quantity = 0;
-
-	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName)
-	{
-		return Item.Name == ItemName;
 	}
 };
 
