@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmissionSaveGame.generated.h"
 
 USTRUCT()
@@ -24,10 +25,9 @@ struct FWildOmissionPlayerSave
 	FVector WorldLocation = FVector::ZeroVector;
 
 	UPROPERTY()
-	TMap<FName, int32> InventoryContents;
+	TArray<FInventoryItem> InventoryContents;
 	
-	UPROPERTY()
-	TArray<class UInventorySlotWidget*> InventorySlots;
+	// TODO inventory slots
 
 };
 

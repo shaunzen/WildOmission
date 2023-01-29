@@ -23,17 +23,34 @@ FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 	{
 		return PlayerSave;
 	}
+	
+	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
+	if (WildOmissionCharacter == nullptr)
+	{
+		return PlayerSave;
+	}
+
 	PlayerSave.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
 
-	PlayerSave.WorldLocation = GetPawn()->GetActorLocation();
+	PlayerSave.WorldLocation = WildOmissionCharacter->GetActorLocation();
 	PlayerSave.IsAlive = true;
+
+	PlayerSave.InventoryContents = WildOmissionCharacter->GetInventoryComponent()->GetContents()->Contents;
 
 	return PlayerSave;
 }
 
 void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave& PlayerSave)
 {
-	GetPawn()->SetActorLocation(PlayerSave.WorldLocation);
+	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
+
+	if (WildOmissionCharacter == nullptr)
+	{
+		return;
+	}
+
+	WildOmissionCharacter->SetActorLocation(PlayerSave.WorldLocation);
+	WildOmissionCharacter->GetInventoryComponent()->GetContents()->Contents = PlayerSave.InventoryContents;
 }
 
 void AWildOmissionPlayerController::Save()
