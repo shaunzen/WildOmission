@@ -8,7 +8,7 @@
 #include "InventoryWidget.h"
 #include "WildOmission/Components/InventoryComponent.h"
 
-void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, uint8 InColumn, uint8 InRow)
+void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const uint8& InColumn, const uint8& InRow)
 {
 	if (InOwner == nullptr || SlotBorder == nullptr || ItemIconBorder == nullptr || QuantityText == nullptr)
 	{
@@ -25,7 +25,7 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, uint8 InColumn, uint
 }
 
 // Pass in Quantity of 0 to clear item from slot
-void UInventorySlotWidget::SetItem(FInventoryItem Item)
+void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 {
 	CurrentItem = Item;
 

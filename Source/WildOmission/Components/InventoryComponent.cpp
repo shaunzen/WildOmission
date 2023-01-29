@@ -38,7 +38,7 @@ void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
 	InventoryWidget->SetComponent(this);
 }
 
-void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
+void UInventoryComponent::AddItem(const FName& ItemName, const int32& Quantity)
 {
 	int32 Remaining;
 	int32 AmountAdded;
@@ -56,13 +56,13 @@ void UInventoryComponent::AddItem(FName ItemName, int32 Quantity)
 	}
 }
 
-void UInventoryComponent::Server_AddItem_Implementation(FName ItemName, int32 Quantity)
+void UInventoryComponent::Server_AddItem_Implementation(const FName& ItemName, const int32& Quantity)
 {
 	// If the item already exists in the contents map
 	Contents.AddItem(ItemName, Quantity);
 }
 
-void UInventoryComponent::RemoveItem(FName ItemName, int32 Quantity, bool bSpawnInWorld)
+void UInventoryComponent::RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld)
 {
 	Server_RemoveItem(ItemName, Quantity);
 	if (bSpawnInWorld == true)
@@ -76,13 +76,13 @@ void UInventoryComponent::RemoveItem(FName ItemName, int32 Quantity, bool bSpawn
 	}
 }
 
-bool UInventoryComponent::Server_RemoveItem_Validate(FName ItemName, int32 Quantity)
+bool UInventoryComponent::Server_RemoveItem_Validate(const FName& ItemName, const int32& Quantity)
 {
 	// Only valid if the player has the item they are removing
 	return !Contents.HasItem(ItemName);
 }
 
-void UInventoryComponent::Server_RemoveItem_Implementation(FName ItemName, int32 Quantity)
+void UInventoryComponent::Server_RemoveItem_Implementation(const FName& ItemName, const int32& Quantity)
 {
 	// Find the item
 	Contents.RemoveItem(ItemName, Quantity);
@@ -93,13 +93,13 @@ void UInventoryComponent::SwapItem()
 	// TODO Swap item
 }
 
-void UInventoryComponent::SpawnWorldItem(FName ItemName, int32 Quantity)
+void UInventoryComponent::SpawnWorldItem(const FName& ItemName, const int32& Quantity)
 {
 	// RPC on the server to spawn a world item of out specification
 	Server_SpawnWorldItem(ItemName, Quantity);
 }
 
-void UInventoryComponent::Server_SpawnWorldItem_Implementation(FName ItemName, int32 Quantity)
+void UInventoryComponent::Server_SpawnWorldItem_Implementation(const FName& ItemName, const int32& Quantity)
 {
 	// Get the data for this item
 	FItem* ItemData = GetItemData(ItemName);
@@ -114,7 +114,7 @@ void UInventoryComponent::Server_SpawnWorldItem_Implementation(FName ItemName, i
 	WorldItem->Client_SetItemProperties(ItemName, Quantity, ItemData->Mesh, GetOwner()->GetActorLocation());
 }
 
-FItem* UInventoryComponent::GetItemData(FName ItemName)
+FItem* UInventoryComponent::GetItemData(const FName& ItemName)
 {
 	if (ItemDataTable == nullptr)
 	{

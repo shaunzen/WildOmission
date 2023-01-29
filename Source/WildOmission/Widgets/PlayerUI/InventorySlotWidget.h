@@ -16,8 +16,8 @@ class WILDOMISSION_API UInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void Setup(UInventoryWidget* InOwner, uint8 InColumn, uint8 InRow);
-	void SetItem(FInventoryItem Item);
+	void Setup(UInventoryWidget* InOwner, const uint8& InColumn, const uint8& InRow);
+	void SetItem(const FInventoryItem& Item);
 	void ClearItem();
 
 	FInventoryItem* GetCurrentItem();

@@ -23,14 +23,14 @@ public:
 	void SetSelectedItemWidget(USelectedItemWidget* InWidget);
 	void SetComponent(UInventoryComponent* InInventoryComponent);
 
-	bool AddItem(FName ItemName, int32 Quantity, int32& Remaining);
-	bool RemoveItem(FName ItemName, int32 Quantity, int32& Remaining);
+	bool AddItem(const FName& ItemName, const int32& Quantity, int32& Remaining);
+	bool RemoveItem(const FName& ItemName, const int32& Quantity, int32& Remaining);
 
 	void Open();
 	void Close();
 
 	// Dragging
-	void StartDragging(FInventoryItem Item);
+	void StartDragging(const FInventoryItem& Item);
 	void EndDragging();
 	bool Dragging() const;
 	void DropSelectedItem(bool bDropAll);

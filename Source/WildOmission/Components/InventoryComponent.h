@@ -121,18 +121,18 @@ public:
 	void Setup(UInventoryWidget* InInventoryWidget);
 
 	// Checks for slot and asks the server to add the item to our contents
-	void AddItem(FName ItemName, int32 Quantity);
-	void RemoveItem(FName ItemName, int32 Quantity, bool bSpawnInWorld = false);
+	void AddItem(const FName& ItemName, const int32& Quantity);
+	void RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld = false);
 	void SwapItem();
 
 	// Calls an rpc on the server to spawn a world item
-	void SpawnWorldItem(FName ItemName, int32 Quantity = 1);
+	void SpawnWorldItem(const FName& ItemName, const int32& Quantity = 1);
 
 	// Gets the contents map for this inventory
 	FInventoryContents* GetContents();
 
 	// Retrives the data about the item id passed in
-	FItem* GetItemData(FName ItemName);
+	FItem* GetItemData(const FName& ItemName);
 
 	// Gets the widget this inventory is using
 	UInventoryWidget* GetWidget();
@@ -150,12 +150,12 @@ private:
 	UInventoryWidget* InventoryWidget;
 
 	UFUNCTION(Server, Reliable)
-	void Server_AddItem(FName ItemName, int32 Quantity);
+	void Server_AddItem(const FName& ItemName, const int32& Quantity);
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_RemoveItem(FName ItemName, int32 Quantity);
+	void Server_RemoveItem(const FName& ItemName, const int32& Quantity);
 	
 	UFUNCTION(Server, Reliable)
-	void Server_SpawnWorldItem(FName ItemName, int32 Quantity);
+	void Server_SpawnWorldItem(const FName& ItemName, const int32& Quantity);
 	
 };

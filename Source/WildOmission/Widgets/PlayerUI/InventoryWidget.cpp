@@ -87,7 +87,7 @@ void UInventoryWidget::CreateInventorySlots()
 	}
 }
 
-bool UInventoryWidget::AddItem(FName ItemName, int32 Quantity, int32& Remaining)
+bool UInventoryWidget::AddItem(const FName& ItemName, const int32& Quantity, int32& Remaining)
 {
 	if (InventoryComponent == nullptr)
 	{
@@ -112,7 +112,7 @@ bool UInventoryWidget::AddItem(FName ItemName, int32 Quantity, int32& Remaining)
 	return QuantityToAdd == 0;
 }
 
-bool UInventoryWidget::RemoveItem(FName ItemName, int32 Quantity, int32& Remaining)
+bool UInventoryWidget::RemoveItem(const FName& ItemName, const int32& Quantity, int32& Remaining)
 {
 	Remaining = Quantity;
 	// Loop through all slots
@@ -229,7 +229,7 @@ void UInventoryWidget::Close()
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UInventoryWidget::StartDragging(FInventoryItem Item)
+void UInventoryWidget::StartDragging(const FInventoryItem& Item)
 {
 	FItem* ItemData = InventoryComponent->GetItemData(Item.Name);
 	if (ItemData == nullptr)
