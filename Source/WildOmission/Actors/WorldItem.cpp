@@ -44,7 +44,6 @@ void AWorldItem::Tick(float DeltaTime)
 
 void AWorldItem::Interact(AActor* Interactor)
 {
-	// add to their inventory
 	AWildOmissionCharacter* CharacterInteractor = Cast<AWildOmissionCharacter>(Interactor);
 	if (CharacterInteractor == nullptr)
 	{
@@ -56,6 +55,7 @@ void AWorldItem::Interact(AActor* Interactor)
 		return;
 	}
 
+	// Add to their inventory
 	CharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
 	
 	// Destroy this Item

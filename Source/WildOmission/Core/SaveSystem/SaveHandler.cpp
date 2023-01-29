@@ -26,7 +26,7 @@ void ASaveHandler::SaveGame()
 		return;
 	}
 
-	PlayerSaveHandlerComponent->SavePlayers(SaveFile->PlayerSaves);
+	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Saving the level"));
 	UpdateSaveFile(SaveFile);
 }

@@ -30,7 +30,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
-	SaveHandler->GetPlayerHandler()->LoadPlayer(NewPlayer);
+	SaveHandler->GetPlayerHandler()->Load(NewPlayer);
 
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Green, FString::Printf(TEXT("%s Has Joined the game"), *NewPlayer->GetPlayerState<APlayerState>()->GetUniqueId().ToString()));
 }

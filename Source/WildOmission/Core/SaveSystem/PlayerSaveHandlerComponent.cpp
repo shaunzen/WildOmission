@@ -22,10 +22,10 @@ void UPlayerSaveHandlerComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	FTimerHandle UpdatePendingTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::AddAllPlayersToPending, 60.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::AddAllToPending, 60.0f, true);
 }
 
-void UPlayerSaveHandlerComponent::AddPlayerToPending(APlayerController* PlayerController)
+void UPlayerSaveHandlerComponent::AddToPending(APlayerController* PlayerController)
 {
 	AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
 	if (WildOmissionPlayerController == nullptr)
@@ -36,13 +36,13 @@ void UPlayerSaveHandlerComponent::AddPlayerToPending(APlayerController* PlayerCo
 	AddSaveToList(WildOmissionPlayerController->SavePlayer(), PendingSaves);
 }
 
-void UPlayerSaveHandlerComponent::SavePlayers(TArray<FWildOmissionPlayerSave>& OutUpdatedSavesList)
+void UPlayerSaveHandlerComponent::Save(TArray<FWildOmissionPlayerSave>& OutUpdatedSavesList)
 {
 	AddSavesToList(PendingSaves, OutUpdatedSavesList);
 	PendingSaves.Empty();
 }
 
-void UPlayerSaveHandlerComponent::LoadPlayer(APlayerController* PlayerController)
+void UPlayerSaveHandlerComponent::Load(APlayerController* PlayerController)
 {
 	ASaveHandler* SaveHandlerOwner = Cast<ASaveHandler>(GetOwner());
 	AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
@@ -72,7 +72,7 @@ void UPlayerSaveHandlerComponent::LoadPlayer(APlayerController* PlayerController
 	}
 }
 
-void UPlayerSaveHandlerComponent::AddAllPlayersToPending()
+void UPlayerSaveHandlerComponent::AddAllToPending()
 {
 	AWildOmissionGameMode* WildOmissionGameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
 	if (WildOmissionGameMode == nullptr)
@@ -82,7 +82,7 @@ void UPlayerSaveHandlerComponent::AddAllPlayersToPending()
 
 	for (APlayerController* PlayerController : WildOmissionGameMode->GetAllPlayerControllers())
 	{
-		AddPlayerToPending(PlayerController);
+		AddToPending(PlayerController);
 	}
 }
 

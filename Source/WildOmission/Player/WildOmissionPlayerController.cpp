@@ -38,7 +38,7 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave
 
 void AWildOmissionPlayerController::Save()
 {
-	Server_AddToPending();
+	Server_AddToPendingSaves();
 
 	if (HasAuthority() == false)
 	{
@@ -102,7 +102,7 @@ void AWildOmissionPlayerController::Server_DestroyActor_Implementation(AActor* A
 	ActorToDestroy->Destroy();
 }
 
-void AWildOmissionPlayerController::Server_AddToPending_Implementation()
+void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
 {
 	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
 	if (GameMode == nullptr)
@@ -110,5 +110,5 @@ void AWildOmissionPlayerController::Server_AddToPending_Implementation()
 		return;
 	}
 
-	GameMode->GetSaveHandler()->GetPlayerHandler()->AddPlayerToPending(this);
+	GameMode->GetSaveHandler()->GetPlayerHandler()->AddToPending(this);
 }

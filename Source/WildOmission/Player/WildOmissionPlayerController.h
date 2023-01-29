@@ -32,5 +32,5 @@ public:
 
 private:
 	UFUNCTION(Server, Reliable)
-	void Server_AddToPending();
+	void Server_AddToPendingSaves();
 };
