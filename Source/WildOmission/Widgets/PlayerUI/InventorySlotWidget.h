@@ -4,31 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "WildOmission/Structs/InventoryItem.h"
 #include "InventorySlotWidget.generated.h"
 
 class UTextBlock;
 class UBorder;
 class UInventoryWidget;
-
-USTRUCT()
-struct FSlotItem
-{
-	GENERATED_BODY()
-
-	FName Name;
-	int32 Quantity;
-	
-	void Set(FName InName = FName(""), int32 InQuantity = 0)
-	{
-		Name = InName;
-		Quantity = InQuantity;
-	}
-	void Clear()
-	{
-		Name = FName("");
-		Quantity = 0;
-	}
-};
 
 UCLASS()
 class WILDOMISSION_API UInventorySlotWidget : public UUserWidget
@@ -36,10 +17,10 @@ class WILDOMISSION_API UInventorySlotWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	void Setup(UInventoryWidget* InOwner, uint8 InColumn, uint8 InRow);
-	void SetItem(FSlotItem Item);
+	void SetItem(FInventoryItem Item);
 	void ClearItem();
 
-	FSlotItem* GetCurrentItem();
+	FInventoryItem* GetCurrentItem();
 
 	bool IsFull() const;
 
@@ -60,7 +41,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* QuantityText;
 
-	FSlotItem CurrentItem;
+	FInventoryItem CurrentItem;
 
 	UPROPERTY()
 	UInventoryWidget* Owner;

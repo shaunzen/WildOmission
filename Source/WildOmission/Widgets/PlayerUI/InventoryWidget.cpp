@@ -134,7 +134,7 @@ bool UInventoryWidget::RemoveItem(FName ItemName, int32 Quantity, int32& Remaini
 		else
 		{
 			// Remove just the amount we need from this slot
-			FSlotItem NewSlotItem = *InventorySlot->GetCurrentItem();
+			FInventoryItem NewSlotItem = *InventorySlot->GetCurrentItem();
 			NewSlotItem.Quantity -= Remaining;
 			InventorySlot->SetItem(NewSlotItem);
 			Remaining = 0;
@@ -166,14 +166,14 @@ bool UInventoryWidget::AddItemToPopulatedSlot(const FName& ItemName, FItem* Item
 		if (InventorySlot->GetCurrentItem()->Quantity + QuantityToAdd > ItemData->StackSize)
 		{
 			QuantityToAdd -= ItemData->StackSize - InventorySlot->GetCurrentItem()->Quantity;
-			FSlotItem NewSlotItem;
+			FInventoryItem NewSlotItem;
 			NewSlotItem.Name = ItemName;
 			NewSlotItem.Quantity = ItemData->StackSize;
 			InventorySlot->SetItem(NewSlotItem);
 		}
 		else
 		{
-			FSlotItem NewSlotItem;
+			FInventoryItem NewSlotItem;
 			NewSlotItem.Name = ItemName;
 			NewSlotItem.Quantity = QuantityToAdd + InventorySlot->GetCurrentItem()->Quantity;
 			InventorySlot->SetItem(NewSlotItem);
@@ -199,14 +199,14 @@ bool UInventoryWidget::AddItemToEmptySlot(const FName& ItemName, FItem* ItemData
 		if (QuantityToAdd > ItemData->StackSize)
 		{
 			QuantityToAdd -= ItemData->StackSize;
-			FSlotItem NewSlotItem;
+			FInventoryItem NewSlotItem;
 			NewSlotItem.Name = ItemName;
 			NewSlotItem.Quantity = ItemData->StackSize;
 			InventorySlot->SetItem(NewSlotItem);
 		}
 		else
 		{
-			FSlotItem NewSlotItem;
+			FInventoryItem NewSlotItem;
 			NewSlotItem.Name = ItemName;
 			NewSlotItem.Quantity = QuantityToAdd;
 			InventorySlot->SetItem(NewSlotItem);
@@ -229,7 +229,7 @@ void UInventoryWidget::Close()
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UInventoryWidget::StartDragging(FSlotItem Item)
+void UInventoryWidget::StartDragging(FInventoryItem Item)
 {
 	FItem* ItemData = InventoryComponent->GetItemData(Item.Name);
 	if (ItemData == nullptr)
@@ -271,7 +271,7 @@ void UInventoryWidget::DropSelectedItem(bool bDropAll)
 		InventoryComponent->RemoveItem(SelectedItem.Name, 1, true);
 		
 		// Calculate the new selection
-		FSlotItem NewSelection = SelectedItem;
+		FInventoryItem NewSelection = SelectedItem;
 		NewSelection.Quantity -= 1;
 
 		// Stop dragging if there is no more selected item
@@ -287,7 +287,7 @@ void UInventoryWidget::DropSelectedItem(bool bDropAll)
 	}
 }
 
-FSlotItem* UInventoryWidget::GetSelectedItem()
+FInventoryItem* UInventoryWidget::GetSelectedItem()
 {
 	return &SelectedItem;
 }

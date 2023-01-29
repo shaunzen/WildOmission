@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "InventorySlotWidget.h"
+#include "WildOmission/Structs/InventoryItem.h"
 #include "InventoryWidget.generated.h"
 
 class UTextBlock;
@@ -29,12 +30,12 @@ public:
 	void Close();
 
 	// Dragging
-	void StartDragging(FSlotItem Item);
+	void StartDragging(FInventoryItem Item);
 	void EndDragging();
 	bool Dragging() const;
 	void DropSelectedItem(bool bDropAll);
 
-	FSlotItem* GetSelectedItem();
+	FInventoryItem* GetSelectedItem();
 	
 	UInventoryComponent* GetInventoryComponent();
 
@@ -47,7 +48,7 @@ private:
 	UPROPERTY()
 	USelectedItemWidget* SelectedItemWidget;
 
-	FSlotItem SelectedItem;
+	FInventoryItem SelectedItem;
 	bool bCurrentlyDragging;
 
 	// Bind Widget Elements

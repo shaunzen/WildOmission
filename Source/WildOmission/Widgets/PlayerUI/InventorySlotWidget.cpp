@@ -25,7 +25,7 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, uint8 InColumn, uint
 }
 
 // Pass in Quantity of 0 to clear item from slot
-void UInventorySlotWidget::SetItem(FSlotItem Item)
+void UInventorySlotWidget::SetItem(FInventoryItem Item)
 {
 	CurrentItem = Item;
 
@@ -65,7 +65,7 @@ void UInventorySlotWidget::SetItem(FSlotItem Item)
 
 void UInventorySlotWidget::ClearItem()
 {
-	FSlotItem NewSlotItem;
+	FInventoryItem NewSlotItem;
 	NewSlotItem.Clear();
 	this->SetItem(NewSlotItem);
 }
@@ -123,7 +123,7 @@ void UInventorySlotWidget::LeftMouseDrop()
 	{
 		return;
 	}
-	FSlotItem SelectedItem = *Owner->GetSelectedItem();
+	FInventoryItem SelectedItem = *Owner->GetSelectedItem();
 
 	// This slot is empty drop all the contents we are dragging into it
 	if (CurrentItem.Quantity == 0)
@@ -137,7 +137,7 @@ void UInventorySlotWidget::LeftMouseDrop()
 		// If the amount we are trying to add is within stack size
 		if ((CurrentItem.Quantity + SelectedItem.Quantity) <= GetSelectedItemData()->StackSize)
 		{
-			FSlotItem NewItem = CurrentItem;
+			FInventoryItem NewItem = CurrentItem;
 			NewItem.Quantity += SelectedItem.Quantity;
 			this->SetItem(NewItem);
 			Owner->EndDragging();
@@ -146,12 +146,12 @@ void UInventorySlotWidget::LeftMouseDrop()
 		else if ((CurrentItem.Quantity + SelectedItem.Quantity) > GetSelectedItemData()->StackSize)
 		{
 			// Update the selected item
-			FSlotItem NewSelection = SelectedItem;
+			FInventoryItem NewSelection = SelectedItem;
 			NewSelection.Quantity = (CurrentItem.Quantity + SelectedItem.Quantity) - GetSelectedItemData()->StackSize;
 			Owner->StartDragging(NewSelection);
 			
 			// Update the slot item
-			FSlotItem NewSlotItem = CurrentItem;
+			FInventoryItem NewSlotItem = CurrentItem;
 			NewSlotItem.Quantity = GetSelectedItemData()->StackSize;
 			this->SetItem(NewSlotItem);
 		}
@@ -159,7 +159,7 @@ void UInventorySlotWidget::LeftMouseDrop()
 	// This slot's item is different to the one we are dragging
 	else
 	{
-		FSlotItem OldSlotItem = CurrentItem;
+		FInventoryItem OldSlotItem = CurrentItem;
 
 		this->SetItem(SelectedItem);
 		Owner->StartDragging(OldSlotItem);
@@ -186,12 +186,12 @@ void UInventorySlotWidget::RightMouseDrag()
 	int32 HalfQuantity = CurrentItem.Quantity / 2;
 	
 	// Update the selection
-	FSlotItem NewSelection = CurrentItem;
+	FInventoryItem NewSelection = CurrentItem;
 	NewSelection.Quantity = HalfQuantity;
 	Owner->StartDragging(NewSelection);
 
 	// Update the slot
-	FSlotItem NewSlotItem = CurrentItem;
+	FInventoryItem NewSlotItem = CurrentItem;
 	NewSlotItem.Quantity -= HalfQuantity;
 	this->SetItem(NewSlotItem);
 }
@@ -203,16 +203,16 @@ void UInventorySlotWidget::RightMouseDrop()
 	{
 		return;
 	}
-	FSlotItem SelectedItem = *Owner->GetSelectedItem();
+	FInventoryItem SelectedItem = *Owner->GetSelectedItem();
 
 	// Set the slot value to one and remove one from the selection if this slot has no item
 	if (CurrentItem.Quantity == 0)
 	{
-		FSlotItem NewSlotItem = SelectedItem;
+		FInventoryItem NewSlotItem = SelectedItem;
 		NewSlotItem.Quantity = 1;
 		this->SetItem(NewSlotItem);
 
-		FSlotItem NewSelection = SelectedItem;
+		FInventoryItem NewSelection = SelectedItem;
 		NewSelection.Quantity -= 1;
 		Owner->StartDragging(NewSelection);
 	}
@@ -220,12 +220,12 @@ void UInventorySlotWidget::RightMouseDrop()
 	else if (CurrentItem.Name == SelectedItem.Name && (CurrentItem.Quantity + 1) <= GetSelectedItemData()->StackSize)
 	{
 		// Update the slot item
-		FSlotItem NewSlotItem = CurrentItem;
+		FInventoryItem NewSlotItem = CurrentItem;
 		NewSlotItem.Quantity += 1;
 		this->SetItem(NewSlotItem);
 
 		// Update the selection
-		FSlotItem NewSelection = SelectedItem;
+		FInventoryItem NewSelection = SelectedItem;
 		NewSelection.Quantity -= 1;
 		Owner->StartDragging(NewSelection);
 	}
@@ -260,7 +260,7 @@ void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	// TODO set slot color to default shade
 }
 
-FSlotItem* UInventorySlotWidget::GetCurrentItem()
+FInventoryItem* UInventorySlotWidget::GetCurrentItem()
 {
 	return &CurrentItem;
 }
