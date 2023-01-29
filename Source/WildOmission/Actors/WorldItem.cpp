@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "WildOmission/Player/WildOmissionCharacter.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Player/WildOmissionPlayerController.h"
 
 // Sets default values
 AWorldItem::AWorldItem()
@@ -49,14 +50,17 @@ void AWorldItem::Interact(AActor* Interactor)
 	{
 		return;
 	}
+	AWildOmissionPlayerController* PlayerControllerInteractor = Cast<AWildOmissionPlayerController>(CharacterInteractor->GetController());
+	if (PlayerControllerInteractor == nullptr)
+	{
+		return;
+	}
+
 	CharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
 	
-	// destroy this item
-	if (HasAuthority())
-	{
-		this->Destroy();
-		Client_Destroy();
-	}
+	// Destroy this Item
+	PlayerControllerInteractor->Server_DestroyActor(this);
+	Destroy();
 }
 
 FString AWorldItem::PromptText()
@@ -89,11 +93,6 @@ void AWorldItem::Client_SetItemProperties_Implementation(FName InName, int32 InQ
 	ItemQuantity = InQuantity;
 	ItemMesh->SetStaticMesh(InMesh);
 	SetActorLocation(InLocation);
-}
-
-void AWorldItem::Client_Destroy_Implementation()
-{
-	this->Destroy();
 }
 
 // Gets the item name

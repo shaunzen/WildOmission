@@ -40,9 +40,6 @@ public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void Client_SetItemProperties(FName InName, int32 InQuanitty = 1, UStaticMesh* InMesh = nullptr, FVector InLocation = FVector::ZeroVector);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void Client_Destroy();
-
 	// Gets the item name
 	UFUNCTION(BlueprintCallable)
 	FName GetItemName();

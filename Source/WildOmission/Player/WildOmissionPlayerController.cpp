@@ -96,11 +96,8 @@ void AWildOmissionPlayerController::Server_DestroyActor_Implementation(AActor* A
 {
 	if (ActorToDestroy == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Actor to destroy was nullptr."));
 		return;
 	}
-	
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Black, FString::Printf(TEXT("Destroying Actor Named: %s"), *ActorToDestroy->GetActorNameOrLabel()));
 
 	ActorToDestroy->Destroy();
 }
