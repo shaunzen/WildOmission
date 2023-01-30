@@ -8,7 +8,7 @@
 #include "InventoryWidget.h"
 #include "WildOmission/Components/InventoryComponent.h"
 
-void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const uint8& InColumn, const uint8& InRow)
+void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const int32& InIndex)
 {
 	if (InOwner == nullptr || SlotBorder == nullptr || ItemIconBorder == nullptr || QuantityText == nullptr)
 	{
@@ -16,8 +16,7 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const uint8& InColum
 	}
 
 	Owner = InOwner;
-	Column = InColumn;
-	Row = InRow;
+	Index = InIndex;
 	CurrentItem.Name = FName();
 	CurrentItem.Quantity = 0;
 	bIsFull = false;
@@ -61,6 +60,14 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 		bIsFull = false;
 	}
 	QuantityText->SetText(FText::FromString(QuantityString));
+}
+
+FInventorySlotSave UInventorySlotWidget::CreateSave()
+{
+	FInventorySlotSave Save;
+	Save.Index = Index;
+	Save.Contents = CurrentItem;
+	return Save;
 }
 
 void UInventorySlotWidget::ClearItem()

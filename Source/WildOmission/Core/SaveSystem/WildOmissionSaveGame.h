@@ -4,8 +4,32 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Structs/InventoryItem.h"
 #include "WildOmissionSaveGame.generated.h"
+
+USTRUCT()
+struct FInventorySlotSave
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int32 Index;
+
+	UPROPERTY()
+	FInventoryItem Contents;
+
+};
+
+USTRUCT()
+struct FWildOmissionInventorySave
+{
+	GENERATED_BODY()
+	UPROPERTY()
+	TArray<FInventoryItem> Items;
+	
+	UPROPERTY()
+	TArray<FInventorySlotSave> Slots;
+};
 
 USTRUCT()
 struct FWildOmissionPlayerSave
@@ -25,9 +49,7 @@ struct FWildOmissionPlayerSave
 	FVector WorldLocation = FVector::ZeroVector;
 
 	UPROPERTY()
-	TArray<FInventoryItem> InventoryContents;
-	
-	// TODO inventory slots
+	FWildOmissionInventorySave Inventory;
 
 };
 

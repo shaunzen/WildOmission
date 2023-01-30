@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
 #include "WildOmission/Structs/InventoryItem.h"
+#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 
 class UInventoryWidget;
@@ -139,6 +140,11 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	TArray<FInventorySlotSave>* GetSlotSaves();
+
+	FWildOmissionInventorySave Save();
+	void Load(const FWildOmissionInventorySave& InInventorySave);
+
 private:
 	UPROPERTY(EditDefaultsOnly, Replicated)
 	FInventoryContents Contents;
@@ -148,6 +154,9 @@ private:
 
 	UPROPERTY()
 	UInventoryWidget* InventoryWidget;
+
+	UPROPERTY()
+	TArray<FInventorySlotSave> SlotSaves;
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddItem(const FName& ItemName, const int32& Quantity);

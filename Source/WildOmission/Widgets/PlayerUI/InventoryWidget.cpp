@@ -39,6 +39,7 @@ void UInventoryWidget::CreateSlots()
 {
 	CreateToolbarSlots();
 	CreateInventorySlots();
+	LoadSaveDataIntoSlots();
 }
 
 void UInventoryWidget::CreateToolbarSlots()
@@ -46,7 +47,7 @@ void UInventoryWidget::CreateToolbarSlots()
 	for (uint8 i = 0; i < 6; ++i)
 	{
 		UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
-		NewSlot->Setup(this, i, 0);
+		NewSlot->Setup(this, i);
 		
 		ToolbarGridPanel->AddChild(NewSlot);
 		
@@ -67,7 +68,7 @@ void UInventoryWidget::CreateInventorySlots()
 	for (uint8 i = 0; i < 24; ++i)
 	{
 		UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, InventorySlotWidgetClass);
-		NewSlot->Setup(this, Column, Row);
+		NewSlot->Setup(this, i + 6);
 	
 		InventoryGridPanel->AddChild(NewSlot);
 
@@ -84,6 +85,16 @@ void UInventoryWidget::CreateInventorySlots()
 			Column = 0;
 			++Row;
 		}
+	}
+}
+
+void UInventoryWidget::LoadSaveDataIntoSlots()
+{
+	TArray<FInventorySlotSave> SlotSaves = *InventoryComponent->GetSlotSaves();
+
+	for (const FInventorySlotSave& SlotSave : SlotSaves)
+	{
+		InventorySlots[SlotSave.Index]->SetItem(SlotSave.Contents);
 	}
 }
 
@@ -295,4 +306,16 @@ FInventoryItem* UInventoryWidget::GetSelectedItem()
 UInventoryComponent* UInventoryWidget::GetInventoryComponent()
 {
 	return InventoryComponent;
+}
+
+TArray<FInventorySlotSave> UInventoryWidget::Save()
+{
+	TArray<FInventorySlotSave> Save;
+
+	for (UInventorySlotWidget* InventorySlot : InventorySlots)
+	{
+		Save.Add(InventorySlot->CreateSave());
+	}
+
+	return Save;
 }

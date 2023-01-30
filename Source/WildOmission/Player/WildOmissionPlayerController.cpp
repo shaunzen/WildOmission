@@ -5,6 +5,7 @@
 #include "WildOmissionCharacter.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Widgets/PlayerUI/InventoryWidget.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/GameModes/WildOmissionGameMode.h"
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
@@ -35,7 +36,7 @@ FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 	PlayerSave.WorldLocation = WildOmissionCharacter->GetActorLocation();
 	PlayerSave.IsAlive = true;
 
-	PlayerSave.InventoryContents = WildOmissionCharacter->GetInventoryComponent()->GetContents()->Contents;
+	PlayerSave.Inventory = WildOmissionCharacter->GetInventoryComponent()->Save();
 
 	return PlayerSave;
 }
@@ -50,7 +51,7 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave
 	}
 
 	WildOmissionCharacter->SetActorLocation(PlayerSave.WorldLocation);
-	WildOmissionCharacter->GetInventoryComponent()->GetContents()->Contents = PlayerSave.InventoryContents;
+	WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory);
 }
 
 void AWildOmissionPlayerController::Save()

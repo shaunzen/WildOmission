@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventorySlotWidget.h"
 #include "WildOmission/Structs/InventoryItem.h"
+#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryWidget.generated.h"
 
 class UTextBlock;
@@ -26,6 +27,8 @@ public:
 	bool AddItem(const FName& ItemName, const int32& Quantity, int32& Remaining);
 	bool RemoveItem(const FName& ItemName, const int32& Quantity, int32& Remaining);
 
+	TArray<FInventorySlotSave> Save();
+
 	void Open();
 	void Close();
 
@@ -45,6 +48,7 @@ private:
 	TSubclassOf<UInventorySlotWidget> InventorySlotWidgetClass;
 	UPROPERTY()
 	TArray<UInventorySlotWidget*> InventorySlots;
+	
 	UPROPERTY()
 	USelectedItemWidget* SelectedItemWidget;
 
@@ -66,6 +70,8 @@ private:
 
 	void CreateToolbarSlots();
 	void CreateInventorySlots();
+
+	void LoadSaveDataIntoSlots();
 
 	bool AddItemToPopulatedSlot(const FName& ItemName, struct FItem* ItemData, int32& QuantityToAdd);
 	bool AddItemToEmptySlot(const FName& ItemName, struct FItem* ItemData, int32& QuantityToAdd);
