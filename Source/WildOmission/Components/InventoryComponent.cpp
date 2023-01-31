@@ -29,6 +29,7 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UInventoryComponent, Contents);
+	DOREPLIFETIME(UInventoryComponent, SlotSaves);
 }
 
 void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
@@ -146,7 +147,10 @@ FWildOmissionInventorySave UInventoryComponent::Save()
 	// get and save our items
 	Save.Items = Contents.Contents;
 	// get and save widget
-	Save.Slots = InventoryWidget->Save();
+
+	// call on client
+	Client_SaveInventorySlots();
+	Save.Slots = SlotSaves;
 
 	return Save;
 }
@@ -155,4 +159,9 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 {
 	Contents.Contents = InInventorySave.Items;
 	SlotSaves = InInventorySave.Slots;
+}
+
+void UInventoryComponent::Client_SaveInventorySlots_Implementation()
+{
+	SlotSaves = InventoryWidget->Save();
 }

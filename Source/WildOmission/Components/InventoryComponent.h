@@ -155,7 +155,7 @@ private:
 	UPROPERTY()
 	UInventoryWidget* InventoryWidget;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<FInventorySlotSave> SlotSaves;
 
 	UFUNCTION(Server, Reliable)
@@ -167,4 +167,6 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnWorldItem(const FName& ItemName, const int32& Quantity);
 	
+	UFUNCTION(Client, Reliable)
+	void Client_SaveInventorySlots();
 };

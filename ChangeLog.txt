@@ -47,6 +47,12 @@ January 29 2023
 * Fixed Packets being droped under lag.
 * Changed Version Text.
 * Inventory Data is saved.
+
+January 30 2023
+* Inventory Slot Data is saved only in singleplayer
+
+January 31 2023
+
 ================================================
 
 ===========Version 0.1.3 Prototype==============
