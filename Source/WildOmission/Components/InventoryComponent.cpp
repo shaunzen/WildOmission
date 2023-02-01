@@ -56,6 +56,8 @@ void UInventoryComponent::AddItem(const FName& ItemName, const int32& Quantity)
 	// Add item to item list
 	Server_AddItem(ItemName, AmountAdded);
 
+	InventoryWidget->Refresh();
+
 	if (AddSuccess == false)
 	{
 		SpawnWorldItem(ItemName, Remaining);
@@ -80,6 +82,7 @@ void UInventoryComponent::RemoveItem(const FName& ItemName, const int32& Quantit
 		int32 Remaining;
 		bool RemoveSuccess = RemoveItemFromSlots(ItemName, Quantity, Remaining);
 	}
+	InventoryWidget->Refresh();
 }
 
 bool UInventoryComponent::Server_RemoveItem_Validate(const FName& ItemName, const int32& Quantity)
@@ -171,7 +174,7 @@ bool UInventoryComponent::AddItemToPopulatedSlot(const FName& ItemName, FItem* I
 			break;
 		}
 
-		if (Slot.IsFull() || Slot.Item.Name != ItemName)
+		if (Slot.Item.Quantity == GetItemData(ItemName)->StackSize || Slot.Item.Name != ItemName)
 		{
 			continue;
 		}
@@ -205,7 +208,7 @@ bool UInventoryComponent::AddItemToEmptySlot(const FName& ItemName, FItem* ItemD
 			break;
 		}
 
-		if (Slot.IsFull() || Slot.Item.Quantity > 0)
+		if (Slot.Item.Quantity > 0)
 		{
 			continue;
 		}
@@ -383,7 +386,8 @@ void UInventoryComponent::Drop(const int32& ToSlotIndex, bool bSingle)
 		if (ToSlot.Item.Quantity == 0)
 		{
 			// Set slot to one
-			ToSlot.Item.Quantity -= 1;
+			ToSlot.Item.Name = SelectedItem.Name;
+			ToSlot.Item.Quantity = 1;
 
 			// Remove one from dragging
 			SelectedItem.Quantity -= 1;

@@ -80,6 +80,8 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 		Owner->GetInventoryComponent()->SlotInteraction(this->Index, false);
 	}
 
+	Owner->Refresh();
+
 	return FReply::Handled();
 }
 

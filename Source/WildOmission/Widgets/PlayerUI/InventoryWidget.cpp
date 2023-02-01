@@ -114,6 +114,8 @@ void UInventoryWidget::Close()
 {
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
+
+	Refresh();
 }
 
 void UInventoryWidget::Refresh()
