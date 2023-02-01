@@ -6,7 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "InventorySlotWidget.h"
 #include "WildOmission/Structs/InventoryItem.h"
-#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryWidget.generated.h"
 
 class UTextBlock;
@@ -24,21 +23,8 @@ public:
 	void SetSelectedItemWidget(USelectedItemWidget* InWidget);
 	void SetComponent(UInventoryComponent* InInventoryComponent);
 
-	bool AddItem(const FName& ItemName, const int32& Quantity, int32& Remaining);
-	bool RemoveItem(const FName& ItemName, const int32& Quantity, int32& Remaining);
-
-	TArray<FInventorySlotSave> Save();
-
 	void Open();
 	void Close();
-
-	// Dragging
-	void StartDragging(const FInventoryItem& Item);
-	void EndDragging();
-	bool Dragging() const;
-	void DropSelectedItem(bool bDropAll);
-
-	FInventoryItem* GetSelectedItem();
 	
 	UInventoryComponent* GetInventoryComponent();
 
@@ -46,14 +32,12 @@ private:
 	// Slots
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UInventorySlotWidget> InventorySlotWidgetClass;
+
 	UPROPERTY()
 	TArray<UInventorySlotWidget*> InventorySlots;
 	
 	UPROPERTY()
 	USelectedItemWidget* SelectedItemWidget;
-
-	FInventoryItem SelectedItem;
-	bool bCurrentlyDragging;
 
 	// Bind Widget Elements
 	UPROPERTY(meta = (BindWidget))
@@ -70,10 +54,5 @@ private:
 
 	void CreateToolbarSlots();
 	void CreateInventorySlots();
-
-	void LoadSaveDataIntoSlots();
-
-	bool AddItemToPopulatedSlot(const FName& ItemName, struct FItem* ItemData, int32& QuantityToAdd);
-	bool AddItemToEmptySlot(const FName& ItemName, struct FItem* ItemData, int32& QuantityToAdd);
 
 };

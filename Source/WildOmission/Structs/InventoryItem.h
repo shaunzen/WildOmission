@@ -11,10 +11,10 @@ struct FInventoryItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FName Name = FName("");
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	int32 Quantity = 0;
 
 	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName);

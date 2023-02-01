@@ -19,7 +19,6 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const int32& InIndex
 	Index = InIndex;
 	CurrentItem.Name = FName();
 	CurrentItem.Quantity = 0;
-	bIsFull = false;
 	SetItem(CurrentItem);
 }
 
@@ -52,22 +51,13 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 		// Set the item icon color opaque white
 		ItemIconBorder->SetBrushColor(FLinearColor::White);
 		// Check if slot is full
-		bIsFull = CurrentItem.Quantity >= SlotItemData->StackSize;
 	}
 	else
 	{
 		ItemIconBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
-		bIsFull = false;
+		
 	}
 	QuantityText->SetText(FText::FromString(QuantityString));
-}
-
-FInventorySlotSave UInventorySlotWidget::CreateSave()
-{
-	FInventorySlotSave Save;
-	Save.Index = Index;
-	Save.Contents = CurrentItem;
-	return Save;
 }
 
 void UInventorySlotWidget::ClearItem()
@@ -81,179 +71,17 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 {
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	
-	if (!Owner->Dragging())
+	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-		{
-			LeftMouseDrag();
-		}
-		else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
-		{
-			RightMouseDrag();
-		}
+		Owner->GetInventoryComponent()->SlotInteraction(this->Index, true);
 	}
-	else
+	else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-		{
-			LeftMouseDrop();
-		}
-		else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
-		{
-			RightMouseDrop();
-		}
+		Owner->GetInventoryComponent()->SlotInteraction(this->Index, false);
 	}
+
 	return FReply::Handled();
 }
-
-//*
-// Drag and drop functions
-//*
-void UInventorySlotWidget::LeftMouseDrag()
-{
-	// Return early if there is no item here
-	if (CurrentItem.Quantity == 0)
-	{
-		return;
-	}
-
-	// Drag all of the items in this slot
-	Owner->StartDragging(CurrentItem);
-	// Clear this slot
-	this->ClearItem();
-}
-
-void UInventorySlotWidget::LeftMouseDrop()
-{
-	// Get the item data about the item we are dragging
-	if (!GetSelectedItemData())
-	{
-		return;
-	}
-	FInventoryItem SelectedItem = *Owner->GetSelectedItem();
-
-	// This slot is empty drop all the contents we are dragging into it
-	if (CurrentItem.Quantity == 0)
-	{
-		this->SetItem(SelectedItem);
-		Owner->EndDragging();
-	}
-	// This slot's item is the same as the selected item
-	else if (CurrentItem.Name == SelectedItem.Name)
-	{
-		// If the amount we are trying to add is within stack size
-		if ((CurrentItem.Quantity + SelectedItem.Quantity) <= GetSelectedItemData()->StackSize)
-		{
-			FInventoryItem NewItem = CurrentItem;
-			NewItem.Quantity += SelectedItem.Quantity;
-			this->SetItem(NewItem);
-			Owner->EndDragging();
-		}
-		// If the amount we are trying to add is over the stack size
-		else if ((CurrentItem.Quantity + SelectedItem.Quantity) > GetSelectedItemData()->StackSize)
-		{
-			// Update the selected item
-			FInventoryItem NewSelection = SelectedItem;
-			NewSelection.Quantity = (CurrentItem.Quantity + SelectedItem.Quantity) - GetSelectedItemData()->StackSize;
-			Owner->StartDragging(NewSelection);
-			
-			// Update the slot item
-			FInventoryItem NewSlotItem = CurrentItem;
-			NewSlotItem.Quantity = GetSelectedItemData()->StackSize;
-			this->SetItem(NewSlotItem);
-		}
-	}
-	// This slot's item is different to the one we are dragging
-	else
-	{
-		FInventoryItem OldSlotItem = CurrentItem;
-
-		this->SetItem(SelectedItem);
-		Owner->StartDragging(OldSlotItem);
-	}
-}
-
-void UInventorySlotWidget::RightMouseDrag()
-{
-	// Early return if there is no item here
-	if (CurrentItem.Quantity == 0)
-	{
-		return;
-	}
-
-	// If there is only one item
-	if (CurrentItem.Quantity == 1)
-	{
-		Owner->StartDragging(CurrentItem);
-		this->ClearItem();
-		return;
-	}
-	
-	// Split the quantity
-	int32 HalfQuantity = CurrentItem.Quantity / 2;
-	
-	// Update the selection
-	FInventoryItem NewSelection = CurrentItem;
-	NewSelection.Quantity = HalfQuantity;
-	Owner->StartDragging(NewSelection);
-
-	// Update the slot
-	FInventoryItem NewSlotItem = CurrentItem;
-	NewSlotItem.Quantity -= HalfQuantity;
-	this->SetItem(NewSlotItem);
-}
-
-void UInventorySlotWidget::RightMouseDrop()
-{
-	// Get the item data about the item we are dragging
-	if (!GetSelectedItemData())
-	{
-		return;
-	}
-	FInventoryItem SelectedItem = *Owner->GetSelectedItem();
-
-	// Set the slot value to one and remove one from the selection if this slot has no item
-	if (CurrentItem.Quantity == 0)
-	{
-		FInventoryItem NewSlotItem = SelectedItem;
-		NewSlotItem.Quantity = 1;
-		this->SetItem(NewSlotItem);
-
-		FInventoryItem NewSelection = SelectedItem;
-		NewSelection.Quantity -= 1;
-		Owner->StartDragging(NewSelection);
-	}
-	// Add one item to this slot and remove one from the selection if this slot has the same item we are dragging and we are within stack size
-	else if (CurrentItem.Name == SelectedItem.Name && (CurrentItem.Quantity + 1) <= GetSelectedItemData()->StackSize)
-	{
-		// Update the slot item
-		FInventoryItem NewSlotItem = CurrentItem;
-		NewSlotItem.Quantity += 1;
-		this->SetItem(NewSlotItem);
-
-		// Update the selection
-		FInventoryItem NewSelection = SelectedItem;
-		NewSelection.Quantity -= 1;
-		Owner->StartDragging(NewSelection);
-	}
-
-	// Stop dragging if there are no more items to drop
-	if (Owner->GetSelectedItem()->Quantity <= 0)
-	{
-		Owner->EndDragging();
-	}
-}
-
-FItem* UInventorySlotWidget::GetSelectedItemData()
-{
-	FItem* SelectedItemData = nullptr;
-	SelectedItemData = Owner->GetInventoryComponent()->GetItemData(Owner->GetSelectedItem()->Name);
-	return SelectedItemData;
-}
-
-//*
-// End drag and drop functions
-//*
 
 void UInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
@@ -270,9 +98,4 @@ void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 FInventoryItem* UInventorySlotWidget::GetCurrentItem()
 {
 	return &CurrentItem;
-}
-
-bool UInventorySlotWidget::IsFull() const
-{
-	return bIsFull;
 }

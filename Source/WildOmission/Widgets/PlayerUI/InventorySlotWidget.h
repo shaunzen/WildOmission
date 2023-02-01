@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "WildOmission/Structs/InventoryItem.h"
-#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventorySlotWidget.generated.h"
 
 class UTextBlock;
@@ -19,12 +18,9 @@ class WILDOMISSION_API UInventorySlotWidget : public UUserWidget
 public:
 	void Setup(UInventoryWidget* InOwner, const int32& InIndex);
 	void SetItem(const FInventoryItem& Item);
-	FInventorySlotSave CreateSave();
 	void ClearItem();
 
 	FInventoryItem* GetCurrentItem();
-
-	bool IsFull() const;
 
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
@@ -50,14 +46,5 @@ private:
 
 	UPROPERTY()
 	int32 Index;
-	
-	bool bIsFull;
-	
-	void LeftMouseDrag();
-	void LeftMouseDrop();
-	void RightMouseDrag();
-	void RightMouseDrop();
-
-	struct FItem* GetSelectedItemData();
 	
 };

@@ -116,15 +116,5 @@ void UPlayerHUDWidget::UpdateSelectedItemLocation()
 
 void UPlayerHUDWidget::BackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
 {
-	if (Inventory->Dragging())
-	{
-		if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-		{
-			Inventory->DropSelectedItem(true);
-		}
-		else if (MouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
-		{
-			Inventory->DropSelectedItem(false);
-		}
-	}
+	// TODO dropping
 }

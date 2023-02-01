@@ -38,6 +38,33 @@ struct FItem : public FTableRowBase
 };
 
 USTRUCT()
+struct FInventorySlot
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere)
+	FInventoryItem Item;
+	UPROPERTY()
+	int32 Index;
+	
+	void SetItem(const FInventoryItem& InItem)
+	{
+		Item = InItem;
+	}
+
+	void ClearItem()
+	{
+		Item.Clear();
+	}
+
+	bool IsFull() const
+	{
+		// this is temporary
+		return Item.Quantity >= 10;
+	}
+};
+
+USTRUCT()
 struct FInventoryContents
 {
 	GENERATED_BODY()
@@ -118,6 +145,7 @@ class WILDOMISSION_API UInventoryComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UInventoryComponent();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	void Setup(UInventoryWidget* InInventoryWidget);
 
@@ -138,16 +166,21 @@ public:
 	// Gets the widget this inventory is using
 	UInventoryWidget* GetWidget();
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	void SlotInteraction(const int32& SlotIndex, bool Primary = true);
 
-	TArray<FInventorySlotSave>* GetSlotSaves();
 
 	FWildOmissionInventorySave Save();
 	void Load(const FWildOmissionInventorySave& InInventorySave);
 
 private:
-	UPROPERTY(EditDefaultsOnly, Replicated)
+	UPROPERTY(Replicated)
 	FInventoryContents Contents;
+
+	UPROPERTY(EditDefaultsOnly)
+	uint8 SlotCount;
+
+	UPROPERTY(VisibleAnywhere, Replicated)
+	TArray<FInventorySlot> Slots;
 
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* ItemDataTable;
@@ -155,8 +188,21 @@ private:
 	UPROPERTY()
 	UInventoryWidget* InventoryWidget;
 
-	UPROPERTY(Replicated)
-	TArray<FInventorySlotSave> SlotSaves;
+	FInventoryItem SelectedItem;
+	bool Dragging;
+
+	//*************************************************
+	//	Slot stuff
+	//*************************************************
+	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
+	bool AddItemToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
+	bool AddItemToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
+
+	bool RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
+	
+	void Drag(const int32& FromSlotIndex, bool bSplit = false); // The Slot We Are Dragging from, which action (take/split)
+	void Drop(const int32& ToSlotIndex, bool bSingle = false); // The Destination slot, which action (all/single)
+
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddItem(const FName& ItemName, const int32& Quantity);
@@ -166,7 +212,5 @@ private:
 	
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnWorldItem(const FName& ItemName, const int32& Quantity);
-	
-	UFUNCTION(Client, Reliable)
-	void Client_SaveInventorySlots();
+
 };
