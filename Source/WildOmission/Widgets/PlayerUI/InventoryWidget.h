@@ -19,22 +19,26 @@ class WILDOMISSION_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	UInventoryWidget(const FObjectInitializer& ObjectInitializer);
+
 	// Setup
 	void SetSelectedItemWidget(USelectedItemWidget* InWidget);
-	void SetComponent(UInventoryComponent* InInventoryComponent);
+	void Setup(UInventoryComponent* InInventoryComponent);
 
 	void Open();
 	void Close();
+
+	void Refresh();
 	
 	UInventoryComponent* GetInventoryComponent();
 
 private:
 	// Slots
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UInventorySlotWidget> InventorySlotWidgetClass;
+	TSubclassOf<UInventorySlotWidget> SlotWidgetClass;
 
 	UPROPERTY()
-	TArray<UInventorySlotWidget*> InventorySlots;
+	TArray<UInventorySlotWidget*> Slots;
 	
 	UPROPERTY()
 	USelectedItemWidget* SelectedItemWidget;
@@ -50,7 +54,7 @@ private:
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;
 
-	void CreateSlots();
+	void CreateSlots(bool CreateToolbar = false);
 
 	void CreateToolbarSlots();
 	void CreateInventorySlots();

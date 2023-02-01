@@ -22,6 +22,8 @@ public:
 
 	FInventoryItem* GetCurrentItem();
 
+	int32 GetIndex();
+
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 

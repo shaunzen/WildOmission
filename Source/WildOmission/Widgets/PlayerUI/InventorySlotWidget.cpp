@@ -99,3 +99,8 @@ FInventoryItem* UInventorySlotWidget::GetCurrentItem()
 {
 	return &CurrentItem;
 }
+
+int32 UInventorySlotWidget::GetIndex()
+{
+	return Index;
+}

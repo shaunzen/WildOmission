@@ -39,7 +39,7 @@ void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
 {
 	// Create a link between the Widget and this component
 	InventoryWidget = InInventoryWidget;
-	InventoryWidget->SetComponent(this);
+	InventoryWidget->Setup(this);
 
 	Slots.SetNum(SlotCount, false);
 }
@@ -232,7 +232,6 @@ bool UInventoryComponent::AddItemToEmptySlot(const FName& ItemName, FItem* ItemD
 
 bool UInventoryComponent::RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining)
 {
-	// TODO
 	for (FInventorySlot& Slot : Slots)
 	{
 		if (Slot.Item.Name != ItemName)
@@ -408,6 +407,20 @@ void UInventoryComponent::Drop(const int32& ToSlotIndex, bool bSingle)
 	// TODO update UI
 }
 
+TArray<FInventorySlot>& UInventoryComponent::GetSlots()
+{
+	return Slots;
+}
+
+FInventoryItem* UInventoryComponent::GetSelectedItem()
+{
+	return &SelectedItem;
+}
+
+bool UInventoryComponent::IsDragging() const
+{
+	return Dragging;
+}
 
 // Save/Load
 FWildOmissionInventorySave UInventoryComponent::Save()

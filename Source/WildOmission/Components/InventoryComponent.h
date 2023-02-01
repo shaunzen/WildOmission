@@ -168,6 +168,9 @@ public:
 
 	void SlotInteraction(const int32& SlotIndex, bool Primary = true);
 
+	TArray<FInventorySlot>& GetSlots();
+	FInventoryItem* GetSelectedItem();
+	bool IsDragging() const;
 
 	FWildOmissionInventorySave Save();
 	void Load(const FWildOmissionInventorySave& InInventorySave);
