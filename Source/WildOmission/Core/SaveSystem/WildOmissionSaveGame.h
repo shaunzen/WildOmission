@@ -8,27 +8,14 @@
 #include "WildOmissionSaveGame.generated.h"
 
 USTRUCT()
-struct FInventorySlotSave
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	int32 Index;
-
-	UPROPERTY()
-	FInventoryItem Contents;
-
-};
-
-USTRUCT()
 struct FWildOmissionInventorySave
 {
 	GENERATED_BODY()
 	UPROPERTY()
 	TArray<FInventoryItem> Items;
 	
-	UPROPERTY()
-	TArray<FInventorySlotSave> Slots;
+	//UPROPERTY()
+	//TArray<FInventorySlot> Slots;
 };
 
 USTRUCT()

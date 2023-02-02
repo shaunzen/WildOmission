@@ -92,6 +92,7 @@ void UInventoryComponent::SpawnWorldItem(const FName& ItemName, const int32& Qua
 //**************************************************************
 // User Interaction
 //**************************************************************
+
 void UInventoryComponent::SlotInteraction(const int32& SlotIndex, bool Primary)
 {
 	// This is gross
@@ -147,8 +148,69 @@ void UInventoryComponent::DropSelectedItemInWorld(bool Single)
 }
 
 //**************************************************************
+// Getters
+//**************************************************************
+
+FInventoryContents* UInventoryComponent::GetContents()
+{
+	return &Contents;
+}
+
+TArray<FInventorySlot>& UInventoryComponent::GetSlots()
+{
+	return Slots;
+}
+
+bool UInventoryComponent::IsDragging() const
+{
+	return Dragging;
+}
+
+FInventoryItem* UInventoryComponent::GetSelectedItem()
+{
+	return &SelectedItem;
+}
+
+UInventoryWidget* UInventoryComponent::GetWidget()
+{
+	return InventoryWidget;
+}
+
+FItem* UInventoryComponent::GetItemData(const FName& ItemName)
+{
+	if (ItemDataTable == nullptr)
+	{
+		return nullptr;
+	}
+	static const FString ContextString(TEXT("Item Data Context"));
+	return ItemDataTable->FindRow<FItem>(ItemName, ContextString, true);
+}
+
+//**************************************************************
+// Save Load
+//**************************************************************
+
+FWildOmissionInventorySave UInventoryComponent::Save()
+{
+	FWildOmissionInventorySave Save;
+
+	// get and save our items
+	Save.Items = Contents.Contents;
+	// get and save slots
+
+	return Save;
+}
+
+void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave)
+{
+	Contents.Contents = InInventorySave.Items;
+
+}
+
+//**************************************************************
 // Slot Functions
 //**************************************************************
+
 bool UInventoryComponent::AddItemToSlots(const FName& ItemName, const int32& Quantity, int32& Remaining)
 {
 	int32 QuantityToAdd = Quantity;
@@ -261,50 +323,39 @@ void UInventoryComponent::DropAll(const int32& ToSlotIndex)
 
 	FInventorySlot& ToSlot = Slots[ToSlotIndex];
 
-	//TODO is empty function on inventory item
-		// If the slot we are droping to is empty just give it all
 	if (ToSlot.IsEmpty())
 	{
-		// Set slot item to selected
 		ToSlot.Item = SelectedItem;
-		// Clear selected
+	
 		SelectedItem.Clear();
-		// stop dragging
 		Dragging = false;
 	}
-	else if (ToSlot.IsSameItem(SelectedItem))
+	else if (ToSlot.CompareItem(SelectedItem))
 	{
-		// if the amount is within stack size
 		if ((ToSlot.Item.Quantity + SelectedItem.Quantity) <= GetItemData(SelectedItem.Name)->StackSize)
 		{
-			// Give it all
-			FInventoryItem NewSlotItem = ToSlot.Item;
-			NewSlotItem.Quantity += SelectedItem.Quantity;
-			ToSlot.Item = NewSlotItem;
+			ToSlot.Item.Quantity += SelectedItem.Quantity;
+			
 			SelectedItem.Clear();
 			Dragging = false;
 		}
 		else
 		{
-			FInventoryItem NewSelection = SelectedItem;
-			NewSelection.Quantity = (ToSlot.Item.Quantity + SelectedItem.Quantity) - GetItemData(SelectedItem.Name)->StackSize;
-			SelectedItem = NewSelection;
-
-			FInventoryItem NewSlotItem = ToSlot.Item;
-			NewSlotItem.Quantity = GetItemData(SelectedItem.Name)->StackSize;
-			ToSlot.Item = NewSlotItem;
+			SelectedItem.Quantity = (ToSlot.Item.Quantity + SelectedItem.Quantity) - GetItemData(SelectedItem.Name)->StackSize;
+			
+			ToSlot.Item.Quantity = GetItemData(SelectedItem.Name)->StackSize;
 		}
 	}
 	else
 	{
-		// Swap slots
+		// Swap
 		FInventoryItem OldSlotItem = ToSlot.Item;
 
 		ToSlot.Item = SelectedItem;
 		SelectedItem = OldSlotItem;
 	}
 
-	if (SelectedItem.Quantity <= 0)
+	if (SelectedItem.IsZero())
 	{
 		SelectedItem.Clear();
 		Dragging = false;
@@ -329,7 +380,7 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex)
 		// Remove one from dragging
 		SelectedItem.Quantity -= 1;
 	}
-	else if (ToSlot.IsSameItem(SelectedItem) && (ToSlot.Item.Quantity + 1) <= GetItemData(SelectedItem.Name)->StackSize)
+	else if (ToSlot.CompareItem(SelectedItem) && (ToSlot.Item.Quantity + 1) <= GetItemData(SelectedItem.Name)->StackSize)
 	{
 		// Add one to slot
 		ToSlot.Item.Quantity += 1;
@@ -411,72 +462,6 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* It
 		}
 	}
 	return QuantityToAdd == 0;
-}
-
-
-
-
-
-
-
-
-// Save/Load
-FWildOmissionInventorySave UInventoryComponent::Save()
-{
-	FWildOmissionInventorySave Save;
-
-	// get and save our items
-	Save.Items = Contents.Contents;
-	// get and save slots
-
-	return Save;
-}
-
-void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave)
-{
-	Contents.Contents = InInventorySave.Items;
-}
-
-
-
-
-//**************************************************************
-// Getters
-//**************************************************************
-
-FInventoryContents* UInventoryComponent::GetContents()
-{
-	return &Contents;
-}
-
-TArray<FInventorySlot>& UInventoryComponent::GetSlots()
-{
-	return Slots;
-}
-
-bool UInventoryComponent::IsDragging() const
-{
-	return Dragging;
-}
-
-FInventoryItem* UInventoryComponent::GetSelectedItem()
-{
-	return &SelectedItem;
-}
-
-UInventoryWidget* UInventoryComponent::GetWidget()
-{
-	return InventoryWidget;
-}
-
-FItem* UInventoryComponent::GetItemData(const FName& ItemName)
-{
-	if (ItemDataTable == nullptr)
-	{
-		return nullptr;
-	}
-	static const FString ContextString(TEXT("Item Data Context"));
-	return ItemDataTable->FindRow<FItem>(ItemName, ContextString, true);
 }
 
 //**************************************************************

@@ -19,6 +19,8 @@ struct FInventoryItem
 
 	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName);
 
+	bool IsZero() const;
+	
 	void Set(const FName& InName, const int32& InQuantity);
 
 	void Clear();

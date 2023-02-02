@@ -57,7 +57,7 @@ struct FInventorySlot
 		Item.Clear();
 	}
 
-	bool IsSameItem(const FInventoryItem& ItemToCompare) const
+	bool CompareItem(const FInventoryItem& ItemToCompare) const
 	{
 		return Item.Name == ItemToCompare.Name;
 	}

@@ -14,6 +14,11 @@ void FInventoryItem::Set(const FName& InName, const int32& InQuantity)
 	Quantity = InQuantity;
 }
 
+bool FInventoryItem::IsZero() const
+{
+	return Quantity == 0;
+}
+
 void FInventoryItem::Clear()
 {
 	Name = FName("");
