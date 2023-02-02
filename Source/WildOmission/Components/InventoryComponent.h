@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
 #include "WildOmission/Structs/InventoryItem.h"
+#include "WildOmission/Structs/InventorySlot.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 
@@ -34,37 +35,6 @@ struct FItem : public FTableRowBase
 		Thumbnail = nullptr;
 		Mesh = nullptr;
 		StackSize = 1000;
-	}
-};
-
-USTRUCT()
-struct FInventorySlot
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FInventoryItem Item;
-	UPROPERTY()
-	int32 Index;
-	
-	void SetItem(const FInventoryItem& InItem)
-	{
-		Item = InItem;
-	}
-
-	void ClearItem()
-	{
-		Item.Clear();
-	}
-
-	bool CompareItem(const FInventoryItem& ItemToCompare) const
-	{
-		return Item.Name == ItemToCompare.Name;
-	}
-
-	bool IsEmpty() const
-	{
-		return Item.Quantity == 0 || Item.Name == FName("");
 	}
 };
 
