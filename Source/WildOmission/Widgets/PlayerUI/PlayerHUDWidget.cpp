@@ -6,6 +6,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "InventoryWidget.h"
 #include "SelectedItemWidget.h"
+#include "WildOmission/Components/InventoryComponent.h"
 #include "VitalsWidget.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -116,5 +117,12 @@ void UPlayerHUDWidget::UpdateSelectedItemLocation()
 
 void UPlayerHUDWidget::BackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
 {
-	// TODO dropping
+	if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
+		Inventory->GetInventoryComponent()->DropSelectedItemInWorld(false);
+	}
+	else if (MouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
+	{
+		Inventory->GetInventoryComponent()->DropSelectedItemInWorld(true);
+	}
 }

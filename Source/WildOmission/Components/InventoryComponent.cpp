@@ -88,7 +88,7 @@ void UInventoryComponent::RemoveItem(const FName& ItemName, const int32& Quantit
 bool UInventoryComponent::Server_RemoveItem_Validate(const FName& ItemName, const int32& Quantity)
 {
 	// Only valid if the player has the item they are removing
-	return !Contents.HasItem(ItemName);
+	return Contents.HasItem(ItemName);
 }
 
 void UInventoryComponent::Server_RemoveItem_Implementation(const FName& ItemName, const int32& Quantity)
@@ -323,8 +323,6 @@ void UInventoryComponent::Drag(const int32& FromSlotIndex, bool bSplit)
 		NewSlotItem.Quantity -= HalfQuantity;
 		Slots[FromSlotIndex].Item = NewSlotItem;
 	}
-
-	// TODO update UI
 }
 
 void UInventoryComponent::Drop(const int32& ToSlotIndex, bool bSingle)
@@ -407,8 +405,33 @@ void UInventoryComponent::Drop(const int32& ToSlotIndex, bool bSingle)
 		SelectedItem.Clear();
 		Dragging = false;
 	}
+}
 
-	// TODO update UI
+void UInventoryComponent::DropSelectedItemInWorld(bool Single)
+{
+	if (!Dragging)
+	{
+		return;
+	}
+	if (Single == true)
+	{
+		RemoveItem(SelectedItem.Name, 1, true);
+
+		SelectedItem.Quantity -= 1;
+	}
+	else
+	{
+		RemoveItem(SelectedItem.Name, SelectedItem.Quantity, true);
+		SelectedItem.Clear();
+	}
+
+	if (SelectedItem.Quantity == 0)
+	{
+		SelectedItem.Clear();
+		Dragging = false;
+	}
+
+	InventoryWidget->Refresh();
 }
 
 TArray<FInventorySlot>& UInventoryComponent::GetSlots()

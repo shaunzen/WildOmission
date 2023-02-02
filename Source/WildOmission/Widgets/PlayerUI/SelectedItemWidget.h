@@ -15,7 +15,7 @@ class WILDOMISSION_API USelectedItemWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetItem(UTexture2D* ItemIcon, int32 Quantity);
+	void SetItem(UTexture2D* ItemIcon, const int32& Quantity);
 	
 	void Show();
 	
@@ -27,5 +27,7 @@ private:
 	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* QuantityText;
+
+	FString GetQuantityString(const int32& Quantity);
 	
 };

@@ -167,7 +167,7 @@ public:
 	UInventoryWidget* GetWidget();
 
 	void SlotInteraction(const int32& SlotIndex, bool Primary = true);
-
+	void DropSelectedItemInWorld(bool Single = false);
 	TArray<FInventorySlot>& GetSlots();
 	FInventoryItem* GetSelectedItem();
 	bool IsDragging() const;
