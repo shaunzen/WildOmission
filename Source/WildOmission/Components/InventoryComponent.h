@@ -42,7 +42,7 @@ struct FInventorySlot
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	FInventoryItem Item;
 	UPROPERTY()
 	int32 Index;
@@ -57,10 +57,14 @@ struct FInventorySlot
 		Item.Clear();
 	}
 
-	bool IsFull() const
+	bool IsSameItem(const FInventoryItem& ItemToCompare) const
 	{
-		// this is temporary
-		return Item.Quantity >= 10;
+		return Item.Name == ItemToCompare.Name;
+	}
+
+	bool IsEmpty() const
+	{
+		return Item.Quantity == 0 || Item.Name == FName("");
 	}
 };
 
@@ -146,35 +150,56 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
 	void Setup(UInventoryWidget* InInventoryWidget);
 
-	// Checks for slot and asks the server to add the item to our contents
-	void AddItem(const FName& ItemName, const int32& Quantity);
-	void RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld = false);
-	void SwapItem();
+	//**************************************************************
+	// General Management
+	//**************************************************************
 
-	// Calls an rpc on the server to spawn a world item
+	void AddItem(const FName& ItemName, const int32& Quantity);
+	
+	void RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld = false);
+
 	void SpawnWorldItem(const FName& ItemName, const int32& Quantity = 1);
 
+	//**************************************************************
+	// User Interaction
+	//**************************************************************
+
+	void SlotInteraction(const int32& SlotIndex, bool Primary = true);
+
+	void DropSelectedItemInWorld(bool Single = false);
+
+	//**************************************************************
+	// Getters
+	//**************************************************************
+	
 	// Gets the contents map for this inventory
 	FInventoryContents* GetContents();
 
-	// Retrives the data about the item id passed in
-	FItem* GetItemData(const FName& ItemName);
-
-	// Gets the widget this inventory is using
-	UInventoryWidget* GetWidget();
-
-	void SlotInteraction(const int32& SlotIndex, bool Primary = true);
-	void DropSelectedItemInWorld(bool Single = false);
+	// Returns a reference to the inventory slots
 	TArray<FInventorySlot>& GetSlots();
-	FInventoryItem* GetSelectedItem();
+	
+	// Is this inventory currently performing a drag
 	bool IsDragging() const;
 
-	FWildOmissionInventorySave Save();
-	void Load(const FWildOmissionInventorySave& InInventorySave);
+	// Returns a pointer to the currently selected item
+	FInventoryItem* GetSelectedItem();
+	
+	// Gets the widget this inventory is using
+	UInventoryWidget* GetWidget();
+	
+	// Retrives the data about the item id passed in
+	FItem* GetItemData(const FName& ItemName);
+	
+	//**************************************************************
+	// Save Load
+	//**************************************************************
 
+	FWildOmissionInventorySave Save();
+	
+	void Load(const FWildOmissionInventorySave& InInventorySave);
+	
 private:
 	UPROPERTY(Replicated)
 	FInventoryContents Contents;
@@ -191,21 +216,31 @@ private:
 	UPROPERTY()
 	UInventoryWidget* InventoryWidget;
 
+	//**************************************************************
+	// Slot Variables
+	//**************************************************************
 	FInventoryItem SelectedItem;
 	bool Dragging;
 
-	//*************************************************
-	//	Slot stuff
-	//*************************************************
-	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
-	bool AddItemToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
-	bool AddItemToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
+	//**************************************************************
+	// Slot Functions
+	//**************************************************************
 
+	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
 	bool RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
 	
-	void Drag(const int32& FromSlotIndex, bool bSplit = false); // The Slot We Are Dragging from, which action (take/split)
-	void Drop(const int32& ToSlotIndex, bool bSingle = false); // The Destination slot, which action (all/single)
+	void DragAll(const int32& FromSlotIndex);
+	void DragSplit(const int32& FromSlotIndex);
 
+	void DropAll(const int32& ToSlotIndex);
+	void DropSingle(const int32& ToSlotIndex);
+
+	bool FindAndAddToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
+	bool FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
+
+	//**************************************************************
+	// RPC
+	//**************************************************************
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddItem(const FName& ItemName, const int32& Quantity);
