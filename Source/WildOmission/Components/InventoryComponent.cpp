@@ -6,7 +6,6 @@
 #include "WildOmission/Actors/WorldItem.h"
 #include "Net/UnrealNetwork.h"
 
-
 UInventoryComponent::UInventoryComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -15,7 +14,7 @@ UInventoryComponent::UInventoryComponent()
 	
 	// Make this component replicate
 	SetIsReplicatedByDefault(true);
-
+	
 	// Find the item data table
 	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/WildOmission/Blueprints/DataTables/DT_Items"));
 	if (ItemDataTableObject.Succeeded())
@@ -33,6 +32,8 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(UInventoryComponent, Contents);
 	DOREPLIFETIME(UInventoryComponent, Slots);
+	DOREPLIFETIME(UInventoryComponent, SelectedItem);
+	DOREPLIFETIME(UInventoryComponent, Dragging);
 }
 
 void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
@@ -41,7 +42,12 @@ void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
 	InventoryWidget = InInventoryWidget;
 	InventoryWidget->Setup(this);
 
+	// Initialize slots
 	Slots.SetNum(SlotCount, false);
+	for (int32 i = 0; i < SlotCount; ++i)
+	{
+		Slots[i].Index = i;
+	}
 }
 
 //**************************************************************
@@ -60,12 +66,16 @@ void UInventoryComponent::AddItem(const FName& ItemName, const int32& Quantity)
 	// Add item to item list
 	Server_AddItem(ItemName, AmountAdded);
 
-	InventoryWidget->Refresh();
-
 	if (AddSuccess == false)
 	{
 		SpawnWorldItem(ItemName, Remaining);
 	}
+
+	if (InventoryWidget == nullptr)
+	{
+		return;
+	}
+	InventoryWidget->Refresh();
 }
 
 void UInventoryComponent::RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld)
@@ -79,6 +89,11 @@ void UInventoryComponent::RemoveItem(const FName& ItemName, const int32& Quantit
 	{
 		int32 Remaining;
 		bool RemoveSuccess = RemoveItemFromSlots(ItemName, Quantity, Remaining);
+	}
+
+	if (InventoryWidget == nullptr)
+	{
+		return;
 	}
 	InventoryWidget->Refresh();
 }
@@ -194,9 +209,11 @@ FWildOmissionInventorySave UInventoryComponent::Save()
 {
 	FWildOmissionInventorySave Save;
 
-	// get and save our items
+	// Save Contents List
 	Save.Items = Contents.Contents;
-	// get and save slots
+	
+	// Save Slots
+	Save.Slots = Slots;
 
 	return Save;
 }
@@ -204,7 +221,7 @@ FWildOmissionInventorySave UInventoryComponent::Save()
 void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave)
 {
 	Contents.Contents = InInventorySave.Items;
-
+	Slots = InInventorySave.Slots;
 }
 
 //**************************************************************

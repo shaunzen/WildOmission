@@ -26,6 +26,8 @@ public:
 
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
+	UFUNCTION(Exec)
+	void LogLocalInventorySlots();
 
 	UFUNCTION(Server, Reliable)
 	void Server_DestroyActor(AActor* ActorToDestroy);

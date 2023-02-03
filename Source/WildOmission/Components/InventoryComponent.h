@@ -119,7 +119,9 @@ class WILDOMISSION_API UInventoryComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UInventoryComponent();
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void Setup(UInventoryWidget* InInventoryWidget);
 
 	//**************************************************************
@@ -189,7 +191,11 @@ private:
 	//**************************************************************
 	// Slot Variables
 	//**************************************************************
+	
+	UPROPERTY(Replicated)
 	FInventoryItem SelectedItem;
+
+	UPROPERTY(Replicated)
 	bool Dragging;
 
 	//**************************************************************
@@ -220,5 +226,7 @@ private:
 	
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnWorldItem(const FName& ItemName, const int32& Quantity);
+
+	// TODO RPC for slots
 
 };

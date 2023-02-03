@@ -22,6 +22,8 @@ public:
 
 	UFUNCTION(Exec)
 	void LogPlayerInventoryComponents();
+	UFUNCTION(Exec)
+	void LogPlayerInventorySlots();
 
 	UFUNCTION(BlueprintCallable, Exec)
 	void SaveGame();

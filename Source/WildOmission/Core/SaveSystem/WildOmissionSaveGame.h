@@ -5,17 +5,20 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "WildOmission/Structs/InventoryItem.h"
+#include "WildOmission/Structs/InventorySlot.h"
 #include "WildOmissionSaveGame.generated.h"
 
 USTRUCT()
 struct FWildOmissionInventorySave
 {
 	GENERATED_BODY()
+	
 	UPROPERTY()
 	TArray<FInventoryItem> Items;
 	
-	//UPROPERTY()
-	//TArray<FInventorySlot> Slots;
+	UPROPERTY()
+	TArray<FInventorySlot> Slots;
+
 };
 
 USTRUCT()

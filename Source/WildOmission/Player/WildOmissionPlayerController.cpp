@@ -110,6 +110,23 @@ void AWildOmissionPlayerController::LogLocalInventoryContents()
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: %s"), *WildOmissionCharacter->GetActorNameOrLabel()));
 }
 
+void AWildOmissionPlayerController::LogLocalInventorySlots()
+{
+	if (IsLocalController() == false)
+	{
+		return;
+	}
+	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetPawn());
+	if (WildOmissionCharacter == nullptr)
+	{
+		return;
+	}
+
+	for (const FInventorySlot& Slot : WildOmissionCharacter->GetInventoryComponent()->GetSlots())
+	{
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Index: %i, Item: %s, Quantity: %i"), Slot.Index, *Slot.Item.Name.ToString(), Slot.Item.Quantity));
+	}
+}
 void AWildOmissionPlayerController::Server_DestroyActor_Implementation(AActor* ActorToDestroy)
 {
 	if (ActorToDestroy == nullptr)

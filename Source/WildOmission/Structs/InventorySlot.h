@@ -13,10 +13,10 @@ struct FInventorySlot
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FInventoryItem Item;
+	FInventoryItem Item = FInventoryItem();
 	
 	UPROPERTY()
-	int32 Index;
+	int32 Index = 0;
 
 	void SetItem(const FInventoryItem& InItem);
 
