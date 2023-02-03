@@ -122,6 +122,8 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void BeginPlay() override;
+
 	void Setup(UInventoryWidget* InInventoryWidget);
 
 	//**************************************************************
@@ -222,10 +224,22 @@ private:
 	void Server_AddItem(const FName& ItemName, const int32& Quantity);
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_RemoveItem(const FName& ItemName, const int32& Quantity);
+	void Server_RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld);
 	
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnWorldItem(const FName& ItemName, const int32& Quantity);
+
+	UFUNCTION(Server, Reliable)
+	void Server_DragAll(const int32& FromSlotIndex);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_DragSplit(const int32& FromSlotIndex);
+
+	UFUNCTION(Server, Reliable)
+	void Server_DropAll(const int32& ToSlotIndex);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_DropSingle(const int32& ToSlotIndex);
 
 	// TODO RPC for slots
 

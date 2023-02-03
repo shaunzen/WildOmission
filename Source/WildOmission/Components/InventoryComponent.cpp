@@ -36,11 +36,14 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(UInventoryComponent, Dragging);
 }
 
-void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
+void UInventoryComponent::BeginPlay()
 {
-	// Create a link between the Widget and this component
-	InventoryWidget = InInventoryWidget;
-	InventoryWidget->Setup(this);
+	Super::BeginPlay();
+
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
 
 	// Initialize slots
 	Slots.SetNum(SlotCount, false);
@@ -50,26 +53,20 @@ void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
 	}
 }
 
+void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
+{
+	// Create a link between the Widget and this component
+	InventoryWidget = InInventoryWidget;
+	InventoryWidget->Setup(this);
+}
+
 //**************************************************************
 // General Management
 //**************************************************************
 
 void UInventoryComponent::AddItem(const FName& ItemName, const int32& Quantity)
 {
-	int32 Remaining;
-	int32 AmountAdded;
-	bool AddSuccess = AddItemToSlots(ItemName, Quantity, Remaining);
-
-	// Calculate how many were added
-	AmountAdded = Quantity - Remaining;
-
-	// Add item to item list
-	Server_AddItem(ItemName, AmountAdded);
-
-	if (AddSuccess == false)
-	{
-		SpawnWorldItem(ItemName, Remaining);
-	}
+	Server_AddItem(ItemName, Quantity);
 
 	if (InventoryWidget == nullptr)
 	{
@@ -80,16 +77,7 @@ void UInventoryComponent::AddItem(const FName& ItemName, const int32& Quantity)
 
 void UInventoryComponent::RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld)
 {
-	Server_RemoveItem(ItemName, Quantity);
-	if (bSpawnInWorld == true)
-	{
-		Server_SpawnWorldItem(ItemName, Quantity);
-	}
-	else
-	{
-		int32 Remaining;
-		bool RemoveSuccess = RemoveItemFromSlots(ItemName, Quantity, Remaining);
-	}
+	Server_RemoveItem(ItemName, Quantity, bSpawnInWorld);
 
 	if (InventoryWidget == nullptr)
 	{
@@ -279,138 +267,22 @@ bool UInventoryComponent::RemoveItemFromSlots(const FName& ItemName, const int32
 
 void UInventoryComponent::DragAll(const int32& FromSlotIndex)
 {
-	FInventorySlot& FromSlot = Slots[FromSlotIndex];
-
-	if (FromSlot.IsEmpty())
-	{
-		return;
-	}
-
-	SelectedItem = FromSlot.Item;
-	Dragging = true;
-
-	FromSlot.ClearItem();
+	Server_DragAll(FromSlotIndex);
 }
 
-// TODO simplify this function
 void UInventoryComponent::DragSplit(const int32& FromSlotIndex)
 {
-	FInventorySlot& FromSlot = Slots[FromSlotIndex];
-
-	if (FromSlot.IsEmpty())
-	{
-		return;
-	}
-
-	// Just take all if there is only one item
-	if (FromSlot.Item.Quantity == 1)
-	{
-		// Take all		
-		// Start Dragging item in from index
-		SelectedItem = FromSlot.Item;
-		Dragging = true;
-
-		//Take all
-		FromSlot.ClearItem();
-
-		return;
-	}
-
-	// Calculate the half
-	int32 HalfQuantity = FromSlot.Item.Quantity / 2;
-
-	// Start Dragging half
-	FInventoryItem NewSelection = FromSlot.Item;
-	NewSelection.Quantity = HalfQuantity;
-	SelectedItem = NewSelection;
-	Dragging = true;
-
-	// Update the slot
-	FInventoryItem NewSlotItem = FromSlot.Item;
-	NewSlotItem.Quantity -= HalfQuantity;
-	FromSlot.Item = NewSlotItem;
+	Server_DragSplit(FromSlotIndex);
 }
 
 void UInventoryComponent::DropAll(const int32& ToSlotIndex)
 {
-	if (!Dragging)
-	{
-		return;
-	}
-
-	FInventorySlot& ToSlot = Slots[ToSlotIndex];
-
-	if (ToSlot.IsEmpty())
-	{
-		ToSlot.Item = SelectedItem;
-	
-		SelectedItem.Clear();
-		Dragging = false;
-	}
-	else if (ToSlot.CompareItem(SelectedItem))
-	{
-		if ((ToSlot.Item.Quantity + SelectedItem.Quantity) <= GetItemData(SelectedItem.Name)->StackSize)
-		{
-			ToSlot.Item.Quantity += SelectedItem.Quantity;
-			
-			SelectedItem.Clear();
-			Dragging = false;
-		}
-		else
-		{
-			SelectedItem.Quantity = (ToSlot.Item.Quantity + SelectedItem.Quantity) - GetItemData(SelectedItem.Name)->StackSize;
-			
-			ToSlot.Item.Quantity = GetItemData(SelectedItem.Name)->StackSize;
-		}
-	}
-	else
-	{
-		// Swap
-		FInventoryItem OldSlotItem = ToSlot.Item;
-
-		ToSlot.Item = SelectedItem;
-		SelectedItem = OldSlotItem;
-	}
-
-	if (SelectedItem.IsZero())
-	{
-		SelectedItem.Clear();
-		Dragging = false;
-	}
+	Server_DropAll(ToSlotIndex);
 }
 
 void UInventoryComponent::DropSingle(const int32& ToSlotIndex)
 {
-	if (!Dragging)
-	{
-		return;
-	}
-
-	FInventorySlot& ToSlot = Slots[ToSlotIndex];
-
-	if (ToSlot.IsEmpty())
-	{
-		// Set slot to one
-		ToSlot.Item.Name = SelectedItem.Name;
-		ToSlot.Item.Quantity = 1;
-
-		// Remove one from dragging
-		SelectedItem.Quantity -= 1;
-	}
-	else if (ToSlot.CompareItem(SelectedItem) && (ToSlot.Item.Quantity + 1) <= GetItemData(SelectedItem.Name)->StackSize)
-	{
-		// Add one to slot
-		ToSlot.Item.Quantity += 1;
-
-		// Remove one from selection
-		SelectedItem.Quantity -= 1;
-	}
-
-	if (SelectedItem.Quantity <= 0)
-	{
-		SelectedItem.Clear();
-		Dragging = false;
-	}
+	Server_DropSingle(ToSlotIndex);
 }
 
 bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd)
@@ -487,20 +359,41 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* It
 
 void UInventoryComponent::Server_AddItem_Implementation(const FName& ItemName, const int32& Quantity)
 {
-	// If the item already exists in the contents map
-	Contents.AddItem(ItemName, Quantity);
+	int32 Remaining;
+	int32 AmountAdded;
+	bool AddSuccess = AddItemToSlots(ItemName, Quantity, Remaining);
+
+	// Calculate how many were added
+	AmountAdded = Quantity - Remaining;
+
+	// Add item to item list
+	Contents.AddItem(ItemName, AmountAdded);
+	
+	if (AddSuccess == false)
+	{
+		SpawnWorldItem(ItemName, Remaining);
+	}
 }
 
-bool UInventoryComponent::Server_RemoveItem_Validate(const FName& ItemName, const int32& Quantity)
+bool UInventoryComponent::Server_RemoveItem_Validate(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld)
 {
 	// Only valid if the player has the item they are removing
 	return Contents.HasItem(ItemName);
 }
 
-void UInventoryComponent::Server_RemoveItem_Implementation(const FName& ItemName, const int32& Quantity)
+void UInventoryComponent::Server_RemoveItem_Implementation(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld)
 {
 	// Find the item
 	Contents.RemoveItem(ItemName, Quantity);
+	if (bSpawnInWorld == true)
+	{
+		SpawnWorldItem(ItemName, Quantity);
+	}
+	else
+	{
+		int32 Remaining;
+		bool RemoveSuccess = RemoveItemFromSlots(ItemName, Quantity, Remaining);
+	}
 }
 
 void UInventoryComponent::Server_SpawnWorldItem_Implementation(const FName& ItemName, const int32& Quantity)
@@ -516,4 +409,140 @@ void UInventoryComponent::Server_SpawnWorldItem_Implementation(const FName& Item
 
 	// Update world items properties
 	WorldItem->Client_SetItemProperties(ItemName, Quantity, ItemData->Mesh, GetOwner()->GetActorLocation());
+}
+
+void UInventoryComponent::Server_DragAll_Implementation(const int32& FromSlotIndex)
+{
+	FInventorySlot& FromSlot = Slots[FromSlotIndex];
+
+	if (FromSlot.IsEmpty())
+	{
+		return;
+	}
+
+	SelectedItem = FromSlot.Item;
+	Dragging = true;
+
+	FromSlot.ClearItem();
+}
+
+// TODO simplify this function
+void UInventoryComponent::Server_DragSplit_Implementation(const int32& FromSlotIndex)
+{
+	FInventorySlot& FromSlot = Slots[FromSlotIndex];
+
+	if (FromSlot.IsEmpty())
+	{
+		return;
+	}
+
+	// Just take all if there is only one item
+	if (FromSlot.Item.Quantity == 1)
+	{
+		// Take all		
+		// Start Dragging item in from index
+		SelectedItem = FromSlot.Item;
+		Dragging = true;
+
+		//Take all
+		FromSlot.ClearItem();
+
+		return;
+	}
+
+	// Calculate the half
+	int32 HalfQuantity = FromSlot.Item.Quantity / 2;
+
+	// Start Dragging half
+	FInventoryItem NewSelection = FromSlot.Item;
+	NewSelection.Quantity = HalfQuantity;
+	SelectedItem = NewSelection;
+	Dragging = true;
+
+	// Update the slot
+	FInventoryItem NewSlotItem = FromSlot.Item;
+	NewSlotItem.Quantity -= HalfQuantity;
+	FromSlot.Item = NewSlotItem;
+}
+
+void UInventoryComponent::Server_DropAll_Implementation(const int32& ToSlotIndex)
+{
+	if (!Dragging)
+	{
+		return;
+	}
+
+	FInventorySlot& ToSlot = Slots[ToSlotIndex];
+
+	if (ToSlot.IsEmpty())
+	{
+		ToSlot.Item = SelectedItem;
+
+		SelectedItem.Clear();
+		Dragging = false;
+	}
+	else if (ToSlot.CompareItem(SelectedItem))
+	{
+		if ((ToSlot.Item.Quantity + SelectedItem.Quantity) <= GetItemData(SelectedItem.Name)->StackSize)
+		{
+			ToSlot.Item.Quantity += SelectedItem.Quantity;
+
+			SelectedItem.Clear();
+			Dragging = false;
+		}
+		else
+		{
+			SelectedItem.Quantity = (ToSlot.Item.Quantity + SelectedItem.Quantity) - GetItemData(SelectedItem.Name)->StackSize;
+
+			ToSlot.Item.Quantity = GetItemData(SelectedItem.Name)->StackSize;
+		}
+	}
+	else
+	{
+		// Swap
+		FInventoryItem OldSlotItem = ToSlot.Item;
+
+		ToSlot.Item = SelectedItem;
+		SelectedItem = OldSlotItem;
+	}
+
+	if (SelectedItem.IsZero())
+	{
+		SelectedItem.Clear();
+		Dragging = false;
+	}
+}
+
+void UInventoryComponent::Server_DropSingle_Implementation(const int32& ToSlotIndex)
+{
+	if (!Dragging)
+	{
+		return;
+	}
+
+	FInventorySlot& ToSlot = Slots[ToSlotIndex];
+
+	if (ToSlot.IsEmpty())
+	{
+		// Set slot to one
+		ToSlot.Item.Name = SelectedItem.Name;
+		ToSlot.Item.Quantity = 1;
+
+		// Remove one from dragging
+		SelectedItem.Quantity -= 1;
+	}
+	else if (ToSlot.CompareItem(SelectedItem) && (ToSlot.Item.Quantity + 1) <= GetItemData(SelectedItem.Name)->StackSize)
+	{
+		// Add one to slot
+		ToSlot.Item.Quantity += 1;
+
+		// Remove one from selection
+		SelectedItem.Quantity -= 1;
+	}
+
+	if (SelectedItem.Quantity <= 0)
+	{
+		SelectedItem.Clear();
+		Dragging = false;
+	}
 }
