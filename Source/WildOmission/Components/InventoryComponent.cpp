@@ -150,6 +150,11 @@ void UInventoryComponent::DropSelectedItemInWorld(bool Single)
 	InventoryWidget->Refresh();
 }
 
+void UInventoryComponent::StopDragging(bool DropInWorld)
+{
+	Server_StopDragging(DropInWorld);
+}
+
 //**************************************************************
 // Getters
 //**************************************************************
@@ -545,4 +550,19 @@ void UInventoryComponent::Server_DropSingle_Implementation(const int32& ToSlotIn
 		SelectedItem.Clear();
 		Dragging = false;
 	}
+}
+
+void UInventoryComponent::Server_StopDragging_Implementation(bool DropInWorld)
+{
+	if (Dragging == false)
+	{
+		return;
+	}
+
+	FInventoryItem SelectedItemInformation = SelectedItem;
+
+	SelectedItem.Clear();
+	Dragging = false;
+
+	RemoveItem(SelectedItemInformation.Name, SelectedItemInformation.Quantity, DropInWorld);
 }

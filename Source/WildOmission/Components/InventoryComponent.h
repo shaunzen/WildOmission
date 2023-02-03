@@ -144,6 +144,8 @@ public:
 
 	void DropSelectedItemInWorld(bool Single = false);
 
+	void StopDragging(bool DropInWorld = false);
+
 	//**************************************************************
 	// Getters
 	//**************************************************************
@@ -241,6 +243,6 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_DropSingle(const int32& ToSlotIndex);
 
-	// TODO RPC for slots
-
+	UFUNCTION(Server, Reliable)
+	void Server_StopDragging(bool DropInWorld = false);
 };

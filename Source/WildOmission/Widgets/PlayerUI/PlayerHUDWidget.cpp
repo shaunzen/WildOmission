@@ -64,7 +64,14 @@ void UPlayerHUDWidget::ToggleInventory()
 
 void UPlayerHUDWidget::SetInteractionPrompt(FString InString)
 {
-	InteractionPrompt->SetText(FText::FromString(InString));
+	if (!InventoryOpen())
+	{
+		InteractionPrompt->SetText(FText::FromString(InString));
+	}
+	else
+	{
+		InteractionPrompt->SetText(FText::FromString(FString("")));
+	}
 }
 
 void UPlayerHUDWidget::SetVitals(UVitalsComponent* InVitals)

@@ -49,15 +49,16 @@ January 29 2023
 * Inventory Data is saved.
 
 January 30 2023
-* Inventory Slot Data is saved only in singleplayer
+* Inventory Slot Data is saved only in singleplayer.
 
 Febuary 2 2023
-+ Inventory Saving
++ Inventory Saving.
 
 Febuary 3 2023
-* UI Improvements
-+ Vitals Icons
-+ Slot Highlighting
+* UI Improvements.
++ Vitals Icons.
++ Slot Highlighting.
++ Closing the inventory while dragging will drop the selected item.
 ================================================
 
 ===========Version 0.1.3 Prototype==============

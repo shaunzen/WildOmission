@@ -17,30 +17,28 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const int32& InIndex
 
 	Owner = InOwner;
 	Index = InIndex;
-	CurrentItem.Name = FName();
-	CurrentItem.Quantity = 0;
-	SetItem(CurrentItem);
+
+	ClearItem();
 }
 
 // Pass in Quantity of 0 to clear item from slot
 void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 {
-	CurrentItem = Item;
-
+	
 	FString QuantityString;
-	if (CurrentItem.Quantity > 1)
+	if (Item.Quantity > 1)
 	{
-		QuantityString = FString::Printf(TEXT("x%i"), CurrentItem.Quantity);
+		QuantityString = FString::Printf(TEXT("x%i"), Item.Quantity);
 	}
 	else
 	{
 		QuantityString = FString("");
 	}
 
-	if (CurrentItem.Quantity != 0)
+	if (Item.Quantity != 0)
 	{
 		// Get the item data from the player character's inventory component
-		FItem* SlotItemData = Owner->GetInventoryComponent()->GetItemData(CurrentItem.Name);
+		FItem* SlotItemData = Owner->GetInventoryComponent()->GetItemData(Item.Name);
 		if (SlotItemData == nullptr)
 		{
 			return;
@@ -50,21 +48,19 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 		ItemIconBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
 		// Set the item icon color opaque white
 		ItemIconBorder->SetBrushColor(FLinearColor::White);
-		// Check if slot is full
 	}
 	else
 	{
 		ItemIconBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
-		
 	}
 	QuantityText->SetText(FText::FromString(QuantityString));
 }
 
 void UInventorySlotWidget::ClearItem()
 {
-	FInventoryItem NewSlotItem;
-	NewSlotItem.Clear();
-	this->SetItem(NewSlotItem);
+	FInventoryItem BlankItem;
+
+	this->SetItem(BlankItem);
 }
 
 FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -83,23 +79,6 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 	Owner->Refresh();
 
 	return FReply::Handled();
-}
-
-void UInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
-	// TODO set slot color a lighter shade
-}
-
-void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
-{
-	Super::NativeOnMouseLeave(InMouseEvent);
-	// TODO set slot color to default shade
-}
-
-FInventoryItem* UInventorySlotWidget::GetCurrentItem()
-{
-	return &CurrentItem;
 }
 
 int32 UInventorySlotWidget::GetIndex()

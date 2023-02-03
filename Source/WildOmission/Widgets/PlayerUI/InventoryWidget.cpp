@@ -115,6 +115,8 @@ void UInventoryWidget::Close()
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
 
+	InventoryComponent->StopDragging(true);
+	
 	Refresh();
 }
 
