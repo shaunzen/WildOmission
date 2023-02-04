@@ -14,7 +14,14 @@ ASaveHandler::ASaveHandler()
 	PrimaryActorTick.bCanEverTick = false;
 	
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("Player Save Handler Component"));
+}
 
+void ASaveHandler::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FTimerHandle AutoSaveTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
 }
 
 void ASaveHandler::SaveGame()
