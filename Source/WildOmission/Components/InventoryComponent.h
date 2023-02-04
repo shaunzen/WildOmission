@@ -183,7 +183,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	uint8 SlotCount;
 
-	UPROPERTY(VisibleAnywhere, Replicated)
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_Slots)
 	TArray<FInventorySlot> Slots;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -196,10 +196,10 @@ private:
 	// Slot Variables
 	//**************************************************************
 	
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_SelectedItem)
 	FInventoryItem SelectedItem;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_SelectedItem)
 	bool Dragging;
 
 	//**************************************************************
@@ -218,6 +218,12 @@ private:
 	bool FindAndAddToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
 	bool FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
 
+	UFUNCTION()
+	void OnRep_Slots();
+
+	UFUNCTION()
+	void OnRep_SelectedItem();
+	
 	//**************************************************************
 	// RPC
 	//**************************************************************
@@ -228,6 +234,9 @@ private:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld);
 	
+	UFUNCTION(Server, Reliable)
+	void Server_DropSelectedItemInWorld(bool Single);
+
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnWorldItem(const FName& ItemName, const int32& Quantity);
 

@@ -129,25 +129,7 @@ void UInventoryComponent::DropSelectedItemInWorld(bool Single)
 	{
 		return;
 	}
-	if (Single == true)
-	{
-		RemoveItem(SelectedItem.Name, 1, true);
-
-		SelectedItem.Quantity -= 1;
-	}
-	else
-	{
-		RemoveItem(SelectedItem.Name, SelectedItem.Quantity, true);
-		SelectedItem.Clear();
-	}
-
-	if (SelectedItem.Quantity == 0)
-	{
-		SelectedItem.Clear();
-		Dragging = false;
-	}
-
-	InventoryWidget->Refresh();
+	Server_DropSelectedItemInWorld(Single);
 }
 
 void UInventoryComponent::StopDragging(bool DropInWorld)
@@ -358,6 +340,26 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* It
 	return QuantityToAdd == 0;
 }
 
+void UInventoryComponent::OnRep_Slots()
+{
+	if (InventoryWidget == nullptr)
+	{
+		return;
+	}
+
+	InventoryWidget->Refresh();
+}
+
+void UInventoryComponent::OnRep_SelectedItem()
+{
+	if (InventoryWidget == nullptr)
+	{
+		return;
+	}
+
+	InventoryWidget->Refresh();
+}
+
 //**************************************************************
 // RPC
 //**************************************************************
@@ -399,6 +401,32 @@ void UInventoryComponent::Server_RemoveItem_Implementation(const FName& ItemName
 		int32 Remaining;
 		bool RemoveSuccess = RemoveItemFromSlots(ItemName, Quantity, Remaining);
 	}
+}
+
+void UInventoryComponent::Server_DropSelectedItemInWorld_Implementation(bool Single)
+{
+	if (!Dragging)
+	{
+		return;
+	}
+	if (Single == true)
+	{
+		RemoveItem(SelectedItem.Name, 1, true);
+
+		SelectedItem.Quantity -= 1;
+	}
+	else
+	{
+		RemoveItem(SelectedItem.Name, SelectedItem.Quantity, true);
+		SelectedItem.Clear();
+	}
+
+	if (SelectedItem.Quantity == 0)
+	{
+		SelectedItem.Clear();
+		Dragging = false;
+	}
+
 }
 
 void UInventoryComponent::Server_SpawnWorldItem_Implementation(const FName& ItemName, const int32& Quantity)

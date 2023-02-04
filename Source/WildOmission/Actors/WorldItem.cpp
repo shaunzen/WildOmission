@@ -59,8 +59,8 @@ void AWorldItem::Interact(AActor* Interactor)
 	CharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
 	
 	// Destroy this Item
-	PlayerControllerInteractor->Server_DestroyActor(this);
 	Destroy();
+	PlayerControllerInteractor->Server_DestroyActor(this);
 }
 
 FString AWorldItem::PromptText()
