@@ -73,10 +73,12 @@ bool UMainMenuWidget::Initialize()
 	/*New Save*/
 	NewSaveCreateButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateSave);
 	NewSaveBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenSingleplayerMenu);
+	SaveNameInputBox->OnTextChanged.AddDynamic(this, &UMainMenuWidget::SaveNameOnTextChanged);
 
 	/*Host Server*/
 	HostMenuHostButton->OnClicked.AddDynamic(this, &UMainMenuWidget::HostServer);
 	HostMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMultiplayerMenu);
+	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UMainMenuWidget::ServerNameOnTextChanged);
 
 	return true;
 }
@@ -288,6 +290,8 @@ void UMainMenuWidget::OpenNewSaveMenu()
 		return;
 	}
 
+	SaveNameInputBox->SetText(FText::FromString(FString("")));
+	
 	MenuSwitcher->SetActiveWidget(NewSaveMenu);
 }
 
@@ -299,6 +303,8 @@ void UMainMenuWidget::OpenHostMenu()
 		return;
 	}
 
+	ServerNameInputBox->SetText(FText::FromString(FString("")));
+	
 	SetSaveList(GameInstance->GetAllSaveGameSlotNames());
 	MenuSwitcher->SetActiveWidget(HostMenu);
 }
@@ -324,6 +330,11 @@ void UMainMenuWidget::CreateSave()
 	FString NewSaveName;
 	NewSaveName = SaveNameInputBox->GetText().ToString();
 
+	if (NewSaveName == FString(""))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot create a save without a name."));
+		return;
+	}
 	
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
 	// Create a new save with that name
@@ -347,7 +358,7 @@ void UMainMenuWidget::JoinServer()
 void UMainMenuWidget::HostServer()
 {
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	if (GameInstance == nullptr || SelectedSaveIndex.IsSet() == false)
+	if (GameInstance == nullptr || SelectedSaveIndex.IsSet() == false || ServerNameInputBox->GetText().ToString() == FString(""))
 	{
 		return;
 	}
@@ -371,4 +382,28 @@ void UMainMenuWidget::RefreshServerList()
 	RefreshServerListButtonText->SetText(FText::FromString(WaitingString));
 	
 	GameInstance->RefreshServerList();
+}
+
+void UMainMenuWidget::SaveNameOnTextChanged(const FText& Text)
+{
+	FString TextString = Text.ToString();
+
+	if (TextString.Len() > 16)
+	{
+		TextString = TextString.LeftChop(1);
+	}
+
+	SaveNameInputBox->SetText(FText::FromString(TextString));
+}
+
+void UMainMenuWidget::ServerNameOnTextChanged(const FText& Text)
+{
+	FString TextString = Text.ToString();
+
+	if (TextString.Len() > 16)
+	{
+		TextString = TextString.LeftChop(1);
+	}
+
+	ServerNameInputBox->SetText(FText::FromString(TextString));
 }

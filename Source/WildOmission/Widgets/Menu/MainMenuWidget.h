@@ -141,6 +141,11 @@ private:
 	UFUNCTION()
 	void RefreshServerList();
 
+	UFUNCTION()
+	void SaveNameOnTextChanged(const FText& Text);
+	UFUNCTION()
+	void ServerNameOnTextChanged(const FText& Text);
+
 	// TODO Save Row widget class
 	TSubclassOf<USaveRowWidget> SaveRowWidgetClass;
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;

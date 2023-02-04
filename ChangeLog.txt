@@ -65,6 +65,9 @@ Febuary 3 2023
 * Save Creation Date information is populated.
 * Version info gathering change.
 + Auto Save feature saves game every 90 seconds.
+* Input box must contain text.
+* Input box cleared when switching menus.
+* Input box 16 character limit.
 ================================================
 ===========Version 0.2.0 Prototype==============
 ================================================
