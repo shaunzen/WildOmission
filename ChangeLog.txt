@@ -68,6 +68,7 @@ Febuary 3 2023
 * Input box must contain text.
 * Input box cleared when switching menus.
 * Input box 16 character limit.
+* Fixed Item Duplication glitch.
 ================================================
 ===========Version 0.2.0 Prototype==============
 ================================================
