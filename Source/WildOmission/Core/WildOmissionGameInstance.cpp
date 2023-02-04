@@ -336,5 +336,13 @@ TArray<FString> UWildOmissionGameInstance::GetAllSaveGameSlotNames()
 void UWildOmissionGameInstance::CreateSave(const FString& NewSaveName)
 {
 	UWildOmissionSaveGame* NewSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+
+	FDateTime Time;
+	Time = FDateTime::Now();
+
+	NewSaveGame->CreationInformation.Day = Time.GetDay();
+	NewSaveGame->CreationInformation.Month = Time.GetMonth();
+	NewSaveGame->CreationInformation.Year = Time.GetYear();
+
 	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewSaveName, 0);
 }
