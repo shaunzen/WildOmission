@@ -16,6 +16,9 @@ const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
+	// Version Information Here
+	Version = FString("0.1.3 - Prototype");
+
 	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/Blueprints/Widgets/Menu/WBP_MainMenu"));
 	
 	if (MainMenuBlueprint.Class == nullptr)
@@ -345,4 +348,9 @@ void UWildOmissionGameInstance::CreateSave(const FString& NewSaveName)
 	NewSaveGame->CreationInformation.Year = Time.GetYear();
 
 	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewSaveName, 0);
+}
+
+FString UWildOmissionGameInstance::GetVersion() const
+{
+	return Version;
 }

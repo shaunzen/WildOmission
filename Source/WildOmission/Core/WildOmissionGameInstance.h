@@ -42,6 +42,9 @@ public:
 
 	static TArray<FString> GetAllSaveGameSlotNames();
 	void CreateSave(const FString& NewSaveName);
+
+	UFUNCTION(BlueprintCallable)
+	FString GetVersion() const;
 private:
 
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetBlueprintClass;
@@ -58,6 +61,8 @@ private:
 	void OnFindSessionsComplete(bool Success);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 	void OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
+
+	FString Version;
 
 	FString DesiredServerName;
 	FString SaveToLoad;
