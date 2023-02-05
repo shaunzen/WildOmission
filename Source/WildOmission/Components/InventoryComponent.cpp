@@ -24,6 +24,7 @@ UInventoryComponent::UInventoryComponent()
 
 	SlotCount = 30;
 	Dragging = false;
+	ToolbarSelectionIndex = -1;
 }
 
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -34,6 +35,7 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(UInventoryComponent, Slots);
 	DOREPLIFETIME(UInventoryComponent, SelectedItem);
 	DOREPLIFETIME(UInventoryComponent, Dragging);
+	DOREPLIFETIME(UInventoryComponent, ToolbarSelectionIndex);
 }
 
 void UInventoryComponent::BeginPlay()
@@ -51,6 +53,8 @@ void UInventoryComponent::BeginPlay()
 	{
 		Slots[i].Index = i;
 	}
+
+	ToolbarSelectionIndex = -1;
 }
 
 void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
@@ -135,6 +139,11 @@ void UInventoryComponent::DropSelectedItemInWorld(bool Single)
 void UInventoryComponent::StopDragging(bool DropInWorld)
 {
 	Server_StopDragging(DropInWorld);
+}
+
+void UInventoryComponent::SetToolbarSelectionIndex(const int8& SelectionIndex)
+{
+	Server_SetToolbarSelectionIndex(SelectionIndex);
 }
 
 //**************************************************************
@@ -593,4 +602,9 @@ void UInventoryComponent::Server_StopDragging_Implementation(bool DropInWorld)
 	Dragging = false;
 
 	RemoveItem(SelectedItemInformation.Name, SelectedItemInformation.Quantity, DropInWorld);
+}
+
+void UInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(const int8& SelectionIndex)
+{
+	ToolbarSelectionIndex = SelectionIndex;
 }

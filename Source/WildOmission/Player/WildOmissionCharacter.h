@@ -52,23 +52,26 @@ private:
 	//*****************************
 	// Input
 	//*****************************
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UPROPERTY()
 	UInputMappingContext* DefaultMappingContext;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UPROPERTY()
 	UInputAction* MoveAction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UPROPERTY()
 	UInputAction* LookAction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UPROPERTY()
 	UInputAction* JumpAction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UPROPERTY()
 	UInputAction* InteractAction;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UPROPERTY()
 	UInputAction* InventoryAction;
+
+	UPROPERTY()
+	UInputAction* ToolbarSelectionChangeAction;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);

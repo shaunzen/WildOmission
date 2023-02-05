@@ -20,15 +20,32 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/Blueprints/Widgets/PlayerUI/WBP_PlayerHUD"));
+	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Move"));
+	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Look"));
+	ConstructorHelpers::FObjectFinder<UInputAction> JumpActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Jump"));
+	ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Interact"));
+	ConstructorHelpers::FObjectFinder<UInputAction> InventoryActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Inventory"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionChangeActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_ToolbarSelectionChange"));
 
-	if (PlayerHUDWidgetBlueprintClass.Class == nullptr)
+	if (PlayerHUDWidgetBlueprintClass.Class == nullptr
+		|| MoveActionBlueprint.Object == nullptr
+		|| LookActionBlueprint.Object == nullptr
+		|| JumpActionBlueprint.Object == nullptr
+		|| InteractActionBlueprint.Object == nullptr
+		|| InventoryActionBlueprint.Object == nullptr
+		|| ToolbarSelectionChangeActionBlueprint.Object == nullptr)
 	{
 		return;
 	}
 
 	PlayerHUDWidgetClass = PlayerHUDWidgetBlueprintClass.Class;
 
-	// TODO input constructor helpers
+	MoveAction = MoveActionBlueprint.Object;
+	LookAction = LookActionBlueprint.Object;
+	JumpAction = JumpActionBlueprint.Object;
+	InteractAction = InteractActionBlueprint.Object;
+	InventoryAction = InventoryActionBlueprint.Object;
+	ToolbarSelectionChangeAction = ToolbarSelectionChangeActionBlueprint.Object;
 
 	// Set HUD to nullptr before its created
 	PlayerHUDWidget = nullptr;

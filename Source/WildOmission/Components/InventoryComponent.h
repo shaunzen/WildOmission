@@ -146,6 +146,8 @@ public:
 
 	void StopDragging(bool DropInWorld = false);
 
+	void SetToolbarSelectionIndex(const int8& SelectionIndex);
+
 	//**************************************************************
 	// Getters
 	//**************************************************************
@@ -185,6 +187,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_Slots)
 	TArray<FInventorySlot> Slots;
+
+	UPROPERTY(Replicated)
+	int8 ToolbarSelectionIndex;
 
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* ItemDataTable;
@@ -254,4 +259,7 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void Server_StopDragging(bool DropInWorld = false);
+
+	UFUNCTION(Server, Reliable)
+		void Server_SetToolbarSelectionIndex(const int8& SelectionIndex);
 };
