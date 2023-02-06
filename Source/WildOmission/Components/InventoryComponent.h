@@ -167,6 +167,9 @@ public:
 	// Returns a pointer to the currently selected item
 	FInventoryItem* GetSelectedItem();
 	
+	// Returns the Local Toolbar Selection Index
+	int8 GetToolbarSelectionIndex();
+
 	// Gets the widget this inventory is using
 	UInventoryWidget* GetWidget();
 	

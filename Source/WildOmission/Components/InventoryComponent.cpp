@@ -180,6 +180,11 @@ FInventoryItem* UInventoryComponent::GetSelectedItem()
 	return &SelectedItem;
 }
 
+int8 UInventoryComponent::GetToolbarSelectionIndex()
+{
+	return ToolbarSelectionIndex;
+}
+
 UInventoryWidget* UInventoryComponent::GetWidget()
 {
 	return InventoryWidget;

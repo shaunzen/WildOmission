@@ -85,3 +85,13 @@ int32 UInventorySlotWidget::GetIndex()
 {
 	return Index;
 }
+
+void UInventorySlotWidget::SetSelected(bool InSelected)
+{
+	Selected = InSelected;
+}
+
+bool UInventorySlotWidget::IsSelected() const
+{
+	return Selected;
+}

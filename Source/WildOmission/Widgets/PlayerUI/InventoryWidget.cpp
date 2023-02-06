@@ -125,6 +125,9 @@ void UInventoryWidget::Refresh()
 	for (UInventorySlotWidget* InventorySlot : Slots)
 	{
 		InventorySlot->SetItem(InventoryComponent->GetSlots()[InventorySlot->GetIndex()].Item);
+		
+		// Check if it is a selected slot
+		InventorySlot->SetSelected(InventorySlot->GetIndex() == InventoryComponent->GetToolbarSelectionIndex());
 	}
 
 	if (InventoryComponent->IsDragging())

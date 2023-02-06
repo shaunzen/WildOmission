@@ -22,6 +22,11 @@ public:
 	void ClearItem();
 
 	int32 GetIndex();
+	
+	void SetSelected(bool InSelected);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsSelected() const;
 
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
@@ -42,4 +47,6 @@ private:
 	UPROPERTY()
 	int32 Index;
 	
+	UPROPERTY()
+	bool Selected;
 };
