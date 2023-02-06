@@ -24,7 +24,7 @@ UInventoryComponent::UInventoryComponent()
 
 	SlotCount = 30;
 	Dragging = false;
-	ToolbarSelectionIndex = -1;
+	ToolbarSelectionIndex = -2;
 }
 
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -71,23 +71,13 @@ void UInventoryComponent::Setup(UInventoryWidget* InInventoryWidget)
 void UInventoryComponent::AddItem(const FName& ItemName, const int32& Quantity)
 {
 	Server_AddItem(ItemName, Quantity);
-
-	if (InventoryWidget == nullptr)
-	{
-		return;
-	}
-	InventoryWidget->Refresh();
+	RefreshUI();
 }
 
 void UInventoryComponent::RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld)
 {
 	Server_RemoveItem(ItemName, Quantity, bSpawnInWorld);
-
-	if (InventoryWidget == nullptr)
-	{
-		return;
-	}
-	InventoryWidget->Refresh();
+	RefreshUI();
 }
 
 void UInventoryComponent::SpawnWorldItem(const FName& ItemName, const int32& Quantity)
@@ -125,6 +115,8 @@ void UInventoryComponent::SlotInteraction(const int32& SlotIndex, bool Primary)
 			DropSingle(SlotIndex);
 		}
 	}
+
+	RefreshUI();
 }
 
 void UInventoryComponent::DropSelectedItemInWorld(bool Single)
@@ -133,8 +125,10 @@ void UInventoryComponent::DropSelectedItemInWorld(bool Single)
 	{
 		return;
 	}
+
 	Server_DropSelectedItemInWorld(Single);
 }
+
 
 void UInventoryComponent::StopDragging(bool DropInWorld)
 {
@@ -144,16 +138,19 @@ void UInventoryComponent::StopDragging(bool DropInWorld)
 void UInventoryComponent::IncrementToolbarSelection()
 {
 	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex + 1);
+	RefreshUI();
 }
 
 void UInventoryComponent::DecrementToolbarSelection()
 {
 	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex - 1);
+	RefreshUI();
 }
 
 void UInventoryComponent::SetToolbarSelectionIndex(const int8& SelectionIndex)
 {
 	Server_SetToolbarSelectionIndex(SelectionIndex);
+	RefreshUI();
 }
 
 //**************************************************************
@@ -364,7 +361,7 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* It
 	return QuantityToAdd == 0;
 }
 
-void UInventoryComponent::OnRep_UpdateUI()
+void UInventoryComponent::RefreshUI()
 {
 	if (InventoryWidget == nullptr)
 	{
@@ -611,7 +608,7 @@ void UInventoryComponent::Server_StopDragging_Implementation(bool DropInWorld)
 
 void UInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(int8 SelectionIndex)
 {	
-	if (SelectionIndex > 5)
+	if (SelectionIndex == -2 || SelectionIndex > 5)
 	{
 		SelectionIndex = 0;
 	}

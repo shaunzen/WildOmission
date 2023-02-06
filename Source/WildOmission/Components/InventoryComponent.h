@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
+#include "WildOmission/Actors/EquipableItem.h"
 #include "WildOmission/Structs/InventoryItem.h"
 #include "WildOmission/Structs/InventorySlot.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
@@ -27,7 +28,9 @@ struct FItem : public FTableRowBase
 	UStaticMesh* Mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 StackSize;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AEquipableItem> EquipItemClass;
+
 	FItem()
 	{
 		DisplayName = FName(TEXT("Item"));
@@ -191,10 +194,10 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	uint8 SlotCount;
 
-	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_UpdateUI)
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = RefreshUI)
 	TArray<FInventorySlot> Slots;
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_UpdateUI)
+	
+	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
 	int8 ToolbarSelectionIndex;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -207,10 +210,10 @@ private:
 	// Slot Variables
 	//**************************************************************
 	
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_UpdateUI)
+	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
 	FInventoryItem SelectedItem;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_UpdateUI)
+	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
 	bool Dragging;
 
 	//**************************************************************
@@ -230,7 +233,7 @@ private:
 	bool FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
 
 	UFUNCTION()
-	void OnRep_UpdateUI();
+	void RefreshUI();
 	
 	//**************************************************************
 	// RPC
@@ -264,5 +267,5 @@ private:
 	void Server_StopDragging(bool DropInWorld = false);
 
 	UFUNCTION(Server, Reliable)
-		void Server_SetToolbarSelectionIndex(int8 SelectionIndex);
+	void Server_SetToolbarSelectionIndex(int8 SelectionIndex);
 };

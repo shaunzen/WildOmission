@@ -1,0 +1,33 @@
+// Copyright Telephone Studios. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "EquipableItem.generated.h"
+
+UCLASS()
+class WILDOMISSION_API AEquipableItem : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	AEquipableItem();
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called when the item is equiped into the players hands
+	virtual void Equip();
+
+	// Called when the player presses their primary button
+	virtual void Primary();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* ItemMesh;
+};

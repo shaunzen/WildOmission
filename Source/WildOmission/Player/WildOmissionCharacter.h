@@ -44,6 +44,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UInteractionComponent* InteractionComponent;
 	
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* EquipMountPoint;
 	
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;

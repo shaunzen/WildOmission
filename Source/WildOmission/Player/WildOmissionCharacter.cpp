@@ -61,6 +61,9 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
+	EquipMountPoint = CreateDefaultSubobject<USceneComponent>(FName("EquipMountPoint"));
+	EquipMountPoint->SetupAttachment(FirstPersonCameraComponent);
+
 	// Setup vitals component
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 	
