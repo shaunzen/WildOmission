@@ -146,6 +146,9 @@ public:
 
 	void StopDragging(bool DropInWorld = false);
 
+	void IncrementToolbarSelection();
+	void DecrementToolbarSelection();
+
 	void SetToolbarSelectionIndex(const int8& SelectionIndex);
 
 	//**************************************************************

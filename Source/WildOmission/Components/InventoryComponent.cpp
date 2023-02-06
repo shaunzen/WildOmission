@@ -141,6 +141,28 @@ void UInventoryComponent::StopDragging(bool DropInWorld)
 	Server_StopDragging(DropInWorld);
 }
 
+void UInventoryComponent::IncrementToolbarSelection()
+{
+	++ToolbarSelectionIndex;
+	if (ToolbarSelectionIndex > 5)
+	{
+		ToolbarSelectionIndex = 0;
+	}
+
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("SelectionIndex: %i"), ToolbarSelectionIndex));
+}
+
+void UInventoryComponent::DecrementToolbarSelection()
+{
+	--ToolbarSelectionIndex;
+	if (ToolbarSelectionIndex < 0)
+	{
+		ToolbarSelectionIndex = 5;
+	}
+
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("SelectionIndex: %i"), ToolbarSelectionIndex));
+}
+
 void UInventoryComponent::SetToolbarSelectionIndex(const int8& SelectionIndex)
 {
 	Server_SetToolbarSelectionIndex(SelectionIndex);

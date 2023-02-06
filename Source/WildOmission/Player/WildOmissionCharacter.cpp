@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "UObject/ConstructorHelpers.h"
+#include "InputMappingContext.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/InteractionComponent.h"
@@ -20,34 +21,39 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/Blueprints/Widgets/PlayerUI/WBP_PlayerHUD"));
+	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/MC_DefaultMappingContext"));
 	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Move"));
 	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Look"));
 	ConstructorHelpers::FObjectFinder<UInputAction> JumpActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Jump"));
 	ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Interact"));
 	ConstructorHelpers::FObjectFinder<UInputAction> InventoryActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Inventory"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionChangeActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_ToolbarSelectionChange"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_ToolbarSelectionIncrement"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_ToolbarSelectionDecrement"));
 
 	if (PlayerHUDWidgetBlueprintClass.Class == nullptr
+		|| DefaultMappingContextBlueprint.Object == nullptr
 		|| MoveActionBlueprint.Object == nullptr
 		|| LookActionBlueprint.Object == nullptr
 		|| JumpActionBlueprint.Object == nullptr
 		|| InteractActionBlueprint.Object == nullptr
 		|| InventoryActionBlueprint.Object == nullptr
-		|| ToolbarSelectionChangeActionBlueprint.Object == nullptr)
+		|| ToolbarSelectionIncrementBlueprint.Object == nullptr
+		|| ToolbarSelectionDecrementBlueprint.Object == nullptr)
 	{
 		return;
 	}
 
 	PlayerHUDWidgetClass = PlayerHUDWidgetBlueprintClass.Class;
 
+	DefaultMappingContext = DefaultMappingContextBlueprint.Object;
 	MoveAction = MoveActionBlueprint.Object;
 	LookAction = LookActionBlueprint.Object;
 	JumpAction = JumpActionBlueprint.Object;
 	InteractAction = InteractActionBlueprint.Object;
 	InventoryAction = InventoryActionBlueprint.Object;
-	ToolbarSelectionChangeAction = ToolbarSelectionChangeActionBlueprint.Object;
+	ToolbarSelectionIncrementAction = ToolbarSelectionIncrementBlueprint.Object;
+	ToolbarSelectionDecrementAction = ToolbarSelectionDecrementBlueprint.Object;
 
-	// Set HUD to nullptr before its created
 	PlayerHUDWidget = nullptr;
 
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(FName("FirstPersonCamera"));
@@ -146,6 +152,8 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
 	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, InteractionComponent, &UInteractionComponent::Interact);
 	EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleInventory);
+	EnhancedInputComponent->BindAction(ToolbarSelectionIncrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionIncrement);
+	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 }
 
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)
@@ -177,6 +185,26 @@ void AWildOmissionCharacter::ToggleInventory()
 		return;
 	}
 	PlayerHUDWidget->ToggleInventory();
+}
+
+void AWildOmissionCharacter::ToolbarSelectionIncrement()
+{
+	if (InventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	InventoryComponent->IncrementToolbarSelection();
+}
+
+void AWildOmissionCharacter::ToolbarSelectionDecrement()
+{
+	if (InventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	InventoryComponent->DecrementToolbarSelection();
 }
 
 UInventoryComponent* AWildOmissionCharacter::GetInventoryComponent()

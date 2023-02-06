@@ -71,11 +71,15 @@ private:
 	UInputAction* InventoryAction;
 
 	UPROPERTY()
-	UInputAction* ToolbarSelectionChangeAction;
+	UInputAction* ToolbarSelectionIncrementAction;
+
+	UPROPERTY()
+	UInputAction* ToolbarSelectionDecrementAction;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-
+	
 	void ToggleInventory();
-
+	void ToolbarSelectionIncrement();
+	void ToolbarSelectionDecrement();
 };
