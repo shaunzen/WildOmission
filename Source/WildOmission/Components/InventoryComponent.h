@@ -188,10 +188,10 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	uint8 SlotCount;
 
-	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_Slots)
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_UpdateUI)
 	TArray<FInventorySlot> Slots;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_UpdateUI)
 	int8 ToolbarSelectionIndex;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -204,10 +204,10 @@ private:
 	// Slot Variables
 	//**************************************************************
 	
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_SelectedItem)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_UpdateUI)
 	FInventoryItem SelectedItem;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_SelectedItem)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_UpdateUI)
 	bool Dragging;
 
 	//**************************************************************
@@ -227,10 +227,7 @@ private:
 	bool FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
 
 	UFUNCTION()
-	void OnRep_Slots();
-
-	UFUNCTION()
-	void OnRep_SelectedItem();
+	void OnRep_UpdateUI();
 	
 	//**************************************************************
 	// RPC
@@ -264,5 +261,5 @@ private:
 	void Server_StopDragging(bool DropInWorld = false);
 
 	UFUNCTION(Server, Reliable)
-		void Server_SetToolbarSelectionIndex(const int8& SelectionIndex);
+		void Server_SetToolbarSelectionIndex(int8 SelectionIndex);
 };

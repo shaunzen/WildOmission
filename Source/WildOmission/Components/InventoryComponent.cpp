@@ -143,24 +143,12 @@ void UInventoryComponent::StopDragging(bool DropInWorld)
 
 void UInventoryComponent::IncrementToolbarSelection()
 {
-	++ToolbarSelectionIndex;
-	if (ToolbarSelectionIndex > 5)
-	{
-		ToolbarSelectionIndex = 0;
-	}
-
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("SelectionIndex: %i"), ToolbarSelectionIndex));
+	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex + 1);
 }
 
 void UInventoryComponent::DecrementToolbarSelection()
 {
-	--ToolbarSelectionIndex;
-	if (ToolbarSelectionIndex < 0)
-	{
-		ToolbarSelectionIndex = 5;
-	}
-
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("SelectionIndex: %i"), ToolbarSelectionIndex));
+	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex - 1);
 }
 
 void UInventoryComponent::SetToolbarSelectionIndex(const int8& SelectionIndex)
@@ -371,17 +359,7 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* It
 	return QuantityToAdd == 0;
 }
 
-void UInventoryComponent::OnRep_Slots()
-{
-	if (InventoryWidget == nullptr)
-	{
-		return;
-	}
-
-	InventoryWidget->Refresh();
-}
-
-void UInventoryComponent::OnRep_SelectedItem()
+void UInventoryComponent::OnRep_UpdateUI()
 {
 	if (InventoryWidget == nullptr)
 	{
@@ -626,7 +604,16 @@ void UInventoryComponent::Server_StopDragging_Implementation(bool DropInWorld)
 	RemoveItem(SelectedItemInformation.Name, SelectedItemInformation.Quantity, DropInWorld);
 }
 
-void UInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(const int8& SelectionIndex)
-{
+void UInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(int8 SelectionIndex)
+{	
+	if (SelectionIndex > 5)
+	{
+		SelectionIndex = 0;
+	}
+	else if (SelectionIndex < 0)
+	{
+		SelectionIndex = 5;
+	}
+
 	ToolbarSelectionIndex = SelectionIndex;
 }
