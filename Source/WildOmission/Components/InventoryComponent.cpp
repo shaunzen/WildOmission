@@ -2,6 +2,7 @@
 
 
 #include "InventoryComponent.h"
+#include "WildOmission/Player/WildOmissionCharacter.h"
 #include "WildOmission/Widgets/PlayerUI/InventoryWidget.h"
 #include "WildOmission/Actors/WorldItem.h"
 #include "Net/UnrealNetwork.h"
@@ -618,4 +619,28 @@ void UInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(int8 Se
 	}
 
 	ToolbarSelectionIndex = SelectionIndex;
+
+	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
+
+	// return if there is no item
+	if (SelectedSlot.IsEmpty())
+	{
+		return;
+	}
+
+	// get the equipable subclass for this item
+	FItem* SlotItemData = GetItemData(SelectedSlot.Item.Name);
+	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
+	{
+		return;
+	}
+
+	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	// tell player to equip this
+	OwnerCharacter->EquipItem(SlotItemData->EquipItemClass);
 }

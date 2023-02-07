@@ -159,6 +159,12 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 }
 
+void AWildOmissionCharacter::EquipItem(TSubclassOf<AEquipableItem> Item)
+{
+	GetWorld()->SpawnActor<AEquipableItem>(Item, EquipMountPoint->GetComponentLocation(), EquipMountPoint->GetComponentRotation());
+	
+}
+
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MoveAxis = Value.Get<FVector2D>();

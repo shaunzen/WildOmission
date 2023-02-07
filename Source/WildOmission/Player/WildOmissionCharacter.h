@@ -14,6 +14,7 @@ class UInteractionComponent;
 class UPlayerHUDWidget;
 class UInputAction;
 class UInputMappingContext;
+class AEquipableItem;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
@@ -24,6 +25,8 @@ public:
 	AWildOmissionCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void EquipItem(TSubclassOf<AEquipableItem> Item);
 
 	UInventoryComponent* GetInventoryComponent();
 
@@ -46,6 +49,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* EquipMountPoint;
+	
+	UPROPERTY()
+	AEquipableItem* EquipedItem;
 	
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;
