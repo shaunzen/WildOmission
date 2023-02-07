@@ -2,6 +2,7 @@
 
 
 #include "EquipableItem.h"
+#include "WildOmission/Player/WildOmissionCharacter.h"
 
 // Sets default values
 AEquipableItem::AEquipableItem()
@@ -12,6 +13,7 @@ AEquipableItem::AEquipableItem()
 	bReplicates = true;
 
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ItemMesh"));
+	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RootComponent = ItemMesh;
 }
 
@@ -29,14 +31,19 @@ void AEquipableItem::Tick(float DeltaTime)
 
 }
 
-void AEquipableItem::Equip()
+void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 {
-	// get the player
-	// get their mount point
-	// set our anchor to there
+	OwnerCharacter = InOwnerCharacter;
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.f, FColor::Red, FString::Printf(TEXT("Equip action and my owner is: %s"), *OwnerCharacter->GetActorNameOrLabel()));
+
 }
 
 void AEquipableItem::Primary()
 {
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.f, FColor::Red, FString::Printf(TEXT("Primary action and my owner is: %s"), *OwnerCharacter->GetActorNameOrLabel()));
+}
 
+void AEquipableItem::Secondary()
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.f, FColor::Red, FString::Printf(TEXT("Secondary action and my owner is: %s"), *OwnerCharacter->GetActorNameOrLabel()));
 }

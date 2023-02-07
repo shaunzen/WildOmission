@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "EquipableItem.generated.h"
 
+class AWildOmissionCharacter;
+
 UCLASS()
 class WILDOMISSION_API AEquipableItem : public AActor
 {
@@ -19,10 +21,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called when the item is equiped into the players hands
-	virtual void Equip();
+	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter);
 
-	// Called when the player presses their primary button
+	// Primary function of the item. example(Eat, Shoot, Heal)
 	virtual void Primary();
+
+	// Secondary function of the item. example(Nothing, Aim, Heal others)
+	virtual void Secondary();
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,4 +35,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
+
+private:
+
+	UPROPERTY()
+	AWildOmissionCharacter* OwnerCharacter;
 };

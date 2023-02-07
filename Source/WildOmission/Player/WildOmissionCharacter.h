@@ -27,6 +27,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void EquipItem(TSubclassOf<AEquipableItem> Item);
+	void Disarm();
 
 	UInventoryComponent* GetInventoryComponent();
 
@@ -76,6 +77,12 @@ private:
 	UInputAction* InteractAction;
 	
 	UPROPERTY()
+	UInputAction* PrimaryAction;
+	
+	UPROPERTY()
+	UInputAction* SecondaryAction;
+	
+	UPROPERTY()
 	UInputAction* InventoryAction;
 
 	UPROPERTY()
@@ -87,7 +94,11 @@ private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	
+	void Primary();
+	void Secondary();
+
 	void ToggleInventory();
 	void ToolbarSelectionIncrement();
 	void ToolbarSelectionDecrement();
+
 };

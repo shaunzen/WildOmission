@@ -26,6 +26,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Look"));
 	ConstructorHelpers::FObjectFinder<UInputAction> JumpActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Jump"));
 	ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Interact"));
+	ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Primary"));
+	ConstructorHelpers::FObjectFinder<UInputAction> SecondaryActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Secondary"));
 	ConstructorHelpers::FObjectFinder<UInputAction> InventoryActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Inventory"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_ToolbarSelectionIncrement"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_ToolbarSelectionDecrement"));
@@ -36,6 +38,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		|| LookActionBlueprint.Object == nullptr
 		|| JumpActionBlueprint.Object == nullptr
 		|| InteractActionBlueprint.Object == nullptr
+		|| PrimaryActionBlueprint.Object == nullptr
+		|| SecondaryActionBlueprint.Object == nullptr
 		|| InventoryActionBlueprint.Object == nullptr
 		|| ToolbarSelectionIncrementBlueprint.Object == nullptr
 		|| ToolbarSelectionDecrementBlueprint.Object == nullptr)
@@ -50,6 +54,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	LookAction = LookActionBlueprint.Object;
 	JumpAction = JumpActionBlueprint.Object;
 	InteractAction = InteractActionBlueprint.Object;
+	PrimaryAction = PrimaryActionBlueprint.Object;
+	SecondaryAction = SecondaryActionBlueprint.Object;
 	InventoryAction = InventoryActionBlueprint.Object;
 	ToolbarSelectionIncrementAction = ToolbarSelectionIncrementBlueprint.Object;
 	ToolbarSelectionDecrementAction = ToolbarSelectionDecrementBlueprint.Object;
@@ -154,6 +160,8 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::Look);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
 	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, InteractionComponent, &UInteractionComponent::Interact);
+	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Primary);
+	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Secondary);
 	EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleInventory);
 	EnhancedInputComponent->BindAction(ToolbarSelectionIncrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionIncrement);
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
@@ -161,8 +169,21 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 void AWildOmissionCharacter::EquipItem(TSubclassOf<AEquipableItem> Item)
 {
-	GetWorld()->SpawnActor<AEquipableItem>(Item, EquipMountPoint->GetComponentLocation(), EquipMountPoint->GetComponentRotation());
+	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, EquipMountPoint->GetComponentLocation(), EquipMountPoint->GetComponentRotation());
 	
+	EquipedItem->AttachToComponent(EquipMountPoint, FAttachmentTransformRules::KeepWorldTransform);
+
+	EquipedItem->Equip(this);
+}
+
+void AWildOmissionCharacter::Disarm()
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->Destroy();
 }
 
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)
@@ -184,6 +205,26 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 	AddControllerYawInput(LookAxis.X);
 	AddControllerPitchInput(LookAxis.Y);
+}
+
+void AWildOmissionCharacter::Primary()
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->Primary();
+}
+
+void AWildOmissionCharacter::Secondary()
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->Secondary();
 }
 
 void AWildOmissionCharacter::ToggleInventory()

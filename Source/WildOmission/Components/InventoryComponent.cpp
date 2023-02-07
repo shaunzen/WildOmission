@@ -622,6 +622,14 @@ void UInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(int8 Se
 
 	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
 
+	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	OwnerCharacter->Disarm();
+
 	// return if there is no item
 	if (SelectedSlot.IsEmpty())
 	{
@@ -635,11 +643,7 @@ void UInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(int8 Se
 		return;
 	}
 
-	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
-	if (OwnerCharacter == nullptr)
-	{
-		return;
-	}
+
 
 	// tell player to equip this
 	OwnerCharacter->EquipItem(SlotItemData->EquipItemClass);
