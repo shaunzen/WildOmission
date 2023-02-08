@@ -247,6 +247,11 @@ void AWildOmissionCharacter::ToolbarSelectionDecrement()
 	InventoryComponent->DecrementToolbarSelection();
 }
 
+UVitalsComponent* AWildOmissionCharacter::GetVitalsComponent()
+{
+	return VitalsComponent;
+}
+
 UInventoryComponent* AWildOmissionCharacter::GetInventoryComponent()
 {
 	return InventoryComponent;

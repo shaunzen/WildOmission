@@ -19,10 +19,6 @@ UVitalsComponent::UVitalsComponent()
 	StartThirst = MaxThirst * 0.8f;
 	StartHunger = MaxHunger * 0.8f;
 
-	ReplicatedCurrentHealth = StartHealth;
-	ReplicatedCurrentThirst = StartThirst;
-	ReplicatedCurrentHunger = StartHunger;
-
 	CurrentHealth = StartHealth;
 	CurrentThirst = StartThirst;
 	CurrentHunger = StartHunger;
@@ -30,6 +26,11 @@ UVitalsComponent::UVitalsComponent()
 	HealthDepletionRate = 1.0f;
 	ThirstDepletionRate = 0.1f;
 	HungerDepletionRate = 0.3f;
+
+
+	HealthDepletionRate = 1.0f;
+	ThirstDepletionRate = 2.1f;
+	HungerDepletionRate = 2.3f;
 
 	ThirstThreshold = 30.0f;
 	HungerThreshold = 30.0f;
@@ -69,31 +70,26 @@ void UVitalsComponent::CalculateDepletion()
 	if (GetOwner()->HasAuthority())
 	{
 		// Remove from thirst and hunger
-		ReplicatedCurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
-		ReplicatedCurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
+		CurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
+		CurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
 
 		// Prevent from being less than 0
-		FMath::Clamp(ReplicatedCurrentThirst, 0, MaxThirst);
-		FMath::Clamp(ReplicatedCurrentHunger, 0, MaxHunger);
+		FMath::Clamp(CurrentThirst, 0, MaxThirst);
+		FMath::Clamp(CurrentHunger, 0, MaxHunger);
 
 		// If Thirst or Hunger is below threshold start removing Health
-		if (ReplicatedCurrentThirst < ThirstThreshold || ReplicatedCurrentHunger < HungerThreshold)
+		if (CurrentThirst < ThirstThreshold || CurrentHunger < HungerThreshold)
 		{
-			ReplicatedCurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
+			CurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
 		}
 
 		// If Health is less than 0 kill the player
-		if (ReplicatedCurrentHealth < 0.0f)
+		if (CurrentHealth < 0.0f)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
-			ReplicatedCurrentHealth = 0.0f;
+			CurrentHealth = 0.0f;
 		}
 	}
-	
-	// Set the local values to those created on the server
-	CurrentHealth = ReplicatedCurrentHealth;
-	CurrentThirst = ReplicatedCurrentThirst;
-	CurrentHunger = ReplicatedCurrentHunger;
 }
 
 void UVitalsComponent::SetHealth(float Value)
@@ -103,8 +99,8 @@ void UVitalsComponent::SetHealth(float Value)
 		UE_LOG(LogTemp, Warning, TEXT("Attempt to change health on client is not allowed"));
 		return;
 	}
-	ReplicatedCurrentHealth = Value;
-	CurrentHealth = ReplicatedCurrentHealth;
+
+	CurrentHealth = Value;
 }
 
 void UVitalsComponent::SetThirst(float Value)
@@ -114,8 +110,8 @@ void UVitalsComponent::SetThirst(float Value)
 		UE_LOG(LogTemp, Warning, TEXT("Attempt to change thirst on client is not allowed"));
 		return;
 	}
-	ReplicatedCurrentThirst = Value;
-	CurrentThirst = ReplicatedCurrentThirst;
+
+	CurrentThirst = Value;
 }
 
 void UVitalsComponent::SetHunger(float Value)
@@ -125,8 +121,8 @@ void UVitalsComponent::SetHunger(float Value)
 		UE_LOG(LogTemp, Warning, TEXT("Attempt to change hunger on client is not allowed"));
 		return;
 	}
-	ReplicatedCurrentHunger = Value;
-	CurrentHunger = ReplicatedCurrentHunger;
+
+	CurrentHunger = Value;
 }
 
 float UVitalsComponent::GetMaxHealth()
@@ -163,7 +159,7 @@ void UVitalsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UVitalsComponent, ReplicatedCurrentHealth);
-	DOREPLIFETIME(UVitalsComponent, ReplicatedCurrentThirst);
-	DOREPLIFETIME(UVitalsComponent, ReplicatedCurrentHunger);
+	DOREPLIFETIME(UVitalsComponent, CurrentHealth);
+	DOREPLIFETIME(UVitalsComponent, CurrentThirst);
+	DOREPLIFETIME(UVitalsComponent, CurrentHunger);
 }

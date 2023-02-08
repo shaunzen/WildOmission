@@ -29,6 +29,7 @@ public:
 	void EquipItem(TSubclassOf<AEquipableItem> Item);
 	void Disarm();
 
+	UVitalsComponent* GetVitalsComponent();
 	UInventoryComponent* GetInventoryComponent();
 
 protected:
