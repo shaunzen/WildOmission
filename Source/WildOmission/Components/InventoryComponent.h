@@ -139,10 +139,12 @@ public:
 
 	void SpawnWorldItem(const FName& ItemName, const int32& Quantity = 1);
 
+	void RefreshPlayerEquip(FInventorySlot& SelectedSlot);
+
 	//**************************************************************
 	// User Interaction
 	//**************************************************************
-
+	
 	void SlotInteraction(const int32& SlotIndex, bool Primary = true);
 
 	void DropSelectedItemInWorld(bool Single = false);
@@ -153,6 +155,8 @@ public:
 	void DecrementToolbarSelection();
 
 	void SetToolbarSelectionIndex(const int8& SelectionIndex);
+
+	void RemoveHeldItem();
 
 	//**************************************************************
 	// Getters
@@ -268,4 +272,8 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetToolbarSelectionIndex(int8 SelectionIndex);
+
+	UFUNCTION(Server, Reliable)
+	void Server_RemoveHeldItem();
+
 };

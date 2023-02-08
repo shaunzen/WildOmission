@@ -35,14 +35,12 @@ public:
 	// Sets the hunger to a new value, MUST be called from the server or else will do nothing
 	void SetHunger(float Value);
 
-	/*
 	// Adds the specified value to health, MUST be called from the server or else will do nothing
 	void AddHealth(float Value);
 	// Adds the specified value to thirst, MUST be called from the server or else will do nothing
 	void AddThirst(float Value);
 	// Adds the specified value to hunger, MUST be called from the server or else will do nothing
 	void AddHunger(float Value);
-	*/
 
 	float GetMaxHealth();
 	float GetMaxThirst();

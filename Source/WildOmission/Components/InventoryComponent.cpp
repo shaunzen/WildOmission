@@ -87,6 +87,37 @@ void UInventoryComponent::SpawnWorldItem(const FName& ItemName, const int32& Qua
 	Server_SpawnWorldItem(ItemName, Quantity);
 }
 
+void UInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
+{
+
+	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	OwnerCharacter->Disarm();
+
+	// return if there is no item
+	if (SelectedSlot.IsEmpty())
+	{
+		return;
+	}
+
+	// get the equipable subclass for this item
+	FItem* SlotItemData = GetItemData(SelectedSlot.Item.Name);
+	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
+	{
+		return;
+	}
+
+
+
+	// tell player to equip this
+	OwnerCharacter->EquipItem(SlotItemData->EquipItemClass);
+
+}
+
 //**************************************************************
 // User Interaction
 //**************************************************************
@@ -152,6 +183,12 @@ void UInventoryComponent::DecrementToolbarSelection()
 void UInventoryComponent::SetToolbarSelectionIndex(const int8& SelectionIndex)
 {
 	Server_SetToolbarSelectionIndex(SelectionIndex);
+	RefreshUI();
+}
+
+void UInventoryComponent::RemoveHeldItem()
+{
+	Server_RemoveHeldItem();
 	RefreshUI();
 }
 
@@ -623,29 +660,19 @@ void UInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(int8 Se
 
 	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
 
-	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
-	if (OwnerCharacter == nullptr)
-	{
-		return;
-	}
+	RefreshPlayerEquip(SelectedSlot);
+}
 
-	OwnerCharacter->Disarm();
+void UInventoryComponent::Server_RemoveHeldItem_Implementation()
+{
+	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
+	
+	--SelectedSlot.Item.Quantity;
 
-	// return if there is no item
 	if (SelectedSlot.IsEmpty())
 	{
-		return;
+		SelectedSlot.ClearItem();
 	}
 
-	// get the equipable subclass for this item
-	FItem* SlotItemData = GetItemData(SelectedSlot.Item.Name);
-	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
-	{
-		return;
-	}
-
-
-
-	// tell player to equip this
-	OwnerCharacter->EquipItem(SlotItemData->EquipItemClass);
+	RefreshPlayerEquip(SelectedSlot);
 }

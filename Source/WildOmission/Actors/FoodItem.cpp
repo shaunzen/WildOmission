@@ -2,6 +2,9 @@
 
 
 #include "FoodItem.h"
+#include "WildOmission/Player/WildOmissionCharacter.h"
+#include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/VitalsComponent.h"
 
 AFoodItem::AFoodItem()
 {
@@ -10,14 +13,18 @@ AFoodItem::AFoodItem()
 
 void AFoodItem::Primary()
 {
-	Super::Primary();
-	
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("Food Energy: %i"), Energy));
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
 
-	// remove one of our type from the players inventory
-	// refresh the players current held item
-	// add our energy amount to the players hunger bar
-	// play some kind of eat sound
+	Super::Primary();
+
+	OwnerCharacter->GetVitalsComponent()->AddHunger(Energy);
+
+	// TODO play eat sound
+
+	OwnerCharacter->GetInventoryComponent()->RemoveHeldItem();
 }
 
 uint8 AFoodItem::GetEnergy()

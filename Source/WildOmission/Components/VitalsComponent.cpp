@@ -42,13 +42,14 @@ void UVitalsComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetIsReplicated(true);
+	
 	// Return if we are not on the server
 	if (!GetOwner()->HasAuthority())
 	{
 		return;
 	}
 
-	SetIsReplicated(true);
 
 	// Set the start values
 	SetHealth(StartHealth);
@@ -67,62 +68,67 @@ void UVitalsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UVitalsComponent::CalculateDepletion()
 {
-	if (GetOwner()->HasAuthority())
+	if (!GetOwner()->HasAuthority())
 	{
-		// Remove from thirst and hunger
-		CurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
-		CurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
+		return;
+	}
 
-		// Prevent from being less than 0
-		FMath::Clamp(CurrentThirst, 0, MaxThirst);
-		FMath::Clamp(CurrentHunger, 0, MaxHunger);
+	// Remove from thirst and hunger
+	CurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
+	CurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
 
-		// If Thirst or Hunger is below threshold start removing Health
-		if (CurrentThirst < ThirstThreshold || CurrentHunger < HungerThreshold)
-		{
-			CurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
-		}
+	// Prevent from being less than 0
+	FMath::Clamp(CurrentThirst, 0, MaxThirst);
+	FMath::Clamp(CurrentHunger, 0, MaxHunger);
 
-		// If Health is less than 0 kill the player
-		if (CurrentHealth < 0.0f)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
-			CurrentHealth = 0.0f;
-		}
+	// If Thirst or Hunger is below threshold start removing Health
+	if (CurrentThirst < ThirstThreshold || CurrentHunger < HungerThreshold)
+	{
+		CurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
+	}
+
+	// If Health is less than 0 kill the player
+	if (CurrentHealth < 0.0f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
+		CurrentHealth = 0.0f;
 	}
 }
 
 void UVitalsComponent::SetHealth(float Value)
 {
-	if (!GetOwner()->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attempt to change health on client is not allowed"));
-		return;
-	}
-
 	CurrentHealth = Value;
+	FMath::Clamp(CurrentHealth, 0, MaxHealth);
 }
 
 void UVitalsComponent::SetThirst(float Value)
 {
-	if (!GetOwner()->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attempt to change thirst on client is not allowed"));
-		return;
-	}
-
 	CurrentThirst = Value;
+	FMath::Clamp(CurrentThirst, 0, MaxThirst);
 }
 
 void UVitalsComponent::SetHunger(float Value)
 {
-	if (!GetOwner()->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attempt to change hunger on client is not allowed"));
-		return;
-	}
-
 	CurrentHunger = Value;
+	FMath::Clamp(CurrentHunger, 0, MaxHunger);
+}
+
+void UVitalsComponent::AddHealth(float Value)
+{
+	CurrentHealth += Value;
+	FMath::Clamp(CurrentHealth, 0, MaxHealth);
+}
+
+void UVitalsComponent::AddThirst(float Value)
+{
+	CurrentThirst += Value;
+	FMath::Clamp(CurrentThirst, 0, MaxThirst);
+}
+
+void UVitalsComponent::AddHunger(float Value)
+{
+	CurrentHunger += Value;
+	FMath::Clamp(CurrentHunger, 0, MaxHunger);
 }
 
 float UVitalsComponent::GetMaxHealth()

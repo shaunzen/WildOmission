@@ -36,8 +36,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
 
-private:
-
 	UPROPERTY()
 	AWildOmissionCharacter* OwnerCharacter;
+
 };
