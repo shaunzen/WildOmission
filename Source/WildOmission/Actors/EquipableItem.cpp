@@ -35,16 +35,12 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 {
 	OwnerCharacter = InOwnerCharacter;
 	SetOwner(InOwnerCharacter);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.f, FColor::Red, FString::Printf(TEXT("Equip action and my owner is: %s"), *OwnerCharacter->GetActorNameOrLabel()));
-
 }
 
 void AEquipableItem::Primary()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.f, FColor::Red, FString::Printf(TEXT("Primary action and my owner is: %s"), *OwnerCharacter->GetActorNameOrLabel()));
 }
 
 void AEquipableItem::Secondary()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.f, FColor::Red, FString::Printf(TEXT("Secondary action and my owner is: %s"), *OwnerCharacter->GetActorNameOrLabel()));
 }
