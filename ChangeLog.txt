@@ -70,8 +70,14 @@ Febuary 3 2023
 * Input box 16 character limit.
 * Fixed Item Duplication glitch.
 ================================================
+
 ===========Version 0.2.0 Prototype==============
-+ Toolbar Selection Index Increment.
++ Player Can Equip Items from the toolbar.
++ Player Can use item held in hand.
+* Fixed a networking bug, that occurred when dropping items as a host.
 ================================================
 ===========Version 0.2.1 Prototype==============
+* Changed UI Font.
+- Removed On Screen messages.
+
 ================================================

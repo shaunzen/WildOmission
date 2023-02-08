@@ -27,11 +27,6 @@ UVitalsComponent::UVitalsComponent()
 	ThirstDepletionRate = 0.1f;
 	HungerDepletionRate = 0.3f;
 
-
-	HealthDepletionRate = 1.0f;
-	ThirstDepletionRate = 2.1f;
-	HungerDepletionRate = 2.3f;
-
 	ThirstThreshold = 30.0f;
 	HungerThreshold = 30.0f;
 }
