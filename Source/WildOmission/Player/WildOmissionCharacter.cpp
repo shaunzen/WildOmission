@@ -209,22 +209,12 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::Primary()
 {
-	if (EquipedItem == nullptr)
-	{
-		return;
-	}
-
-	EquipedItem->Primary();
+	Server_Primary();
 }
 
 void AWildOmissionCharacter::Secondary()
 {
-	if (EquipedItem == nullptr)
-	{
-		return;
-	}
-
-	EquipedItem->Secondary();
+	Server_Secondary();
 }
 
 void AWildOmissionCharacter::ToggleInventory()
@@ -260,4 +250,24 @@ void AWildOmissionCharacter::ToolbarSelectionDecrement()
 UInventoryComponent* AWildOmissionCharacter::GetInventoryComponent()
 {
 	return InventoryComponent;
+}
+
+void AWildOmissionCharacter::Server_Primary_Implementation()
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->Primary();
+}
+
+void AWildOmissionCharacter::Server_Secondary_Implementation()
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->Secondary();
 }

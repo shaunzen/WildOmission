@@ -101,4 +101,10 @@ private:
 	void ToolbarSelectionIncrement();
 	void ToolbarSelectionDecrement();
 
+	UFUNCTION(Server, Reliable)
+	void Server_Primary();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_Secondary();
+	
 };

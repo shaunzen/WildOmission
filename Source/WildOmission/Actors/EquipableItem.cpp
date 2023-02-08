@@ -34,6 +34,7 @@ void AEquipableItem::Tick(float DeltaTime)
 void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 {
 	OwnerCharacter = InOwnerCharacter;
+	SetOwner(InOwnerCharacter);
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.f, FColor::Red, FString::Printf(TEXT("Equip action and my owner is: %s"), *OwnerCharacter->GetActorNameOrLabel()));
 
 }

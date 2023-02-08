@@ -128,8 +128,9 @@ void UInventoryComponent::DropSelectedItemInWorld(bool Single)
 	}
 
 	Server_DropSelectedItemInWorld(Single);
-}
 
+	RefreshUI();
+}
 
 void UInventoryComponent::StopDragging(bool DropInWorld)
 {
