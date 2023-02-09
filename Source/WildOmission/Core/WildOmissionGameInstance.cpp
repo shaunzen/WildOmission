@@ -5,8 +5,8 @@
 #include "Blueprint/UserWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "OnlineSessionSettings.h"
-#include "WildOmission/Widgets/Menu/MainMenuWidget.h"
-#include "WildOmission/Widgets/Menu/GameplayMenuWidget.h"
+#include "WildOmission/UI/Menu/MainMenuWidget.h"
+#include "WildOmission/UI/Menu/GameplayMenuWidget.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 

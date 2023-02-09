@@ -4,8 +4,8 @@
 #include "PlayerSaveHandlerComponent.h"
 #include "SaveHandler.h"
 #include "WildOmissionSaveGame.h"
-#include "WildOmission/Player/WildOmissionPlayerController.h"
-#include "WildOmission/GameModes/WildOmissionGameMode.h"
+#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
+#include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
 #include "TimerManager.h"
 
 // Sets default values for this component's properties

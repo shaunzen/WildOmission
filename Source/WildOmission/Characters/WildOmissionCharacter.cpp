@@ -11,7 +11,7 @@
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/InteractionComponent.h"
-#include "WildOmission/Widgets/PlayerUI/PlayerHUDWidget.h"
+#include "WildOmission/UI/Player/PlayerHUDWidget.h"
 
 
 // Sets default values

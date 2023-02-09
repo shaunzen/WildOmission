@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
-#include "WildOmission/Player/WildOmissionPlayerController.h"
+#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 
 UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {

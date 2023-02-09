@@ -2,7 +2,7 @@
 
 
 #include "FoodItem.h"
-#include "WildOmission/Player/WildOmissionCharacter.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 

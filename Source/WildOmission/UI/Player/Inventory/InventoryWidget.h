@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "InventorySlotWidget.h"
-#include "WildOmission/Structs/InventoryItem.h"
+#include "WildOmission/Core/Structs/InventoryItem.h"
 #include "InventoryWidget.generated.h"
 
 class UTextBlock;

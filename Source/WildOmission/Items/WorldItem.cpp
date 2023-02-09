@@ -3,9 +3,9 @@
 
 #include "WorldItem.h"
 #include "Components/StaticMeshComponent.h"
-#include "WildOmission/Player/WildOmissionCharacter.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/InventoryComponent.h"
-#include "WildOmission/Player/WildOmissionPlayerController.h"
+#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 
 // Sets default values
 AWorldItem::AWorldItem()

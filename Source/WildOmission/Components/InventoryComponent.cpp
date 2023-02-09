@@ -2,9 +2,9 @@
 
 
 #include "InventoryComponent.h"
-#include "WildOmission/Player/WildOmissionCharacter.h"
-#include "WildOmission/Widgets/PlayerUI/InventoryWidget.h"
-#include "WildOmission/Actors/WorldItem.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "WildOmission/UI/Player/Inventory/InventoryWidget.h"
+#include "WildOmission/Items/WorldItem.h"
 #include "Net/UnrealNetwork.h"
 
 UInventoryComponent::UInventoryComponent()

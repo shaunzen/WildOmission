@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
-#include "WildOmission/Actors/EquipableItem.h"
-#include "WildOmission/Structs/InventoryItem.h"
-#include "WildOmission/Structs/InventorySlot.h"
+#include "WildOmission/Items/EquipableItem.h"
+#include "WildOmission/Core/Structs/InventoryItem.h"
+#include "WildOmission/Core/Structs/InventorySlot.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 

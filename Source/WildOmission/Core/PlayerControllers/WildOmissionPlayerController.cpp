@@ -2,12 +2,12 @@
 
 
 #include "WildOmissionPlayerController.h"
-#include "WildOmissionCharacter.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "WildOmission/Components/InventoryComponent.h"
-#include "WildOmission/Widgets/PlayerUI/InventoryWidget.h"
+#include "WildOmission/UI/Player/Inventory/InventoryWidget.h"
 #include "GameFramework/PlayerState.h"
-#include "WildOmission/GameModes/WildOmissionGameMode.h"
+#include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
 

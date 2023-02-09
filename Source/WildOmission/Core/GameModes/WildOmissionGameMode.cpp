@@ -5,10 +5,10 @@
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
-#include "WildOmission/Player/WildOmissionCharacter.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "WildOmission/Components/InventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
-#include "WildOmission/Components/InventoryComponent.h"
 
 void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {

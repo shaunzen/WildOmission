@@ -2,7 +2,7 @@
 
 
 #include "EquipableItem.h"
-#include "WildOmission/Player/WildOmissionCharacter.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 
 // Sets default values
 AEquipableItem::AEquipableItem()

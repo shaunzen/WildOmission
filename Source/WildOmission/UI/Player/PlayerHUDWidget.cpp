@@ -4,8 +4,8 @@
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Components/CanvasPanelSlot.h"
-#include "InventoryWidget.h"
-#include "SelectedItemWidget.h"
+#include "WildOmission/UI/Player/Inventory/InventoryWidget.h"
+#include "WildOmission/UI/Player/Inventory/SelectedItemWidget.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "VitalsWidget.h"
 

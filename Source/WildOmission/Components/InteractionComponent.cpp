@@ -2,8 +2,8 @@
 
 
 #include "InteractionComponent.h"
-#include "WildOmission/Interfaces/Interactable.h"
-#include "WildOmission/Widgets/PlayerUI/PlayerHUDWidget.h"
+#include "WildOmission/Core/Interfaces/Interactable.h"
+#include "WildOmission/UI/Player/PlayerHUDWidget.h"
 
 UInteractionComponent::UInteractionComponent()
 {
