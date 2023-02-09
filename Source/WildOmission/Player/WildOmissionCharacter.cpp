@@ -20,17 +20,17 @@ AWildOmissionCharacter::AWildOmissionCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/Blueprints/Widgets/PlayerUI/WBP_PlayerHUD"));
-	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/MC_DefaultMappingContext"));
-	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Move"));
-	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Look"));
-	ConstructorHelpers::FObjectFinder<UInputAction> JumpActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Jump"));
-	ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Interact"));
-	ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Primary"));
-	ConstructorHelpers::FObjectFinder<UInputAction> SecondaryActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Secondary"));
-	ConstructorHelpers::FObjectFinder<UInputAction> InventoryActionBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_Inventory"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_ToolbarSelectionIncrement"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Blueprints/Input/InputActions/IA_ToolbarSelectionDecrement"));
+	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Player/WBP_PlayerHUD"));
+	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Core/Input/MC_DefaultMappingContext"));
+	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Move"));
+	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Look"));
+	ConstructorHelpers::FObjectFinder<UInputAction> JumpActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Jump"));
+	ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Interact"));
+	ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Primary"));
+	ConstructorHelpers::FObjectFinder<UInputAction> SecondaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Secondary"));
+	ConstructorHelpers::FObjectFinder<UInputAction> InventoryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Inventory"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionIncrement"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionDecrement"));
 
 	if (PlayerHUDWidgetBlueprintClass.Class == nullptr
 		|| DefaultMappingContextBlueprint.Object == nullptr

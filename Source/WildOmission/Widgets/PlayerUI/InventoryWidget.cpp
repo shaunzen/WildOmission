@@ -14,7 +14,7 @@
 
 UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UInventorySlotWidget> InventorySlotBPWidgetClass(TEXT("/Game/WildOmission/Blueprints/Widgets/PlayerUI/WBP_InventorySlot"));
+	ConstructorHelpers::FClassFinder<UInventorySlotWidget> InventorySlotBPWidgetClass(TEXT("/Game/WildOmission/UI/Player/WBP_InventorySlot"));
 	if (InventorySlotBPWidgetClass.Class == nullptr)
 	{
 		return;

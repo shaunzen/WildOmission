@@ -17,14 +17,14 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 {
 	bIsFocusable = true;
 	
-	ConstructorHelpers::FClassFinder<USaveRowWidget> SaveRowWidgetBPClass(TEXT("/Game/WildOmission/Blueprints/Widgets/Menu/WBP_SaveRow"));
+	ConstructorHelpers::FClassFinder<USaveRowWidget> SaveRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_SaveRow"));
 	if (SaveRowWidgetBPClass.Class == nullptr)
 	{
 		return;
 	}
 	SaveRowWidgetClass = SaveRowWidgetBPClass.Class;
 
-	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/WildOmission/Blueprints/Widgets/Menu/WBP_ServerRow"));
+	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_ServerRow"));
 	if (ServerRowWidgetBPClass.Class == nullptr)
 	{
 		return;

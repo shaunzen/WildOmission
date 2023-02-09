@@ -19,7 +19,7 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	// Version Information Here
 	Version = FString("0.2.1 - Prototype");
 
-	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/Blueprints/Widgets/Menu/WBP_MainMenu"));
+	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_MainMenu"));
 	
 	if (MainMenuBlueprint.Class == nullptr)
 	{
@@ -28,7 +28,7 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	
 	MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
 
-	ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/WildOmission/Blueprints/Widgets/Menu/WBP_GameplayMenu"));
+	ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_GameplayMenu"));
 	
 	if (GameplayMenuBlueprint.Class == nullptr)
 	{
