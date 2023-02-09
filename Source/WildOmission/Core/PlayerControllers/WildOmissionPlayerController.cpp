@@ -75,7 +75,7 @@ void AWildOmissionPlayerController::Save()
 void AWildOmissionPlayerController::Spawn()
 {
 	// TODO find a location and give the default items
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Player hasnt played on this save or was dead last time they loaded, spawning with default settings"));
+
 }
 
 FString AWildOmissionPlayerController::GetUniqueID()

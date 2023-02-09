@@ -34,7 +34,6 @@ void ASaveHandler::SaveGame()
 	}
 
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Saving the level"));
 	UpdateSaveFile(SaveFile);
 }
 
@@ -55,8 +54,6 @@ void ASaveHandler::LoadGame(const FString& SaveFileName)
 	{
 		// TODO generate level
 	}
-
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, CurrentSaveFileName);
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
