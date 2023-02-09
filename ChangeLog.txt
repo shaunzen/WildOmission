@@ -76,8 +76,17 @@ Febuary 3 2023
 + Player Can use item held in hand.
 * Fixed a networking bug, that occurred when dropping items as a host.
 ================================================
+
 ===========Version 0.2.1 Prototype==============
 * Changed UI Font.
 * Optimizations.
 - Removed On Screen messages.
+================================================
+
+===========Version 0.2.2 Prototype==============
++ Eating and Drinking Sounds.
+================================================
+
+===========Version 0.2.3 Prototype==============
+
 ================================================

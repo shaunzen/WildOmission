@@ -6,9 +6,8 @@
 #include "EquipableItem.h"
 #include "FoodItem.generated.h"
 
-/**
- * 
- */
+class USoundBase;
+
 UCLASS()
 class WILDOMISSION_API AFoodItem : public AEquipableItem
 {
@@ -21,11 +20,22 @@ public:
 	virtual void Primary() override;
 
 	uint8 GetEnergy();
+	uint8 GetHydration();
 
 	void SetEnergy(uint8 InEnergy);
+	void SetHydration(uint8 InHydration);
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	uint8 Energy;
+
+	UPROPERTY(EditDefaultsOnly)
+	uint8 Hydration;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* ConsumptionSound;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayConsumeSound();
 
 };

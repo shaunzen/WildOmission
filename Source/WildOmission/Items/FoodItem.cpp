@@ -5,10 +5,12 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AFoodItem::AFoodItem()
 {
-	Energy = 100.0f;
+	Energy = 0.0f;
+	Hydration = 0.0f;
 }
 
 void AFoodItem::Primary()
@@ -21,9 +23,13 @@ void AFoodItem::Primary()
 	Super::Primary();
 
 	OwnerCharacter->GetVitalsComponent()->AddHunger(Energy);
+	OwnerCharacter->GetVitalsComponent()->AddThirst(Hydration);
 
-	// TODO play eat sound
-
+	if (HasAuthority())
+	{
+		Client_PlayConsumeSound();
+	}
+	
 	OwnerCharacter->GetInventoryComponent()->RemoveHeldItem();
 }
 
@@ -32,7 +38,27 @@ uint8 AFoodItem::GetEnergy()
 	return Energy;
 }
 
+uint8 AFoodItem::GetHydration()
+{
+	return Hydration;
+}
+
 void AFoodItem::SetEnergy(uint8 InEnergy)
 {
 	Energy = InEnergy;
+}
+
+void AFoodItem::SetHydration(uint8 InHydration)
+{
+	Hydration = InHydration;
+}
+
+void AFoodItem::Client_PlayConsumeSound_Implementation()
+{
+	if (ConsumptionSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ConsumptionSound, GetActorLocation());
 }
