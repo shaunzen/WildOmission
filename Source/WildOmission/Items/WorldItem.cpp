@@ -67,7 +67,35 @@ void AWorldItem::Interact(AActor* Interactor)
 
 FString AWorldItem::PromptText()
 {
-	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+	FName ItemDisplayName;
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController == nullptr)
+	{
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+	}
+
+	AWildOmissionCharacter* Character = Cast<AWildOmissionCharacter>(PlayerController->GetCharacter());
+	if (Character == nullptr)
+	{
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+	}
+
+	UInventoryComponent* PlayerInventoryComponent = Character->GetInventoryComponent();
+	if (PlayerInventoryComponent == nullptr)
+	{
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+	}
+
+	FItem* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
+	if (ItemData == nullptr)
+	{
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+	}
+	
+	ItemDisplayName = ItemData->DisplayName;
+
+	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName.ToString());
 }
 
 // Sets the item id name for this world item

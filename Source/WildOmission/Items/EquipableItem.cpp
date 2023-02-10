@@ -39,8 +39,10 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 
 void AEquipableItem::Primary()
 {
+
 }
 
 void AEquipableItem::Secondary()
 {
+
 }

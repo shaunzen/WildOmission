@@ -29,6 +29,8 @@ public:
 	void EquipItem(TSubclassOf<AEquipableItem> Item);
 	void Disarm();
 
+	AEquipableItem* GetEquipedItem();
+
 	UVitalsComponent* GetVitalsComponent();
 	UInventoryComponent* GetInventoryComponent();
 

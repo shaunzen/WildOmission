@@ -186,6 +186,11 @@ void AWildOmissionCharacter::Disarm()
 	EquipedItem->Destroy();
 }
 
+AEquipableItem* AWildOmissionCharacter::GetEquipedItem()
+{
+	return EquipedItem;
+}
+
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MoveAxis = Value.Get<FVector2D>();

@@ -96,11 +96,10 @@ void UInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 		return;
 	}
 
-	OwnerCharacter->Disarm();
-
 	// return if there is no item
 	if (SelectedSlot.IsEmpty())
 	{
+		OwnerCharacter->Disarm();
 		return;
 	}
 
@@ -108,11 +107,17 @@ void UInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 	FItem* SlotItemData = GetItemData(SelectedSlot.Item.Name);
 	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
 	{
+		OwnerCharacter->Disarm();
 		return;
 	}
 
-
-
+	// is this item the same as we are already holding
+	if (OwnerCharacter->GetEquipedItem() != nullptr && SlotItemData->EquipItemClass.Get() == OwnerCharacter->GetEquipedItem()->GetClass())
+	{
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString("The item to be equiped is already equiped"));
+		return;
+	}
+	
 	// tell player to equip this
 	OwnerCharacter->EquipItem(SlotItemData->EquipItemClass);
 
@@ -490,13 +495,13 @@ void UInventoryComponent::Server_SpawnWorldItem_Implementation(const FName& Item
 		return;
 	}
 
-	// Update world items properties
 	FVector SpawnLocation;
 	FVector PhysicsImpulse;
 
 	SpawnLocation = GetOwner()->GetActorLocation();
 	PhysicsImpulse = GetOwner()->GetActorForwardVector() * 5000.0f;
 	
+	// Update world items properties
 	WorldItem->Client_SetItemProperties(ItemName, Quantity, ItemData->Mesh, SpawnLocation);
 
 	WorldItem->AddImpulse(PhysicsImpulse);
