@@ -491,7 +491,15 @@ void UInventoryComponent::Server_SpawnWorldItem_Implementation(const FName& Item
 	}
 
 	// Update world items properties
-	WorldItem->Client_SetItemProperties(ItemName, Quantity, ItemData->Mesh, GetOwner()->GetActorLocation());
+	FVector SpawnLocation;
+	FVector PhysicsImpulse;
+
+	SpawnLocation = GetOwner()->GetActorLocation();
+	PhysicsImpulse = GetOwner()->GetActorForwardVector() * 5000.0f;
+	
+	WorldItem->Client_SetItemProperties(ItemName, Quantity, ItemData->Mesh, SpawnLocation);
+
+	WorldItem->AddImpulse(PhysicsImpulse);
 }
 
 void UInventoryComponent::Server_DragAll_Implementation(const int32& FromSlotIndex)

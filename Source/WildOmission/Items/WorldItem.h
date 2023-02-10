@@ -52,6 +52,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetItemMesh();
 
+	void AddImpulse(FVector Impulse);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

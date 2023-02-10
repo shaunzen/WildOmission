@@ -24,6 +24,8 @@ AWorldItem::AWorldItem()
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ItemMesh"));
 	RootComponent = ItemMesh;
 	ItemMesh->SetSimulatePhysics(true);
+	ItemMesh->SetMassOverrideInKg(FName(), 20.0f);
+	ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 }
 
@@ -111,4 +113,9 @@ int32 AWorldItem::GetItemQuantity()
 UStaticMeshComponent* AWorldItem::GetItemMesh()
 {
 	return ItemMesh;
+}
+
+void AWorldItem::AddImpulse(FVector Impulse)
+{
+	ItemMesh->AddImpulse(Impulse);
 }
