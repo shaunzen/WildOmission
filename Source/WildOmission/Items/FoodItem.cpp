@@ -25,10 +25,7 @@ void AFoodItem::Primary()
 	OwnerCharacter->GetVitalsComponent()->AddHunger(Energy);
 	OwnerCharacter->GetVitalsComponent()->AddThirst(Hydration);
 
-	if (HasAuthority())
-	{
-		Client_PlayConsumeSound();
-	}
+	Client_PlayConsumeSound();
 	
 	OwnerCharacter->GetInventoryComponent()->RemoveHeldItem();
 }
