@@ -184,6 +184,7 @@ void AWildOmissionCharacter::Disarm()
 	}
 
 	EquipedItem->Destroy();
+	EquipedItem = nullptr;
 }
 
 AEquipableItem* AWildOmissionCharacter::GetEquipedItem()

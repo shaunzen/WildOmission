@@ -87,9 +87,8 @@ void UInventoryComponent::SpawnWorldItem(const FName& ItemName, const int32& Qua
 	Server_SpawnWorldItem(ItemName, Quantity);
 }
 
-void UInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
+void UInventoryComponent::EquipPlayer(FInventorySlot& SelectedSlot)
 {
-
 	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
 	if (OwnerCharacter == nullptr)
 	{
@@ -118,7 +117,7 @@ void UInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 		return;
 	}
 	
-	// tell player to equip this
+	OwnerCharacter->Disarm();
 	OwnerCharacter->EquipItem(SlotItemData->EquipItemClass);
 
 }
@@ -415,6 +414,23 @@ void UInventoryComponent::RefreshUI()
 	InventoryWidget->Refresh();
 }
 
+void UInventoryComponent::RefreshPlayerEquip()
+{
+	if (!IsToolbarSlotSelectionValid())
+	{
+		return;
+	}
+
+	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
+
+	EquipPlayer(SelectedSlot);
+}
+
+bool UInventoryComponent::IsToolbarSlotSelectionValid() const
+{
+	return ToolbarSelectionIndex > -1 && ToolbarSelectionIndex < 6;
+}
+
 //**************************************************************
 // RPC
 //**************************************************************
@@ -435,6 +451,8 @@ void UInventoryComponent::Server_AddItem_Implementation(const FName& ItemName, c
 	{
 		SpawnWorldItem(ItemName, Remaining);
 	}
+
+	RefreshPlayerEquip();
 }
 
 bool UInventoryComponent::Server_RemoveItem_Validate(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld)
@@ -455,6 +473,8 @@ void UInventoryComponent::Server_RemoveItem_Implementation(const FName& ItemName
 	{
 		int32 Remaining;
 		bool RemoveSuccess = RemoveItemFromSlots(ItemName, Quantity, Remaining);
+
+		RefreshPlayerEquip();
 	}
 }
 
@@ -520,6 +540,8 @@ void UInventoryComponent::Server_DragAll_Implementation(const int32& FromSlotInd
 	Dragging = true;
 
 	FromSlot.ClearItem();
+
+	RefreshPlayerEquip();
 }
 
 // TODO simplify this function
@@ -559,6 +581,8 @@ void UInventoryComponent::Server_DragSplit_Implementation(const int32& FromSlotI
 	FInventoryItem NewSlotItem = FromSlot.Item;
 	NewSlotItem.Quantity -= HalfQuantity;
 	FromSlot.Item = NewSlotItem;
+
+	RefreshPlayerEquip();
 }
 
 void UInventoryComponent::Server_DropAll_Implementation(const int32& ToSlotIndex)
@@ -607,6 +631,8 @@ void UInventoryComponent::Server_DropAll_Implementation(const int32& ToSlotIndex
 		SelectedItem.Clear();
 		Dragging = false;
 	}
+
+	RefreshPlayerEquip();
 }
 
 void UInventoryComponent::Server_DropSingle_Implementation(const int32& ToSlotIndex)
@@ -641,6 +667,8 @@ void UInventoryComponent::Server_DropSingle_Implementation(const int32& ToSlotIn
 		SelectedItem.Clear();
 		Dragging = false;
 	}
+
+	RefreshPlayerEquip();
 }
 
 void UInventoryComponent::Server_StopDragging_Implementation(bool DropInWorld)
@@ -671,9 +699,7 @@ void UInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(int8 Se
 
 	ToolbarSelectionIndex = SelectionIndex;
 
-	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
-
-	RefreshPlayerEquip(SelectedSlot);
+	RefreshPlayerEquip();
 }
 
 void UInventoryComponent::Server_RemoveHeldItem_Implementation()
@@ -687,5 +713,5 @@ void UInventoryComponent::Server_RemoveHeldItem_Implementation()
 		SelectedSlot.ClearItem();
 	}
 
-	RefreshPlayerEquip(SelectedSlot);
+	RefreshPlayerEquip();
 }

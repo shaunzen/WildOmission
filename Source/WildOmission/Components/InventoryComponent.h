@@ -139,7 +139,7 @@ public:
 
 	void SpawnWorldItem(const FName& ItemName, const int32& Quantity = 1);
 
-	void RefreshPlayerEquip(FInventorySlot& SelectedSlot);
+	void EquipPlayer(FInventorySlot& SelectedSlot);
 
 	//**************************************************************
 	// User Interaction
@@ -238,7 +238,11 @@ private:
 
 	UFUNCTION()
 	void RefreshUI();
-	
+
+	void RefreshPlayerEquip();
+
+	bool IsToolbarSlotSelectionValid() const;
+
 	//**************************************************************
 	// RPC
 	//**************************************************************
