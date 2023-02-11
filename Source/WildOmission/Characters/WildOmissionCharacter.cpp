@@ -8,7 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "UObject/ConstructorHelpers.h"
 #include "InputMappingContext.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
@@ -74,7 +74,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 	
 	// Setup inventory component
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
+	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(FName("InventoryComponent"));
 	InventoryComponent->SetIsReplicated(true);
 
 	// Setup interaction component
@@ -259,6 +259,11 @@ UVitalsComponent* AWildOmissionCharacter::GetVitalsComponent()
 }
 
 UInventoryComponent* AWildOmissionCharacter::GetInventoryComponent()
+{
+	return InventoryComponent;
+}
+
+UPlayerInventoryComponent* AWildOmissionCharacter::GetPlayerInventoryComponent()
 {
 	return InventoryComponent;
 }

@@ -10,6 +10,7 @@
 class UCameraComponent;
 class UVitalsComponent;
 class UInventoryComponent;
+class UPlayerInventoryComponent;
 class UInteractionComponent;
 class UPlayerHUDWidget;
 class UInputAction;
@@ -32,7 +33,12 @@ public:
 	AEquipableItem* GetEquipedItem();
 
 	UVitalsComponent* GetVitalsComponent();
+	
+	// Returns players inventory component as generic inventory
 	UInventoryComponent* GetInventoryComponent();
+
+	// Return players inventory component as player inventory
+	UPlayerInventoryComponent* GetPlayerInventoryComponent();
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,7 +52,7 @@ private:
 	UVitalsComponent* VitalsComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	UInventoryComponent* InventoryComponent;
+	UPlayerInventoryComponent* InventoryComponent;
 	
 	UPROPERTY(VisibleAnywhere)
 	UInteractionComponent* InteractionComponent;
