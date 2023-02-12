@@ -4,7 +4,7 @@
 #include "WorldItem.h"
 #include "Components/StaticMeshComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 
 // Sets default values

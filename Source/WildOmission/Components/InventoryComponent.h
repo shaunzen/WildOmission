@@ -12,6 +12,7 @@
 #include "InventoryComponent.generated.h"
 
 class UInventoryWidget;
+class UInventoryManipulatorComponent;
 
 USTRUCT(BlueprintType)
 struct FItem : public FTableRowBase
@@ -127,7 +128,7 @@ public:
 
 	virtual void BeginPlay() override;
 
-	void Setup(UInventoryWidget* InInventoryWidget);
+	void Setup(UInventoryManipulatorComponent* InventoryManipulator, UInventoryWidget* InventoryWidgetToUse);
 
 	//**************************************************************
 	// General Management
@@ -137,26 +138,11 @@ public:
 	
 	void RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld = false);
 
-	void SpawnWorldItem(const FName& ItemName, const int32& Quantity = 1);
-
-	void EquipPlayer(FInventorySlot& SelectedSlot);
-
 	//**************************************************************
 	// User Interaction
 	//**************************************************************
 	
 	void SlotInteraction(const int32& SlotIndex, bool Primary = true);
-
-	void DropSelectedItemInWorld(bool Single = false);
-
-	void StopDragging(bool DropInWorld = false);
-
-	void IncrementToolbarSelection();
-	void DecrementToolbarSelection();
-
-	void SetToolbarSelectionIndex(const int8& SelectionIndex);
-
-	void RemoveHeldItem();
 
 	//**************************************************************
 	// Getters
@@ -168,21 +154,14 @@ public:
 	// Returns a reference to the inventory slots
 	TArray<FInventorySlot>& GetSlots();
 	
-	// Is this inventory currently performing a drag
-	bool IsDragging() const;
-
-	// Returns a pointer to the currently selected item
-	FInventoryItem* GetSelectedItem();
-	
-	// Returns the Local Toolbar Selection Index
-	int8 GetToolbarSelectionIndex();
-
 	// Gets the widget this inventory is using
 	UInventoryWidget* GetWidget();
 	
 	// Retrives the data about the item id passed in
 	FItem* GetItemData(const FName& ItemName);
 	
+	UInventoryManipulatorComponent* GetManipulator();
+
 	//**************************************************************
 	// Save Load
 	//**************************************************************
@@ -190,8 +169,9 @@ public:
 	FWildOmissionInventorySave Save();
 	
 	void Load(const FWildOmissionInventorySave& InInventorySave);
-	
-private:
+
+protected:
+
 	UPROPERTY(Replicated)
 	FInventoryContents Contents;
 
@@ -201,24 +181,21 @@ private:
 	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = RefreshUI)
 	TArray<FInventorySlot> Slots;
 	
-	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
-	int8 ToolbarSelectionIndex;
-
-	UPROPERTY(EditDefaultsOnly)
-	UDataTable* ItemDataTable;
+	UPROPERTY()
+	UInventoryManipulatorComponent* Manipulator;
 
 	UPROPERTY()
 	UInventoryWidget* InventoryWidget;
 
-	//**************************************************************
-	// Slot Variables
-	//**************************************************************
-	
-	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
-	FInventoryItem SelectedItem;
+	UFUNCTION()
+	virtual void RefreshUI();
 
-	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
-	bool Dragging;
+	virtual void OnInventoryChange();
+
+private:
+
+	UPROPERTY(EditDefaultsOnly)
+	UDataTable* ItemDataTable;
 
 	//**************************************************************
 	// Slot Functions
@@ -236,29 +213,25 @@ private:
 	bool FindAndAddToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
 	bool FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
 
-	UFUNCTION()
-	void RefreshUI();
-
-	void RefreshPlayerEquip();
-
-	bool IsToolbarSlotSelectionValid() const;
-
 	//**************************************************************
 	// RPC
 	//**************************************************************
 
+	/*General Item Mananagement*/
+	UFUNCTION(Server, Reliable)
+	void Server_AddItemToContents(const FName& ItemName, const int32& Quantity);
+
 	UFUNCTION(Server, Reliable)
 	void Server_AddItem(const FName& ItemName, const int32& Quantity);
 
+
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld);
-	
-	UFUNCTION(Server, Reliable)
-	void Server_DropSelectedItemInWorld(bool Single);
+	void Server_RemoveItemFromContents(const FName& ItemName, const int32& Quantity);
 
-	UFUNCTION(Server, Reliable)
-	void Server_SpawnWorldItem(const FName& ItemName, const int32& Quantity);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RemoveItem(const FName& ItemName, const int32& Quantity);
 
+	/*Drag and drop*/
 	UFUNCTION(Server, Reliable)
 	void Server_DragAll(const int32& FromSlotIndex);
 	
@@ -270,14 +243,5 @@ private:
 	
 	UFUNCTION(Server, Reliable)
 	void Server_DropSingle(const int32& ToSlotIndex);
-
-	UFUNCTION(Server, Reliable)
-	void Server_StopDragging(bool DropInWorld = false);
-
-	UFUNCTION(Server, Reliable)
-	void Server_SetToolbarSelectionIndex(int8 SelectionIndex);
-
-	UFUNCTION(Server, Reliable)
-	void Server_RemoveHeldItem();
 
 };

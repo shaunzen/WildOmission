@@ -21,6 +21,7 @@ struct FInventoryItem
 
 	bool IsZero() const;
 	
+	void Set(const FInventoryItem& InItem);
 	void Set(const FName& InName, const int32& InQuantity);
 
 	void Clear();

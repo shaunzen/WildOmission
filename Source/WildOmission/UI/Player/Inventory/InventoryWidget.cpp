@@ -10,7 +10,9 @@
 #include "Components/UniformGridSlot.h"
 #include "Components/CanvasPanel.h"
 #include "UObject/ConstructorHelpers.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
 
 UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -114,27 +116,37 @@ void UInventoryWidget::Close()
 {
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
-
-	InventoryComponent->StopDragging(true);
 	
 	Refresh();
 }
 
 void UInventoryWidget::Refresh()
 {
+	UInventoryManipulatorComponent* Manipulator = InventoryComponent->GetManipulator();
+	if (Manipulator == nullptr)
+	{
+		return;
+	}
+	UPlayerInventoryComponent* InvCompAsPlayer = Cast<UPlayerInventoryComponent>(InventoryComponent);
+	if (InvCompAsPlayer == nullptr)
+	{
+		return;
+	}
+
 	for (UInventorySlotWidget* InventorySlot : Slots)
 	{
 		InventorySlot->SetItem(InventoryComponent->GetSlots()[InventorySlot->GetIndex()].Item);
 		
 		// Check if it is a selected slot
-		InventorySlot->SetSelected(InventorySlot->GetIndex() == InventoryComponent->GetToolbarSelectionIndex());
+		InventorySlot->SetSelected(InventorySlot->GetIndex() == InvCompAsPlayer->GetToolbarSelectionIndex());
 	}
 
-	if (InventoryComponent->IsDragging())
+	// TODO handle in player hud
+	if (Manipulator->IsDragging())
 	{
 		SelectedItemWidget->Show();
-		FItem* SelectedItemData = InventoryComponent->GetItemData(InventoryComponent->GetSelectedItem()->Name);
-		SelectedItemWidget->SetItem(SelectedItemData->Thumbnail, InventoryComponent->GetSelectedItem()->Quantity);
+		FItem* SelectedItemData = InventoryComponent->GetItemData(Manipulator->GetSelectedItem().Name);
+		SelectedItemWidget->SetItem(SelectedItemData->Thumbnail, Manipulator->GetSelectedItem().Quantity);
 	}
 	else
 	{

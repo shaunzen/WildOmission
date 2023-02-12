@@ -6,7 +6,7 @@
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
 

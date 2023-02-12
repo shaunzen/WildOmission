@@ -1,0 +1,179 @@
+// Copyright Telephone Studios. All Rights Reserved.
+
+
+#include "InventoryManipulatorComponent.h"
+#include "WildOmission/Items/WorldItem.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "Net/UnrealNetwork.h"
+
+// Sets default values for this component's properties
+UInventoryManipulatorComponent::UInventoryManipulatorComponent()
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = false;
+
+	// ...
+}
+
+
+// Called when the game starts
+void UInventoryManipulatorComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+	
+}
+
+void UInventoryManipulatorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UInventoryManipulatorComponent, SelectedItem);
+	DOREPLIFETIME(UInventoryManipulatorComponent, Dragging);
+}
+
+//**************************************************************
+// General Management
+//**************************************************************
+
+void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const int32& Quantity)
+{
+	// RPC on the server to spawn a world item of out specification
+	Server_SpawnWorldItem(ItemName, Quantity);
+}
+
+//**************************************************************
+// User Interaction
+//**************************************************************
+
+void UInventoryManipulatorComponent::DropSelectedItemInWorld(bool Single)
+{
+	if (!Dragging)
+	{
+		return;
+	}
+
+	Server_DropSelectedItemInWorld(Single);
+
+	RefreshInventoryUI();
+}
+
+void UInventoryManipulatorComponent::StartDragging(const FInventoryItem& ItemToDrag)
+{
+	Server_StartDragging(ItemToDrag);
+}
+
+void UInventoryManipulatorComponent::StopDragging(bool DropInWorld)
+{
+	Server_StopDragging(DropInWorld);
+}
+
+//**************************************************************
+// Getters
+//**************************************************************
+
+bool UInventoryManipulatorComponent::IsDragging() const
+{
+	return Dragging;
+}
+
+FInventoryItem UInventoryManipulatorComponent::GetSelectedItem()
+{
+	return SelectedItem;
+}
+
+void UInventoryManipulatorComponent::RefreshInventoryUI()
+{
+	// TODO Refresh all widgets open
+}
+
+//**************************************************************
+// RPC
+//**************************************************************
+
+void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementation(bool Single)
+{
+	if (!Dragging)
+	{
+		return;
+	}
+	if (Single == true)
+	{
+		// TODO component to remove from
+		//RemoveItem(SelectedItem.Name, 1, true);
+
+		SelectedItem.Quantity -= 1;
+	}
+	else
+	{
+		// TODO component to remove from
+		//RemoveItem(SelectedItem.Name, SelectedItem.Quantity, true);
+		SelectedItem.Clear();
+	}
+
+	if (SelectedItem.Quantity == 0)
+	{
+		SelectedItem.Clear();
+		Dragging = false;
+	}
+
+}
+
+void UInventoryManipulatorComponent::Server_SpawnWorldItem_Implementation(const FName& ItemName, const int32& Quantity)
+{
+	// Get player's inventory
+	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
+	if (PlayerInventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	// Get the data for this item
+	FItem* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
+	
+	// Spawn a world item actor
+	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();
+	if (ItemData == nullptr || WorldItem == nullptr)
+	{
+		return;
+	}
+
+	FVector SpawnLocation;
+	FVector PhysicsImpulse;
+
+	SpawnLocation = GetOwner()->GetActorLocation();
+	PhysicsImpulse = GetOwner()->GetActorForwardVector() * 5000.0f;
+
+	// Update world items properties
+	WorldItem->Client_SetItemProperties(ItemName, Quantity, ItemData->Mesh, SpawnLocation);
+
+	WorldItem->AddImpulse(PhysicsImpulse);
+}
+
+void UInventoryManipulatorComponent::Server_StartDragging_Implementation(const FInventoryItem& ItemToDrag)
+{
+	// remove item from contents list when we start dragging
+
+	SelectedItem = ItemToDrag;
+	Dragging = true;
+}
+
+void UInventoryManipulatorComponent::Server_StopDragging_Implementation(bool DropInWorld)
+{
+	if (Dragging == false)
+	{
+		return;
+	}
+
+	FInventoryItem SelectedItemInformation = SelectedItem;
+
+	SelectedItem.Clear();
+	Dragging = false;
+
+	if (DropInWorld)
+	{
+		SpawnWorldItem(SelectedItemInformation.Name, SelectedItemInformation.Quantity);
+	}
+}

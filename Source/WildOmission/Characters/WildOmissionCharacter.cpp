@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "UObject/ConstructorHelpers.h"
 #include "InputMappingContext.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/InteractionComponent.h"
@@ -73,6 +74,10 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	// Setup vitals component
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 	
+	// Setup inventory manipulator
+	InventoryManipulator= CreateDefaultSubobject<UInventoryManipulatorComponent>(FName("InventoryManipulator"));
+	InventoryManipulator->SetIsReplicated(true);
+
 	// Setup inventory component
 	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(FName("InventoryComponent"));
 	InventoryComponent->SetIsReplicated(true);
@@ -121,7 +126,7 @@ void AWildOmissionCharacter::BeginPlay()
 	PlayerHUDWidget->AddToViewport();
 	
 	// Set the player's inventory component to use the player's inventory widget
-	InventoryComponent->Setup(PlayerHUDWidget->GetInventoryWidget());
+	InventoryComponent->Setup(InventoryManipulator, PlayerHUDWidget->GetInventoryWidget());
 	InteractionComponent->Setup(this, PlayerHUDWidget);
 }
 
@@ -258,12 +263,7 @@ UVitalsComponent* AWildOmissionCharacter::GetVitalsComponent()
 	return VitalsComponent;
 }
 
-UInventoryComponent* AWildOmissionCharacter::GetInventoryComponent()
-{
-	return InventoryComponent;
-}
-
-UPlayerInventoryComponent* AWildOmissionCharacter::GetPlayerInventoryComponent()
+UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent()
 {
 	return InventoryComponent;
 }

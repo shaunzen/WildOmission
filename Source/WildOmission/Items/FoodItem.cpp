@@ -3,7 +3,7 @@
 
 #include "FoodItem.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "Kismet/GameplayStatics.h"
 

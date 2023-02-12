@@ -6,7 +6,8 @@
 #include "Components/CanvasPanelSlot.h"
 #include "WildOmission/UI/Player/Inventory/InventoryWidget.h"
 #include "WildOmission/UI/Player/Inventory/SelectedItemWidget.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "VitalsWidget.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -47,6 +48,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		// Hide inventory menu
 		BackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
 		Inventory->Close();
+		// TODO stop dragging
 	}
 	else
 	{
@@ -124,12 +126,18 @@ void UPlayerHUDWidget::UpdateSelectedItemLocation()
 
 void UPlayerHUDWidget::BackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
 {
+	UInventoryManipulatorComponent* PlayerInventoryManipulator = Inventory->GetInventoryComponent()->GetManipulator();
+	if (PlayerInventoryManipulator == nullptr)
+	{
+		return;
+	}
+
 	if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		Inventory->GetInventoryComponent()->DropSelectedItemInWorld(false);
+		PlayerInventoryManipulator->DropSelectedItemInWorld(false);
 	}
 	else if (MouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		Inventory->GetInventoryComponent()->DropSelectedItemInWorld(true);
+		PlayerInventoryManipulator->DropSelectedItemInWorld(true);
 	}
 }

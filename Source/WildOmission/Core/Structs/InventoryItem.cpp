@@ -8,6 +8,12 @@ bool FInventoryItem::CompareNames(const FInventoryItem& Item, const FName& ItemN
 	return Item.Name == ItemName;
 }
 
+void FInventoryItem::Set(const FInventoryItem& InItem)
+{
+	Name = InItem.Name;
+	Quantity = InItem.Quantity;
+}
+
 void FInventoryItem::Set(const FName& InName, const int32& InQuantity)
 {
 	Name = InName;
