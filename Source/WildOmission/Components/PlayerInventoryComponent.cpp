@@ -9,6 +9,7 @@
 UPlayerInventoryComponent::UPlayerInventoryComponent()
 {
 	SlotCount = 30;
+	ToolbarSelectionIndex = -1;
 }
 
 void UPlayerInventoryComponent::BeginPlay()
@@ -16,6 +17,8 @@ void UPlayerInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
+
+	ToolbarSelectionIndex = -1;
 }
 
 void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
