@@ -11,7 +11,6 @@
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 
-class UInventoryWidget;
 class UInventoryManipulatorComponent;
 
 USTRUCT(BlueprintType)
@@ -128,7 +127,7 @@ public:
 
 	virtual void BeginPlay() override;
 
-	void Setup(UInventoryManipulatorComponent* InventoryManipulator, UInventoryWidget* InventoryWidgetToUse);
+	void Setup(UInventoryManipulatorComponent* InventoryManipulator);
 
 	//**************************************************************
 	// General Management
@@ -153,9 +152,6 @@ public:
 
 	// Returns a reference to the inventory slots
 	TArray<FInventorySlot>& GetSlots();
-	
-	// Gets the widget this inventory is using
-	UInventoryWidget* GetWidget();
 	
 	// Retrives the data about the item id passed in
 	FItem* GetItemData(const FName& ItemName);
@@ -183,9 +179,6 @@ protected:
 	
 	UPROPERTY()
 	UInventoryManipulatorComponent* Manipulator;
-
-	UPROPERTY()
-	UInventoryWidget* InventoryWidget;
 
 	UFUNCTION()
 	virtual void RefreshUI();

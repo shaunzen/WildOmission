@@ -122,11 +122,6 @@ void UInventoryWidget::Close()
 
 void UInventoryWidget::Refresh()
 {
-	UInventoryManipulatorComponent* Manipulator = InventoryComponent->GetManipulator();
-	if (Manipulator == nullptr)
-	{
-		return;
-	}
 	UPlayerInventoryComponent* InvCompAsPlayer = Cast<UPlayerInventoryComponent>(InventoryComponent);
 	if (InvCompAsPlayer == nullptr)
 	{
@@ -139,18 +134,6 @@ void UInventoryWidget::Refresh()
 		
 		// Check if it is a selected slot
 		InventorySlot->SetSelected(InventorySlot->GetIndex() == InvCompAsPlayer->GetToolbarSelectionIndex());
-	}
-
-	// TODO handle in player hud
-	if (Manipulator->IsDragging())
-	{
-		SelectedItemWidget->Show();
-		FItem* SelectedItemData = InventoryComponent->GetItemData(Manipulator->GetSelectedItem().Name);
-		SelectedItemWidget->SetItem(SelectedItemData->Thumbnail, Manipulator->GetSelectedItem().Quantity);
-	}
-	else
-	{
-		SelectedItemWidget->Hide();
 	}
 }
 

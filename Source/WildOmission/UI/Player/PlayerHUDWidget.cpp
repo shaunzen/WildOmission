@@ -8,6 +8,7 @@
 #include "WildOmission/UI/Player/Inventory/SelectedItemWidget.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "VitalsWidget.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -19,6 +20,14 @@ void UPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	BackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("BackgroundMouseButtonDown"));
+	
+	AWildOmissionCharacter* OwnerCharacter = GetOwningPlayerPawn<AWildOmissionCharacter>();
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	Inventory->Setup(OwnerCharacter->GetInventoryComponent());
 	Inventory->SetSelectedItemWidget(SelectedItem);
 }
 
@@ -27,6 +36,30 @@ void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	
 	UpdateSelectedItemLocation();
+}
+
+void UPlayerHUDWidget::RefreshInventoryState()
+{
+	// TODO all open inventory menus refresh
+
+	UInventoryManipulatorComponent* PlayerInventoryManipulator = Inventory->GetInventoryComponent()->GetManipulator();
+	if (PlayerInventoryManipulator == nullptr)
+	{
+		return;
+	}
+	
+	Inventory->Refresh();
+	
+	if (PlayerInventoryManipulator->IsDragging())
+	{
+		SelectedItem->Show();
+		FItem* SelectedItemData = Inventory->GetInventoryComponent()->GetItemData(PlayerInventoryManipulator->GetSelectedItem().Name);
+		SelectedItem->SetItem(SelectedItemData->Thumbnail, PlayerInventoryManipulator->GetSelectedItem().Quantity);
+	}
+	else
+	{
+		SelectedItem->Hide();
+	}
 }
 
 void UPlayerHUDWidget::ToggleInventory()
@@ -48,7 +81,14 @@ void UPlayerHUDWidget::ToggleInventory()
 		// Hide inventory menu
 		BackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
 		Inventory->Close();
-		// TODO stop dragging
+
+		UInventoryManipulatorComponent* PlayerInventoryManipulator = Inventory->GetInventoryComponent()->GetManipulator();
+		if (PlayerInventoryManipulator == nullptr)
+		{
+			return;
+		}
+
+		PlayerInventoryManipulator->StopDragging(true);
 	}
 	else
 	{

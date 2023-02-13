@@ -2,8 +2,9 @@
 
 
 #include "InventoryComponent.h"
-#include "WildOmission/UI/Player/Inventory/InventoryWidget.h"
+#include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "Net/UnrealNetwork.h"
 
 UInventoryComponent::UInventoryComponent()
@@ -50,13 +51,9 @@ void UInventoryComponent::BeginPlay()
 	}
 }
 
-void UInventoryComponent::Setup(UInventoryManipulatorComponent* InventoryManipulator, UInventoryWidget* InventoryWidgetToUse)
+void UInventoryComponent::Setup(UInventoryManipulatorComponent* InventoryManipulator)
 {
 	Manipulator = InventoryManipulator;
-
-	// Create a link between the Widget and this component
-	InventoryWidget = InventoryWidgetToUse;
-	InventoryWidget->Setup(this);
 }
 
 //**************************************************************
@@ -120,11 +117,6 @@ FInventoryContents* UInventoryComponent::GetContents()
 TArray<FInventorySlot>& UInventoryComponent::GetSlots()
 {
 	return Slots;
-}
-
-UInventoryWidget* UInventoryComponent::GetWidget()
-{
-	return InventoryWidget;
 }
 
 FItem* UInventoryComponent::GetItemData(const FName& ItemName)
@@ -308,12 +300,24 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* It
 
 void UInventoryComponent::RefreshUI()
 {
-	if (InventoryWidget == nullptr)
+	if (Manipulator == nullptr)
 	{
 		return;
 	}
 
-	InventoryWidget->Refresh();
+	AWildOmissionCharacter* ManipulatorCharacter = Cast<AWildOmissionCharacter>(Manipulator->GetOwner());
+	if (ManipulatorCharacter == nullptr)
+	{
+		return;
+	}
+
+	UPlayerHUDWidget* ManipulatorHUD = ManipulatorCharacter->GetHUD();
+	if (ManipulatorHUD == nullptr)
+	{
+		return;
+	}
+
+	ManipulatorHUD->RefreshInventoryState();
 }
 
 void UInventoryComponent::OnInventoryChange()

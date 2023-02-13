@@ -33,7 +33,7 @@ AWorldItem::AWorldItem()
 void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
-
+	//SetOwner(GetWorld()->GetFirstPlayerController());
 	SetReplicateMovement(true);
 }
 

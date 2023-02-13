@@ -48,14 +48,14 @@ protected:
 
 private:	
 
-	UPROPERTY(Replicated, ReplicatedUsing = RefreshInventoryUI)
+	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
 	FInventoryItem SelectedItem;
 
-	UPROPERTY(Replicated, ReplicatedUsing = RefreshInventoryUI)
+	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
 	bool Dragging;
 
 	UFUNCTION()
-	void RefreshInventoryUI();
+	void RefreshUI();
 
 	//**************************************************************
 	// RPC

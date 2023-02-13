@@ -37,6 +37,8 @@ public:
 	// Returns players inventory component
 	UPlayerInventoryComponent* GetInventoryComponent();
 
+	UPlayerHUDWidget* GetHUD();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

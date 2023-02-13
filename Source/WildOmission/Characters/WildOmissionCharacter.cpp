@@ -75,7 +75,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 	
 	// Setup inventory manipulator
-	InventoryManipulator= CreateDefaultSubobject<UInventoryManipulatorComponent>(FName("InventoryManipulator"));
+	InventoryManipulator = CreateDefaultSubobject<UInventoryManipulatorComponent>(FName("InventoryManipulator"));
 	InventoryManipulator->SetIsReplicated(true);
 
 	// Setup inventory component
@@ -106,6 +106,9 @@ void AWildOmissionCharacter::BeginPlay()
 	}
 	Subsystem->AddMappingContext(DefaultMappingContext, 0);
 
+	// Set the player's inventory component to use the player's inventory widget
+	InventoryComponent->Setup(InventoryManipulator);
+
 	// Return if we are not being locally controlled
 	if (!IsLocallyControlled())
 	{
@@ -125,8 +128,6 @@ void AWildOmissionCharacter::BeginPlay()
 	PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
 	PlayerHUDWidget->AddToViewport();
 	
-	// Set the player's inventory component to use the player's inventory widget
-	InventoryComponent->Setup(InventoryManipulator, PlayerHUDWidget->GetInventoryWidget());
 	InteractionComponent->Setup(this, PlayerHUDWidget);
 }
 
@@ -266,6 +267,11 @@ UVitalsComponent* AWildOmissionCharacter::GetVitalsComponent()
 UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent()
 {
 	return InventoryComponent;
+}
+
+UPlayerHUDWidget* AWildOmissionCharacter::GetHUD()
+{
+	return PlayerHUDWidget;
 }
 
 void AWildOmissionCharacter::Server_Primary_Implementation()

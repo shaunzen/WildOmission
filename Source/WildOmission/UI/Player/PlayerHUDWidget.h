@@ -26,6 +26,8 @@ public:
 	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	void RefreshInventoryState();
+
 	// Setters
 	void ToggleInventory();
 	void SetInteractionPrompt(FString InString);

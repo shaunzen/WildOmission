@@ -4,6 +4,8 @@
 #include "InventoryManipulatorComponent.h"
 #include "WildOmission/Items/WorldItem.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -57,7 +59,7 @@ void UInventoryManipulatorComponent::DropSelectedItemInWorld(bool Single)
 
 	Server_DropSelectedItemInWorld(Single);
 
-	RefreshInventoryUI();
+	RefreshUI();
 }
 
 void UInventoryManipulatorComponent::StartDragging(const FInventoryItem& ItemToDrag)
@@ -84,9 +86,23 @@ FInventoryItem UInventoryManipulatorComponent::GetSelectedItem()
 	return SelectedItem;
 }
 
-void UInventoryManipulatorComponent::RefreshInventoryUI()
+void UInventoryManipulatorComponent::RefreshUI()
 {
-	// TODO Refresh all widgets open
+	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	// get the player hud
+	UPlayerHUDWidget* OwnerHUD = OwnerCharacter->GetHUD();
+	if (OwnerHUD == nullptr)
+	{
+		return;
+	}
+
+	// call refresh
+	OwnerHUD->RefreshInventoryState();
 }
 
 //**************************************************************
@@ -101,15 +117,12 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 	}
 	if (Single == true)
 	{
-		// TODO component to remove from
-		//RemoveItem(SelectedItem.Name, 1, true);
-
+		Server_SpawnWorldItem(SelectedItem.Name, 1);
 		SelectedItem.Quantity -= 1;
 	}
 	else
 	{
-		// TODO component to remove from
-		//RemoveItem(SelectedItem.Name, SelectedItem.Quantity, true);
+		Server_SpawnWorldItem(SelectedItem.Name, SelectedItem.Quantity);
 		SelectedItem.Clear();
 	}
 
