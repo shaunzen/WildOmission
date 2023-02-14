@@ -5,7 +5,6 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
-#include "WildOmission/UI/Player/Inventory/InventoryWidget.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
