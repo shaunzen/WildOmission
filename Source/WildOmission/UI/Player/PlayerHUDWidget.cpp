@@ -29,6 +29,8 @@ void UPlayerHUDWidget::NativeConstruct()
 	}
 
 	PlayerInventory->Setup(OwnerCharacter->GetInventoryComponent());
+
+	RefreshInventoryStates();
 }
 
 void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
