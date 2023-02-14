@@ -102,6 +102,13 @@ int8 UPlayerInventoryComponent::GetToolbarSelectionIndex()
 // Slot Functions
 //**************************************************************
 
+void UPlayerInventoryComponent::OnInventoryChange()
+{
+	Super::OnInventoryChange();
+
+	RefreshPlayerEquip();
+}
+
 void UPlayerInventoryComponent::RefreshPlayerEquip()
 {
 	if (!IsToolbarSlotSelectionValid())

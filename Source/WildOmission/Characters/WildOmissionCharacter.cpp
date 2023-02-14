@@ -208,11 +208,11 @@ void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 {
-	// Return early if the inventory menu is open
 	if (PlayerHUDWidget->IsInventoryMenuOpen())
 	{
 		return;
 	}
+
 	FVector2D LookAxis = Value.Get<FVector2D>();
 
 	AddControllerYawInput(LookAxis.X);
@@ -221,11 +221,21 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::Primary()
 {
+	if (PlayerHUDWidget->IsInventoryMenuOpen())
+	{
+		return;
+	}
+
 	Server_Primary();
 }
 
 void AWildOmissionCharacter::Secondary()
 {
+	if (PlayerHUDWidget->IsInventoryMenuOpen())
+	{
+		return;
+	}
+
 	Server_Secondary();
 }
 
