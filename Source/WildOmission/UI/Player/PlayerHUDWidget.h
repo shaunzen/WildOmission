@@ -13,12 +13,14 @@ class UVitalsComponent;
 class UVitalsWidget;
 
 class UInventoryWidget;
+class UPlayerInventoryWidget;
 class USelectedItemWidget;
 
 UCLASS(Abstract)
 class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
 	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
 	
@@ -26,7 +28,7 @@ public:
 	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void RefreshInventoryState();
+	void RefreshInventoryStates();
 
 	// Setters
 	void ToggleInventory();
@@ -34,8 +36,9 @@ public:
 	void SetVitals(UVitalsComponent* InVitals);
 
 	// Getters
-	UInventoryWidget* GetInventoryWidget();
-	bool InventoryOpen();
+	UPlayerInventoryWidget* GetPlayerInventoryWidget();
+	
+	bool IsInventoryMenuOpen();
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -45,7 +48,7 @@ private:
 	UBorder* BackgroundBorder;
 
 	UPROPERTY(meta = (BindWidget))
-	UInventoryWidget* Inventory;
+	UPlayerInventoryWidget* PlayerInventory;
 	
 	UPROPERTY(meta = (BindWidget))
 	USelectedItemWidget* SelectedItem;
@@ -53,7 +56,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
 
-	bool bInventoryOpen;
+	bool bInventoryMenuOpen;
+
 	void UpdateSelectedItemLocation();
 
 	UFUNCTION()

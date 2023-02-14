@@ -209,7 +209,7 @@ void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 {
 	// Return early if the inventory menu is open
-	if (PlayerHUDWidget->InventoryOpen())
+	if (PlayerHUDWidget->IsInventoryMenuOpen())
 	{
 		return;
 	}

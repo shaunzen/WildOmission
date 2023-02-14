@@ -10,25 +10,17 @@
 #include "Components/UniformGridSlot.h"
 #include "Components/CanvasPanel.h"
 #include "UObject/ConstructorHelpers.h"
-#include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/InventoryComponent.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
 
 UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UInventorySlotWidget> InventorySlotBPWidgetClass(TEXT("/Game/WildOmission/UI/Player/WBP_InventorySlot"));
+	ConstructorHelpers::FClassFinder<UInventorySlotWidget> InventorySlotBPWidgetClass(TEXT("/Game/WildOmission/UI/Inventory/WBP_InventorySlot"));
 	if (InventorySlotBPWidgetClass.Class == nullptr)
 	{
 		return;
 	}
 
 	SlotWidgetClass = InventorySlotBPWidgetClass.Class;
-}
-
-void UInventoryWidget::SetSelectedItemWidget(USelectedItemWidget* InWidget)
-{
-	SelectedItemWidget = InWidget;
-	SelectedItemWidget->Hide();
 }
 
 void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
@@ -41,39 +33,9 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 	
 	InventoryComponent = InInventoryComponent;
 
-	CreateSlots(true);
-
 	// Set default visibility
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
-	ToolbarGridPanel->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UInventoryWidget::CreateSlots(bool CreateToolbar)
-{
-	if (CreateToolbar)
-	{
-		CreateToolbarSlots();
-	}
-	CreateInventorySlots();
-}
-
-void UInventoryWidget::CreateToolbarSlots()
-{
-	for (uint8 i = 0; i < 6; ++i)
-	{
-		UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, SlotWidgetClass);
-		NewSlot->Setup(this, i);
-		
-		ToolbarGridPanel->AddChild(NewSlot);
-		
-		UUniformGridSlot* GridSlot = Cast<UUniformGridSlot>(NewSlot->Slot);
-
-		GridSlot->SetColumn(i);
-		GridSlot->SetRow(0);
-
-		Slots.Add(NewSlot);
-	}
 }
 
 void UInventoryWidget::CreateInventorySlots()
@@ -122,18 +84,10 @@ void UInventoryWidget::Close()
 
 void UInventoryWidget::Refresh()
 {
-	UPlayerInventoryComponent* InvCompAsPlayer = Cast<UPlayerInventoryComponent>(InventoryComponent);
-	if (InvCompAsPlayer == nullptr)
-	{
-		return;
-	}
-
 	for (UInventorySlotWidget* InventorySlot : Slots)
 	{
 		InventorySlot->SetItem(InventoryComponent->GetSlots()[InventorySlot->GetIndex()].Item);
-		
-		// Check if it is a selected slot
-		InventorySlot->SetSelected(InventorySlot->GetIndex() == InvCompAsPlayer->GetToolbarSelectionIndex());
+		InventorySlot->SetSelected(false);
 	}
 }
 

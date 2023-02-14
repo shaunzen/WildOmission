@@ -317,7 +317,7 @@ void UInventoryComponent::RefreshUI()
 		return;
 	}
 
-	ManipulatorHUD->RefreshInventoryState();
+	ManipulatorHUD->RefreshInventoryStates();
 }
 
 void UInventoryComponent::OnInventoryChange()

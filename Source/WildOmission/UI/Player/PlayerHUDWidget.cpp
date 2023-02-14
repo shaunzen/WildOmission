@@ -5,6 +5,7 @@
 #include "Components/Border.h"
 #include "Components/CanvasPanelSlot.h"
 #include "WildOmission/UI/Inventory/InventoryWidget.h"
+#include "WildOmission/UI/Inventory/PlayerInventoryWidget.h"
 #include "WildOmission/UI/Inventory/SelectedItemWidget.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
@@ -13,7 +14,7 @@
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	bInventoryOpen = false;
+	bInventoryMenuOpen = false;
 }
 
 void UPlayerHUDWidget::NativeConstruct()
@@ -27,8 +28,7 @@ void UPlayerHUDWidget::NativeConstruct()
 		return;
 	}
 
-	Inventory->Setup(OwnerCharacter->GetInventoryComponent());
-	Inventory->SetSelectedItemWidget(SelectedItem);
+	PlayerInventory->Setup(OwnerCharacter->GetInventoryComponent());
 }
 
 void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -38,22 +38,22 @@ void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	UpdateSelectedItemLocation();
 }
 
-void UPlayerHUDWidget::RefreshInventoryState()
+void UPlayerHUDWidget::RefreshInventoryStates()
 {
 	// TODO all open inventory menus refresh
 
-	UInventoryManipulatorComponent* PlayerInventoryManipulator = Inventory->GetInventoryComponent()->GetManipulator();
+	UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerInventory->GetInventoryComponent()->GetManipulator();
 	if (PlayerInventoryManipulator == nullptr)
 	{
 		return;
 	}
 	
-	Inventory->Refresh();
+	PlayerInventory->Refresh();
 	
 	if (PlayerInventoryManipulator->IsDragging())
 	{
 		SelectedItem->Show();
-		FItem* SelectedItemData = Inventory->GetInventoryComponent()->GetItemData(PlayerInventoryManipulator->GetSelectedItem().Name);
+		FItem* SelectedItemData = PlayerInventory->GetInventoryComponent()->GetItemData(PlayerInventoryManipulator->GetSelectedItem().Name);
 		SelectedItem->SetItem(SelectedItemData->Thumbnail, PlayerInventoryManipulator->GetSelectedItem().Quantity);
 	}
 	else
@@ -64,7 +64,7 @@ void UPlayerHUDWidget::RefreshInventoryState()
 
 void UPlayerHUDWidget::ToggleInventory()
 {
-	bInventoryOpen = !bInventoryOpen;
+	bInventoryMenuOpen = !bInventoryMenuOpen;
 	// Get player controller
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr)
@@ -72,7 +72,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		return;
 	}
 
-	if (bInventoryOpen == false)
+	if (bInventoryMenuOpen == false)
 	{
 		// Set input mode to game
 		FInputModeGameOnly InputModeData;
@@ -80,9 +80,9 @@ void UPlayerHUDWidget::ToggleInventory()
 		PlayerController->bShowMouseCursor = false;
 		// Hide inventory menu
 		BackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
-		Inventory->Close();
+		PlayerInventory->Close();
 
-		UInventoryManipulatorComponent* PlayerInventoryManipulator = Inventory->GetInventoryComponent()->GetManipulator();
+		UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerInventory->GetInventoryComponent()->GetManipulator();
 		if (PlayerInventoryManipulator == nullptr)
 		{
 			return;
@@ -100,13 +100,13 @@ void UPlayerHUDWidget::ToggleInventory()
 		PlayerController->bShowMouseCursor = true;
 		// Show inventory menu
 		BackgroundBorder->SetVisibility(ESlateVisibility::Visible);
-		Inventory->Open();
+		PlayerInventory->Open();
 	}
 }
 
 void UPlayerHUDWidget::SetInteractionPrompt(FString InString)
 {
-	if (!InventoryOpen())
+	if (!IsInventoryMenuOpen())
 	{
 		InteractionPrompt->SetText(FText::FromString(InString));
 	}
@@ -121,14 +121,14 @@ void UPlayerHUDWidget::SetVitals(UVitalsComponent* InVitals)
 	Vitals->Set(InVitals);
 }
 
-bool UPlayerHUDWidget::InventoryOpen()
+bool UPlayerHUDWidget::IsInventoryMenuOpen()
 {
-	return bInventoryOpen;
+	return bInventoryMenuOpen;
 }
 
-UInventoryWidget* UPlayerHUDWidget::GetInventoryWidget()
+UPlayerInventoryWidget* UPlayerHUDWidget::GetPlayerInventoryWidget()
 {
-	return Inventory;
+	return PlayerInventory;
 }
 
 void UPlayerHUDWidget::UpdateSelectedItemLocation()
@@ -166,7 +166,7 @@ void UPlayerHUDWidget::UpdateSelectedItemLocation()
 
 void UPlayerHUDWidget::BackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
 {
-	UInventoryManipulatorComponent* PlayerInventoryManipulator = Inventory->GetInventoryComponent()->GetManipulator();
+	UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerInventory->GetInventoryComponent()->GetManipulator();
 	if (PlayerInventoryManipulator == nullptr)
 	{
 		return;

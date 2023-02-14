@@ -1,0 +1,63 @@
+// Copyright Telephone Studios. All Rights Reserved.
+
+
+#include "PlayerInventoryWidget.h"
+#include "Components/UniformGridPanel.h"
+#include "Components/UniformGridSlot.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
+
+UPlayerInventoryWidget::UPlayerInventoryWidget(const FObjectInitializer& ObjectInitializer) : UInventoryWidget(ObjectInitializer)
+{
+
+}
+
+void UPlayerInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
+{
+	Super::Setup(InInventoryComponent);
+
+	if (InInventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	PlayerInventoryComponent = Cast<UPlayerInventoryComponent>(InInventoryComponent);
+	if (PlayerInventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	CreateToolbarSlots();
+	CreateInventorySlots();
+
+	ToolbarGridPanel->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UPlayerInventoryWidget::Refresh()
+{
+	Super::Refresh();
+
+	if (PlayerInventoryComponent == nullptr || PlayerInventoryComponent->GetToolbarSelectionIndex() == -1)
+	{
+		return;
+	}
+
+	Slots[PlayerInventoryComponent->GetToolbarSelectionIndex()]->SetSelected(true);
+}
+
+void UPlayerInventoryWidget::CreateToolbarSlots()
+{
+	for (uint8 i = 0; i < 6; ++i)
+	{
+		UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, SlotWidgetClass);
+		NewSlot->Setup(this, i);
+
+		ToolbarGridPanel->AddChild(NewSlot);
+
+		UUniformGridSlot* GridSlot = Cast<UUniformGridSlot>(NewSlot->Slot);
+
+		GridSlot->SetColumn(i);
+		GridSlot->SetRow(0);
+
+		Slots.Add(NewSlot);
+	}
+}

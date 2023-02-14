@@ -102,7 +102,7 @@ void UInventoryManipulatorComponent::RefreshUI()
 	}
 
 	// call refresh
-	OwnerHUD->RefreshInventoryState();
+	OwnerHUD->RefreshInventoryStates();
 }
 
 //**************************************************************
