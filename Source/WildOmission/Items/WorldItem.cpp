@@ -34,12 +34,6 @@ void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	SetOwner(GetWorld()->GetFirstPlayerController());
 	SetReplicateMovement(true);
 }
 
@@ -55,7 +49,7 @@ void AWorldItem::Interact(AActor* Interactor)
 	CharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
 	
 	// Destroy this Item
-	Server_Destroy();
+	Destroy();
 }
 
 FString AWorldItem::PromptText()
@@ -139,9 +133,4 @@ UStaticMeshComponent* AWorldItem::GetItemMesh()
 void AWorldItem::AddImpulse(FVector Impulse)
 {
 	ItemMesh->AddImpulse(Impulse);
-}
-
-void AWorldItem::Server_Destroy_Implementation()
-{
-	Destroy();
 }

@@ -42,4 +42,6 @@ private:
 
 	bool LineTraceOnInteractableChannel(FHitResult& OutHitResult) const;
 	
+	UFUNCTION(Server, Reliable)
+	void Server_Interact(AActor* ActorToInteract);
 };

@@ -40,7 +40,7 @@ void UInteractionComponent::Interact()
 	{
 		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
 		{
-			Interactable->Interact(GetOwner());
+			Server_Interact(HitResult.GetActor());
 		}
 	}
 }
@@ -66,4 +66,15 @@ bool UInteractionComponent::LineTraceOnInteractableChannel(FHitResult& OutHitRes
 	FVector Start = GetComponentLocation();
 	FVector End = Start + (GetForwardVector() * InteractionRange);
 	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel1);
+}
+
+void UInteractionComponent::Server_Interact_Implementation(AActor* ActorToInteract)
+{
+	IInteractable* InteractableActor = Cast<IInteractable>(ActorToInteract);
+	if (InteractableActor == nullptr)
+	{
+		return;
+	}
+
+	InteractableActor->Interact(GetOwner());
 }
