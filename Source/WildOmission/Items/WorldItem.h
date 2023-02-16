@@ -16,9 +16,6 @@ public:
 	// Sets default values for this actor's properties
 	AWorldItem();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	//* Begin Interactable Interface implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
@@ -67,5 +64,8 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
+
+	UFUNCTION(Server, Reliable)
+	void Server_Destroy();
 
 };

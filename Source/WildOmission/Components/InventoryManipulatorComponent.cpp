@@ -134,7 +134,7 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 
 }
 
-void UInventoryManipulatorComponent::Server_SpawnWorldItem_Implementation(const FName& ItemName, const int32& Quantity)
+void UInventoryManipulatorComponent::Server_SpawnWorldItem_Implementation(FName ItemName, int32 Quantity)
 {
 	// Get player's inventory
 	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
@@ -165,7 +165,7 @@ void UInventoryManipulatorComponent::Server_SpawnWorldItem_Implementation(const 
 	WorldItem->AddImpulse(PhysicsImpulse);
 }
 
-void UInventoryManipulatorComponent::Server_StartDragging_Implementation(const FInventoryItem& ItemToDrag)
+void UInventoryManipulatorComponent::Server_StartDragging_Implementation(FInventoryItem ItemToDrag)
 {
 	// remove item from contents list when we start dragging
 

@@ -65,10 +65,10 @@ private:
 	void Server_DropSelectedItemInWorld(bool Single);
 
 	UFUNCTION(Server, Reliable)
-	void Server_SpawnWorldItem(const FName& ItemName, const int32& Quantity);
+	void Server_SpawnWorldItem(FName ItemName, int32 Quantity);
 
 	UFUNCTION(Server, Reliable)
-	void Server_StartDragging(const FInventoryItem& ItemToDrag);
+	void Server_StartDragging(FInventoryItem ItemToDrag);
 
 	UFUNCTION(Server, Reliable)
 	void Server_StopDragging(bool DropInWorld);

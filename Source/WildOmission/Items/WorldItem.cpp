@@ -11,7 +11,7 @@
 AWorldItem::AWorldItem()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// Set this actor to replicate
 	bReplicates = true;
@@ -33,15 +33,14 @@ AWorldItem::AWorldItem()
 void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
-	//SetOwner(GetWorld()->GetFirstPlayerController());
+	
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	SetOwner(GetWorld()->GetFirstPlayerController());
 	SetReplicateMovement(true);
-}
-
-// Called every frame
-void AWorldItem::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 void AWorldItem::Interact(AActor* Interactor)
@@ -51,18 +50,12 @@ void AWorldItem::Interact(AActor* Interactor)
 	{
 		return;
 	}
-	AWildOmissionPlayerController* PlayerControllerInteractor = Cast<AWildOmissionPlayerController>(CharacterInteractor->GetController());
-	if (PlayerControllerInteractor == nullptr)
-	{
-		return;
-	}
 
 	// Add to their inventory
 	CharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
 	
 	// Destroy this Item
-	Destroy();
-	PlayerControllerInteractor->Server_DestroyActor(this);
+	Server_Destroy();
 }
 
 FString AWorldItem::PromptText()
@@ -146,4 +139,9 @@ UStaticMeshComponent* AWorldItem::GetItemMesh()
 void AWorldItem::AddImpulse(FVector Impulse)
 {
 	ItemMesh->AddImpulse(Impulse);
+}
+
+void AWorldItem::Server_Destroy_Implementation()
+{
+	Destroy();
 }
