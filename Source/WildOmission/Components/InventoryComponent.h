@@ -127,7 +127,7 @@ public:
 
 	virtual void BeginPlay() override;
 
-	void Setup(UInventoryManipulatorComponent* InventoryManipulator);
+	void SetManipulator(UInventoryManipulatorComponent* InventoryManipulator);
 
 	//**************************************************************
 	// General Management
@@ -168,13 +168,13 @@ public:
 
 protected:
 
-	UPROPERTY(Replicated)
-	FInventoryContents Contents;
-
 	UPROPERTY(EditDefaultsOnly)
 	uint8 SlotCount;
 
-	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = RefreshUI)
+	UPROPERTY(Replicated)
+	FInventoryContents Contents;
+
+	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
 	TArray<FInventorySlot> Slots;
 	
 	UPROPERTY()

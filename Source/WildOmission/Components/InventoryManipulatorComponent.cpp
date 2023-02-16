@@ -14,8 +14,9 @@ UInventoryManipulatorComponent::UInventoryManipulatorComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicatedByDefault(true);
 
-	// ...
+	Dragging = false;
 }
 
 
@@ -24,8 +25,10 @@ void UInventoryManipulatorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	Dragging = false;
+	SelectedItem.Clear();
 	
+	RefreshUI();
 }
 
 void UInventoryManipulatorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -167,8 +170,6 @@ void UInventoryManipulatorComponent::Server_SpawnWorldItem_Implementation(FName 
 
 void UInventoryManipulatorComponent::Server_StartDragging_Implementation(FInventoryItem ItemToDrag)
 {
-	// remove item from contents list when we start dragging
-
 	SelectedItem = ItemToDrag;
 	Dragging = true;
 }

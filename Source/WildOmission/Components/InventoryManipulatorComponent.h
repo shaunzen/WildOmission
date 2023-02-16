@@ -48,10 +48,10 @@ protected:
 
 private:	
 
-	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = RefreshUI)
 	FInventoryItem SelectedItem;
 
-	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
+	UPROPERTY(EditAnywhere, Replicated, ReplicatedUsing = RefreshUI)
 	bool Dragging;
 
 	UFUNCTION()

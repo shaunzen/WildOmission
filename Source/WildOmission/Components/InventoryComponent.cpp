@@ -51,7 +51,7 @@ void UInventoryComponent::BeginPlay()
 	}
 }
 
-void UInventoryComponent::Setup(UInventoryManipulatorComponent* InventoryManipulator)
+void UInventoryComponent::SetManipulator(UInventoryManipulatorComponent* InventoryManipulator)
 {
 	Manipulator = InventoryManipulator;
 }
@@ -392,7 +392,6 @@ void UInventoryComponent::Server_DragAll_Implementation(const int32& FromSlotInd
 		return;
 	}
 
-	
 	Manipulator->StartDragging(FromSlot.Item);
 
 	Server_RemoveItemFromContents(FromSlot.Item.Name, FromSlot.Item.Quantity);

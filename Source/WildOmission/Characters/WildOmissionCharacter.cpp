@@ -106,12 +106,6 @@ void AWildOmissionCharacter::BeginPlay()
 	}
 	Subsystem->AddMappingContext(DefaultMappingContext, 0);
 
-	if (HasAuthority())
-	{
-		// Set the player's inventory component to use the player's inventory widget
-		InventoryComponent->Setup(InventoryManipulator);
-	}
-	
 	// Return if we are not being locally controlled
 	if (!IsLocallyControlled())
 	{

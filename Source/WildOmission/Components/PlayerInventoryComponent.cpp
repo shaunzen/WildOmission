@@ -3,6 +3,7 @@
 
 #include "PlayerInventoryComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Items/WorldItem.h"
 #include "Net/UnrealNetwork.h"
 
@@ -17,6 +18,10 @@ void UPlayerInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
+	
+	UInventoryManipulatorComponent* OwnerManipulator = OwnerCharacter->FindComponentByClass<UInventoryManipulatorComponent>();
+	
+	SetManipulator(OwnerManipulator);
 
 	ToolbarSelectionIndex = -1;
 }
