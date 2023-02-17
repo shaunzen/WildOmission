@@ -89,6 +89,20 @@ FString AWildOmissionPlayerController::GetUniqueID()
 	return ID;
 }
 
+void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
+{
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr)
+	{
+		return;
+	}
+
+	GameMode->GetSaveHandler()->GetPlayerHandler()->AddToPending(this);
+}
+
+//*****************************
+// Testing functions
+
 void AWildOmissionPlayerController::LogLocalInventoryContents()
 {
 	if (!IsLocalController())
@@ -125,24 +139,4 @@ void AWildOmissionPlayerController::LogLocalInventorySlots()
 	{
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Index: %i, Item: %s, Quantity: %i"), Slot.Index, *Slot.Item.Name.ToString(), Slot.Item.Quantity));
 	}
-}
-void AWildOmissionPlayerController::Server_DestroyActor_Implementation(AActor* ActorToDestroy)
-{
-	if (ActorToDestroy == nullptr)
-	{
-		return;
-	}
-
-	ActorToDestroy->Destroy();
-}
-
-void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
-{
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode == nullptr)
-	{
-		return;
-	}
-
-	GameMode->GetSaveHandler()->GetPlayerHandler()->AddToPending(this);
 }

@@ -65,7 +65,4 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
 
-	UFUNCTION(Server, Reliable)
-	void Server_Destroy();
-
 };

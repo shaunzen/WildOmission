@@ -14,23 +14,26 @@ class WILDOMISSION_API AWildOmissionPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	// TODO Save
 	struct FWildOmissionPlayerSave SavePlayer();
 
+	// TODO Load
 	void LoadPlayerSave(const struct FWildOmissionPlayerSave& PlayerSave);
 
+	// TODO SaveGame
 	void Save();
 
 	void Spawn();
 
 	FString GetUniqueID();
 
+	//*****************************
+	// Testing functions
+
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
 	UFUNCTION(Exec)
 	void LogLocalInventorySlots();
-
-	UFUNCTION(Server, Reliable)
-	void Server_DestroyActor(AActor* ActorToDestroy);
 
 private:
 	UFUNCTION(Server, Reliable)
