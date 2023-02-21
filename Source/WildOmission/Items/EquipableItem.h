@@ -23,6 +23,9 @@ public:
 	// Called when the item is equiped into the players hands
 	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter);
 
+	// Called before the item is unequiped
+	virtual void OnUnequip();
+
 	// Primary function of the item. example(Eat, Shoot, Heal)
 	virtual void Primary();
 
@@ -36,7 +39,13 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
 
+	UPROPERTY(EditAnywhere)
+	USoundBase* EquipSound;
+
 	UPROPERTY()
 	AWildOmissionCharacter* OwnerCharacter;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayEquipSound();
 
 };

@@ -65,4 +65,10 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
 
+	UPROPERTY()
+	USoundBase* PickupSound;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayPickupSound();
+
 };

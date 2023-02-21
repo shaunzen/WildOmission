@@ -2,6 +2,8 @@
 
 
 #include "EquipableItem.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 
 // Sets default values
@@ -15,6 +17,15 @@ AEquipableItem::AEquipableItem()
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ItemMesh"));
 	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RootComponent = ItemMesh;
+
+	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
+
+	if (EquipSoundObject.Object == nullptr)
+	{
+		return;
+	}
+
+	EquipSound = EquipSoundObject.Object;
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +46,12 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 {
 	OwnerCharacter = InOwnerCharacter;
 	SetOwner(InOwnerCharacter);
+	Client_PlayEquipSound();
+}
+
+void AEquipableItem::OnUnequip()
+{
+	Client_PlayEquipSound();
 }
 
 void AEquipableItem::Primary()
@@ -45,4 +62,14 @@ void AEquipableItem::Primary()
 void AEquipableItem::Secondary()
 {
 
+}
+
+void AEquipableItem::Client_PlayEquipSound_Implementation()
+{
+	if (GetWorld() == nullptr || EquipSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), EquipSound, GetActorLocation());
 }

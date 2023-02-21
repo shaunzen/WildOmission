@@ -6,6 +6,8 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 
 // Sets default values
 AWorldItem::AWorldItem()
@@ -26,6 +28,15 @@ AWorldItem::AWorldItem()
 	ItemMesh->SetSimulatePhysics(true);
 	ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
+
+	ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Pickup/Pickup_Cue"));
+	
+	if (PickupSoundObject.Object == nullptr)
+	{
+		return;
+	}
+
+	PickupSound = PickupSoundObject.Object;
 }
 
 // Called when the game starts or when spawned
@@ -47,7 +58,10 @@ void AWorldItem::Interact(AActor* Interactor)
 
 	// Add to their inventory
 	CharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
-	
+
+	// Play Pickup sound
+	Client_PlayPickupSound();
+
 	// Destroy this Item
 	Destroy();
 }
@@ -79,7 +93,7 @@ FString AWorldItem::PromptText()
 	{
 		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
 	}
-	
+
 	ItemDisplayName = ItemData->DisplayName;
 
 	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName.ToString());
@@ -133,4 +147,14 @@ UStaticMeshComponent* AWorldItem::GetItemMesh()
 void AWorldItem::AddImpulse(FVector Impulse)
 {
 	ItemMesh->AddImpulse(Impulse);
+}
+
+void AWorldItem::Client_PlayPickupSound_Implementation()
+{
+	if (GetWorld() == nullptr || PickupSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PickupSound, GetActorLocation());
 }
