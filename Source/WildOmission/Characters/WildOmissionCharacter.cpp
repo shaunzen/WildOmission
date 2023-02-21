@@ -186,6 +186,7 @@ void AWildOmissionCharacter::Disarm()
 		return;
 	}
 
+	EquipedItem->OnUnequip();
 	EquipedItem->Destroy();
 	EquipedItem = nullptr;
 }
