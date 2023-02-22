@@ -13,6 +13,7 @@
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -68,6 +69,10 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
+	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonMesh"));
+	FirstPersonMesh->SetVisibility(false, true);
+	FirstPersonMesh->SetupAttachment(FirstPersonCameraComponent);
+
 	EquipMountPoint = CreateDefaultSubobject<USceneComponent>(FName("EquipMountPoint"));
 	EquipMountPoint->SetupAttachment(FirstPersonCameraComponent);
 
@@ -114,6 +119,7 @@ void AWildOmissionCharacter::BeginPlay()
 	
 	// Hide player model?
 	GetMesh()->SetVisibility(false);
+	FirstPersonMesh->SetVisibility(true, true);
 
 	// Create the player's hud
 	if (PlayerHUDWidgetClass == nullptr)
@@ -170,18 +176,26 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 }
 
+void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWildOmissionCharacter, EquipedItem);
+}
+
 void AWildOmissionCharacter::EquipItem(TSubclassOf<AEquipableItem> Item)
 {
 	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, EquipMountPoint->GetComponentLocation(), EquipMountPoint->GetComponentRotation());
-	
-	EquipedItem->AttachToComponent(EquipMountPoint, FAttachmentTransformRules::KeepWorldTransform);
 
+	EquipedItem->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+	//EquipedItem->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, FName("RightHandMountSocket"));
+	
 	EquipedItem->Equip(this);
 }
 
 void AWildOmissionCharacter::Disarm()
 {
-	if (EquipedItem == nullptr)
+	if (!IsItemEquiped())
 	{
 		return;
 	}
@@ -194,6 +208,11 @@ void AWildOmissionCharacter::Disarm()
 AEquipableItem* AWildOmissionCharacter::GetEquipedItem()
 {
 	return EquipedItem;
+}
+
+bool AWildOmissionCharacter::IsItemEquiped() const
+{
+	return EquipedItem != nullptr;
 }
 
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)

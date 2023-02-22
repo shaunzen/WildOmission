@@ -26,11 +26,16 @@ public:
 	AWildOmissionCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void EquipItem(TSubclassOf<AEquipableItem> Item);
 	void Disarm();
 
+	UFUNCTION(BlueprintCallable)
 	AEquipableItem* GetEquipedItem();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsItemEquiped() const;
 
 	UVitalsComponent* GetVitalsComponent();
 	
@@ -48,6 +53,9 @@ private:
 	UCameraComponent* FirstPersonCameraComponent;
 	
 	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* FirstPersonMesh;
+
+	UPROPERTY(VisibleAnywhere)
 	UVitalsComponent* VitalsComponent;
 	
 	UPROPERTY(VisibleAnywhere)
@@ -62,7 +70,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* EquipMountPoint;
 	
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	AEquipableItem* EquipedItem;
 	
 	UPROPERTY()
