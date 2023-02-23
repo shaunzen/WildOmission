@@ -185,7 +185,7 @@ void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 void AWildOmissionCharacter::EquipItem(TSubclassOf<AEquipableItem> Item)
 {
-	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, EquipMountPoint->GetComponentLocation(), EquipMountPoint->GetComponentRotation());
+	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, GetActorLocation(), GetActorRotation());
 
 	EquipedItem->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 	//EquipedItem->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, FName("RightHandMountSocket"));
