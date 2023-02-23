@@ -44,8 +44,8 @@ void AEquipableItem::Tick(float DeltaTime)
 
 void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 {
-	OwnerCharacter = InOwnerCharacter;
 	SetOwner(InOwnerCharacter);
+	Client_AttachToPlayer();
 	Client_PlayEquipSound();
 }
 
@@ -62,6 +62,31 @@ void AEquipableItem::Primary()
 void AEquipableItem::Secondary()
 {
 
+}
+
+AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter()
+{
+	return Cast<AWildOmissionCharacter>(GetOwner());
+}
+
+void AEquipableItem::Client_AttachToPlayer_Implementation()
+{
+	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
+
+	if (OwnerCharacter == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Owner was nullptr"));
+		return;
+	}
+
+	if (HasAuthority())
+	{
+		AttachToComponent(OwnerCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+	}
+	else
+	{
+		AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+	}
 }
 
 void AEquipableItem::Client_PlayEquipSound_Implementation()

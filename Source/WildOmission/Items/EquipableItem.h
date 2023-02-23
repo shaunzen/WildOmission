@@ -42,8 +42,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	USoundBase* EquipSound;
 
-	UPROPERTY()
-	AWildOmissionCharacter* OwnerCharacter;
+	AWildOmissionCharacter* GetOwnerCharacter();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_AttachToPlayer();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayEquipSound();

@@ -187,9 +187,6 @@ void AWildOmissionCharacter::EquipItem(TSubclassOf<AEquipableItem> Item)
 {
 	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, GetActorLocation(), GetActorRotation());
 
-	EquipedItem->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
-	//EquipedItem->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, FName("RightHandMountSocket"));
-	
 	EquipedItem->Equip(this);
 }
 
@@ -208,6 +205,11 @@ void AWildOmissionCharacter::Disarm()
 AEquipableItem* AWildOmissionCharacter::GetEquipedItem()
 {
 	return EquipedItem;
+}
+
+USkeletalMeshComponent* AWildOmissionCharacter::GetFirstPersonMesh()
+{
+	return FirstPersonMesh;
 }
 
 bool AWildOmissionCharacter::IsItemEquiped() const

@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AEquipableItem* GetEquipedItem();
 
+	UFUNCTION()
+	USkeletalMeshComponent* GetFirstPersonMesh();
+
 	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;
 

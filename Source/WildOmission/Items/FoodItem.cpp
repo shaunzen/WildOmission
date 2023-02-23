@@ -15,6 +15,7 @@ AFoodItem::AFoodItem()
 
 void AFoodItem::Primary()
 {
+	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
 	if (OwnerCharacter == nullptr)
 	{
 		return;
