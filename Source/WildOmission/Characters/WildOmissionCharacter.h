@@ -40,6 +40,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsSwingingTool() const;
+
 	UVitalsComponent* GetVitalsComponent();
 	
 	// Returns players inventory component

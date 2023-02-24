@@ -15,6 +15,7 @@
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "Net/UnrealNetwork.h"
 
+#include "WildOmission/Items/ToolItem.h"
 
 // Sets default values
 AWildOmissionCharacter::AWildOmissionCharacter()
@@ -215,6 +216,23 @@ USkeletalMeshComponent* AWildOmissionCharacter::GetFirstPersonMesh()
 bool AWildOmissionCharacter::IsItemEquiped() const
 {
 	return EquipedItem != nullptr;
+}
+
+bool AWildOmissionCharacter::IsSwingingTool() const
+{
+	if (EquipedItem == nullptr)
+	{
+		return false;
+	}
+
+	AToolItem* Tool = Cast<AToolItem>(EquipedItem);
+
+	if (Tool == nullptr)
+	{
+		return false;
+	}
+
+	return Tool->IsSwinging();
 }
 
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)

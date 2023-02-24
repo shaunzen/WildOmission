@@ -19,6 +19,10 @@ public:
 
 	virtual void Secondary() override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	bool IsSwinging() const;
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> ToolType;
@@ -31,5 +35,11 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	float SwingTimeSeconds;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Swinging)
+	bool Swinging;
+
+	UFUNCTION()
+	void OnRep_Swinging();
 
 };
