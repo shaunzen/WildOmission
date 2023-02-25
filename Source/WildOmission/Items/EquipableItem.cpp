@@ -69,6 +69,11 @@ AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter()
 	return Cast<AWildOmissionCharacter>(GetOwner());
 }
 
+bool AEquipableItem::IsOwnedByOurLocalPlayer() const
+{
+	return HasAuthority();
+}
+
 void AEquipableItem::Client_AttachToPlayer_Implementation()
 {
 	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
@@ -79,7 +84,7 @@ void AEquipableItem::Client_AttachToPlayer_Implementation()
 		return;
 	}
 
-	if (HasAuthority())
+	if (IsOwnedByOurLocalPlayer())
 	{
 		AttachToComponent(OwnerCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 	}

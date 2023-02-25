@@ -16,6 +16,7 @@
 #include "Net/UnrealNetwork.h"
 
 #include "WildOmission/Items/ToolItem.h"
+#include "HumanAnimInstance.h"
 
 // Sets default values
 AWildOmissionCharacter::AWildOmissionCharacter()
@@ -218,21 +219,26 @@ bool AWildOmissionCharacter::IsItemEquiped() const
 	return EquipedItem != nullptr;
 }
 
-bool AWildOmissionCharacter::IsSwingingTool() const
+void AWildOmissionCharacter::PlaySwingAnimation()
 {
-	if (EquipedItem == nullptr)
+	// only if this is our player
+	UHumanAnimInstance* FirstPersonAnimInstance = Cast<UHumanAnimInstance>(FirstPersonMesh->GetAnimInstance());
+	
+	if (FirstPersonAnimInstance == nullptr)
 	{
-		return false;
+		return;
 	}
 
-	AToolItem* Tool = Cast<AToolItem>(EquipedItem);
+	FirstPersonAnimInstance->PlaySwingAnimation();
 
-	if (Tool == nullptr)
+	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(GetMesh()->GetAnimInstance());
+
+	if (ThirdPersonAnimInstance == nullptr)
 	{
-		return false;
+		return;
 	}
 
-	return Tool->IsSwinging();
+	ThirdPersonAnimInstance->PlaySwingAnimation();
 }
 
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)

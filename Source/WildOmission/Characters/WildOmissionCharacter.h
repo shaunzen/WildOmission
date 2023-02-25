@@ -40,8 +40,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;
 
-	UFUNCTION(BlueprintCallable)
-	bool IsSwingingTool() const;
+	void PlaySwingAnimation();
 
 	UVitalsComponent* GetVitalsComponent();
 	
