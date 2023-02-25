@@ -16,6 +16,7 @@ AEquipableItem::AEquipableItem()
 
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ItemMesh"));
 	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ItemMesh->SetCastShadow(false);
 	RootComponent = ItemMesh;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
@@ -32,20 +33,25 @@ AEquipableItem::AEquipableItem()
 void AEquipableItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (IsOwnedByOurLocalPlayer())
+	{
+		return;
+	}
+	ItemMesh->SetCastShadow(true);
 }
 
 // Called every frame
 void AEquipableItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	HandleAttachment();
 }
 
 void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 {
 	SetOwner(InOwnerCharacter);
-	Client_AttachToPlayer();
 	Client_PlayEquipSound();
 }
 
@@ -71,10 +77,10 @@ AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter()
 
 bool AEquipableItem::IsOwnedByOurLocalPlayer() const
 {
-	return HasAuthority();
+	return Owner == GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
-void AEquipableItem::Client_AttachToPlayer_Implementation()
+void AEquipableItem::HandleAttachment()
 {
 	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
 
@@ -83,15 +89,23 @@ void AEquipableItem::Client_AttachToPlayer_Implementation()
 		UE_LOG(LogTemp, Error, TEXT("Owner was nullptr"));
 		return;
 	}
+	
+	FVector AttachLocation;
+	FRotator AttachRotation;
 
 	if (IsOwnedByOurLocalPlayer())
 	{
-		AttachToComponent(OwnerCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+		AttachLocation = OwnerCharacter->GetFirstPersonMesh()->GetSocketLocation(FName("RightHandMountSocket"));
+		AttachRotation = OwnerCharacter->GetFirstPersonMesh()->GetSocketRotation(FName("RightHandMountSocket"));
 	}
 	else
 	{
-		AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+		AttachLocation = OwnerCharacter->GetMesh()->GetSocketLocation(FName("RightHandMountSocket"));
+		AttachRotation = OwnerCharacter->GetMesh()->GetSocketRotation(FName("RightHandMountSocket"));
 	}
+
+	SetActorLocation(AttachLocation);
+	SetActorRotation(AttachRotation);
 }
 
 void AEquipableItem::Client_PlayEquipSound_Implementation()

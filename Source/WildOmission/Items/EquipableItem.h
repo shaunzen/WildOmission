@@ -46,8 +46,7 @@ protected:
 
 	AWildOmissionCharacter* GetOwnerCharacter();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Client_AttachToPlayer();
+	void HandleAttachment();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayEquipSound();
