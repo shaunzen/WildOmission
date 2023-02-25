@@ -15,7 +15,47 @@ class WILDOMISSION_API UHumanAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
+	UHumanAnimInstance(const FObjectInitializer& ObjectInitializer);
 	
-	UFUNCTION(BlueprintImplementableEvent)
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
 	void PlaySwingAnimation();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayFootstepSound();
+
+	UPROPERTY(BlueprintReadonly)
+	float Speed;
+
+	UPROPERTY(BlueprintReadonly)
+	float Angle;
+
+	UPROPERTY(BlueprintReadonly)
+	bool Falling;
+
+	UPROPERTY(BlueprintReadonly)
+	bool HoldingItem;
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* GrassFootstepSound;
+	
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* GravelFootstepSound;
+	
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* RockFootstepSound;
+	
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* WoodFootstepSound;
+	
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* SwingMontage;
+
+	void CalculateSpeedAndAngle();
+	
+	void CalculateFalling();
+
+	void HandleItemHolding();
+	
 };
