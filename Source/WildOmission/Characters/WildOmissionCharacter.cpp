@@ -221,9 +221,7 @@ bool AWildOmissionCharacter::IsItemEquiped() const
 
 void AWildOmissionCharacter::PlaySwingAnimation()
 {
-	// only if this is our player
 	UHumanAnimInstance* FirstPersonAnimInstance = Cast<UHumanAnimInstance>(FirstPersonMesh->GetAnimInstance());
-	
 	if (FirstPersonAnimInstance == nullptr)
 	{
 		return;
@@ -232,7 +230,6 @@ void AWildOmissionCharacter::PlaySwingAnimation()
 	FirstPersonAnimInstance->PlaySwingAnimation();
 
 	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(GetMesh()->GetAnimInstance());
-
 	if (ThirdPersonAnimInstance == nullptr)
 	{
 		return;
