@@ -17,9 +17,9 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	HoldingItem = false;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
-	ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
-	ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
-	ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Gravel/HumanFootstep_Gravel_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Rock/HumanFootstep_Rock_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Wood/HumanFootstep_Wood_Cue"));
 	ConstructorHelpers::FObjectFinder<UAnimMontage> SwingAnimMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/A_Human_SwingTool_Montage"));
 
 	if (GrassFootstepSoundObject.Object == nullptr
@@ -67,22 +67,32 @@ void UHumanAnimInstance::PlayFootstepSound()
 	FHitResult HitResult;
 	FVector StartLocation = PawnOwner->GetActorLocation();
 	FVector EndLocation = StartLocation - FVector(0.0f, 0.0f, 100.0f);
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Visibility))
+	FCollisionQueryParams Params;
+
+	Params.bTraceComplex = true;
+	Params.bReturnPhysicalMaterial = true;
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Visibility, Params))
 	{
-		if (!HitResult.PhysMaterial.IsValid())
+		UE_LOG(LogTemp, Warning, TEXT("Hit actor name %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+		if (HitResult.PhysMaterial == nullptr)
 		{
 			return;
 		}
-		switch (HitResult.PhysMaterial.Get()->SurfaceType)
+
+		switch (HitResult.PhysMaterial->SurfaceType)
 		{
 
 		case SurfaceType1: // Grass
+			UE_LOG(LogTemp, Warning, TEXT("Grass footstep sound"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GrassFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType2: // Gravel
+			UE_LOG(LogTemp, Warning, TEXT("Gravel footstep sound"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GravelFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType3: // Rock
+			UE_LOG(LogTemp, Warning, TEXT("Rock footstep sound"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType4: // Wood
@@ -94,6 +104,7 @@ void UHumanAnimInstance::PlayFootstepSound()
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Playing footstep sound"));
 	}
+	UE_LOG(LogTemp, Error, TEXT("End of footstep code."));
 }
 
 void UHumanAnimInstance::CalculateSpeedAndAngle()
