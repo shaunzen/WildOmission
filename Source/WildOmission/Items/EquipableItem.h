@@ -32,7 +32,7 @@ public:
 	// Secondary function of the item. example(Nothing, Aim, Heal others)
 	virtual void Secondary();
 
-	UStaticMesh* GetItemMesh();
+	UStaticMesh* GetMesh();
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,8 +41,8 @@ protected:
 	bool IsOwnedByOurLocalPlayer() const;
 
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* ItemMesh;
-
+	UStaticMeshComponent* Mesh;
+	
 	UPROPERTY(EditAnywhere)
 	USoundBase* EquipSound;
 

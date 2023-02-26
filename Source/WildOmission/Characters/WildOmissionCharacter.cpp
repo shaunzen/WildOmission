@@ -194,13 +194,6 @@ void AWildOmissionCharacter::EquipItem(TSubclassOf<AEquipableItem> Item)
 	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, GetActorLocation(), GetActorRotation());
 
 	EquipedItem->Equip(this);
-
-	if (IsLocallyControlled())
-	{
-		EquipedItem->SetHidden(true);
-		FirstPersonEquipedItem->SetStaticMesh(EquipedItem->GetItemMesh());
-		FirstPersonEquipedItem->SetVisibility(true, true);
-	}
 }
 
 void AWildOmissionCharacter::Disarm()

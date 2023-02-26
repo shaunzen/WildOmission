@@ -16,6 +16,9 @@ AEquipableItem::AEquipableItem()
 
 	// setup item mesh, for some reason we cant modify it from the editor
 	// game seems to be crashing because no mesh is specified and we are trying to use the mesh to create a first person decoy
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("Mesh"));
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RootComponent = Mesh;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
 
@@ -64,9 +67,9 @@ void AEquipableItem::Secondary()
 
 }
 
-UStaticMesh* AEquipableItem::GetItemMesh()
+UStaticMesh* AEquipableItem::GetMesh()
 {
-	return ItemMesh->GetStaticMesh();
+	return Mesh->GetStaticMesh();
 }
 
 AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter() const
@@ -82,7 +85,8 @@ bool AEquipableItem::IsOwnedByOurLocalPlayer() const
 
 		return false;
 	}
-	return Owner->GetRemoteRole() == ROLE_AutonomousProxy;
+	//return Owner->GetRemoteRole() == ROLE_AutonomousProxy;
+	return OwnerCharacter->IsLocallyControlled();
 }
 
 void AEquipableItem::HandleAttachment()
