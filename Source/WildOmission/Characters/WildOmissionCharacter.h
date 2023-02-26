@@ -61,6 +61,9 @@ private:
 	USkeletalMeshComponent* FirstPersonMesh;
 
 	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* FirstPersonEquipedItem;
+	
+	UPROPERTY(VisibleAnywhere)
 	UVitalsComponent* VitalsComponent;
 	
 	UPROPERTY(VisibleAnywhere)

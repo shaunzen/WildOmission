@@ -75,6 +75,10 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonMesh->SetVisibility(false, true);
 	FirstPersonMesh->SetupAttachment(FirstPersonCameraComponent);
 
+	FirstPersonEquipedItem = CreateDefaultSubobject<UStaticMeshComponent>(FName("FirstPersonEquipedItem"));
+	FirstPersonEquipedItem->SetVisibility(false, true);
+	FirstPersonEquipedItem->SetupAttachment(FirstPersonMesh, FName("RightHandMountSocket"));
+
 	EquipMountPoint = CreateDefaultSubobject<USceneComponent>(FName("EquipMountPoint"));
 	EquipMountPoint->SetupAttachment(FirstPersonCameraComponent);
 
@@ -190,6 +194,13 @@ void AWildOmissionCharacter::EquipItem(TSubclassOf<AEquipableItem> Item)
 	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, GetActorLocation(), GetActorRotation());
 
 	EquipedItem->Equip(this);
+
+	if (IsLocallyControlled())
+	{
+		EquipedItem->SetHidden(true);
+		FirstPersonEquipedItem->SetStaticMesh(EquipedItem->GetItemMesh());
+		FirstPersonEquipedItem->SetVisibility(true, true);
+	}
 }
 
 void AWildOmissionCharacter::Disarm()
@@ -201,6 +212,10 @@ void AWildOmissionCharacter::Disarm()
 
 	EquipedItem->OnUnequip();
 	EquipedItem->Destroy();
+	if (IsLocallyControlled())
+	{
+		FirstPersonEquipedItem->SetVisibility(false, true);
+	}
 	EquipedItem = nullptr;
 }
 

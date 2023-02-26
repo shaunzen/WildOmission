@@ -14,16 +14,9 @@ AEquipableItem::AEquipableItem()
 
 	bReplicates = true;
 
-	FirstPersonMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("FirstPersonMesh"));
-	FirstPersonMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	FirstPersonMesh->SetCastShadow(false);
-	FirstPersonMesh->SetupAttachment(RootComponent);
+	// setup item mesh, for some reason we cant modify it from the editor
+	// game seems to be crashing because no mesh is specified and we are trying to use the mesh to create a first person decoy
 
-	ThirdPersonMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ThirdPersonMesh"));
-	ThirdPersonMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ThirdPersonMesh->SetCastShadow(true);
-	ThirdPersonMesh->SetupAttachment(RootComponent);
-	
 	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
 
 	if (EquipSoundObject.Object == nullptr)
@@ -38,20 +31,7 @@ AEquipableItem::AEquipableItem()
 void AEquipableItem::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (IsOwnedByOurLocalPlayer())
-	{
-		FirstPersonMesh->SetVisibility(true);
-		ThirdPersonMesh->SetVisibility(false);
-	}
-	else
-	{
-		FirstPersonMesh->SetVisibility(false);
-		ThirdPersonMesh->SetVisibility(true);
-	}
-
-	FirstPersonMesh->SetStaticMesh(ItemMesh);
-	ThirdPersonMesh->SetStaticMesh(ItemMesh);
+	
 }
 
 // Called every frame
@@ -64,6 +44,7 @@ void AEquipableItem::Tick(float DeltaTime)
 void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 {
 	SetOwner(InOwnerCharacter);
+
 	HandleAttachment();
 	Client_PlayEquipSound();
 }
@@ -83,6 +64,11 @@ void AEquipableItem::Secondary()
 
 }
 
+UStaticMesh* AEquipableItem::GetItemMesh()
+{
+	return ItemMesh->GetStaticMesh();
+}
+
 AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter() const
 {
 	return Cast<AWildOmissionCharacter>(GetOwner());
@@ -96,13 +82,11 @@ bool AEquipableItem::IsOwnedByOurLocalPlayer() const
 
 		return false;
 	}
-
-	return OwnerCharacter->IsLocallyControlled();
+	return Owner->GetRemoteRole() == ROLE_AutonomousProxy;
 }
 
 void AEquipableItem::HandleAttachment()
 {
-
 	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
 
 	if (OwnerCharacter == nullptr)
@@ -110,9 +94,8 @@ void AEquipableItem::HandleAttachment()
 		UE_LOG(LogTemp, Error, TEXT("Owner was nullptr"));
 		return;
 	}
-	
-	FirstPersonMesh->AttachToComponent(OwnerCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
-	ThirdPersonMesh->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+
+	AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 }
 
 void AEquipableItem::Client_PlayEquipSound_Implementation()
