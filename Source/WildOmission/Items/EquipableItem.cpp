@@ -14,11 +14,16 @@ AEquipableItem::AEquipableItem()
 
 	bReplicates = true;
 
-	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ItemMesh"));
-	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ItemMesh->SetCastShadow(false);
-	RootComponent = ItemMesh;
+	FirstPersonMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("FirstPersonMesh"));
+	FirstPersonMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	FirstPersonMesh->SetCastShadow(false);
+	FirstPersonMesh->SetupAttachment(RootComponent);
 
+	ThirdPersonMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ThirdPersonMesh"));
+	ThirdPersonMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ThirdPersonMesh->SetCastShadow(true);
+	ThirdPersonMesh->SetupAttachment(RootComponent);
+	
 	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
 
 	if (EquipSoundObject.Object == nullptr)
@@ -36,9 +41,17 @@ void AEquipableItem::BeginPlay()
 
 	if (IsOwnedByOurLocalPlayer())
 	{
-		return;
+		FirstPersonMesh->SetVisibility(true);
+		ThirdPersonMesh->SetVisibility(false);
 	}
-	ItemMesh->SetCastShadow(true);
+	else
+	{
+		FirstPersonMesh->SetVisibility(false);
+		ThirdPersonMesh->SetVisibility(true);
+	}
+
+	FirstPersonMesh->SetStaticMesh(ItemMesh);
+	ThirdPersonMesh->SetStaticMesh(ItemMesh);
 }
 
 // Called every frame
@@ -46,12 +59,12 @@ void AEquipableItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	HandleAttachment();
 }
 
 void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 {
 	SetOwner(InOwnerCharacter);
+	HandleAttachment();
 	Client_PlayEquipSound();
 }
 
@@ -70,18 +83,26 @@ void AEquipableItem::Secondary()
 
 }
 
-AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter()
+AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter() const
 {
 	return Cast<AWildOmissionCharacter>(GetOwner());
 }
 
 bool AEquipableItem::IsOwnedByOurLocalPlayer() const
 {
-	return Owner == GetWorld()->GetFirstPlayerController()->GetPawn();
+	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
+	if (OwnerCharacter == nullptr)
+	{
+
+		return false;
+	}
+
+	return OwnerCharacter->IsLocallyControlled();
 }
 
 void AEquipableItem::HandleAttachment()
 {
+
 	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
 
 	if (OwnerCharacter == nullptr)
@@ -90,22 +111,8 @@ void AEquipableItem::HandleAttachment()
 		return;
 	}
 	
-	FVector AttachLocation;
-	FRotator AttachRotation;
-
-	if (IsOwnedByOurLocalPlayer())
-	{
-		AttachLocation = OwnerCharacter->GetFirstPersonMesh()->GetSocketLocation(FName("RightHandMountSocket"));
-		AttachRotation = OwnerCharacter->GetFirstPersonMesh()->GetSocketRotation(FName("RightHandMountSocket"));
-	}
-	else
-	{
-		AttachLocation = OwnerCharacter->GetMesh()->GetSocketLocation(FName("RightHandMountSocket"));
-		AttachRotation = OwnerCharacter->GetMesh()->GetSocketRotation(FName("RightHandMountSocket"));
-	}
-
-	SetActorLocation(AttachLocation);
-	SetActorRotation(AttachRotation);
+	FirstPersonMesh->AttachToComponent(OwnerCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+	ThirdPersonMesh->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 }
 
 void AEquipableItem::Client_PlayEquipSound_Implementation()

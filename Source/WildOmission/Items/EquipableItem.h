@@ -38,13 +38,19 @@ protected:
 
 	bool IsOwnedByOurLocalPlayer() const;
 
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* ItemMesh;
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMesh* ItemMesh;
 
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* FirstPersonMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* ThirdPersonMesh;
+	
 	UPROPERTY(EditAnywhere)
 	USoundBase* EquipSound;
 
-	AWildOmissionCharacter* GetOwnerCharacter();
+	AWildOmissionCharacter* GetOwnerCharacter() const;
 
 	void HandleAttachment();
 
