@@ -99,7 +99,7 @@ void AEquipableItem::HandleAttachment()
 		return;
 	}
 
-	AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+	AttachToComponent(OwnerCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 }
 
 void AEquipableItem::Client_PlayEquipSound_Implementation()

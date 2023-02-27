@@ -20,7 +20,7 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Gravel/HumanFootstep_Gravel_Cue"));
 	ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Rock/HumanFootstep_Rock_Cue"));
 	ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Wood/HumanFootstep_Wood_Cue"));
-	ConstructorHelpers::FObjectFinder<UAnimMontage> SwingAnimMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/A_Human_SwingTool_Montage"));
+	ConstructorHelpers::FObjectFinder<UAnimMontage> SwingAnimMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/A_Human_SwingTool_02_Montage"));
 
 	if (GrassFootstepSoundObject.Object == nullptr
 		|| GravelFootstepSoundObject.Object == nullptr
@@ -74,7 +74,6 @@ void UHumanAnimInstance::PlayFootstepSound()
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Visibility, Params))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit actor name %s"), *HitResult.GetActor()->GetActorNameOrLabel());
 		if (HitResult.PhysMaterial == nullptr)
 		{
 			return;
@@ -82,17 +81,13 @@ void UHumanAnimInstance::PlayFootstepSound()
 
 		switch (HitResult.PhysMaterial->SurfaceType)
 		{
-
 		case SurfaceType1: // Grass
-			UE_LOG(LogTemp, Warning, TEXT("Grass footstep sound"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GrassFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType2: // Gravel
-			UE_LOG(LogTemp, Warning, TEXT("Gravel footstep sound"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GravelFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType3: // Rock
-			UE_LOG(LogTemp, Warning, TEXT("Rock footstep sound"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType4: // Wood
@@ -102,9 +97,7 @@ void UHumanAnimInstance::PlayFootstepSound()
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
 			break;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Playing footstep sound"));
 	}
-	UE_LOG(LogTemp, Error, TEXT("End of footstep code."));
 }
 
 void UHumanAnimInstance::CalculateSpeedAndAngle()
