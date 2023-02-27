@@ -15,6 +15,7 @@ class UInteractionComponent;
 class UPlayerHUDWidget;
 class UInputAction;
 class UInputMappingContext;
+class UEquipComponent;
 class AEquipableItem;
 
 UCLASS()
@@ -24,21 +25,14 @@ class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
 
 public:
 	AWildOmissionCharacter();
+
 	virtual void Tick(float DeltaTime) override;
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void EquipItem(TSubclassOf<AEquipableItem> Item);
-	void Disarm();
-
-	UFUNCTION(BlueprintCallable)
-	AEquipableItem* GetEquipedItem();
-
+	
 	UFUNCTION()
 	USkeletalMeshComponent* GetFirstPersonMesh();
-
-	UFUNCTION(BlueprintCallable)
-	bool IsItemEquiped() const;
 
 	void PlaySwingAnimation();
 
@@ -46,6 +40,10 @@ public:
 	
 	// Returns players inventory component
 	UPlayerInventoryComponent* GetInventoryComponent();
+
+	// Returns players equip component
+	UFUNCTION(BlueprintCallable)
+	UEquipComponent* GetEquipComponent() const;
 
 	UPlayerHUDWidget* GetHUD();
 
@@ -61,8 +59,8 @@ private:
 	USkeletalMeshComponent* FirstPersonMesh;
 
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* FirstPersonEquipedItem;
-	
+	UEquipComponent* EquipComponent;
+
 	UPROPERTY(VisibleAnywhere)
 	UVitalsComponent* VitalsComponent;
 	
@@ -74,13 +72,7 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	UInteractionComponent* InteractionComponent;
-	
-	UPROPERTY(VisibleAnywhere)
-	USceneComponent* EquipMountPoint;
-	
-	UPROPERTY(Replicated)
-	AEquipableItem* EquipedItem;
-	
+
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;
 	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
@@ -127,11 +119,5 @@ private:
 	void ToggleInventory();
 	void ToolbarSelectionIncrement();
 	void ToolbarSelectionDecrement();
-
-	UFUNCTION(Server, Reliable)
-	void Server_Primary();
-	
-	UFUNCTION(Server, Reliable)
-	void Server_Secondary();
 	
 };

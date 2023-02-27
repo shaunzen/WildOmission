@@ -14,7 +14,7 @@
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "Net/UnrealNetwork.h"
-
+#include "WildOmission/Components/EquipComponent.h"
 #include "WildOmission/Items/ToolItem.h"
 #include "HumanAnimInstance.h"
 
@@ -75,12 +75,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonMesh->SetVisibility(false, true);
 	FirstPersonMesh->SetupAttachment(FirstPersonCameraComponent);
 
-	FirstPersonEquipedItem = CreateDefaultSubobject<UStaticMeshComponent>(FName("FirstPersonEquipedItem"));
-	FirstPersonEquipedItem->SetVisibility(false, true);
-	FirstPersonEquipedItem->SetupAttachment(FirstPersonMesh, FName("RightHandMountSocket"));
-
-	EquipMountPoint = CreateDefaultSubobject<USceneComponent>(FName("EquipMountPoint"));
-	EquipMountPoint->SetupAttachment(FirstPersonCameraComponent);
+	EquipComponent = CreateDefaultSubobject<UEquipComponent>(FName("EquipComponent"));
+	EquipComponent->SetupAttachment(FirstPersonMesh);
 
 	// Setup vitals component
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
@@ -182,49 +178,10 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 }
 
-void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AWildOmissionCharacter, EquipedItem);
-}
-
-void AWildOmissionCharacter::EquipItem(TSubclassOf<AEquipableItem> Item)
-{
-	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, GetActorLocation(), GetActorRotation());
-
-	EquipedItem->Equip(this);
-}
-
-void AWildOmissionCharacter::Disarm()
-{
-	if (!IsItemEquiped())
-	{
-		return;
-	}
-
-	EquipedItem->OnUnequip();
-	EquipedItem->Destroy();
-	if (IsLocallyControlled())
-	{
-		FirstPersonEquipedItem->SetVisibility(false, true);
-	}
-	EquipedItem = nullptr;
-}
-
-AEquipableItem* AWildOmissionCharacter::GetEquipedItem()
-{
-	return EquipedItem;
-}
 
 USkeletalMeshComponent* AWildOmissionCharacter::GetFirstPersonMesh()
 {
 	return FirstPersonMesh;
-}
-
-bool AWildOmissionCharacter::IsItemEquiped() const
-{
-	return EquipedItem != nullptr;
 }
 
 void AWildOmissionCharacter::PlaySwingAnimation()
@@ -274,7 +231,7 @@ void AWildOmissionCharacter::Primary()
 		return;
 	}
 
-	Server_Primary();
+	EquipComponent->Server_Primary();
 }
 
 void AWildOmissionCharacter::Secondary()
@@ -284,7 +241,7 @@ void AWildOmissionCharacter::Secondary()
 		return;
 	}
 
-	Server_Secondary();
+	EquipComponent->Server_Secondary();
 }
 
 void AWildOmissionCharacter::ToggleInventory()
@@ -327,27 +284,12 @@ UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent()
 	return InventoryComponent;
 }
 
+UEquipComponent* AWildOmissionCharacter::GetEquipComponent() const
+{
+	return EquipComponent;
+}
+
 UPlayerHUDWidget* AWildOmissionCharacter::GetHUD()
 {
 	return PlayerHUDWidget;
-}
-
-void AWildOmissionCharacter::Server_Primary_Implementation()
-{
-	if (EquipedItem == nullptr)
-	{
-		return;
-	}
-
-	EquipedItem->Primary();
-}
-
-void AWildOmissionCharacter::Server_Secondary_Implementation()
-{
-	if (EquipedItem == nullptr)
-	{
-		return;
-	}
-
-	EquipedItem->Secondary();
 }

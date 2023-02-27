@@ -5,6 +5,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Items/WorldItem.h"
+#include "WildOmission/Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
@@ -40,10 +41,16 @@ void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 
 void UPlayerInventoryComponent::EquipPlayer(FInventorySlot& SelectedSlot)
 {
+	UEquipComponent* PlayerEquipComponent = OwnerCharacter->GetEquipComponent();
+	if (PlayerEquipComponent == nullptr)
+	{
+		return;
+	}
+
 	// return if there is no item
 	if (SelectedSlot.IsEmpty())
 	{
-		OwnerCharacter->Disarm();
+		PlayerEquipComponent->Disarm();
 		return;
 	}
 
@@ -51,18 +58,18 @@ void UPlayerInventoryComponent::EquipPlayer(FInventorySlot& SelectedSlot)
 	FItem* SlotItemData = GetItemData(SelectedSlot.Item.Name);
 	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
 	{
-		OwnerCharacter->Disarm();
+		PlayerEquipComponent->Disarm();
 		return;
 	}
 
 	// is this item the same as we are already holding
-	if (OwnerCharacter->GetEquipedItem() != nullptr && SlotItemData->EquipItemClass.Get() == OwnerCharacter->GetEquipedItem()->GetClass())
+	if (PlayerEquipComponent->GetEquipedItem() != nullptr && SlotItemData->EquipItemClass.Get() == PlayerEquipComponent->GetEquipedItem()->GetClass())
 	{
 		return;
 	}
 
-	OwnerCharacter->Disarm();
-	OwnerCharacter->EquipItem(SlotItemData->EquipItemClass);
+	PlayerEquipComponent->Disarm();
+	PlayerEquipComponent->EquipItem(SlotItemData->EquipItemClass);
 
 }
 

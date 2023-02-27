@@ -5,6 +5,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/Character.h"
 #include "WildOmissionCharacter.h"
+#include "WildOmission/Components/EquipComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
@@ -143,5 +144,11 @@ void UHumanAnimInstance::HandleItemHolding()
 		return;
 	}
 
-	HoldingItem = CharacterOwner->IsItemEquiped();
+	UEquipComponent* PlayerEquipComponent = CharacterOwner->GetEquipComponent();
+	if (PlayerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	HoldingItem = PlayerEquipComponent->IsItemEquiped();
 }
