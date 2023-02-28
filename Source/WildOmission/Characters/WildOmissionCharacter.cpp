@@ -178,6 +178,24 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 }
 
+bool AWildOmissionCharacter::IsLocalPlayer() const
+{
+	return IsLocallyControlled();
+
+	const ENetMode NetMode = GetNetMode();
+
+	if (NetMode == NM_Standalone)
+	{
+		return true;
+	}
+	
+	if (NetMode == NM_Client && GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		return true;
+	}
+
+	return GetRemoteRole() != ROLE_AutonomousProxy && GetLocalRole() == ROLE_Authority;
+}
 
 USkeletalMeshComponent* AWildOmissionCharacter::GetFirstPersonMesh()
 {

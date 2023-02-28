@@ -48,7 +48,8 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
 {
 	SetOwner(InOwnerCharacter);
 
-	HandleAttachment();
+	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+
 	Client_PlayEquipSound();
 }
 
@@ -77,31 +78,6 @@ AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter() const
 	return Cast<AWildOmissionCharacter>(GetOwner());
 }
 
-bool AEquipableItem::IsOwnedByOurLocalPlayer() const
-{
-	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
-	if (OwnerCharacter == nullptr)
-	{
-
-		return false;
-	}
-	//return Owner->GetRemoteRole() == ROLE_AutonomousProxy;
-	return OwnerCharacter->IsLocallyControlled();
-}
-
-void AEquipableItem::HandleAttachment()
-{
-	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
-
-	if (OwnerCharacter == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Owner was nullptr"));
-		return;
-	}
-
-	AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
-}
-
 void AEquipableItem::Client_PlayEquipSound_Implementation()
 {
 	if (GetWorld() == nullptr || EquipSound == nullptr)
@@ -110,4 +86,9 @@ void AEquipableItem::Client_PlayEquipSound_Implementation()
 	}
 
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), EquipSound, GetActorLocation());
+}
+
+void AEquipableItem::SetLocalVisibility(bool bVisible)
+{
+	Mesh->SetVisibility(bVisible);
 }

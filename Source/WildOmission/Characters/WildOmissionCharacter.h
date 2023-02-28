@@ -30,7 +30,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
+	bool IsLocalPlayer() const;
+
 	UFUNCTION()
 	USkeletalMeshComponent* GetFirstPersonMesh();
 

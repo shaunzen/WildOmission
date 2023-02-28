@@ -46,7 +46,10 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* FirstPersonEquipedItem;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_EquipedItem)
 	AEquipableItem* EquipedItem;
+
+	UFUNCTION()
+	void OnRep_EquipedItem();
 
 };

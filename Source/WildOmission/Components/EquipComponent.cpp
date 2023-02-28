@@ -14,7 +14,7 @@ UEquipComponent::UEquipComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 
-	// ...
+	FirstPersonEquipedItem = CreateDefaultSubobject<UStaticMeshComponent>(FName("FirstPersonEquipedItem"));
 }
 
 void UEquipComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -29,8 +29,13 @@ void UEquipComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	FirstPersonEquipedItem->AttachToComponent(OwnerCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 }
 
 
@@ -53,6 +58,11 @@ void UEquipComponent::EquipItem(TSubclassOf<AEquipableItem> Item)
 	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
 
 	EquipedItem->Equip(OwnerCharacter);
+	
+	if (GetOwner()->HasAuthority())
+	{
+		OnRep_EquipedItem();
+	}
 }
 
 void UEquipComponent::Disarm()
@@ -66,6 +76,11 @@ void UEquipComponent::Disarm()
 	EquipedItem->Destroy();
 
 	EquipedItem = nullptr;
+
+	if (GetOwner()->HasAuthority())
+	{
+		OnRep_EquipedItem();
+	}
 }
 
 AEquipableItem* UEquipComponent::GetEquipedItem()
@@ -97,4 +112,26 @@ void UEquipComponent::Server_Secondary_Implementation()
 	}
 
 	EquipedItem->Secondary();
+}
+
+void UEquipComponent::OnRep_EquipedItem()
+{
+	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	if (EquipedItem)
+	{
+		FirstPersonEquipedItem->SetStaticMesh(EquipedItem->GetMesh());
+
+		FirstPersonEquipedItem->SetVisibility(OwnerCharacter->IsLocallyControlled());
+
+		EquipedItem->SetLocalVisibility(!OwnerCharacter->IsLocallyControlled());
+	}
+	else
+	{
+		FirstPersonEquipedItem->SetVisibility(false);
+	}
 }
