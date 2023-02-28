@@ -25,6 +25,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Player/WBP_PlayerHUD"));
+	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerArmsAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_FirstPerson"));
+	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerThirdPersonAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_ThirdPerson"));
 	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Core/Input/MC_DefaultMappingContext"));
 	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Move"));
 	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Look"));
@@ -35,8 +37,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FObjectFinder<UInputAction> InventoryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Inventory"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionIncrement"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionDecrement"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerArmsMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_HumanFirstPersonArms"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerThirdPersonMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_Human"));
 
 	if (PlayerHUDWidgetBlueprintClass.Class == nullptr
+		|| PlayerArmsAnimBlueprintClass.Class == nullptr
+		|| PlayerThirdPersonAnimBlueprintClass.Class == nullptr
 		|| DefaultMappingContextBlueprint.Object == nullptr
 		|| MoveActionBlueprint.Object == nullptr
 		|| LookActionBlueprint.Object == nullptr
@@ -46,7 +52,9 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		|| SecondaryActionBlueprint.Object == nullptr
 		|| InventoryActionBlueprint.Object == nullptr
 		|| ToolbarSelectionIncrementBlueprint.Object == nullptr
-		|| ToolbarSelectionDecrementBlueprint.Object == nullptr)
+		|| ToolbarSelectionDecrementBlueprint.Object == nullptr
+		|| PlayerArmsMeshObject.Object == nullptr
+		|| PlayerThirdPersonMeshObject.Object == nullptr)
 	{
 		return;
 	}
@@ -64,6 +72,9 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ToolbarSelectionIncrementAction = ToolbarSelectionIncrementBlueprint.Object;
 	ToolbarSelectionDecrementAction = ToolbarSelectionDecrementBlueprint.Object;
 
+	GetMesh()->SetSkeletalMesh(PlayerThirdPersonMeshObject.Object);
+	GetMesh()->SetAnimClass(PlayerThirdPersonAnimBlueprintClass.Class);
+
 	PlayerHUDWidget = nullptr;
 
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(FName("FirstPersonCamera"));
@@ -71,12 +82,18 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
-	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonMesh"));
-	FirstPersonMesh->SetVisibility(false, true);
-	FirstPersonMesh->SetupAttachment(FirstPersonCameraComponent);
+	FirstPersonArmsMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonArmsComponent"));
+	FirstPersonArmsMeshComponent->SetupAttachment(FirstPersonCameraComponent);
+	FirstPersonArmsMeshComponent->SetSkeletalMesh(PlayerArmsMeshObject.Object);
+	FirstPersonArmsMeshComponent->SetAnimClass(PlayerArmsAnimBlueprintClass.Class);
+	FirstPersonArmsMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -160.0f));
+	FirstPersonArmsMeshComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+	FirstPersonArmsMeshComponent->SetRelativeScale3D(FVector(0.9f, 0.9f, 0.9f));
+	FirstPersonArmsMeshComponent->SetVisibility(false);
+	FirstPersonArmsMeshComponent->SetCastShadow(false);
 
 	EquipComponent = CreateDefaultSubobject<UEquipComponent>(FName("EquipComponent"));
-	EquipComponent->SetupAttachment(FirstPersonMesh);
+	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
 
 	// Setup vitals component
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
@@ -121,7 +138,7 @@ void AWildOmissionCharacter::BeginPlay()
 	
 	// Hide player model?
 	GetMesh()->SetVisibility(false);
-	FirstPersonMesh->SetVisibility(true, true);
+	FirstPersonArmsMeshComponent->SetVisibility(true);
 
 	// Create the player's hud
 	if (PlayerHUDWidgetClass == nullptr)
@@ -151,6 +168,7 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	// TODO i see no reason why this cant be handed in the ui class itself
 	if (PlayerHUDWidget == nullptr)
 	{
 		return;
@@ -178,48 +196,6 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 }
 
-bool AWildOmissionCharacter::IsLocalPlayer() const
-{
-	return IsLocallyControlled();
-
-	const ENetMode NetMode = GetNetMode();
-
-	if (NetMode == NM_Standalone)
-	{
-		return true;
-	}
-	
-	if (NetMode == NM_Client && GetLocalRole() == ROLE_AutonomousProxy)
-	{
-		return true;
-	}
-
-	return GetRemoteRole() != ROLE_AutonomousProxy && GetLocalRole() == ROLE_Authority;
-}
-
-USkeletalMeshComponent* AWildOmissionCharacter::GetFirstPersonMesh()
-{
-	return FirstPersonMesh;
-}
-
-void AWildOmissionCharacter::PlaySwingAnimation()
-{
-	UHumanAnimInstance* FirstPersonAnimInstance = Cast<UHumanAnimInstance>(FirstPersonMesh->GetAnimInstance());
-	if (FirstPersonAnimInstance == nullptr)
-	{
-		return;
-	}
-
-	FirstPersonAnimInstance->PlaySwingAnimation();
-
-	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(GetMesh()->GetAnimInstance());
-	if (ThirdPersonAnimInstance == nullptr)
-	{
-		return;
-	}
-
-	ThirdPersonAnimInstance->PlaySwingAnimation();
-}
 
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 {
@@ -310,4 +286,9 @@ UEquipComponent* AWildOmissionCharacter::GetEquipComponent() const
 UPlayerHUDWidget* AWildOmissionCharacter::GetHUD()
 {
 	return PlayerHUDWidget;
+}
+
+USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
+{
+	return FirstPersonArmsMeshComponent;
 }

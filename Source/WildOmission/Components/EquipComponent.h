@@ -7,6 +7,7 @@
 #include "EquipComponent.generated.h"
 
 class AEquipableItem;
+class AWildOmissionCharacter;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UEquipComponent : public USceneComponent
@@ -19,11 +20,10 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	void EquipItem(TSubclassOf<AEquipableItem> Item);
 	void Disarm();
+
+	void PlaySwingAnimation();
 
 	UFUNCTION(BlueprintCallable)
 	AEquipableItem* GetEquipedItem();
@@ -38,16 +38,17 @@ public:
 	void Server_Secondary();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
-
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* FirstPersonEquipedItem;
+	UStaticMeshComponent* FirstPersonItemMeshComponent;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_EquipedItem)
 	AEquipableItem* EquipedItem;
+
+	UPROPERTY()
+	AWildOmissionCharacter* OwnerCharacter;
 
 	UFUNCTION()
 	void OnRep_EquipedItem();

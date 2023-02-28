@@ -4,6 +4,8 @@
 #include "EquipComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Items/EquipableItem.h"
+#include "WildOmission/Characters/HumanAnimInstance.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -11,10 +13,12 @@ UEquipComponent::UEquipComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
+	
 	SetIsReplicatedByDefault(true);
 
-	FirstPersonEquipedItem = CreateDefaultSubobject<UStaticMeshComponent>(FName("FirstPersonEquipedItem"));
+	FirstPersonItemMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("FirstPersonItemMeshComponent"));
+	FirstPersonItemMeshComponent->SetCastShadow(false);
 }
 
 void UEquipComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -24,32 +28,17 @@ void UEquipComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(UEquipComponent, EquipedItem);
 }
 
-// Called when the game starts
 void UEquipComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
-	if (OwnerCharacter == nullptr)
-	{
-		return;
-	}
+	OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
 
-	FirstPersonEquipedItem->AttachToComponent(OwnerCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
-}
-
-
-// Called every frame
-void UEquipComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	FirstPersonItemMeshComponent->AttachToComponent(OwnerCharacter->GetArmsMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 }
 
 void UEquipComponent::EquipItem(TSubclassOf<AEquipableItem> Item)
 {
-	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
 	if (OwnerCharacter == nullptr)
 	{
 		return;
@@ -81,6 +70,25 @@ void UEquipComponent::Disarm()
 	{
 		OnRep_EquipedItem();
 	}
+}
+
+void UEquipComponent::PlaySwingAnimation()
+{
+	UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
+	if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
+	{
+		return;
+	}
+
+	FirstPersonArmsAnimInstance->PlaySwingAnimation();
+
+	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
+	if (ThirdPersonAnimInstance == nullptr)
+	{
+		return;
+	}
+
+	ThirdPersonAnimInstance->PlaySwingAnimation();
 }
 
 AEquipableItem* UEquipComponent::GetEquipedItem()
@@ -116,22 +124,16 @@ void UEquipComponent::Server_Secondary_Implementation()
 
 void UEquipComponent::OnRep_EquipedItem()
 {
-	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
-	if (OwnerCharacter == nullptr)
-	{
-		return;
-	}
-
 	if (EquipedItem)
 	{
-		FirstPersonEquipedItem->SetStaticMesh(EquipedItem->GetMesh());
+		FirstPersonItemMeshComponent->SetStaticMesh(EquipedItem->GetMesh());
 
-		FirstPersonEquipedItem->SetVisibility(OwnerCharacter->IsLocallyControlled());
+		FirstPersonItemMeshComponent->SetVisibility(OwnerCharacter->IsLocallyControlled());
 
 		EquipedItem->SetLocalVisibility(!OwnerCharacter->IsLocallyControlled());
 	}
 	else
 	{
-		FirstPersonEquipedItem->SetVisibility(false);
+		FirstPersonItemMeshComponent->SetVisibility(false);
 	}
 }

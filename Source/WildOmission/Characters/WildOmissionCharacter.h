@@ -30,13 +30,6 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	bool IsLocalPlayer() const;
-
-	UFUNCTION()
-	USkeletalMeshComponent* GetFirstPersonMesh();
-
-	void PlaySwingAnimation();
-
 	UVitalsComponent* GetVitalsComponent();
 	
 	// Returns players inventory component
@@ -46,7 +39,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UEquipComponent* GetEquipComponent() const;
 
+	UFUNCTION(BlueprintCallable)
+	USkeletalMeshComponent* GetArmsMesh() const;
+
 	UPlayerHUDWidget* GetHUD();
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -57,7 +54,7 @@ private:
 	UCameraComponent* FirstPersonCameraComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	USkeletalMeshComponent* FirstPersonMesh;
+	USkeletalMeshComponent* FirstPersonArmsMeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UEquipComponent* EquipComponent;

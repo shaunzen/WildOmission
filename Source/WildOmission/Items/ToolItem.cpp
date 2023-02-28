@@ -2,7 +2,7 @@
 
 
 #include "ToolItem.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "WildOmission/Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AToolItem::AToolItem()
@@ -28,10 +28,11 @@ void AToolItem::Secondary()
 
 void AToolItem::Client_PlaySwingAnimation_Implementation()
 {
-	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
-	if (OwnerCharacter == nullptr)
+	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr)
 	{
 		return;
 	}
-	OwnerCharacter->PlaySwingAnimation();
+
+	OwnerEquipComponent->PlaySwingAnimation();
 }
