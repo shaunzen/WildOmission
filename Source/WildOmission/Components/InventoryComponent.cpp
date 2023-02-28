@@ -311,7 +311,7 @@ void UInventoryComponent::RefreshUI()
 		return;
 	}
 
-	UPlayerHUDWidget* ManipulatorHUD = ManipulatorCharacter->GetHUD();
+	UPlayerHUDWidget* ManipulatorHUD = ManipulatorCharacter->GetHUDWidget();
 	if (ManipulatorHUD == nullptr)
 	{
 		return;

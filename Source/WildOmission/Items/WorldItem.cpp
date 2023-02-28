@@ -50,14 +50,14 @@ void AWorldItem::BeginPlay()
 
 void AWorldItem::Interact(AActor* Interactor)
 {
-	AWildOmissionCharacter* CharacterInteractor = Cast<AWildOmissionCharacter>(Interactor);
-	if (CharacterInteractor == nullptr)
+	UInventoryComponent* InteractorInventoryComponent = Interactor->FindComponentByClass<UInventoryComponent>();
+	if (InteractorInventoryComponent == nullptr)
 	{
 		return;
 	}
 
 	// Add to their inventory
-	CharacterInteractor->GetInventoryComponent()->AddItem(ItemName, ItemQuantity);
+	InteractorInventoryComponent->AddItem(ItemName, ItemQuantity);
 
 	// Play Pickup sound
 	Client_PlayPickupSound();

@@ -132,19 +132,7 @@ void UHumanAnimInstance::CalculateFalling()
 
 void UHumanAnimInstance::HandleItemHolding()
 {
-	APawn* PawnOwner = TryGetPawnOwner();
-	if (PawnOwner == nullptr)
-	{
-		return;
-	}
-
-	AWildOmissionCharacter* CharacterOwner = Cast<AWildOmissionCharacter>(PawnOwner);
-	if (CharacterOwner == nullptr)
-	{
-		return;
-	}
-
-	UEquipComponent* PlayerEquipComponent = CharacterOwner->GetEquipComponent();
+	UEquipComponent* PlayerEquipComponent = TryGetPawnOwner()->FindComponentByClass<UEquipComponent>();
 	if (PlayerEquipComponent == nullptr)
 	{
 		return;

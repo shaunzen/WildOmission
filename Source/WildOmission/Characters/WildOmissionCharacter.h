@@ -29,24 +29,19 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UVitalsComponent* GetVitalsComponent();
 	
-	// Returns players inventory component
-	UPlayerInventoryComponent* GetInventoryComponent();
-
-	// Returns players equip component
-	UFUNCTION(BlueprintCallable)
-	UEquipComponent* GetEquipComponent() const;
-
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
 
-	UPlayerHUDWidget* GetHUD();
+	UFUNCTION(BlueprintCallable)
+	UPlayerHUDWidget* GetHUDWidget() const;
 
+	UFUNCTION(BlueprintCallable)
+	UPlayerInventoryComponent* GetInventoryComponent() const;
 
 protected:
 	virtual void BeginPlay() override;
+
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 private:
@@ -63,7 +58,7 @@ private:
 	UVitalsComponent* VitalsComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	UInventoryManipulatorComponent* InventoryManipulator;
+	UInventoryManipulatorComponent* InventoryManipulatorComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UPlayerInventoryComponent* InventoryComponent;
@@ -80,42 +75,41 @@ private:
 	//*****************************
 	UPROPERTY()
 	UInputMappingContext* DefaultMappingContext;
-	
 	UPROPERTY()
 	UInputAction* MoveAction;
-	
 	UPROPERTY()
 	UInputAction* LookAction;
-	
 	UPROPERTY()
 	UInputAction* JumpAction;
-	
 	UPROPERTY()
 	UInputAction* InteractAction;
-	
 	UPROPERTY()
 	UInputAction* PrimaryAction;
-	
 	UPROPERTY()
 	UInputAction* SecondaryAction;
-	
 	UPROPERTY()
 	UInputAction* InventoryAction;
-
 	UPROPERTY()
 	UInputAction* ToolbarSelectionIncrementAction;
-
 	UPROPERTY()
 	UInputAction* ToolbarSelectionDecrementAction;
-
+	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	
+
 	void Primary();
 	void Secondary();
 
 	void ToggleInventory();
 	void ToolbarSelectionIncrement();
 	void ToolbarSelectionDecrement();
-	
+
+	//********************************	
+	// Setup Member functions
+	//********************************
+
+	void SetupEnhancedInputSubsystem();
+	void SetupMesh();
+	void SetupPlayerHUD();
+
 };

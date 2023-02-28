@@ -98,14 +98,14 @@ void UInventoryManipulatorComponent::RefreshUI()
 	}
 
 	// get the player hud
-	UPlayerHUDWidget* OwnerHUD = OwnerCharacter->GetHUD();
-	if (OwnerHUD == nullptr)
+	UPlayerHUDWidget* OwnerHUDWidget = OwnerCharacter->GetHUDWidget();
+	if (OwnerHUDWidget == nullptr)
 	{
 		return;
 	}
 
 	// call refresh
-	OwnerHUD->RefreshInventoryStates();
+	OwnerHUDWidget->RefreshInventoryStates();
 }
 
 //**************************************************************

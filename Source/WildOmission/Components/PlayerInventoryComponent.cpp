@@ -41,7 +41,7 @@ void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 
 void UPlayerInventoryComponent::EquipPlayer(FInventorySlot& SelectedSlot)
 {
-	UEquipComponent* PlayerEquipComponent = OwnerCharacter->GetEquipComponent();
+	UEquipComponent* PlayerEquipComponent = OwnerCharacter->FindComponentByClass<UEquipComponent>();
 	if (PlayerEquipComponent == nullptr)
 	{
 		return;

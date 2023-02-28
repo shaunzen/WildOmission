@@ -22,13 +22,13 @@ void UPlayerHUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 	BackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("BackgroundMouseButtonDown"));
 	
-	AWildOmissionCharacter* OwnerCharacter = GetOwningPlayerPawn<AWildOmissionCharacter>();
-	if (OwnerCharacter == nullptr)
+	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwningPlayerPawn<AWildOmissionCharacter>()->FindComponentByClass<UPlayerInventoryComponent>();
+	if (PlayerInventoryComponent == nullptr)
 	{
 		return;
 	}
 
-	PlayerInventory->Setup(OwnerCharacter->GetInventoryComponent());
+	PlayerInventory->Setup(PlayerInventoryComponent);
 
 	RefreshInventoryStates();
 }

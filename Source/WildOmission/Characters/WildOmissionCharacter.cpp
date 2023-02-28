@@ -2,23 +2,22 @@
 
 
 #include "WildOmissionCharacter.h"
-#include "Components/StaticMeshComponent.h"
+#include "HumanAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "UObject/ConstructorHelpers.h"
 #include "InputMappingContext.h"
-#include "WildOmission/Components/InventoryManipulatorComponent.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
-#include "WildOmission/Components/VitalsComponent.h"
-#include "WildOmission/Components/InteractionComponent.h"
-#include "WildOmission/UI/Player/PlayerHUDWidget.h"
-#include "Net/UnrealNetwork.h"
+#include "UObject/ConstructorHelpers.h"
 #include "WildOmission/Components/EquipComponent.h"
-#include "WildOmission/Items/ToolItem.h"
-#include "HumanAnimInstance.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "WildOmission/Components/InteractionComponent.h"
+#include "WildOmission/Components/VitalsComponent.h"
+#include "WildOmission/UI/Player/PlayerHUDWidget.h"
 
-// Sets default values
+//********************************
+// Setup/General Actor Functionality
+//********************************
 AWildOmissionCharacter::AWildOmissionCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -95,65 +94,63 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	EquipComponent = CreateDefaultSubobject<UEquipComponent>(FName("EquipComponent"));
 	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
 
-	// Setup vitals component
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 	
-	// Setup inventory manipulator
-	InventoryManipulator = CreateDefaultSubobject<UInventoryManipulatorComponent>(FName("InventoryManipulator"));
-	InventoryManipulator->SetIsReplicated(true);
+	InventoryManipulatorComponent = CreateDefaultSubobject<UInventoryManipulatorComponent>(FName("InventoryManipulatorComponent"));
+	InventoryManipulatorComponent->SetIsReplicated(true);
 
-	// Setup inventory component
 	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(FName("InventoryComponent"));
 	InventoryComponent->SetIsReplicated(true);
 
-	// Setup interaction component
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
 }
 
-// Called when the game starts or when spawned
 void AWildOmissionCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController == nullptr)
-	{
-
-		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter: Failed to cast Controller to a PlayerController"));
-		return;
-	}
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-	if (Subsystem == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter: EISubsystem was nullptr"));
-		return;
-	}
-	Subsystem->AddMappingContext(DefaultMappingContext, 0);
-
-	// Return if we are not being locally controlled
-	if (!IsLocallyControlled())
-	{
-		return;
-	}
 	
-	// Hide player model?
-	GetMesh()->SetVisibility(false);
-	FirstPersonArmsMeshComponent->SetVisibility(true);
-
-	// Create the player's hud
-	if (PlayerHUDWidgetClass == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter: PlayerHUDWidgetClass was nullptr"));
-		return;
-	}
-	UE_LOG(LogTemp, Warning, TEXT("Creating Player HUD Widget"));
-	PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
-	PlayerHUDWidget->AddToViewport();
-	
+	SetupEnhancedInputSubsystem();
+	SetupMesh();
+	SetupPlayerHUD();
 	InteractionComponent->Setup(this, PlayerHUDWidget);
 }
 
-// Called when the game ends
+void AWildOmissionCharacter::SetupEnhancedInputSubsystem()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (Subsystem == nullptr)
+	{
+		return;
+	}
+
+	Subsystem->AddMappingContext(DefaultMappingContext, 0);
+}
+
+void AWildOmissionCharacter::SetupMesh()
+{
+	GetMesh()->SetVisibility(!IsLocallyControlled());
+	FirstPersonArmsMeshComponent->SetVisibility(IsLocallyControlled());
+}
+
+void AWildOmissionCharacter::SetupPlayerHUD()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (!IsLocallyControlled() || PlayerController == nullptr || PlayerHUDWidgetClass == nullptr)
+	{
+		return;
+	}
+
+	PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
+	PlayerHUDWidget->AddToViewport();
+}
+
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (PlayerHUDWidget != nullptr)
@@ -163,20 +160,15 @@ void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 }
 
-// Called every frame
 void AWildOmissionCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	// TODO i see no reason why this cant be handed in the ui class itself
-	if (PlayerHUDWidget == nullptr)
-	{
-		return;
-	}
-	PlayerHUDWidget->SetVitals(VitalsComponent);
 }
 
-// Called to bind functionality to input
+//********************************
+// Input
+//********************************
+
 void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -195,7 +187,6 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(ToolbarSelectionIncrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionIncrement);
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 }
-
 
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 {
@@ -268,27 +259,21 @@ void AWildOmissionCharacter::ToolbarSelectionDecrement()
 	InventoryComponent->DecrementToolbarSelection();
 }
 
-UVitalsComponent* AWildOmissionCharacter::GetVitalsComponent()
-{
-	return VitalsComponent;
-}
-
-UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent()
-{
-	return InventoryComponent;
-}
-
-UEquipComponent* AWildOmissionCharacter::GetEquipComponent() const
-{
-	return EquipComponent;
-}
-
-UPlayerHUDWidget* AWildOmissionCharacter::GetHUD()
-{
-	return PlayerHUDWidget;
-}
+//********************************
+// Getters
+//********************************
 
 USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 {
 	return FirstPersonArmsMeshComponent;
+}
+
+UPlayerHUDWidget* AWildOmissionCharacter::GetHUDWidget() const
+{
+	return PlayerHUDWidget;
+}
+
+UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent() const
+{
+	return InventoryComponent;
 }

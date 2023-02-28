@@ -15,20 +15,20 @@ AFoodItem::AFoodItem()
 
 void AFoodItem::Primary()
 {
-	AWildOmissionCharacter* OwnerCharacter = GetOwnerCharacter();
-	if (OwnerCharacter == nullptr)
+	Super::Primary();
+	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwnerCharacter()->FindComponentByClass<UPlayerInventoryComponent>();
+	UVitalsComponent* OwnerVitalsComponent = GetOwnerCharacter()->FindComponentByClass<UVitalsComponent>();
+	if (OwnerInventoryComponent == nullptr || OwnerVitalsComponent == nullptr)
 	{
 		return;
 	}
 
-	Super::Primary();
-
-	OwnerCharacter->GetVitalsComponent()->AddHunger(Energy);
-	OwnerCharacter->GetVitalsComponent()->AddThirst(Hydration);
+	OwnerVitalsComponent->AddHunger(Energy);
+	OwnerVitalsComponent->AddThirst(Hydration);
 
 	Client_PlayConsumeSound();
 	
-	OwnerCharacter->GetInventoryComponent()->RemoveHeldItem();
+	OwnerInventoryComponent->RemoveHeldItem();
 }
 
 uint8 AFoodItem::GetEnergy()
