@@ -86,7 +86,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonArmsMeshComponent->SetupAttachment(FirstPersonCameraComponent);
 	FirstPersonArmsMeshComponent->SetSkeletalMesh(PlayerArmsMeshObject.Object);
 	FirstPersonArmsMeshComponent->SetAnimClass(PlayerArmsAnimBlueprintClass.Class);
-	FirstPersonArmsMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -160.0f));
+	FirstPersonArmsMeshComponent->SetRelativeLocation(FVector(-5.0f, 0.0f, -150.0f));
 	FirstPersonArmsMeshComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	FirstPersonArmsMeshComponent->SetRelativeScale3D(FVector(0.9f, 0.9f, 0.9f));
 	FirstPersonArmsMeshComponent->SetVisibility(false);
