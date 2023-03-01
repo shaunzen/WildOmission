@@ -115,13 +115,7 @@ void UHumanAnimInstance::CalculateSpeedAndAngle()
 
 void UHumanAnimInstance::CalculateFalling()
 {
-	APawn* PawnOwner = TryGetPawnOwner();
-	if (PawnOwner == nullptr)
-	{
-		return;
-	}
-
-	ACharacter* CharacterOwner = Cast<ACharacter>(PawnOwner);
+	ACharacter* CharacterOwner = Cast<ACharacter>(TryGetPawnOwner());
 	if (CharacterOwner == nullptr)
 	{
 		return;
@@ -132,6 +126,11 @@ void UHumanAnimInstance::CalculateFalling()
 
 void UHumanAnimInstance::HandleItemHolding()
 {
+	if (TryGetPawnOwner() == nullptr)
+	{
+		return;
+	}
+
 	UEquipComponent* PlayerEquipComponent = TryGetPawnOwner()->FindComponentByClass<UEquipComponent>();
 	if (PlayerEquipComponent == nullptr)
 	{

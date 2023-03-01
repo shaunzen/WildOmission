@@ -32,9 +32,7 @@ public:
 
 	// Setters
 	void ToggleInventory();
-	void SetInteractionPrompt(FString InString);
-	void SetVitals(UVitalsComponent* InVitals);
-
+	
 	// Getters
 	UPlayerInventoryWidget* GetPlayerInventoryWidget();
 	
@@ -58,6 +56,7 @@ private:
 
 	bool bInventoryMenuOpen;
 
+	void UpdateInteractionPrompt();
 	void UpdateSelectedItemLocation();
 
 	UFUNCTION()

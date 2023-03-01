@@ -113,7 +113,6 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
-	InteractionComponent->Setup(this, PlayerHUDWidget);
 }
 
 void AWildOmissionCharacter::SetupEnhancedInputSubsystem()
@@ -273,7 +272,17 @@ UPlayerHUDWidget* AWildOmissionCharacter::GetHUDWidget() const
 	return PlayerHUDWidget;
 }
 
+UVitalsComponent* AWildOmissionCharacter::GetVitalsComponent() const
+{
+	return VitalsComponent;
+}
+
 UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent() const
 {
 	return InventoryComponent;
+}
+
+UInventoryManipulatorComponent* AWildOmissionCharacter::GetInventoryManipulatorComponent() const
+{
+	return InventoryManipulatorComponent;
 }

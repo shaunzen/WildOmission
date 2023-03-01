@@ -6,6 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "InteractionComponent.generated.h"
 
+class AWildOmissionCharacter;
 class UPlayerHUDWidget;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -19,24 +20,17 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION()
-	void Setup(APawn* InOwnerPawn, UPlayerHUDWidget* WidgetToUse);
-	
-	UFUNCTION()
 	void Interact();
 
-protected:
-	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintCallable)
+	FString GetInteractionString() const;
 
 private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float InteractionRange;
 
-	UPROPERTY()
-	UPlayerHUDWidget* PlayerHUDWidget;
-
-	UPROPERTY()
-	APawn* OwnerPawn;
+	FString InteractionString;
 
 	void UpdateInteractionPrompt();
 

@@ -37,7 +37,13 @@ public:
 	UPlayerHUDWidget* GetHUDWidget() const;
 
 	UFUNCTION(BlueprintCallable)
+	UVitalsComponent* GetVitalsComponent() const;
+
+	UFUNCTION(BlueprintCallable)
 	UPlayerInventoryComponent* GetInventoryComponent() const;
+
+	UFUNCTION(BlueprintCallable)
+	UInventoryManipulatorComponent* GetInventoryManipulatorComponent() const;
 
 protected:
 	virtual void BeginPlay() override;

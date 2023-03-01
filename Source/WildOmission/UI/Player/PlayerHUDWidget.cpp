@@ -9,6 +9,7 @@
 #include "WildOmission/UI/Inventory/SelectedItemWidget.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "VitalsWidget.h"
 
@@ -22,7 +23,7 @@ void UPlayerHUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 	BackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("BackgroundMouseButtonDown"));
 	
-	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwningPlayerPawn<AWildOmissionCharacter>()->FindComponentByClass<UPlayerInventoryComponent>();
+	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UPlayerInventoryComponent>();
 	if (PlayerInventoryComponent == nullptr)
 	{
 		return;
@@ -36,7 +37,8 @@ void UPlayerHUDWidget::NativeConstruct()
 void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	
+
+	UpdateInteractionPrompt();
 	UpdateSelectedItemLocation();
 }
 
@@ -63,6 +65,7 @@ void UPlayerHUDWidget::RefreshInventoryStates()
 		SelectedItem->Hide();
 	}
 }
+
 
 void UPlayerHUDWidget::ToggleInventory()
 {
@@ -106,23 +109,6 @@ void UPlayerHUDWidget::ToggleInventory()
 	}
 }
 
-void UPlayerHUDWidget::SetInteractionPrompt(FString InString)
-{
-	if (!IsInventoryMenuOpen())
-	{
-		InteractionPrompt->SetText(FText::FromString(InString));
-	}
-	else
-	{
-		InteractionPrompt->SetText(FText::FromString(FString("")));
-	}
-}
-
-void UPlayerHUDWidget::SetVitals(UVitalsComponent* InVitals)
-{
-	Vitals->Set(InVitals);
-}
-
 bool UPlayerHUDWidget::IsInventoryMenuOpen()
 {
 	return bInventoryMenuOpen;
@@ -131,6 +117,24 @@ bool UPlayerHUDWidget::IsInventoryMenuOpen()
 UPlayerInventoryWidget* UPlayerHUDWidget::GetPlayerInventoryWidget()
 {
 	return PlayerInventory;
+}
+
+void UPlayerHUDWidget::UpdateInteractionPrompt()
+{
+	UInteractionComponent* OwnerInteractionComopnent = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UInteractionComponent>();
+	if (OwnerInteractionComopnent == nullptr)
+	{
+		return;
+	}
+
+	if (!bInventoryMenuOpen)
+	{
+		InteractionPrompt->SetText(FText::FromString(OwnerInteractionComopnent->GetInteractionString()));
+	}
+	else
+	{
+		InteractionPrompt->SetText(FText::FromString(FString("")));
+	}
 }
 
 void UPlayerHUDWidget::UpdateSelectedItemLocation()

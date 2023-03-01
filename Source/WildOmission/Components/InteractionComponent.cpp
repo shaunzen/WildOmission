@@ -2,6 +2,7 @@
 
 
 #include "InteractionComponent.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 
@@ -11,25 +12,10 @@ UInteractionComponent::UInteractionComponent()
 	InteractionRange = 300.0f;
 }
 
-void UInteractionComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-void UInteractionComponent::Setup(APawn* InOwnerPawn, UPlayerHUDWidget* WidgetToUse)
-{
-	OwnerPawn = InOwnerPawn;
-	PlayerHUDWidget = WidgetToUse;
-}
-
 void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (OwnerPawn == nullptr || OwnerPawn->IsLocallyControlled() == false)
-	{
-		return;
-	}
+	
 	UpdateInteractionPrompt();
 }
 
@@ -45,6 +31,11 @@ void UInteractionComponent::Interact()
 	}
 }
 
+FString UInteractionComponent::GetInteractionString() const
+{
+	return InteractionString;
+}
+
 void UInteractionComponent::UpdateInteractionPrompt()
 {
 	FHitResult HitResult;
@@ -52,12 +43,12 @@ void UInteractionComponent::UpdateInteractionPrompt()
 	{
 		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
 		{
-			PlayerHUDWidget->SetInteractionPrompt(Interactable->PromptText());
+			InteractionString = Interactable->PromptText();
 		}
 	}
 	else
 	{
-		PlayerHUDWidget->SetInteractionPrompt(FString(""));
+		InteractionString = FString("");
 	}
 }
 
