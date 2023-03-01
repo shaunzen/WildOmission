@@ -70,31 +70,43 @@ private:
 	class UInputMappingContext* DefaultMappingContext;
 	UPROPERTY()
 	class UInputAction* MoveAction;
+
 	UPROPERTY()
 	class UInputAction* LookAction;
+	
 	UPROPERTY()
 	class UInputAction* JumpAction;
+	
 	UPROPERTY()
 	class UInputAction* InteractAction;
+	
 	UPROPERTY()
 	class UInputAction* PrimaryAction;
+	
 	UPROPERTY()
 	class UInputAction* SecondaryAction;
+	
 	UPROPERTY()
 	class UInputAction* InventoryAction;
+	
 	UPROPERTY()
 	class UInputAction* ToolbarSelectionIncrementAction;
+	
 	UPROPERTY()
 	class UInputAction* ToolbarSelectionDecrementAction;
 	
 	void Move(const FInputActionValue& Value);
+	
 	void Look(const FInputActionValue& Value);
 
 	void Primary();
+	
 	void Secondary();
 
 	void ToggleInventory();
+	
 	void ToolbarSelectionIncrement();
+	
 	void ToolbarSelectionDecrement();
 
 	//********************************	
@@ -102,7 +114,9 @@ private:
 	//********************************
 
 	void SetupEnhancedInputSubsystem();
+	
 	void SetupMesh();
+	
 	void SetupPlayerHUD();
 
 };

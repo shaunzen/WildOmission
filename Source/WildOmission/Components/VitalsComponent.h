@@ -15,76 +15,93 @@ class WILDOMISSION_API UVitalsComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UVitalsComponent();
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-
-	// Gets the local current health
-	float GetHealth();
-	// Gets the local current thirst
-	float GetThirst();
-	//Gets the local current hunger
-	float GetHunger();
-
-	// Sets the health to a new value, MUST be called from the server or else will do nothing
+	UFUNCTION(BlueprintCallable)
 	void SetHealth(float Value);
-	// Sets the thirst to a new value, MUST be called from the server or else will do nothing
+	
+	UFUNCTION(BlueprintCallable)
 	void SetThirst(float Value);
-	// Sets the hunger to a new value, MUST be called from the server or else will do nothing
+	
+	UFUNCTION(BlueprintCallable)
 	void SetHunger(float Value);
 
-	// Adds the specified value to health, MUST be called from the server or else will do nothing
+	UFUNCTION(BlueprintCallable)
 	void AddHealth(float Value);
-	// Adds the specified value to thirst, MUST be called from the server or else will do nothing
-	void AddThirst(float Value);
-	// Adds the specified value to hunger, MUST be called from the server or else will do nothing
-	void AddHunger(float Value);
 
-	float GetMaxHealth();
-	float GetMaxThirst();
-	float GetMaxHunger();
+	UFUNCTION(BlueprintCallable)
+	void AddThirst(float Value);
+
+	UFUNCTION(BlueprintCallable)
+	void AddHunger(float Value);
+	
+	UFUNCTION(BlueprintCallable)
+	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxThirst() const;
+	
+	UFUNCTION(BlueprintCallable)
+	float GetMaxHunger() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetThirst() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetHunger() const;
+
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
-	//*
-	// Max Values
-	//*
+	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth;
+
+	UPROPERTY(EditDefaultsOnly)
 	float MaxThirst;
+	
+	UPROPERTY(EditDefaultsOnly)
 	float MaxHunger;
 	
-	//*
-	// Start Values
-	//*
+	UPROPERTY(EditDefaultsOnly)
 	float StartHealth;
+	
+	UPROPERTY(EditDefaultsOnly)
 	float StartThirst;
+	
+	UPROPERTY(EditDefaultsOnly)
 	float StartHunger;
-
-	//*
-	// Depletion Rates
-	//*
+	
+	UPROPERTY(EditDefaultsOnly)
 	float HealthDepletionRate;
+
+	UPROPERTY(EditDefaultsOnly)
 	float ThirstDepletionRate;
+	
+	UPROPERTY(EditDefaultsOnly)
 	float HungerDepletionRate;
 
-	//*
-	// Threshold for health damage
-	//*
+	UPROPERTY(EditDefaultsOnly)
 	float ThirstThreshold;
+	
+	UPROPERTY(EditDefaultsOnly)
 	float HungerThreshold;
-
-	//*
-	// Current local values
-	//*
+	
 	UPROPERTY(Replicated)
 	float CurrentHealth;
+	
 	UPROPERTY(Replicated)
 	float CurrentThirst;
+
 	UPROPERTY(Replicated)
 	float CurrentHunger;
 

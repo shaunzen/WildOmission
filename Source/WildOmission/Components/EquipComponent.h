@@ -6,9 +6,6 @@
 #include "Components/SceneComponent.h"
 #include "EquipComponent.generated.h"
 
-class AEquipableItem;
-class AWildOmissionCharacter;
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UEquipComponent : public USceneComponent
 {
@@ -21,12 +18,13 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void EquipItem(TSubclassOf<AEquipableItem> Item);
+
 	void Disarm();
 
 	void PlaySwingAnimation();
 
 	UFUNCTION(BlueprintCallable)
-	AEquipableItem* GetEquipedItem();
+	class AEquipableItem* GetEquipedItem();
 
 	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;
@@ -45,10 +43,10 @@ private:
 	UStaticMeshComponent* FirstPersonItemMeshComponent;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_EquipedItem)
-	AEquipableItem* EquipedItem;
+	class AEquipableItem* EquipedItem;
 
 	UPROPERTY()
-	AWildOmissionCharacter* OwnerCharacter;
+	class AWildOmissionCharacter* OwnerCharacter;
 
 	UFUNCTION()
 	void OnRep_EquipedItem();

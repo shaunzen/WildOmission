@@ -2,13 +2,12 @@
 
 
 #include "HumanAnimInstance.h"
-#include "UObject/ConstructorHelpers.h"
 #include "GameFramework/Character.h"
-#include "WildOmissionCharacter.h"
-#include "WildOmission/Components/EquipComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UObject/ConstructorHelpers.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
+#include "WildOmission/Components/EquipComponent.h"
 
 UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializer)
 {

@@ -2,9 +2,7 @@
 
 
 #include "InteractionComponent.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
-#include "WildOmission/UI/Player/PlayerHUDWidget.h"
 
 UInteractionComponent::UInteractionComponent()
 {

@@ -31,7 +31,6 @@ UVitalsComponent::UVitalsComponent()
 	HungerThreshold = 30.0f;
 }
 
-
 // Called when the game starts
 void UVitalsComponent::BeginPlay()
 {
@@ -50,13 +49,21 @@ void UVitalsComponent::BeginPlay()
 	SetHunger(StartHunger);
 }
 
-
 // Called every frame
 void UVitalsComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	CalculateDepletion();
+}
+
+void UVitalsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UVitalsComponent, CurrentHealth);
+	DOREPLIFETIME(UVitalsComponent, CurrentThirst);
+	DOREPLIFETIME(UVitalsComponent, CurrentHunger);
 }
 
 void UVitalsComponent::CalculateDepletion()
@@ -124,41 +131,32 @@ void UVitalsComponent::AddHunger(float Value)
 	FMath::Clamp(CurrentHunger, 0, MaxHunger);
 }
 
-float UVitalsComponent::GetMaxHealth()
+float UVitalsComponent::GetMaxHealth() const
 {
 	return MaxHealth;
 }
 
-float UVitalsComponent::GetMaxThirst()
+float UVitalsComponent::GetMaxThirst() const
 {
 	return MaxThirst;
 }
 
-float UVitalsComponent::GetMaxHunger()
+float UVitalsComponent::GetMaxHunger() const
 {
 	return MaxHunger;
 }
 
-float UVitalsComponent::GetHealth()
+float UVitalsComponent::GetHealth() const
 {
 	return CurrentHealth;
 }
 
-float UVitalsComponent::GetThirst()
+float UVitalsComponent::GetThirst() const
 {
 	return CurrentThirst;
 }
 
-float UVitalsComponent::GetHunger()
+float UVitalsComponent::GetHunger() const
 {
 	return CurrentHunger;
-}
-
-void UVitalsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UVitalsComponent, CurrentHealth);
-	DOREPLIFETIME(UVitalsComponent, CurrentThirst);
-	DOREPLIFETIME(UVitalsComponent, CurrentHunger);
 }

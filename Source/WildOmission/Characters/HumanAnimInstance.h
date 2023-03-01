@@ -6,9 +6,6 @@
 #include "Animation/AnimInstance.h"
 #include "HumanAnimInstance.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class WILDOMISSION_API UHumanAnimInstance : public UAnimInstance
 {

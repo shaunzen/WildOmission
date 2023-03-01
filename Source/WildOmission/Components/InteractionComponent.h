@@ -6,9 +6,6 @@
 #include "Components/SceneComponent.h"
 #include "InteractionComponent.generated.h"
 
-class AWildOmissionCharacter;
-class UPlayerHUDWidget;
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UInteractionComponent : public USceneComponent
 {
