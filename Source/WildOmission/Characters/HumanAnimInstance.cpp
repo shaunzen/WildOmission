@@ -44,7 +44,7 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	Super::NativeUpdateAnimation(DeltaTime);
 
 	CalculateSpeedAndAngle();
-	CalculateFalling();
+	HandleFalling();
 	HandleItemHolding();
 }
 
@@ -113,7 +113,7 @@ void UHumanAnimInstance::CalculateSpeedAndAngle()
 	Angle = PawnOwner->GetTransform().InverseTransformVector(PawnOwner->GetVelocity()).Rotation().Yaw;
 }
 
-void UHumanAnimInstance::CalculateFalling()
+void UHumanAnimInstance::HandleFalling()
 {
 	ACharacter* CharacterOwner = Cast<ACharacter>(TryGetPawnOwner());
 	if (CharacterOwner == nullptr)

@@ -7,17 +7,6 @@
 #include "InputActionValue.h"
 #include "WildOmissionCharacter.generated.h"
 
-class UCameraComponent;
-class UVitalsComponent;
-class UInventoryManipulatorComponent;
-class UPlayerInventoryComponent;
-class UInteractionComponent;
-class UPlayerHUDWidget;
-class UInputAction;
-class UInputMappingContext;
-class UEquipComponent;
-class AEquipableItem;
-
 UCLASS()
 class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
 {
@@ -26,24 +15,22 @@ class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
 public:
 	AWildOmissionCharacter();
 
-	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
 
 	UFUNCTION(BlueprintCallable)
-	UPlayerHUDWidget* GetHUDWidget() const;
+	class UPlayerHUDWidget* GetHUDWidget() const;
 
 	UFUNCTION(BlueprintCallable)
-	UVitalsComponent* GetVitalsComponent() const;
+	class UVitalsComponent* GetVitalsComponent() const;
 
 	UFUNCTION(BlueprintCallable)
-	UPlayerInventoryComponent* GetInventoryComponent() const;
+	class UPlayerInventoryComponent* GetInventoryComponent() const;
 
 	UFUNCTION(BlueprintCallable)
-	UInventoryManipulatorComponent* GetInventoryManipulatorComponent() const;
+	class UInventoryManipulatorComponent* GetInventoryManipulatorComponent() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -52,53 +39,53 @@ protected:
 	
 private:
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* FirstPersonCameraComponent;
+	class UCameraComponent* FirstPersonCameraComponent;
 	
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* FirstPersonArmsMeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UEquipComponent* EquipComponent;
+	class UEquipComponent* EquipComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UVitalsComponent* VitalsComponent;
+	class UVitalsComponent* VitalsComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	UInventoryManipulatorComponent* InventoryManipulatorComponent;
+	class UInventoryManipulatorComponent* InventoryManipulatorComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UPlayerInventoryComponent* InventoryComponent;
+	class UPlayerInventoryComponent* InventoryComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	UInteractionComponent* InteractionComponent;
+	class UInteractionComponent* InteractionComponent;
 
 	UPROPERTY()
-	UPlayerHUDWidget* PlayerHUDWidget;
-	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
+	class UPlayerHUDWidget* PlayerHUDWidget;
+	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	//*****************************
 	// Input
 	//*****************************
 	UPROPERTY()
-	UInputMappingContext* DefaultMappingContext;
+	class UInputMappingContext* DefaultMappingContext;
 	UPROPERTY()
-	UInputAction* MoveAction;
+	class UInputAction* MoveAction;
 	UPROPERTY()
-	UInputAction* LookAction;
+	class UInputAction* LookAction;
 	UPROPERTY()
-	UInputAction* JumpAction;
+	class UInputAction* JumpAction;
 	UPROPERTY()
-	UInputAction* InteractAction;
+	class UInputAction* InteractAction;
 	UPROPERTY()
-	UInputAction* PrimaryAction;
+	class UInputAction* PrimaryAction;
 	UPROPERTY()
-	UInputAction* SecondaryAction;
+	class UInputAction* SecondaryAction;
 	UPROPERTY()
-	UInputAction* InventoryAction;
+	class UInputAction* InventoryAction;
 	UPROPERTY()
-	UInputAction* ToolbarSelectionIncrementAction;
+	class UInputAction* ToolbarSelectionIncrementAction;
 	UPROPERTY()
-	UInputAction* ToolbarSelectionDecrementAction;
+	class UInputAction* ToolbarSelectionDecrementAction;
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);

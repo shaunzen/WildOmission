@@ -21,7 +21,7 @@
 AWildOmissionCharacter::AWildOmissionCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Player/WBP_PlayerHUD"));
 	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerArmsAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_FirstPerson"));
@@ -157,11 +157,6 @@ void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		PlayerHUDWidget->RemoveFromParent();
 		PlayerHUDWidget = nullptr;
 	}
-}
-
-void AWildOmissionCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 //********************************
