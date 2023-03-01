@@ -5,13 +5,22 @@
 #include "Components/ProgressBar.h"
 #include "WildOmission/Components/VitalsComponent.h"
 
-void UVitalsWidget::Set(UVitalsComponent* InVitals)
+void UVitalsWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	if (InVitals == nullptr || HealthBar == nullptr || ThirstBar == nullptr || HungerBar == nullptr)
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	UpdateBars();
+}
+
+void UVitalsWidget::UpdateBars()
+{
+	UVitalsComponent* PlayerVitals = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UVitalsComponent>();
+	if (PlayerVitals == nullptr)
 	{
 		return;
 	}
-	HealthBar->SetPercent(InVitals->GetHealth() / InVitals->GetMaxHealth());
-	ThirstBar->SetPercent(InVitals->GetThirst() / InVitals->GetMaxThirst());
-	HungerBar->SetPercent(InVitals->GetHunger() / InVitals->GetMaxHunger());
+
+	HealthBar->SetPercent(PlayerVitals->GetHealth() / PlayerVitals->GetMaxHealth());
+	ThirstBar->SetPercent(PlayerVitals->GetThirst() / PlayerVitals->GetMaxThirst());
+	HungerBar->SetPercent(PlayerVitals->GetHunger() / PlayerVitals->GetMaxHunger());
 }

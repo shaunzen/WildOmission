@@ -39,12 +39,10 @@ void UVitalsComponent::BeginPlay()
 
 	SetIsReplicated(true);
 	
-	// Return if we are not on the server
 	if (!GetOwner()->HasAuthority())
 	{
 		return;
 	}
-
 
 	// Set the start values
 	SetHealth(StartHealth);

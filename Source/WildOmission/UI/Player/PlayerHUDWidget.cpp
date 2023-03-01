@@ -21,6 +21,7 @@ UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) 
 void UPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
 	BackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("BackgroundMouseButtonDown"));
 	
 	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UPlayerInventoryComponent>();
@@ -65,7 +66,6 @@ void UPlayerHUDWidget::RefreshInventoryStates()
 		SelectedItem->Hide();
 	}
 }
-
 
 void UPlayerHUDWidget::ToggleInventory()
 {

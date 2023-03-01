@@ -38,7 +38,6 @@ void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 // General Management
 //**************************************************************
 
-
 void UPlayerInventoryComponent::EquipPlayer(FInventorySlot& SelectedSlot)
 {
 	UEquipComponent* PlayerEquipComponent = OwnerCharacter->FindComponentByClass<UEquipComponent>();

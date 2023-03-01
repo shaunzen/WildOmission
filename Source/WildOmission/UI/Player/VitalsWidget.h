@@ -7,14 +7,14 @@
 #include "VitalsWidget.generated.h"
 
 class UProgressBar;
-class UVitalsComponent;
 
 UCLASS()
 class WILDOMISSION_API UVitalsWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
-	void Set(UVitalsComponent* InVitals);
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -23,4 +23,7 @@ private:
 	UProgressBar* ThirstBar;
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* HungerBar;
+
+	void UpdateBars();
+
 };
