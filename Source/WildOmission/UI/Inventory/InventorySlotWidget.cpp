@@ -24,7 +24,6 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const int32& InIndex
 // Pass in Quantity of 0 to clear item from slot
 void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 {
-	
 	FString QuantityString;
 	if (Item.Quantity > 1)
 	{

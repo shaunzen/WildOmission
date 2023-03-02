@@ -3,7 +3,6 @@
 
 #include "InteractionComponent.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
-#include "DrawDebugHelpers.h"
 
 UInteractionComponent::UInteractionComponent()
 {
@@ -57,8 +56,6 @@ bool UInteractionComponent::TraceOnInteractableChannel(FHitResult& OutHitResult)
 	FVector Start = GetComponentLocation();
 	FVector End = Start + (GetForwardVector() * InteractionRange);
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
-	
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, -1, 0, InteractionRadius);
 
 	return GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel1, Sphere);
 }
