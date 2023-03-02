@@ -20,17 +20,18 @@ public:
 
 	virtual void Logout(AController* Exiting) override;
 
-	UFUNCTION(Exec)
-	void LogPlayerInventoryComponents();
-	UFUNCTION(Exec)
-	void LogPlayerInventorySlots();
-
 	UFUNCTION(BlueprintCallable, Exec)
 	void SaveGame();
 	
 	ASaveHandler* GetSaveHandler();
 
 	TArray<APlayerController*> GetAllPlayerControllers();
+
+	UFUNCTION(Exec)
+	void LogPlayerInventoryComponents();
+
+	UFUNCTION(Exec)
+	void LogPlayerInventorySlots();
 
 private:
 	UPROPERTY()
