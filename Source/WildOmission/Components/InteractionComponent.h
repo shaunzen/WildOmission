@@ -27,11 +27,14 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float InteractionRange;
 
+	UPROPERTY(EditDefaultsOnly)
+	float InteractionRadius;
+
 	FString InteractionString;
 
 	void UpdateInteractionPrompt();
 
-	bool LineTraceOnInteractableChannel(FHitResult& OutHitResult) const;
+	bool TraceOnInteractableChannel(FHitResult& OutHitResult) const;
 	
 	UFUNCTION(Server, Reliable)
 	void Server_Interact(AActor* ActorToInteract);

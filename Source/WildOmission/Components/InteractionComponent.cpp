@@ -3,11 +3,13 @@
 
 #include "InteractionComponent.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
+#include "DrawDebugHelpers.h"
 
 UInteractionComponent::UInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	InteractionRange = 300.0f;
+	InteractionRadius = 5.0f;
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -20,7 +22,7 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 void UInteractionComponent::Interact()
 {
 	FHitResult HitResult;
-	if (LineTraceOnInteractableChannel(HitResult))
+	if (TraceOnInteractableChannel(HitResult))
 	{
 		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
 		{
@@ -37,7 +39,7 @@ FString UInteractionComponent::GetInteractionString() const
 void UInteractionComponent::UpdateInteractionPrompt()
 {
 	FHitResult HitResult;
-	if (LineTraceOnInteractableChannel(HitResult))
+	if (TraceOnInteractableChannel(HitResult))
 	{
 		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
 		{
@@ -50,11 +52,15 @@ void UInteractionComponent::UpdateInteractionPrompt()
 	}
 }
 
-bool UInteractionComponent::LineTraceOnInteractableChannel(FHitResult& OutHitResult) const
+bool UInteractionComponent::TraceOnInteractableChannel(FHitResult& OutHitResult) const
 {
 	FVector Start = GetComponentLocation();
 	FVector End = Start + (GetForwardVector() * InteractionRange);
-	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel1);
+	FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
+	
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, -1, 0, InteractionRadius);
+
+	return GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel1, Sphere);
 }
 
 void UInteractionComponent::Server_Interact_Implementation(AActor* ActorToInteract)
