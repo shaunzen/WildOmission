@@ -38,7 +38,7 @@ void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 // General Management
 //**************************************************************
 
-void UPlayerInventoryComponent::EquipPlayer(FInventorySlot& SelectedSlot)
+void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 {
 	UEquipComponent* PlayerEquipComponent = OwnerCharacter->FindComponentByClass<UEquipComponent>();
 	if (PlayerEquipComponent == nullptr)
@@ -61,14 +61,16 @@ void UPlayerInventoryComponent::EquipPlayer(FInventorySlot& SelectedSlot)
 		return;
 	}
 
+	AEquipableItem* CurrentEquipedItem = PlayerEquipComponent->GetEquipedItem();
+
 	// is this item the same as we are already holding
-	if (PlayerEquipComponent->GetEquipedItem() != nullptr && SlotItemData->EquipItemClass.Get() == PlayerEquipComponent->GetEquipedItem()->GetClass())
+	if (CurrentEquipedItem && SelectedSlot.Index == CurrentEquipedItem->GetFromSlotIndex() && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass())
 	{
 		return;
 	}
 
 	PlayerEquipComponent->Disarm();
-	PlayerEquipComponent->EquipItem(SlotItemData->EquipItemClass);
+	PlayerEquipComponent->EquipItem(SlotItemData->EquipItemClass, SelectedSlot.Index);
 
 }
 
@@ -117,10 +119,10 @@ void UPlayerInventoryComponent::OnInventoryChange()
 {
 	Super::OnInventoryChange();
 
-	RefreshPlayerEquip();
+	RefreshToolbarSelectionState();
 }
 
-void UPlayerInventoryComponent::RefreshPlayerEquip()
+void UPlayerInventoryComponent::RefreshToolbarSelectionState()
 {
 	if (!IsToolbarSlotSelectionValid())
 	{
@@ -129,7 +131,7 @@ void UPlayerInventoryComponent::RefreshPlayerEquip()
 
 	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
 
-	EquipPlayer(SelectedSlot);
+	RefreshPlayerEquip(SelectedSlot);
 }
 
 bool UPlayerInventoryComponent::IsToolbarSlotSelectionValid() const
@@ -154,7 +156,7 @@ void UPlayerInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(i
 
 	ToolbarSelectionIndex = SelectionIndex;
 
-	RefreshPlayerEquip();
+	RefreshToolbarSelectionState();
 }
 
 void UPlayerInventoryComponent::Server_RemoveHeldItem_Implementation()
@@ -168,5 +170,5 @@ void UPlayerInventoryComponent::Server_RemoveHeldItem_Implementation()
 		SelectedSlot.ClearItem();
 	}
 
-	RefreshPlayerEquip();
+	RefreshToolbarSelectionState();
 }

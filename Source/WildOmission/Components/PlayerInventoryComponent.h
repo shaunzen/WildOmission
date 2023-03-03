@@ -25,7 +25,7 @@ public:
 	// General Management
 	//**************************************************************
 	
-	void EquipPlayer(FInventorySlot& SelectedSlot);
+	void RefreshPlayerEquip(FInventorySlot& SelectedSlot);
 
 	//**************************************************************
 	// User Interaction
@@ -60,7 +60,7 @@ private:
 	// Slot Functions
 	//**************************************************************
 
-	void RefreshPlayerEquip();
+	void RefreshToolbarSelectionState();
 	
 	bool IsToolbarSlotSelectionValid() const;
 

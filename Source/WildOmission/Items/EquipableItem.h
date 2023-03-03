@@ -21,7 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called when the item is equiped into the players hands
-	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter);
+	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const int8& InFromSlotIndex);
 
 	// Called before the item is unequiped
 	virtual void OnUnequip();
@@ -36,6 +36,8 @@ public:
 	
 	void SetLocalVisibility(bool bVisible);
 
+	int8 GetFromSlotIndex() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,6 +47,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	USoundBase* EquipSound;
+
+	int8 FromSlotIndex;
 
 	AWildOmissionCharacter* GetOwnerCharacter() const;
 

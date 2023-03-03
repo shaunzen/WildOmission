@@ -44,7 +44,7 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 		}
 
 		// Set the item icon border to the item thumbnail
-		ItemIconBorder->SetBrushFromTexture(SlotItemData->Thumbnail);
+		ItemIconBorder->SetBrushFromMaterial(SlotItemData->Thumbnail);
 		// Set the item icon color opaque white
 		ItemIconBorder->SetBrushColor(FLinearColor::White);
 	}
@@ -80,7 +80,7 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 	return FReply::Handled();
 }
 
-int32 UInventorySlotWidget::GetIndex()
+int32 UInventorySlotWidget::GetIndex() const
 {
 	return Index;
 }

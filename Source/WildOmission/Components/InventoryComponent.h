@@ -23,7 +23,7 @@ struct FItem : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture2D* Thumbnail;
+	UMaterialInstance* Thumbnail;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* Mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

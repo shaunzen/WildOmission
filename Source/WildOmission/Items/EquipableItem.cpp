@@ -28,6 +28,8 @@ AEquipableItem::AEquipableItem()
 	}
 
 	EquipSound = EquipSoundObject.Object;
+
+	FromSlotIndex = -1;
 }
 
 // Called when the game starts or when spawned
@@ -44,9 +46,11 @@ void AEquipableItem::Tick(float DeltaTime)
 	
 }
 
-void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter)
+void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const int8& InFromSlotIndex)
 {
 	SetOwner(InOwnerCharacter);
+	
+	FromSlotIndex = InFromSlotIndex;
 
 	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 
@@ -91,4 +95,9 @@ void AEquipableItem::Client_PlayEquipSound_Implementation()
 void AEquipableItem::SetLocalVisibility(bool bVisible)
 {
 	Mesh->SetVisibility(bVisible);
+}
+
+int8 AEquipableItem::GetFromSlotIndex() const
+{
+	return FromSlotIndex;
 }

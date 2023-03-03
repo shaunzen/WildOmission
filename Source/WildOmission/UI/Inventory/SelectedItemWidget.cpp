@@ -5,9 +5,9 @@
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
 
-void USelectedItemWidget::SetItem(UTexture2D* ItemIcon, const int32& Quantity)
+void USelectedItemWidget::SetItem(UMaterialInstance* ItemIcon, const int32& Quantity)
 {
-	IconBorder->SetBrushFromTexture(ItemIcon);
+	IconBorder->SetBrushFromMaterial(ItemIcon);
 	QuantityText->SetText(FText::FromString(GetQuantityString(Quantity)));
 }
 

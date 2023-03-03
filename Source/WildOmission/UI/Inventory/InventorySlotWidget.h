@@ -21,7 +21,8 @@ public:
 	void SetItem(const FInventoryItem& Item);
 	void ClearItem();
 
-	int32 GetIndex();
+	UFUNCTION(BlueprintCallable)
+	int32 GetIndex() const;
 	
 	void SetSelected(bool InSelected);
 

@@ -37,7 +37,7 @@ void UEquipComponent::BeginPlay()
 	FirstPersonItemMeshComponent->AttachToComponent(OwnerCharacter->GetArmsMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 }
 
-void UEquipComponent::EquipItem(TSubclassOf<AEquipableItem> Item)
+void UEquipComponent::EquipItem(TSubclassOf<AEquipableItem> Item, const int8& FromSlotIndex)
 {
 	if (OwnerCharacter == nullptr)
 	{
@@ -46,7 +46,7 @@ void UEquipComponent::EquipItem(TSubclassOf<AEquipableItem> Item)
 
 	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
 
-	EquipedItem->Equip(OwnerCharacter);
+	EquipedItem->Equip(OwnerCharacter, FromSlotIndex);
 	
 	if (GetOwner()->HasAuthority())
 	{

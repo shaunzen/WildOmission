@@ -15,7 +15,7 @@ class WILDOMISSION_API USelectedItemWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetItem(UTexture2D* ItemIcon, const int32& Quantity);
+	void SetItem(UMaterialInstance* ItemIcon, const int32& Quantity);
 	
 	void Show();
 	
