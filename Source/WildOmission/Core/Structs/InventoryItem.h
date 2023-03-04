@@ -17,7 +17,11 @@ struct FInventoryItem
 	UPROPERTY(VisibleAnywhere)
 	int32 Quantity = 0;
 
+	UPROPERTY(VisibleAnywhere)
+	uint32 UniqueID = 0;
+
 	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName);
+	static bool CompareID(const FInventoryItem& Item, const uint32& ItemID);
 
 	bool IsZero() const;
 	
