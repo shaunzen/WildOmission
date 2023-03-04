@@ -163,7 +163,7 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 
 bool UInventoryComponent::AddItemToSlots(const FName& ItemName, const int32& Quantity, int32& Remaining)
 {
-	uint32 UniqueID = GetWorld()->GetUnpausedTimeSeconds();
+	uint32 UniqueID = FMath::RandRange(1, 999999);
 
 	int32 QuantityToAdd = Quantity;
 	FItem* ItemData = GetItemData(ItemName);
