@@ -462,7 +462,12 @@ void UInventoryComponent::Server_DropAll_Implementation(const int32& ToSlotIndex
 
 		Manipulator->StopDragging();
 	}
-	else if (ToSlot.SameItemNameAs(Manipulator->GetSelectedItem()))
+
+
+	//**************************************************************************
+	// this is the fuking problem, its getting erased here
+	//****************************************************
+	else if (ToSlot.SameItemNameAs(Manipulator->GetSelectedItem())) // and not something unique?
 	{
 		if ((ToSlot.Item.Quantity + Manipulator->GetSelectedItem().Quantity) <= GetItemData(Manipulator->GetSelectedItem().Name)->StackSize)
 		{

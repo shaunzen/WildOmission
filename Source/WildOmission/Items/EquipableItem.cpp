@@ -30,6 +30,7 @@ AEquipableItem::AEquipableItem()
 	EquipSound = EquipSoundObject.Object;
 
 	FromSlotIndex = -1;
+	UniqueID = 0;
 }
 
 // Called when the game starts or when spawned
@@ -46,11 +47,12 @@ void AEquipableItem::Tick(float DeltaTime)
 	
 }
 
-void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const int8& InFromSlotIndex)
+void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const int8& InFromSlotIndex, const uint32& InUniqueID)
 {
 	SetOwner(InOwnerCharacter);
 	
 	FromSlotIndex = InFromSlotIndex;
+	UniqueID = InUniqueID;
 
 	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
 
@@ -100,4 +102,9 @@ void AEquipableItem::SetLocalVisibility(bool bVisible)
 int8 AEquipableItem::GetFromSlotIndex() const
 {
 	return FromSlotIndex;
+}
+
+uint32 AEquipableItem::GetUniqueItemID() const
+{
+	return UniqueID;
 }

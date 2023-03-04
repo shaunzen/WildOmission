@@ -21,7 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called when the item is equiped into the players hands
-	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const int8& InFromSlotIndex);
+	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const int8& InFromSlotIndex, const uint32& InUniqueID);
 
 	// Called before the item is unequiped
 	virtual void OnUnequip();
@@ -38,6 +38,8 @@ public:
 
 	int8 GetFromSlotIndex() const;
 
+	uint32 GetUniqueItemID() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,9 +52,9 @@ protected:
 
 	int8 FromSlotIndex;
 
-	AWildOmissionCharacter* GetOwnerCharacter() const;
+	uint32 UniqueID;
 
-	void HandleAttachment();
+	AWildOmissionCharacter* GetOwnerCharacter() const;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayEquipSound();
