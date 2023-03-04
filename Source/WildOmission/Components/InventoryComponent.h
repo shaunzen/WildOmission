@@ -204,7 +204,7 @@ private:
 	void DropSingle(const int32& ToSlotIndex);
 
 	bool FindAndAddToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
-	bool FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
+	bool FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, const uint32& ItemUniqueID, int32& QuantityToAdd);
 
 	//**************************************************************
 	// RPC

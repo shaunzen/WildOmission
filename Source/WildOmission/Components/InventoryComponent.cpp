@@ -163,6 +163,8 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 
 bool UInventoryComponent::AddItemToSlots(const FName& ItemName, const int32& Quantity, int32& Remaining)
 {
+	uint32 UniqueID = GetWorld()->GetUnpausedTimeSeconds();
+
 	int32 QuantityToAdd = Quantity;
 	FItem* ItemData = GetItemData(ItemName);
 	if (ItemData == nullptr)
@@ -172,7 +174,7 @@ bool UInventoryComponent::AddItemToSlots(const FName& ItemName, const int32& Qua
 
 	if (!FindAndAddToPopulatedSlot(ItemName, ItemData, QuantityToAdd))
 	{
-		FindAndAddToEmptySlot(ItemName, ItemData, QuantityToAdd);
+		FindAndAddToEmptySlot(ItemName, ItemData, UniqueID, QuantityToAdd);
 	}
 
 	Remaining = QuantityToAdd;
@@ -264,7 +266,7 @@ bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, FItem
 	return QuantityToAdd == 0;
 }
 
-bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd)
+bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, const uint32& ItemUniqueID, int32& QuantityToAdd)
 {
 	for (FInventorySlot& Slot : Slots)
 	{
@@ -291,6 +293,7 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* It
 			FInventoryItem NewSlotItem;
 			NewSlotItem.Name = ItemName;
 			NewSlotItem.Quantity = QuantityToAdd;
+			NewSlotItem.UniqueID = ItemUniqueID;
 			Slot.Item = NewSlotItem;
 			QuantityToAdd = 0;
 		}
@@ -393,6 +396,9 @@ void UInventoryComponent::Server_DragAll_Implementation(const int32& FromSlotInd
 	}
 
 	Manipulator->StartDragging(FromSlot.Item);
+	
+	// todo temp
+	UE_LOG(LogTemp, Warning, TEXT("FromSlot Item Unique ID: %i"), FromSlot.Item.UniqueID);
 
 	Server_RemoveItemFromContents(FromSlot.Item.Name, FromSlot.Item.Quantity);
 	
@@ -456,7 +462,7 @@ void UInventoryComponent::Server_DropAll_Implementation(const int32& ToSlotIndex
 
 		Manipulator->StopDragging();
 	}
-	else if (ToSlot.CompareItem(Manipulator->GetSelectedItem()))
+	else if (ToSlot.SameItemNameAs(Manipulator->GetSelectedItem()))
 	{
 		if ((ToSlot.Item.Quantity + Manipulator->GetSelectedItem().Quantity) <= GetItemData(Manipulator->GetSelectedItem().Name)->StackSize)
 		{
@@ -526,7 +532,7 @@ void UInventoryComponent::Server_DropSingle_Implementation(const int32& ToSlotIn
 		// Remove one from dragging
 		Manipulator->StartDragging(NewSelection);
 	}
-	else if (ToSlot.CompareItem(Manipulator->GetSelectedItem()) && (ToSlot.Item.Quantity + 1) <= GetItemData(Manipulator->GetSelectedItem().Name)->StackSize)
+	else if (ToSlot.SameItemNameAs(Manipulator->GetSelectedItem()) && (ToSlot.Item.Quantity + 1) <= GetItemData(Manipulator->GetSelectedItem().Name)->StackSize)
 	{
 		// Add one to slot
 		ToSlot.Item.Quantity += 1;

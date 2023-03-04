@@ -13,9 +13,14 @@ void FInventorySlot::ClearItem()
 	Item.Clear();
 }
 
-bool FInventorySlot::CompareItem(const FInventoryItem& ItemToCompare) const
+bool FInventorySlot::SameItemNameAs(const FInventoryItem& ItemToCompare) const
 {
 	return Item.Name == ItemToCompare.Name;
+}
+
+bool FInventorySlot::SameItemIdAs(const FInventoryItem& ItemToCompare) const
+{
+	return Item.UniqueID == ItemToCompare.UniqueID;
 }
 
 bool FInventorySlot::IsEmpty() const

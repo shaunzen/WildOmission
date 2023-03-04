@@ -22,7 +22,9 @@ struct FInventorySlot
 
 	void ClearItem();
 
-	bool CompareItem(const FInventoryItem& ItemToCompare) const;
+	bool SameItemNameAs(const FInventoryItem& ItemToCompare) const;
+
+	bool SameItemIdAs(const FInventoryItem& ItemToCompare) const;
 
 	bool IsEmpty() const;
 };
