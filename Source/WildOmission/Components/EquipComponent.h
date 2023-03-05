@@ -17,7 +17,7 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void EquipItem(TSubclassOf<AEquipableItem> Item, const int8& FromSlotIndex, const uint32& UniqueID);
+	void EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> Item, const int8& FromSlotIndex, const uint32& UniqueID);
 
 	void Disarm();
 

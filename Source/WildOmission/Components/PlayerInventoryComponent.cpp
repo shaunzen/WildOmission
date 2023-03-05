@@ -74,7 +74,7 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 	}
 
 	PlayerEquipComponent->Disarm();
-	PlayerEquipComponent->EquipItem(SlotItemData->EquipItemClass, SelectedSlot.Index, SelectedSlot.Item.UniqueID);
+	PlayerEquipComponent->EquipItem(SelectedSlot.Item.Name, SlotItemData->EquipItemClass, SelectedSlot.Index, SelectedSlot.Item.UniqueID);
 
 }
 

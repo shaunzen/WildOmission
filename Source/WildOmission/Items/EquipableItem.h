@@ -21,7 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called when the item is equiped into the players hands
-	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const int8& InFromSlotIndex, const uint32& InUniqueID);
+	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID);
 
 	// Called before the item is unequiped
 	virtual void OnUnequip();
@@ -49,6 +49,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	USoundBase* EquipSound;
+
+	FName ItemName;
 
 	int8 FromSlotIndex;
 

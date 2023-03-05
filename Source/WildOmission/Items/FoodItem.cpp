@@ -7,12 +7,6 @@
 #include "WildOmission/Components/VitalsComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-AFoodItem::AFoodItem()
-{
-	Energy = 0.0f;
-	Hydration = 0.0f;
-}
-
 void AFoodItem::Primary()
 {
 	Super::Primary();
@@ -23,32 +17,21 @@ void AFoodItem::Primary()
 		return;
 	}
 
+	FItem* ItemData = OwnerInventoryComponent->GetItemData(ItemName);
+	if (ItemData == nullptr)
+	{
+		return;
+	}
+
+	int32 Energy = ItemData->GetStat(FName("Energy"));
+	int32 Hydration = ItemData->GetStat(FName("Hydration"));
+	
 	OwnerVitalsComponent->AddHunger(Energy);
 	OwnerVitalsComponent->AddThirst(Hydration);
 
 	Client_PlayConsumeSound();
 	
 	OwnerInventoryComponent->RemoveHeldItem();
-}
-
-uint8 AFoodItem::GetEnergy()
-{
-	return Energy;
-}
-
-uint8 AFoodItem::GetHydration()
-{
-	return Hydration;
-}
-
-void AFoodItem::SetEnergy(uint8 InEnergy)
-{
-	Energy = InEnergy;
-}
-
-void AFoodItem::SetHydration(uint8 InHydration)
-{
-	Hydration = InHydration;
 }
 
 void AFoodItem::Client_PlayConsumeSound_Implementation()

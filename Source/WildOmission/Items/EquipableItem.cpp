@@ -47,10 +47,11 @@ void AEquipableItem::Tick(float DeltaTime)
 	
 }
 
-void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const int8& InFromSlotIndex, const uint32& InUniqueID)
+void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
 {
 	SetOwner(InOwnerCharacter);
 	
+	ItemName = InItemName;
 	FromSlotIndex = InFromSlotIndex;
 	UniqueID = InUniqueID;
 
