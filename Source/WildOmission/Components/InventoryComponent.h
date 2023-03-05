@@ -240,7 +240,7 @@ private:
 	// Slot Functions
 	//**************************************************************
 
-	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, const TArray<FItemStat> Stats, int32& Remaining);
+	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats, int32& Remaining);
 	bool RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
 	
 	void DragAll(const int32& FromSlotIndex);
