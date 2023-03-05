@@ -152,6 +152,12 @@ public:
 
 	// Returns a reference to the inventory slots
 	TArray<FInventorySlot>& GetSlots();
+
+	// Returns a poiter to the item with the specified unique id
+	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
+
+	// Returns a poiter to the slot containing an item with the specified unique id
+	FInventorySlot* FindSlotContainingItemWithUniqueID(const uint32& UniqueID);
 	
 	// Retrives the data about the item id passed in
 	FItem* GetItemData(const FName& ItemName);

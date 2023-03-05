@@ -119,6 +119,50 @@ TArray<FInventorySlot>& UInventoryComponent::GetSlots()
 	return Slots;
 }
 
+FInventoryItem* UInventoryComponent::FindItemWithUniqueID(const uint32& UniqueID)
+{
+	FInventoryItem* FoundItem = nullptr;
+
+	for (FInventorySlot& Slot : Slots)
+	{
+		if (Slot.IsEmpty())
+		{
+			continue;
+		}
+		if (Slot.Item.UniqueID != UniqueID)
+		{
+			continue;
+		}
+		
+		FoundItem = &Slot.Item;
+		break;
+	}
+
+	return FoundItem;
+}
+
+FInventorySlot* UInventoryComponent::FindSlotContainingItemWithUniqueID(const uint32& UniqueID)
+{
+	FInventorySlot* FoundSlot = nullptr;
+
+	for (FInventorySlot& Slot : Slots)
+	{
+		if (Slot.IsEmpty())
+		{
+			continue;
+		}
+		if (Slot.Item.UniqueID != UniqueID)
+		{
+			continue;
+		}
+
+		FoundSlot = &Slot;
+		break;
+	}
+
+	return FoundSlot;
+}
+
 FItem* UInventoryComponent::GetItemData(const FName& ItemName)
 {
 	if (ItemDataTable == nullptr)
