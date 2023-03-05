@@ -23,7 +23,7 @@ public:
 	// General Management
 	//**************************************************************
 
-	void SpawnWorldItem(const FName& ItemName, const int32& Quantity);
+	void SpawnWorldItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats);
 
 	//**************************************************************
 	// User Interaction
@@ -67,7 +67,7 @@ private:
 	void Server_DropSelectedItemInWorld(bool Single);
 
 	UFUNCTION(Server, Reliable)
-	void Server_SpawnWorldItem(FName ItemName, int32 Quantity);
+	void Server_SpawnWorldItem(FName ItemName, int32 Quantity, const TArray<FItemStat>& Stats);
 
 	UFUNCTION(Server, Reliable)
 	void Server_StartDragging(FInventoryItem ItemToDrag);

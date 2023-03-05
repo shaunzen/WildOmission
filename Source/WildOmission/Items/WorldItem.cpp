@@ -99,29 +99,12 @@ FString AWorldItem::PromptText()
 	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName.ToString());
 }
 
-// Sets the item id name for this world item
-void AWorldItem::Client_SetItemName_Implementation(FName InName)
-{
-	ItemName = InName;
-}
-
-// Sets the item quantity for this world item
-void AWorldItem::Client_SetItemQuantity_Implementation(int32 InQuantity)
-{
-	ItemQuantity = InQuantity;
-}
-
-// Sets the item mesh for this world item
-void AWorldItem::Client_SetItemMesh_Implementation(UStaticMesh* InMesh)
-{
-	ItemMesh->SetStaticMesh(InMesh);
-}
-
 // Sets all properties for this world item in one go
-void AWorldItem::Client_SetItemProperties_Implementation(FName InName, int32 InQuantity, UStaticMesh* InMesh, FVector InLocation)
+void AWorldItem::Client_SetItemProperties_Implementation(FName InName, int32 InQuantity, const TArray<FItemStat>& InStats, UStaticMesh* InMesh, FVector InLocation)
 {
 	ItemName = InName;
 	ItemQuantity = InQuantity;
+	Stats = InStats;
 	ItemMesh->SetStaticMesh(InMesh);
 	SetActorLocation(InLocation);
 }
@@ -136,6 +119,11 @@ FName AWorldItem::GetItemName()
 int32 AWorldItem::GetItemQuantity()
 {
 	return ItemQuantity;
+}
+
+TArray<FItemStat> AWorldItem::GetStats()
+{
+	return Stats;
 }
 
 // Gets the items static mesh component

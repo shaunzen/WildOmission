@@ -21,21 +21,9 @@ public:
 	virtual FString PromptText() override;
 	//* End Interactable Interface implementation
 
-	// Sets the item id name for this world item
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void Client_SetItemName(FName InName);
-
-	// Sets the item quantity for this world item
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void Client_SetItemQuantity(int32 InQuantity);
-	
-	// Sets the item mesh for this world item
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void Client_SetItemMesh(UStaticMesh* InMesh);
-
 	// Sets all properties for this world item in one go
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void Client_SetItemProperties(FName InName, int32 InQuanitty = 1, UStaticMesh* InMesh = nullptr, FVector InLocation = FVector::ZeroVector);
+	void Client_SetItemProperties(FName InName, int32 InQuanitty, const TArray<FItemStat>& InStats, UStaticMesh* InMesh = nullptr, FVector InLocation = FVector::ZeroVector);
 
 	// Gets the item name
 	UFUNCTION(BlueprintCallable)
@@ -44,6 +32,9 @@ public:
 	// Gets the item quantity
 	UFUNCTION(BlueprintCallable)
 	int32 GetItemQuantity();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FItemStat> GetStats();
 	
 	// Gets the items static mesh component
 	UFUNCTION(BlueprintCallable)
@@ -62,6 +53,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	int32 ItemQuantity;
 	
+	UPROPERTY(EditAnywhere)
+	TArray<FItemStat> Stats;
+
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ItemMesh;
 

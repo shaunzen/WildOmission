@@ -43,10 +43,10 @@ void UInventoryManipulatorComponent::GetLifetimeReplicatedProps(TArray<FLifetime
 // General Management
 //**************************************************************
 
-void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const int32& Quantity)
+void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats)
 {
 	// RPC on the server to spawn a world item of out specification
-	Server_SpawnWorldItem(ItemName, Quantity);
+	Server_SpawnWorldItem(ItemName, Quantity, Stats);
 }
 
 //**************************************************************
@@ -130,12 +130,12 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 	}
 	if (Single == true)
 	{
-		Server_SpawnWorldItem(SelectedItem.Name, 1);
+		Server_SpawnWorldItem(SelectedItem.Name, 1, SelectedItem.Stats);
 		SelectedItem.Quantity -= 1;
 	}
 	else
 	{
-		Server_SpawnWorldItem(SelectedItem.Name, SelectedItem.Quantity);
+		Server_SpawnWorldItem(SelectedItem.Name, SelectedItem.Quantity, SelectedItem.Stats);
 		SelectedItem.Clear();
 	}
 
@@ -147,7 +147,7 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 
 }
 
-void UInventoryManipulatorComponent::Server_SpawnWorldItem_Implementation(FName ItemName, int32 Quantity)
+void UInventoryManipulatorComponent::Server_SpawnWorldItem_Implementation(FName ItemName, int32 Quantity, const TArray<FItemStat>& Stats)
 {
 	// Get player's inventory
 	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
@@ -173,7 +173,7 @@ void UInventoryManipulatorComponent::Server_SpawnWorldItem_Implementation(FName 
 	PhysicsImpulse = GetOwner()->GetActorForwardVector() * 5000.0f;
 
 	// Update world items properties
-	WorldItem->Client_SetItemProperties(ItemName, Quantity, ItemData->Mesh, SpawnLocation);
+	WorldItem->Client_SetItemProperties(ItemName, Quantity, Stats, ItemData->Mesh, SpawnLocation);
 
 	WorldItem->AddImpulse(PhysicsImpulse);
 }
@@ -198,6 +198,6 @@ void UInventoryManipulatorComponent::Server_StopDragging_Implementation(bool Dro
 
 	if (DropInWorld)
 	{
-		SpawnWorldItem(SelectedItemInformation.Name, SelectedItemInformation.Quantity);
+		SpawnWorldItem(SelectedItemInformation.Name, SelectedItemInformation.Quantity, SelectedItemInformation.Stats);
 	}
 }

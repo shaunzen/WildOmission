@@ -15,5 +15,5 @@ struct FItemStat
 	FName Name = FName();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Value = 0;
+	int32 Value = -1;
 };

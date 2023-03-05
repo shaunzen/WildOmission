@@ -52,7 +52,7 @@ struct FItem : public FTableRowBase
 
 	int32 GetStat(const FName& StatName)
 	{
-		int32 StatValue = 0;
+		int32 StatValue = -1;
 
 		if (Stats.Num() == 0)
 		{

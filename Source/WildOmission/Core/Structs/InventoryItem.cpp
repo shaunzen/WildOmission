@@ -41,7 +41,7 @@ void FInventoryItem::Clear()
 
 int32 FInventoryItem::GetStat(const FName& StatName)
 {
-	int32 StatValue = 0;
+	int32 StatValue = -1;
 
 	if (Stats.Num() == 0)
 	{
@@ -60,4 +60,40 @@ int32 FInventoryItem::GetStat(const FName& StatName)
 	}
 
 	return StatValue;
+}
+
+void FInventoryItem::SetStat(const FName& StatName, const int32& Value)
+{
+	bool StatExists = false;
+
+	if (Stats.Num() == 0)
+	{
+		AddStat(StatName, Value);
+	}
+
+	for (FItemStat& Stat : Stats)
+	{
+		if (Stat.Name != StatName)
+		{
+			continue;
+		}
+
+		StatExists = true;
+		Stat.Value = Value;
+		break;
+	}
+
+	if (StatExists == false)
+	{
+		AddStat(StatName, Value);
+	}
+}
+
+void FInventoryItem::AddStat(const FName& StatName, const int32& Value)
+{
+	FItemStat NewStat;
+	NewStat.Name = StatName;
+	NewStat.Value = Value;
+
+	Stats.Add(NewStat);
 }

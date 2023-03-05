@@ -15,11 +15,22 @@ class WILDOMISSION_API AToolItem : public AEquipableItem
 public:
 	AToolItem();
 
+	//TODO load the durability from the item
+	
+	// Called when the item is equiped into the players hands
+	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
+
+	// TODO save the durability to the item
+
+	// Called before the item is unequiped
+	virtual void OnUnequip() override;
+
+	//TODO save durability everytime we take damage?
 	virtual void Primary() override;
 
 	virtual void Secondary() override;
 
-private:
+protected:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> ToolType;
 	
@@ -32,6 +43,12 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float SwingTimeSeconds;
 
+	int32 Durability;
+
+	UFUNCTION()
+	void ApplyDamage();
+
+private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlaySwingAnimation();
 

@@ -2,7 +2,9 @@
 
 
 #include "ToolItem.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/EquipComponent.h"
+#include "WildOmission/Components/InventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AToolItem::AToolItem()
@@ -12,6 +14,35 @@ AToolItem::AToolItem()
 	GatherMultiplyer = 1.0f;
 	EffectiveRangeCentimeters = 2000.0f;
 	SwingTimeSeconds = 1.0f;
+
+	Durability = 1000;
+}
+
+void AToolItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
+{
+	Super::Equip(InOwnerCharacter, InItemName, InFromSlotIndex, InUniqueID);
+
+	UInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UInventoryComponent>();
+	if (OwnerInventory == nullptr)
+	{
+		return;
+	}
+
+	FInventoryItem* InventoryItem = OwnerInventory->FindItemWithUniqueID(UniqueID);
+	if (InventoryItem == nullptr)
+	{
+		return;
+	}
+
+	Durability = InventoryItem->GetStat(FName("Durability"));
+
+	UE_LOG(LogTemp, Warning, TEXT("Pickup Durability %i"), Durability);
+}
+
+void AToolItem::OnUnequip()
+{
+	Super::OnUnequip();
+
 }
 
 void AToolItem::Primary()
@@ -24,6 +55,26 @@ void AToolItem::Primary()
 void AToolItem::Secondary()
 {
 	Super::Secondary();
+}
+
+void AToolItem::ApplyDamage()
+{
+	Durability -= 10;
+
+	// Save durability to slot item
+	UInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UInventoryComponent>();
+	if (OwnerInventory == nullptr)
+	{
+		return;
+	}
+
+	FInventoryItem* InventoryItem = OwnerInventory->FindItemWithUniqueID(UniqueID);
+	if (InventoryItem == nullptr)
+	{
+		return;
+	}
+
+	InventoryItem->SetStat(FName("Durability"), Durability);
 }
 
 void AToolItem::Client_PlaySwingAnimation_Implementation()

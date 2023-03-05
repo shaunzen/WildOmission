@@ -395,7 +395,8 @@ void UInventoryComponent::Server_AddItem_Implementation(const FName& ItemName, c
 	
 	if (AddSuccess == false)
 	{
-		Manipulator->SpawnWorldItem(ItemName, Remaining);
+		TArray<FItemStat> Stats;
+		Manipulator->SpawnWorldItem(ItemName, Remaining, Stats);
 	}
 
 	OnInventoryChange();
