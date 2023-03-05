@@ -166,15 +166,19 @@ public:
 	// General Management
 	//**************************************************************
 
-	void AddItem(const FName& ItemName, const int32& Quantity);
-	
-	void RemoveItem(const FName& ItemName, const int32& Quantity, bool bSpawnInWorld = false);
+	UFUNCTION(Server, Reliable)
+	void Server_AddItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RemoveItem(const FName& ItemName, const int32& Quantity, bool bDropInWorld = false);
+
 
 	//**************************************************************
 	// User Interaction
 	//**************************************************************
 	
-	void SlotInteraction(const int32& SlotIndex, bool Primary = true);
+	UFUNCTION(Server, Reliable)
+	void Server_SlotInteraction(const int32& SlotIndex, bool Primary = true);
 
 	//**************************************************************
 	// Getters
@@ -188,6 +192,9 @@ public:
 
 	// Returns a poiter to the item with the specified unique id
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
+
+	// Returns a pointer to slot containing the specified item
+	FInventorySlot* FindSlotContainingItem(const FName& ItemToFind);
 
 	// Returns a poiter to the slot containing an item with the specified unique id
 	FInventorySlot* FindSlotContainingItemWithUniqueID(const uint32& UniqueID);
@@ -233,7 +240,7 @@ private:
 	// Slot Functions
 	//**************************************************************
 
-	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
+	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, const TArray<FItemStat> Stats, int32& Remaining);
 	bool RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
 	
 	void DragAll(const int32& FromSlotIndex);
@@ -243,37 +250,6 @@ private:
 	void DropSingle(const int32& ToSlotIndex);
 
 	bool FindAndAddToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd);
-	bool FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, const uint32& ItemUniqueID, int32& QuantityToAdd);
-
-	//**************************************************************
-	// RPC
-	//**************************************************************
-
-	/*General Item Mananagement*/
-	UFUNCTION(Server, Reliable)
-	void Server_AddItemToContents(const FName& ItemName, const int32& Quantity);
-
-	UFUNCTION(Server, Reliable)
-	void Server_AddItem(const FName& ItemName, const int32& Quantity);
-
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_RemoveItemFromContents(const FName& ItemName, const int32& Quantity);
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_RemoveItem(const FName& ItemName, const int32& Quantity);
-
-	/*Drag and drop*/
-	UFUNCTION(Server, Reliable)
-	void Server_DragAll(const int32& FromSlotIndex);
-	
-	UFUNCTION(Server, Reliable)
-	void Server_DragSplit(const int32& FromSlotIndex);
-
-	UFUNCTION(Server, Reliable)
-	void Server_DropAll(const int32& ToSlotIndex);
-	
-	UFUNCTION(Server, Reliable)
-	void Server_DropSingle(const int32& ToSlotIndex);
+	bool FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, const TArray<FItemStat>& Stats, const uint32& ItemUniqueID, int32& QuantityToAdd);
 
 };
