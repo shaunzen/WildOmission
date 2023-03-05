@@ -20,6 +20,8 @@ struct FInventoryItem
 	UPROPERTY(VisibleAnywhere)
 	uint32 UniqueID = 0;
 
+	// todo FInventoryItemStats
+
 	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName);
 	static bool CompareID(const FInventoryItem& Item, const uint32& ItemID);
 
@@ -29,4 +31,6 @@ struct FInventoryItem
 	void Set(const FName& InName, const int32& InQuantity);
 
 	void Clear();
+
+	// float GetStat(FName StatName)
 };

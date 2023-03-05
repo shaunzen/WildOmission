@@ -40,6 +40,8 @@ public:
 	
 	bool IsDragging() const;
 
+	bool SelectedItemHasUniqueID(const uint32& UniqueID) const;
+
 	FInventoryItem GetSelectedItem();
 
 protected:

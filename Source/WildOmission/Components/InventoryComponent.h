@@ -30,7 +30,7 @@ struct FItem : public FTableRowBase
 	int32 StackSize;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AEquipableItem> EquipItemClass;
-
+	
 	FItem()
 	{
 		DisplayName = FName(TEXT("Item"));
@@ -38,6 +38,7 @@ struct FItem : public FTableRowBase
 		Thumbnail = nullptr;
 		Mesh = nullptr;
 		StackSize = 1000;
+		EquipItemClass = nullptr;
 	}
 };
 

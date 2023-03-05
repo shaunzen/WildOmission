@@ -84,6 +84,16 @@ bool UInventoryManipulatorComponent::IsDragging() const
 	return Dragging;
 }
 
+bool UInventoryManipulatorComponent::SelectedItemHasUniqueID(const uint32& UniqueID) const
+{
+	if (Dragging == false || SelectedItem.UniqueID != UniqueID)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 FInventoryItem UInventoryManipulatorComponent::GetSelectedItem()
 {
 	return SelectedItem;

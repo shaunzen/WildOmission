@@ -443,6 +443,7 @@ void UInventoryComponent::Server_DragAll_Implementation(const int32& FromSlotInd
 	
 	// todo temp
 	UE_LOG(LogTemp, Warning, TEXT("FromSlot Item Unique ID: %i"), FromSlot.Item.UniqueID);
+	//UE_LOG(LogTemp, Warning, TEXT("FromSlot Item Durability: %d"), FromSlot.Item.Durability);
 
 	Server_RemoveItemFromContents(FromSlot.Item.Name, FromSlot.Item.Quantity);
 	
