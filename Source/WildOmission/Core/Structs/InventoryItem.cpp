@@ -38,3 +38,26 @@ void FInventoryItem::Clear()
 	Quantity = 0;
 	UniqueID = 0;
 }
+
+int32 FInventoryItem::GetStat(const FName& StatName)
+{
+	int32 StatValue = 0;
+
+	if (Stats.Num() == 0)
+	{
+		return StatValue;
+	}
+
+	for (const FItemStat& Stat : Stats)
+	{
+		if (Stat.Name != StatName)
+		{
+			continue;
+		}
+
+		StatValue = Stat.Value;
+		break;
+	}
+
+	return StatValue;
+}

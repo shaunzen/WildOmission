@@ -8,6 +8,7 @@
 #include "WildOmission/Items/EquipableItem.h"
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "WildOmission/Core/Structs/InventorySlot.h"
+#include "WildOmission/Core/Structs/ItemStat.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 
@@ -20,17 +21,25 @@ struct FItem : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName DisplayName;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInstance* Thumbnail;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* Mesh;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 StackSize;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FItemStat> Stats;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AEquipableItem> EquipItemClass;
-	
+
 	FItem()
 	{
 		DisplayName = FName(TEXT("Item"));
@@ -39,6 +48,29 @@ struct FItem : public FTableRowBase
 		Mesh = nullptr;
 		StackSize = 1000;
 		EquipItemClass = nullptr;
+	}
+
+	int32 GetStat(const FName& StatName)
+	{
+		int32 StatValue = 0;
+
+		if (Stats.Num() == 0)
+		{
+			return StatValue;
+		}
+
+		for (const FItemStat& Stat : Stats)
+		{
+			if (Stat.Name != StatName)
+			{
+				continue;
+			}
+
+			StatValue = Stat.Value;
+			break;
+		}
+
+		return StatValue;
 	}
 };
 

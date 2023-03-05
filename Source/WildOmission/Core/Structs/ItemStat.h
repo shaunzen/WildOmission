@@ -6,14 +6,14 @@
 #include "UObject/NoExportTypes.h"
 #include "ItemStat.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FItemStat
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere)
-	FName Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName Name = FName();
 
-	UPROPERTY(VisibleAnywhere)
-	float Value;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Value = 0;
 };

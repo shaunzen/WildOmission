@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "ItemStat.h"
 #include "InventoryItem.generated.h"
 
 USTRUCT()
@@ -20,7 +21,8 @@ struct FInventoryItem
 	UPROPERTY(VisibleAnywhere)
 	uint32 UniqueID = 0;
 
-	// todo FInventoryItemStats
+	UPROPERTY(VisibleAnywhere)
+	TArray<FItemStat> Stats;
 
 	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName);
 	static bool CompareID(const FInventoryItem& Item, const uint32& ItemID);
@@ -32,5 +34,5 @@ struct FInventoryItem
 
 	void Clear();
 
-	// float GetStat(FName StatName)
+	int32 GetStat(const FName& StatName);
 };
