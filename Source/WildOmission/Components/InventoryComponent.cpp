@@ -462,12 +462,7 @@ void UInventoryComponent::Server_DropAll_Implementation(const int32& ToSlotIndex
 
 		Manipulator->StopDragging();
 	}
-
-
-	//**************************************************************************
-	// this is the fuking problem, its getting erased here
-	//****************************************************
-	else if (ToSlot.SameItemNameAs(Manipulator->GetSelectedItem())) // and not something unique?
+	else if (ToSlot.SameItemNameAs(Manipulator->GetSelectedItem()) && GetItemData(Manipulator->GetSelectedItem().Name)->StackSize != 1) // and not something unique?
 	{
 		if ((ToSlot.Item.Quantity + Manipulator->GetSelectedItem().Quantity) <= GetItemData(Manipulator->GetSelectedItem().Name)->StackSize)
 		{
@@ -495,6 +490,7 @@ void UInventoryComponent::Server_DropAll_Implementation(const int32& ToSlotIndex
 	}
 	else
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Performing swap for items."));
 		// Swap
 		FInventoryItem OldSlotItem = ToSlot.Item;
 
