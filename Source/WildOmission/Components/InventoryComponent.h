@@ -5,15 +5,7 @@
 // TODO clean these up
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Engine/DataTable.h"
-
 #include "WildOmission/Core/Structs/InventoryContents.h"
-#include "WildOmission/Core/Structs/ItemData.h"
-
-#include "WildOmission/Items/EquipableItem.h"
-#include "WildOmission/Core/Structs/InventoryItem.h"
-#include "WildOmission/Core/Structs/InventorySlot.h"
-#include "WildOmission/Core/Structs/ItemStat.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 
@@ -69,7 +61,7 @@ public:
 	FInventorySlot* FindSlotContainingItemWithUniqueID(const uint32& UniqueID);
 	
 	// Retrives the data about the item id passed in
-	FItemData* GetItemData(const FName& ItemName);
+	struct FItemData* GetItemData(const FName& ItemName);
 	
 	UInventoryManipulatorComponent* GetManipulator();
 
@@ -103,7 +95,7 @@ protected:
 private:
 
 	UPROPERTY(EditDefaultsOnly)
-	UDataTable* ItemDataTable;
+	class UDataTable* ItemDataTable;
 
 	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats, int32& Remaining);
 	bool RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);

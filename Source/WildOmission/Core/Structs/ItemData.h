@@ -38,38 +38,8 @@ struct FItemData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AEquipableItem> EquipItemClass;
 
+	FItemData();
 
-	//TODO move these to source file
-	FItemData()
-	{
-		DisplayName = FName(TEXT("Item"));
-		Description = FString(TEXT("This is an Item."));
-		Thumbnail = nullptr;
-		Mesh = nullptr;
-		StackSize = 1000;
-		EquipItemClass = nullptr;
-	}
+	int32 GetStat(const FName& StatName);
 
-	int32 GetStat(const FName& StatName)
-	{
-		int32 StatValue = -1;
-
-		if (Stats.Num() == 0)
-		{
-			return StatValue;
-		}
-
-		for (const FItemStat& Stat : Stats)
-		{
-			if (Stat.Name != StatName)
-			{
-				continue;
-			}
-
-			StatValue = Stat.Value;
-			break;
-		}
-
-		return StatValue;
-	}
 };

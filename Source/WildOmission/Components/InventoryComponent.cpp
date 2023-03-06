@@ -5,6 +5,7 @@
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "WildOmission/Core/Structs/ItemData.h"
 #include "Net/UnrealNetwork.h"
 
 UInventoryComponent::UInventoryComponent()
