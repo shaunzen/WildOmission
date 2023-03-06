@@ -43,6 +43,7 @@ public:
 	bool SelectedItemHasUniqueID(const uint32& UniqueID) const;
 
 	FInventoryItem GetSelectedItem();
+	FInventoryItem* GetSelectedItemAddress();
 
 protected:
 	// Called when the game starts

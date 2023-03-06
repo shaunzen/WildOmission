@@ -163,6 +163,11 @@ FInventoryItem UInventoryManipulatorComponent::GetSelectedItem()
 	return SelectedItem;
 }
 
+FInventoryItem* UInventoryManipulatorComponent::GetSelectedItemAddress()
+{
+	return &SelectedItem;
+}
+
 void UInventoryManipulatorComponent::RefreshUI()
 {
 	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());

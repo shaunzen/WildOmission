@@ -49,6 +49,8 @@ protected:
 	void ApplyDamage();
 
 private:
+	FInventoryItem* FindInInventory();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlaySwingAnimation();
 

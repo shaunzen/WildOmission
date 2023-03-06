@@ -5,6 +5,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/EquipComponent.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AToolItem::AToolItem()
@@ -62,19 +63,30 @@ void AToolItem::ApplyDamage()
 	Durability -= 10;
 
 	// Save durability to slot item
+	FInventoryItem* InventoryItem = FindInInventory();
+	InventoryItem->SetStat(FName("Durability"), Durability);
+}
+
+FInventoryItem* AToolItem::FindInInventory()
+{
 	UInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UInventoryComponent>();
 	if (OwnerInventory == nullptr)
 	{
-		return;
+		return nullptr;
 	}
 
 	FInventoryItem* InventoryItem = OwnerInventory->FindItemWithUniqueID(UniqueID);
 	if (InventoryItem == nullptr)
 	{
-		return;
+		if (!OwnerInventory->GetManipulator()->SelectedItemHasUniqueID(UniqueID))
+		{
+			return nullptr;
+		}
+
+		InventoryItem = OwnerInventory->GetManipulator()->GetSelectedItemAddress();
 	}
 
-	InventoryItem->SetStat(FName("Durability"), Durability);
+	return InventoryItem;
 }
 
 void AToolItem::Client_PlaySwingAnimation_Implementation()
