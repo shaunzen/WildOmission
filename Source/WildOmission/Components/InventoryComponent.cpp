@@ -217,14 +217,14 @@ FInventorySlot* UInventoryComponent::FindSlotContainingItemWithUniqueID(const ui
 	return FoundSlot;
 }
 
-FItem* UInventoryComponent::GetItemData(const FName& ItemName)
+FItemData* UInventoryComponent::GetItemData(const FName& ItemName)
 {
 	if (ItemDataTable == nullptr)
 	{
 		return nullptr;
 	}
 	static const FString ContextString(TEXT("Item Data Context"));
-	return ItemDataTable->FindRow<FItem>(ItemName, ContextString, true);
+	return ItemDataTable->FindRow<FItemData>(ItemName, ContextString, true);
 }
 
 UInventoryManipulatorComponent* UInventoryComponent::GetManipulator()
@@ -267,7 +267,7 @@ bool UInventoryComponent::AddItemToSlots(const FName& ItemName, const int32& Qua
 	TArray<FItemStat> ItemStats;
 
 	int32 QuantityToAdd = Quantity;
-	FItem* ItemData = GetItemData(ItemName);
+	FItemData* ItemData = GetItemData(ItemName);
 	if (ItemData == nullptr)
 	{
 		return false;
@@ -485,7 +485,7 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex)
 }
 
 
-bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, FItem* ItemData, int32& QuantityToAdd)
+bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, FItemData* ItemData, int32& QuantityToAdd)
 {
 	for (FInventorySlot& Slot : Slots)
 	{
@@ -519,7 +519,7 @@ bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, FItem
 	return QuantityToAdd == 0;
 }
 
-bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItem* ItemData, const TArray<FItemStat>& Stats, const uint32& ItemUniqueID, int32& QuantityToAdd)
+bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItemData* ItemData, const TArray<FItemStat>& Stats, const uint32& ItemUniqueID, int32& QuantityToAdd)
 {
 	for (FInventorySlot& Slot : Slots)
 	{

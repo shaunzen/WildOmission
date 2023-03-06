@@ -58,7 +58,7 @@ void UPlayerHUDWidget::RefreshInventoryStates()
 	if (PlayerInventoryManipulator->IsDragging())
 	{
 		SelectedItem->Show();
-		FItem* SelectedItemData = PlayerInventory->GetInventoryComponent()->GetItemData(PlayerInventoryManipulator->GetSelectedItem().Name);
+		FItemData* SelectedItemData = PlayerInventory->GetInventoryComponent()->GetItemData(PlayerInventoryManipulator->GetSelectedItem().Name);
 		SelectedItem->SetItem(SelectedItemData->Thumbnail, PlayerInventoryManipulator->GetSelectedItem().Quantity);
 	}
 	else

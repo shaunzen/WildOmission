@@ -36,6 +36,7 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	RockFootstepSound = RockFootstepSoundObject.Object;
 	WoodFootstepSound = WoodFootstepSoundObject.Object;
 	SwingMontage = SwingAnimMontageObject.Object;
+	StopWalkAnimationWhenFalling = false;
 }
 
 void UHumanAnimInstance::NativeUpdateAnimation(float DeltaTime)
@@ -107,9 +108,15 @@ void UHumanAnimInstance::CalculateSpeedAndAngle()
 	{
 		return;
 	}
-
+	
 	Speed = PawnOwner->GetVelocity().Length();
 	Angle = PawnOwner->GetTransform().InverseTransformVector(PawnOwner->GetVelocity()).Rotation().Yaw;
+	
+	if (StopWalkAnimationWhenFalling == true && Falling == true)
+	{
+		Speed = 0.0f;
+		Angle = 0.0f;
+	}
 }
 
 void UHumanAnimInstance::HandleFalling()

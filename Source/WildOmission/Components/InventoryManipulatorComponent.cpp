@@ -82,7 +82,7 @@ void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const
 	}
 
 	// Get the data for this item
-	FItem* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
+	FItemData* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
 
 	// Spawn a world item actor
 	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();

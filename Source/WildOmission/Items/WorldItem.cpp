@@ -88,7 +88,7 @@ FString AWorldItem::PromptText()
 		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
 	}
 
-	FItem* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
+	FItemData* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
 	if (ItemData == nullptr)
 	{
 		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());

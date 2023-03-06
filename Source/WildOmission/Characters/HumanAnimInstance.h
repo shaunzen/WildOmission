@@ -49,6 +49,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* SwingMontage;
 
+	UPROPERTY(EditDefaultsOnly)
+	bool StopWalkAnimationWhenFalling;
+
 	void CalculateSpeedAndAngle();
 	
 	void HandleFalling();

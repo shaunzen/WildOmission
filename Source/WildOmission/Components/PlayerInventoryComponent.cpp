@@ -56,7 +56,7 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 	}
 
 	// get the equipable subclass for this item
-	FItem* SlotItemData = GetItemData(SelectedSlot.Item.Name);
+	FItemData* SlotItemData = GetItemData(SelectedSlot.Item.Name);
 	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
 	{
 		PlayerEquipComponent->Disarm();
