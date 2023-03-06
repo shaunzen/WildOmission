@@ -18,8 +18,7 @@ AWorldItem::AWorldItem()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Set this actor to replicate
-	SetReplicates(true);
-
+	bReplicates = true;
 
 	// Setup default values
 	Name = FName(TEXT("Item"));
@@ -31,6 +30,7 @@ AWorldItem::AWorldItem()
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
+	MeshComponent->SetIsReplicated(true);
 
 	ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Pickup/Pickup_Cue"));
 	
@@ -46,9 +46,11 @@ AWorldItem::AWorldItem()
 void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetReplicates(true);
-	SetReplicateMovement(true);
+	
+	if (!HasAuthority())
+	{
+		return;
+	}
 
 	MeshComponent->SetMassOverrideInKg(FName(), 20.0f);
 }
@@ -60,7 +62,6 @@ void AWorldItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	DOREPLIFETIME(AWorldItem, Name);
 	DOREPLIFETIME(AWorldItem, Quantity);
 	DOREPLIFETIME(AWorldItem, Stats);
-	DOREPLIFETIME(AWorldItem, MeshComponent);
 }
 
 void AWorldItem::Interact(AActor* Interactor)

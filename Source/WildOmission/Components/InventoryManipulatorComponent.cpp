@@ -91,6 +91,8 @@ void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const
 		return;
 	}
 
+	WorldItem->SetOwner(GetOwner());
+
 	FVector SpawnLocation;
 	FVector PhysicsImpulse;
 

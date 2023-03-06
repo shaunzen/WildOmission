@@ -43,7 +43,7 @@ private:
 	UPROPERTY(Replicated, EditAnywhere)
 	TArray<struct FItemStat> Stats;
 
-	UPROPERTY(Replicated, VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY()
