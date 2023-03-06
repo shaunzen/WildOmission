@@ -48,7 +48,7 @@ void AToolItem::OnUnequip()
 void AToolItem::Primary()
 {
 	Super::Primary();
-
+	ApplyDamage();
 	Client_PlaySwingAnimation();
 }
 

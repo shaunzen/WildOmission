@@ -263,14 +263,24 @@ bool UInventoryComponent::AddItemToSlots(const FName& ItemName, const int32& Qua
 {
 	uint32 UniqueID = FMath::RandRange(1, 999999);
 
-	// if the stats are empty populate with defaults
-	TArray<FItemStat> ItemStats;
+
 
 	int32 QuantityToAdd = Quantity;
 	FItemData* ItemData = GetItemData(ItemName);
 	if (ItemData == nullptr)
 	{
 		return false;
+	}
+	
+	// if the item stats are empty populate with defaults
+	TArray<FItemStat> ItemStats;
+	if (ItemData->Stats.Num() > 0 && Stats.Num() == 0)
+	{
+		ItemStats = ItemData->Stats;
+	}
+	else
+	{
+		ItemStats = Stats;
 	}
 
 	if (!FindAndAddToPopulatedSlot(ItemName, ItemData, QuantityToAdd))
@@ -331,6 +341,11 @@ void UInventoryComponent::DragAll(const int32& FromSlotIndex)
 
 	// todo temp
 	UE_LOG(LogTemp, Warning, TEXT("FromSlot Item Unique ID: %i"), FromSlot.Item.UniqueID);
+	for (const FItemStat& Stat : FromSlot.Item.Stats)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Dragging Item with stat: %s: %i"), *Stat.Name.ToString(), Stat.Value);
+	}
+
 	//UE_LOG(LogTemp, Warning, TEXT("FromSlot Item Durability: %d"), FromSlot.Item.Durability);
 
 	Contents.RemoveItem(FromSlot.Item.Name, FromSlot.Item.Quantity);
