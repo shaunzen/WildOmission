@@ -2,6 +2,7 @@
 
 
 #include "ItemData.h"
+#include "ItemStat.h"
 
 FItemData::FItemData()
 {

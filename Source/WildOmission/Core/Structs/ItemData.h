@@ -4,11 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-
-//TODO remove these and forward declare
-#include "ItemStat.h"
-#include "WildOmission/Items/EquipableItem.h"
-
 #include "UObject/NoExportTypes.h"
 #include "ItemData.generated.h"
 
@@ -33,10 +28,10 @@ struct FItemData : public FTableRowBase
 	int32 StackSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FItemStat> Stats;
+	TArray<struct FItemStat> Stats;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AEquipableItem> EquipItemClass;
+	TSubclassOf<class AEquipableItem> EquipItemClass;
 
 	FItemData();
 
