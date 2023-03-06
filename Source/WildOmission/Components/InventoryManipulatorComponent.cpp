@@ -24,6 +24,11 @@ UInventoryManipulatorComponent::UInventoryManipulatorComponent()
 void UInventoryManipulatorComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
 
 	Dragging = false;
 	SelectedItem.Clear();
@@ -43,36 +48,88 @@ void UInventoryManipulatorComponent::GetLifetimeReplicatedProps(TArray<FLifetime
 // General Management
 //**************************************************************
 
+void UInventoryManipulatorComponent::StartDragging(const FInventoryItem& ItemToDrag)
+{
+	SelectedItem = ItemToDrag;
+	Dragging = true;
+}
+
+void UInventoryManipulatorComponent::StopDragging(bool DropInWorld)
+{
+	if (Dragging == false)
+	{
+		return;
+	}
+
+	FInventoryItem SelectedItemInformation = SelectedItem;
+
+	SelectedItem.Clear();
+	Dragging = false;
+
+	if (DropInWorld)
+	{
+		SpawnWorldItem(SelectedItemInformation.Name, SelectedItemInformation.Quantity, SelectedItemInformation.Stats);
+	}
+}
+
 void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats)
 {
-	// RPC on the server to spawn a world item of out specification
-	Server_SpawnWorldItem(ItemName, Quantity, Stats);
+	// Get player's inventory
+	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
+	if (PlayerInventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	// Get the data for this item
+	FItem* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
+
+	// Spawn a world item actor
+	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();
+	if (ItemData == nullptr || WorldItem == nullptr)
+	{
+		return;
+	}
+
+	FVector SpawnLocation;
+	FVector PhysicsImpulse;
+
+	SpawnLocation = GetOwner()->GetActorLocation();
+	PhysicsImpulse = GetOwner()->GetActorForwardVector() * 5000.0f;
+
+	// Update world items properties
+	WorldItem->Client_SetItemProperties(ItemName, Quantity, Stats, ItemData->Mesh, SpawnLocation);
+
+	WorldItem->AddImpulse(PhysicsImpulse);
 }
 
 //**************************************************************
 // User Interaction
 //**************************************************************
 
-void UInventoryManipulatorComponent::DropSelectedItemInWorld(bool Single)
+void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementation(bool Single)
 {
 	if (!Dragging)
 	{
 		return;
 	}
+	if (Single == true)
+	{
+		SpawnWorldItem(SelectedItem.Name, 1, SelectedItem.Stats);
+		SelectedItem.Quantity -= 1;
+	}
+	else
+	{
+		SpawnWorldItem(SelectedItem.Name, SelectedItem.Quantity, SelectedItem.Stats);
+		SelectedItem.Clear();
+	}
 
-	Server_DropSelectedItemInWorld(Single);
+	if (SelectedItem.Quantity == 0)
+	{
+		SelectedItem.Clear();
+		Dragging = false;
+	}
 
-	RefreshUI();
-}
-
-void UInventoryManipulatorComponent::StartDragging(const FInventoryItem& ItemToDrag)
-{
-	Server_StartDragging(ItemToDrag);
-}
-
-void UInventoryManipulatorComponent::StopDragging(bool DropInWorld)
-{
-	Server_StopDragging(DropInWorld);
 }
 
 //**************************************************************
@@ -116,88 +173,4 @@ void UInventoryManipulatorComponent::RefreshUI()
 
 	// call refresh
 	OwnerHUDWidget->RefreshInventoryStates();
-}
-
-//**************************************************************
-// RPC
-//**************************************************************
-
-void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementation(bool Single)
-{
-	if (!Dragging)
-	{
-		return;
-	}
-	if (Single == true)
-	{
-		Server_SpawnWorldItem(SelectedItem.Name, 1, SelectedItem.Stats);
-		SelectedItem.Quantity -= 1;
-	}
-	else
-	{
-		Server_SpawnWorldItem(SelectedItem.Name, SelectedItem.Quantity, SelectedItem.Stats);
-		SelectedItem.Clear();
-	}
-
-	if (SelectedItem.Quantity == 0)
-	{
-		SelectedItem.Clear();
-		Dragging = false;
-	}
-
-}
-
-void UInventoryManipulatorComponent::Server_SpawnWorldItem_Implementation(FName ItemName, int32 Quantity, const TArray<FItemStat>& Stats)
-{
-	// Get player's inventory
-	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
-	if (PlayerInventoryComponent == nullptr)
-	{
-		return;
-	}
-
-	// Get the data for this item
-	FItem* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
-	
-	// Spawn a world item actor
-	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();
-	if (ItemData == nullptr || WorldItem == nullptr)
-	{
-		return;
-	}
-
-	FVector SpawnLocation;
-	FVector PhysicsImpulse;
-
-	SpawnLocation = GetOwner()->GetActorLocation();
-	PhysicsImpulse = GetOwner()->GetActorForwardVector() * 5000.0f;
-
-	// Update world items properties
-	WorldItem->Client_SetItemProperties(ItemName, Quantity, Stats, ItemData->Mesh, SpawnLocation);
-
-	WorldItem->AddImpulse(PhysicsImpulse);
-}
-
-void UInventoryManipulatorComponent::Server_StartDragging_Implementation(FInventoryItem ItemToDrag)
-{
-	SelectedItem = ItemToDrag;
-	Dragging = true;
-}
-
-void UInventoryManipulatorComponent::Server_StopDragging_Implementation(bool DropInWorld)
-{
-	if (Dragging == false)
-	{
-		return;
-	}
-
-	FInventoryItem SelectedItemInformation = SelectedItem;
-
-	SelectedItem.Clear();
-	Dragging = false;
-
-	if (DropInWorld)
-	{
-		SpawnWorldItem(SelectedItemInformation.Name, SelectedItemInformation.Quantity, SelectedItemInformation.Stats);
-	}
 }

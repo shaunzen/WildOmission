@@ -68,11 +68,11 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 	
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		Owner->GetInventoryComponent()->SlotInteraction(this->Index, true);
+		Owner->GetInventoryComponent()->Server_SlotInteraction(this->Index, true);
 	}
 	else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		Owner->GetInventoryComponent()->SlotInteraction(this->Index, false);
+		Owner->GetInventoryComponent()->Server_SlotInteraction(this->Index, false);
 	}
 
 	Owner->Refresh();

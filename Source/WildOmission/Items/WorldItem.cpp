@@ -57,7 +57,7 @@ void AWorldItem::Interact(AActor* Interactor)
 	}
 
 	// Add to their inventory
-	InteractorInventoryComponent->AddItem(ItemName, ItemQuantity);
+	InteractorInventoryComponent->AddItem(ItemName, ItemQuantity, Stats);
 
 	// Play Pickup sound
 	Client_PlayPickupSound();

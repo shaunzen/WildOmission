@@ -166,12 +166,9 @@ public:
 	// General Management
 	//**************************************************************
 
-	UFUNCTION(Server, Reliable)
-	void Server_AddItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats);
+	void AddItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats);
 
-	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_RemoveItem(const FName& ItemName, const int32& Quantity, bool bDropInWorld = false);
-
+	void RemoveItem(const FName& ItemName, const int32& Quantity, bool bDropInWorld = false);
 
 	//**************************************************************
 	// User Interaction
@@ -235,10 +232,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* ItemDataTable;
-
-	//**************************************************************
-	// Slot Functions
-	//**************************************************************
 
 	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats, int32& Remaining);
 	bool RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);

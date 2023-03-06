@@ -23,17 +23,17 @@ public:
 	// General Management
 	//**************************************************************
 
+	void StartDragging(const FInventoryItem& ItemToDrag);
+	void StopDragging(bool DropInWorld = false);
 	void SpawnWorldItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats);
 
 	//**************************************************************
 	// User Interaction
 	//**************************************************************
 
-	void DropSelectedItemInWorld(bool Single = false);
-
-	void StartDragging(const FInventoryItem& ItemToDrag);
-	void StopDragging(bool DropInWorld = false);
-
+	UFUNCTION(Server, Reliable)
+	void Server_DropSelectedItemInWorld(bool Single);
+	
 	//**************************************************************
 	// Getters
 	//**************************************************************
@@ -58,21 +58,5 @@ private:
 
 	UFUNCTION()
 	void RefreshUI();
-
-	//**************************************************************
-	// RPC
-	//**************************************************************
-
-	UFUNCTION(Server, Reliable)
-	void Server_DropSelectedItemInWorld(bool Single);
-
-	UFUNCTION(Server, Reliable)
-	void Server_SpawnWorldItem(FName ItemName, int32 Quantity, const TArray<FItemStat>& Stats);
-
-	UFUNCTION(Server, Reliable)
-	void Server_StartDragging(FInventoryItem ItemToDrag);
-
-	UFUNCTION(Server, Reliable)
-	void Server_StopDragging(bool DropInWorld);
 
 };

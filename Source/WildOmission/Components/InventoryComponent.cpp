@@ -60,7 +60,7 @@ void UInventoryComponent::SetManipulator(UInventoryManipulatorComponent* Invento
 // General Management
 //**************************************************************
 
-void UInventoryComponent::Server_AddItem_Implementation(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats)
+void UInventoryComponent::AddItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats)
 {
 	int32 Remaining;
 	int32 AmountAdded;
@@ -81,13 +81,7 @@ void UInventoryComponent::Server_AddItem_Implementation(const FName& ItemName, c
 	RefreshUI();
 }
 
-bool UInventoryComponent::Server_RemoveItem_Validate(const FName& ItemName, const int32& Quantity, bool bDropInWorld)
-{
-	// Only valid if the player has the item they are removing
-	return Contents.HasItem(ItemName);
-}
-
-void UInventoryComponent::Server_RemoveItem_Implementation(const FName& ItemName, const int32& Quantity, bool bDropInWorld)
+void UInventoryComponent::RemoveItem(const FName& ItemName, const int32& Quantity, bool bDropInWorld)
 {
 	// Remove from contents
 	Contents.RemoveItem(ItemName, Quantity);

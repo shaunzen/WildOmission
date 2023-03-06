@@ -180,10 +180,12 @@ void UPlayerHUDWidget::BackgroundMouseButtonDown(FGeometry MyGeometry, const FPo
 
 	if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		PlayerInventoryManipulator->DropSelectedItemInWorld(false);
+		PlayerInventoryManipulator->Server_DropSelectedItemInWorld(false);
 	}
 	else if (MouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		PlayerInventoryManipulator->DropSelectedItemInWorld(true);
+		PlayerInventoryManipulator->Server_DropSelectedItemInWorld(true);
 	}
+
+	RefreshInventoryStates();
 }
