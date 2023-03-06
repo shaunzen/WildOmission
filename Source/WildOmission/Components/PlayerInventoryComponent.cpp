@@ -5,6 +5,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Items/WorldItem.h"
+#include "WildOmission/Items/EquipableItem.h"
 #include "WildOmission/Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
 

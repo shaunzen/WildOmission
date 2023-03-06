@@ -16,30 +16,17 @@ public:
 	// Sets default values for this actor's properties
 	AWorldItem();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	//* Begin Interactable Interface implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
 	//* End Interactable Interface implementation
 
-	// Sets all properties for this world item in one go
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void Client_SetItemProperties(FName InName, int32 InQuanitty, const TArray<FItemStat>& InStats, UStaticMesh* InMesh = nullptr, FVector InLocation = FVector::ZeroVector);
-
-	// Gets the item name
-	UFUNCTION(BlueprintCallable)
-	FName GetItemName();
-	
-	// Gets the item quantity
-	UFUNCTION(BlueprintCallable)
-	int32 GetItemQuantity();
-
-	UFUNCTION(BlueprintCallable)
-	TArray<FItemStat> GetStats();
-	
-	// Gets the items static mesh component
-	UFUNCTION(BlueprintCallable)
-	UStaticMeshComponent* GetItemMesh();
-
+	void SetName(const FName& InName);
+	void SetQuantity(const int32& InQuantity);
+	void SetStats(const TArray<struct FItemStat>& InStats);
+	void SetMesh(UStaticMesh* InMesh);
 	void AddImpulse(FVector Impulse);
 
 protected:
@@ -47,17 +34,17 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditAnywhere)
-	FName ItemName;
+	UPROPERTY(Replicated, EditAnywhere)
+	FName Name;
 
-	UPROPERTY(EditAnywhere)
-	int32 ItemQuantity;
+	UPROPERTY(Replicated, EditAnywhere)
+	int32 Quantity;
 	
-	UPROPERTY(EditAnywhere)
-	TArray<FItemStat> Stats;
+	UPROPERTY(Replicated, EditAnywhere)
+	TArray<struct FItemStat> Stats;
 
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* ItemMesh;
+	UPROPERTY(Replicated, VisibleAnywhere)
+	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY()
 	USoundBase* PickupSound;

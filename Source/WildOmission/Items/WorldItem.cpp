@@ -6,8 +6,10 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
+#include "WildOmission/Core/Structs/ItemStat.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AWorldItem::AWorldItem()
@@ -16,18 +18,19 @@ AWorldItem::AWorldItem()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Set this actor to replicate
-	bReplicates = true;
+	SetReplicates(true);
+	SetReplicateMovement(true);
 
 	// Setup default values
-	ItemName = FName(TEXT("Item"));
-	ItemQuantity = 1;
+	Name = FName(TEXT("Item"));
+	Quantity = 1;
 
 	// Create static mesh component
-	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("ItemMesh"));
-	RootComponent = ItemMesh;
-	ItemMesh->SetSimulatePhysics(true);
-	ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-	ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
+	RootComponent = MeshComponent;
+	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 
 	ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Pickup/Pickup_Cue"));
 	
@@ -44,8 +47,18 @@ void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	ItemMesh->SetMassOverrideInKg(FName(), 20.0f);
+	MeshComponent->SetMassOverrideInKg(FName(), 20.0f);
 	SetReplicateMovement(true);
+}
+
+void AWorldItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWorldItem, Name);
+	DOREPLIFETIME(AWorldItem, Quantity);
+	DOREPLIFETIME(AWorldItem, Stats);
+	DOREPLIFETIME(AWorldItem, MeshComponent);
 }
 
 void AWorldItem::Interact(AActor* Interactor)
@@ -57,7 +70,7 @@ void AWorldItem::Interact(AActor* Interactor)
 	}
 
 	// Add to their inventory
-	InteractorInventoryComponent->AddItem(ItemName, ItemQuantity, Stats);
+	InteractorInventoryComponent->AddItem(Name, Quantity, Stats);
 
 	// Play Pickup sound
 	Client_PlayPickupSound();
@@ -73,25 +86,25 @@ FString AWorldItem::PromptText()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Name.ToString());
 	}
 
 	AWildOmissionCharacter* Character = Cast<AWildOmissionCharacter>(PlayerController->GetCharacter());
 	if (Character == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Name.ToString());
 	}
 
 	UInventoryComponent* PlayerInventoryComponent = Character->GetInventoryComponent();
 	if (PlayerInventoryComponent == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Name.ToString());
 	}
 
-	FItemData* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
+	FItemData* ItemData = PlayerInventoryComponent->GetItemData(Name);
 	if (ItemData == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemName.ToString());
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Name.ToString());
 	}
 
 	ItemDisplayName = ItemData->DisplayName;
@@ -99,42 +112,29 @@ FString AWorldItem::PromptText()
 	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName.ToString());
 }
 
-// Sets all properties for this world item in one go
-void AWorldItem::Client_SetItemProperties_Implementation(FName InName, int32 InQuantity, const TArray<FItemStat>& InStats, UStaticMesh* InMesh, FVector InLocation)
+void AWorldItem::SetName(const FName& InName)
 {
-	ItemName = InName;
-	ItemQuantity = InQuantity;
+	Name = InName;
+}
+
+void AWorldItem::SetQuantity(const int32& InQuantity)
+{
+	Quantity = InQuantity;
+}
+
+void AWorldItem::SetStats(const TArray<FItemStat>& InStats)
+{
 	Stats = InStats;
-	ItemMesh->SetStaticMesh(InMesh);
-	SetActorLocation(InLocation);
 }
 
-// Gets the item name
-FName AWorldItem::GetItemName()
+void AWorldItem::SetMesh(UStaticMesh* InMesh)
 {
-	return ItemName;
-}
-
-// Gets the item quantity
-int32 AWorldItem::GetItemQuantity()
-{
-	return ItemQuantity;
-}
-
-TArray<FItemStat> AWorldItem::GetStats()
-{
-	return Stats;
-}
-
-// Gets the items static mesh component
-UStaticMeshComponent* AWorldItem::GetItemMesh()
-{
-	return ItemMesh;
+	MeshComponent->SetStaticMesh(InMesh);
 }
 
 void AWorldItem::AddImpulse(FVector Impulse)
 {
-	ItemMesh->AddImpulse(Impulse);
+	MeshComponent->AddImpulse(Impulse);
 }
 
 void AWorldItem::Client_PlayPickupSound_Implementation()

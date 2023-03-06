@@ -98,8 +98,11 @@ void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const
 	PhysicsImpulse = GetOwner()->GetActorForwardVector() * 5000.0f;
 
 	// Update world items properties
-	WorldItem->Client_SetItemProperties(ItemName, Quantity, Stats, ItemData->Mesh, SpawnLocation);
-
+	WorldItem->SetActorLocation(SpawnLocation);
+	WorldItem->SetName(ItemName);
+	WorldItem->SetQuantity(Quantity);
+	WorldItem->SetStats(Stats);
+	WorldItem->SetMesh(ItemData->Mesh);
 	WorldItem->AddImpulse(PhysicsImpulse);
 }
 

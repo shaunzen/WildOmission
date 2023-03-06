@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "WildOmission/Core/Structs/InventoryContents.h"
+#include "WildOmission/Core/Structs/ItemData.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 
@@ -61,7 +62,7 @@ public:
 	FInventorySlot* FindSlotContainingItemWithUniqueID(const uint32& UniqueID);
 	
 	// Retrives the data about the item id passed in
-	struct FItemData* GetItemData(const FName& ItemName);
+	FItemData* GetItemData(const FName& ItemName);
 	
 	UInventoryManipulatorComponent* GetManipulator();
 

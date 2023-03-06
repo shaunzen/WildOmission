@@ -54,7 +54,7 @@ private:
 	int8 ToolbarSelectionIndex;
 
 	UPROPERTY()
-	AWildOmissionCharacter* OwnerCharacter;
+	class AWildOmissionCharacter* OwnerCharacter;
 
 	//**************************************************************
 	// Slot Functions
@@ -71,6 +71,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_SetToolbarSelectionIndex(int8 SelectionIndex);
 
+	// TODO should this be an RPC?
 	UFUNCTION(Server, Reliable)
 	void Server_RemoveHeldItem();
 
