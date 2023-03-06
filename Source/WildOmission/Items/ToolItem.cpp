@@ -62,7 +62,6 @@ void AToolItem::ApplyDamage()
 {
 	Durability -= 10;
 
-	// Save durability to slot item
 	FInventoryItem* InventoryItem = FindInInventory();
 	InventoryItem->SetStat(FName("Durability"), Durability);
 }

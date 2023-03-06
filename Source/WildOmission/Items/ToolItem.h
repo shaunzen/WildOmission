@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "EquipableItem.h"
 #include "WildOmission/Core/Enums/ToolType.h"
+#include "WildOmission/Core/Structs/InventoryItem.h"
 #include "ToolItem.generated.h"
 
 UCLASS()
@@ -47,10 +48,10 @@ protected:
 
 	UFUNCTION()
 	void ApplyDamage();
-
-private:
+	
 	FInventoryItem* FindInInventory();
 
+private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlaySwingAnimation();
 
