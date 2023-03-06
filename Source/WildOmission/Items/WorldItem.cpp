@@ -19,7 +19,7 @@ AWorldItem::AWorldItem()
 
 	// Set this actor to replicate
 	SetReplicates(true);
-	SetReplicateMovement(true);
+
 
 	// Setup default values
 	Name = FName(TEXT("Item"));
@@ -46,9 +46,11 @@ AWorldItem::AWorldItem()
 void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	MeshComponent->SetMassOverrideInKg(FName(), 20.0f);
+
+	SetReplicates(true);
 	SetReplicateMovement(true);
+
+	MeshComponent->SetMassOverrideInKg(FName(), 20.0f);
 }
 
 void AWorldItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

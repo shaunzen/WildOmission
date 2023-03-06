@@ -104,6 +104,8 @@ void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const
 	WorldItem->SetStats(Stats);
 	WorldItem->SetMesh(ItemData->Mesh);
 	WorldItem->AddImpulse(PhysicsImpulse);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Orange, FString("hahah spoon the actor lmao"));
 }
 
 //**************************************************************
