@@ -27,48 +27,27 @@ public:
 
 	void SetManipulator(UInventoryManipulatorComponent* InventoryManipulator);
 
-	//**************************************************************
-	// General Management
-	//**************************************************************
+	//this could benifit from InventoryItem
+	void AddItem(const FInventoryItem& ItemToAdd);
 
-	void AddItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats);
-
-	void RemoveItem(const FName& ItemName, const int32& Quantity, bool bDropInWorld = false);
-
-	//**************************************************************
-	// User Interaction
-	//**************************************************************
+	void RemoveItem(const FInventoryItem& ItemToRemove, bool bDropInWorld = false);
 	
 	UFUNCTION(Server, Reliable)
 	void Server_SlotInteraction(const int32& SlotIndex, bool Primary = true);
-
-	//**************************************************************
-	// Getters
-	//**************************************************************
 	
-	// Gets the contents map for this inventory
 	FInventoryContents* GetContents();
 
-	// Returns a reference to the inventory slots
 	TArray<FInventorySlot>& GetSlots();
 
-	// Returns a poiter to the item with the specified unique id
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
 
-	// Returns a pointer to slot containing the specified item
 	FInventorySlot* FindSlotContainingItem(const FName& ItemToFind);
 
-	// Returns a poiter to the slot containing an item with the specified unique id
 	FInventorySlot* FindSlotContainingItemWithUniqueID(const uint32& UniqueID);
 	
-	// Retrives the data about the item id passed in
 	FItemData* GetItemData(const FName& ItemName);
 	
 	UInventoryManipulatorComponent* GetManipulator();
-
-	//**************************************************************
-	// Save Load
-	//**************************************************************
 
 	FWildOmissionInventorySave Save();
 	
@@ -98,7 +77,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	class UDataTable* ItemDataTable;
 
-	bool AddItemToSlots(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats, int32& Remaining);
+	bool AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining);
 	bool RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
 	
 	void DragAll(const int32& FromSlotIndex);

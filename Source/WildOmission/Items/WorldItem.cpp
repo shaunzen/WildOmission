@@ -21,8 +21,8 @@ AWorldItem::AWorldItem()
 	bReplicates = true;
 
 	// Setup default values
-	Name = FName(TEXT("Item"));
-	Quantity = 1;
+	Item.Name = FName(TEXT("Item"));
+	Item.Quantity = 1;
 
 	// Create static mesh component
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
@@ -59,9 +59,7 @@ void AWorldItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AWorldItem, Name);
-	DOREPLIFETIME(AWorldItem, Quantity);
-	DOREPLIFETIME(AWorldItem, Stats);
+	DOREPLIFETIME(AWorldItem, Item);
 }
 
 void AWorldItem::Interact(AActor* Interactor)
@@ -73,7 +71,7 @@ void AWorldItem::Interact(AActor* Interactor)
 	}
 
 	// Add to their inventory
-	InteractorInventoryComponent->AddItem(Name, Quantity, Stats);
+	InteractorInventoryComponent->AddItem(Item);
 
 	// Play Pickup sound
 	Client_PlayPickupSound();
@@ -89,25 +87,25 @@ FString AWorldItem::PromptText()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Name.ToString());
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Item.Name.ToString());
 	}
 
 	AWildOmissionCharacter* Character = Cast<AWildOmissionCharacter>(PlayerController->GetCharacter());
 	if (Character == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Name.ToString());
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Item.Name.ToString());
 	}
 
 	UInventoryComponent* PlayerInventoryComponent = Character->GetInventoryComponent();
 	if (PlayerInventoryComponent == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Name.ToString());
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Item.Name.ToString());
 	}
 
-	FItemData* ItemData = PlayerInventoryComponent->GetItemData(Name);
+	FItemData* ItemData = PlayerInventoryComponent->GetItemData(Item.Name);
 	if (ItemData == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Name.ToString());
+		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Item.Name.ToString());
 	}
 
 	ItemDisplayName = ItemData->DisplayName;
@@ -115,24 +113,22 @@ FString AWorldItem::PromptText()
 	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName.ToString());
 }
 
-void AWorldItem::SetName(const FName& InName)
+void AWorldItem::SetItem(const FInventoryItem& InItem)
 {
-	Name = InName;
-}
+	UInventoryComponent* FirstPlayerInventoryComponent = GetWorld()->GetFirstPlayerController()->GetPawn()->FindComponentByClass<UInventoryComponent>();
+	if (FirstPlayerInventoryComponent == nullptr)
+	{
+		return;
+	}
+	
+	FItemData* NewItemData = FirstPlayerInventoryComponent->GetItemData(InItem.Name);
+	if (NewItemData == nullptr)
+	{
+		return;
+	}
 
-void AWorldItem::SetQuantity(const int32& InQuantity)
-{
-	Quantity = InQuantity;
-}
-
-void AWorldItem::SetStats(const TArray<FItemStat>& InStats)
-{
-	Stats = InStats;
-}
-
-void AWorldItem::SetMesh(UStaticMesh* InMesh)
-{
-	MeshComponent->SetStaticMesh(InMesh);
+	MeshComponent->SetStaticMesh(NewItemData->Mesh);
+	Item = InItem;
 }
 
 void AWorldItem::AddImpulse(FVector Impulse)

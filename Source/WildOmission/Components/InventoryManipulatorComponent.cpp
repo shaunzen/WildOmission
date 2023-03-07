@@ -68,11 +68,11 @@ void UInventoryManipulatorComponent::StopDragging(bool DropInWorld)
 
 	if (DropInWorld)
 	{
-		SpawnWorldItem(SelectedItemInformation.Name, SelectedItemInformation.Quantity, SelectedItemInformation.Stats);
+		SpawnWorldItem(SelectedItemInformation);
 	}
 }
 
-void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats)
+void UInventoryManipulatorComponent::SpawnWorldItem(const FInventoryItem& ItemToSpawn)
 {
 	// Get player's inventory
 	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
@@ -82,7 +82,7 @@ void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const
 	}
 
 	// Get the data for this item
-	FItemData* ItemData = PlayerInventoryComponent->GetItemData(ItemName);
+	FItemData* ItemData = PlayerInventoryComponent->GetItemData(ItemToSpawn.Name);
 
 	// Spawn a world item actor
 	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();
@@ -101,13 +101,8 @@ void UInventoryManipulatorComponent::SpawnWorldItem(const FName& ItemName, const
 
 	// Update world items properties
 	WorldItem->SetActorLocation(SpawnLocation);
-	WorldItem->SetName(ItemName);
-	WorldItem->SetQuantity(Quantity);
-	WorldItem->SetStats(Stats);
-	WorldItem->SetMesh(ItemData->Mesh);
+	WorldItem->SetItem(ItemToSpawn);
 	WorldItem->AddImpulse(PhysicsImpulse);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Orange, FString("hahah spoon the actor lmao"));
 }
 
 //**************************************************************
@@ -120,14 +115,19 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 	{
 		return;
 	}
+	
+	FInventoryItem ItemToSpawn;
+	ItemToSpawn = SelectedItem;
+
 	if (Single == true)
 	{
-		SpawnWorldItem(SelectedItem.Name, 1, SelectedItem.Stats);
+		ItemToSpawn.Quantity = 1;
+		SpawnWorldItem(ItemToSpawn);
 		SelectedItem.Quantity -= 1;
 	}
 	else
 	{
-		SpawnWorldItem(SelectedItem.Name, SelectedItem.Quantity, SelectedItem.Stats);
+		SpawnWorldItem(ItemToSpawn);
 		SelectedItem.Clear();
 	}
 

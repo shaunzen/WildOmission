@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
+#include "WildOmission/Core/Structs/InventoryItem.h"
 #include "WorldItem.generated.h"
 
 UCLASS()
@@ -23,10 +24,7 @@ public:
 	virtual FString PromptText() override;
 	//* End Interactable Interface implementation
 
-	void SetName(const FName& InName);
-	void SetQuantity(const int32& InQuantity);
-	void SetStats(const TArray<struct FItemStat>& InStats);
-	void SetMesh(UStaticMesh* InMesh);
+	void SetItem(const FInventoryItem& InItem);
 	void AddImpulse(FVector Impulse);
 
 protected:
@@ -35,13 +33,7 @@ protected:
 
 private:
 	UPROPERTY(Replicated, EditAnywhere)
-	FName Name;
-
-	UPROPERTY(Replicated, EditAnywhere)
-	int32 Quantity;
-	
-	UPROPERTY(Replicated, EditAnywhere)
-	TArray<struct FItemStat> Stats;
+	FInventoryItem Item;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;

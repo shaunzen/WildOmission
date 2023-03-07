@@ -12,16 +12,16 @@ struct FInventoryItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	FName Name = FName("");
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	int32 Quantity = 0;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	uint32 UniqueID = 0;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	TArray<FItemStat> Stats;
 
 	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName);

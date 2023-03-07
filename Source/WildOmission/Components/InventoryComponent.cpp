@@ -56,57 +56,47 @@ void UInventoryComponent::SetManipulator(UInventoryManipulatorComponent* Invento
 	Manipulator = InventoryManipulator;
 }
 
-//**************************************************************
-// General Management
-//**************************************************************
-
-void UInventoryComponent::AddItem(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats)
+void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd)
 {
 	int32 Remaining;
 	int32 AmountAdded;
-	bool AddSuccess = AddItemToSlots(ItemName, Quantity, Stats, Remaining);
+	bool AddSuccess = AddItemToSlots(ItemToAdd, Remaining);
 
 	// Calculate how many were added
-	AmountAdded = Quantity - Remaining;
+	AmountAdded = ItemToAdd.Quantity - Remaining;
 
 	// Add item to item list
-	Contents.AddItem(ItemName, AmountAdded);
+	Contents.AddItem(ItemToAdd.Name, AmountAdded);
 
 	if (AddSuccess == false)
 	{
-		Manipulator->SpawnWorldItem(ItemName, Remaining, Stats);
+		FInventoryItem DroppedItem = ItemToAdd;
+		DroppedItem.Quantity = Remaining;
+		Manipulator->SpawnWorldItem(DroppedItem);
 	}
 
 	OnInventoryChange();
 	RefreshUI();
 }
 
-void UInventoryComponent::RemoveItem(const FName& ItemName, const int32& Quantity, bool bDropInWorld)
+void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove, bool bDropInWorld)
 {
 	// Remove from contents
-	Contents.RemoveItem(ItemName, Quantity);
-
-	TArray<FItemStat> ItemStats = FindSlotContainingItem(ItemName)->Item.Stats;
-
-	// Remove from slots
-	int32 Remaining;
-	bool RemoveSuccess = RemoveItemFromSlots(ItemName, Quantity, Remaining);
+	Contents.RemoveItem(ItemToRemove.Name, ItemToRemove.Quantity);
 
 	if (bDropInWorld == true)
 	{
-		Manipulator->SpawnWorldItem(ItemName, Quantity, ItemStats);
+		Manipulator->SpawnWorldItem(ItemToRemove);
 	}
+
+	// Remove from slots
+	int32 Remaining;
+	bool RemoveSuccess = RemoveItemFromSlots(ItemToRemove.Name, ItemToRemove.Quantity, Remaining);
 
 	// Call inventory change
 	OnInventoryChange();
 	RefreshUI();
 }
-
-
-
-//**************************************************************
-// User Interaction
-//**************************************************************
 
 void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& SlotIndex, bool Primary)
 {
@@ -136,10 +126,6 @@ void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& Slo
 
 	RefreshUI();
 }
-
-//**************************************************************
-// Getters
-//**************************************************************
 
 FInventoryContents* UInventoryComponent::GetContents()
 {
@@ -232,10 +218,6 @@ UInventoryManipulatorComponent* UInventoryComponent::GetManipulator()
 	return Manipulator;
 }
 
-//**************************************************************
-// Save Load
-//**************************************************************
-
 FWildOmissionInventorySave UInventoryComponent::Save()
 {
 	FWildOmissionInventorySave Save;
@@ -255,18 +237,14 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 	Slots = InInventorySave.Slots;
 }
 
-//**************************************************************
-// Slot Functions
-//**************************************************************
-
-bool UInventoryComponent::AddItemToSlots(const FName& ItemName, const int32& Quantity, const TArray<FItemStat>& Stats, int32& Remaining)
+bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining)
 {
 	uint32 UniqueID = FMath::RandRange(1, 999999);
 
 
 
-	int32 QuantityToAdd = Quantity;
-	FItemData* ItemData = GetItemData(ItemName);
+	Remaining = ItemToAdd.Quantity;
+	FItemData* ItemData = GetItemData(ItemToAdd.Name);
 	if (ItemData == nullptr)
 	{
 		return false;
@@ -274,23 +252,21 @@ bool UInventoryComponent::AddItemToSlots(const FName& ItemName, const int32& Qua
 	
 	// if the item stats are empty populate with defaults
 	TArray<FItemStat> ItemStats;
-	if (ItemData->Stats.Num() > 0 && Stats.Num() == 0)
+	if (ItemData->Stats.Num() > 0 && ItemToAdd.Stats.Num() == 0)
 	{
 		ItemStats = ItemData->Stats;
 	}
 	else
 	{
-		ItemStats = Stats;
+		ItemStats = ItemToAdd.Stats;
 	}
 
-	if (!FindAndAddToPopulatedSlot(ItemName, ItemData, QuantityToAdd))
+	if (!FindAndAddToPopulatedSlot(ItemToAdd.Name, ItemData, Remaining))
 	{
-		FindAndAddToEmptySlot(ItemName, ItemData, ItemStats, UniqueID, QuantityToAdd);
+		FindAndAddToEmptySlot(ItemToAdd.Name, ItemData, ItemStats, UniqueID, Remaining);
 	}
 
-	Remaining = QuantityToAdd;
-
-	return QuantityToAdd == 0;
+	return Remaining == 0;
 }
 
 bool UInventoryComponent::RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining)
