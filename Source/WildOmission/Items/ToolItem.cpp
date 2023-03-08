@@ -19,6 +19,13 @@ AToolItem::AToolItem()
 	Durability = 1000;
 }
 
+void AToolItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AToolItem, Durability);
+}
+
 void AToolItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
 {
 	Super::Equip(InOwnerCharacter, InItemName, InFromSlotIndex, InUniqueID);

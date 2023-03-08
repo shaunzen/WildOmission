@@ -34,7 +34,7 @@ struct FInventoryItem
 
 	void Clear();
 
-	int32 GetStat(const FName& StatName);
+	int32 GetStat(const FName& StatName) const;
 	void SetStat(const FName& StatName, const int32& Value);
 
 private:

@@ -17,6 +17,8 @@ public:
 	// Sets default values for this actor's properties
 	AEquipableItem();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -50,10 +52,13 @@ protected:
 	UPROPERTY(EditAnywhere)
 	USoundBase* EquipSound;
 
+	UPROPERTY(Replicated)
 	FName ItemName;
 
+	UPROPERTY(Replicated)
 	int8 FromSlotIndex;
 
+	UPROPERTY(Replicated)
 	uint32 UniqueID;
 
 	AWildOmissionCharacter* GetOwnerCharacter() const;

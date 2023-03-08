@@ -51,4 +51,7 @@ private:
 	UFUNCTION()
 	void OnRep_EquipedItem();
 
+	UFUNCTION()
+	void RefreshEquipedSlot();
+
 };

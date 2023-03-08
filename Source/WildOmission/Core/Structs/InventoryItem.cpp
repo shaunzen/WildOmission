@@ -39,7 +39,7 @@ void FInventoryItem::Clear()
 	UniqueID = 0;
 }
 
-int32 FInventoryItem::GetStat(const FName& StatName)
+int32 FInventoryItem::GetStat(const FName& StatName) const
 {
 	int32 StatValue = -1;
 

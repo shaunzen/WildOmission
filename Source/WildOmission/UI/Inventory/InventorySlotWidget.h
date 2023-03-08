@@ -9,6 +9,7 @@
 
 class UTextBlock;
 class UBorder;
+class UProgressBar;
 class UInventoryWidget;
 
 UCLASS()
@@ -41,6 +42,9 @@ private:
 	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* QuantityText;
+
+	UPROPERTY(Meta = (BindWidget))
+	UProgressBar* DurabilityBar;
 
 	UPROPERTY()
 	UInventoryWidget* Owner;

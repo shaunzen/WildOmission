@@ -16,17 +16,14 @@ class WILDOMISSION_API AToolItem : public AEquipableItem
 public:
 	AToolItem();
 
-	//TODO load the durability from the item
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	// Called when the item is equiped into the players hands
 	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
 
-	// TODO save the durability to the item
-
 	// Called before the item is unequiped
 	virtual void OnUnequip() override;
 
-	//TODO save durability everytime we take damage?
 	virtual void Primary() override;
 
 	virtual void Secondary() override;
@@ -44,6 +41,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float SwingTimeSeconds;
 
+	UPROPERTY(Replicated)
 	int32 Durability;
 
 	UFUNCTION()

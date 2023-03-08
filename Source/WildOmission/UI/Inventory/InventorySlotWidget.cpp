@@ -5,6 +5,7 @@
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
 #include "InventoryWidget.h"
 #include "WildOmission/Components/InventoryComponent.h"
 
@@ -47,10 +48,23 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 		ItemIconBorder->SetBrushFromMaterial(SlotItemData->Thumbnail);
 		// Set the item icon color opaque white
 		ItemIconBorder->SetBrushColor(FLinearColor::White);
+
+		if (SlotItemData->GetStat(FName("Durability")) > 0)
+		{
+			DurabilityBar->SetVisibility(ESlateVisibility::Visible);
+			float Percent;
+			Percent = (float)Item.GetStat(FName("Durability")) / (float)SlotItemData->GetStat(FName("Durability"));
+			DurabilityBar->SetPercent(Percent);
+		}
+		else
+		{
+			DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 	else
 	{
 		ItemIconBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+		DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
 	}
 	QuantityText->SetText(FText::FromString(QuantityString));
 }

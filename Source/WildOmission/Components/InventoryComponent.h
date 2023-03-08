@@ -69,7 +69,7 @@ protected:
 
 	UFUNCTION()
 	virtual void RefreshUI();
-	
+
 	virtual void OnInventoryChange();
 
 private:

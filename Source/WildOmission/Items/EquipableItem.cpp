@@ -5,6 +5,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AEquipableItem::AEquipableItem()
@@ -31,6 +32,15 @@ AEquipableItem::AEquipableItem()
 
 	FromSlotIndex = -1;
 	UniqueID = 0;
+}
+
+void AEquipableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEquipableItem, ItemName);
+	DOREPLIFETIME(AEquipableItem, FromSlotIndex);
+	DOREPLIFETIME(AEquipableItem, UniqueID);
 }
 
 // Called when the game starts or when spawned

@@ -91,6 +91,11 @@ void UInventoryWidget::Refresh()
 	}
 }
 
+void UInventoryWidget::RefreshSlot(const int32& SlotIndex)
+{
+	Slots[SlotIndex]->SetItem(InventoryComponent->GetSlots()[SlotIndex].Item);
+}
+
 UInventoryComponent* UInventoryWidget::GetInventoryComponent()
 {
 	return InventoryComponent;

@@ -29,7 +29,7 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	void RefreshInventoryStates();
-
+	
 	// Setters
 	void ToggleInventory();
 	

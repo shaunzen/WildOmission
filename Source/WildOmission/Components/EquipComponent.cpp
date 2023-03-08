@@ -5,6 +5,8 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Items/EquipableItem.h"
 #include "WildOmission/Characters/HumanAnimInstance.h"
+#include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "WildOmission/UI/Inventory/PlayerInventoryWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -110,6 +112,8 @@ void UEquipComponent::Server_Primary_Implementation()
 	}
 
 	EquipedItem->Primary();
+
+	OnRep_EquipedItem();
 }
 
 void UEquipComponent::Server_Secondary_Implementation()
@@ -120,12 +124,16 @@ void UEquipComponent::Server_Secondary_Implementation()
 	}
 
 	EquipedItem->Secondary();
+
+	OnRep_EquipedItem();
 }
 
 void UEquipComponent::OnRep_EquipedItem()
 {
 	if (EquipedItem)
 	{
+		RefreshEquipedSlot();
+		
 		FirstPersonItemMeshComponent->SetStaticMesh(EquipedItem->GetMesh());
 
 		FirstPersonItemMeshComponent->SetVisibility(OwnerCharacter->IsLocallyControlled());
@@ -136,4 +144,25 @@ void UEquipComponent::OnRep_EquipedItem()
 	{
 		FirstPersonItemMeshComponent->SetVisibility(false);
 	}
+
+}
+
+void UEquipComponent::RefreshEquipedSlot()
+{
+	if (!OwnerCharacter->IsLocallyControlled())
+	{
+		return;
+	}
+	UPlayerHUDWidget* PlayerHUD = OwnerCharacter->GetHUDWidget();
+	if (PlayerHUD == nullptr)
+	{
+		return;
+	}
+	UPlayerInventoryWidget* PlayerInventoryWidget = PlayerHUD->GetPlayerInventoryWidget();
+	if (PlayerInventoryWidget == nullptr)
+	{
+		return;
+	}
+
+	PlayerInventoryWidget->RefreshSlot(EquipedItem->GetFromSlotIndex());
 }

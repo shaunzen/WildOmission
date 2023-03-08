@@ -22,6 +22,7 @@ public:
 
 	virtual void Setup(UInventoryComponent* InInventoryComponent);
 	virtual void Refresh();
+	virtual void RefreshSlot(const int32& SlotIndex);
 
 	void Open();
 	void Close();
