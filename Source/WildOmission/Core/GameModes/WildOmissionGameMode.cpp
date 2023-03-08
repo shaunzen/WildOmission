@@ -31,6 +31,12 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	
 	SaveHandler->GetPlayerHandler()->Load(NewPlayer);
+	APlayerState* PlayerState = NewPlayer->GetPlayerState<APlayerState>();
+	if (PlayerState == nullptr)
+	{
+		return;
+	}
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 20.0f, FColor::Green, FString::Printf(TEXT("Player Unique Id: %s"), *PlayerState->GetUniqueId().ToString()));
 }
 
 void AWildOmissionGameMode::Logout(AController* Exiting)

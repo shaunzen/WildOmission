@@ -10,6 +10,8 @@ public class WildOmissionTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
+		bUsesSteam = true;
+
 		ExtraModuleNames.AddRange( new string[] { "WildOmission" } );
 	}
 }

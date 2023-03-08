@@ -123,7 +123,7 @@ void UWildOmissionGameInstance::RefreshServerList()
 		return;
 	}
 	// Uncomment for lan results using null
-	SessionSearch->bIsLanQuery = true;
+	//SessionSearch->bIsLanQuery = true;
 	SessionSearch->MaxSearchResults = 100;
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
@@ -195,10 +195,12 @@ void UWildOmissionGameInstance::CreateSession()
 		return;
 	}
 	FOnlineSessionSettings SessionSettings;
-	SessionSettings.bIsLANMatch = (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL");
+	SessionSettings.bIsLANMatch = false;
 	SessionSettings.NumPublicConnections = 5;
 	SessionSettings.bShouldAdvertise = true;
 	SessionSettings.bUsesPresence = true;
+	SessionSettings.bUseLobbiesIfAvailable = true;
+
 	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
