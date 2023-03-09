@@ -80,4 +80,5 @@ private:
 	void DropAll(const int32& ToSlotIndex);
 	void DropSingle(const int32& ToSlotIndex);
 
+	bool WithinStackSize(const FInventoryItem& Item, const int32& AmountToAdd);
 };

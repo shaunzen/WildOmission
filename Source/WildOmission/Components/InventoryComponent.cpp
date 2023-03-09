@@ -387,15 +387,6 @@ void UInventoryComponent::DragAll(const int32& FromSlotIndex)
 
 	Manipulator->StartDragging(FromSlot.Item);
 
-	// todo temp
-	UE_LOG(LogTemp, Warning, TEXT("FromSlot Item Unique ID: %i"), FromSlot.Item.UniqueID);
-	for (const FItemStat& Stat : FromSlot.Item.Stats)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Dragging Item with stat: %s: %i"), *Stat.Name.ToString(), Stat.Value);
-	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("FromSlot Item Durability: %d"), FromSlot.Item.Durability);
-
 	Contents.RemoveItem(FromSlot.Item.Name, FromSlot.Item.Quantity);
 
 	FromSlot.ClearItem();
@@ -415,11 +406,7 @@ void UInventoryComponent::DragSplit(const int32& FromSlotIndex)
 	// Just take all if there is only one item
 	if (FromSlot.Item.Quantity == 1)
 	{
-		// Take all		
-		// Start Dragging item in from index
 		Manipulator->StartDragging(FromSlot.Item);
-
-		//Take all
 		FromSlot.ClearItem();
 
 		return;
@@ -430,69 +417,69 @@ void UInventoryComponent::DragSplit(const int32& FromSlotIndex)
 
 	// Start Dragging half
 	FInventoryItem NewSelection = FromSlot.Item;
-	NewSelection.Quantity = HalfQuantity;
+	NewSelection.Quantity -= HalfQuantity;
+
 
 	Manipulator->StartDragging(NewSelection);
-
 	Contents.RemoveItem(NewSelection.Name, NewSelection.Quantity);
 
-	// Update the slot
 	FInventoryItem NewSlotItem = FromSlot.Item;
-	NewSlotItem.Quantity -= HalfQuantity;
+	NewSlotItem.Quantity = HalfQuantity;
 	FromSlot.Item = NewSlotItem;
 
+	// Update the slot
 	OnInventoryChange();
-
 }
 
 void UInventoryComponent::DropAll(const int32& ToSlotIndex)
 {
 	FInventorySlot& ToSlot = Slots[ToSlotIndex];
+	FInventoryItem SelectedItem = Manipulator->GetSelectedItem();
 
 	if (ToSlot.IsEmpty())
 	{
-		ToSlot.Item = Manipulator->GetSelectedItem();
+		ToSlot.Item = SelectedItem;
 
-		Contents.AddItem(Manipulator->GetSelectedItem().Name, Manipulator->GetSelectedItem().Quantity);
+		Contents.AddItem(SelectedItem.Name, SelectedItem.Quantity);
 
 		Manipulator->StopDragging();
 	}
-	else if (ToSlot.SameItemNameAs(Manipulator->GetSelectedItem()) && GetItemData(Manipulator->GetSelectedItem().Name)->StackSize != 1) // and not something unique?
+	else if (ToSlot.SameItemNameAs(SelectedItem) && GetItemData(SelectedItem.Name)->StackSize != 1) // same item and the stack size for this item is not 1
 	{
-		if ((ToSlot.Item.Quantity + Manipulator->GetSelectedItem().Quantity) <= GetItemData(Manipulator->GetSelectedItem().Name)->StackSize)
+		if ((ToSlot.Item.Quantity + SelectedItem.Quantity) <= GetItemData(SelectedItem.Name)->StackSize) // todo move to function
 		{
-			ToSlot.Item.Quantity += Manipulator->GetSelectedItem().Quantity;
-
+			// Update Inventory
+			ToSlot.Item.Quantity += SelectedItem.Quantity;
 			Contents.AddItem(Manipulator->GetSelectedItem().Name, Manipulator->GetSelectedItem().Quantity);
 			
+			// Update Selection
 			Manipulator->StopDragging();
 		}
 		else
 		{
-			FInventoryItem NewSelection = ToSlot.Item;
+			int32 OldSlotItemQuantity = ToSlot.Item.Quantity;
 
-			NewSelection.Quantity = (ToSlot.Item.Quantity + Manipulator->GetSelectedItem().Quantity) - GetItemData(Manipulator->GetSelectedItem().Name)->StackSize;
-
-			// figure out how much is actually added
+			// Update Inventory
 			int32 AmountAdded = GetItemData(ToSlot.Item.Name)->StackSize - ToSlot.Item.Quantity;
-
-			Contents.AddItem(NewSelection.Name, AmountAdded);
+			ToSlot.Item.Quantity = GetItemData(SelectedItem.Name)->StackSize;
+			Contents.AddItem(SelectedItem.Name, AmountAdded);
 			
-			Manipulator->StartDragging(NewSelection);
-
-			ToSlot.Item.Quantity = GetItemData(ToSlot.Item.Name)->StackSize;
+			// Update Selection
+			SelectedItem.Quantity = (OldSlotItemQuantity + SelectedItem.Quantity) - GetItemData(SelectedItem.Name)->StackSize;
+			Manipulator->StartDragging(SelectedItem);
 		}
 	}
 	else
 	{
-		// Swap
+		// Store the old item for swap
 		FInventoryItem OldSlotItem = ToSlot.Item;
 
+		// Update Inventory
 		Contents.RemoveItem(OldSlotItem.Name, OldSlotItem.Quantity);
-		Contents.AddItem(Manipulator->GetSelectedItem().Name, Manipulator->GetSelectedItem().Quantity);
+		Contents.AddItem(SelectedItem.Name, SelectedItem.Quantity);
+		ToSlot.Item = SelectedItem;
 
-		ToSlot.Item = Manipulator->GetSelectedItem();
-
+		// Update Selection
 		Manipulator->StartDragging(OldSlotItem);
 	}
 
@@ -512,31 +499,30 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex)
 	}
 
 	FInventorySlot& ToSlot = Slots[ToSlotIndex];
+	FInventoryItem SelectedItem = Manipulator->GetSelectedItem();
 
 	if (ToSlot.IsEmpty())
 	{
-		// Set slot to one
-		ToSlot.Item.Name = Manipulator->GetSelectedItem().Name;
+		// Update Inventory
+		ToSlot.Item.Name = SelectedItem.Name;
 		ToSlot.Item.Quantity = 1;
+		Contents.AddItem(SelectedItem.Name, 1);
 
-		Contents.AddItem(Manipulator->GetSelectedItem().Name, 1);
-
-		FInventoryItem NewSelection = Manipulator->GetSelectedItem();
+		// Update Selection
+		FInventoryItem NewSelection = SelectedItem;
 		NewSelection.Quantity -= 1;
-
-		// Remove one from dragging
 		Manipulator->StartDragging(NewSelection);
 	}
-	else if (ToSlot.SameItemNameAs(Manipulator->GetSelectedItem()) && (ToSlot.Item.Quantity + 1) <= GetItemData(Manipulator->GetSelectedItem().Name)->StackSize)
+	else if (ToSlot.SameItemNameAs(SelectedItem) && (ToSlot.Item.Quantity + 1) <= GetItemData(SelectedItem.Name)->StackSize)
 	{
-		// Add one to slot
+		// Update Inventory
 		ToSlot.Item.Quantity += 1;
+		Contents.AddItem(SelectedItem.Name, 1);
 
-		Contents.AddItem(Manipulator->GetSelectedItem().Name, 1);
-
-		// Remove one from selection
-		FInventoryItem NewSelection = Manipulator->GetSelectedItem();
+		// Update Selection
+		FInventoryItem NewSelection = SelectedItem;
 		NewSelection.Quantity -= 1;
+		Manipulator->StartDragging(NewSelection);
 	}
 
 	if (Manipulator->GetSelectedItem().Quantity <= 0)
@@ -545,4 +531,9 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex)
 	}
 
 	OnInventoryChange();
+}
+
+bool UInventoryComponent::WithinStackSize(const FInventoryItem& BaseItem, const int32& AmountToAdd)
+{
+	return (BaseItem.Quantity + AmountToAdd) <= GetItemData(BaseItem.Name)->StackSize;
 }
