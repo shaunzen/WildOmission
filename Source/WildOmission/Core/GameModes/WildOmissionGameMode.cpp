@@ -49,6 +49,20 @@ void AWildOmissionGameMode::SaveGame()
 	SaveHandler->SaveGame();
 }
 
+void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
+{
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
+		{
+			return;
+		}
+
+		PlayerController->GetPawn()->SetActorLocation(FVector(0.0f, 0.0f, 100.0f));
+	}
+}
+
 ASaveHandler* AWildOmissionGameMode::GetSaveHandler()
 {
 	return SaveHandler;

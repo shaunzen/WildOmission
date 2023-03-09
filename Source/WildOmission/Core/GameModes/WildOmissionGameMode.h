@@ -23,6 +23,9 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void SaveGame();
 	
+	UFUNCTION(Exec)
+	void ResetLocationOfAllConnectedPlayers();
+
 	ASaveHandler* GetSaveHandler();
 
 	TArray<APlayerController*> GetAllPlayerControllers();
