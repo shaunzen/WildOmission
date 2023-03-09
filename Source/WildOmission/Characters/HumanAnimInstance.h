@@ -28,6 +28,9 @@ public:
 	float Angle;
 
 	UPROPERTY(BlueprintReadonly)
+	float HeadAngle;
+
+	UPROPERTY(BlueprintReadonly)
 	bool Falling;
 
 	UPROPERTY(BlueprintReadonly)
