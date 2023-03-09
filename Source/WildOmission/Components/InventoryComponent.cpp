@@ -446,7 +446,7 @@ void UInventoryComponent::DropAll(const int32& ToSlotIndex)
 	}
 	else if (ToSlot.SameItemNameAs(SelectedItem) && GetItemData(SelectedItem.Name)->StackSize != 1) // same item and the stack size for this item is not 1
 	{
-		if ((ToSlot.Item.Quantity + SelectedItem.Quantity) <= GetItemData(SelectedItem.Name)->StackSize) // todo move to function
+		if (WithinStackSize(ToSlot.Item, SelectedItem.Quantity)) // todo move to function
 		{
 			// Update Inventory
 			ToSlot.Item.Quantity += SelectedItem.Quantity;
@@ -513,7 +513,7 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex)
 		NewSelection.Quantity -= 1;
 		Manipulator->StartDragging(NewSelection);
 	}
-	else if (ToSlot.SameItemNameAs(SelectedItem) && (ToSlot.Item.Quantity + 1) <= GetItemData(SelectedItem.Name)->StackSize)
+	else if (ToSlot.SameItemNameAs(SelectedItem) && WithinStackSize(ToSlot.Item, 1))
 	{
 		// Update Inventory
 		ToSlot.Item.Quantity += 1;
