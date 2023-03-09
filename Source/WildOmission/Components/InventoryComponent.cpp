@@ -9,14 +9,10 @@
 
 UInventoryComponent::UInventoryComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	
-	// Make this component replicate
 	SetIsReplicatedByDefault(true);
 	
-	// Find the item data table
 	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
 	if (ItemDataTableObject.Succeeded())
 	{
@@ -37,7 +33,6 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	if (!GetOwner()->HasAuthority())
 	{
 		return;
@@ -58,14 +53,16 @@ void UInventoryComponent::SetManipulator(UInventoryManipulatorComponent* Invento
 
 void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd)
 {
+	// The amount of items we were unable to add
 	int32 Remaining;
+	
+	// The amount of items we successfully added
 	int32 AmountAdded;
+	
 	bool AddSuccess = AddItemToSlots(ItemToAdd, Remaining);
 
-	// Calculate how many were added
+	// Calculate how many were added and add that amount to our contents
 	AmountAdded = ItemToAdd.Quantity - Remaining;
-
-	// Add item to item list
 	Contents.AddItem(ItemToAdd.Name, AmountAdded);
 
 	if (AddSuccess == false)
@@ -76,26 +73,21 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd)
 	}
 
 	OnInventoryChange();
-	RefreshUI();
 }
 
-void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove, bool bDropInWorld)
+void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove)
 {
-	// Remove from contents
-	Contents.RemoveItem(ItemToRemove.Name, ItemToRemove.Quantity);
-
-	if (bDropInWorld == true)
-	{
-		Manipulator->SpawnWorldItem(ItemToRemove);
-	}
-
-	// Remove from slots
 	int32 Remaining;
-	bool RemoveSuccess = RemoveItemFromSlots(ItemToRemove.Name, ItemToRemove.Quantity, Remaining);
+	int32 AmountSuccessfullyRemoved;
+	
+	RemoveItemFromSlots(ItemToRemove.Name, ItemToRemove.Quantity, Remaining);
+	AmountSuccessfullyRemoved = ItemToRemove.Quantity - Remaining;
+
+	// Remove from contents
+	Contents.RemoveItem(ItemToRemove.Name, AmountSuccessfullyRemoved);
 
 	// Call inventory change
 	OnInventoryChange();
-	RefreshUI();
 }
 
 void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& SlotIndex, bool Primary)
@@ -127,14 +119,14 @@ void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& Slo
 	RefreshUI();
 }
 
-FInventoryContents* UInventoryComponent::GetContents()
+FItemData* UInventoryComponent::GetItemData(const FName& ItemName)
 {
-	return &Contents;
-}
-
-TArray<FInventorySlot>& UInventoryComponent::GetSlots()
-{
-	return Slots;
+	if (ItemDataTable == nullptr)
+	{
+		return nullptr;
+	}
+	static const FString ContextString(TEXT("Item Data Context"));
+	return ItemDataTable->FindRow<FItemData>(ItemName, ContextString, true);
 }
 
 FInventoryItem* UInventoryComponent::FindItemWithUniqueID(const uint32& UniqueID)
@@ -181,39 +173,22 @@ FInventorySlot* UInventoryComponent::FindSlotContainingItem(const FName& ItemToF
 	return FoundSlot;
 }
 
-FInventorySlot* UInventoryComponent::FindSlotContainingItemWithUniqueID(const uint32& UniqueID)
+FInventoryContents* UInventoryComponent::GetContents()
 {
-	FInventorySlot* FoundSlot = nullptr;
-
-	for (FInventorySlot& Slot : Slots)
-	{
-		if (Slot.IsEmpty())
-		{
-			continue;
-		}
-		if (Slot.Item.UniqueID != UniqueID)
-		{
-			continue;
-		}
-
-		FoundSlot = &Slot;
-		break;
-	}
-
-	return FoundSlot;
+	return &Contents;
 }
 
-FItemData* UInventoryComponent::GetItemData(const FName& ItemName)
+FInventorySlot* UInventoryComponent::GetSlot(const int32& SlotIndex)
 {
-	if (ItemDataTable == nullptr)
-	{
-		return nullptr;
-	}
-	static const FString ContextString(TEXT("Item Data Context"));
-	return ItemDataTable->FindRow<FItemData>(ItemName, ContextString, true);
+	return &Slots[SlotIndex];
 }
 
-UInventoryManipulatorComponent* UInventoryComponent::GetManipulator()
+TArray<FInventorySlot>& UInventoryComponent::GetSlots()
+{
+	return Slots;
+}
+
+UInventoryManipulatorComponent* UInventoryComponent::GetManipulator() const
 {
 	return Manipulator;
 }
@@ -237,18 +212,43 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 	Slots = InInventorySave.Slots;
 }
 
+void UInventoryComponent::OnInventoryChange()
+{
+	RefreshUI();
+}
+
+void UInventoryComponent::RefreshUI()
+{
+	if (Manipulator == nullptr)
+	{
+		return;
+	}
+
+	AWildOmissionCharacter* ManipulatorCharacter = Cast<AWildOmissionCharacter>(Manipulator->GetOwner());
+	if (ManipulatorCharacter == nullptr)
+	{
+		return;
+	}
+
+	UPlayerHUDWidget* ManipulatorHUD = ManipulatorCharacter->GetHUDWidget();
+	if (ManipulatorHUD == nullptr)
+	{
+		return;
+	}
+
+	ManipulatorHUD->RefreshInventoryStates();
+}
+
 bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining)
 {
-	uint32 UniqueID = FMath::RandRange(1, 999999);
-
-
-
-	Remaining = ItemToAdd.Quantity;
 	FItemData* ItemData = GetItemData(ItemToAdd.Name);
 	if (ItemData == nullptr)
 	{
 		return false;
 	}
+
+	uint32 UniqueID = FMath::RandRange(1, 999999);
+	Remaining = ItemToAdd.Quantity;
 	
 	// if the item stats are empty populate with defaults
 	TArray<FItemStat> ItemStats;
@@ -261,12 +261,84 @@ bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32&
 		ItemStats = ItemToAdd.Stats;
 	}
 
-	if (!FindAndAddToPopulatedSlot(ItemToAdd.Name, ItemData, Remaining))
+	if (!FindAndAddToPopulatedSlot(ItemToAdd.Name, ItemData->StackSize, Remaining))
 	{
-		FindAndAddToEmptySlot(ItemToAdd.Name, ItemData, ItemStats, UniqueID, Remaining);
+		FindAndAddToEmptySlot(ItemToAdd.Name, ItemData->StackSize, ItemStats, Remaining);
 	}
 
 	return Remaining == 0;
+}
+
+bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const int32& ItemStackSize, int32& QuantityToAdd)
+{
+	for (FInventorySlot& Slot : Slots)
+	{
+		if (QuantityToAdd == 0)
+		{
+			break;
+		}
+
+		if (Slot.Item.Quantity == GetItemData(ItemName)->StackSize || Slot.Item.Name != ItemName)
+		{
+			continue;
+		}
+
+		if (Slot.Item.Quantity + QuantityToAdd > ItemStackSize)
+		{
+			QuantityToAdd -= ItemStackSize - Slot.Item.Quantity;
+			FInventoryItem NewSlotItem;
+			NewSlotItem.Name = ItemName;
+			NewSlotItem.Quantity = ItemStackSize;
+			Slot.Item = NewSlotItem;
+		}
+		else
+		{
+			FInventoryItem NewSlotItem;
+			NewSlotItem.Name = ItemName;
+			NewSlotItem.Quantity = QuantityToAdd + Slot.Item.Quantity;
+			Slot.Item = NewSlotItem;
+			QuantityToAdd = 0;
+		}
+	}
+	return QuantityToAdd == 0;
+}
+
+bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, const int32& ItemStackSize, const TArray<FItemStat>& Stats, int32& QuantityToAdd)
+{
+	for (FInventorySlot& Slot : Slots)
+	{
+		if (QuantityToAdd == 0)
+		{
+			break;
+		}
+		if (Slot.Item.Quantity > 0)
+		{
+			continue;
+		}
+
+		uint32 ItemUniqueID = FMath::RandRange(0, 99999);
+
+		if (QuantityToAdd > ItemStackSize)
+		{
+			QuantityToAdd -= ItemStackSize;
+			FInventoryItem NewSlotItem;
+			NewSlotItem.Name = ItemName;
+			NewSlotItem.Quantity = ItemStackSize;
+			NewSlotItem.UniqueID = ItemUniqueID;
+			Slot.Item = NewSlotItem;
+		}
+		else
+		{
+			FInventoryItem NewSlotItem;
+			NewSlotItem.Name = ItemName;
+			NewSlotItem.Quantity = QuantityToAdd;
+			NewSlotItem.Stats = Stats;
+			NewSlotItem.UniqueID = ItemUniqueID;
+			Slot.Item = NewSlotItem;
+			QuantityToAdd = 0;
+		}
+	}
+	return QuantityToAdd == 0;
 }
 
 bool UInventoryComponent::RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining)
@@ -473,103 +545,4 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex)
 	}
 
 	OnInventoryChange();
-}
-
-
-bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, FItemData* ItemData, int32& QuantityToAdd)
-{
-	for (FInventorySlot& Slot : Slots)
-	{
-		if (QuantityToAdd == 0)
-		{
-			break;
-		}
-
-		if (Slot.Item.Quantity == GetItemData(ItemName)->StackSize || Slot.Item.Name != ItemName)
-		{
-			continue;
-		}
-
-		if (Slot.Item.Quantity + QuantityToAdd > ItemData->StackSize)
-		{
-			QuantityToAdd -= ItemData->StackSize - Slot.Item.Quantity;
-			FInventoryItem NewSlotItem;
-			NewSlotItem.Name = ItemName;
-			NewSlotItem.Quantity = ItemData->StackSize;
-			Slot.Item = NewSlotItem;
-		}
-		else
-		{
-			FInventoryItem NewSlotItem;
-			NewSlotItem.Name = ItemName;
-			NewSlotItem.Quantity = QuantityToAdd + Slot.Item.Quantity;
-			Slot.Item = NewSlotItem;
-			QuantityToAdd = 0;
-		}
-	}
-	return QuantityToAdd == 0;
-}
-
-bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, FItemData* ItemData, const TArray<FItemStat>& Stats, const uint32& ItemUniqueID, int32& QuantityToAdd)
-{
-	for (FInventorySlot& Slot : Slots)
-	{
-		if (QuantityToAdd == 0)
-		{
-			break;
-		}
-
-		if (Slot.Item.Quantity > 0)
-		{
-			continue;
-		}
-
-		if (QuantityToAdd > ItemData->StackSize)
-		{
-			QuantityToAdd -= ItemData->StackSize;
-			FInventoryItem NewSlotItem;
-			NewSlotItem.Name = ItemName;
-			NewSlotItem.Quantity = ItemData->StackSize;
-			NewSlotItem.UniqueID = ItemUniqueID;
-			Slot.Item = NewSlotItem;
-		}
-		else
-		{
-			FInventoryItem NewSlotItem;
-			NewSlotItem.Name = ItemName;
-			NewSlotItem.Quantity = QuantityToAdd;
-			NewSlotItem.Stats = Stats;
-			NewSlotItem.UniqueID = ItemUniqueID;
-			Slot.Item = NewSlotItem;
-			QuantityToAdd = 0;
-		}
-	}
-	return QuantityToAdd == 0;
-}
-
-void UInventoryComponent::RefreshUI()
-{
-	if (Manipulator == nullptr)
-	{
-		return;
-	}
-
-	AWildOmissionCharacter* ManipulatorCharacter = Cast<AWildOmissionCharacter>(Manipulator->GetOwner());
-	if (ManipulatorCharacter == nullptr)
-	{
-		return;
-	}
-
-	UPlayerHUDWidget* ManipulatorHUD = ManipulatorCharacter->GetHUDWidget();
-	if (ManipulatorHUD == nullptr)
-	{
-		return;
-	}
-
-	ManipulatorHUD->RefreshInventoryStates();
-}
-
-void UInventoryComponent::OnInventoryChange()
-{
-	RefreshUI();
 }

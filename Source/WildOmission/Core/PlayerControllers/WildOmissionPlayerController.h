@@ -32,9 +32,7 @@ public:
 
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
-	UFUNCTION(Exec)
-	void LogLocalInventorySlots();
-
+	
 private:
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();

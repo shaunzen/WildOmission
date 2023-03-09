@@ -50,7 +50,7 @@ protected:
 
 private:
 
-	UPROPERTY(Replicated, ReplicatedUsing = RefreshUI)
+	UPROPERTY(Replicated, ReplicatedUsing = OnInventoryChange)
 	int8 ToolbarSelectionIndex;
 
 	UPROPERTY()

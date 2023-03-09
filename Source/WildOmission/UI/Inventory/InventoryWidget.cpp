@@ -86,14 +86,14 @@ void UInventoryWidget::Refresh()
 {
 	for (UInventorySlotWidget* InventorySlot : Slots)
 	{
-		InventorySlot->SetItem(InventoryComponent->GetSlots()[InventorySlot->GetIndex()].Item);
+		InventorySlot->SetItem(InventoryComponent->GetSlot(InventorySlot->GetIndex())->Item);
 		InventorySlot->SetSelected(false);
 	}
 }
 
 void UInventoryWidget::RefreshSlot(const int32& SlotIndex)
 {
-	Slots[SlotIndex]->SetItem(InventoryComponent->GetSlots()[SlotIndex].Item);
+	Slots[SlotIndex]->SetItem(InventoryComponent->GetSlot(SlotIndex)->Item);
 }
 
 UInventoryComponent* UInventoryWidget::GetInventoryComponent()

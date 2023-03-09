@@ -122,15 +122,3 @@ void AWildOmissionPlayerController::LogLocalInventoryContents()
 	}
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: %s"), *WildOmissionCharacter->GetActorNameOrLabel()));
 }
-
-void AWildOmissionPlayerController::LogLocalInventorySlots()
-{
-	if (IsLocalController() == false)
-	{
-		return;
-	}
-	for (const FInventorySlot& Slot : GetPawn()->FindComponentByClass<UInventoryComponent>()->GetSlots())
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Index: %i, Item: %s, Quantity: %i"), Slot.Index, *Slot.Item.Name.ToString(), Slot.Item.Quantity));
-	}
-}
