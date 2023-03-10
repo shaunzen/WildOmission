@@ -44,6 +44,7 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	Super::NativeUpdateAnimation(DeltaTime);
 
 	CalculateSpeedAndAngle();
+	CalculateHeadAngle();
 	HandleFalling();
 	HandleItemHolding();
 }
@@ -117,6 +118,17 @@ void UHumanAnimInstance::CalculateSpeedAndAngle()
 		Speed = 0.0f;
 		Angle = 0.0f;
 	}
+}
+
+void UHumanAnimInstance::CalculateHeadAngle()
+{
+	APawn* PawnOwner = TryGetPawnOwner();
+	if (PawnOwner == nullptr)
+	{
+		return;
+	}
+
+	HeadAngle = -PawnOwner->GetControlRotation().Pitch;
 }
 
 void UHumanAnimInstance::HandleFalling()

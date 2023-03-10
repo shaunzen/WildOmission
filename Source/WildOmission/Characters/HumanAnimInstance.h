@@ -57,6 +57,8 @@ private:
 
 	void CalculateSpeedAndAngle();
 	
+	void CalculateHeadAngle();
+
 	void HandleFalling();
 
 	void HandleItemHolding();
