@@ -41,6 +41,10 @@ void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 
 void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 {
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
 	UEquipComponent* PlayerEquipComponent = OwnerCharacter->FindComponentByClass<UEquipComponent>();
 	if (PlayerEquipComponent == nullptr)
 	{
@@ -103,7 +107,17 @@ void UPlayerInventoryComponent::SetToolbarSelectionIndex(const int8& SelectionIn
 
 void UPlayerInventoryComponent::RemoveHeldItem()
 {
-	Server_RemoveHeldItem();
+	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
+
+	--SelectedSlot.Item.Quantity;
+
+	if (SelectedSlot.IsEmpty())
+	{
+		SelectedSlot.ClearItem();
+	}
+
+	RefreshToolbarSelectionState();
+
 	RefreshUI();
 }
 
@@ -160,20 +174,6 @@ void UPlayerInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(i
 	}
 
 	ToolbarSelectionIndex = SelectionIndex;
-
-	RefreshToolbarSelectionState();
-}
-
-void UPlayerInventoryComponent::Server_RemoveHeldItem_Implementation()
-{
-	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
-
-	--SelectedSlot.Item.Quantity;
-
-	if (SelectedSlot.IsEmpty())
-	{
-		SelectedSlot.ClearItem();
-	}
 
 	RefreshToolbarSelectionState();
 }

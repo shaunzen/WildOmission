@@ -4,7 +4,7 @@
 #include "ToolItem.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/EquipComponent.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -30,7 +30,7 @@ void AToolItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InI
 {
 	Super::Equip(InOwnerCharacter, InItemName, InFromSlotIndex, InUniqueID);
 
-	UInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UInventoryComponent>();
+	UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventory == nullptr)
 	{
 		return;
@@ -71,6 +71,18 @@ void AToolItem::ApplyDamage()
 
 	FInventoryItem* InventoryItem = FindInInventory();
 	InventoryItem->SetStat(FName("Durability"), Durability);
+
+	if (Durability <= 0.0f)
+	{
+		//remove held item
+		UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
+		if (OwnerInventory == nullptr)
+		{
+			return;
+		}
+
+		OwnerInventory->RemoveHeldItem();
+	}
 }
 
 FInventoryItem* AToolItem::FindInInventory()
