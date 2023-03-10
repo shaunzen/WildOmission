@@ -294,6 +294,7 @@ void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString)
 {
 	//TODO goto main menu
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 20.0f, FColor::Red, FString::Printf(TEXT("Error String %s"), *ErrorString));
 	UE_LOG(LogTemp, Error, TEXT("Network failure disconnecting..."));
 	UE_LOG(LogTemp, Error, TEXT("Damnit larch you forgot to add disconnecting"));
 }

@@ -70,8 +70,9 @@ void UPlayerHUDWidget::RefreshInventoryStates()
 void UPlayerHUDWidget::ToggleInventory()
 {
 	bInventoryMenuOpen = !bInventoryMenuOpen;
+
 	// Get player controller
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	APlayerController* PlayerController = GetOwningPlayer();;
 	if (PlayerController == nullptr)
 	{
 		return;
@@ -83,6 +84,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		FInputModeGameOnly InputModeData;
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = false;
+		
 		// Hide inventory menu
 		BackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
 		PlayerInventory->Close();
@@ -94,6 +96,8 @@ void UPlayerHUDWidget::ToggleInventory()
 		}
 
 		PlayerInventoryManipulator->StopDragging(true);
+
+		RefreshInventoryStates();
 	}
 	else
 	{
