@@ -14,6 +14,7 @@
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "Net/UnrealNetwork.h"
 
 //********************************
 // Setup/General Actor Functionality
@@ -21,7 +22,7 @@
 AWildOmissionCharacter::AWildOmissionCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Player/WBP_PlayerHUD"));
 	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerArmsAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_FirstPerson"));
@@ -106,6 +107,13 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
 }
 
+void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWildOmissionCharacter, ControlPitch);
+}
+
 void AWildOmissionCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -157,6 +165,18 @@ void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		PlayerHUDWidget->RemoveFromParent();
 		PlayerHUDWidget = nullptr;
 	}
+}
+
+void AWildOmissionCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	ControlPitch = GetControlRotation().Pitch;
 }
 
 //********************************
@@ -256,6 +276,11 @@ void AWildOmissionCharacter::ToolbarSelectionDecrement()
 //********************************
 // Getters
 //********************************
+
+float AWildOmissionCharacter::GetControlPitch() const
+{
+	return ControlPitch;
+}
 
 USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 {

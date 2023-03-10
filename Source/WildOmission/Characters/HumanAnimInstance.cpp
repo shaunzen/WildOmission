@@ -9,6 +9,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "WildOmission/Components/EquipComponent.h"
 
+#include "WildOmission/Characters/WildOmissionCharacter.h"
+
 UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializer)
 {
 	Speed = 0;
@@ -127,8 +129,13 @@ void UHumanAnimInstance::CalculateHeadAngle()
 	{
 		return;
 	}
+	AWildOmissionCharacter* CharacterOwner = Cast<AWildOmissionCharacter>(PawnOwner);
+	if (CharacterOwner == nullptr)
+	{
+		return;
+	}
 
-	HeadAngle = -PawnOwner->GetControlRotation().Pitch;
+	HeadAngle = -CharacterOwner->GetControlPitch();
 }
 
 void UHumanAnimInstance::HandleFalling()

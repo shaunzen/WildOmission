@@ -15,8 +15,15 @@ class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
 public:
 	AWildOmissionCharacter();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	float GetControlPitch() const;
+
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
 
@@ -62,6 +69,9 @@ private:
 	UPROPERTY()
 	class UPlayerHUDWidget* PlayerHUDWidget;
 	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
+
+	UPROPERTY(Replicated)
+	float ControlPitch;
 
 	//*****************************
 	// Input
