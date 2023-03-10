@@ -20,12 +20,11 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION()
-	float GetControlPitch() const;
-
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
+
+	UFUNCTION()
+	float GetHeadPitch() const;
 
 	UFUNCTION(BlueprintCallable)
 	class UPlayerHUDWidget* GetHUDWidget() const;
@@ -71,7 +70,7 @@ private:
 	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	UPROPERTY(Replicated)
-	float ControlPitch;
+	float HeadPitch;
 
 	//*****************************
 	// Input

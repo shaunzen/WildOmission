@@ -124,18 +124,13 @@ void UHumanAnimInstance::CalculateSpeedAndAngle()
 
 void UHumanAnimInstance::CalculateHeadAngle()
 {
-	APawn* PawnOwner = TryGetPawnOwner();
-	if (PawnOwner == nullptr)
-	{
-		return;
-	}
-	AWildOmissionCharacter* CharacterOwner = Cast<AWildOmissionCharacter>(PawnOwner);
+	AWildOmissionCharacter* CharacterOwner = Cast<AWildOmissionCharacter>(TryGetPawnOwner());
 	if (CharacterOwner == nullptr)
 	{
 		return;
 	}
-
-	HeadAngle = -CharacterOwner->GetControlPitch();
+	
+	HeadAngle = -CharacterOwner->GetHeadPitch() * 0.5f;	
 }
 
 void UHumanAnimInstance::HandleFalling()

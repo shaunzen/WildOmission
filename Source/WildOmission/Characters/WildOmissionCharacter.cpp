@@ -111,7 +111,7 @@ void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AWildOmissionCharacter, ControlPitch);
+	DOREPLIFETIME(AWildOmissionCharacter, HeadPitch);
 }
 
 void AWildOmissionCharacter::BeginPlay()
@@ -175,8 +175,8 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	{
 		return;
 	}
-
-	ControlPitch = GetControlRotation().Pitch;
+	
+	HeadPitch = GetControlRotation().GetNormalized().Pitch;
 }
 
 //********************************
@@ -277,14 +277,15 @@ void AWildOmissionCharacter::ToolbarSelectionDecrement()
 // Getters
 //********************************
 
-float AWildOmissionCharacter::GetControlPitch() const
-{
-	return ControlPitch;
-}
 
 USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 {
 	return FirstPersonArmsMeshComponent;
+}
+
+float AWildOmissionCharacter::GetHeadPitch() const
+{
+	return HeadPitch;
 }
 
 UPlayerHUDWidget* AWildOmissionCharacter::GetHUDWidget() const
