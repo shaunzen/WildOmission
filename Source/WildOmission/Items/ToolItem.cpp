@@ -58,16 +58,18 @@ void AToolItem::OnUnequip()
 void AToolItem::Primary()
 {
 	Super::Primary();
+
+	Client_PlaySwingAnimation();
+	
 	FHitResult HitResult;
 	FVector Start = GetOwnerCharacter()->GetCameraOrigin();
 	FVector End = Start + (GetOwnerCharacter()->GetCameraForwardVector() * EffectiveRangeCentimeters);
 
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 10.0f, 0, 5.0f);
-
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 	{
 		UHarvestableComponent* HitHarvestableComponent = HitResult.GetActor()->FindComponentByClass<UHarvestableComponent>();
-		if (HitHarvestableComponent == nullptr)
+		
+		if (HitHarvestableComponent == nullptr || HitHarvestableComponent->GetRequiredToolType() != ToolType)
 		{
 			return;
 		}
@@ -75,8 +77,6 @@ void AToolItem::Primary()
 		HitHarvestableComponent->OnHarvest(GetOwner());
 		ApplyDamage();
 	}
-
-	Client_PlaySwingAnimation();
 }
 
 void AToolItem::Secondary()

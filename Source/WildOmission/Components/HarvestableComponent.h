@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "WildOmission/Core/Structs/InventoryItem.h"
+#include "WildOmission/Core/Enums/ToolType.h"
 #include "Components/ActorComponent.h"
 #include "HarvestableComponent.generated.h"
 
@@ -19,6 +20,8 @@ public:
 
 	virtual void OnHarvest(AActor* HarvestingActor);
 
+	TEnumAsByte<EToolType> GetRequiredToolType() const;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -26,6 +29,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	FInventoryItem ItemYeild;
 
+	UPROPERTY(EditDefaultsOnly)
+	TEnumAsByte<EToolType> RequiredToolType;
+	
 	UPROPERTY(EditDefaultsOnly)
 	int32 Durability;
 

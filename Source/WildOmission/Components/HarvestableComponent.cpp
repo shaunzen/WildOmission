@@ -49,3 +49,8 @@ void UHarvestableComponent::OnHarvest(AActor* HarvestingActor)
 		GetOwner()->Destroy();
 	}
 }
+
+TEnumAsByte<EToolType> UHarvestableComponent::GetRequiredToolType() const
+{
+	return RequiredToolType;
+}
