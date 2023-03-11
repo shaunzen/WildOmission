@@ -26,6 +26,12 @@ public:
 	UFUNCTION()
 	float GetHeadPitch() const;
 
+	UFUNCTION()
+	FVector GetCameraOrigin();
+
+	UFUNCTION()
+	FVector GetCameraForwardVector();
+
 	UFUNCTION(BlueprintCallable)
 	class UPlayerHUDWidget* GetHUDWidget() const;
 

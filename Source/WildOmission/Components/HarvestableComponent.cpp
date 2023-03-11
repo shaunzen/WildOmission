@@ -33,7 +33,7 @@ void UHarvestableComponent::OnHarvest(AActor* HarvestingActor)
 
 	FInventoryItem ItemToGive;
 	ItemToGive = ItemYeild;
-	ItemToGive.Quantity * 1.0f; // todo make tool gather multiplier
+	ItemToGive.Quantity = ItemYeild.Quantity * 1.0f; // todo make tool gather multiplier
 
 	if (ItemToGive.Quantity <= 0)
 	{

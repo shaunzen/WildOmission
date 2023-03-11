@@ -288,6 +288,16 @@ float AWildOmissionCharacter::GetHeadPitch() const
 	return HeadPitch;
 }
 
+FVector AWildOmissionCharacter::GetCameraOrigin()
+{
+	return FirstPersonCameraComponent->GetComponentLocation();
+}
+
+FVector AWildOmissionCharacter::GetCameraForwardVector()
+{
+	return FirstPersonCameraComponent->GetForwardVector();
+}
+
 UPlayerHUDWidget* AWildOmissionCharacter::GetHUDWidget() const
 {
 	return PlayerHUDWidget;

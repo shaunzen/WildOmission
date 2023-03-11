@@ -6,6 +6,8 @@
 #include "WildOmission/Components/EquipComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "WildOmission/Components/HarvestableComponent.h"
+#include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 
 AToolItem::AToolItem()
@@ -13,7 +15,7 @@ AToolItem::AToolItem()
 	ToolType = EToolType::WOOD;
 
 	GatherMultiplyer = 1.0f;
-	EffectiveRangeCentimeters = 2000.0f;
+	EffectiveRangeCentimeters = 100.0f;
 	SwingTimeSeconds = 1.0f;
 
 	Durability = 1000;
@@ -56,7 +58,24 @@ void AToolItem::OnUnequip()
 void AToolItem::Primary()
 {
 	Super::Primary();
-	ApplyDamage();
+	FHitResult HitResult;
+	FVector Start = GetOwnerCharacter()->GetCameraOrigin();
+	FVector End = Start + (GetOwnerCharacter()->GetCameraForwardVector() * EffectiveRangeCentimeters);
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 10.0f, 0, 5.0f);
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+	{
+		UHarvestableComponent* HitHarvestableComponent = HitResult.GetActor()->FindComponentByClass<UHarvestableComponent>();
+		if (HitHarvestableComponent == nullptr)
+		{
+			return;
+		}
+
+		HitHarvestableComponent->OnHarvest(GetOwner());
+		ApplyDamage();
+	}
+
 	Client_PlaySwingAnimation();
 }
 
