@@ -21,6 +21,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayFootstepSound();
 
+	UFUNCTION(BlueprintCallable)
+	void HarvestResource();
+
 	UPROPERTY(BlueprintReadonly)
 	float Speed;
 

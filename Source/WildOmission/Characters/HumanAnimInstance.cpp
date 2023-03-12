@@ -104,6 +104,13 @@ void UHumanAnimInstance::PlayFootstepSound()
 	}
 }
 
+void UHumanAnimInstance::HarvestResource()
+{
+	// get owner equip comp and tell it to harvest
+
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString("TEXT"));
+}
+
 void UHumanAnimInstance::CalculateSpeedAndAngle()
 {
 	APawn* PawnOwner = TryGetPawnOwner();
