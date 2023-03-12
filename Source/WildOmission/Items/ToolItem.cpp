@@ -15,7 +15,7 @@ AToolItem::AToolItem()
 	ToolType = EToolType::WOOD;
 
 	GatherMultiplyer = 1.0f;
-	EffectiveRangeCentimeters = 100.0f;
+	EffectiveRangeCentimeters = 150.0f;
 	SwingTimeSeconds = 1.0f;
 
 	Durability = 1000;
@@ -60,7 +60,15 @@ void AToolItem::Primary()
 	Super::Primary();
 
 	Client_PlaySwingAnimation();
-	
+}
+
+void AToolItem::Harvest()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	FHitResult HitResult;
 	FVector Start = GetOwnerCharacter()->GetCameraOrigin();
 	FVector End = Start + (GetOwnerCharacter()->GetCameraForwardVector() * EffectiveRangeCentimeters);
@@ -68,13 +76,13 @@ void AToolItem::Primary()
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 	{
 		UHarvestableComponent* HitHarvestableComponent = HitResult.GetActor()->FindComponentByClass<UHarvestableComponent>();
-		
-		if (HitHarvestableComponent == nullptr || HitHarvestableComponent->GetRequiredToolType() != ToolType)
+
+		if (HitHarvestableComponent && HitHarvestableComponent->GetRequiredToolType() == ToolType)
 		{
-			return;
+			HitHarvestableComponent->OnHarvest(GetOwner());
 		}
 
-		HitHarvestableComponent->OnHarvest(GetOwner());
+		// TODO hit sound
 		ApplyDamage();
 	}
 }
@@ -93,7 +101,6 @@ void AToolItem::ApplyDamage()
 
 	if (Durability <= 0.0f)
 	{
-		//remove held item
 		UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
 		if (OwnerInventory == nullptr)
 		{
@@ -101,6 +108,7 @@ void AToolItem::ApplyDamage()
 		}
 
 		OwnerInventory->RemoveHeldItem();
+		// TODO play break sound
 	}
 }
 

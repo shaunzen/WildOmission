@@ -28,6 +28,8 @@ public:
 
 	virtual void Secondary() override;
 
+	virtual void Harvest();
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> ToolType;

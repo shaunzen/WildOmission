@@ -8,7 +8,7 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
 #include "WildOmission/Components/EquipComponent.h"
-
+#include "WildOmission/Items/ToolItem.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 
 UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializer)
@@ -107,8 +107,25 @@ void UHumanAnimInstance::PlayFootstepSound()
 void UHumanAnimInstance::HarvestResource()
 {
 	// get owner equip comp and tell it to harvest
+	APawn* PawnOwner = TryGetPawnOwner();
+	if (PawnOwner == nullptr)
+	{
+		return;
+	}
 
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString("TEXT"));
+	UEquipComponent* OwnerEquipComponent = PawnOwner->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr) 
+	{
+		return;
+	}
+
+	AToolItem* EquipedTool = Cast<AToolItem>(OwnerEquipComponent->GetEquipedItem());
+	if (EquipedTool == nullptr)
+	{
+		return;
+	}
+
+	EquipedTool->Harvest();
 }
 
 void UHumanAnimInstance::CalculateSpeedAndAngle()
