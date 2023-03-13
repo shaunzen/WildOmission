@@ -52,7 +52,12 @@ protected:
 	FInventoryItem* FindInInventory();
 
 private:
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* HarvestSound;
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlaySwingAnimation();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayHarvestSound();
 };

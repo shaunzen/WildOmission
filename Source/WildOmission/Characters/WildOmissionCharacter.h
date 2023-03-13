@@ -7,6 +7,8 @@
 #include "InputActionValue.h"
 #include "WildOmissionCharacter.generated.h"
 
+class UCameraComponent;
+
 UCLASS()
 class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
 {
@@ -27,10 +29,7 @@ public:
 	float GetHeadPitch() const;
 
 	UFUNCTION()
-	FVector GetCameraOrigin();
-
-	UFUNCTION()
-	FVector GetCameraForwardVector();
+	UCameraComponent* GetFirstPersonCameraComponent();
 
 	UFUNCTION(BlueprintCallable)
 	class UPlayerHUDWidget* GetHUDWidget() const;
@@ -51,7 +50,7 @@ protected:
 	
 private:
 	UPROPERTY(VisibleAnywhere)
-	class UCameraComponent* FirstPersonCameraComponent;
+	UCameraComponent* FirstPersonCameraComponent;
 	
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* FirstPersonArmsMeshComponent;

@@ -2,13 +2,18 @@
 
 
 #include "ToolItem.h"
+#include "UObject/ConstructorHelpers.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/EquipComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/HarvestableComponent.h"
-#include "DrawDebugHelpers.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+
+#include "DrawDebugHelpers.h"
 
 AToolItem::AToolItem()
 {
@@ -19,6 +24,14 @@ AToolItem::AToolItem()
 	SwingTimeSeconds = 1.0f;
 
 	Durability = 1000;
+
+	ConstructorHelpers::FObjectFinder<USoundBase> HarvestSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
+	if (HarvestSoundObject.Object == nullptr)
+	{
+		return;
+	}
+
+	HarvestSound = HarvestSoundObject.Object;
 }
 
 void AToolItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -45,8 +58,6 @@ void AToolItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InI
 	}
 
 	Durability = InventoryItem->GetStat(FName("Durability"));
-
-	UE_LOG(LogTemp, Warning, TEXT("Pickup Durability %i"), Durability);
 }
 
 void AToolItem::OnUnequip()
@@ -68,10 +79,12 @@ void AToolItem::Harvest()
 	{
 		return;
 	}
+	
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
 
 	FHitResult HitResult;
-	FVector Start = GetOwnerCharacter()->GetCameraOrigin();
-	FVector End = Start + (GetOwnerCharacter()->GetCameraForwardVector() * EffectiveRangeCentimeters);
+	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 	{
@@ -82,7 +95,7 @@ void AToolItem::Harvest()
 			HitHarvestableComponent->OnHarvest(GetOwner());
 		}
 
-		// TODO hit sound
+		Client_PlayHarvestSound();
 		ApplyDamage();
 	}
 }
@@ -108,7 +121,6 @@ void AToolItem::ApplyDamage()
 		}
 
 		OwnerInventory->RemoveHeldItem();
-		// TODO play break sound
 	}
 }
 
@@ -143,4 +155,14 @@ void AToolItem::Client_PlaySwingAnimation_Implementation()
 	}
 
 	OwnerEquipComponent->PlaySwingAnimation();
+}
+
+void AToolItem::Client_PlayHarvestSound_Implementation()
+{
+	if (HarvestSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HarvestSound, GetActorLocation());
 }

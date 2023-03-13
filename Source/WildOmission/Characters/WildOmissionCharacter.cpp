@@ -81,6 +81,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonCameraComponent->SetupAttachment(RootComponent);
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+	FirstPersonCameraComponent->SetIsReplicated(true);
 
 	FirstPersonArmsMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonArmsComponent"));
 	FirstPersonArmsMeshComponent->SetupAttachment(FirstPersonCameraComponent);
@@ -283,19 +284,15 @@ USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 	return FirstPersonArmsMeshComponent;
 }
 
+//TODO remove this and just use control rotation
 float AWildOmissionCharacter::GetHeadPitch() const
 {
 	return HeadPitch;
 }
 
-FVector AWildOmissionCharacter::GetCameraOrigin()
+UCameraComponent* AWildOmissionCharacter::GetFirstPersonCameraComponent()
 {
-	return FirstPersonCameraComponent->GetComponentLocation();
-}
-
-FVector AWildOmissionCharacter::GetCameraForwardVector()
-{
-	return FirstPersonCameraComponent->GetForwardVector();
+	return FirstPersonCameraComponent;
 }
 
 UPlayerHUDWidget* AWildOmissionCharacter::GetHUDWidget() const
