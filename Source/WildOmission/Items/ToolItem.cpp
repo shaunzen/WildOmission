@@ -13,8 +13,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
-#include "DrawDebugHelpers.h"
-
 AToolItem::AToolItem()
 {
 	ToolType = EToolType::WOOD;

@@ -81,7 +81,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonCameraComponent->SetupAttachment(RootComponent);
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
-	FirstPersonCameraComponent->SetIsReplicated(true);
 
 	FirstPersonArmsMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonArmsComponent"));
 	FirstPersonArmsMeshComponent->SetupAttachment(FirstPersonCameraComponent);
@@ -108,13 +107,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
 }
 
-void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AWildOmissionCharacter, HeadPitch);
-}
-
 void AWildOmissionCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -122,6 +114,18 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
+}
+
+void AWildOmissionCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	Client_UpdateHeadPitch(GetControlRotation().GetNormalized().Pitch);
 }
 
 void AWildOmissionCharacter::SetupEnhancedInputSubsystem()
@@ -166,18 +170,6 @@ void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		PlayerHUDWidget->RemoveFromParent();
 		PlayerHUDWidget = nullptr;
 	}
-}
-
-void AWildOmissionCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	if (!HasAuthority())
-	{
-		return;
-	}
-	
-	HeadPitch = GetControlRotation().GetNormalized().Pitch;
 }
 
 //********************************
@@ -284,7 +276,6 @@ USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 	return FirstPersonArmsMeshComponent;
 }
 
-//TODO remove this and just use control rotation
 float AWildOmissionCharacter::GetHeadPitch() const
 {
 	return HeadPitch;
@@ -313,4 +304,13 @@ UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent() const
 UInventoryManipulatorComponent* AWildOmissionCharacter::GetInventoryManipulatorComponent() const
 {
 	return InventoryManipulatorComponent;
+}
+
+//********************************
+// RPC
+//********************************
+
+void AWildOmissionCharacter::Client_UpdateHeadPitch_Implementation(const float& NewHeadPitch)
+{
+	HeadPitch = NewHeadPitch;
 }
