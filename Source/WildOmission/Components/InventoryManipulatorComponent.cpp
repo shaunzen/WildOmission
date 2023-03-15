@@ -54,22 +54,15 @@ void UInventoryManipulatorComponent::StartDragging(const FInventoryItem& ItemToD
 	Dragging = true;
 }
 
-void UInventoryManipulatorComponent::StopDragging(bool DropInWorld)
+void UInventoryManipulatorComponent::StopDragging()
 {
 	if (Dragging == false)
 	{
 		return;
 	}
 
-	FInventoryItem SelectedItemInformation = SelectedItem;
-
 	SelectedItem.Clear();
 	Dragging = false;
-
-	if (DropInWorld)
-	{
-		SpawnWorldItem(SelectedItemInformation);
-	}
 }
 
 void UInventoryManipulatorComponent::SpawnWorldItem(const FInventoryItem& ItemToSpawn)

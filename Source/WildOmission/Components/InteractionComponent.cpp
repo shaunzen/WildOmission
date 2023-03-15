@@ -21,7 +21,7 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 void UInteractionComponent::Interact()
 {
 	FHitResult HitResult;
-	if (TraceOnInteractableChannel(HitResult))
+	if (LineTraceOnVisibility(HitResult))
 	{
 		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
 		{
@@ -38,11 +38,15 @@ FString UInteractionComponent::GetInteractionString() const
 void UInteractionComponent::UpdateInteractionPrompt()
 {
 	FHitResult HitResult;
-	if (TraceOnInteractableChannel(HitResult))
+	if (LineTraceOnVisibility(HitResult))
 	{
 		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
 		{
 			InteractionString = Interactable->PromptText();
+		}
+		else
+		{
+			InteractionString = FString("");
 		}
 	}
 	else
@@ -51,13 +55,13 @@ void UInteractionComponent::UpdateInteractionPrompt()
 	}
 }
 
-bool UInteractionComponent::TraceOnInteractableChannel(FHitResult& OutHitResult) const
+bool UInteractionComponent::LineTraceOnVisibility(FHitResult& OutHitResult) const
 {
 	FVector Start = GetComponentLocation();
 	FVector End = Start + (GetForwardVector() * InteractionRange);
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
 
-	return GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel1, Sphere);
+	return GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_Visibility, Sphere);
 }
 
 void UInteractionComponent::Server_Interact_Implementation(AActor* ActorToInteract)

@@ -24,7 +24,7 @@ public:
 	//**************************************************************
 
 	void StartDragging(const FInventoryItem& ItemToDrag);
-	void StopDragging(bool DropInWorld = false);
+	void StopDragging();
 	void SpawnWorldItem(const FInventoryItem& ItemToSpawn);
 
 	//**************************************************************
@@ -33,7 +33,7 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_DropSelectedItemInWorld(bool Single);
-	
+
 	//**************************************************************
 	// Getters
 	//**************************************************************

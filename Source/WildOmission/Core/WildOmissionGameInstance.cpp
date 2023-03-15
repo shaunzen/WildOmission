@@ -17,7 +17,7 @@ const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
 	// Version Information Here
-	Version = FString("0.3.1 - Prototype");
+	Version = FString("0.3.1 - Pre 2 - Prototype");
 
 	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_MainMenu"));
 	
@@ -194,12 +194,14 @@ void UWildOmissionGameInstance::CreateSession()
 	{
 		return;
 	}
+
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = false;
 	SessionSettings.NumPublicConnections = 5;
 	SessionSettings.bShouldAdvertise = true;
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.bUseLobbiesIfAvailable = true;
+	SessionSettings.bAllowJoinInProgress = true;
 
 	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);

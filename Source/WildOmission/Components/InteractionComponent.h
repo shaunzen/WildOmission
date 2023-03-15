@@ -34,7 +34,7 @@ private:
 
 	void UpdateInteractionPrompt();
 
-	bool TraceOnInteractableChannel(FHitResult& OutHitResult) const;
+	bool LineTraceOnVisibility(FHitResult& OutHitResult) const;
 	
 	UFUNCTION(Server, Reliable)
 	void Server_Interact(AActor* ActorToInteract);

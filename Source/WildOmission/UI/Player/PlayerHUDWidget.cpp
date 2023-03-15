@@ -95,7 +95,7 @@ void UPlayerHUDWidget::ToggleInventory()
 			return;
 		}
 
-		PlayerInventoryManipulator->StopDragging(true);
+		PlayerInventoryManipulator->Server_DropSelectedItemInWorld(false);
 
 		RefreshInventoryStates();
 	}

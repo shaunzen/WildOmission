@@ -130,10 +130,15 @@ void UEquipComponent::Server_Secondary_Implementation()
 
 void UEquipComponent::OnRep_EquipedItem()
 {
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
 	if (EquipedItem)
 	{
 		RefreshEquipedSlot();
-		
+
 		FirstPersonItemMeshComponent->SetStaticMesh(EquipedItem->GetMesh());
 
 		FirstPersonItemMeshComponent->SetVisibility(OwnerCharacter->IsLocallyControlled());
@@ -149,15 +154,17 @@ void UEquipComponent::OnRep_EquipedItem()
 
 void UEquipComponent::RefreshEquipedSlot()
 {
-	if (!OwnerCharacter->IsLocallyControlled())
+	if (OwnerCharacter == nullptr)
 	{
 		return;
 	}
+
 	UPlayerHUDWidget* PlayerHUD = OwnerCharacter->GetHUDWidget();
 	if (PlayerHUD == nullptr)
 	{
 		return;
 	}
+	
 	UPlayerInventoryWidget* PlayerInventoryWidget = PlayerHUD->GetPlayerInventoryWidget();
 	if (PlayerInventoryWidget == nullptr)
 	{
