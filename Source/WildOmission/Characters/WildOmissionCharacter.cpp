@@ -84,6 +84,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	FirstPersonArmsMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonArmsComponent"));
 	FirstPersonArmsMeshComponent->SetupAttachment(FirstPersonCameraComponent);
+	FirstPersonArmsMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	FirstPersonArmsMeshComponent->SetSkeletalMesh(PlayerArmsMeshObject.Object);
 	FirstPersonArmsMeshComponent->SetAnimClass(PlayerArmsAnimBlueprintClass.Class);
 	FirstPersonArmsMeshComponent->SetRelativeLocation(FVector(-5.0f, 0.0f, -150.0f));
@@ -126,6 +127,13 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	}
 
 	Client_UpdateHeadPitch(GetControlRotation().GetNormalized().Pitch);
+}
+
+void AWildOmissionCharacter::UnPossessed()
+{
+	Super::UnPossessed();
+
+	EquipComponent->DestroyEquipedItem();
 }
 
 void AWildOmissionCharacter::SetupEnhancedInputSubsystem()

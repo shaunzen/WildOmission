@@ -21,6 +21,8 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void UnPossessed() override;
+
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
 

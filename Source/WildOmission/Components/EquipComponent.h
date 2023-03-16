@@ -21,6 +21,8 @@ public:
 
 	void Disarm();
 
+	void DestroyEquipedItem();
+
 	void PlaySwingAnimation();
 
 	UFUNCTION(BlueprintCallable)

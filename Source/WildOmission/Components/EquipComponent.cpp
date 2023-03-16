@@ -74,6 +74,17 @@ void UEquipComponent::Disarm()
 	}
 }
 
+void UEquipComponent::DestroyEquipedItem()
+{
+	if (!IsItemEquiped())
+	{
+		return;
+	}
+
+	EquipedItem->Destroy();
+	EquipedItem = nullptr;
+}
+
 void UEquipComponent::PlaySwingAnimation()
 {
 	UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
