@@ -7,21 +7,21 @@
 #include "ItemStat.h"
 #include "InventoryItem.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FInventoryItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName Name = FName("");
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 Quantity = 0;
 
 	UPROPERTY(EditAnywhere)
 	uint32 UniqueID = 0;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FItemStat> Stats;
 
 	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName);
