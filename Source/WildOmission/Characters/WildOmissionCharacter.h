@@ -71,6 +71,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UInteractionComponent* InteractionComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	class UWidgetComponent* NameTag;
+	
 	UPROPERTY()
 	class UPlayerHUDWidget* PlayerHUDWidget;
 	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;

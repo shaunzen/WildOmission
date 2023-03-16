@@ -14,6 +14,7 @@
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
 
 //********************************
@@ -106,6 +107,11 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
+
+	NameTag = CreateDefaultSubobject<UWidgetComponent>(FName("NameTag"));
+	NameTag->SetupAttachment(RootComponent);
+	NameTag->SetWidgetSpace(EWidgetSpace::Screen);
+	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 }
 
 void AWildOmissionCharacter::BeginPlay()
