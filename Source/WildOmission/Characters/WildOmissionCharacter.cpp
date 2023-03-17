@@ -14,7 +14,8 @@
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
-#include "Components/WidgetComponent.h"
+#include "Components/BillboardComponent.h"
+#include "Components/TextRenderComponent.h"
 #include "Net/UnrealNetwork.h"
 
 //********************************
@@ -108,19 +109,26 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
 
-	NameTag = CreateDefaultSubobject<UWidgetComponent>(FName("NameTag"));
-	NameTag->SetupAttachment(RootComponent);
-	NameTag->SetWidgetSpace(EWidgetSpace::Screen);
-	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+	NameTagBillboard = CreateDefaultSubobject<UBillboardComponent>(FName("NameTagBillboard"));
+	NameTagBillboard->SetupAttachment(RootComponent);
+	NameTagBillboard->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+
+	NameTagText = CreateDefaultSubobject<UTextRenderComponent>(FName("NameTagText"));
+	NameTagText->SetupAttachment(NameTagBillboard);
+
+
 }
 
 void AWildOmissionCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
+	
+	FString TestPlayer = FString("Test Player");
+	NameTagText->SetText(FText::FromString(TestPlayer));
 }
 
 void AWildOmissionCharacter::Tick(float DeltaTime)

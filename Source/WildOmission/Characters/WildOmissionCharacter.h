@@ -72,8 +72,11 @@ private:
 	class UInteractionComponent* InteractionComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	class UWidgetComponent* NameTag;
+	class UBillboardComponent* NameTagBillboard;
 	
+	UPROPERTY(VisibleAnywhere)
+	class UTextRenderComponent* NameTagText;
+
 	UPROPERTY()
 	class UPlayerHUDWidget* PlayerHUDWidget;
 	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
