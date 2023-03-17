@@ -8,12 +8,14 @@
 
 class UTextBlock;
 class UBorder;
+class UWidgetSwitcher;
 
 class UVitalsComponent;
 class UVitalsWidget;
 
 class UInventoryWidget;
 class UPlayerInventoryWidget;
+class UCraftingWidget;
 class USelectedItemWidget;
 
 UCLASS(Abstract)
@@ -43,23 +45,33 @@ private:
 	UTextBlock* InteractionPrompt;
 	
 	UPROPERTY(meta = (BindWidget))
-	UBorder* BackgroundBorder;
+	UBorder* MenuBackgroundBorder;
+
+	UPROPERTY(meta = (BindWidget))
+	UWidgetSwitcher* MenuSwitcher;
 
 	UPROPERTY(meta = (BindWidget))
 	UPlayerInventoryWidget* PlayerInventory;
 	
+	UPROPERTY(Meta = (BindWidget))
+	UCraftingWidget* CraftingMenu;
+
 	UPROPERTY(meta = (BindWidget))
 	USelectedItemWidget* SelectedItem;
 	
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
 
+	bool bMenuOpen;
+
 	bool bInventoryMenuOpen;
+
+	bool bCraftingMenuOpen;
 
 	void UpdateInteractionPrompt();
 	void UpdateSelectedItemLocation();
 
 	UFUNCTION()
-	void BackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
+	void MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
 
 };

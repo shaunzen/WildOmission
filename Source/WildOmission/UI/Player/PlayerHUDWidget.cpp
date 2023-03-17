@@ -15,14 +15,16 @@
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	bMenuOpen = false;
 	bInventoryMenuOpen = false;
+	bCraftingMenuOpen = false;
 }
 
 void UPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	BackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("BackgroundMouseButtonDown"));
+	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("MenuBackgroundMouseButtonDown"));
 	
 	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UPlayerInventoryComponent>();
 	if (PlayerInventoryComponent == nullptr)
@@ -86,7 +88,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		PlayerController->bShowMouseCursor = false;
 		
 		// Hide inventory menu
-		BackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
+		MenuBackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
 		PlayerInventory->Close();
 
 		UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerInventory->GetInventoryComponent()->GetManipulator();
@@ -108,7 +110,7 @@ void UPlayerHUDWidget::ToggleInventory()
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = true;
 		// Show inventory menu
-		BackgroundBorder->SetVisibility(ESlateVisibility::Visible);
+		MenuBackgroundBorder->SetVisibility(ESlateVisibility::Visible);
 		PlayerInventory->Open();
 	}
 }
@@ -174,7 +176,7 @@ void UPlayerHUDWidget::UpdateSelectedItemLocation()
 	SelectedItemSlot->SetPosition(FVector2D::ZeroVector);
 }
 
-void UPlayerHUDWidget::BackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
+void UPlayerHUDWidget::MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
 {
 	UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerInventory->GetInventoryComponent()->GetManipulator();
 	if (PlayerInventoryManipulator == nullptr)
