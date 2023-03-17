@@ -71,12 +71,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UInteractionComponent* InteractionComponent;
 
-	UPROPERTY(VisibleAnywhere)
-	class UBillboardComponent* NameTagBillboard;
-	
-	UPROPERTY(VisibleAnywhere)
-	class UTextRenderComponent* NameTagText;
-
 	UPROPERTY()
 	class UPlayerHUDWidget* PlayerHUDWidget;
 	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
@@ -89,6 +83,7 @@ private:
 	//*****************************
 	UPROPERTY()
 	class UInputMappingContext* DefaultMappingContext;
+
 	UPROPERTY()
 	class UInputAction* MoveAction;
 

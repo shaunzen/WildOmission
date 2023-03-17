@@ -108,15 +108,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
-
-	NameTagBillboard = CreateDefaultSubobject<UBillboardComponent>(FName("NameTagBillboard"));
-	NameTagBillboard->SetupAttachment(RootComponent);
-	NameTagBillboard->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
-
-	NameTagText = CreateDefaultSubobject<UTextRenderComponent>(FName("NameTagText"));
-	NameTagText->SetupAttachment(NameTagBillboard);
-
-
 }
 
 void AWildOmissionCharacter::BeginPlay()
@@ -126,9 +117,6 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
-	
-	FString TestPlayer = FString("Test Player");
-	NameTagText->SetText(FText::FromString(TestPlayer));
 }
 
 void AWildOmissionCharacter::Tick(float DeltaTime)
