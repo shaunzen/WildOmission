@@ -2,6 +2,24 @@
 
 
 #include "NameTagComponent.h"
+#include "UObject/ConstructorHelpers.h"
+
+UNameTagComponent::UNameTagComponent()
+{
+	FString Placeholder = FString("Jerald :S");
+	SetText(FText::FromString(Placeholder));
+
+	// Epic thats a typo lmao
+	SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
+	
+	/*ConstructorHelpers::FObjectFinder<UFont> GameFont(TEXT("/Game/WildOmission/UI/Fonts/Akshar"));
+	if (GameFont.Object == nullptr)
+	{
+		return;
+	}
+
+	SetFont(GameFont.Object);*/
+}
 
 void UNameTagComponent::BeginPlay()
 {

@@ -15,6 +15,8 @@ class WILDOMISSION_API UNameTagComponent : public UTextRenderComponent
 	GENERATED_BODY()
 
 public:
+	UNameTagComponent();
+
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

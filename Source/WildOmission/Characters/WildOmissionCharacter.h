@@ -8,6 +8,7 @@
 #include "WildOmissionCharacter.generated.h"
 
 class UCameraComponent;
+class UNameTagComponent;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
@@ -70,6 +71,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	class UInteractionComponent* InteractionComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UNameTagComponent* NameTag;
 
 	UPROPERTY()
 	class UPlayerHUDWidget* PlayerHUDWidget;
