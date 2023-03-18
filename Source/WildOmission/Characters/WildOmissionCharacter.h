@@ -107,7 +107,10 @@ private:
 	class UInputAction* SecondaryAction;
 	
 	UPROPERTY()
-	class UInputAction* InventoryAction;
+	class UInputAction* ToggleInventoryMenuAction;
+
+	UPROPERTY()
+	UInputAction* ToggleCraftingMenuAction;
 	
 	UPROPERTY()
 	class UInputAction* ToolbarSelectionIncrementAction;
@@ -123,8 +126,10 @@ private:
 	
 	void Secondary();
 
-	void ToggleInventory();
+	void ToggleInventoryMenu();
 	
+	void ToggleCraftingMenu();
+
 	void ToolbarSelectionIncrement();
 	
 	void ToolbarSelectionDecrement();

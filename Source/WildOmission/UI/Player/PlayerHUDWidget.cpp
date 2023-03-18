@@ -4,18 +4,19 @@
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/WidgetSwitcher.h"
 #include "WildOmission/UI/Inventory/InventoryWidget.h"
 #include "WildOmission/UI/Inventory/PlayerInventoryWidget.h"
 #include "WildOmission/UI/Inventory/SelectedItemWidget.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/UI/Crafting/CraftingWidget.h"
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "VitalsWidget.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	bMenuOpen = false;
 	bInventoryMenuOpen = false;
 	bCraftingMenuOpen = false;
 }
@@ -69,55 +70,29 @@ void UPlayerHUDWidget::RefreshInventoryStates()
 	}
 }
 
-void UPlayerHUDWidget::ToggleInventory()
+void UPlayerHUDWidget::ToggleInventoryMenu()
 {
-	bInventoryMenuOpen = !bInventoryMenuOpen;
-
-	// Get player controller
-	APlayerController* PlayerController = GetOwningPlayer();;
-	if (PlayerController == nullptr)
-	{
-		return;
-	}
-
-	if (bInventoryMenuOpen == false)
-	{
-		// Set input mode to game
-		FInputModeGameOnly InputModeData;
-		PlayerController->SetInputMode(InputModeData);
-		PlayerController->bShowMouseCursor = false;
-		
-		// Hide inventory menu
-		MenuBackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
-		PlayerInventory->Close();
-
-		UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerInventory->GetInventoryComponent()->GetManipulator();
-		if (PlayerInventoryManipulator == nullptr)
-		{
-			return;
-		}
-
-		PlayerInventoryManipulator->Server_DropSelectedItemInWorld(false);
-
-		RefreshInventoryStates();
-	}
-	else
-	{
-		// Set input mode to ui
-		FInputModeGameAndUI InputModeData;
-		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		InputModeData.SetHideCursorDuringCapture(false);
-		PlayerController->SetInputMode(InputModeData);
-		PlayerController->bShowMouseCursor = true;
-		// Show inventory menu
-		MenuBackgroundBorder->SetVisibility(ESlateVisibility::Visible);
-		PlayerInventory->Open();
-	}
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Toggle Inventory Menu"));
 }
 
-bool UPlayerHUDWidget::IsInventoryMenuOpen()
+void UPlayerHUDWidget::ToggleCraftingMenu()
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Toggle Crafting Menu"));
+}
+
+bool UPlayerHUDWidget::IsMenuOpen() const
+{
+	return bInventoryMenuOpen || bCraftingMenuOpen;
+}
+
+bool UPlayerHUDWidget::IsInventoryMenuOpen() const
 {
 	return bInventoryMenuOpen;
+}
+
+bool UPlayerHUDWidget::IsCraftingMenuOpen() const
+{
+	return bCraftingMenuOpen;
 }
 
 UPlayerInventoryWidget* UPlayerHUDWidget::GetPlayerInventoryWidget()

@@ -35,7 +35,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Interact"));
 	ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Primary"));
 	ConstructorHelpers::FObjectFinder<UInputAction> SecondaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Secondary"));
-	ConstructorHelpers::FObjectFinder<UInputAction> InventoryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Inventory"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToggleInventoryMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleInventoryMenu"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToggleCraftingMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleCraftingMenu"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionIncrement"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionDecrement"));
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerArmsMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_HumanFirstPersonArms"));
@@ -51,7 +52,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		|| InteractActionBlueprint.Object == nullptr
 		|| PrimaryActionBlueprint.Object == nullptr
 		|| SecondaryActionBlueprint.Object == nullptr
-		|| InventoryActionBlueprint.Object == nullptr
+		|| ToggleInventoryMenuActionBlueprint.Object == nullptr
+		|| ToggleCraftingMenuActionBlueprint.Object == nullptr
 		|| ToolbarSelectionIncrementBlueprint.Object == nullptr
 		|| ToolbarSelectionDecrementBlueprint.Object == nullptr
 		|| PlayerArmsMeshObject.Object == nullptr
@@ -69,7 +71,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	InteractAction = InteractActionBlueprint.Object;
 	PrimaryAction = PrimaryActionBlueprint.Object;
 	SecondaryAction = SecondaryActionBlueprint.Object;
-	InventoryAction = InventoryActionBlueprint.Object;
+	ToggleInventoryMenuAction = ToggleInventoryMenuActionBlueprint.Object;
+	ToggleCraftingMenuAction = ToggleCraftingMenuActionBlueprint.Object;
 	ToolbarSelectionIncrementAction = ToolbarSelectionIncrementBlueprint.Object;
 	ToolbarSelectionDecrementAction = ToolbarSelectionDecrementBlueprint.Object;
 
@@ -203,7 +206,8 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, InteractionComponent, &UInteractionComponent::Interact);
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Primary);
 	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Secondary);
-	EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleInventory);
+	EnhancedInputComponent->BindAction(ToggleInventoryMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleInventoryMenu);
+	EnhancedInputComponent->BindAction(ToggleCraftingMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleCraftingMenu);
 	EnhancedInputComponent->BindAction(ToolbarSelectionIncrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionIncrement);
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 }
@@ -218,7 +222,8 @@ void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 {
-	if (PlayerHUDWidget->IsInventoryMenuOpen())
+
+	if (PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}
@@ -231,7 +236,7 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::Primary()
 {
-	if (PlayerHUDWidget->IsInventoryMenuOpen())
+	if (PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}
@@ -241,7 +246,7 @@ void AWildOmissionCharacter::Primary()
 
 void AWildOmissionCharacter::Secondary()
 {
-	if (PlayerHUDWidget->IsInventoryMenuOpen())
+	if (PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}
@@ -249,14 +254,23 @@ void AWildOmissionCharacter::Secondary()
 	EquipComponent->Server_Secondary();
 }
 
-void AWildOmissionCharacter::ToggleInventory()
+void AWildOmissionCharacter::ToggleInventoryMenu()
 {
 	if (PlayerHUDWidget == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("PlayerCharacter: PlayerHUDWidget was nullptr"));
 		return;
 	}
-	PlayerHUDWidget->ToggleInventory();
+	PlayerHUDWidget->ToggleInventoryMenu();
+}
+
+void AWildOmissionCharacter::ToggleCraftingMenu()
+{
+	if (PlayerHUDWidget == nullptr)
+	{
+		return;
+	}
+
+	PlayerHUDWidget->ToggleCraftingMenu();
 }
 
 void AWildOmissionCharacter::ToolbarSelectionIncrement()

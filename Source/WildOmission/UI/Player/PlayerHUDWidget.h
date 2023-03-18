@@ -33,12 +33,18 @@ public:
 	void RefreshInventoryStates();
 	
 	// Setters
-	void ToggleInventory();
+	void ToggleInventoryMenu();
 	
+	void ToggleCraftingMenu();
+
 	// Getters
 	UPlayerInventoryWidget* GetPlayerInventoryWidget();
 	
-	bool IsInventoryMenuOpen();
+	bool IsMenuOpen() const;
+
+	bool IsInventoryMenuOpen() const;
+
+	bool IsCraftingMenuOpen() const;
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -61,8 +67,6 @@ private:
 	
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
-
-	bool bMenuOpen;
 
 	bool bInventoryMenuOpen;
 
