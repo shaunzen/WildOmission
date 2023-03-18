@@ -10,8 +10,9 @@ UNameTagComponent::UNameTagComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	FString Placeholder = FString("Jerald :S");
+	FString Placeholder = FString("Jerald :s");
 	SetText(FText::FromString(Placeholder));
+
 
 	// Epic thats a typo lmao
 	SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
@@ -20,39 +21,23 @@ UNameTagComponent::UNameTagComponent()
 void UNameTagComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	FString OwnerPlayerName;
-	
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (OwnerPawn == nullptr)
+
+	if (GetOwner()->GetLocalRole() == ROLE_AutonomousProxy)
 	{
-		return;
+		SetVisibility(false);
 	}
-
-	APlayerState* OwnerState = OwnerPawn->GetPlayerState();
-	if (OwnerState == nullptr)
-	{
-		return;
-	}
-
-	OwnerPlayerName = OwnerState->GetPlayerName();
-
-	SetText(FText::FromString(OwnerPlayerName));
-
-	if (GetOwner()->GetLocalRole() == ROLE_SimulatedProxy)
-	{
-		return;
-	}
-
-	SetVisibility(false);
 }
 
 void UNameTagComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// Set rotation to always face local player
-	
+	UpdateRotation();
+	UpdateName();
+}
+
+void UNameTagComponent::UpdateRotation()
+{
 	APawn* LocalPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (LocalPawn == nullptr)
 	{
@@ -61,10 +46,27 @@ void UNameTagComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
 	}
 
 	FRotator TagRotation;
-	
+
 	TagRotation = UKismetMathLibrary::FindLookAtRotation(LocalPawn->GetActorLocation(), this->GetComponentLocation());
 	TagRotation.Yaw += 180.0f;
 	TagRotation.Pitch = 0.0f;
 
 	SetWorldRotation(TagRotation);
+}
+
+void UNameTagComponent::UpdateName()
+{
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	APlayerState* OwnerPlayerState = OwnerPawn->GetPlayerState();
+	if (OwnerPlayerState == nullptr)
+	{
+		return;
+	}
+
+	SetText(FText::FromString(OwnerPlayerState->GetPlayerName()));
 }
