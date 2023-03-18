@@ -73,11 +73,39 @@ void UPlayerHUDWidget::RefreshInventoryStates()
 void UPlayerHUDWidget::ToggleInventoryMenu()
 {
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Toggle Inventory Menu"));
+
+	if (!IsMenuOpen())
+	{
+		OpenMenuPanel();
+		SwitchToInventoryMenu();
+	}
+	else if (IsCraftingMenuOpen())
+	{
+		SwitchToInventoryMenu();
+	}
+	else if (IsInventoryMenuOpen())
+	{
+		CloseMenuPanel();
+	}
 }
 
 void UPlayerHUDWidget::ToggleCraftingMenu()
 {
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Toggle Crafting Menu"));
+	if (!IsMenuOpen())
+	{
+		OpenMenuPanel();
+		SwitchToCraftingMenu();
+	}
+	else if (IsInventoryMenuOpen())
+	{
+		// TODO stop dragging operations
+		SwitchToCraftingMenu();
+	}
+	else if (IsCraftingMenuOpen())
+	{
+		CloseMenuPanel();
+	}
 }
 
 bool UPlayerHUDWidget::IsMenuOpen() const
@@ -98,6 +126,69 @@ bool UPlayerHUDWidget::IsCraftingMenuOpen() const
 UPlayerInventoryWidget* UPlayerHUDWidget::GetPlayerInventoryWidget()
 {
 	return PlayerInventory;
+}
+
+void UPlayerHUDWidget::OpenMenuPanel()
+{
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	FInputModeGameAndUI InputModeData;
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputModeData.SetHideCursorDuringCapture(false);
+	PlayerController->SetInputMode(InputModeData);
+	PlayerController->bShowMouseCursor = true;
+	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UPlayerHUDWidget::SwitchToInventoryMenu()
+{
+	bInventoryMenuOpen = true;
+	bCraftingMenuOpen = false;
+
+	// TODO swap for whole inventory menu later when looting is implemented
+	MenuSwitcher->SetActiveWidget(PlayerInventory);
+
+	PlayerInventory->Open();
+
+	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UPlayerHUDWidget::SwitchToCraftingMenu()
+{
+	bInventoryMenuOpen = false;
+	bCraftingMenuOpen = true;
+
+	MenuSwitcher->SetActiveWidget(CraftingMenu);
+
+	PlayerInventory->Close();
+
+	CraftingMenu->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UPlayerHUDWidget::CloseMenuPanel()
+{
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	FInputModeGameOnly InputModeData;
+	PlayerController->SetInputMode(InputModeData);
+	PlayerController->bShowMouseCursor = false;
+	
+	bInventoryMenuOpen = false;
+	bCraftingMenuOpen = false;
+	
+	PlayerInventory->Close();
+	
+	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
+
+	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UPlayerHUDWidget::UpdateInteractionPrompt()

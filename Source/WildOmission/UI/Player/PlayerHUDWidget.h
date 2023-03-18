@@ -72,6 +72,11 @@ private:
 
 	bool bCraftingMenuOpen;
 
+	void OpenMenuPanel();
+	void SwitchToInventoryMenu();
+	void SwitchToCraftingMenu();
+	void CloseMenuPanel();
+
 	void UpdateInteractionPrompt();
 	void UpdateSelectedItemLocation();
 
