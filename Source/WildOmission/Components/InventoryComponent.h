@@ -10,6 +10,7 @@
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 
+class UDataTable;
 class UInventoryManipulatorComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -68,7 +69,7 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	class UDataTable* ItemDataTable;
+	UDataTable* ItemDataTable;
 
 	bool AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining);
 	bool FindAndAddToPopulatedSlot(const FName& ItemName, const int32& ItemStackSize, int32& QuantityToAdd);

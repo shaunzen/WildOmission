@@ -16,7 +16,6 @@
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/NameTagComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
-#include "Net/UnrealNetwork.h"
 
 //********************************
 // Setup/General Actor Functionality
