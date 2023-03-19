@@ -26,7 +26,7 @@ UCraftingComponent::UCraftingComponent()
 void UCraftingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 }
 
 

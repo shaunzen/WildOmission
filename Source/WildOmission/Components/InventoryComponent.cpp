@@ -125,7 +125,9 @@ FItemData* UInventoryComponent::GetItemData(const FName& ItemName)
 	{
 		return nullptr;
 	}
+
 	static const FString ContextString(TEXT("Item Data Context"));
+	
 	return ItemDataTable->FindRow<FItemData>(ItemName, ContextString, true);
 }
 
