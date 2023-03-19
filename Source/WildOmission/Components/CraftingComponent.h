@@ -27,6 +27,8 @@ public:
 	create crafting function
 	Create get recipe function
 	*/
+	UFUNCTION(Server, Reliable)
+	void Server_CraftItem(const FName& ItemToCraft);
 
 	FCraftingRecipe* GetRecipe(const FName& RecipeName);
 

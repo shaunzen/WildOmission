@@ -37,6 +37,18 @@ void UCraftingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 }
 
+void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraft)
+{
+	// find the recipe in the data table
+	
+	// get the owners inventory comp
+	// check they have the ingredients
+		// return if they dont
+
+	// remove ingredients
+	// add resulting yeild
+}
+
 FCraftingRecipe* UCraftingComponent::GetRecipe(const FName& RecipeName)
 {
 	if (RecipeDataTable == nullptr)
