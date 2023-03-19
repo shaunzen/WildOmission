@@ -345,6 +345,8 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, const int
 
 bool UInventoryComponent::RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining)
 {
+	Remaining = Quantity;
+
 	for (FInventorySlot& Slot : Slots)
 	{
 		if (Slot.Item.Name != ItemName)

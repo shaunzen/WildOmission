@@ -105,7 +105,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	InventoryManipulatorComponent = CreateDefaultSubobject<UInventoryManipulatorComponent>(FName("InventoryManipulatorComponent"));
 	
 	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(FName("InventoryComponent"));
-
+	
 	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(FName("CraftingComponent"));
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));

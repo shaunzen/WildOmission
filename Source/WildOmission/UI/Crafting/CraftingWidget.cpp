@@ -37,7 +37,6 @@ void UCraftingWidget::PickaxeButtonClicked()
 	}
 	
 	OwnerCraftingComponent->Server_CraftItem(FName("pickaxe"));
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Crafting Pickaxe"));
 }
 
 void UCraftingWidget::HatchetButtonClicked()
@@ -54,6 +53,5 @@ void UCraftingWidget::HatchetButtonClicked()
 		return;
 	}
 
-	OwnerCraftingComponent->Server_CraftItem(FName("pickaxe"));
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Crafting Hatchet"));
+	OwnerCraftingComponent->Server_CraftItem(FName("hatchet"));
 }
