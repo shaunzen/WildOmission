@@ -11,6 +11,8 @@
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
 {
+	SetIsReplicatedByDefault(true);
+
 	SlotCount = 30;
 	ToolbarSelectionIndex = -1;
 }

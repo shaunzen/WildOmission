@@ -8,6 +8,7 @@
 #include "WildOmissionCharacter.generated.h"
 
 class UCameraComponent;
+class UCraftingComponent;
 class UNameTagComponent;
 
 UCLASS()
@@ -40,10 +41,13 @@ public:
 	class UVitalsComponent* GetVitalsComponent() const;
 
 	UFUNCTION(BlueprintCallable)
+	class UInventoryManipulatorComponent* GetInventoryManipulatorComponent() const;
+
+	UFUNCTION(BlueprintCallable)
 	class UPlayerInventoryComponent* GetInventoryComponent() const;
 
 	UFUNCTION(BlueprintCallable)
-	class UInventoryManipulatorComponent* GetInventoryManipulatorComponent() const;
+	UCraftingComponent* GetCraftingComponent() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -69,6 +73,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UPlayerInventoryComponent* InventoryComponent;
 	
+	UPROPERTY(VisibleAnywhere)
+	UCraftingComponent* CraftingComponent;
+
 	UPROPERTY(VisibleAnywhere)
 	class UInteractionComponent* InteractionComponent;
 

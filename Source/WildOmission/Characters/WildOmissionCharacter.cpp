@@ -9,8 +9,9 @@
 #include "InputMappingContext.h"
 #include "UObject/ConstructorHelpers.h"
 #include "WildOmission/Components/EquipComponent.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Components/CraftingComponent.h"
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/NameTagComponent.h"
@@ -103,10 +104,10 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 	
 	InventoryManipulatorComponent = CreateDefaultSubobject<UInventoryManipulatorComponent>(FName("InventoryManipulatorComponent"));
-	InventoryManipulatorComponent->SetIsReplicated(true);
-
+	
 	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(FName("InventoryComponent"));
-	InventoryComponent->SetIsReplicated(true);
+
+	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(FName("CraftingComponent"));
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
@@ -323,14 +324,19 @@ UVitalsComponent* AWildOmissionCharacter::GetVitalsComponent() const
 	return VitalsComponent;
 }
 
+UInventoryManipulatorComponent* AWildOmissionCharacter::GetInventoryManipulatorComponent() const
+{
+	return InventoryManipulatorComponent;
+}
+
 UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent() const
 {
 	return InventoryComponent;
 }
 
-UInventoryManipulatorComponent* AWildOmissionCharacter::GetInventoryManipulatorComponent() const
+UCraftingComponent* AWildOmissionCharacter::GetCraftingComponent() const
 {
-	return InventoryManipulatorComponent;
+	return CraftingComponent;
 }
 
 //********************************
