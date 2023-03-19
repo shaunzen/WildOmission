@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "CraftingWidget.generated.h"
+#include "CraftingMenuWidget.generated.h"
 
 class UButton;
 
 UCLASS()
-class WILDOMISSION_API UCraftingWidget : public UUserWidget
+class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

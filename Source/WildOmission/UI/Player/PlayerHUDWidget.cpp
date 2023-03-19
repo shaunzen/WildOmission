@@ -10,7 +10,7 @@
 #include "WildOmission/UI/Inventory/SelectedItemWidget.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
-#include "WildOmission/UI/Crafting/CraftingWidget.h"
+#include "WildOmission/UI/Crafting/CraftingMenuWidget.h"
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "VitalsWidget.h"

@@ -15,7 +15,7 @@ class UVitalsWidget;
 
 class UInventoryWidget;
 class UPlayerInventoryWidget;
-class UCraftingWidget;
+class UCraftingMenuWidget;
 class USelectedItemWidget;
 
 UCLASS(Abstract)
@@ -60,7 +60,7 @@ private:
 	UPlayerInventoryWidget* PlayerInventory;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UCraftingWidget* CraftingMenu;
+	UCraftingMenuWidget* CraftingMenu;
 
 	UPROPERTY(meta = (BindWidget))
 	USelectedItemWidget* SelectedItem;

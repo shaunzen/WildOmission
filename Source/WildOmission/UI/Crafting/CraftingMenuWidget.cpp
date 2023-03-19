@@ -1,11 +1,11 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "CraftingWidget.h"
+#include "CraftingMenuWidget.h"
 #include "Components/Button.h"
 #include "WildOmission/Components/CraftingComponent.h"
 
-bool UCraftingWidget::Initialize()
+bool UCraftingMenuWidget::Initialize()
 {
 	bool Success = Super::Initialize();
 	
@@ -16,13 +16,13 @@ bool UCraftingWidget::Initialize()
 		return false;
 	}
 
-	CraftPickaxeButton->OnClicked.AddDynamic(this, &UCraftingWidget::PickaxeButtonClicked);
-	CraftHatchetButton->OnClicked.AddDynamic(this, &UCraftingWidget::HatchetButtonClicked);
+	CraftPickaxeButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::PickaxeButtonClicked);
+	CraftHatchetButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::HatchetButtonClicked);
 
 	return true;
 }
 
-void UCraftingWidget::PickaxeButtonClicked()
+void UCraftingMenuWidget::PickaxeButtonClicked()
 {
 	APawn* PawnOwner = GetOwningPlayerPawn<APawn>();
 	if (PawnOwner == nullptr)
@@ -39,7 +39,7 @@ void UCraftingWidget::PickaxeButtonClicked()
 	OwnerCraftingComponent->Server_CraftItem(FName("pickaxe"));
 }
 
-void UCraftingWidget::HatchetButtonClicked()
+void UCraftingMenuWidget::HatchetButtonClicked()
 {
 	APawn* PawnOwner = GetOwningPlayerPawn<APawn>();
 	if (PawnOwner == nullptr)
