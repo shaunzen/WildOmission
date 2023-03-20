@@ -6,26 +6,22 @@
 #include "Blueprint/UserWidget.h"
 #include "CraftingMenuWidget.generated.h"
 
-class UButton;
+class UTileView;
 
 UCLASS()
 class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	void OnOpen();
 
 protected:
 	virtual bool Initialize() override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UButton* CraftPickaxeButton;
-
-	UPROPERTY(Meta = (BindWidget))
-	UButton* CraftHatchetButton;
-
+	UTileView* RecipeTileView;
+	
 	UFUNCTION()
-	void PickaxeButtonClicked();
-	UFUNCTION()
-	void HatchetButtonClicked();
-
+		void Craft();
 };

@@ -185,6 +185,7 @@ void UPlayerHUDWidget::SwitchToCraftingMenu()
 	bCraftingMenuOpen = true;
 
 	MenuSwitcher->SetActiveWidget(CraftingMenu);
+	CraftingMenu->OnOpen();
 
 	PlayerInventory->Close();
 
