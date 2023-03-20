@@ -72,7 +72,17 @@ void UPlayerHUDWidget::RefreshInventoryStates()
 
 void UPlayerHUDWidget::ToggleInventoryMenu()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Toggle Inventory Menu"));
+	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	UInventoryManipulatorComponent* OwnerInventoryManipulator = OwnerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventoryManipulator == nullptr)
+	{
+		return;
+	}
 
 	if (!IsMenuOpen())
 	{
@@ -85,13 +95,25 @@ void UPlayerHUDWidget::ToggleInventoryMenu()
 	}
 	else if (IsInventoryMenuOpen())
 	{
+		OwnerInventoryManipulator->Server_DropSelectedItemInWorld(false);
 		CloseMenuPanel();
 	}
 }
 
 void UPlayerHUDWidget::ToggleCraftingMenu()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Toggle Crafting Menu"));
+	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	UInventoryManipulatorComponent* OwnerInventoryManipulator = OwnerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventoryManipulator == nullptr)
+	{
+		return;
+	}
+
 	if (!IsMenuOpen())
 	{
 		OpenMenuPanel();
@@ -99,7 +121,7 @@ void UPlayerHUDWidget::ToggleCraftingMenu()
 	}
 	else if (IsInventoryMenuOpen())
 	{
-		// TODO stop dragging operations
+		OwnerInventoryManipulator->Server_DropSelectedItemInWorld(false);
 		SwitchToCraftingMenu();
 	}
 	else if (IsCraftingMenuOpen())
