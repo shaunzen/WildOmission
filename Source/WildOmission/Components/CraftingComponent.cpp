@@ -81,6 +81,11 @@ void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraf
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Crafted: Name: %s Quantity: %i"), *RecipeData->Yeild.Name.ToString(), RecipeData->Yeild.Quantity));
 }
 
+TArray<FName> UCraftingComponent::GetAllRecipes()
+{
+	return RecipeDataTable->GetRowNames();
+}
+
 FCraftingRecipe* UCraftingComponent::GetRecipe(const FName& RecipeName)
 {
 	if (RecipeDataTable == nullptr)

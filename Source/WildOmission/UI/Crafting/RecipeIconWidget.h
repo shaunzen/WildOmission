@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Blueprint/IUserObjectListEntry.h"
 #include "RecipeIconWidget.generated.h"
 
 class UButton;
@@ -11,7 +12,7 @@ class UBorder;
 class UCraftingMenuWidget;
 
 UCLASS()
-class WILDOMISSION_API URecipeIconWidget : public UUserWidget
+class WILDOMISSION_API URecipeIconWidget : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 	

@@ -30,6 +30,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_CraftItem(const FName& ItemToCraft);
 
+	TArray<FName> GetAllRecipes();
+
 	FCraftingRecipe* GetRecipe(const FName& RecipeName);
 
 protected:

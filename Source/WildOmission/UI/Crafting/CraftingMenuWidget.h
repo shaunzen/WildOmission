@@ -6,13 +6,16 @@
 #include "Blueprint/UserWidget.h"
 #include "CraftingMenuWidget.generated.h"
 
-class UTileView;
+class UWrapBox;
+class URecipeIconWidget;
 
 UCLASS()
 class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	UCraftingMenuWidget(const FObjectInitializer& ObjectInializer);
+
 	void OnOpen();
 
 protected:
@@ -20,7 +23,10 @@ protected:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UTileView* RecipeTileView;
+	UWrapBox* RecipesWrapBox;
+	
+	UPROPERTY()
+	TSubclassOf<URecipeIconWidget> RecipeIconWidgetClass;
 	
 	UFUNCTION()
 		void Craft();

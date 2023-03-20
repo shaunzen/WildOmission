@@ -21,6 +21,6 @@ struct FCraftingRecipe : public FTableRowBase
 	TArray<FInventoryItem> Ingredients;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 CraftTime;
+	int32 CraftTime = 0;
 
 };
