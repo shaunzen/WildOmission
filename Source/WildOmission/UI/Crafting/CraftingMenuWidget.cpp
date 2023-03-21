@@ -79,7 +79,25 @@ void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)
 
 void UCraftingMenuWidget::UpdateSelectedRecipeInfo()
 {
-	// TODO
+	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
+	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
+	if (OwnerInventoryComponent == nullptr || OwnerCraftingComponent == nullptr)
+	{
+		return;
+	}
+
+	FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(SelectedRecipe);
+	if (RecipeData == nullptr)
+	{
+		return;
+	}
+
+	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
+	{
+		// Create a new ingredient row
+		// Populate it with the relevent information
+		// Add to IngredientListBox
+	}
 }
 
 void UCraftingMenuWidget::Craft()
