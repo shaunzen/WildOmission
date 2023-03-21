@@ -4,23 +4,18 @@
 #include "RecipeIconWidget.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
+#include "CraftingMenuWidget.h"
 
-void URecipeIconWidget::Setup(UCraftingMenuWidget* InParent, const uint32& InIndex, UMaterialInstance* Icon)
+void URecipeIconWidget::Setup(UCraftingMenuWidget* InParent, const FName& InRecipeName, UMaterialInstance* Icon)
 {
 	Parent = InParent;
-	Index = InIndex;
-
-	// this isnt working???
+	RecipeName = InRecipeName;
 	RecipeIconBorder->SetBrushFromMaterial(Icon);
-	FString MaterialName = Icon->GetName();
 	
-	UE_LOG(LogTemp, Warning, TEXT("Setup recipe icon, Material name %s"), *MaterialName);
-
 	RecipeButton->OnClicked.AddDynamic(this, &URecipeIconWidget::OnClicked);
 }
 
 void URecipeIconWidget::OnClicked()
 {
-	// TODO
-	//Parent->SetSelectedRecipe(Index);
+	Parent->SetSelectedRecipe(RecipeName);
 }

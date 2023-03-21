@@ -17,7 +17,7 @@ class WILDOMISSION_API URecipeIconWidget : public UUserWidget, public IUserObjec
 	GENERATED_BODY()
 	
 public:
-	void Setup(UCraftingMenuWidget* InParent, const uint32& InIndex, UMaterialInstance* Icon);
+	void Setup(UCraftingMenuWidget* InParent, const FName& InRecipeName, UMaterialInstance* Icon);
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -29,7 +29,7 @@ private:
 	UPROPERTY()
 	UCraftingMenuWidget* Parent;
 
-	uint32 Index;
+	FName RecipeName;
 
 	UFUNCTION()
 	void OnClicked();

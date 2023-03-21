@@ -36,7 +36,8 @@ bool UCraftingMenuWidget::Initialize()
 void UCraftingMenuWidget::OnOpen()
 {
 	// Clear all children of the scroll box
-	
+	RecipesWrapBox->ClearChildren();
+
 	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
 	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
 	if (OwnerInventoryComponent == nullptr || OwnerCraftingComponent == nullptr)
@@ -54,10 +55,6 @@ void UCraftingMenuWidget::OnOpen()
 			UE_LOG(LogTemp, Error, TEXT("Failed to find recipe data for %s"), *RecipeName.ToString());
 			return;
 		}
-
-		URecipeIconWidget* NewRecipe = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
-		RecipesWrapBox->AddChild(NewRecipe);
-
 		FItemData* YeildItemData = OwnerInventoryComponent->GetItemData(RecipeData->Yeild.Name);
 		if (YeildItemData == nullptr)
 		{
@@ -65,19 +62,28 @@ void UCraftingMenuWidget::OnOpen()
 			return;
 		}
 
-		// Set recipe defaults
-		NewRecipe->Setup(this, 0, YeildItemData->Thumbnail);
+		URecipeIconWidget* NewRecipe = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
+		NewRecipe->Setup(this, RecipeName, YeildItemData->Thumbnail);
+		RecipesWrapBox->AddChild(NewRecipe);
 	}
+}
+
+void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)
+{
+	SelectedRecipe = SelectedRecipeName;
 	
-	// needed
-	// TSubclassOf pointer to the recipe icon class so we can instanciate them
-	// pointer to the scroll box
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("New Recipe Selected: %s"), *SelectedRecipe.ToString()));
+
+	UpdateSelectedRecipeInfo();
+}
+
+void UCraftingMenuWidget::UpdateSelectedRecipeInfo()
+{
+	// TODO
 }
 
 void UCraftingMenuWidget::Craft()
 {
-	FName RecipeName("pickaxe");
-
 	APawn* PawnOwner = GetOwningPlayerPawn<APawn>();
 	if (PawnOwner == nullptr)
 	{
@@ -90,5 +96,5 @@ void UCraftingMenuWidget::Craft()
 		return;
 	}
 	
-	OwnerCraftingComponent->Server_CraftItem(RecipeName);
+	OwnerCraftingComponent->Server_CraftItem(SelectedRecipe);
 }

@@ -18,6 +18,8 @@ public:
 
 	void OnOpen();
 
+	void SetSelectedRecipe(const FName& SelectedRecipeName);
+
 protected:
 	virtual bool Initialize() override;
 
@@ -28,6 +30,11 @@ private:
 	UPROPERTY()
 	TSubclassOf<URecipeIconWidget> RecipeIconWidgetClass;
 	
+	FName SelectedRecipe;
+
+	void UpdateSelectedRecipeInfo();
+
 	UFUNCTION()
-		void Craft();
+	void Craft();
+
 };
