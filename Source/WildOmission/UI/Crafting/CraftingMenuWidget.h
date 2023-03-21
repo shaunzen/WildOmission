@@ -7,7 +7,10 @@
 #include "CraftingMenuWidget.generated.h"
 
 class UWrapBox;
+class UTextBlock;
+class UVerticalBox;
 class URecipeIconWidget;
+class UIngredientRowWidget;
 
 UCLASS()
 class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
@@ -27,12 +30,23 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UWrapBox* RecipesWrapBox;
 	
+	UPROPERTY(Meta = (BindWidget))
+		UTextBlock* SelectedRecipeNameTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	UVerticalBox* IngredientListBox;
+
 	UPROPERTY()
 	TSubclassOf<URecipeIconWidget> RecipeIconWidgetClass;
 	
+	UPROPERTY()
+	TSubclassOf<UIngredientRowWidget> IngredientRowWidgetClass;
+
 	FName SelectedRecipe;
 
-	void UpdateSelectedRecipeInfo();
+	void UpdateSelectedRecipeDetailsPanel();
+
+	void UpdateIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent);
 
 	UFUNCTION()
 	void Craft();

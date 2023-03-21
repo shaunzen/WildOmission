@@ -3,7 +3,9 @@
 
 #include "CraftingMenuWidget.h"
 #include "Components/WrapBox.h"
+#include "Components/VerticalBox.h"
 #include "RecipeIconWidget.h"
+#include "IngredientRowWidget.h"
 #include "WildOmission/Components/CraftingComponent.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -11,12 +13,16 @@
 UCraftingMenuWidget::UCraftingMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	ConstructorHelpers::FClassFinder<URecipeIconWidget> RecipeIconWidgetBlueprint(TEXT("/Game/WildOmission/UI/Crafting/WBP_RecipeIcon"));
-	if (RecipeIconWidgetBlueprint.Class == nullptr)
+	ConstructorHelpers::FClassFinder<UIngredientRowWidget> IngredientRowWidgetBlueprint(TEXT("/Game/WildOmission/UI/Crafting/WBP_IngredientRow"));
+
+	if (RecipeIconWidgetBlueprint.Class == nullptr
+		|| IngredientRowWidgetBlueprint.Class == nullptr)
 	{
 		return;
 	}
 
 	RecipeIconWidgetClass = RecipeIconWidgetBlueprint.Class;
+	IngredientRowWidgetClass = IngredientRowWidgetBlueprint.Class;
 }
 
 bool UCraftingMenuWidget::Initialize()
@@ -74,10 +80,10 @@ void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)
 	
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("New Recipe Selected: %s"), *SelectedRecipe.ToString()));
 
-	UpdateSelectedRecipeInfo();
+	UpdateSelectedRecipeDetailsPanel();
 }
 
-void UCraftingMenuWidget::UpdateSelectedRecipeInfo()
+void UCraftingMenuWidget::UpdateSelectedRecipeDetailsPanel()
 {
 	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
 	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
@@ -87,16 +93,39 @@ void UCraftingMenuWidget::UpdateSelectedRecipeInfo()
 	}
 
 	FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(SelectedRecipe);
-	if (RecipeData == nullptr)
-	{
-		return;
-	}
+
+
+	// update name
+
+	UpdateIngredientList(RecipeData, OwnerInventoryComponent);
+
+}
+
+void UCraftingMenuWidget::UpdateIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent)
+{
+	// Clear list
+	IngredientListBox->ClearChildren();
 
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
+		int32 HasAmount = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
+		FItemData* IngredientItemData = OwnerInventoryComponent->GetItemData(Ingredient.Name);
+		if (IngredientItemData == nullptr)
+		{
+			return;
+		}
+
 		// Create a new ingredient row
+		UIngredientRowWidget* NewIngredientRow = CreateWidget<UIngredientRowWidget>(this, IngredientRowWidgetClass);
+		if (NewIngredientRow == nullptr)
+		{
+			return;
+		}
 		// Populate it with the relevent information
+		NewIngredientRow->Setup(IngredientItemData->DisplayName, Ingredient.Quantity, HasAmount);
+
 		// Add to IngredientListBox
+		IngredientListBox->AddChild(NewIngredientRow);
 	}
 }
 
