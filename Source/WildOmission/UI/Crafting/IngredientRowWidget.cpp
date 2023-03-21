@@ -20,6 +20,8 @@ void UIngredientRowWidget::Setup(const FName& IngredientName, const int32& Ingre
 	IngredientNameTextBlock->SetText(FText::FromName(IngredientName));
 	AmountNeededTextBlock->SetText(FText::FromString(AmountNeededString));
 	HaveAmountTextBlock->SetText(FText::FromString(HaveAmountString));
+
+	SetColor();
 }
 
 bool UIngredientRowWidget::HasEnough() const

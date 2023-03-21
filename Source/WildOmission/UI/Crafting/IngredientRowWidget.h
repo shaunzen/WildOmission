@@ -19,6 +19,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool HasEnough() const;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetColor();
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* IngredientNameTextBlock;

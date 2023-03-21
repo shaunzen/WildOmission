@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "Components/VerticalBox.h"
+#include "Components/Button.h"
 #include "RecipeIconWidget.h"
 #include "IngredientRowWidget.h"
 #include "WildOmission/Components/CraftingComponent.h"
@@ -32,12 +33,13 @@ bool UCraftingMenuWidget::Initialize()
 	bool Success = Super::Initialize();
 	
 	if (Success == false
-		|| RecipeIconWidgetClass == nullptr
-		|| RecipesWrapBox == nullptr)
+		|| CraftButton == nullptr)
 	{
 		return false;
 	}
-	// Set entry
+
+	CraftButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::Craft);
+
 	return true;
 }
 
@@ -109,6 +111,8 @@ void UCraftingMenuWidget::UpdateSelectedRecipeDetailsPanel()
 	SelectedRecipeIconImage->SetBrushFromMaterial(RecipeYeildItemData->Thumbnail);
 	SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
 
+	CraftButton->SetIsEnabled(CanCraftSelectedRecipe());
+
 	UpdateIngredientList(RecipeData, OwnerInventoryComponent);
 
 }
@@ -141,6 +145,29 @@ void UCraftingMenuWidget::UpdateIngredientList(FCraftingRecipe* RecipeData, UInv
 	}
 }
 
+bool UCraftingMenuWidget::CanCraftSelectedRecipe()
+{
+	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
+	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
+	if (OwnerInventoryComponent == nullptr || OwnerCraftingComponent == nullptr)
+	{
+		return false;
+	}
+
+	FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(SelectedRecipe);
+
+	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
+	{
+		int32 IngredientHasAmount = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
+		if (IngredientHasAmount < Ingredient.Quantity)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void UCraftingMenuWidget::Craft()
 {
 	APawn* PawnOwner = GetOwningPlayerPawn<APawn>();
@@ -156,4 +183,6 @@ void UCraftingMenuWidget::Craft()
 	}
 	
 	OwnerCraftingComponent->Server_CraftItem(SelectedRecipe);
+
+	// refresh inventory menu
 }

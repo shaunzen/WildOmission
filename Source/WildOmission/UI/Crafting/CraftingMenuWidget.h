@@ -10,6 +10,7 @@ class UWrapBox;
 class UTextBlock;
 class UImage;
 class UVerticalBox;
+class UButton;
 class URecipeIconWidget;
 class UIngredientRowWidget;
 class UInventoryComponent;
@@ -46,6 +47,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UVerticalBox* IngredientListBox;
 
+	UPROPERTY(Meta = (BindWidget))
+	UButton* CraftButton;
+
 	UPROPERTY()
 	TSubclassOf<URecipeIconWidget> RecipeIconWidgetClass;
 	
@@ -57,6 +61,8 @@ private:
 	void UpdateSelectedRecipeDetailsPanel();
 
 	void UpdateIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent);
+
+	bool CanCraftSelectedRecipe();
 
 	UFUNCTION()
 	void Craft();
