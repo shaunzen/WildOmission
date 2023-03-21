@@ -3,6 +3,8 @@
 
 #include "CraftingMenuWidget.h"
 #include "Components/WrapBox.h"
+#include "Components/TextBlock.h"
+#include "Components/Image.h"
 #include "Components/VerticalBox.h"
 #include "RecipeIconWidget.h"
 #include "IngredientRowWidget.h"
@@ -94,8 +96,18 @@ void UCraftingMenuWidget::UpdateSelectedRecipeDetailsPanel()
 
 	FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(SelectedRecipe);
 
+	FItemData* RecipeYeildItemData = OwnerInventoryComponent->GetItemData(RecipeData->Yeild.Name);
+	if (RecipeYeildItemData == nullptr)
+	{
+		return;
+	}
 
 	// update name
+	SelectedRecipeNameTextBlock->SetText(FText::FromName(RecipeYeildItemData->DisplayName));
+	SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(RecipeYeildItemData->Description));
+	
+	SelectedRecipeIconImage->SetBrushFromMaterial(RecipeYeildItemData->Thumbnail);
+	SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
 
 	UpdateIngredientList(RecipeData, OwnerInventoryComponent);
 

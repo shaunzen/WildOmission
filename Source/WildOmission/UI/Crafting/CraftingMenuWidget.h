@@ -8,9 +8,13 @@
 
 class UWrapBox;
 class UTextBlock;
+class UImage;
 class UVerticalBox;
 class URecipeIconWidget;
 class UIngredientRowWidget;
+class UInventoryComponent;
+
+struct FCraftingRecipe;
 
 UCLASS()
 class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
@@ -31,7 +35,13 @@ private:
 	UWrapBox* RecipesWrapBox;
 	
 	UPROPERTY(Meta = (BindWidget))
-		UTextBlock* SelectedRecipeNameTextBlock;
+	UTextBlock* SelectedRecipeNameTextBlock;
+	
+	UPROPERTY(Meta = (BindWidget))
+	UImage* SelectedRecipeIconImage;
+
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* SelectedRecipeDescriptionTextBlock;
 
 	UPROPERTY(Meta = (BindWidget))
 	UVerticalBox* IngredientListBox;
