@@ -39,6 +39,8 @@ bool UCraftingMenuWidget::Initialize()
 	}
 
 	CraftButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::Craft);
+	
+	SelectedRecipe = FName("");
 
 	return true;
 }
@@ -76,6 +78,8 @@ void UCraftingMenuWidget::OnOpen()
 		NewRecipe->Setup(this, RecipeName, YeildItemData->Thumbnail);
 		RecipesWrapBox->AddChild(NewRecipe);
 	}
+
+	UpdateSelectedRecipeDetailsPanel();
 }
 
 void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)
@@ -96,7 +100,22 @@ void UCraftingMenuWidget::UpdateSelectedRecipeDetailsPanel()
 		return;
 	}
 
+	if (SelectedRecipe == FName())
+	{
+		SelectedRecipeNameTextBlock->SetText(FText::FromString(FString()));
+		SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(FString()));
+		SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+		CraftButton->SetIsEnabled(false);
+		IngredientListBox->ClearChildren();
+
+		return;
+	}
+
 	FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(SelectedRecipe);
+	if (RecipeData == nullptr)
+	{
+		return;
+	}
 
 	FItemData* RecipeYeildItemData = OwnerInventoryComponent->GetItemData(RecipeData->Yeild.Name);
 	if (RecipeYeildItemData == nullptr)
