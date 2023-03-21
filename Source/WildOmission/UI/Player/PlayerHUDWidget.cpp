@@ -126,6 +126,7 @@ void UPlayerHUDWidget::ToggleCraftingMenu()
 	}
 	else if (IsCraftingMenuOpen())
 	{
+		SwitchToInventoryMenu();
 		CloseMenuPanel();
 	}
 }
