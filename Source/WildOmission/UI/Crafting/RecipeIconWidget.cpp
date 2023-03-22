@@ -4,6 +4,8 @@
 #include "RecipeIconWidget.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
+#include "WildOmission/Components/CraftingComponent.h"
+#include "WildOmission/Components/InventoryComponent.h"
 #include "CraftingMenuWidget.h"
 
 void URecipeIconWidget::Setup(UCraftingMenuWidget* InParent, const FName& InRecipeName, UMaterialInstance* Icon)
@@ -12,8 +14,8 @@ void URecipeIconWidget::Setup(UCraftingMenuWidget* InParent, const FName& InReci
 	RecipeName = InRecipeName;
 	RecipeIconBorder->SetBrushFromMaterial(Icon);
 
-	// todo cancraft recipe
-	bCanCraft = true;
+	bCanCraft = EvaluateCraftibility();
+	
 	RecipeButton->OnClicked.AddDynamic(this, &URecipeIconWidget::OnClicked);
 }
 
@@ -35,4 +37,31 @@ bool URecipeIconWidget::IsCraftable() const
 void URecipeIconWidget::OnClicked()
 {
 	Parent->SetSelectedRecipe(RecipeName);
+}
+
+bool URecipeIconWidget::EvaluateCraftibility()
+{
+	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
+	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
+	if (OwnerCraftingComponent == nullptr || OwnerInventoryComponent == nullptr)
+	{
+		return false;
+	}
+
+	FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(RecipeName);
+	if (RecipeData == nullptr)
+	{
+		return false;
+	}
+
+	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
+	{
+		int32 PlayerHas = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
+		if (PlayerHas < Ingredient.Quantity)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }

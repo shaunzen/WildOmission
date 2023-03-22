@@ -37,9 +37,11 @@ private:
 
 	FName RecipeName;
 
-	bool bCanCraft;
-
 	UFUNCTION()
 	void OnClicked();
+
+	bool EvaluateCraftibility();
+
+	bool bCanCraft;
 
 };
