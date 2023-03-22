@@ -76,6 +76,7 @@ void UCraftingMenuWidget::OnOpen()
 		}
 
 		URecipeIconWidget* NewRecipe = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
+
 		NewRecipe->Setup(this, RecipeName, YeildItemData->Thumbnail);
 		RecipesWrapBox->AddChild(NewRecipe);
 	}

@@ -11,7 +11,9 @@ void URecipeIconWidget::Setup(UCraftingMenuWidget* InParent, const FName& InReci
 	Parent = InParent;
 	RecipeName = InRecipeName;
 	RecipeIconBorder->SetBrushFromMaterial(Icon);
-	
+
+	// todo cancraft recipe
+	bCanCraft = true;
 	RecipeButton->OnClicked.AddDynamic(this, &URecipeIconWidget::OnClicked);
 }
 
@@ -23,6 +25,11 @@ bool URecipeIconWidget::IsSelected() const
 	}
 
 	return Parent->GetSelectedRecipe() == RecipeName;
+}
+
+bool URecipeIconWidget::IsCraftable() const
+{
+	return bCanCraft;
 }
 
 void URecipeIconWidget::OnClicked()
