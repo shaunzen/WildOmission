@@ -260,6 +260,7 @@ void AWildOmissionCharacter::ToggleInventoryMenu()
 	{
 		return;
 	}
+
 	PlayerHUDWidget->ToggleInventoryMenu();
 }
 
@@ -275,7 +276,7 @@ void AWildOmissionCharacter::ToggleCraftingMenu()
 
 void AWildOmissionCharacter::ToolbarSelectionIncrement()
 {
-	if (InventoryComponent == nullptr)
+	if (PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}
@@ -285,7 +286,7 @@ void AWildOmissionCharacter::ToolbarSelectionIncrement()
 
 void AWildOmissionCharacter::ToolbarSelectionDecrement()
 {
-	if (InventoryComponent == nullptr)
+	if (PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}

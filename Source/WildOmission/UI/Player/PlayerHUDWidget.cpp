@@ -46,6 +46,12 @@ void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	UpdateSelectedItemLocation();
 }
 
+void UPlayerHUDWidget::RefreshAllMenus()
+{
+	RefreshInventoryStates();
+	CraftingMenu->OnOpen();
+}
+
 void UPlayerHUDWidget::RefreshInventoryStates()
 {
 	// TODO all open inventory menus refresh

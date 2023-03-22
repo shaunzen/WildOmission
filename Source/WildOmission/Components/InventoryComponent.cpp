@@ -238,7 +238,7 @@ void UInventoryComponent::RefreshUI()
 		return;
 	}
 
-	ManipulatorHUD->RefreshInventoryStates();
+	ManipulatorHUD->RefreshAllMenus();
 }
 
 bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining)

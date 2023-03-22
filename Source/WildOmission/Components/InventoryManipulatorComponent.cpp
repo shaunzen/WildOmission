@@ -177,5 +177,5 @@ void UInventoryManipulatorComponent::RefreshUI()
 	}
 
 	// call refresh
-	OwnerHUDWidget->RefreshInventoryStates();
+	OwnerHUDWidget->RefreshAllMenus();
 }

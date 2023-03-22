@@ -30,7 +30,7 @@ public:
 	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	void RefreshInventoryStates();
+	void RefreshAllMenus();
 	
 	// Setters
 	void ToggleInventoryMenu();
@@ -76,6 +76,8 @@ private:
 	void SwitchToInventoryMenu();
 	void SwitchToCraftingMenu();
 	void CloseMenuPanel();
+
+	void RefreshInventoryStates();
 
 	void UpdateInteractionPrompt();
 	void UpdateSelectedItemLocation();
