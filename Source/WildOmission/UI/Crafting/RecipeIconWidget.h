@@ -18,6 +18,9 @@ class WILDOMISSION_API URecipeIconWidget : public UUserWidget, public IUserObjec
 	
 public:
 	void Setup(UCraftingMenuWidget* InParent, const FName& InRecipeName, UMaterialInstance* Icon);
+	
+	UFUNCTION(BlueprintCallable)
+	bool IsSelected() const;
 
 private:
 	UPROPERTY(Meta = (BindWidget))

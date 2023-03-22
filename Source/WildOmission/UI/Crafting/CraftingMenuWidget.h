@@ -28,6 +28,8 @@ public:
 
 	void SetSelectedRecipe(const FName& SelectedRecipeName);
 
+	FName GetSelectedRecipe() const;
+
 protected:
 	virtual bool Initialize() override;
 

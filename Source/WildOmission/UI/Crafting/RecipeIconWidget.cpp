@@ -15,6 +15,16 @@ void URecipeIconWidget::Setup(UCraftingMenuWidget* InParent, const FName& InReci
 	RecipeButton->OnClicked.AddDynamic(this, &URecipeIconWidget::OnClicked);
 }
 
+bool URecipeIconWidget::IsSelected() const
+{
+	if (Parent == nullptr)
+	{
+		return false;
+	}
+
+	return Parent->GetSelectedRecipe() == RecipeName;
+}
+
 void URecipeIconWidget::OnClicked()
 {
 	Parent->SetSelectedRecipe(RecipeName);

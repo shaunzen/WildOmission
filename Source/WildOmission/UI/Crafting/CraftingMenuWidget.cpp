@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
 #include "Components/Button.h"
 #include "RecipeIconWidget.h"
 #include "IngredientRowWidget.h"
@@ -91,6 +92,11 @@ void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)
 	UpdateSelectedRecipeDetailsPanel();
 }
 
+FName UCraftingMenuWidget::GetSelectedRecipe() const
+{
+	return SelectedRecipe;
+}
+
 void UCraftingMenuWidget::UpdateSelectedRecipeDetailsPanel()
 {
 	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
@@ -161,6 +167,22 @@ void UCraftingMenuWidget::UpdateIngredientList(FCraftingRecipe* RecipeData, UInv
 
 		// Add to IngredientListBox
 		IngredientListBox->AddChild(NewIngredientRow);
+		
+		// get slot
+		UVerticalBoxSlot* IngredientRowSlot = Cast<UVerticalBoxSlot>(NewIngredientRow->Slot);
+		if (IngredientRowSlot == nullptr)
+		{
+			return;
+		}
+
+		// set padding
+		FMargin RowPadding;
+		RowPadding.Top = 5.0f;
+		RowPadding.Bottom = 5.0f;
+		RowPadding.Left = 5.0f;
+		RowPadding.Right = 5.0f;
+
+		IngredientRowSlot->SetPadding(RowPadding);
 	}
 }
 
