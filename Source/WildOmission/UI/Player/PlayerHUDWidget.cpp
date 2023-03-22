@@ -49,7 +49,7 @@ void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 void UPlayerHUDWidget::RefreshAllMenus()
 {
 	RefreshInventoryStates();
-	CraftingMenu->OnOpen();
+	CraftingMenu->Refresh();
 }
 
 void UPlayerHUDWidget::RefreshInventoryStates()
@@ -192,7 +192,7 @@ void UPlayerHUDWidget::SwitchToCraftingMenu()
 	bCraftingMenuOpen = true;
 
 	MenuSwitcher->SetActiveWidget(CraftingMenu);
-	CraftingMenu->OnOpen();
+	CraftingMenu->Refresh();
 
 	PlayerInventory->Close();
 

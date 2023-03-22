@@ -19,8 +19,7 @@ UCraftingMenuWidget::UCraftingMenuWidget(const FObjectInitializer& ObjectInitial
 	ConstructorHelpers::FClassFinder<URecipeIconWidget> RecipeIconWidgetBlueprint(TEXT("/Game/WildOmission/UI/Crafting/WBP_RecipeIcon"));
 	ConstructorHelpers::FClassFinder<UIngredientRowWidget> IngredientRowWidgetBlueprint(TEXT("/Game/WildOmission/UI/Crafting/WBP_IngredientRow"));
 
-	if (RecipeIconWidgetBlueprint.Class == nullptr
-		|| IngredientRowWidgetBlueprint.Class == nullptr)
+	if (RecipeIconWidgetBlueprint.Class == nullptr || IngredientRowWidgetBlueprint.Class == nullptr)
 	{
 		return;
 	}
@@ -46,7 +45,24 @@ bool UCraftingMenuWidget::Initialize()
 	return true;
 }
 
-void UCraftingMenuWidget::OnOpen()
+void UCraftingMenuWidget::Refresh()
+{
+	RefreshRecipesList();
+	RefreshDetailsPanel();
+}
+
+void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)
+{
+	SelectedRecipe = SelectedRecipeName;
+	RefreshDetailsPanel();
+}
+
+FName UCraftingMenuWidget::GetSelectedRecipe() const
+{
+	return SelectedRecipe;
+}
+
+void UCraftingMenuWidget::RefreshRecipesList()
 {
 	// Clear all children of the scroll box
 	RecipesWrapBox->ClearChildren();
@@ -58,16 +74,15 @@ void UCraftingMenuWidget::OnOpen()
 		return;
 	}
 
-	// For each entry create a new recipe icon and populate it with the relavent information
 	for (const FName& RecipeName : OwnerCraftingComponent->GetAllRecipes())
 	{
-		// Get recipe data table entries
 		FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(RecipeName);
 		if (RecipeData == nullptr)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Failed to find recipe data for %s"), *RecipeName.ToString());
 			return;
 		}
+		
 		FItemData* YeildItemData = OwnerInventoryComponent->GetItemData(RecipeData->Yeild.Name);
 		if (YeildItemData == nullptr)
 		{
@@ -75,30 +90,14 @@ void UCraftingMenuWidget::OnOpen()
 			return;
 		}
 
-		URecipeIconWidget* NewRecipe = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
+		URecipeIconWidget* NewRecipeEntry = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
 
-		NewRecipe->Setup(this, RecipeName, YeildItemData->Thumbnail);
-		RecipesWrapBox->AddChild(NewRecipe);
+		NewRecipeEntry->Setup(this, RecipeName, YeildItemData->Thumbnail);
+		RecipesWrapBox->AddChild(NewRecipeEntry);
 	}
-
-	UpdateSelectedRecipeDetailsPanel();
 }
 
-void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)
-{
-	SelectedRecipe = SelectedRecipeName;
-	
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("New Recipe Selected: %s"), *SelectedRecipe.ToString()));
-
-	UpdateSelectedRecipeDetailsPanel();
-}
-
-FName UCraftingMenuWidget::GetSelectedRecipe() const
-{
-	return SelectedRecipe;
-}
-
-void UCraftingMenuWidget::UpdateSelectedRecipeDetailsPanel()
+void UCraftingMenuWidget::RefreshDetailsPanel()
 {
 	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
 	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
@@ -109,12 +108,7 @@ void UCraftingMenuWidget::UpdateSelectedRecipeDetailsPanel()
 
 	if (SelectedRecipe == FName())
 	{
-		SelectedRecipeNameTextBlock->SetText(FText::FromString(FString()));
-		SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(FString()));
-		SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
-		CraftButton->SetIsEnabled(false);
-		IngredientListBox->ClearChildren();
-
+		ClearDetailsPanel();
 		return;
 	}
 
@@ -130,20 +124,32 @@ void UCraftingMenuWidget::UpdateSelectedRecipeDetailsPanel()
 		return;
 	}
 
-	// update name
 	SelectedRecipeNameTextBlock->SetText(FText::FromName(RecipeYeildItemData->DisplayName));
-	SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(RecipeYeildItemData->Description));
 	
+	SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(RecipeYeildItemData->Description));
+
 	SelectedRecipeIconImage->SetBrushFromMaterial(RecipeYeildItemData->Thumbnail);
 	SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
 
+	RefreshIngredientList(RecipeData, OwnerInventoryComponent);
+
 	CraftButton->SetIsEnabled(CanCraftSelectedRecipe());
-
-	UpdateIngredientList(RecipeData, OwnerInventoryComponent);
-
 }
 
-void UCraftingMenuWidget::UpdateIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent)
+void UCraftingMenuWidget::ClearDetailsPanel()
+{
+	SelectedRecipeNameTextBlock->SetText(FText::FromString(FString()));
+	SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(FString()));
+	SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+
+	//FSlateBrush NewBrush;
+	//SelectedRecipeIconImage->SetBrush(NewBrush);
+
+	CraftButton->SetIsEnabled(false);
+	IngredientListBox->ClearChildren();
+}
+
+void UCraftingMenuWidget::RefreshIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent)
 {
 	// Clear list
 	IngredientListBox->ClearChildren();
@@ -187,6 +193,23 @@ void UCraftingMenuWidget::UpdateIngredientList(FCraftingRecipe* RecipeData, UInv
 	}
 }
 
+void UCraftingMenuWidget::Craft()
+{
+	APawn* PawnOwner = GetOwningPlayerPawn<APawn>();
+	if (PawnOwner == nullptr)
+	{
+		return;
+	}
+
+	UCraftingComponent* OwnerCraftingComponent = PawnOwner->FindComponentByClass<UCraftingComponent>();
+	if (OwnerCraftingComponent == nullptr)
+	{
+		return;
+	}
+	
+	OwnerCraftingComponent->Server_CraftItem(SelectedRecipe);
+}
+
 bool UCraftingMenuWidget::CanCraftSelectedRecipe()
 {
 	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
@@ -208,23 +231,4 @@ bool UCraftingMenuWidget::CanCraftSelectedRecipe()
 	}
 
 	return true;
-}
-
-void UCraftingMenuWidget::Craft()
-{
-	APawn* PawnOwner = GetOwningPlayerPawn<APawn>();
-	if (PawnOwner == nullptr)
-	{
-		return;
-	}
-
-	UCraftingComponent* OwnerCraftingComponent = PawnOwner->FindComponentByClass<UCraftingComponent>();
-	if (OwnerCraftingComponent == nullptr)
-	{
-		return;
-	}
-	
-	OwnerCraftingComponent->Server_CraftItem(SelectedRecipe);
-
-	// refresh inventory menu
 }

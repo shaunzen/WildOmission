@@ -24,10 +24,9 @@ class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
 public:
 	UCraftingMenuWidget(const FObjectInitializer& ObjectInializer);
 
-	void OnOpen();
+	void Refresh();
 
 	void SetSelectedRecipe(const FName& SelectedRecipeName);
-
 	FName GetSelectedRecipe() const;
 
 protected:
@@ -60,9 +59,11 @@ private:
 
 	FName SelectedRecipe;
 
-	void UpdateSelectedRecipeDetailsPanel();
+	void RefreshRecipesList();
 
-	void UpdateIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent);
+	void RefreshDetailsPanel();
+	void ClearDetailsPanel();
+	void RefreshIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent);
 
 	bool CanCraftSelectedRecipe();
 
