@@ -139,19 +139,18 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 void UCraftingMenuWidget::ClearDetailsPanel()
 {
 	SelectedRecipeNameTextBlock->SetText(FText::FromString(FString()));
+	
 	SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(FString()));
+
 	SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 
-	//FSlateBrush NewBrush;
-	//SelectedRecipeIconImage->SetBrush(NewBrush);
-
 	CraftButton->SetIsEnabled(false);
+
 	IngredientListBox->ClearChildren();
 }
 
 void UCraftingMenuWidget::RefreshIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent)
 {
-	// Clear list
 	IngredientListBox->ClearChildren();
 
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
@@ -163,26 +162,19 @@ void UCraftingMenuWidget::RefreshIngredientList(FCraftingRecipe* RecipeData, UIn
 			return;
 		}
 
-		// Create a new ingredient row
 		UIngredientRowWidget* NewIngredientRow = CreateWidget<UIngredientRowWidget>(this, IngredientRowWidgetClass);
 		if (NewIngredientRow == nullptr)
 		{
 			return;
 		}
-		// Populate it with the relevent information
 		NewIngredientRow->Setup(IngredientItemData->DisplayName, Ingredient.Quantity, HasAmount);
-
-		// Add to IngredientListBox
 		IngredientListBox->AddChild(NewIngredientRow);
 		
-		// get slot
 		UVerticalBoxSlot* IngredientRowSlot = Cast<UVerticalBoxSlot>(NewIngredientRow->Slot);
 		if (IngredientRowSlot == nullptr)
 		{
 			return;
 		}
-
-		// set padding
 		FMargin RowPadding;
 		RowPadding.Top = 5.0f;
 		RowPadding.Bottom = 5.0f;

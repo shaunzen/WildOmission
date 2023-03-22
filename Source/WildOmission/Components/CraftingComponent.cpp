@@ -40,45 +40,34 @@ void UCraftingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraft)
 {
-	// find the recipe in the data table
 	FCraftingRecipe* RecipeData = GetRecipe(ItemToCraft);
 	if (RecipeData == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Failed to find recipe data for recipe: %s"), *ItemToCraft.ToString()));
 		return;
 	}
 
-	// get the owners inventory comp
 	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Failed to get owner inventory component"));
 		return;
 	}
 
-	// check they have the ingredients
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
 		int32 IngredientAmountInInventory = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
 		
-		// return if they dont
 		if (IngredientAmountInInventory < Ingredient.Quantity)
 		{
-			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Cannot craft %s: not enough %s, Needed %i, you have %i"), *ItemToCraft.ToString(), *Ingredient.Name.ToString(), Ingredient.Quantity, IngredientAmountInInventory));
 			return;
 		}
 	}
 
-	// remove ingredients
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
 		OwnerInventoryComponent->RemoveItem(Ingredient);
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Yellow, FString::Printf(TEXT("Removed Ingredient: Name: %s Quantity: %i"), *Ingredient.Name.ToString(), Ingredient.Quantity));
 	}
 
-	// add resulting yeild
 	OwnerInventoryComponent->AddItem(RecipeData->Yeild);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Crafted: Name: %s Quantity: %i"), *RecipeData->Yeild.Name.ToString(), RecipeData->Yeild.Quantity));
 }
 
 TArray<FName> UCraftingComponent::GetAllRecipes()
