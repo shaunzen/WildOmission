@@ -70,9 +70,16 @@ void UWildOmissionGameInstance::Init()
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 
-	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
+	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);	
+}
+
+void UWildOmissionGameInstance::OnStart()
+{
+	Super::OnStart();
 
 	BrandingWidget = CreateWidget<UUserWidget>(this, BrandingWidgetBlueprintClass);
+
+	BrandingWidget->AddToViewport();
 }
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()

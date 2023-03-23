@@ -45,6 +45,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString GetVersion() const;
+
+protected:
+	virtual void OnStart() override;
+
 private:
 
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetBlueprintClass;
