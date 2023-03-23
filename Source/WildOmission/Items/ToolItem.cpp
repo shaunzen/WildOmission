@@ -88,7 +88,7 @@ void AToolItem::Harvest()
 	{
 		UHarvestableComponent* HitHarvestableComponent = HitResult.GetActor()->FindComponentByClass<UHarvestableComponent>();
 
-		if (HitHarvestableComponent && HitHarvestableComponent->GetRequiredToolType() == ToolType)
+		if (HitHarvestableComponent && (HitHarvestableComponent->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
 		{
 			HitHarvestableComponent->OnHarvest(GetOwner());
 		}

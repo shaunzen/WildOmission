@@ -17,7 +17,7 @@ const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
 	// Version Information Here
-	Version = FString("0.4.1 - Prototype");
+	Version = FString("Pre Alpha 0.4.1");
 
 	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_MainMenu"));
 	
@@ -36,6 +36,15 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	}
 	
 	GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> BrandingBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_Branding"));
+
+	if (BrandingBlueprint.Class == nullptr)
+	{
+		return;
+	}
+
+	BrandingWidgetBlueprintClass = BrandingBlueprint.Class;
 }
 
 void UWildOmissionGameInstance::Init()
@@ -62,6 +71,8 @@ void UWildOmissionGameInstance::Init()
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
+
+	BrandingWidget = CreateWidget<UUserWidget>(this, BrandingWidgetBlueprintClass);
 }
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()

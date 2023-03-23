@@ -33,17 +33,22 @@ public:
 	void RefreshAllMenus();
 	
 	// Setters
+	UFUNCTION(BlueprintCallable)
 	void ToggleInventoryMenu();
 	
+	UFUNCTION(BlueprintCallable)
 	void ToggleCraftingMenu();
 
 	// Getters
 	UPlayerInventoryWidget* GetPlayerInventoryWidget();
 	
+	UFUNCTION(BlueprintCallable)
 	bool IsMenuOpen() const;
 
+	UFUNCTION(BlueprintCallable)
 	bool IsInventoryMenuOpen() const;
 
+	UFUNCTION(BlueprintCallable)
 	bool IsCraftingMenuOpen() const;
 
 private:

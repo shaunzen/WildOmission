@@ -33,7 +33,7 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!GetOwner()->HasAuthority())
+	if (!GetOwner()->HasAuthority() || Slots.Num() == SlotCount)
 	{
 		return;
 	}
@@ -44,6 +44,14 @@ void UInventoryComponent::BeginPlay()
 	{
 		Slots[i].Index = i;
 	}
+
+	// give the default items
+	FInventoryItem RockItem;
+	RockItem.Name = FName("rock");
+	RockItem.Quantity = 1;
+
+	AddItem(RockItem);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString("Initialized inventory with defaults"));
 }
 
 void UInventoryComponent::SetManipulator(UInventoryManipulatorComponent* InventoryManipulator)

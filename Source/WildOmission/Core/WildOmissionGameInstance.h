@@ -53,6 +53,9 @@ private:
 	TSubclassOf<UGameplayMenuWidget> GameplayMenuWidgetBlueprintClass;
 	UGameplayMenuWidget* GameplayMenuWidget;
 
+	TSubclassOf<UUserWidget> BrandingWidgetBlueprintClass;
+	UUserWidget* BrandingWidget;
+
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 

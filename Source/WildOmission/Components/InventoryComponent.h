@@ -27,7 +27,10 @@ public:
 	
 	void SetManipulator(UInventoryManipulatorComponent* InventoryManipulator);
 
+	UFUNCTION(BlueprintCallable)
 	void AddItem(const FInventoryItem& ItemToAdd);
+
+	UFUNCTION(BlueprintCallable)
 	void RemoveItem(const FInventoryItem& ItemToRemove);	
 
 	UFUNCTION(Server, Reliable)

@@ -74,7 +74,6 @@ void AWildOmissionPlayerController::Save()
 void AWildOmissionPlayerController::Spawn()
 {
 	// TODO find a location and give the default items
-
 }
 
 FString AWildOmissionPlayerController::GetUniqueID()
