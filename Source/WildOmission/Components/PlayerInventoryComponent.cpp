@@ -28,6 +28,13 @@ void UPlayerInventoryComponent::BeginPlay()
 	SetManipulator(OwnerManipulator);
 
 	ToolbarSelectionIndex = -1;
+
+	// give the default items
+	FInventoryItem RockItem;
+	RockItem.Name = FName("rock");
+	RockItem.Quantity = 1;
+
+	AddItem(RockItem);
 }
 
 void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

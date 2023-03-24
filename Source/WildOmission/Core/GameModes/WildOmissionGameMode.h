@@ -23,7 +23,7 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void SaveGame();
 	
-	UFUNCTION(Exec)
+	UFUNCTION(BlueprintCallable, Exec)
 	void ResetLocationOfAllConnectedPlayers();
 
 	ASaveHandler* GetSaveHandler();
