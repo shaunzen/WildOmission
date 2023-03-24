@@ -15,7 +15,7 @@ void UIngredientRowWidget::Setup(const FName& IngredientName, const int32& Ingre
 
 	FString AmountNeededString = FString::Printf(TEXT("%i"), IngredientAmountNeeded);
 	FString HaveAmountString = FString::Printf(TEXT("%i"), IngredientHasAmount);
-	bHasEnough = IngredientAmountNeeded < IngredientHasAmount;
+	bHasEnough = IngredientAmountNeeded <= IngredientHasAmount;
 
 	IngredientNameTextBlock->SetText(FText::FromName(IngredientName));
 	AmountNeededTextBlock->SetText(FText::FromString(AmountNeededString));
