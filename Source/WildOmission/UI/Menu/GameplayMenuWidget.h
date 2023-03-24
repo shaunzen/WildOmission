@@ -27,9 +27,6 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* SaveNameText;
-
-	UPROPERTY(Meta = (BindWidget))
 	UButton* ResumeButton;
 
 	UPROPERTY(Meta = (BindWidget))
