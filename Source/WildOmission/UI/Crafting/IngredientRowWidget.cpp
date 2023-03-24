@@ -4,7 +4,7 @@
 #include "IngredientRowWidget.h"
 #include "Components/TextBlock.h"
 
-void UIngredientRowWidget::Setup(const FName& IngredientName, const int32& IngredientAmountNeeded, const int32& IngredientHasAmount)
+void UIngredientRowWidget::Setup(const FString& IngredientName, const int32& IngredientAmountNeeded, const int32& IngredientHasAmount)
 {
 	if (IngredientNameTextBlock == nullptr
 		|| AmountNeededTextBlock == nullptr
@@ -17,7 +17,7 @@ void UIngredientRowWidget::Setup(const FName& IngredientName, const int32& Ingre
 	FString HaveAmountString = FString::Printf(TEXT("%i"), IngredientHasAmount);
 	bHasEnough = IngredientAmountNeeded <= IngredientHasAmount;
 
-	IngredientNameTextBlock->SetText(FText::FromName(IngredientName));
+	IngredientNameTextBlock->SetText(FText::FromString(IngredientName));
 	AmountNeededTextBlock->SetText(FText::FromString(AmountNeededString));
 	HaveAmountTextBlock->SetText(FText::FromString(HaveAmountString));
 

@@ -6,7 +6,7 @@
 
 FItemData::FItemData()
 {
-	DisplayName = FName(TEXT("Item"));
+	DisplayName = FString(TEXT("Item"));
 	Description = FString(TEXT("This is an Item."));
 	Thumbnail = nullptr;
 	Mesh = nullptr;

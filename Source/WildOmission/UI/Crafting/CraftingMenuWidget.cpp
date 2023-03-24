@@ -124,7 +124,7 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 		return;
 	}
 
-	SelectedRecipeNameTextBlock->SetText(FText::FromName(RecipeYeildItemData->DisplayName));
+	SelectedRecipeNameTextBlock->SetText(FText::FromString(RecipeYeildItemData->DisplayName));
 	
 	SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(RecipeYeildItemData->Description));
 

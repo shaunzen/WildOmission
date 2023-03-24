@@ -82,7 +82,7 @@ void AWorldItem::Interact(AActor* Interactor)
 
 FString AWorldItem::PromptText()
 {
-	FName ItemDisplayName;
+	FString ItemDisplayName;
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr)
@@ -110,7 +110,7 @@ FString AWorldItem::PromptText()
 
 	ItemDisplayName = ItemData->DisplayName;
 
-	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName.ToString());
+	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName);
 }
 
 void AWorldItem::SetItem(const FInventoryItem& InItem)

@@ -13,7 +13,7 @@ struct FItemData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName DisplayName;
+	FString DisplayName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
