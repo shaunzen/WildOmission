@@ -16,7 +16,7 @@ public:
 	
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlaySwingAnimation();
+	void PlaySwingAnimation(UAnimMontage* SwingMontage);
 
 	UFUNCTION(BlueprintCallable)
 	void PlayFootstepSound();
@@ -52,9 +52,6 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* WoodFootstepSound;
 	
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* SwingMontage;
-
 	UPROPERTY(EditDefaultsOnly)
 	bool StopWalkAnimationWhenFalling;
 

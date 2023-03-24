@@ -29,7 +29,11 @@ void UPlayerInventoryComponent::BeginPlay()
 
 	ToolbarSelectionIndex = -1;
 
-	// give the default items
+	if (!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+	
 	FInventoryItem RockItem;
 	RockItem.Name = FName("rock");
 	RockItem.Quantity = 1;

@@ -51,7 +51,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	USoundBase* EquipSound;
-
+	
 	UPROPERTY(Replicated)
 	FName ItemName;
 

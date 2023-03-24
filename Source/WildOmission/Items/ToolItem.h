@@ -46,6 +46,9 @@ protected:
 	UPROPERTY(Replicated)
 	int32 Durability;
 
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* SwingMontage;
+
 	UFUNCTION()
 	void ApplyDamage();
 	

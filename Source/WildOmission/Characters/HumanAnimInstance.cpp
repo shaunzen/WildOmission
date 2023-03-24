@@ -22,13 +22,11 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Gravel/HumanFootstep_Gravel_Cue"));
 	ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Rock/HumanFootstep_Rock_Cue"));
 	ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Wood/HumanFootstep_Wood_Cue"));
-	ConstructorHelpers::FObjectFinder<UAnimMontage> SwingAnimMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/A_Human_SwingTool_02_Montage"));
-
+	
 	if (GrassFootstepSoundObject.Object == nullptr
 		|| GravelFootstepSoundObject.Object == nullptr
 		|| RockFootstepSoundObject.Object == nullptr
-		|| WoodFootstepSoundObject.Object == nullptr
-		|| SwingAnimMontageObject.Object == nullptr)
+		|| WoodFootstepSoundObject.Object == nullptr)
 	{
 		return;
 	}
@@ -37,7 +35,6 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	GravelFootstepSound = GravelFootstepSoundObject.Object;
 	RockFootstepSound = RockFootstepSoundObject.Object;
 	WoodFootstepSound = WoodFootstepSoundObject.Object;
-	SwingMontage = SwingAnimMontageObject.Object;
 	StopWalkAnimationWhenFalling = false;
 }
 
@@ -51,7 +48,7 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	HandleItemHolding();
 }
 
-void UHumanAnimInstance::PlaySwingAnimation()
+void UHumanAnimInstance::PlaySwingAnimation(UAnimMontage* SwingMontage)
 {
 	if (Montage_IsPlaying(SwingMontage))
 	{

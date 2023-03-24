@@ -85,7 +85,7 @@ void UEquipComponent::DestroyEquipedItem()
 	EquipedItem = nullptr;
 }
 
-void UEquipComponent::PlaySwingAnimation()
+void UEquipComponent::PlaySwingAnimation(UAnimMontage* SwingMontage)
 {
 	UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
 	if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
@@ -93,7 +93,7 @@ void UEquipComponent::PlaySwingAnimation()
 		return;
 	}
 
-	FirstPersonArmsAnimInstance->PlaySwingAnimation();
+	FirstPersonArmsAnimInstance->PlaySwingAnimation(SwingMontage);
 
 	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
 	if (ThirdPersonAnimInstance == nullptr)
@@ -101,7 +101,7 @@ void UEquipComponent::PlaySwingAnimation()
 		return;
 	}
 
-	ThirdPersonAnimInstance->PlaySwingAnimation();
+	ThirdPersonAnimInstance->PlaySwingAnimation(SwingMontage);
 }
 
 AEquipableItem* UEquipComponent::GetEquipedItem()
