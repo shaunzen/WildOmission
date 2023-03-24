@@ -113,7 +113,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	NameTag = CreateDefaultSubobject<UNameTagComponent>(FName("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
-	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 }
 
 void AWildOmissionCharacter::BeginPlay()
