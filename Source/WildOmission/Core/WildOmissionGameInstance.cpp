@@ -36,15 +36,6 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	}
 	
 	GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
-
-	ConstructorHelpers::FClassFinder<UUserWidget> BrandingBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_Branding"));
-
-	if (BrandingBlueprint.Class == nullptr)
-	{
-		return;
-	}
-
-	BrandingWidgetBlueprintClass = BrandingBlueprint.Class;
 }
 
 void UWildOmissionGameInstance::Init()
@@ -71,15 +62,6 @@ void UWildOmissionGameInstance::Init()
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);	
-}
-
-void UWildOmissionGameInstance::OnStart()
-{
-	Super::OnStart();
-
-	BrandingWidget = CreateWidget<UUserWidget>(this, BrandingWidgetBlueprintClass);
-
-	BrandingWidget->AddToViewport();
 }
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()

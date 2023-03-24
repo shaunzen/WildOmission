@@ -46,9 +46,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FString GetVersion() const;
 
-protected:
-	virtual void OnStart() override;
-
 private:
 
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetBlueprintClass;
@@ -56,9 +53,6 @@ private:
 
 	TSubclassOf<UGameplayMenuWidget> GameplayMenuWidgetBlueprintClass;
 	UGameplayMenuWidget* GameplayMenuWidget;
-
-	TSubclassOf<UUserWidget> BrandingWidgetBlueprintClass;
-	UUserWidget* BrandingWidget;
 
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
