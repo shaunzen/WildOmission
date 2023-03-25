@@ -24,7 +24,7 @@ AToolItem::AToolItem()
 	Durability = 1000;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> HarvestSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
-	ConstructorHelpers::FObjectFinder<UAnimMontage> SwingAnimMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/A_Human_SwingTool_02_Montage"));
+	ConstructorHelpers::FObjectFinder<UAnimMontage> SwingAnimMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/A_Human_SwingTool_01_Montage"));
 
 	if (HarvestSoundObject.Object == nullptr || SwingAnimMontageObject.Object == nullptr)
 	{
@@ -106,6 +106,11 @@ void AToolItem::Secondary()
 	Super::Secondary();
 }
 
+UAnimMontage* AToolItem::GetSwingMontage() const
+{
+	return SwingMontage;
+}
+
 void AToolItem::ApplyDamage()
 {
 	Durability -= 10;
@@ -155,7 +160,7 @@ void AToolItem::Client_PlaySwingAnimation_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlaySwingAnimation(SwingMontage);
+	OwnerEquipComponent->PlaySwingAnimation();
 }
 
 void AToolItem::Client_PlayHarvestSound_Implementation()

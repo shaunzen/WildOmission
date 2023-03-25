@@ -30,6 +30,9 @@ public:
 
 	virtual void Harvest();
 
+	UFUNCTION(BlueprintCallable)
+	UAnimMontage* GetSwingMontage() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> ToolType;
@@ -46,9 +49,6 @@ protected:
 	UPROPERTY(Replicated)
 	int32 Durability;
 
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* SwingMontage;
-
 	UFUNCTION()
 	void ApplyDamage();
 	
@@ -56,8 +56,11 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* SwingMontage;
+
+	UPROPERTY(EditDefaultsOnly)
 	USoundBase* HarvestSound;
-	
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlaySwingAnimation();
 

@@ -42,6 +42,10 @@ public:
 
 	uint32 GetUniqueItemID() const;
 
+	UAnimSequence* GetEquipPose() const;
+
+	bool IsTwoHanded() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -52,6 +56,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	USoundBase* EquipSound;
 	
+	UPROPERTY(EditDefaultsOnly)
+	UAnimSequence* EquipPose;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bRequiresTwoHands;
+
 	UPROPERTY(Replicated)
 	FName ItemName;
 

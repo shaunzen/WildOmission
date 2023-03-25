@@ -17,6 +17,8 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	Angle = 0;
 	Falling = false;
 	HoldingItem = false;
+	HoldingTwoHandedItem = false;
+	EquipedItemPose = nullptr;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
 	ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Gravel/HumanFootstep_Gravel_Cue"));
@@ -178,5 +180,16 @@ void UHumanAnimInstance::HandleItemHolding()
 		return;
 	}
 
-	HoldingItem = PlayerEquipComponent->IsItemEquiped();
+	if (PlayerEquipComponent->IsItemEquiped())
+	{
+		HoldingItem = true;
+		HoldingTwoHandedItem = PlayerEquipComponent->GetEquipedItem()->IsTwoHanded();
+		EquipedItemPose = PlayerEquipComponent->GetEquipedItem()->GetEquipPose();
+	}
+	else
+	{
+		HoldingItem = false;
+		HoldingTwoHandedItem = false;
+		EquipedItemPose = nullptr;
+	}
 }

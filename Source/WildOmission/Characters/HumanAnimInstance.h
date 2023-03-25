@@ -39,6 +39,12 @@ public:
 	UPROPERTY(BlueprintReadonly)
 	bool HoldingItem;
 
+	UPROPERTY(BlueprintReadonly)
+	bool HoldingTwoHandedItem;
+
+	UPROPERTY(BlueprintReadonly)
+	UAnimSequence* EquipedItemPose;
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* GrassFootstepSound;

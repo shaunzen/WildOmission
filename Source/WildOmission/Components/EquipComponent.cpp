@@ -4,6 +4,7 @@
 #include "EquipComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Items/EquipableItem.h"
+#include "WildOmission/Items/ToolItem.h"
 #include "WildOmission/Characters/HumanAnimInstance.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "WildOmission/UI/Inventory/PlayerInventoryWidget.h"
@@ -85,15 +86,22 @@ void UEquipComponent::DestroyEquipedItem()
 	EquipedItem = nullptr;
 }
 
-void UEquipComponent::PlaySwingAnimation(UAnimMontage* SwingMontage)
+//todo PlayPrimaryAnimation instead for more modular elements
+void UEquipComponent::PlaySwingAnimation()
 {
+	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
+	if (EquipedTool == nullptr)
+	{
+		return;
+	}
+
 	UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
 	if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
 	{
 		return;
 	}
 
-	FirstPersonArmsAnimInstance->PlaySwingAnimation(SwingMontage);
+	FirstPersonArmsAnimInstance->PlaySwingAnimation(EquipedTool->GetSwingMontage());
 
 	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
 	if (ThirdPersonAnimInstance == nullptr)
@@ -101,7 +109,7 @@ void UEquipComponent::PlaySwingAnimation(UAnimMontage* SwingMontage)
 		return;
 	}
 
-	ThirdPersonAnimInstance->PlaySwingAnimation(SwingMontage);
+	ThirdPersonAnimInstance->PlaySwingAnimation(EquipedTool->GetSwingMontage());
 }
 
 AEquipableItem* UEquipComponent::GetEquipedItem()

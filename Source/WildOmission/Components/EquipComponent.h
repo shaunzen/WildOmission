@@ -23,7 +23,7 @@ public:
 
 	void DestroyEquipedItem();
 
-	void PlaySwingAnimation(UAnimMontage* SwingMontage);
+	void PlaySwingAnimation();
 
 	UFUNCTION(BlueprintCallable)
 	class AEquipableItem* GetEquipedItem();

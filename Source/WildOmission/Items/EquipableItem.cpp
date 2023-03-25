@@ -22,16 +22,19 @@ AEquipableItem::AEquipableItem()
 	RootComponent = Mesh;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
+	ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseObject(TEXT("/Game/WildOmission/Characters/Human/Animation/A_Human_HoldingTool_01"));
 
-	if (EquipSoundObject.Object == nullptr)
+	if (EquipSoundObject.Object == nullptr || EquipPoseObject.Object == nullptr)
 	{
 		return;
 	}
 
 	EquipSound = EquipSoundObject.Object;
+	EquipPose = EquipPoseObject.Object;
 
 	FromSlotIndex = -1;
 	UniqueID = 0;
+	bRequiresTwoHands = false;
 }
 
 void AEquipableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -118,4 +121,14 @@ int8 AEquipableItem::GetFromSlotIndex() const
 uint32 AEquipableItem::GetUniqueItemID() const
 {
 	return UniqueID;
+}
+
+UAnimSequence* AEquipableItem::GetEquipPose() const
+{
+	return EquipPose;
+}
+
+bool AEquipableItem::IsTwoHanded() const
+{
+	return bRequiresTwoHands;
 }
