@@ -37,7 +37,7 @@ void UEquipComponent::BeginPlay()
 
 	OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
 
-	FirstPersonItemMeshComponent->AttachToComponent(OwnerCharacter->GetArmsMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+	FirstPersonItemMeshComponent->AttachToComponent(OwnerCharacter->GetArmsMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 }
 
 void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> Item, const int8& FromSlotIndex, const uint32& UniqueID)
@@ -50,7 +50,7 @@ void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableIte
 	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
 
 	EquipedItem->Equip(OwnerCharacter, ItemName, FromSlotIndex, UniqueID);
-	
+
 	if (GetOwner()->HasAuthority())
 	{
 		OnRep_EquipedItem();
@@ -161,6 +161,8 @@ void UEquipComponent::OnRep_EquipedItem()
 		FirstPersonItemMeshComponent->SetStaticMesh(EquipedItem->GetMesh());
 
 		FirstPersonItemMeshComponent->SetVisibility(OwnerCharacter->IsLocallyControlled());
+		FirstPersonItemMeshComponent->SetRelativeLocation(EquipedItem->GetSocketOffset().GetLocation());
+		FirstPersonItemMeshComponent->SetRelativeRotation(EquipedItem->GetSocketOffset().GetRotation());
 
 		EquipedItem->SetLocalVisibility(!OwnerCharacter->IsLocallyControlled());
 	}

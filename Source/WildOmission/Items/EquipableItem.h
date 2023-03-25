@@ -46,12 +46,17 @@ public:
 
 	bool IsTwoHanded() const;
 
+	FTransform GetSocketOffset();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
+	
+	UPROPERTY(EditDefaultsOnly)
+	FTransform SocketOffset;
 	
 	UPROPERTY(EditAnywhere)
 	USoundBase* EquipSound;

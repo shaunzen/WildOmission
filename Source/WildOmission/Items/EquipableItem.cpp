@@ -19,6 +19,7 @@ AEquipableItem::AEquipableItem()
 	// game seems to be crashing because no mesh is specified and we are trying to use the mesh to create a first person decoy
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("Mesh"));
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	RootComponent = Mesh;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
@@ -50,7 +51,9 @@ void AEquipableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void AEquipableItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Mesh->SetRelativeLocation(SocketOffset.GetLocation());
+	Mesh->SetRelativeRotation(SocketOffset.GetRotation());
 }
 
 // Called every frame
@@ -68,7 +71,7 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName
 	FromSlotIndex = InFromSlotIndex;
 	UniqueID = InUniqueID;
 
-	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RightHandMountSocket"));
+	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 
 	Client_PlayEquipSound();
 }
@@ -131,4 +134,9 @@ UAnimSequence* AEquipableItem::GetEquipPose() const
 bool AEquipableItem::IsTwoHanded() const
 {
 	return bRequiresTwoHands;
+}
+
+FTransform AEquipableItem::GetSocketOffset()
+{
+	return SocketOffset;
 }
