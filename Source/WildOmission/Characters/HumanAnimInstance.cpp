@@ -16,8 +16,6 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	Speed = 0;
 	Angle = 0;
 	Falling = false;
-	HoldingItem = false;
-	HoldingTwoHandedItem = false;
 	EquipedItemPose = nullptr;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
@@ -47,12 +45,12 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	CalculateSpeedAndAngle();
 	CalculateHeadAngle();
 	HandleFalling();
-	HandleItemHolding();
+	HandleEquipPose();
 }
 
 void UHumanAnimInstance::PlaySwingAnimation(UAnimMontage* SwingMontage)
 {
-	if (Montage_IsPlaying(SwingMontage))
+	if (Montage_IsPlaying(nullptr))
 	{
 		return;
 	}
@@ -167,7 +165,7 @@ void UHumanAnimInstance::HandleFalling()
 	Falling = CharacterOwner->GetCharacterMovement()->IsFalling();
 }
 
-void UHumanAnimInstance::HandleItemHolding()
+void UHumanAnimInstance::HandleEquipPose()
 {
 	if (TryGetPawnOwner() == nullptr)
 	{
@@ -180,16 +178,11 @@ void UHumanAnimInstance::HandleItemHolding()
 		return;
 	}
 
-	if (PlayerEquipComponent->IsItemEquiped())
+	if (PlayerEquipComponent->GetEquipedItem() == nullptr)
 	{
-		HoldingItem = true;
-		HoldingTwoHandedItem = PlayerEquipComponent->GetEquipedItem()->IsTwoHanded();
-		EquipedItemPose = PlayerEquipComponent->GetEquipedItem()->GetEquipPose();
-	}
-	else
-	{
-		HoldingItem = false;
-		HoldingTwoHandedItem = false;
 		EquipedItemPose = nullptr;
+		return;
 	}
+
+	EquipedItemPose = PlayerEquipComponent->GetEquipedItem()->GetEquipPose();	
 }

@@ -44,8 +44,6 @@ public:
 
 	UAnimSequence* GetEquipPose() const;
 
-	bool IsTwoHanded() const;
-
 	FTransform GetSocketOffset();
 
 protected:
@@ -63,9 +61,6 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	UAnimSequence* EquipPose;
-
-	UPROPERTY(EditDefaultsOnly)
-	bool bRequiresTwoHands;
 
 	UPROPERTY(Replicated)
 	FName ItemName;

@@ -35,7 +35,6 @@ AEquipableItem::AEquipableItem()
 
 	FromSlotIndex = -1;
 	UniqueID = 0;
-	bRequiresTwoHands = false;
 }
 
 void AEquipableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -129,11 +128,6 @@ uint32 AEquipableItem::GetUniqueItemID() const
 UAnimSequence* AEquipableItem::GetEquipPose() const
 {
 	return EquipPose;
-}
-
-bool AEquipableItem::IsTwoHanded() const
-{
-	return bRequiresTwoHands;
 }
 
 FTransform AEquipableItem::GetSocketOffset()

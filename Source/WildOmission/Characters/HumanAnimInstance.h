@@ -67,6 +67,6 @@ private:
 
 	void HandleFalling();
 
-	void HandleItemHolding();
+	void HandleEquipPose();
 	
 };
