@@ -49,9 +49,15 @@ void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 bool UPlayerHUDWidget::Initialize()
 {
-	Super::Initialize();
+	bool Success = Super::Initialize();
+	if (Success == false)
+	{
+		return false;
+	}
 
 	UpdateBrandingText();
+
+	return true;
 }
 
 void UPlayerHUDWidget::RefreshAllMenus()
@@ -173,7 +179,7 @@ void UPlayerHUDWidget::UpdateBrandingText()
 		return;
 	}
 
-	FString BrandingString = FString::Printf(TEXT("Wild Omission %s"), GameInstance->GetVersion());
+	FString BrandingString = FString::Printf(TEXT("Wild Omission %s"), *GameInstance->GetVersion());
 	BrandingTextBlock->SetText(FText::FromString(BrandingString));
 }
 

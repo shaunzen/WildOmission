@@ -23,7 +23,7 @@ AEquipableItem::AEquipableItem()
 	RootComponent = Mesh;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
-	ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseObject(TEXT("/Game/WildOmission/Characters/Human/Animation/A_Human_HoldingTool_01"));
+	ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_HoldTool"));
 
 	if (EquipSoundObject.Object == nullptr || EquipPoseObject.Object == nullptr)
 	{

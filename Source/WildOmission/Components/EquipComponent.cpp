@@ -86,8 +86,7 @@ void UEquipComponent::DestroyEquipedItem()
 	EquipedItem = nullptr;
 }
 
-//todo PlayPrimaryAnimation instead for more modular elements
-void UEquipComponent::PlaySwingAnimation()
+void UEquipComponent::PlayPrimaryMontage()
 {
 	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
 	if (EquipedTool == nullptr)
@@ -101,7 +100,7 @@ void UEquipComponent::PlaySwingAnimation()
 		return;
 	}
 
-	FirstPersonArmsAnimInstance->PlaySwingAnimation(EquipedTool->GetSwingMontage());
+	FirstPersonArmsAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage());
 
 	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
 	if (ThirdPersonAnimInstance == nullptr)
@@ -109,7 +108,7 @@ void UEquipComponent::PlaySwingAnimation()
 		return;
 	}
 
-	ThirdPersonAnimInstance->PlaySwingAnimation(EquipedTool->GetSwingMontage());
+	ThirdPersonAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage());
 }
 
 AEquipableItem* UEquipComponent::GetEquipedItem()

@@ -24,15 +24,15 @@ AToolItem::AToolItem()
 	Durability = 1000;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> HarvestSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
-	ConstructorHelpers::FObjectFinder<UAnimMontage> SwingAnimMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/A_Human_SwingTool_01_Montage"));
+	ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_SwingTool_Montage"));
 
-	if (HarvestSoundObject.Object == nullptr || SwingAnimMontageObject.Object == nullptr)
+	if (HarvestSoundObject.Object == nullptr || PrimaryMontageObject.Object == nullptr)
 	{
 		return;
 	}
 
 	HarvestSound = HarvestSoundObject.Object;
-	SwingMontage = SwingAnimMontageObject.Object;
+	PrimaryMontage = PrimaryMontageObject.Object;
 }
 
 void AToolItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -71,7 +71,7 @@ void AToolItem::Primary()
 {
 	Super::Primary();
 
-	Client_PlaySwingAnimation();
+	Client_PlayPrimaryMontage();
 }
 
 void AToolItem::Harvest()
@@ -110,9 +110,9 @@ void AToolItem::Secondary()
 	Super::Secondary();
 }
 
-UAnimMontage* AToolItem::GetSwingMontage() const
+UAnimMontage* AToolItem::GetPrimaryMontage() const
 {
-	return SwingMontage;
+	return PrimaryMontage;
 }
 
 void AToolItem::ApplyDamage()
@@ -156,7 +156,7 @@ FInventoryItem* AToolItem::FindInInventory()
 	return InventoryItem;
 }
 
-void AToolItem::Client_PlaySwingAnimation_Implementation()
+void AToolItem::Client_PlayPrimaryMontage_Implementation()
 {
 	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
 	if (OwnerEquipComponent == nullptr)
@@ -164,7 +164,7 @@ void AToolItem::Client_PlaySwingAnimation_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlaySwingAnimation();
+	OwnerEquipComponent->PlayPrimaryMontage();
 }
 
 void AToolItem::Client_PlayHarvestSound_Implementation()

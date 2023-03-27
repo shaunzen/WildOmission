@@ -31,7 +31,7 @@ public:
 	virtual void Harvest();
 
 	UFUNCTION(BlueprintCallable)
-	UAnimMontage* GetSwingMontage() const;
+	UAnimMontage* GetPrimaryMontage() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -56,13 +56,13 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* SwingMontage;
+	UAnimMontage* PrimaryMontage;
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* HarvestSound;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlaySwingAnimation();
+	void Client_PlayPrimaryMontage();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayHarvestSound();
