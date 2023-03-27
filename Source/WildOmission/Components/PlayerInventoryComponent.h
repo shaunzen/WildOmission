@@ -43,7 +43,7 @@ public:
 	//**************************************************************
 
 	int8 GetToolbarSelectionIndex();
-
+	
 protected:
 
 	virtual void OnInventoryChange() override;

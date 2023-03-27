@@ -70,6 +70,8 @@ protected:
 
 	virtual void RefreshUI();
 
+	bool LoadedFromSave;
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* ItemDataTable;

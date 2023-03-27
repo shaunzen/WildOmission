@@ -20,6 +20,7 @@ UInventoryComponent::UInventoryComponent()
 	}
 
 	SlotCount = 24;
+	LoadedFromSave = false;
 }
 
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -44,6 +45,7 @@ void UInventoryComponent::BeginPlay()
 	{
 		Slots[i].Index = i;
 	}
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Initialized Slots."));
 }
 
 void UInventoryComponent::SetManipulator(UInventoryManipulatorComponent* InventoryManipulator)
@@ -212,6 +214,7 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 {
 	Contents.Contents = InInventorySave.Items;
 	Slots = InInventorySave.Slots;
+	LoadedFromSave = true;
 }
 
 void UInventoryComponent::OnInventoryChange()

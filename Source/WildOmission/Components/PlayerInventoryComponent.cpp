@@ -29,11 +29,10 @@ void UPlayerInventoryComponent::BeginPlay()
 
 	ToolbarSelectionIndex = -1;
 
-	if (!GetOwner()->HasAuthority())
+	if (!GetOwner()->HasAuthority() || LoadedFromSave == true)
 	{
 		return;
 	}
-	
 	FInventoryItem RockItem;
 	RockItem.Name = FName("rock");
 	RockItem.Quantity = 1;
