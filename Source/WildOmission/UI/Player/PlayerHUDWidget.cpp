@@ -13,6 +13,7 @@
 #include "WildOmission/UI/Crafting/CraftingMenuWidget.h"
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "VitalsWidget.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -44,6 +45,13 @@ void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	UpdateInteractionPrompt();
 	UpdateSelectedItemLocation();
+}
+
+bool UPlayerHUDWidget::Initialize()
+{
+	Super::Initialize();
+
+	UpdateBrandingText();
 }
 
 void UPlayerHUDWidget::RefreshAllMenus()
@@ -155,6 +163,18 @@ bool UPlayerHUDWidget::IsCraftingMenuOpen() const
 UPlayerInventoryWidget* UPlayerHUDWidget::GetPlayerInventoryWidget()
 {
 	return PlayerInventory;
+}
+
+void UPlayerHUDWidget::UpdateBrandingText()
+{
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+
+	FString BrandingString = FString::Printf(TEXT("Wild Omission %s"), GameInstance->GetVersion());
+	BrandingTextBlock->SetText(FText::FromString(BrandingString));
 }
 
 void UPlayerHUDWidget::OpenMenuPanel()

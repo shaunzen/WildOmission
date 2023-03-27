@@ -30,6 +30,8 @@ public:
 	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	virtual bool Initialize() override;
+
 	void RefreshAllMenus();
 	
 	// Setters
@@ -73,9 +75,14 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
 
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* BrandingTextBlock;
+
 	bool bInventoryMenuOpen;
 
 	bool bCraftingMenuOpen;
+
+	void UpdateBrandingText();
 
 	void OpenMenuPanel();
 	void SwitchToInventoryMenu();
