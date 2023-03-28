@@ -5,6 +5,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
@@ -41,6 +42,7 @@ FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 	PlayerSave.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
 
 	PlayerSave.Inventory = WildOmissionCharacter->GetInventoryComponent()->Save();
+	PlayerSave.SelectedItem = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItem();
 
 	return PlayerSave;
 }
@@ -61,6 +63,11 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave
 	WildOmissionCharacter->GetVitalsComponent()->SetThirst(PlayerSave.Vitals.Thirst);
 
 	WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory);
+
+	if (PlayerSave.SelectedItem.Quantity > 0)
+	{
+		WildOmissionCharacter->GetInventoryManipulatorComponent()->SpawnWorldItem(PlayerSave.SelectedItem);
+	}
 }
 
 void AWildOmissionPlayerController::Save()

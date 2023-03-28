@@ -27,13 +27,13 @@ struct FVitalsSave
 	GENERATED_BODY()
 
 	UPROPERTY()
-	float Health;
+	float Health = 50.0f;
 	
 	UPROPERTY()
-	float Hunger;
+	float Hunger = 100.0f;
 	
 	UPROPERTY()
-	float Thirst;
+	float Thirst = 100.0f;
 };
 
 USTRUCT()
@@ -58,6 +58,9 @@ struct FWildOmissionPlayerSave
 
 	UPROPERTY()
 	FWildOmissionInventorySave Inventory;
+
+	UPROPERTY()
+	FInventoryItem SelectedItem;
 
 };
 
