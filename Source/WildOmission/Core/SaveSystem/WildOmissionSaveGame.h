@@ -22,6 +22,21 @@ struct FWildOmissionInventorySave
 };
 
 USTRUCT()
+struct FVitalsSave
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	float Health;
+	
+	UPROPERTY()
+	float Hunger;
+	
+	UPROPERTY()
+	float Thirst;
+};
+
+USTRUCT()
 struct FWildOmissionPlayerSave
 {
 	GENERATED_BODY()
@@ -40,6 +55,9 @@ struct FWildOmissionPlayerSave
 
 	UPROPERTY()
 	FWildOmissionInventorySave Inventory;
+
+	UPROPERTY()
+	FVitalsSave Vitals;
 
 };
 

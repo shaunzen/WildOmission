@@ -5,6 +5,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Components/VitalsComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
@@ -34,6 +35,10 @@ FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 
 	PlayerSave.WorldLocation = WildOmissionCharacter->GetActorLocation();
 	PlayerSave.IsAlive = true;
+	
+	PlayerSave.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
+	PlayerSave.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
+	PlayerSave.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
 
 	PlayerSave.Inventory = WildOmissionCharacter->GetInventoryComponent()->Save();
 
@@ -50,6 +55,11 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave
 	}
 
 	WildOmissionCharacter->SetActorLocation(PlayerSave.WorldLocation);
+	
+	WildOmissionCharacter->GetVitalsComponent()->SetHealth(PlayerSave.Vitals.Health);
+	WildOmissionCharacter->GetVitalsComponent()->SetHunger(PlayerSave.Vitals.Hunger);
+	WildOmissionCharacter->GetVitalsComponent()->SetThirst(PlayerSave.Vitals.Thirst);
+
 	WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory);
 }
 
