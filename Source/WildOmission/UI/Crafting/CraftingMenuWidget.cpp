@@ -67,23 +67,16 @@ void UCraftingMenuWidget::RefreshRecipesList()
 	// Clear all children of the scroll box
 	RecipesWrapBox->ClearChildren();
 
-	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
-	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
-	if (OwnerInventoryComponent == nullptr || OwnerCraftingComponent == nullptr)
+	for (const FName& RecipeName : UCraftingComponent::GetAllRecipes())
 	{
-		return;
-	}
-
-	for (const FName& RecipeName : OwnerCraftingComponent->GetAllRecipes())
-	{
-		FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(RecipeName);
+		FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(RecipeName);
 		if (RecipeData == nullptr)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Failed to find recipe data for %s"), *RecipeName.ToString());
 			return;
 		}
 		
-		FItemData* YeildItemData = OwnerInventoryComponent->GetItemData(RecipeData->Yeild.Name);
+		FItemData* YeildItemData = UInventoryComponent::GetItemData(RecipeData->Yeild.Name);
 		if (YeildItemData == nullptr)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Failed to find item data for recipe yeild %s"), *RecipeData->Yeild.Name.ToString());
@@ -99,26 +92,19 @@ void UCraftingMenuWidget::RefreshRecipesList()
 
 void UCraftingMenuWidget::RefreshDetailsPanel()
 {
-	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
-	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
-	if (OwnerInventoryComponent == nullptr || OwnerCraftingComponent == nullptr)
-	{
-		return;
-	}
-
 	if (SelectedRecipe == FName())
 	{
 		ClearDetailsPanel();
 		return;
 	}
 
-	FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(SelectedRecipe);
+	FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(SelectedRecipe);
 	if (RecipeData == nullptr)
 	{
 		return;
 	}
 
-	FItemData* RecipeYeildItemData = OwnerInventoryComponent->GetItemData(RecipeData->Yeild.Name);
+	FItemData* RecipeYeildItemData = UInventoryComponent::GetItemData(RecipeData->Yeild.Name);
 	if (RecipeYeildItemData == nullptr)
 	{
 		return;
@@ -131,7 +117,7 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 	SelectedRecipeIconImage->SetBrushFromMaterial(RecipeYeildItemData->Thumbnail);
 	SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
 
-	RefreshIngredientList(RecipeData, OwnerInventoryComponent);
+	RefreshIngredientList();
 
 	CraftButton->SetIsEnabled(CanCraftSelectedRecipe());
 }
@@ -149,14 +135,21 @@ void UCraftingMenuWidget::ClearDetailsPanel()
 	IngredientListBox->ClearChildren();
 }
 
-void UCraftingMenuWidget::RefreshIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent)
+void UCraftingMenuWidget::RefreshIngredientList()
 {
 	IngredientListBox->ClearChildren();
+	
+	FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(SelectedRecipe);
+	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
+	if (RecipeData == nullptr || OwnerInventoryComponent == nullptr)
+	{
+		return;
+	}
 
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
 		int32 HasAmount = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
-		FItemData* IngredientItemData = OwnerInventoryComponent->GetItemData(Ingredient.Name);
+		FItemData* IngredientItemData = UInventoryComponent::GetItemData(Ingredient.Name);
 		if (IngredientItemData == nullptr)
 		{
 			return;
@@ -187,13 +180,7 @@ void UCraftingMenuWidget::RefreshIngredientList(FCraftingRecipe* RecipeData, UIn
 
 void UCraftingMenuWidget::Craft()
 {
-	APawn* PawnOwner = GetOwningPlayerPawn<APawn>();
-	if (PawnOwner == nullptr)
-	{
-		return;
-	}
-
-	UCraftingComponent* OwnerCraftingComponent = PawnOwner->FindComponentByClass<UCraftingComponent>();
+	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
 	if (OwnerCraftingComponent == nullptr)
 	{
 		return;
@@ -204,14 +191,12 @@ void UCraftingMenuWidget::Craft()
 
 bool UCraftingMenuWidget::CanCraftSelectedRecipe()
 {
+	FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(SelectedRecipe);
 	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
-	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
-	if (OwnerInventoryComponent == nullptr || OwnerCraftingComponent == nullptr)
+	if (RecipeData == nullptr || OwnerInventoryComponent == nullptr)
 	{
 		return false;
 	}
-
-	FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(SelectedRecipe);
 
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{

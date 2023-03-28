@@ -37,8 +37,7 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 
 	if (Item.Quantity != 0)
 	{
-		// Get the item data from the player character's inventory component
-		FItemData* SlotItemData = Owner->GetInventoryComponent()->GetItemData(Item.Name);
+		FItemData* SlotItemData = UInventoryComponent::GetItemData(Item.Name);
 		if (SlotItemData == nullptr)
 		{
 			return;

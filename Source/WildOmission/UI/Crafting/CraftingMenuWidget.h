@@ -63,7 +63,7 @@ private:
 
 	void RefreshDetailsPanel();
 	void ClearDetailsPanel();
-	void RefreshIngredientList(FCraftingRecipe* RecipeData, UInventoryComponent* OwnerInventoryComponent);
+	void RefreshIngredientList();
 
 	bool CanCraftSelectedRecipe();
 

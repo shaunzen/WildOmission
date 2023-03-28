@@ -67,15 +67,8 @@ void UInventoryManipulatorComponent::StopDragging()
 
 void UInventoryManipulatorComponent::SpawnWorldItem(const FInventoryItem& ItemToSpawn)
 {
-	// Get player's inventory
-	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
-	if (PlayerInventoryComponent == nullptr)
-	{
-		return;
-	}
-
 	// Get the data for this item
-	FItemData* ItemData = PlayerInventoryComponent->GetItemData(ItemToSpawn.Name);
+	FItemData* ItemData = UInventoryComponent::GetItemData(ItemToSpawn.Name);
 
 	// Spawn a world item actor
 	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();

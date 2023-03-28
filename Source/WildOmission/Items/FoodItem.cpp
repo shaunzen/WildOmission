@@ -17,7 +17,7 @@ void AFoodItem::Primary()
 		return;
 	}
 
-	FItemData* ItemData = OwnerInventoryComponent->GetItemData(ItemName);
+	FItemData* ItemData = UInventoryComponent::GetItemData(ItemName);
 	if (ItemData == nullptr)
 	{
 		return;

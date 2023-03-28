@@ -5,6 +5,8 @@
 #include "InventoryComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
+static UDataTable* RecipeDataTable = nullptr;
+
 // Sets default values for this component's properties
 UCraftingComponent::UCraftingComponent()
 {
@@ -13,13 +15,11 @@ UCraftingComponent::UCraftingComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 	
-	ConstructorHelpers::FObjectFinder<UDataTable> RecipeDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_CraftingRecipes"));
-	if (RecipeDataTableBlueprint.Object == nullptr)
+	static ConstructorHelpers::FObjectFinder<UDataTable> RecipeDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_CraftingRecipes"));
+	if (RecipeDataTableBlueprint.Succeeded())
 	{
-		return;
+		RecipeDataTable = RecipeDataTableBlueprint.Object;
 	}
-
-	RecipeDataTable = RecipeDataTableBlueprint.Object;
 }
 
 
