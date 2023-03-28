@@ -27,6 +27,9 @@ public:
 	void SetItem(const FInventoryItem& InItem);
 	void AddImpulse(FVector Impulse);
 
+	FInventoryItem GetItem() const;
+	bool IgnoredInSave() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,6 +37,9 @@ protected:
 private:
 	UPROPERTY(Replicated, EditAnywhere)
 	FInventoryItem Item;
+
+	UPROPERTY(EditAnywhere)
+	bool IgnoreInSave;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;

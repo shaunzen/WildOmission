@@ -10,7 +10,6 @@
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 
-class UDataTable;
 class UInventoryManipulatorComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -36,7 +35,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SlotInteraction(const int32& SlotIndex, bool Primary = true);
 
-	FItemData* GetItemData(const FName& ItemName);
+	static FItemData* GetItemData(const FName& ItemName);
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
 	FInventorySlot* FindSlotContainingItem(const FName& ItemToFind);	
 
@@ -73,9 +72,6 @@ protected:
 	bool LoadedFromSave;
 
 private:
-	UPROPERTY(EditDefaultsOnly)
-	UDataTable* ItemDataTable;
-
 	bool AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining);
 	bool FindAndAddToPopulatedSlot(const FName& ItemName, const int32& ItemStackSize, int32& QuantityToAdd);
 	bool FindAndAddToEmptySlot(const FName& ItemName, const int32& ItemStackSize, const TArray<FItemStat>& Stats, int32& QuantityToAdd);

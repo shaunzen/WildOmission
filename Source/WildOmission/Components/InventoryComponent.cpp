@@ -7,6 +7,8 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "Net/UnrealNetwork.h"
 
+static UDataTable* ItemDataTable = nullptr;
+
 UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -45,7 +47,6 @@ void UInventoryComponent::BeginPlay()
 	{
 		Slots[i].Index = i;
 	}
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Initialized Slots."));
 }
 
 void UInventoryComponent::SetManipulator(UInventoryManipulatorComponent* InventoryManipulator)

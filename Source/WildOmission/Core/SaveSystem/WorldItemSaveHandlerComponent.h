@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "WorldItemSaveHandlerComponent.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UWorldItemSaveHandlerComponent : public UActorComponent
 {
@@ -19,5 +18,6 @@ public:
 	void Save(TArray<struct FWorldItemSave>& OutSaves);
 
 	void Load(const TArray<struct FWorldItemSave>& InSaves);
+private:
 
 };
