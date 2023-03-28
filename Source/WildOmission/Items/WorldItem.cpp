@@ -32,6 +32,7 @@ AWorldItem::AWorldItem()
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 	MeshComponent->SetIsReplicated(true);
 
+
 	ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Pickup/Pickup_Cue"));
 	
 	if (PickupSoundObject.Object == nullptr)
@@ -53,6 +54,7 @@ void AWorldItem::BeginPlay()
 	}
 
 	MeshComponent->SetMassOverrideInKg(FName(), 20.0f);
+	MeshComponent->OnComponentHit.AddDynamic(this, &AWorldItem::OnComponentHit);
 }
 
 void AWorldItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -120,6 +122,17 @@ FInventoryItem AWorldItem::GetItem() const
 bool AWorldItem::IgnoredInSave() const
 {
 	return IgnoreInSave;
+}
+
+void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor == nullptr)
+	{
+		return;
+	}
+
+	// TODO clumping logic here
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("WorldItem Hit Actor Named: %s"), *OtherActor->GetActorNameOrLabel()));
 }
 
 void AWorldItem::Client_PlayPickupSound_Implementation()
