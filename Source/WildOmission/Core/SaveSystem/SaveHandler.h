@@ -8,6 +8,7 @@
 
 class UWildOmissionSaveGame;
 class UPlayerSaveHandlerComponent;
+class UWorldItemSaveHandlerComponent;
 
 UCLASS()
 class WILDOMISSION_API ASaveHandler : public AActor
@@ -31,8 +32,12 @@ public:
 private:
 	FString CurrentSaveFileName;
 
+	UPROPERTY()
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
 	
+	UPROPERTY()
+	UWorldItemSaveHandlerComponent* WorldItemSaveHandlerComponent;
+
 	void ValidateSave();
 
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);

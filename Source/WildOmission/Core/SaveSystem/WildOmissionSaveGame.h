@@ -54,10 +54,23 @@ struct FWildOmissionPlayerSave
 	FVector WorldLocation = FVector::ZeroVector;
 
 	UPROPERTY()
-	FWildOmissionInventorySave Inventory;
+	FVitalsSave Vitals;
 
 	UPROPERTY()
-	FVitalsSave Vitals;
+	FWildOmissionInventorySave Inventory;
+
+};
+
+USTRUCT()
+struct FWorldItemSave
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector WorldLocation;
+	
+	UPROPERTY()
+	FInventoryItem Item;
 
 };
 
@@ -96,5 +109,8 @@ public:
 
 	UPROPERTY()
 	TArray<FWildOmissionPlayerSave> PlayerSaves;
+
+	UPROPERTY()
+	TArray<FWorldItemSave> WorldItems;
 
 };
