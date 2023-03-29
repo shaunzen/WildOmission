@@ -30,6 +30,7 @@ AWorldItem::AWorldItem()
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
+	MeshComponent->SetNotifyRigidBodyCollision(true);
 	MeshComponent->SetIsReplicated(true);
 
 
@@ -126,13 +127,39 @@ bool AWorldItem::IgnoredInSave() const
 
 void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor == nullptr)
+	AWorldItem* OtherWorldItem = Cast<AWorldItem>(OtherActor);
+	if (OtherWorldItem == nullptr)
 	{
 		return;
 	}
 
-	// TODO clumping logic here
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString::Printf(TEXT("WorldItem Hit Actor Named: %s"), *OtherActor->GetActorNameOrLabel()));
+	FInventoryItem OurItem = this->GetItem();
+	FInventoryItem OtherItem = OtherWorldItem->GetItem();
+	FItemData* ItemData = UInventoryComponent::GetItemData(OurItem.Name);
+	if (OtherItem.Name != OurItem.Name || ItemData == nullptr || ItemData->StackSize == 1)
+	{
+		return;
+	}
+
+	OurItem.Quantity = OtherItem.Quantity + OurItem.Quantity;
+	int32 RemainingQuantity = 0;
+
+	if (OurItem.Quantity > ItemData->StackSize)
+	{
+		RemainingQuantity = OurItem.Quantity - ItemData->StackSize;
+		OurItem.Quantity = ItemData->StackSize;
+		
+		OtherItem.Quantity = RemainingQuantity;
+		OtherWorldItem->SetItem(OtherItem);
+
+		this->SetItem(OurItem);
+	}
+	else
+	{
+		OtherWorldItem->Destroy();
+
+		this->SetItem(OurItem);
+	}
 }
 
 void AWorldItem::Client_PlayPickupSound_Implementation()
