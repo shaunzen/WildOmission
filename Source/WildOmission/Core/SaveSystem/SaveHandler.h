@@ -42,6 +42,8 @@ private:
 	UPROPERTY()
 	UResourceSaveHandlerComponent* ResourceSaveHandlerComponent;
 
+	void GenerateLevel(UWildOmissionSaveGame* SaveToModify);
+
 	void ValidateSave();
 
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);

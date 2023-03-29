@@ -28,7 +28,7 @@ UResourceSaveHandlerComponent::UResourceSaveHandlerComponent()
 	StoneNode = StoneNodeBlueprint.Class;
 }
 
-void UResourceSaveHandlerComponent::Generate()
+void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& GenerationSettings)
 {
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Generating New Resources."));
 	int32 NumberOfTrees = 100;

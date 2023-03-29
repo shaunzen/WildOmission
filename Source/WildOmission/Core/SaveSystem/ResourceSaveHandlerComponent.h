@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "ResourceSaveHandlerComponent.generated.h"
 
 
@@ -16,7 +17,7 @@ public:
 	// Sets default values for this component's properties
 	UResourceSaveHandlerComponent();
 	
-	void Generate();
+	void Generate(const FWorldGenerationSettings& GenerationSettings);
 
 	void Save();
 	void Load();

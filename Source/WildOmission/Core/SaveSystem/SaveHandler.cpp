@@ -5,6 +5,7 @@
 #include "PlayerSaveHandlerComponent.h"
 #include "WorldItemSaveHandlerComponent.h"
 #include "ResourceSaveHandlerComponent.h"
+#include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmissionSaveGame.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -59,10 +60,7 @@ void ASaveHandler::LoadGame(const FString& SaveFileName)
 
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
-		// TODO generate level
-		ResourceSaveHandlerComponent->Generate();
-
-		SaveFile->CreationInformation.LevelHasGenerated = true;
+		GenerateLevel(SaveFile);
 		UpdateSaveFile(SaveFile);
 		return;
 	}
@@ -94,6 +92,16 @@ void ASaveHandler::ValidateSave()
 	CurrentSaveFileName = FString("PIE_Save");
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
 	GameInstance->CreateSave(CurrentSaveFileName);
+}
+
+void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
+{
+	FWorldGenerationSettings GenerationSettings;
+
+	// TODO generate level
+	ResourceSaveHandlerComponent->Generate(GenerationSettings);
+
+	SaveToModify->CreationInformation.LevelHasGenerated = true;
 }
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
