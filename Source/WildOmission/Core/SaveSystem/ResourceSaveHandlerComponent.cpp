@@ -30,32 +30,37 @@ UResourceSaveHandlerComponent::UResourceSaveHandlerComponent()
 
 void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& GenerationSettings)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Generating New Resources."));
-	int32 NumberOfTrees = 100;
-	int32 NumberOfStone = 100;
 	
+	int32 WorldArea = GenerationSettings.WorldSizeX * GenerationSettings.WorldSizeY;
+
+	int32 NumberOfTrees = FMath::RoundToInt32(WorldArea * GenerationSettings.TreeDensity);
+	int32 NumberOfStone = FMath::RoundToInt32(WorldArea * GenerationSettings.NodeDensity);
+	
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Generating %i Trees, and %i Nodes."), NumberOfTrees, NumberOfStone));
+
 	for (int32 i = 0; i < NumberOfTrees; ++i)
 	{
 		bool TreeSpawnFound = false;
 		FVector LocationToSpawn;
+		FRotator RotationToSpawn;
+		RotationToSpawn.Yaw = FMath::RandRange(0, 360);
 		int8 TypeToSpawn = FMath::RandRange(0, 2);
 
 		while (TreeSpawnFound == false)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Looking For Valid Spawn for tree %i"), i);
-			TreeSpawnFound = FindSpawnLocation(LocationToSpawn);
+			TreeSpawnFound = FindSpawnLocation(GenerationSettings, LocationToSpawn);
 		}
-		//spawn it at location
+		
 		switch(TypeToSpawn)
 		{
 		case 0:
-			GetWorld()->SpawnActor<AActor>(Tree01, LocationToSpawn, FRotator::ZeroRotator);
+			GetWorld()->SpawnActor<AActor>(Tree01, LocationToSpawn, RotationToSpawn);
 			break;
 		case 1:
-			GetWorld()->SpawnActor<AActor>(Tree02, LocationToSpawn, FRotator::ZeroRotator);
+			GetWorld()->SpawnActor<AActor>(Tree02, LocationToSpawn, RotationToSpawn);
 			break;
 		case 2:
-			GetWorld()->SpawnActor<AActor>(Tree03, LocationToSpawn, FRotator::ZeroRotator);
+			GetWorld()->SpawnActor<AActor>(Tree03, LocationToSpawn, RotationToSpawn);
 			break;
 		}
 	}
@@ -64,14 +69,15 @@ void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& Gen
 	{
 		bool FoundSpawn = false;
 		FVector LocationToSpawn;
-		
+		FRotator RotationToSpawn;
+		RotationToSpawn.Yaw = FMath::RandRange(0, 360);
+
 		while (FoundSpawn == false)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Looking For Valid Spawn for stone %i"), i);
-			FoundSpawn = FindSpawnLocation(LocationToSpawn);
+			FoundSpawn = FindSpawnLocation(GenerationSettings, LocationToSpawn);
 		}
 
-		GetWorld()->SpawnActor<AActor>(StoneNode, LocationToSpawn, FRotator::ZeroRotator);
+		GetWorld()->SpawnActor<AActor>(StoneNode, LocationToSpawn, RotationToSpawn);
 	}
 }
 
@@ -85,18 +91,20 @@ void UResourceSaveHandlerComponent::Load()
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Loading Resources from save."));
 }
 
-bool UResourceSaveHandlerComponent::FindSpawnLocation(FVector& OutLocation)
+bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation)
 {
+	int32 HalfWorldX = GenerationSettings.WorldSizeX * 0.5f;
+	int32 HalfWorldY = GenerationSettings.WorldSizeY * 0.5f;
+
 	FHitResult HitResult;
-	FVector Start = FVector(FMath::RandRange(-10000, 10000), FMath::RandRange(-10000, 10000), 1000);
+	FVector Start = FVector(FMath::RandRange(-HalfWorldX, HalfWorldX), FMath::RandRange(-HalfWorldY, HalfWorldY), GenerationSettings.WorldHeight);
 	FVector End = Start - FVector(0, 0, 2000);
 	
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Found Valid Spawn Location: %s"), *HitResult.ImpactPoint.ToCompactString());
 		OutLocation = HitResult.ImpactPoint;
 		return true;
 	}
-	UE_LOG(LogTemp, Error, TEXT("Couldnt Reach any thing Traced from %s to %s"), *Start.ToCompactString(), *End.ToCompactString());
+
 	return false;
 }

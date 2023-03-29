@@ -30,5 +30,5 @@ private:
 	TSubclassOf<AActor> Tree03;
 	TSubclassOf<AActor> StoneNode;
 
-	bool FindSpawnLocation(FVector& OutLocation);
+	bool FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation);
 };
