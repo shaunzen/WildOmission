@@ -4,6 +4,7 @@
 #include "SaveHandler.h"
 #include "PlayerSaveHandlerComponent.h"
 #include "WorldItemSaveHandlerComponent.h"
+#include "ResourceSaveHandlerComponent.h"
 #include "WildOmissionSaveGame.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -16,7 +17,7 @@ ASaveHandler::ASaveHandler()
 	
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
 	WorldItemSaveHandlerComponent = CreateDefaultSubobject<UWorldItemSaveHandlerComponent>(FName("WorldItemSaveHandlerComponent"));
-
+	ResourceSaveHandlerComponent = CreateDefaultSubobject<UResourceSaveHandlerComponent>(FName("ResourceSaveHandlerComponent"));
 }
 
 void ASaveHandler::BeginPlay()
@@ -38,6 +39,7 @@ void ASaveHandler::SaveGame()
 
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 	WorldItemSaveHandlerComponent->Save(SaveFile->WorldItems);
+	ResourceSaveHandlerComponent->Save();
 
 	UpdateSaveFile(SaveFile);
 }
@@ -58,6 +60,7 @@ void ASaveHandler::LoadGame(const FString& SaveFileName)
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		// TODO generate level
+		ResourceSaveHandlerComponent->Generate();
 
 		SaveFile->CreationInformation.LevelHasGenerated = true;
 		UpdateSaveFile(SaveFile);
@@ -65,6 +68,7 @@ void ASaveHandler::LoadGame(const FString& SaveFileName)
 	}
 
 	WorldItemSaveHandlerComponent->Load(SaveFile->WorldItems);
+	ResourceSaveHandlerComponent->Load();
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()

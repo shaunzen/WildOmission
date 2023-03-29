@@ -15,5 +15,12 @@ class WILDOMISSION_API UResourceSaveHandlerComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UResourceSaveHandlerComponent();
-		
+	
+	void Generate();
+
+	void Save();
+	void Load();
+
+private:
+
 };

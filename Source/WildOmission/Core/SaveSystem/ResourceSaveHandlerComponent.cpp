@@ -12,3 +12,18 @@ UResourceSaveHandlerComponent::UResourceSaveHandlerComponent()
 
 	// ...
 }
+
+void UResourceSaveHandlerComponent::Generate()
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Generating New Resources."));
+}
+
+void UResourceSaveHandlerComponent::Save()
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Saving Resources."));
+}
+
+void UResourceSaveHandlerComponent::Load()
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Loading Resources from save."));
+}

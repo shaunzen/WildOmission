@@ -9,6 +9,7 @@
 class UWildOmissionSaveGame;
 class UPlayerSaveHandlerComponent;
 class UWorldItemSaveHandlerComponent;
+class UResourceSaveHandlerComponent;
 
 UCLASS()
 class WILDOMISSION_API ASaveHandler : public AActor
@@ -37,6 +38,9 @@ private:
 	
 	UPROPERTY()
 	UWorldItemSaveHandlerComponent* WorldItemSaveHandlerComponent;
+
+	UPROPERTY()
+	UResourceSaveHandlerComponent* ResourceSaveHandlerComponent;
 
 	void ValidateSave();
 
