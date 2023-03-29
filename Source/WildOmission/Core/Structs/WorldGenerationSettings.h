@@ -21,8 +21,8 @@ struct FWorldGenerationSettings
 	int32 WorldHeight = 1000;
 
 	UPROPERTY(EditDefaultsOnly)
-	float TreeDensity = 0.5f;
+	float TreeDensity = 0.00005f;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float NodeDensity = 0.3f;
+	float NodeDensity = 0.00003f;
 };
