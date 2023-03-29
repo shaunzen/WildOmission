@@ -42,19 +42,20 @@ void UResourceSaveHandlerComponent::Generate()
 
 		while (TreeSpawnFound == false)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Looking For Valid Spawn for tree %i"), i);
 			TreeSpawnFound = FindSpawnLocation(LocationToSpawn);
 		}
 		//spawn it at location
 		switch(TypeToSpawn)
 		{
 		case 0:
-			GetWorld()->SpawnActor<AActor>(Tree01->StaticClass(), LocationToSpawn, FRotator::ZeroRotator);
+			GetWorld()->SpawnActor<AActor>(Tree01, LocationToSpawn, FRotator::ZeroRotator);
 			break;
 		case 1:
-			GetWorld()->SpawnActor<AActor>(Tree02->StaticClass(), LocationToSpawn, FRotator::ZeroRotator);
+			GetWorld()->SpawnActor<AActor>(Tree02, LocationToSpawn, FRotator::ZeroRotator);
 			break;
 		case 2:
-			GetWorld()->SpawnActor<AActor>(Tree03->StaticClass(), LocationToSpawn, FRotator::ZeroRotator);
+			GetWorld()->SpawnActor<AActor>(Tree03, LocationToSpawn, FRotator::ZeroRotator);
 			break;
 		}
 	}
@@ -66,6 +67,7 @@ void UResourceSaveHandlerComponent::Generate()
 		
 		while (FoundSpawn == false)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Looking For Valid Spawn for stone %i"), i);
 			FoundSpawn = FindSpawnLocation(LocationToSpawn);
 		}
 
@@ -91,13 +93,10 @@ bool UResourceSaveHandlerComponent::FindSpawnLocation(FVector& OutLocation)
 	
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2))
 	{
-		if (HitResult.PhysMaterial == nullptr || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
-		{
-			return false;
-		}
-
+		UE_LOG(LogTemp, Warning, TEXT("Found Valid Spawn Location: %s"), *HitResult.ImpactPoint.ToCompactString());
+		OutLocation = HitResult.ImpactPoint;
 		return true;
 	}
-
+	UE_LOG(LogTemp, Error, TEXT("Couldnt Reach any thing Traced from %s to %s"), *Start.ToCompactString(), *End.ToCompactString());
 	return false;
 }
