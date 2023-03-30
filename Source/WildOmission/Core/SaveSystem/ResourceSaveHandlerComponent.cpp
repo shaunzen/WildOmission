@@ -41,15 +41,14 @@ void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& Gen
 
 	for (int32 i = 0; i < NumberOfTrees; ++i)
 	{
-		bool TreeSpawnFound = false;
 		FVector LocationToSpawn;
 		FRotator RotationToSpawn;
 		RotationToSpawn.Yaw = FMath::RandRange(0, 360);
 		int8 TypeToSpawn = FMath::RandRange(0, 2);
 
-		while (TreeSpawnFound == false)
+		if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
 		{
-			TreeSpawnFound = FindSpawnLocation(GenerationSettings, LocationToSpawn);
+			continue;
 		}
 		
 		switch(TypeToSpawn)
@@ -68,14 +67,13 @@ void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& Gen
 
 	for (int32 i = 0; i < NumberOfStone; ++i)
 	{
-		bool FoundSpawn = false;
 		FVector LocationToSpawn;
 		FRotator RotationToSpawn = FRotator::ZeroRotator;
 		RotationToSpawn.Yaw = FMath::RandRange(0, 360);
 
-		while (FoundSpawn == false)
+		if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
 		{
-			FoundSpawn = FindSpawnLocation(GenerationSettings, LocationToSpawn);
+			continue;
 		}
 
 		GetWorld()->SpawnActor<AActor>(StoneNode, LocationToSpawn, RotationToSpawn);
