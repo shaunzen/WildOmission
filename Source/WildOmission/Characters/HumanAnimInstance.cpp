@@ -83,18 +83,23 @@ void UHumanAnimInstance::PlayFootstepSound()
 		switch (HitResult.PhysMaterial->SurfaceType)
 		{
 		case SurfaceType1: // Grass
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Surface grass"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GrassFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType2: // Gravel
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Surface gravel"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GravelFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType3: // Rock
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Surface rock"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType4: // Wood
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Surface wood"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), WoodFootstepSound, HitResult.Location);
 			break;
 		case SurfaceType_Default:
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Surface default"));
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
 			break;
 		}

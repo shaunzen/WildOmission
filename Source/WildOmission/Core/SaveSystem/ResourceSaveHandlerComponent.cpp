@@ -151,9 +151,18 @@ bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSett
 	FHitResult HitResult;
 	FVector Start = FVector(FMath::RandRange(-HalfWorldX, HalfWorldX), FMath::RandRange(-HalfWorldY, HalfWorldY), GenerationSettings.WorldHeight);
 	FVector End = Start - FVector(0, 0, 2000);
-	
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2))
+	FCollisionQueryParams Params;
+
+	Params.bTraceComplex = true;
+	Params.bReturnPhysicalMaterial = true;
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2, Params))
 	{
+		if (!HitResult.PhysMaterial.IsValid() || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
+		{
+			return false;
+		}
+
 		OutLocation = HitResult.ImpactPoint;
 		return true;
 	}
