@@ -17,7 +17,7 @@ const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
 	// Version Information Here
-	Version = FString("Pre Alpha 0.4.3");
+	Version = FString("Pre Alpha 0.4.4");
 
 	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_MainMenu"));
 	
