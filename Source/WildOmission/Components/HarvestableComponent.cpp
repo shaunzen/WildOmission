@@ -2,6 +2,8 @@
 
 
 #include "HarvestableComponent.h"
+#include "EquipComponent.h"
+#include "WildOmission/Items/ToolItem.h"
 #include "InventoryComponent.h"
 
 UHarvestableComponent::UHarvestableComponent()
@@ -26,14 +28,21 @@ void UHarvestableComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 void UHarvestableComponent::OnHarvest(AActor* HarvestingActor)
 {
 	UInventoryComponent* HarvestingInventoryComponent = HarvestingActor->FindComponentByClass<UInventoryComponent>();
-	if (HarvestingInventoryComponent == nullptr)
+	UEquipComponent* HarvestingEquipComponent = HarvestingActor->FindComponentByClass<UEquipComponent>();
+	if (HarvestingInventoryComponent == nullptr || HarvestingEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	AToolItem* HarvestingTool = Cast<AToolItem>(HarvestingEquipComponent->GetEquipedItem());
+	if (HarvestingTool == nullptr)
 	{
 		return;
 	}
 
 	FInventoryItem ItemToGive;
 	ItemToGive = ItemYeild;
-	ItemToGive.Quantity = ItemYeild.Quantity * 1.0f; // todo make tool gather multiplier
+	ItemToGive.Quantity = ItemYeild.Quantity * HarvestingTool->GetGatherMultiplier();
 
 	if (ItemToGive.Quantity <= 0)
 	{
@@ -42,7 +51,7 @@ void UHarvestableComponent::OnHarvest(AActor* HarvestingActor)
 
 	HarvestingInventoryComponent->AddItem(ItemToGive);
 
-	Durability -= ItemToGive.Quantity;
+	Durability -= ItemYeild.Quantity;
 
 	if (Durability <= 0.0f)
 	{

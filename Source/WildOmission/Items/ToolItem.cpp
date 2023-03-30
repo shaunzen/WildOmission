@@ -17,7 +17,7 @@ AToolItem::AToolItem()
 {
 	ToolType = EToolType::WOOD;
 
-	GatherMultiplyer = 1.0f;
+	GatherMultiplier = 1.0f;
 	EffectiveRangeCentimeters = 150.0f;
 	SwingTimeSeconds = 1.0f;
 
@@ -113,6 +113,11 @@ void AToolItem::Secondary()
 UAnimMontage* AToolItem::GetPrimaryMontage() const
 {
 	return PrimaryMontage;
+}
+
+float AToolItem::GetGatherMultiplier() const
+{
+	return GatherMultiplier;
 }
 
 void AToolItem::ApplyDamage()

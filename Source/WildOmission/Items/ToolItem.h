@@ -33,12 +33,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UAnimMontage* GetPrimaryMontage() const;
 
+	float GetGatherMultiplier() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> ToolType;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float GatherMultiplyer;
+	float GatherMultiplier;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float EffectiveRangeCentimeters;
