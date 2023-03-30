@@ -12,17 +12,17 @@ struct FWorldGenerationSettings
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	int32 WorldSizeX = 10000;
+	int32 WorldSizeX = 50000;
 	
 	UPROPERTY(EditDefaultsOnly)
-	int32 WorldSizeY = 10000;
+	int32 WorldSizeY = 50000;
 	
 	UPROPERTY(EditDefaultsOnly)
 	int32 WorldHeight = 1000;
 
 	UPROPERTY(EditDefaultsOnly)
-	float TreeDensity = 0.00005f;
+	float TreeDensity = 0.005f;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float NodeDensity = 0.00003f;
+	float NodeDensity = 0.003f;
 };

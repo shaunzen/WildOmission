@@ -30,11 +30,10 @@ UResourceSaveHandlerComponent::UResourceSaveHandlerComponent()
 
 void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& GenerationSettings)
 {
-	
-	int32 WorldArea = GenerationSettings.WorldSizeX * GenerationSettings.WorldSizeY;
+	int32 WorldPerimeter = (GenerationSettings.WorldSizeX + GenerationSettings.WorldSizeY) * 2;
 
-	int32 NumberOfTrees = FMath::RoundToInt32(WorldArea * GenerationSettings.TreeDensity);
-	int32 NumberOfStone = FMath::RoundToInt32(WorldArea * GenerationSettings.NodeDensity);
+	int32 NumberOfTrees = FMath::RoundToInt32(WorldPerimeter * GenerationSettings.TreeDensity);
+	int32 NumberOfStone = FMath::RoundToInt32(WorldPerimeter * GenerationSettings.NodeDensity);
 	
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Generating %i Trees, and %i Nodes."), NumberOfTrees, NumberOfStone));
 
@@ -69,7 +68,7 @@ void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& Gen
 	{
 		bool FoundSpawn = false;
 		FVector LocationToSpawn;
-		FRotator RotationToSpawn;
+		FRotator RotationToSpawn = FRotator::ZeroRotator;
 		RotationToSpawn.Yaw = FMath::RandRange(0, 360);
 
 		while (FoundSpawn == false)
