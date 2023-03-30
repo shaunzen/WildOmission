@@ -4,7 +4,7 @@
 #include "SaveHandler.h"
 #include "PlayerSaveHandlerComponent.h"
 #include "WorldItemSaveHandlerComponent.h"
-#include "ResourceSaveHandlerComponent.h"
+#include "HarvestableSaveHandlerComponent.h"
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmissionSaveGame.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
@@ -18,7 +18,7 @@ ASaveHandler::ASaveHandler()
 	
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
 	WorldItemSaveHandlerComponent = CreateDefaultSubobject<UWorldItemSaveHandlerComponent>(FName("WorldItemSaveHandlerComponent"));
-	ResourceSaveHandlerComponent = CreateDefaultSubobject<UResourceSaveHandlerComponent>(FName("ResourceSaveHandlerComponent"));
+	HarvestableSaveHandlerComponent = CreateDefaultSubobject<UHarvestableSaveHandlerComponent>(FName("HarvestableSaveHandlerComponent"));
 }
 
 void ASaveHandler::BeginPlay()
@@ -40,7 +40,7 @@ void ASaveHandler::SaveGame()
 
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 	WorldItemSaveHandlerComponent->Save(SaveFile->WorldItems);
-	ResourceSaveHandlerComponent->Save(SaveFile->Harvestables);
+	HarvestableSaveHandlerComponent->Save(SaveFile->Harvestables);
 
 	UpdateSaveFile(SaveFile);
 }
@@ -66,7 +66,7 @@ void ASaveHandler::LoadGame(const FString& SaveFileName)
 	}
 
 	WorldItemSaveHandlerComponent->Load(SaveFile->WorldItems);
-	ResourceSaveHandlerComponent->Load(SaveFile->Harvestables);
+	HarvestableSaveHandlerComponent->Load(SaveFile->Harvestables);
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
@@ -98,10 +98,10 @@ void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
 {
 	FWorldGenerationSettings GenerationSettings;
 
-	// TODO generate level
-	ResourceSaveHandlerComponent->Generate(GenerationSettings);
+	HarvestableSaveHandlerComponent->Generate(GenerationSettings);
 
 	SaveToModify->CreationInformation.LevelHasGenerated = true;
+
 }
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)

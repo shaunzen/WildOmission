@@ -6,17 +6,17 @@
 #include "Components/ActorComponent.h"
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmissionSaveGame.h"
-#include "ResourceSaveHandlerComponent.generated.h"
+#include "HarvestableSaveHandlerComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UResourceSaveHandlerComponent : public UActorComponent
+class WILDOMISSION_API UHarvestableSaveHandlerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UResourceSaveHandlerComponent();
+	UHarvestableSaveHandlerComponent();
 	
 	void Generate(const FWorldGenerationSettings& GenerationSettings);
 

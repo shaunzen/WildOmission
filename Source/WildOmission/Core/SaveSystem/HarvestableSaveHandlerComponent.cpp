@@ -1,14 +1,14 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "ResourceSaveHandlerComponent.h"
+#include "HarvestableSaveHandlerComponent.h"
 #include "WildOmission/Components/HarvestableComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values for this component's properties
-UResourceSaveHandlerComponent::UResourceSaveHandlerComponent()
+UHarvestableSaveHandlerComponent::UHarvestableSaveHandlerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -30,15 +30,13 @@ UResourceSaveHandlerComponent::UResourceSaveHandlerComponent()
 	StoneNode = StoneNodeBlueprint.Class;
 }
 
-void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& GenerationSettings)
+void UHarvestableSaveHandlerComponent::Generate(const FWorldGenerationSettings& GenerationSettings)
 {
 	int32 WorldPerimeter = (GenerationSettings.WorldSizeX + GenerationSettings.WorldSizeY) * 2;
 
 	int32 NumberOfTrees = FMath::RoundToInt32(WorldPerimeter * GenerationSettings.TreeDensity);
 	int32 NumberOfStone = FMath::RoundToInt32(WorldPerimeter * GenerationSettings.NodeDensity);
 	
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Generating %i Trees, and %i Nodes."), NumberOfTrees, NumberOfStone));
-
 	for (int32 i = 0; i < NumberOfTrees; ++i)
 	{
 		FVector LocationToSpawn;
@@ -80,7 +78,7 @@ void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& Gen
 	}
 }
 
-void UResourceSaveHandlerComponent::Save(TArray<FHarvestableSave>& OutSaves)
+void UHarvestableSaveHandlerComponent::Save(TArray<FHarvestableSave>& OutSaves)
 {
 	OutSaves.Empty();
 	
@@ -107,14 +105,10 @@ void UResourceSaveHandlerComponent::Save(TArray<FHarvestableSave>& OutSaves)
 
 		OutSaves.Add(Save);
 	}
-
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Saving %i Resources."), OutSaves.Num()));
 }
 
-void UResourceSaveHandlerComponent::Load(const TArray<FHarvestableSave>& InSaves)
+void UHarvestableSaveHandlerComponent::Load(const TArray<FHarvestableSave>& InSaves)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Loading %i Resources from save."), InSaves.Num()));
-	
 	for (const FHarvestableSave& Save : InSaves)
 	{
 		//todo find better way of doing this
@@ -134,14 +128,10 @@ void UResourceSaveHandlerComponent::Load(const TArray<FHarvestableSave>& InSaves
 		{
 			GetWorld()->SpawnActor<AActor>(StoneNode, Save.Transform);
 		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Unknown Type: %s"), *Save.Type.ToString()));
-		}
 	}
 }
 
-bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation)
+bool UHarvestableSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation)
 {
 	int32 HalfWorldX = GenerationSettings.WorldSizeX * 0.5f;
 	int32 HalfWorldY = GenerationSettings.WorldSizeY * 0.5f;

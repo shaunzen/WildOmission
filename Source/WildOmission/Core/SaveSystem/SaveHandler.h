@@ -9,7 +9,7 @@
 class UWildOmissionSaveGame;
 class UPlayerSaveHandlerComponent;
 class UWorldItemSaveHandlerComponent;
-class UResourceSaveHandlerComponent;
+class UHarvestableSaveHandlerComponent;
 
 UCLASS()
 class WILDOMISSION_API ASaveHandler : public AActor
@@ -40,7 +40,7 @@ private:
 	UWorldItemSaveHandlerComponent* WorldItemSaveHandlerComponent;
 
 	UPROPERTY()
-	UResourceSaveHandlerComponent* ResourceSaveHandlerComponent;
+	UHarvestableSaveHandlerComponent* HarvestableSaveHandlerComponent;
 
 	void GenerateLevel(UWildOmissionSaveGame* SaveToModify);
 
