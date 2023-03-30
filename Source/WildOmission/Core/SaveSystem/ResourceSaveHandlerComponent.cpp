@@ -2,7 +2,9 @@
 
 
 #include "ResourceSaveHandlerComponent.h"
+#include "WildOmission/Components/HarvestableComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values for this component's properties
@@ -80,14 +82,65 @@ void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& Gen
 	}
 }
 
-void UResourceSaveHandlerComponent::Save()
+void UResourceSaveHandlerComponent::Save(TArray<FHarvestableSave>& OutSaves)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Saving Resources."));
+	OutSaves.Empty();
+	
+	TArray<AActor*> HarvestableActors;
+
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Harvestable"), HarvestableActors);
+	if (HarvestableActors.Num() == 0)
+	{
+		return;
+	}
+
+	for (AActor* HarvestableActor : HarvestableActors)
+	{
+		UHarvestableComponent* HarvestableComponent = HarvestableActor->FindComponentByClass<UHarvestableComponent>();
+		if (HarvestableComponent == nullptr)
+		{
+			return;
+		}
+
+		FHarvestableSave Save;
+		Save.Transform = HarvestableActor->GetTransform();
+		Save.Type = HarvestableComponent->GetType();
+		Save.Durability = HarvestableComponent->GetDurability();
+
+		OutSaves.Add(Save);
+	}
+
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Saving %i Resources."), OutSaves.Num()));
 }
 
-void UResourceSaveHandlerComponent::Load()
+void UResourceSaveHandlerComponent::Load(const TArray<FHarvestableSave>& InSaves)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Loading Resources from save."));
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString::Printf(TEXT("Loading %i Resources from save."), InSaves.Num()));
+	
+	for (const FHarvestableSave& Save : InSaves)
+	{
+		//todo find better way of doing this
+		if (Save.Type == FName("TREE01"))
+		{
+			GetWorld()->SpawnActor<AActor>(Tree01, Save.Transform);
+		}
+		else if (Save.Type == FName("TREE02"))
+		{
+			GetWorld()->SpawnActor<AActor>(Tree02, Save.Transform);
+		}
+		else if (Save.Type == FName("TREE03"))
+		{
+			GetWorld()->SpawnActor<AActor>(Tree03, Save.Transform);
+		}
+		else if (Save.Type == FName("STONE_NODE"))
+		{
+			GetWorld()->SpawnActor<AActor>(StoneNode, Save.Transform);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Unknown Type: %s"), *Save.Type.ToString()));
+		}
+	}
 }
 
 bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation)

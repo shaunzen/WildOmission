@@ -54,3 +54,18 @@ TEnumAsByte<EToolType> UHarvestableComponent::GetRequiredToolType() const
 {
 	return RequiredToolType;
 }
+
+int32 UHarvestableComponent::GetDurability() const
+{
+	return Durability;
+}
+
+void UHarvestableComponent::SetDurability(const int32& InDurability)
+{
+	Durability = InDurability;
+}
+
+FName UHarvestableComponent::GetType() const
+{
+	return Type;
+}

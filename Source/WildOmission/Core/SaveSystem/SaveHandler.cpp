@@ -40,7 +40,7 @@ void ASaveHandler::SaveGame()
 
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 	WorldItemSaveHandlerComponent->Save(SaveFile->WorldItems);
-	ResourceSaveHandlerComponent->Save();
+	ResourceSaveHandlerComponent->Save(SaveFile->Harvestables);
 
 	UpdateSaveFile(SaveFile);
 }
@@ -66,7 +66,7 @@ void ASaveHandler::LoadGame(const FString& SaveFileName)
 	}
 
 	WorldItemSaveHandlerComponent->Load(SaveFile->WorldItems);
-	ResourceSaveHandlerComponent->Load();
+	ResourceSaveHandlerComponent->Load(SaveFile->Harvestables);
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()

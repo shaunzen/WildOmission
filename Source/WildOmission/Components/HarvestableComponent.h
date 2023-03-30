@@ -21,6 +21,12 @@ public:
 	virtual void OnHarvest(AActor* HarvestingActor);
 
 	TEnumAsByte<EToolType> GetRequiredToolType() const;
+	
+	int32 GetDurability() const;
+
+	void SetDurability(const int32& InDurability);
+	
+	FName GetType() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -34,5 +40,8 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	int32 Durability;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName Type;
 
 };

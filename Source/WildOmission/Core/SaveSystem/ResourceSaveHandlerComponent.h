@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
+#include "WildOmissionSaveGame.h"
 #include "ResourceSaveHandlerComponent.generated.h"
 
 
@@ -19,8 +20,8 @@ public:
 	
 	void Generate(const FWorldGenerationSettings& GenerationSettings);
 
-	void Save();
-	void Load();
+	void Save(TArray<FHarvestableSave>& OutSaves);
+	void Load(const TArray<FHarvestableSave>& InSaves);
 
 private:
 	// When Biomes and more level generation related things are implemented
