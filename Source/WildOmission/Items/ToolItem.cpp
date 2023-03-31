@@ -7,7 +7,7 @@
 #include "WildOmission/Components/EquipComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
-#include "WildOmission/Components/HarvestableComponent.h"
+#include "WildOmission/Resources/HarvestableResource.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -93,11 +93,11 @@ void AToolItem::Harvest()
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
-		UHarvestableComponent* HitHarvestableComponent = HitResult.GetActor()->FindComponentByClass<UHarvestableComponent>();
-
-		if (HitHarvestableComponent && (HitHarvestableComponent->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
+		AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
+		
+		if (HitHarvestable && (HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
 		{
-			HitHarvestableComponent->OnHarvest(GetOwner());
+			HitHarvestable->OnHarvest(GetOwner());
 		}
 
 		Client_PlayHarvestSound(HitResult.ImpactPoint);
