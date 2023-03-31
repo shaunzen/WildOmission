@@ -10,6 +10,7 @@
 void AConsumableItem::Primary()
 {
 	Super::Primary();
+
 	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwnerCharacter()->FindComponentByClass<UPlayerInventoryComponent>();
 	UVitalsComponent* OwnerVitalsComponent = GetOwnerCharacter()->FindComponentByClass<UVitalsComponent>();
 	if (OwnerInventoryComponent == nullptr || OwnerVitalsComponent == nullptr)
