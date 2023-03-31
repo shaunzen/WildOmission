@@ -78,22 +78,6 @@ struct FWorldItemSave
 };
 
 USTRUCT()
-struct FHarvestableSave
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FTransform Transform;
-	
-	UPROPERTY()
-	FName Type;
-
-	UPROPERTY()
-	int32 Durability;
-
-};
-
-USTRUCT()
 struct FWildOmissionSaveCreationInformation
 {
 	GENERATED_BODY()
@@ -125,9 +109,6 @@ public:
 	
 	UPROPERTY()
 	FWildOmissionSaveCreationInformation CreationInformation;
-
-	UPROPERTY()
-	TArray<FHarvestableSave> Harvestables;
 
 	UPROPERTY()
 	TArray<FWildOmissionPlayerSave> PlayerSaves;
