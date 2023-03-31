@@ -45,12 +45,18 @@ private:
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY()
+	USoundBase* ClumpSound;
+
+	UPROPERTY()
 	USoundBase* PickupSound;
 
 	UFUNCTION()
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(NetMulticast, Unreliable)
+	void Client_PlayClumpSound();
+
+	UFUNCTION(NetMulticast, Unreliable)
 	void Client_PlayPickupSound();
 
 };

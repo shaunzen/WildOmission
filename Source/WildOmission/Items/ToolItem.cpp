@@ -100,7 +100,7 @@ void AToolItem::Harvest()
 			HitHarvestableComponent->OnHarvest(GetOwner());
 		}
 
-		Client_PlayHarvestSound();
+		Client_PlayHarvestSound(HitResult.ImpactPoint);
 		ApplyDamage();
 	}
 }
@@ -172,12 +172,12 @@ void AToolItem::Client_PlayPrimaryMontage_Implementation()
 	OwnerEquipComponent->PlayPrimaryMontage();
 }
 
-void AToolItem::Client_PlayHarvestSound_Implementation()
+void AToolItem::Client_PlayHarvestSound_Implementation(const FVector& HarvestLocation)
 {
 	if (HarvestSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HarvestSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HarvestSound, HarvestLocation);
 }

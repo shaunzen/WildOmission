@@ -67,5 +67,5 @@ private:
 	void Client_PlayPrimaryMontage();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayHarvestSound();
+	void Client_PlayHarvestSound(const FVector& HarvestLocation);
 };

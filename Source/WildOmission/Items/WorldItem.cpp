@@ -33,14 +33,15 @@ AWorldItem::AWorldItem()
 	MeshComponent->SetNotifyRigidBodyCollision(true);
 	MeshComponent->SetIsReplicated(true);
 
-
+	ConstructorHelpers::FObjectFinder<USoundBase> ClumpSoundObject(TEXT("/Game/WildOmission/Items/WorldItems/Audio/ItemClump_Cue"));
 	ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Pickup/Pickup_Cue"));
 	
-	if (PickupSoundObject.Object == nullptr)
+	if (!ClumpSoundObject.Succeeded() || !PickupSoundObject.Succeeded())
 	{
 		return;
 	}
 
+	ClumpSound = ClumpSoundObject.Object;
 	PickupSound = PickupSoundObject.Object;
 }
 
@@ -160,11 +161,23 @@ void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 
 		this->SetItem(OurItem);
 	}
+
+	Client_PlayClumpSound();
+}
+
+void AWorldItem::Client_PlayClumpSound_Implementation()
+{
+	if (ClumpSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ClumpSound, GetActorLocation());
 }
 
 void AWorldItem::Client_PlayPickupSound_Implementation()
 {
-	if (GetWorld() == nullptr || PickupSound == nullptr)
+	if (PickupSound == nullptr)
 	{
 		return;
 	}
