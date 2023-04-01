@@ -38,6 +38,7 @@ void ASaveHandler::SaveGame()
 		return;
 	}
 
+	ResourceSaveHandlerComponent->Save(SaveFile->HarvestableResources, SaveFile->CollectableResources);
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 	WorldItemSaveHandlerComponent->Save(SaveFile->WorldItems);
 
@@ -60,11 +61,24 @@ void ASaveHandler::LoadGame(const FString& SaveFileName)
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		GenerateLevel(SaveFile);
+
 		UpdateSaveFile(SaveFile);
 		return;
 	}
 
+	ResourceSaveHandlerComponent->Load(SaveFile->HarvestableResources, SaveFile->CollectableResources);
 	WorldItemSaveHandlerComponent->Load(SaveFile->WorldItems);
+}
+
+void ASaveHandler::GenerateLevelAgain()
+{
+	UWildOmissionSaveGame* SaveFile = GetSaveFile();
+	if (SaveFile == nullptr)
+	{
+		return;
+	}
+	GenerateLevel(SaveFile);
+	UpdateSaveFile(SaveFile);
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()

@@ -11,9 +11,12 @@ AHarvestableResource::AHarvestableResource()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	SetReplicates(true);
+	bReplicates = true;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMeshComponent"));
+	RootComponent = MeshComponent;
+
+	Identifier = FName();
 }
 
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
@@ -63,4 +66,14 @@ int32 AHarvestableResource::GetDurability() const
 void AHarvestableResource::SetDurability(const int32& InDurability)
 {
 	Durability = InDurability;
+}
+
+FName AHarvestableResource::GetIdentifier() const
+{
+	return Identifier;
+}
+
+void AHarvestableResource::SetIdentifier(const FName& InIdentifier)
+{
+	Identifier = InIdentifier;
 }

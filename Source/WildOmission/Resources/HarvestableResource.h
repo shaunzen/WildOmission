@@ -25,6 +25,9 @@ public:
 	
 	void SetDurability(const int32& InDurability);
 
+	FName GetIdentifier() const;
+	void SetIdentifier(const FName& InIdentifier);
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	FInventoryItem ItemYeild;
@@ -37,5 +40,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
+
+	FName Identifier;
 
 };

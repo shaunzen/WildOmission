@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmission/Core/Structs/BiomeGenerationData.h"
+#include "WildOmissionSaveGame.h"
 #include "ResourceSaveHandlerComponent.generated.h"
 
 
@@ -20,7 +21,9 @@ public:
 
 	void Generate(const FWorldGenerationSettings& GenerationSettings);
 
-	//todo save/load
+	void Save(TArray<FHarvestableResourceSave>& OutHarvestableSaves, TArray<FCollectableResourceSave>& OutCollectableSaves);
+	
+	void Load(const TArray<FHarvestableResourceSave>& InHarvestableSaves, const TArray<FCollectableResourceSave>& InCollectableSaves);
 
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
 

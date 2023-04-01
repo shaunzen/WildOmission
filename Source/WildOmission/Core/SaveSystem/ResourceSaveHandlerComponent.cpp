@@ -6,6 +6,7 @@
 #include "Engine/DataTable.h"
 #include "WildOmission/Resources/HarvestableResource.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Kismet/GameplayStatics.h"
 
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
@@ -29,6 +30,51 @@ void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& Gen
 	GenerateNodes(GenerationSettings);
 }
 
+void UResourceSaveHandlerComponent::Save(TArray<FHarvestableResourceSave>& OutHarvestableSaves, TArray<FCollectableResourceSave>& OutCollectableSaves)
+{
+	OutHarvestableSaves.Empty();
+	OutCollectableSaves.Empty();
+
+	TArray<AActor*> HarvestableActors;
+
+	//TODO collectables
+	TArray<AActor*> CollectableActors;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AHarvestableResource::StaticClass(), HarvestableActors);
+	if (HarvestableActors.Num() == 0)
+	{
+		return;
+	}
+
+	for (AActor* HarvestableActor : HarvestableActors)
+	{
+		AHarvestableResource* Harvestable = Cast<AHarvestableResource>(HarvestableActor);
+		if (Harvestable == nullptr)
+		{
+			return;
+		}
+
+		FHarvestableResourceSave Save;
+
+		Save.Class = Harvestable->GetClass();
+		Save.Durability = Harvestable->GetDurability();
+		Save.Transform = Harvestable->GetActorTransform();
+
+		OutHarvestableSaves.Add(Save);
+	}
+}
+
+void UResourceSaveHandlerComponent::Load(const TArray<FHarvestableResourceSave>& InHarvestableSaves, const TArray<FCollectableResourceSave>& InCollectableSaves)
+{
+	for (const FHarvestableResourceSave& Harvestable : InHarvestableSaves)
+	{
+		AHarvestableResource* SpawnedHarvestable = GetWorld()->SpawnActor<AHarvestableResource>(Harvestable.Class, Harvestable.Transform);
+		SpawnedHarvestable->SetDurability(Harvestable.Durability);
+	}
+
+	// TODO collectables later
+}
+
 FBiomeGenerationData* UResourceSaveHandlerComponent::GetBiomeGenerationData(const FName& BiomeName)
 {
 	if (BiomeGenerationDataTable == nullptr)
@@ -43,6 +89,7 @@ FBiomeGenerationData* UResourceSaveHandlerComponent::GetBiomeGenerationData(cons
 
 void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings& GenerationSettings)
 {
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString("Generating Trees"));
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
 	if (BiomeData == nullptr)
@@ -66,7 +113,7 @@ void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings
 				continue;
 			}
 
-			GetWorld()->SpawnActor<AHarvestableResource>(Tree.BlueprintClass, LocationToSpawn, RotationToSpawn);
+			AHarvestableResource* SpawnedTree = GetWorld()->SpawnActor<AHarvestableResource>(Tree.BlueprintClass, LocationToSpawn, RotationToSpawn);
 		}
 	}
 	
@@ -74,6 +121,7 @@ void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings
 
 void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings& GenerationSettings)
 {
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString("Generating Nodes"));
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
 	if (BiomeData == nullptr)
@@ -97,7 +145,7 @@ void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings
 				continue;
 			}
 
-			GetWorld()->SpawnActor<AHarvestableResource>(Node.BlueprintClass, LocationToSpawn, RotationToSpawn);
+			AHarvestableResource* SpawnedNode = GetWorld()->SpawnActor<AHarvestableResource>(Node.BlueprintClass, LocationToSpawn, RotationToSpawn);
 		}
 	}
 }
@@ -117,14 +165,20 @@ bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSett
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2, Params))
 	{
-		if (!HitResult.PhysMaterial.IsValid() || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
+		if (HitResult.PhysMaterial == nullptr)
 		{
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Invalid Surface on actor %s"), *HitResult.GetActor()->GetActorNameOrLabel()));
+			return false;
+		}
+		if (HitResult.PhysMaterial->SurfaceType != SurfaceType1)
+		{
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Invalid Location: Non-Grass Surface"));
 			return false;
 		}
 
 		OutLocation = HitResult.ImpactPoint;
 		return true;
 	}
-
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Invalid Location: Nothing was hit"));
 	return false;
 }

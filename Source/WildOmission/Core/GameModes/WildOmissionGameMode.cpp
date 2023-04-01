@@ -43,6 +43,11 @@ void AWildOmissionGameMode::SaveGame()
 	SaveHandler->SaveGame();
 }
 
+void AWildOmissionGameMode::GenerateLevelAgain()
+{
+	SaveHandler->GenerateLevelAgain();
+}
+
 void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 {
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)

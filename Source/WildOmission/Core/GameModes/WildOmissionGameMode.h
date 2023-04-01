@@ -24,6 +24,9 @@ public:
 	void SaveGame();
 	
 	UFUNCTION(BlueprintCallable, Exec)
+	void GenerateLevelAgain();
+
+	UFUNCTION(BlueprintCallable, Exec)
 	void ResetLocationOfAllConnectedPlayers();
 
 	ASaveHandler* GetSaveHandler();

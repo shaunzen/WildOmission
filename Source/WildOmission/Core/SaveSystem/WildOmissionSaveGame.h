@@ -78,6 +78,35 @@ struct FWorldItemSave
 };
 
 USTRUCT()
+struct FHarvestableResourceSave
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	UClass* Class;
+	
+	UPROPERTY()
+	int32 Durability;
+
+	UPROPERTY()
+	FTransform Transform;
+
+};
+
+USTRUCT()
+struct FCollectableResourceSave
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	UClass* Class;
+
+	UPROPERTY()
+	FTransform Transform;
+
+};
+
+USTRUCT()
 struct FWildOmissionSaveCreationInformation
 {
 	GENERATED_BODY()
@@ -109,6 +138,12 @@ public:
 	
 	UPROPERTY()
 	FWildOmissionSaveCreationInformation CreationInformation;
+
+	UPROPERTY()
+	TArray<FHarvestableResourceSave> HarvestableResources;
+
+	UPROPERTY()
+	TArray<FCollectableResourceSave> CollectableResources;
 
 	UPROPERTY()
 	TArray<FWildOmissionPlayerSave> PlayerSaves;

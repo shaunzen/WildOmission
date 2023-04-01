@@ -26,6 +26,8 @@ public:
 
 	void LoadGame(const FString& SaveFileName);
 
+	void GenerateLevelAgain();
+	
 	UPlayerSaveHandlerComponent* GetPlayerHandler();
 
 	UWildOmissionSaveGame* GetSaveFile();
