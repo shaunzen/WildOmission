@@ -4,6 +4,8 @@
 #include "ResourceSaveHandlerComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
+#include "WildOmission/Resources/HarvestableResource.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
@@ -31,7 +33,7 @@ FBiomeGenerationData* UResourceSaveHandlerComponent::GetBiomeGenerationData(cons
 {
 	if (BiomeGenerationDataTable == nullptr)
 	{
-		return;
+		return nullptr;
 	}
 
 	static const FString ContextString(TEXT("Biome Generation Data Context"));
@@ -48,6 +50,26 @@ void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings
 		return;
 	}
 
+	int32 WorldPerimeter = (GenerationSettings.WorldSizeX + GenerationSettings.WorldSizeY) * 2;
+
+	for (const FHarvestableResourceData& Tree : BiomeData->Trees)
+	{
+		int32 AmountOfTreeToSpawn = FMath::RoundToInt32((WorldPerimeter * Tree.DensityPerTenMeters) / BiomeData->Trees.Num());
+		for (int32 i = 0; i < AmountOfTreeToSpawn; i++)
+		{
+			FVector LocationToSpawn = FVector::ZeroVector;
+			FRotator RotationToSpawn = FRotator::ZeroRotator;
+			RotationToSpawn.Yaw = FMath::RandRange(0, 360);
+
+			if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
+			{
+				continue;
+			}
+
+			GetWorld()->SpawnActor<AHarvestableResource>(Tree.BlueprintClass, LocationToSpawn, RotationToSpawn);
+		}
+	}
+	
 }
 
 void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings& GenerationSettings)
@@ -59,9 +81,49 @@ void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings
 		return;
 	}
 
+	int32 WorldPerimeter = (GenerationSettings.WorldSizeX + GenerationSettings.WorldSizeY) * 2;
+
+	for (const FHarvestableResourceData& Node : BiomeData->Nodes)
+	{
+		int32 AmountOfNodeToSpawn = FMath::RoundToInt32((WorldPerimeter * Node.DensityPerTenMeters) / BiomeData->Nodes.Num());
+		for (int32 i = 0; i < AmountOfNodeToSpawn; i++)
+		{
+			FVector LocationToSpawn = FVector::ZeroVector;
+			FRotator RotationToSpawn = FRotator::ZeroRotator;
+			RotationToSpawn.Yaw = FMath::RandRange(0, 360);
+
+			if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
+			{
+				continue;
+			}
+
+			GetWorld()->SpawnActor<AHarvestableResource>(Node.BlueprintClass, LocationToSpawn, RotationToSpawn);
+		}
+	}
 }
 
-bool UResourceSaveHandlerComponent::FindSpawnLocation(FVector& OutLocation)
+bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation)
 {
+	int32 HalfWorldX = GenerationSettings.WorldSizeX * 0.5f;
+	int32 HalfWorldY = GenerationSettings.WorldSizeY * 0.5f;
+
+	FHitResult HitResult;
+	FVector Start = FVector(FMath::RandRange(-HalfWorldX, HalfWorldX), FMath::RandRange(-HalfWorldY, HalfWorldY), GenerationSettings.WorldHeight);
+	FVector End = Start - FVector(0, 0, 2000);
+	FCollisionQueryParams Params;
+	Params.bTraceComplex = true;
+	Params.bReturnPhysicalMaterial = true;
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2, Params))
+	{
+		if (!HitResult.PhysMaterial.IsValid() || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
+		{
+			return false;
+		}
+
+		OutLocation = HitResult.ImpactPoint;
+		return true;
+	}
+
 	return false;
 }

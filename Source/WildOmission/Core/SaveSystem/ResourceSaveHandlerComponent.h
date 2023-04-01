@@ -28,6 +28,6 @@ private:
 	void GenerateTrees(const FWorldGenerationSettings& GenerationSettings);
 	void GenerateNodes(const FWorldGenerationSettings& GenerationSettings);
 
-	bool FindSpawnLocation(FVector& OutLocation);
+	bool FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation);
 
 };
