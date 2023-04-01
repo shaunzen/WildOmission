@@ -21,7 +21,7 @@ struct FHarvestableResourceData
 	TSubclassOf<AHarvestableResource> BlueprintClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float DensityPerTenMeters = 0.0f;
+	float DensityPerMeter = 0.0f;
 
 };
 

@@ -12,13 +12,13 @@ struct FWorldGenerationSettings
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	int32 WorldSizeX = 50000;
+	int32 WorldSizeMetersX = 500;
 	
 	UPROPERTY(EditDefaultsOnly)
-	int32 WorldSizeY = 50000;
+	int32 WorldSizeMetersY = 500;
 	
 	UPROPERTY(EditDefaultsOnly)
-	int32 WorldHeight = 1000;
+	int32 WorldHeightMeters = 100;
 
 	UPROPERTY(EditDefaultsOnly)
 	float TreeDensity = 0.005f;
