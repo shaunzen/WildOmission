@@ -2,6 +2,7 @@
 
 
 #include "SaveHandler.h"
+#include "ResourceSaveHandlerComponent.h"
 #include "PlayerSaveHandlerComponent.h"
 #include "WorldItemSaveHandlerComponent.h"
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
@@ -15,6 +16,7 @@ ASaveHandler::ASaveHandler()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	
+	ResourceSaveHandlerComponent = CreateDefaultSubobject<UResourceSaveHandlerComponent>(FName("ResourceSaveHandlerComponent"));
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
 	WorldItemSaveHandlerComponent = CreateDefaultSubobject<UWorldItemSaveHandlerComponent>(FName("WorldItemSaveHandlerComponent"));
 }
@@ -94,6 +96,7 @@ void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
 {
 	FWorldGenerationSettings GenerationSettings;
 
+	ResourceSaveHandlerComponent->Generate(GenerationSettings);
 	
 	SaveToModify->CreationInformation.LevelHasGenerated = true;
 

@@ -7,6 +7,7 @@
 #include "SaveHandler.generated.h"
 
 class UWildOmissionSaveGame;
+class UResourceSaveHandlerComponent;
 class UPlayerSaveHandlerComponent;
 class UWorldItemSaveHandlerComponent;
 
@@ -31,6 +32,9 @@ public:
 
 private:
 	FString CurrentSaveFileName;
+
+	UPROPERTY()
+	UResourceSaveHandlerComponent* ResourceSaveHandlerComponent;
 
 	UPROPERTY()
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
