@@ -25,7 +25,6 @@ UResourceSaveHandlerComponent::UResourceSaveHandlerComponent()
 
 void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& GenerationSettings)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Generation Function Called."));
 	GenerateTrees(GenerationSettings);
 	GenerateNodes(GenerationSettings);
 }
@@ -44,7 +43,6 @@ FBiomeGenerationData* UResourceSaveHandlerComponent::GetBiomeGenerationData(cons
 
 void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings& GenerationSettings)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Tree Generation Function Called."));
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
 	if (BiomeData == nullptr)
@@ -53,8 +51,7 @@ void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings
 	}
 
 	int32 WorldAreaMeters = GenerationSettings.WorldSizeMetersX * GenerationSettings.WorldSizeMetersY;
-	UE_LOG(LogTemp, Warning, TEXT("WorldSizeMetersX: %i, WorldSizeMetersY: %i"), GenerationSettings.WorldSizeMetersX, GenerationSettings.WorldSizeMetersY);
-	UE_LOG(LogTemp, Warning, TEXT("WorldAreaMeters: %i"), WorldAreaMeters);
+
 	for (const FHarvestableResourceData& Tree : BiomeData->Trees)
 	{
 		int32 AmountOfTreeToSpawn = FMath::RoundToInt32((WorldAreaMeters * Tree.DensityPerMeter) / BiomeData->Trees.Num());
@@ -71,14 +68,12 @@ void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings
 
 			GetWorld()->SpawnActor<AHarvestableResource>(Tree.BlueprintClass, LocationToSpawn, RotationToSpawn);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Generating %i of %s"), AmountOfTreeToSpawn, *Tree.Identifier.ToString());
 	}
 	
 }
 
 void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings& GenerationSettings)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Node Generation Function Called."));
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
 	if (BiomeData == nullptr)
@@ -87,7 +82,7 @@ void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings
 	}
 
 	int32 WorldAreaMeters = GenerationSettings.WorldSizeMetersX * GenerationSettings.WorldSizeMetersY;
-	UE_LOG(LogTemp, Warning, TEXT("WorldAreaMeters: %i"), WorldAreaMeters);
+
 	for (const FHarvestableResourceData& Node : BiomeData->Nodes)
 	{
 		int32 AmountOfNodeToSpawn = FMath::RoundToInt32((WorldAreaMeters * Node.DensityPerMeter) / BiomeData->Nodes.Num());
@@ -104,7 +99,6 @@ void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings
 
 			GetWorld()->SpawnActor<AHarvestableResource>(Node.BlueprintClass, LocationToSpawn, RotationToSpawn);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Generating %i of %s"), AmountOfNodeToSpawn, *Node.Identifier.ToString());
 	}
 }
 
@@ -115,7 +109,8 @@ bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSett
 
 	FHitResult HitResult;
 	FVector Start = FVector(FMath::RandRange(-HalfWorldCentimetersX, HalfWorldCentimetersX), FMath::RandRange(-HalfWorldCentimetersY, HalfWorldCentimetersY), GenerationSettings.WorldHeightMeters * 100);
-	FVector End = Start - FVector(0, 0, 2000);
+	FVector End = Start - FVector(0, 0, GenerationSettings.WorldHeightMeters * 200);
+
 	FCollisionQueryParams Params;
 	Params.bTraceComplex = true;
 	Params.bReturnPhysicalMaterial = true;
