@@ -89,7 +89,6 @@ FBiomeGenerationData* UResourceSaveHandlerComponent::GetBiomeGenerationData(cons
 
 void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings& GenerationSettings)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString("Generating Trees"));
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
 	if (BiomeData == nullptr)
@@ -121,7 +120,6 @@ void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings
 
 void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings& GenerationSettings)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Orange, FString("Generating Nodes"));
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
 	if (BiomeData == nullptr)
@@ -165,20 +163,13 @@ bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSett
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2, Params))
 	{
-		if (HitResult.PhysMaterial == nullptr)
+		if (HitResult.PhysMaterial == nullptr || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
 		{
-			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Invalid Surface on actor %s"), *HitResult.GetActor()->GetActorNameOrLabel()));
-			return false;
-		}
-		if (HitResult.PhysMaterial->SurfaceType != SurfaceType1)
-		{
-			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Invalid Location: Non-Grass Surface"));
 			return false;
 		}
 
 		OutLocation = HitResult.ImpactPoint;
 		return true;
 	}
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Invalid Location: Nothing was hit"));
 	return false;
 }

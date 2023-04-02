@@ -24,9 +24,9 @@ public:
 
 	void SaveGame();
 
-	void LoadGame(const FString& SaveFileName);
+	void SetSaveFile(const FString& SaveFileName);
 
-	void GenerateLevelAgain();
+	void LoadWorld();
 	
 	UPlayerSaveHandlerComponent* GetPlayerHandler();
 

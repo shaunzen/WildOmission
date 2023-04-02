@@ -14,16 +14,23 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	FString SaveGame = UGameplayStatics::ParseOption(Options, "SaveGame");
+	FString SaveFile = UGameplayStatics::ParseOption(Options, "SaveGame");
 
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
-	
+
 	if (SaveHandler == nullptr)
 	{
 		return;
 	}
-	
-	SaveHandler->LoadGame(SaveGame);
+
+	SaveHandler->SetSaveFile(SaveFile);
+}
+
+void AWildOmissionGameMode::StartPlay()
+{
+	Super::StartPlay();
+
+	SaveHandler->LoadWorld();
 }
 
 void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
@@ -41,11 +48,6 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 void AWildOmissionGameMode::SaveGame()
 {
 	SaveHandler->SaveGame();
-}
-
-void AWildOmissionGameMode::GenerateLevelAgain()
-{
-	SaveHandler->GenerateLevelAgain();
 }
 
 void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
