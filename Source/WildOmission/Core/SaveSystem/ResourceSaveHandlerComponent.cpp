@@ -165,6 +165,7 @@ bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSett
 	{
 		if (HitResult.PhysMaterial == nullptr || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
 		{
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Magenta, FString("PhysMat Invalid"));
 			return false;
 		}
 

@@ -61,6 +61,8 @@ void ASaveHandler::LoadWorld()
 
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Generating world."));
+
 		GenerateLevel(SaveFile);
 		
 		UpdateSaveFile(SaveFile);
@@ -99,11 +101,14 @@ void ASaveHandler::ValidateSave()
 void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
 {
 	FWorldGenerationSettings GenerationSettings;
+	FTimerHandle ResourceGenerationTimerHandle;
+	FTimerDelegate ResourceGenerationTimerDelegate;
+	
+	ResourceGenerationTimerDelegate.BindUFunction(ResourceSaveHandlerComponent, FName("Generate"), GenerationSettings);
 
-	ResourceSaveHandlerComponent->Generate(GenerationSettings);
+	GetWorld()->GetTimerManager().SetTimer(ResourceGenerationTimerHandle, ResourceGenerationTimerDelegate, 1.0f, false);
 	
 	SaveToModify->CreationInformation.LevelHasGenerated = true;
-
 }
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)

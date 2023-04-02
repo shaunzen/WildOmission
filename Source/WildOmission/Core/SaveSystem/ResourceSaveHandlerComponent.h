@@ -19,6 +19,7 @@ public:
 	// Sets default values for this component's properties
 	UResourceSaveHandlerComponent();
 
+	UFUNCTION()
 	void Generate(const FWorldGenerationSettings& GenerationSettings);
 
 	void Save(TArray<FHarvestableResourceSave>& OutHarvestableSaves, TArray<FCollectableResourceSave>& OutCollectableSaves);
