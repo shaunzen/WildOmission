@@ -6,23 +6,32 @@
 #include "UObject/NoExportTypes.h"
 #include "Engine/DataTable.h"
 #include "WildOmission/Resources/HarvestableResource.h"
+#include "WildOmission/Resources/CollectableResource.h"
 #include "BiomeGenerationData.generated.h"
 
-// TODO one of these for collectables too
 USTRUCT(BlueprintType)
 struct FHarvestableResourceData
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FName Identifier;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AHarvestableResource> BlueprintClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float DensityPerMeter = 0.0f;
+	float DensityPerMeter = 0.001f;
 
+};
+
+USTRUCT(BlueprintType)
+struct FCollectableResourceData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<ACollectableResource> BlueprintClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float DensityPerMeter = 0.0005f;
 };
 
 USTRUCT(BlueprintType)
@@ -35,5 +44,8 @@ struct FBiomeGenerationData : public FTableRowBase
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TArray<FHarvestableResourceData> Nodes;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<FCollectableResourceData> Collectables;
 
 };

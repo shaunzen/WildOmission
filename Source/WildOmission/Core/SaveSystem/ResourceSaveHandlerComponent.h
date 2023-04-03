@@ -31,6 +31,7 @@ public:
 private:
 	void GenerateTrees(const FWorldGenerationSettings& GenerationSettings);
 	void GenerateNodes(const FWorldGenerationSettings& GenerationSettings);
+	void GenerateCollectables(const FWorldGenerationSettings& GenerationSettings);
 
 	bool FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation);
 

@@ -28,6 +28,7 @@ void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& Gen
 {
 	GenerateTrees(GenerationSettings);
 	GenerateNodes(GenerationSettings);
+	GenerateCollectables(GenerationSettings);
 }
 
 void UResourceSaveHandlerComponent::Save(TArray<FHarvestableResourceSave>& OutHarvestableSaves, TArray<FCollectableResourceSave>& OutCollectableSaves)
@@ -144,6 +145,35 @@ void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings
 			}
 
 			AHarvestableResource* SpawnedNode = GetWorld()->SpawnActor<AHarvestableResource>(Node.BlueprintClass, LocationToSpawn, RotationToSpawn);
+		}
+	}
+}
+
+void UResourceSaveHandlerComponent::GenerateCollectables(const FWorldGenerationSettings& GenerationSettings)
+{
+	const FName DefaultBiome(TEXT("Plains"));
+	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
+	if (BiomeData == nullptr)
+	{
+		return;
+	}
+
+	int32 WorldAreaMeters = GenerationSettings.WorldSizeMetersX * GenerationSettings.WorldSizeMetersY;
+
+	for (const FCollectableResourceData& Collectable : BiomeData->Collectables)
+	{
+		int32 AmountOfCollectableToSpawn = FMath::RoundToInt32((WorldAreaMeters * Collectable.DensityPerMeter) / BiomeData->Nodes.Num());
+		for (int32 i = 0; i < AmountOfCollectableToSpawn; i++)
+		{
+			FVector LocationToSpawn = FVector::ZeroVector;
+			FRotator RotationToSpawn = FRotator::ZeroRotator;
+			RotationToSpawn.Yaw = FMath::RandRange(0, 360);
+			if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
+			{
+				continue;
+			}
+
+			ACollectableResource* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableResource>(Collectable.BlueprintClass, LocationToSpawn, RotationToSpawn);
 		}
 	}
 }
