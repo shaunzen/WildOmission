@@ -61,8 +61,6 @@ void ASaveHandler::LoadWorld()
 
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Generating world."));
-
 		GenerateLevel(SaveFile);
 		
 		UpdateSaveFile(SaveFile);
