@@ -37,11 +37,8 @@ void UResourceSaveHandlerComponent::Save(TArray<FHarvestableResourceSave>& OutHa
 	OutCollectableSaves.Empty();
 
 	TArray<AActor*> HarvestableActors;
-
-	//TODO collectables
-	TArray<AActor*> CollectableActors;
-
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AHarvestableResource::StaticClass(), HarvestableActors);
+	
 	if (HarvestableActors.Num() == 0)
 	{
 		return;
@@ -63,6 +60,30 @@ void UResourceSaveHandlerComponent::Save(TArray<FHarvestableResourceSave>& OutHa
 
 		OutHarvestableSaves.Add(Save);
 	}
+
+	TArray<AActor*> CollectableActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACollectableResource::StaticClass(), CollectableActors);
+
+	if (CollectableActors.Num() == 0)
+	{
+		return;
+	}
+
+	for (AActor* CollectableActor : CollectableActors)
+	{
+		ACollectableResource* Collectable = Cast<ACollectableResource>(CollectableActor);
+		if (Collectable == nullptr)
+		{
+			return;
+		}
+
+		FCollectableResourceSave Save;
+
+		Save.Class = Collectable->GetClass();
+		Save.Transform = Collectable->GetActorTransform();
+
+		OutCollectableSaves.Add(Save);
+	}
 }
 
 void UResourceSaveHandlerComponent::Load(const TArray<FHarvestableResourceSave>& InHarvestableSaves, const TArray<FCollectableResourceSave>& InCollectableSaves)
@@ -73,7 +94,10 @@ void UResourceSaveHandlerComponent::Load(const TArray<FHarvestableResourceSave>&
 		SpawnedHarvestable->SetDurability(Harvestable.Durability);
 	}
 
-	// TODO collectables later
+	for (const FCollectableResourceSave& Collectable : InCollectableSaves)
+	{
+		ACollectableResource* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableResource>(Collectable.Class, Collectable.Transform);
+	}
 }
 
 FBiomeGenerationData* UResourceSaveHandlerComponent::GetBiomeGenerationData(const FName& BiomeName)

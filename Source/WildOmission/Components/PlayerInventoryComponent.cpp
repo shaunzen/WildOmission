@@ -60,7 +60,7 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 	UEquipComponent* PlayerEquipComponent = OwnerCharacter->FindComponentByClass<UEquipComponent>();
 	if (PlayerEquipComponent == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("The player is fucking stupid"));
+		UE_LOG(LogTemp, Warning, TEXT("RefreshPlayerEquip: Failed to get player's equip component"));
 		return;
 	}
 
@@ -68,7 +68,6 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 	if (SelectedSlot.IsEmpty())
 	{
 		PlayerEquipComponent->Disarm();
-		UE_LOG(LogTemp, Warning, TEXT("This slot is empty?"));
 		return;
 	}
 
@@ -77,7 +76,6 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
 	{
 		PlayerEquipComponent->Disarm();
-		UE_LOG(LogTemp, Warning, TEXT("Cannot get item data"));
 		return;
 	}
 
@@ -86,7 +84,6 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 	// is this item the same as we are already holding
 	if (CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot equip the exact same fucking item dumbass"));
 		return;
 	}
 
