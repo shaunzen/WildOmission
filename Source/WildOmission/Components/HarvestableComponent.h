@@ -33,7 +33,7 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	FInventoryItem ItemYeild;
+	FInventoryItem ItemYield;
 
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> RequiredToolType;

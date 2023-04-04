@@ -35,7 +35,7 @@ void ACollectableResource::Interact(AActor* Interactor)
 	}
 
 	// Add resource to collectors inventory
-	InteractorInventoryComponent->AddItem(Yeild);
+	InteractorInventoryComponent->AddItem(Yield);
 
 	// Play Collect sound
 	Client_PlayCollectSound();
@@ -46,17 +46,17 @@ void ACollectableResource::Interact(AActor* Interactor)
 
 FString ACollectableResource::PromptText()
 {
-	FString YeildedItemDisplayName;
+	FString YieldedItemDisplayName;
 
-	FItemData* ItemData = UInventoryComponent::GetItemData(Yeild.Name);
+	FItemData* ItemData = UInventoryComponent::GetItemData(Yield.Name);
 	if (ItemData == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to harvest %s"), *Yeild.Name.ToString());
+		return FString::Printf(TEXT("Press 'E' to harvest %s"), *Yield.Name.ToString());
 	}
 
-	YeildedItemDisplayName = ItemData->DisplayName;
+	YieldedItemDisplayName = ItemData->DisplayName;
 
-	return FString::Printf(TEXT("Press 'E' to harvest %s"), *YeildedItemDisplayName);
+	return FString::Printf(TEXT("Press 'E' to harvest %s"), *YieldedItemDisplayName);
 }
 
 void ACollectableResource::Client_PlayCollectSound_Implementation()

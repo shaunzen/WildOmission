@@ -24,7 +24,7 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	FInventoryItem Yeild;
+	FInventoryItem Yield;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;

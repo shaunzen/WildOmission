@@ -35,8 +35,8 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 	}
 
 	FInventoryItem ItemToGive;
-	ItemToGive = ItemYeild;
-	ItemToGive.Quantity = ItemYeild.Quantity * HarvestingTool->GetGatherMultiplier();
+	ItemToGive = ItemYield;
+	ItemToGive.Quantity = ItemYield.Quantity * HarvestingTool->GetGatherMultiplier();
 
 	if (ItemToGive.Quantity <= 0)
 	{
@@ -45,7 +45,7 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 
 	HarvestingInventoryComponent->AddItem(ItemToGive);
 
-	Durability -= ItemYeild.Quantity;
+	Durability -= ItemYield.Quantity;
 
 	if (Durability <= 0.0f)
 	{

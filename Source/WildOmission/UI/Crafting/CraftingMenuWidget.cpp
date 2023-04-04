@@ -76,16 +76,16 @@ void UCraftingMenuWidget::RefreshRecipesList()
 			return;
 		}
 		
-		FItemData* YeildItemData = UInventoryComponent::GetItemData(RecipeData->Yeild.Name);
-		if (YeildItemData == nullptr)
+		FItemData* YieldItemData = UInventoryComponent::GetItemData(RecipeData->Yield.Name);
+		if (YieldItemData == nullptr)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to find item data for recipe yeild %s"), *RecipeData->Yeild.Name.ToString());
+			UE_LOG(LogTemp, Error, TEXT("Failed to find item data for recipe yeild %s"), *RecipeData->Yield.Name.ToString());
 			return;
 		}
 
 		URecipeIconWidget* NewRecipeEntry = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
 
-		NewRecipeEntry->Setup(this, RecipeName, YeildItemData->Thumbnail);
+		NewRecipeEntry->Setup(this, RecipeName, YieldItemData->Thumbnail);
 		RecipesWrapBox->AddChild(NewRecipeEntry);
 	}
 }
@@ -104,17 +104,17 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 		return;
 	}
 
-	FItemData* RecipeYeildItemData = UInventoryComponent::GetItemData(RecipeData->Yeild.Name);
-	if (RecipeYeildItemData == nullptr)
+	FItemData* RecipeYieldItemData = UInventoryComponent::GetItemData(RecipeData->Yield.Name);
+	if (RecipeYieldItemData == nullptr)
 	{
 		return;
 	}
 
-	SelectedRecipeNameTextBlock->SetText(FText::FromString(RecipeYeildItemData->DisplayName));
+	SelectedRecipeNameTextBlock->SetText(FText::FromString(RecipeYieldItemData->DisplayName));
 	
-	SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(RecipeYeildItemData->Description));
+	SelectedRecipeDescriptionTextBlock->SetText(FText::FromString(RecipeYieldItemData->Description));
 
-	SelectedRecipeIconImage->SetBrushFromMaterial(RecipeYeildItemData->Thumbnail);
+	SelectedRecipeIconImage->SetBrushFromMaterial(RecipeYieldItemData->Thumbnail);
 	SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
 
 	RefreshIngredientList();

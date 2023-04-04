@@ -15,7 +15,7 @@ struct FCraftingRecipe : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FInventoryItem Yeild;
+	FInventoryItem Yield;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FInventoryItem> Ingredients;

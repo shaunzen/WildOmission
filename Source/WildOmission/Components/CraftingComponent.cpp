@@ -67,7 +67,7 @@ void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraf
 		OwnerInventoryComponent->RemoveItem(Ingredient);
 	}
 
-	OwnerInventoryComponent->AddItem(RecipeData->Yeild);
+	OwnerInventoryComponent->AddItem(RecipeData->Yield);
 }
 
 TArray<FName> UCraftingComponent::GetAllRecipes()
