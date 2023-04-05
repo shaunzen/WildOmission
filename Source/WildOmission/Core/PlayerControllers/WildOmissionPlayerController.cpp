@@ -188,10 +188,29 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 
+	if (DeathMenu == nullptr || !IsLocalController())
+	{
+		return;
+	}
+
+	DeathMenu->RemoveFromParent();
+	DeathMenu = nullptr;
 }
 
 void AWildOmissionPlayerController::OnUnPossess()
 {
 	Super::OnUnPossess();
+	
+	if (!IsLocalController())
+	{
+		return;
+	}
 
+	DeathMenu = CreateWidget<UDeathMenuWidget>(this, DeathMenuWidgetClass);
+	if (DeathMenu == nullptr)
+	{
+		return;
+	}
+
+	DeathMenu->AddToViewport();
 }
