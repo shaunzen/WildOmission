@@ -15,6 +15,7 @@
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/NameTagComponent.h"
+#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 
 //********************************
@@ -192,6 +193,13 @@ void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AWildOmissionCharacter::HandleDeath()
 {
+	AWildOmissionPlayerController* OurController = Cast<AWildOmissionPlayerController>(Controller);
+	if (OurController == nullptr)
+	{
+		return;
+	}
+	OurController->Client_ShowDeathMenu();
+
 	// Create lootable container with inventory
 	Destroy();
 }

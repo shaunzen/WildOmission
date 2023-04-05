@@ -193,14 +193,23 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 		return;
 	}
 
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
+	bShowMouseCursor = false;
+
 	DeathMenu->RemoveFromParent();
 	DeathMenu = nullptr;
+	
 }
 
 void AWildOmissionPlayerController::OnUnPossess()
 {
 	Super::OnUnPossess();
 	
+}
+
+void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()
+{
 	if (!IsLocalController())
 	{
 		return;
@@ -211,6 +220,13 @@ void AWildOmissionPlayerController::OnUnPossess()
 	{
 		return;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Creating Death Menu."));
+
+	FInputModeUIOnly InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputMode.SetWidgetToFocus(DeathMenu->TakeWidget());
+	bShowMouseCursor = true;
 
 	DeathMenu->AddToViewport();
 }

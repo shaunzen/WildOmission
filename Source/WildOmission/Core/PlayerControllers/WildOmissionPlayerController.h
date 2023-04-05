@@ -27,6 +27,9 @@ public:
 
 	void Respawn();
 
+	UFUNCTION(Client, Reliable)
+	void Client_ShowDeathMenu();
+
 	FString GetUniqueID();
 
 	//*****************************
