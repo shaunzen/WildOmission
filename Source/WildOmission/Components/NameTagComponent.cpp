@@ -41,7 +41,6 @@ void UNameTagComponent::UpdateRotation()
 	APawn* LocalPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (LocalPawn == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("failed to get local pawn"));
 		return;
 	}
 

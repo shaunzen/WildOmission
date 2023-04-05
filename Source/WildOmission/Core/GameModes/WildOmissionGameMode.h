@@ -7,6 +7,7 @@
 #include "WildOmissionGameMode.generated.h"
 
 class ASaveHandler;
+class AWildOmissionCharacter;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase

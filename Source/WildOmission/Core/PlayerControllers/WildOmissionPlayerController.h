@@ -7,6 +7,7 @@
 #include "WildOmissionPlayerController.generated.h"
 
 class UInventoryComponent;
+class UDeathMenuWidget;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionPlayerController : public APlayerController
@@ -14,26 +15,42 @@ class WILDOMISSION_API AWildOmissionPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	// TODO Save
+	AWildOmissionPlayerController();
+
 	struct FWildOmissionPlayerSave SavePlayer();
 
-	// TODO Load
 	void LoadPlayerSave(const struct FWildOmissionPlayerSave& PlayerSave);
 
-	// TODO SaveGame
 	void Save();
 
 	void Spawn();
 
+	void Respawn();
+
 	FString GetUniqueID();
 
 	//*****************************
-	// Testing functions
-
+	// Console functions
+	UFUNCTION(Exec)
+	void Kill();
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
 	
+protected:
+	virtual void OnPossess(APawn* aPawn) override;
+	virtual void OnUnPossess() override;
+
 private:
+	UPROPERTY()
+	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
+
+	UPROPERTY()
+	UDeathMenuWidget* DeathMenu;
+
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_KillThisPlayer();
+
 };

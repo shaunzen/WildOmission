@@ -11,6 +11,19 @@
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
+#include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "WildOmission/UI/Player/DeathMenuWidget.h"
+#include "UObject/ConstructorHelpers.h"
+
+AWildOmissionPlayerController::AWildOmissionPlayerController()
+{
+	ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmission/UI/Player/WBP_DeathMenu"));
+	if (!DeathMenuWidgetBlueprint.Succeeded())
+	{
+		return;
+	}
+	DeathMenuWidgetClass = DeathMenuWidgetBlueprint.Class;
+}
 
 FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 {
@@ -25,14 +38,15 @@ FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 	{
 		return PlayerSave;
 	}
+	PlayerSave.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
 	
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
 	if (WildOmissionCharacter == nullptr)
 	{
+		PlayerSave.IsAlive = false;
 		return PlayerSave;
 	}
 
-	PlayerSave.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
 
 	PlayerSave.WorldLocation = WildOmissionCharacter->GetActorLocation();
 	PlayerSave.IsAlive = true;
@@ -93,6 +107,11 @@ void AWildOmissionPlayerController::Spawn()
 	// TODO find a location and give the default items
 }
 
+void AWildOmissionPlayerController::Respawn()
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Respawning..."));
+}
+
 FString AWildOmissionPlayerController::GetUniqueID()
 {
 	FString ID = FString("");
@@ -103,6 +122,27 @@ FString AWildOmissionPlayerController::GetUniqueID()
 	}
 
 	return ID;
+}
+
+void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Killing Player %s"), *GetPawn()->GetActorNameOrLabel()));
+	// Get pawn
+	APawn* OurPawn = GetPawn();
+	if (OurPawn == nullptr)
+	{
+		return;
+	}
+
+	// Get vitals from pawn
+	UVitalsComponent* PawnVitals = OurPawn->FindComponentByClass<UVitalsComponent>();
+	if (PawnVitals == nullptr)
+	{
+		return;
+	}
+
+	// Set health to zero
+	PawnVitals->SetHealth(0.0f);
 }
 
 void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
@@ -117,7 +157,12 @@ void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
 }
 
 //*****************************
-// Testing functions
+// Console functions
+
+void AWildOmissionPlayerController::Kill()
+{
+	Server_KillThisPlayer();
+}
 
 void AWildOmissionPlayerController::LogLocalInventoryContents()
 {
@@ -137,4 +182,16 @@ void AWildOmissionPlayerController::LogLocalInventoryContents()
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Item: %s, Quantity: %i"), *ItemData.Name.ToString(), ItemData.Quantity));
 	}
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: %s"), *WildOmissionCharacter->GetActorNameOrLabel()));
+}
+
+void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
+{
+	Super::OnPossess(aPawn);
+
+}
+
+void AWildOmissionPlayerController::OnUnPossess()
+{
+	Super::OnUnPossess();
+
 }

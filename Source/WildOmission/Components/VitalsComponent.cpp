@@ -3,6 +3,8 @@
 
 #include "VitalsComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 
 // Sets default values for this component's properties
 UVitalsComponent::UVitalsComponent()
@@ -77,11 +79,19 @@ void UVitalsComponent::CalculateDepletion()
 		CurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
 	}
 
-	// If Health is less than 0 kill the player
-	if (CurrentHealth < 0.0f)
+	// If Health is too low kill the player
+	if (CurrentHealth < KINDA_SMALL_NUMBER)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
+		//UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
 		CurrentHealth = 0.0f;
+
+		AWildOmissionCharacter* CharacterOwner = Cast<AWildOmissionCharacter>(GetOwner());
+		if(CharacterOwner == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to kill player cannot cast vitals component owner to wo character"));
+			return;
+		}
+		CharacterOwner->HandleDeath();
 	}
 }
 

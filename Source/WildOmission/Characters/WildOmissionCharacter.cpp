@@ -181,11 +181,19 @@ void AWildOmissionCharacter::SetupPlayerHUD()
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (PlayerHUDWidget != nullptr)
+	if (PlayerHUDWidget == nullptr)
 	{
-		PlayerHUDWidget->RemoveFromParent();
-		PlayerHUDWidget = nullptr;
+		return;
 	}
+	
+	PlayerHUDWidget->RemoveFromParent();
+	PlayerHUDWidget = nullptr;
+}
+
+void AWildOmissionCharacter::HandleDeath()
+{
+	// Create lootable container with inventory
+	Destroy();
 }
 
 //********************************

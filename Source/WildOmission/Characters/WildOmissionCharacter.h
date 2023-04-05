@@ -25,6 +25,8 @@ public:
 
 	virtual void UnPossessed() override;
 
+	void HandleDeath();
+	
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
 
