@@ -102,14 +102,10 @@ void AWildOmissionPlayerController::Save()
 	GameMode->SaveGame();
 }
 
-void AWildOmissionPlayerController::Spawn()
+void AWildOmissionPlayerController::Server_RequestRespawn_Implementation()
 {
-	// TODO find a location and give the default items
-}
-
-void AWildOmissionPlayerController::Respawn()
-{
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Respawning..."));
+	// Get gamemode
+	// call HandleRespawn passing this as PlayerController
 }
 
 FString AWildOmissionPlayerController::GetUniqueID()

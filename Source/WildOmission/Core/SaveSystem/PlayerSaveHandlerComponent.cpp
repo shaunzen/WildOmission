@@ -68,7 +68,8 @@ void UPlayerSaveHandlerComponent::Load(APlayerController* PlayerController)
 	// Must be a new player just go ahead and call his spawn function
 	else
 	{
-		WildOmissionPlayerController->Spawn();
+		// TODO uhh
+		//WildOmissionPlayerController->Spawn();
 	}
 }
 

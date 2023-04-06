@@ -22,10 +22,9 @@ public:
 	void LoadPlayerSave(const struct FWildOmissionPlayerSave& PlayerSave);
 
 	void Save();
-
-	void Spawn();
-
-	void Respawn();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_RequestRespawn();
 
 	UFUNCTION(Client, Reliable)
 	void Client_ShowDeathMenu();
