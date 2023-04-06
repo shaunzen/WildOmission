@@ -14,6 +14,8 @@ class WILDOMISSION_API UDeathMenuWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UDeathMenuWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 
 private:

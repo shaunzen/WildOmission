@@ -107,4 +107,6 @@ private:
 
 	void CalculateDepletion();
 	
+	UFUNCTION()
+	void OnOwnerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
 };

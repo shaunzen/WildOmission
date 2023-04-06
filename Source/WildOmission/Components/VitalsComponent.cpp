@@ -38,7 +38,8 @@ UVitalsComponent::UVitalsComponent()
 void UVitalsComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UVitalsComponent::OnOwnerTakeAnyDamage);
 }
 
 // Called every frame
@@ -159,4 +160,16 @@ float UVitalsComponent::GetThirst() const
 float UVitalsComponent::GetHunger() const
 {
 	return CurrentHunger;
+}
+
+void UVitalsComponent::OnOwnerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (!GetOwner()->HasAuthority() || DamagedActor == nullptr)
+	{
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("%s Has taken %f damage"), DamagedActor->GetActorNameOrLabel(), Damage));
+
+	AddHealth(-Damage);
 }

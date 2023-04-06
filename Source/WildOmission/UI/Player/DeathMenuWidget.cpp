@@ -5,6 +5,11 @@
 #include "Components/Button.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 
+UDeathMenuWidget::UDeathMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	bIsFocusable = true;
+}
+
 void UDeathMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

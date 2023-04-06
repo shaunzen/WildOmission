@@ -110,7 +110,7 @@ void AWildOmissionPlayerController::Server_RequestRespawn_Implementation()
 		UE_LOG(LogTemp, Warning, TEXT("Failed to handle respawn, couldnt get game mode"));
 		return;
 	}
-	
+
 	GameMode->RestartPlayer(this);
 }
 
@@ -128,7 +128,6 @@ FString AWildOmissionPlayerController::GetUniqueID()
 
 void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Killing Player %s"), *GetPawn()->GetActorNameOrLabel()));
 	// Get pawn
 	APawn* OurPawn = GetPawn();
 	if (OurPawn == nullptr)
