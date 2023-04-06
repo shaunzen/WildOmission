@@ -66,6 +66,14 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 
 void AWildOmissionGameMode::HandleRespawn(APlayerController* ControllerToRespawn)
 {
+	if (ControllerToRespawn == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to handle player respawn player controller was null"));
+		return;
+	}
+	// create a new character
+	RestartPlayer(ControllerToRespawn);
+	// tell controller to possess it
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString("Handling respawn now!"));
 }
 
