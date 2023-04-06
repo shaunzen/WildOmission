@@ -29,6 +29,8 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void ResetLocationOfAllConnectedPlayers();
 
+	void HandleRespawn(APlayerController* ControllerToRespawn);
+
 	ASaveHandler* GetSaveHandler();
 
 	TArray<APlayerController*> GetAllPlayerControllers();

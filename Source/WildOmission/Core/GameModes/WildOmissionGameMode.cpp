@@ -64,6 +64,11 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 	}
 }
 
+void AWildOmissionGameMode::HandleRespawn(APlayerController* ControllerToRespawn)
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString("Handling respawn now!"));
+}
+
 ASaveHandler* AWildOmissionGameMode::GetSaveHandler()
 {
 	return SaveHandler;
