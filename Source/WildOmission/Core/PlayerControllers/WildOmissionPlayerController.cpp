@@ -189,18 +189,6 @@ void AWildOmissionPlayerController::LogLocalInventoryContents()
 void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
-
-	if (DeathMenu == nullptr || !IsLocalController())
-	{
-		return;
-	}
-
-	FInputModeGameOnly InputMode;
-	SetInputMode(InputMode);
-	bShowMouseCursor = false;
-
-	DeathMenu->RemoveFromParent();
-	DeathMenu = nullptr;
 	
 }
 
@@ -217,13 +205,14 @@ void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()
 		return;
 	}
 
-	DeathMenu = CreateWidget<UDeathMenuWidget>(this, DeathMenuWidgetClass);
+	UE_LOG(LogTemp, Display, TEXT("Showing Death Menu."));
+
+	UDeathMenuWidget* DeathMenu = CreateWidget<UDeathMenuWidget>(this, DeathMenuWidgetClass);
 	if (DeathMenu == nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to show death menu."));
 		return;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Creating Death Menu."));
 
 	FInputModeUIOnly InputMode;
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);

@@ -239,7 +239,7 @@ void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 {
 
-	if (PlayerHUDWidget->IsMenuOpen())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}
@@ -252,7 +252,7 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::Primary()
 {
-	if (PlayerHUDWidget->IsMenuOpen())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}
@@ -262,7 +262,7 @@ void AWildOmissionCharacter::Primary()
 
 void AWildOmissionCharacter::Secondary()
 {
-	if (PlayerHUDWidget->IsMenuOpen())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}
@@ -292,7 +292,7 @@ void AWildOmissionCharacter::ToggleCraftingMenu()
 
 void AWildOmissionCharacter::ToolbarSelectionIncrement()
 {
-	if (PlayerHUDWidget->IsMenuOpen())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}
@@ -302,7 +302,7 @@ void AWildOmissionCharacter::ToolbarSelectionIncrement()
 
 void AWildOmissionCharacter::ToolbarSelectionDecrement()
 {
-	if (PlayerHUDWidget->IsMenuOpen())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}

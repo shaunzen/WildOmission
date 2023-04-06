@@ -46,9 +46,6 @@ private:
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
 
-	UPROPERTY()
-	UDeathMenuWidget* DeathMenu;
-
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();
 	

@@ -29,4 +29,6 @@ private:
 	UFUNCTION()
 	void QuitButtonClicked();
 
+	void Teardown();
+
 };

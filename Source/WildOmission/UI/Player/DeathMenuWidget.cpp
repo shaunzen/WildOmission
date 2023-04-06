@@ -20,7 +20,6 @@ void UDeathMenuWidget::NativeConstruct()
 
 void UDeathMenuWidget::RespawnButtonClicked()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, FString("Respawning"));
 	AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(GetOwningPlayer());
 	if (PlayerController == nullptr)
 	{
@@ -28,12 +27,29 @@ void UDeathMenuWidget::RespawnButtonClicked()
 		return;
 	}
 
-	// RPC to server on player controller (Server_RequestRespawn)
 	PlayerController->Server_RequestRespawn();
-	// Player controller then tells the game mode to handle the spawning for us
+
+	Teardown();
 }
 
 void UDeathMenuWidget::QuitButtonClicked()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString("Quiting to menu"));
+	// TODO open main menu
+	Teardown();
+}
+
+void UDeathMenuWidget::Teardown()
+{
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to teardown death menu, couldn't get owning player controller"));
+		return;
+	}
+
+	FInputModeGameOnly InputMode;
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = false;
+
+	this->RemoveFromParent();
 }
