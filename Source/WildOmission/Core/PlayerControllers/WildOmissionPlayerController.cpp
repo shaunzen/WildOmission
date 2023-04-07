@@ -208,10 +208,5 @@ void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()
 		return;
 	}
 
-	FInputModeUIOnly InputMode;
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputMode.SetWidgetToFocus(DeathMenu->TakeWidget());
-	bShowMouseCursor = true;
-
-	DeathMenu->AddToViewport();
+	DeathMenu->Show();
 }

@@ -4,6 +4,7 @@
 #include "DeathMenuWidget.h"
 #include "Components/Button.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
+#include "WildOmission/Core/WildOmissionGameInstance.h"
 
 UDeathMenuWidget::UDeathMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -23,6 +24,25 @@ void UDeathMenuWidget::NativeConstruct()
 	QuitButton->OnClicked.AddDynamic(this, &UDeathMenuWidget::QuitButtonClicked);
 }
 
+void UDeathMenuWidget::Show()
+{
+	AddToViewport();
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	
+	FInputModeUIOnly InputModeData;
+	InputModeData.SetWidgetToFocus(TakeWidget());
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	PlayerController->SetInputMode(InputModeData);
+	PlayerController->bShowMouseCursor = true;
+}
+
 void UDeathMenuWidget::RespawnButtonClicked()
 {
 	AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(GetOwningPlayer());
@@ -40,7 +60,15 @@ void UDeathMenuWidget::RespawnButtonClicked()
 
 void UDeathMenuWidget::QuitButtonClicked()
 {
-	// TODO open main menu
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+
+	if (!GameInstance)
+	{
+		return;
+	}
+
+	GameInstance->ReturnToMainMenu();
+
 	Teardown();
 }
 

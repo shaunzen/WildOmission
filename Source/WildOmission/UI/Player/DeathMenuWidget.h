@@ -18,6 +18,8 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	void Show();
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* RespawnButton;
