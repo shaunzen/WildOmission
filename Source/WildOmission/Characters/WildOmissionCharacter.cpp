@@ -138,6 +138,15 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	Client_UpdateHeadPitch(GetControlRotation().GetNormalized().Pitch);
 }
 
+void AWildOmissionCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	SetupEnhancedInputSubsystem();
+	SetupMesh();
+	SetupPlayerHUD();
+}
+
 void AWildOmissionCharacter::UnPossessed()
 {
 	Super::UnPossessed();
@@ -171,7 +180,7 @@ void AWildOmissionCharacter::SetupMesh()
 void AWildOmissionCharacter::SetupPlayerHUD()
 {
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (!IsLocallyControlled() || PlayerController == nullptr || PlayerHUDWidgetClass == nullptr)
+	if (!IsLocallyControlled() || PlayerController == nullptr || PlayerHUDWidget != nullptr || PlayerHUDWidgetClass == nullptr)
 	{
 		return;
 	}

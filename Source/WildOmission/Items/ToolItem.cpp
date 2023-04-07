@@ -14,6 +14,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
+#include "DrawDebugHelpers.h"
 
 AToolItem::AToolItem()
 {
@@ -93,7 +94,7 @@ void AToolItem::Harvest()
 	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Camera, CollisionParams))
 	{
 		AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
 		

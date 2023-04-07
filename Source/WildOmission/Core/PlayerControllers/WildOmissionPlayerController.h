@@ -23,6 +23,9 @@ public:
 
 	void Save();
 	
+	UFUNCTION(Exec)
+	void RestartOurPlayer();
+
 	UFUNCTION(Server, Reliable)
 	void Server_RequestRespawn();
 
@@ -37,12 +40,11 @@ public:
 	void Kill();
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
-	
-protected:
-	virtual void OnPossess(APawn* aPawn) override;
-	virtual void OnUnPossess() override;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	APawn* TheOne;
+
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
 

@@ -169,7 +169,5 @@ void UVitalsComponent::OnOwnerTakeAnyDamage(AActor* DamagedActor, float Damage, 
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("%s Has taken %f damage"), *DamagedActor->GetActorNameOrLabel(), Damage));
-
 	AddHealth(-Damage);
 }

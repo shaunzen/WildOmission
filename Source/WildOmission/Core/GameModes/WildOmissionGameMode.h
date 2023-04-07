@@ -29,7 +29,7 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void ResetLocationOfAllConnectedPlayers();
 
-	void HandleRespawn(APlayerController* ControllerToRespawn);
+	void HandlePlayerRespawn(AController* ControllerToRespawn);
 
 	ASaveHandler* GetSaveHandler();
 

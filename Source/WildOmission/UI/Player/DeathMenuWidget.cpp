@@ -32,7 +32,8 @@ void UDeathMenuWidget::RespawnButtonClicked()
 		return;
 	}
 
-	PlayerController->Server_RequestRespawn();
+	PlayerController->UnPossess();
+	PlayerController->ServerRestartPlayer();
 
 	Teardown();
 }

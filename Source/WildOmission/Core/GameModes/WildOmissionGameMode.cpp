@@ -50,6 +50,37 @@ void AWildOmissionGameMode::SaveGame()
 	SaveHandler->SaveGame();
 }
 
+void AWildOmissionGameMode::HandlePlayerRespawn(AController* ControllerToRespawn)
+{
+	AActor* PlayerStart = FindPlayerStart(ControllerToRespawn);
+	if (PlayerStart == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn player, couldn't find valid player start."));
+		return;
+	}
+
+	// spawn default pawn
+	APawn* NewPawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, PlayerStart->GetActorTransform());
+	if (NewPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn player, couldn't spawn pawn."));
+		return;
+	}
+
+	if (ControllerToRespawn->HasAuthority())
+	{
+		UE_LOG(LogTemp, Display, TEXT("Controller is host, giving auto recieve input."));
+		NewPawn->AutoPossessPlayer = EAutoReceiveInput::Player0;
+	}
+
+	// make controller possess it
+	ControllerToRespawn->UnPossess();
+	ControllerToRespawn->Possess(NewPawn);
+
+
+	// if the controller is host then set auto possess to player 0
+}
+
 void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 {
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)

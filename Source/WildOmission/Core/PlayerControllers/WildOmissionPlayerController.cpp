@@ -102,16 +102,23 @@ void AWildOmissionPlayerController::Save()
 	GameMode->SaveGame();
 }
 
+void AWildOmissionPlayerController::RestartOurPlayer()
+{
+	UnPossess();
+	ServerRestartPlayer();
+}
+
 void AWildOmissionPlayerController::Server_RequestRespawn_Implementation()
 {
-	AGameModeBase* GameMode = GetWorld()->GetAuthGameMode();
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
 	if (GameMode == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to handle respawn, couldnt get game mode"));
 		return;
 	}
 
-	GameMode->RestartPlayer(this);
+	UE_LOG(LogTemp, Display, TEXT("Respawning Player."));
+	GameMode->HandlePlayerRespawn(this);
 }
 
 FString AWildOmissionPlayerController::GetUniqueID()
@@ -183,18 +190,6 @@ void AWildOmissionPlayerController::LogLocalInventoryContents()
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Item: %s, Quantity: %i"), *ItemData.Name.ToString(), ItemData.Quantity));
 	}
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: %s"), *WildOmissionCharacter->GetActorNameOrLabel()));
-}
-
-void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
-{
-	Super::OnPossess(aPawn);
-	
-}
-
-void AWildOmissionPlayerController::OnUnPossess()
-{
-	Super::OnUnPossess();
-	
 }
 
 void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()

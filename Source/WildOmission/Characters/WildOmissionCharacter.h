@@ -23,6 +23,7 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void PossessedBy(AController* NewController) override;
 	virtual void UnPossessed() override;
 
 	void HandleDeath();
