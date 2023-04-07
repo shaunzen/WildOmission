@@ -37,6 +37,8 @@ void UPlayerHUDWidget::NativeConstruct()
 	PlayerInventory->Setup(PlayerInventoryComponent);
 
 	RefreshInventoryStates();
+
+	SelectedItem->Hide();
 }
 
 void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

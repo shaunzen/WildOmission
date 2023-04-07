@@ -102,25 +102,6 @@ void AWildOmissionPlayerController::Save()
 	GameMode->SaveGame();
 }
 
-void AWildOmissionPlayerController::RestartOurPlayer()
-{
-	UnPossess();
-	ServerRestartPlayer();
-}
-
-void AWildOmissionPlayerController::Server_RequestRespawn_Implementation()
-{
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to handle respawn, couldnt get game mode"));
-		return;
-	}
-
-	UE_LOG(LogTemp, Display, TEXT("Respawning Player."));
-	GameMode->HandlePlayerRespawn(this);
-}
-
 FString AWildOmissionPlayerController::GetUniqueID()
 {
 	FString ID = FString("");

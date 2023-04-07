@@ -23,12 +23,6 @@ public:
 
 	void Save();
 	
-	UFUNCTION(Exec)
-	void RestartOurPlayer();
-
-	UFUNCTION(Server, Reliable)
-	void Server_RequestRespawn();
-
 	UFUNCTION(Client, Reliable)
 	void Client_ShowDeathMenu();
 
@@ -38,13 +32,11 @@ public:
 	// Console functions
 	UFUNCTION(Exec)
 	void Kill();
+
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	APawn* TheOne;
-
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
 

@@ -70,7 +70,7 @@ struct FWorldItemSave
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FVector WorldLocation;
+	FVector WorldLocation = FVector::ZeroVector;
 	
 	UPROPERTY()
 	FInventoryItem Item;
@@ -83,13 +83,13 @@ struct FHarvestableResourceSave
 	GENERATED_BODY()
 
 	UPROPERTY()
-	UClass* Class;
+	UClass* Class = nullptr;
 	
 	UPROPERTY()
-	int32 Durability;
+	int32 Durability = 0;
 
 	UPROPERTY()
-	FTransform Transform;
+	FTransform Transform = FTransform::Identity;
 
 };
 
@@ -99,10 +99,10 @@ struct FCollectableResourceSave
 	GENERATED_BODY()
 
 	UPROPERTY()
-	UClass* Class;
+	UClass* Class = nullptr;
 
 	UPROPERTY()
-	FTransform Transform;
+	FTransform Transform = FTransform::Identity;
 
 };
 
@@ -134,7 +134,7 @@ public:
 	UWildOmissionSaveGame();
 
 	UPROPERTY()
-	uint32 DaysPlayed;
+	uint32 DaysPlayed = 0;
 	
 	UPROPERTY()
 	FWildOmissionSaveCreationInformation CreationInformation;
