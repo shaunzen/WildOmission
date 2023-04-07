@@ -13,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/EngineTypes.h"
+#include "Engine/DamageEvents.h"
 
 AToolItem::AToolItem()
 {
@@ -104,7 +105,8 @@ void AToolItem::Harvest()
 		AWildOmissionCharacter* HitCharacter = Cast<AWildOmissionCharacter>(HitResult.GetActor());
 		if (HitCharacter)
 		{
-			HitCharacter->TakeDamage(20.0f, /*something here*/, GetOwnerCharacter()->GetController(), this);
+			FPointDamageEvent HitByToolEvent(20.0f, HitResult, OwnerCharacterLookVector, nullptr);
+			HitCharacter->TakeDamage(20.0f, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
 		}
 		Client_PlayHarvestSound(HitResult.ImpactPoint);
 		ApplyDamage();

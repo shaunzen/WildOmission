@@ -249,7 +249,13 @@ void UPlayerHUDWidget::CloseMenuPanel()
 
 void UPlayerHUDWidget::UpdateInteractionPrompt()
 {
-	UInteractionComponent* OwnerInteractionComopnent = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UInteractionComponent>();
+	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+	
+	UInteractionComponent* OwnerInteractionComopnent = OwnerPawn->FindComponentByClass<UInteractionComponent>();
 	if (OwnerInteractionComopnent == nullptr)
 	{
 		return;

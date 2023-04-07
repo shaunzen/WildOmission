@@ -14,6 +14,12 @@ void UVitalsWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UVitalsWidget::UpdateBars()
 {
+	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
 	UVitalsComponent* PlayerVitals = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UVitalsComponent>();
 	if (PlayerVitals == nullptr)
 	{
