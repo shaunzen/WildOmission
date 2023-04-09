@@ -47,6 +47,8 @@ void UInventoryComponent::BeginPlay()
 	{
 		Slots[i].Index = i;
 	}
+
+	LoadedFromSave = false;
 }
 
 void UInventoryComponent::SetManipulator(UInventoryManipulatorComponent* InventoryManipulator)

@@ -120,7 +120,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 void AWildOmissionCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
@@ -141,7 +141,7 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 void AWildOmissionCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
+	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();

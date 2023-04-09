@@ -71,7 +71,7 @@ void UPlayerHUDWidget::RefreshAllMenus()
 void UPlayerHUDWidget::RefreshInventoryStates()
 {
 	// TODO all open inventory menus refresh
-
+	
 	UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerInventory->GetInventoryComponent()->GetManipulator();
 	if (PlayerInventoryManipulator == nullptr)
 	{

@@ -22,12 +22,14 @@ void UPlayerInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
-	
+
 	UInventoryManipulatorComponent* OwnerManipulator = OwnerCharacter->FindComponentByClass<UInventoryManipulatorComponent>();
 	
 	SetManipulator(OwnerManipulator);
 
 	ToolbarSelectionIndex = -1;
+	
+	RefreshUI();
 
 	if (!GetOwner()->HasAuthority() || LoadedFromSave == true)
 	{
