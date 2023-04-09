@@ -247,6 +247,8 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
 
 	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
+
+	RefreshInventoryStates();
 }
 
 void UPlayerHUDWidget::UpdateInteractionPrompt()
