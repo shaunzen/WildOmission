@@ -32,6 +32,6 @@ private:
 	UPROPERTY()
 	USoundBase* CollectSound;
 
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayCollectSound();
 };
