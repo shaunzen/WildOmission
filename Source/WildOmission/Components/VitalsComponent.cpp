@@ -66,24 +66,19 @@ void UVitalsComponent::CalculateDepletion()
 		return;
 	}
 
-	// Remove from thirst and hunger
-	CurrentThirst -= ThirstDepletionRate * GetWorld()->GetDeltaSeconds();
-	CurrentHunger -= HungerDepletionRate * GetWorld()->GetDeltaSeconds();
-
-	// Prevent from being less than 0
-	FMath::Clamp(CurrentThirst, 0, MaxThirst);
-	FMath::Clamp(CurrentHunger, 0, MaxHunger);
-
+	// Remove from thirst and hunger, and clamp to min and max value
+	CurrentThirst = FMath::Clamp(CurrentThirst - (ThirstDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxThirst);
+	CurrentHunger = FMath::Clamp(CurrentHunger - (HungerDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxHunger);
+	
 	// If Thirst or Hunger is below threshold start removing Health
 	if (CurrentThirst < ThirstThreshold || CurrentHunger < HungerThreshold)
 	{
-		CurrentHealth -= HealthDepletionRate * GetWorld()->GetDeltaSeconds();
+		CurrentHealth = FMath::Clamp(CurrentHealth - (HealthDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxHealth);
 	}
 
 	// If Health is too low kill the player
 	if (CurrentHealth < KINDA_SMALL_NUMBER)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Player Has Died"));
 		CurrentHealth = 0.0f;
 
 		AWildOmissionCharacter* CharacterOwner = Cast<AWildOmissionCharacter>(GetOwner());
@@ -98,38 +93,32 @@ void UVitalsComponent::CalculateDepletion()
 
 void UVitalsComponent::SetHealth(float Value)
 {
-	CurrentHealth = Value;
-	FMath::Clamp(CurrentHealth, 0, MaxHealth);
+	CurrentHealth = FMath::Clamp(Value, 0.0f, MaxHealth);
 }
 
 void UVitalsComponent::SetThirst(float Value)
 {
-	CurrentThirst = Value;
-	FMath::Clamp(CurrentThirst, 0, MaxThirst);
+	CurrentThirst = FMath::Clamp(Value, 0.0f, MaxThirst);
 }
 
 void UVitalsComponent::SetHunger(float Value)
 {
-	CurrentHunger = Value;
-	FMath::Clamp(CurrentHunger, 0, MaxHunger);
+	CurrentHunger = FMath::Clamp(Value, 0.0f, MaxHunger);
 }
 
 void UVitalsComponent::AddHealth(float Value)
 {
-	CurrentHealth += Value;
-	FMath::Clamp(CurrentHealth, 0, MaxHealth);
+	CurrentHealth = FMath::Clamp(CurrentHealth + Value, 0.0f, MaxHealth);
 }
 
 void UVitalsComponent::AddThirst(float Value)
 {
-	CurrentThirst += Value;
-	FMath::Clamp(CurrentThirst, 0, MaxThirst);
+	CurrentThirst = FMath::Clamp(CurrentThirst + Value, 0.0f, MaxThirst);
 }
 
 void UVitalsComponent::AddHunger(float Value)
 {
-	CurrentHunger += Value;
-	FMath::Clamp(CurrentHunger, 0, MaxHunger);
+	CurrentHunger = FMath::Clamp(CurrentHunger + Value, 0.0f, MaxHunger);
 }
 
 float UVitalsComponent::GetMaxHealth() const
