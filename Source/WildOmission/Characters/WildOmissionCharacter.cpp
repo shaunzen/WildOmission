@@ -368,6 +368,16 @@ UCraftingComponent* AWildOmissionCharacter::GetCraftingComponent() const
 // RPC
 //********************************
 
+void AWildOmissionCharacter::Client_OpenContainer_Implementation(AStorageCrate* Container)
+{
+	if (Container == nullptr || PlayerHUDWidget == nullptr)
+	{
+		return;
+	}
+
+	PlayerHUDWidget->OpenContainer(Container);
+}
+
 void AWildOmissionCharacter::Client_UpdateHeadPitch_Implementation(const float& NewHeadPitch)
 {
 	HeadPitch = NewHeadPitch;

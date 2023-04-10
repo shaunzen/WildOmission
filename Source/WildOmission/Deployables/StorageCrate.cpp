@@ -3,6 +3,7 @@
 
 #include "StorageCrate.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 
 // Sets default values
 AStorageCrate::AStorageCrate()
@@ -35,6 +36,13 @@ void AStorageCrate::Tick(float DeltaTime)
 
 void AStorageCrate::Interact(AActor* Interactor)
 {
+	AWildOmissionCharacter* InteractingCharacter = Cast<AWildOmissionCharacter>(Interactor);
+	if (InteractingCharacter == nullptr)
+	{
+		return;
+	}
+
+	InteractingCharacter->Client_OpenContainer(this);
 	// RPC to client of user trying to open
 }
 
@@ -45,7 +53,7 @@ FString AStorageCrate::PromptText()
 
 UClass* AStorageCrate::GetWidgetClass() const
 {
-	return WidgetClass;
+	return WidgetClass.Get();
 }
 
 UInventoryComponent* AStorageCrate::GetInventoryComponent() const

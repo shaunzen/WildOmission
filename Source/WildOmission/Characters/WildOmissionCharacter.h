@@ -10,6 +10,7 @@
 class UCameraComponent;
 class UCraftingComponent;
 class UNameTagComponent;
+class AStorageCrate;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
@@ -27,6 +28,9 @@ public:
 	virtual void UnPossessed() override;
 
 	void HandleDeath();
+
+	UFUNCTION(Client, Reliable)
+	void Client_OpenContainer(AStorageCrate* Container);
 	
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
