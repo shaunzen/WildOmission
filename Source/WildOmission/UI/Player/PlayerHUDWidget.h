@@ -18,6 +18,8 @@ class UPlayerInventoryWidget;
 class UCraftingMenuWidget;
 class USelectedItemWidget;
 
+class AStorageCrate;
+
 UCLASS(Abstract)
 class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
 {
@@ -34,7 +36,7 @@ public:
 
 	void RefreshAllMenus();
 	
-	//void OpenContainer(UInventoryComponent* Container);
+	void OpenContainer(AStorageCrate* Container);
 
 	// Setters
 	UFUNCTION(BlueprintCallable)

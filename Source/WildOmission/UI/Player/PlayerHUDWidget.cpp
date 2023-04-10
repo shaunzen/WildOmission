@@ -15,6 +15,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "VitalsWidget.h"
+#include "WildOmission/Deployables/StorageCrate.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -66,6 +67,11 @@ void UPlayerHUDWidget::RefreshAllMenus()
 {
 	RefreshInventoryStates();
 	CraftingMenu->Refresh();
+}
+
+void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Opening container %s"), *Container->GetActorNameOrLabel());
 }
 
 void UPlayerHUDWidget::RefreshInventoryStates()
