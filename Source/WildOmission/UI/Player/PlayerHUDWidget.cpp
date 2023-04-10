@@ -5,6 +5,8 @@
 #include "Components/Border.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/WidgetSwitcher.h"
+#include "Components/SizeBox.h"
+#include "Components/SizeBoxSlot.h"
 #include "WildOmission/UI/Inventory/InventoryWidget.h"
 #include "WildOmission/UI/Inventory/PlayerInventoryWidget.h"
 #include "WildOmission/UI/Inventory/SelectedItemWidget.h"
@@ -73,6 +75,26 @@ void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
 {
 	OpenMenuPanel();
 	SwitchToInventoryMenu();
+
+	if (Container->GetWidgetClass() == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot open container, Widget class not defined."));
+		return;
+	}
+
+	UInventoryWidget* ContainerWidget = CreateWidget<UInventoryWidget>(this, Container->GetWidgetClass(), FName("ContainerWidget"));
+	
+	InventoryContainer->AddChild(ContainerWidget);
+	
+	USizeBoxSlot* ContainerSlot = Cast<USizeBoxSlot>(ContainerWidget->Slot);
+	if (ContainerSlot == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to open container, couldn't get container slot"));
+		return;
+	}
+
+	ContainerSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+	ContainerSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Right);
 
 	UE_LOG(LogTemp, Warning, TEXT("Opening container %s"), *Container->GetActorNameOrLabel());
 }
@@ -216,7 +238,7 @@ void UPlayerHUDWidget::SwitchToInventoryMenu()
 	bCraftingMenuOpen = false;
 
 	// TODO swap for whole inventory menu later when looting is implemented
-	MenuSwitcher->SetActiveWidget(PlayerInventory);
+	MenuSwitcher->SetActiveWidget(InventoryContainer);
 
 	PlayerInventory->Open();
 

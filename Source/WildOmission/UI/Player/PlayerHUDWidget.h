@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UBorder;
+class USizeBox;
 class UWidgetSwitcher;
 
 class UVitalsComponent;
@@ -66,6 +67,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
+
+	UPROPERTY(Meta = (BindWidget))
+	USizeBox* InventoryContainer;
 
 	UPROPERTY(meta = (BindWidget))
 	UPlayerInventoryWidget* PlayerInventory;
