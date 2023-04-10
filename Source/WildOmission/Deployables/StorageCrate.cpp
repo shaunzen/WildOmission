@@ -16,6 +16,7 @@ AStorageCrate::AStorageCrate()
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 
+	WidgetClass = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -40,4 +41,14 @@ void AStorageCrate::Interact(AActor* Interactor)
 FString AStorageCrate::PromptText()
 {
 	return FString("Press 'E' to open Storage Crate");
+}
+
+UClass* AStorageCrate::GetWidgetClass() const
+{
+	return WidgetClass;
+}
+
+UInventoryComponent* AStorageCrate::GetInventoryComponent() const
+{
+	return InventoryComponent;
 }

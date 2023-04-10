@@ -50,8 +50,6 @@ public:
 	FWildOmissionInventorySave Save();	
 	void Load(const FWildOmissionInventorySave& InInventorySave);
 
-	UClass* GetWidgetClass() const;
-
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
@@ -85,8 +83,5 @@ private:
 	void DropSingle(const int32& ToSlotIndex);
 
 	bool WithinStackSize(const FInventoryItem& Item, const int32& AmountToAdd);
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> WidgetClass;
 
 };

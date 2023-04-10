@@ -26,6 +26,9 @@ public:
 	virtual FString PromptText() override;
 	/*End Interactable Interface Implementation*/
 
+	UClass* GetWidgetClass() const;
+	UInventoryComponent* GetInventoryComponent() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,6 +37,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Container")
+	TSubclassOf<UUserWidget> WidgetClass;
+
 	UPROPERTY(VisibleAnywhere)
 	UInventoryComponent* InventoryComponent;
 

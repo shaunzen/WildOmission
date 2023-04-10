@@ -23,8 +23,6 @@ UInventoryComponent::UInventoryComponent()
 
 	SlotCount = 24;
 	LoadedFromSave = false;
-
-	WidgetClass = nullptr;
 }
 
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -220,11 +218,6 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 	Contents.Contents = InInventorySave.Items;
 	Slots = InInventorySave.Slots;
 	LoadedFromSave = true;
-}
-
-UClass* UInventoryComponent::GetWidgetClass() const
-{
-	return WidgetClass;
 }
 
 void UInventoryComponent::OnInventoryChange()
