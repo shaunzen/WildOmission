@@ -5,8 +5,8 @@
 #include "Components/Border.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/WidgetSwitcher.h"
-#include "Components/SizeBox.h"
-#include "Components/SizeBoxSlot.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 #include "WildOmission/UI/Inventory/InventoryWidget.h"
 #include "WildOmission/UI/Inventory/PlayerInventoryWidget.h"
 #include "WildOmission/UI/Inventory/SelectedItemWidget.h"
@@ -83,18 +83,22 @@ void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
 	}
 
 	UInventoryWidget* ContainerWidget = CreateWidget<UInventoryWidget>(this, Container->GetWidgetClass(), FName("ContainerWidget"));
-	
-	InventoryContainer->AddChild(ContainerWidget);
-	
-	USizeBoxSlot* ContainerSlot = Cast<USizeBoxSlot>(ContainerWidget->Slot);
+	UCanvasPanelSlot* ContainerSlot = InventoryPanel->AddChildToCanvas(ContainerWidget);
 	if (ContainerSlot == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to open container, couldn't get container slot"));
 		return;
 	}
 
-	ContainerSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
-	ContainerSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Right);
+	FAnchors ContainerAnchor;
+	ContainerAnchor.Maximum.Y = 1.0f;
+	ContainerAnchor.Maximum.X = 1.0f;
+	ContainerAnchor.Minimum.X = 1.0f;
+	ContainerAnchor.Minimum.Y = 1.0f;
+
+	ContainerSlot->SetAnchors(ContainerAnchor);
+	ContainerSlot->SetAlignment(FVector2D(1.0f, 1.0f));
+	ContainerSlot->SetPosition(FVector2D(-20.0f, -20.0f));
 
 	UE_LOG(LogTemp, Warning, TEXT("Opening container %s"), *Container->GetActorNameOrLabel());
 }
@@ -237,8 +241,7 @@ void UPlayerHUDWidget::SwitchToInventoryMenu()
 	bInventoryMenuOpen = true;
 	bCraftingMenuOpen = false;
 
-	// TODO swap for whole inventory menu later when looting is implemented
-	MenuSwitcher->SetActiveWidget(InventoryContainer);
+	MenuSwitcher->SetActiveWidget(InventoryPanel);
 
 	PlayerInventory->Open();
 
