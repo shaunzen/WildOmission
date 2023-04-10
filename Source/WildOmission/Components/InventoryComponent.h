@@ -24,16 +24,14 @@ public:
 	
 	virtual void BeginPlay() override;
 	
-	void SetManipulator(UInventoryManipulatorComponent* InventoryManipulator);
-
 	UFUNCTION(BlueprintCallable)
-	void AddItem(const FInventoryItem& ItemToAdd);
+	void AddItem(const FInventoryItem& ItemToAdd, UInventoryManipulatorComponent* Manipulator);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem(const FInventoryItem& ItemToRemove);	
 
 	UFUNCTION(Server, Reliable)
-	void Server_SlotInteraction(const int32& SlotIndex, bool Primary = true);
+	void Server_SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary = true);
 
 	static FItemData* GetItemData(const FName& ItemName);
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
@@ -46,8 +44,6 @@ public:
 	// TODO this is a temporary function only for testing
 	TArray<FInventorySlot>& GetSlots();
 	
-	UInventoryManipulatorComponent* GetManipulator() const;
-
 	FWildOmissionInventorySave Save();	
 	void Load(const FWildOmissionInventorySave& InInventorySave);
 
@@ -62,9 +58,6 @@ protected:
 	UPROPERTY(Replicated, ReplicatedUsing = OnInventoryChange, VisibleAnywhere)
 	TArray<FInventorySlot> Slots;
 	
-	UPROPERTY()
-	UInventoryManipulatorComponent* Manipulator;
-
 	UFUNCTION()
 	virtual void OnInventoryChange();
 
@@ -78,10 +71,10 @@ private:
 	bool FindAndAddToEmptySlot(const FName& ItemName, const int32& ItemStackSize, const TArray<FItemStat>& Stats, int32& QuantityToAdd);
 	bool RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
 	
-	void DragAll(const int32& FromSlotIndex);
-	void DragSplit(const int32& FromSlotIndex);
-	void DropAll(const int32& ToSlotIndex);
-	void DropSingle(const int32& ToSlotIndex);
+	void DragAll(const int32& FromSlotIndex, UInventoryManipulatorComponent* Manipulator);
+	void DragSplit(const int32& FromSlotIndex, UInventoryManipulatorComponent* Manipulator);
+	void DropAll(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator);
+	void DropSingle(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator);
 
 	bool WithinStackSize(const FInventoryItem& Item, const int32& AmountToAdd);
 

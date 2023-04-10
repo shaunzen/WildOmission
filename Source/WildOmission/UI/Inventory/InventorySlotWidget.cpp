@@ -8,6 +8,7 @@
 #include "Components/ProgressBar.h"
 #include "InventoryWidget.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
 
 void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const int32& InIndex)
 {
@@ -79,13 +80,25 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 {
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	
+	APawn* PlayerPawn = GetOwningPlayerPawn();
+	if (PlayerPawn == nullptr)
+	{
+		return FReply::Handled();
+	}
+
+	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = PlayerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventoryManipulatorComponent == nullptr)
+	{
+		return FReply::Handled();
+	}
+
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		Owner->GetInventoryComponent()->Server_SlotInteraction(this->Index, true);
+		Owner->GetInventoryComponent()->Server_SlotInteraction(this->Index, OwnerInventoryManipulatorComponent, true);
 	}
 	else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		Owner->GetInventoryComponent()->Server_SlotInteraction(this->Index, false);
+		Owner->GetInventoryComponent()->Server_SlotInteraction(this->Index, OwnerInventoryManipulatorComponent, false);
 	}
 
 	return FReply::Handled();

@@ -5,6 +5,7 @@
 #include "EquipComponent.h"
 #include "WildOmission/Items/ToolItem.h"
 #include "InventoryComponent.h"
+#include "InventoryManipulatorComponent.h"
 
 UHarvestableComponent::UHarvestableComponent()
 {
@@ -28,8 +29,9 @@ void UHarvestableComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 void UHarvestableComponent::OnHarvest(AActor* HarvestingActor)
 {
 	UInventoryComponent* HarvestingInventoryComponent = HarvestingActor->FindComponentByClass<UInventoryComponent>();
+	UInventoryManipulatorComponent* HarvestingInventoryManipulatorComponent = HarvestingActor->FindComponentByClass<UInventoryManipulatorComponent>();
 	UEquipComponent* HarvestingEquipComponent = HarvestingActor->FindComponentByClass<UEquipComponent>();
-	if (HarvestingInventoryComponent == nullptr || HarvestingEquipComponent == nullptr)
+	if (HarvestingInventoryComponent == nullptr || HarvestingInventoryManipulatorComponent == nullptr || HarvestingEquipComponent == nullptr)
 	{
 		return;
 	}
@@ -49,7 +51,7 @@ void UHarvestableComponent::OnHarvest(AActor* HarvestingActor)
 		ItemToGive.Quantity = 1;
 	}
 
-	HarvestingInventoryComponent->AddItem(ItemToGive);
+	HarvestingInventoryComponent->AddItem(ItemToGive, HarvestingInventoryManipulatorComponent);
 
 	Durability -= ItemYield.Quantity;
 

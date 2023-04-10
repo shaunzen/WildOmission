@@ -51,12 +51,7 @@ void UInventoryComponent::BeginPlay()
 	LoadedFromSave = false;
 }
 
-void UInventoryComponent::SetManipulator(UInventoryManipulatorComponent* InventoryManipulator)
-{
-	Manipulator = InventoryManipulator;
-}
-
-void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd)
+void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, UInventoryManipulatorComponent* Manipulator)
 {
 	// The amount of items we were unable to add
 	int32 Remaining;
@@ -95,29 +90,29 @@ void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove)
 	OnInventoryChange();
 }
 
-void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& SlotIndex, bool Primary)
+void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary)
 {
 	// This is gross
 	if (!Manipulator->IsDragging())
 	{
 		if (Primary)
 		{
-			DragAll(SlotIndex);
+			DragAll(SlotIndex, Manipulator);
 		}
 		else
 		{
-			DragSplit(SlotIndex);
+			DragSplit(SlotIndex, Manipulator);
 		}
 	}
 	else
 	{
 		if (Primary)
 		{
-			DropAll(SlotIndex);
+			DropAll(SlotIndex, Manipulator);
 		}
 		else
 		{
-			DropSingle(SlotIndex);
+			DropSingle(SlotIndex, Manipulator);
 		}
 	}
 
@@ -200,11 +195,6 @@ TArray<FInventorySlot>& UInventoryComponent::GetSlots()
 	return Slots;
 }
 
-UInventoryManipulatorComponent* UInventoryComponent::GetManipulator() const
-{
-	return Manipulator;
-}
-
 FWildOmissionInventorySave UInventoryComponent::Save()
 {
 	FWildOmissionInventorySave Save;
@@ -232,18 +222,19 @@ void UInventoryComponent::OnInventoryChange()
 
 void UInventoryComponent::RefreshUI()
 {
-	if (Manipulator == nullptr)
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController == nullptr)
 	{
 		return;
 	}
 
-	AWildOmissionCharacter* ManipulatorCharacter = Cast<AWildOmissionCharacter>(Manipulator->GetOwner());
-	if (ManipulatorCharacter == nullptr)
+	AWildOmissionCharacter* PlayerCharacter = Cast<AWildOmissionCharacter>(PlayerController->GetPawn());
+	if (PlayerCharacter == nullptr)
 	{
 		return;
 	}
 
-	UPlayerHUDWidget* ManipulatorHUD = ManipulatorCharacter->GetHUDWidget();
+	UPlayerHUDWidget* ManipulatorHUD = PlayerCharacter->GetHUDWidget();
 	if (ManipulatorHUD == nullptr)
 	{
 		return;
@@ -391,7 +382,7 @@ bool UInventoryComponent::RemoveItemFromSlots(const FName& ItemName, const int32
 	return Remaining == 0;
 }
 
-void UInventoryComponent::DragAll(const int32& FromSlotIndex)
+void UInventoryComponent::DragAll(const int32& FromSlotIndex, UInventoryManipulatorComponent* Manipulator)
 {
 	FInventorySlot& FromSlot = Slots[FromSlotIndex];
 
@@ -409,7 +400,7 @@ void UInventoryComponent::DragAll(const int32& FromSlotIndex)
 	OnInventoryChange();
 }
 
-void UInventoryComponent::DragSplit(const int32& FromSlotIndex)
+void UInventoryComponent::DragSplit(const int32& FromSlotIndex, UInventoryManipulatorComponent* Manipulator)
 {
 	FInventorySlot& FromSlot = Slots[FromSlotIndex];
 
@@ -446,7 +437,7 @@ void UInventoryComponent::DragSplit(const int32& FromSlotIndex)
 	OnInventoryChange();
 }
 
-void UInventoryComponent::DropAll(const int32& ToSlotIndex)
+void UInventoryComponent::DropAll(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator)
 {
 	FInventorySlot& ToSlot = Slots[ToSlotIndex];
 	FInventoryItem SelectedItem = Manipulator->GetSelectedItem();
@@ -506,7 +497,7 @@ void UInventoryComponent::DropAll(const int32& ToSlotIndex)
 	OnInventoryChange();
 }
 
-void UInventoryComponent::DropSingle(const int32& ToSlotIndex)
+void UInventoryComponent::DropSingle(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator)
 {
 	if (!Manipulator->IsDragging())
 	{

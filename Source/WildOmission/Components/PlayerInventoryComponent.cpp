@@ -25,8 +25,6 @@ void UPlayerInventoryComponent::BeginPlay()
 
 	UInventoryManipulatorComponent* OwnerManipulator = OwnerCharacter->FindComponentByClass<UInventoryManipulatorComponent>();
 	
-	SetManipulator(OwnerManipulator);
-
 	ToolbarSelectionIndex = -1;
 	
 	RefreshUI();
@@ -39,7 +37,7 @@ void UPlayerInventoryComponent::BeginPlay()
 	RockItem.Name = FName("rock");
 	RockItem.Quantity = 1;
 
-	AddItem(RockItem);
+	AddItem(RockItem, OwnerManipulator);
 }
 
 void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -151,7 +151,8 @@ void AToolItem::ApplyDamage()
 FInventoryItem* AToolItem::FindInInventory()
 {
 	UInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UInventoryComponent>();
-	if (OwnerInventory == nullptr)
+	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = Owner->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventory == nullptr || OwnerInventoryManipulatorComponent == nullptr)
 	{
 		return nullptr;
 	}
@@ -159,12 +160,12 @@ FInventoryItem* AToolItem::FindInInventory()
 	FInventoryItem* InventoryItem = OwnerInventory->FindItemWithUniqueID(UniqueID);
 	if (InventoryItem == nullptr)
 	{
-		if (!OwnerInventory->GetManipulator()->SelectedItemHasUniqueID(UniqueID))
+		if (!OwnerInventoryManipulatorComponent->SelectedItemHasUniqueID(UniqueID))
 		{
 			return nullptr;
 		}
 
-		InventoryItem = OwnerInventory->GetManipulator()->GetSelectedItemAddress();
+		InventoryItem = OwnerInventoryManipulatorComponent->GetSelectedItemAddress();
 	}
 
 	return InventoryItem;

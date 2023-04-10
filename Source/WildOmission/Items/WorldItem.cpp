@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/Core/Structs/ItemStat.h"
 #include "Kismet/GameplayStatics.h"
@@ -69,13 +70,14 @@ void AWorldItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 void AWorldItem::Interact(AActor* Interactor)
 {
 	UInventoryComponent* InteractorInventoryComponent = Interactor->FindComponentByClass<UInventoryComponent>();
-	if (InteractorInventoryComponent == nullptr)
+	UInventoryManipulatorComponent* InteractorInventoryManipulatorComponent = Interactor->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (InteractorInventoryComponent == nullptr || InteractorInventoryManipulatorComponent == nullptr)
 	{
 		return;
 	}
 
 	// Add to their inventory
-	InteractorInventoryComponent->AddItem(Item);
+	InteractorInventoryComponent->AddItem(Item, InteractorInventoryManipulatorComponent);
 
 	// Play Pickup sound
 	Client_PlayPickupSound();

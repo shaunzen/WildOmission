@@ -33,7 +33,7 @@ void UInventoryManipulatorComponent::BeginPlay()
 	Dragging = false;
 	SelectedItem.Clear();
 	
-	RefreshUI();
+	//RefreshUI();
 }
 
 void UInventoryManipulatorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

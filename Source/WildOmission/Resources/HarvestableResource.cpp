@@ -5,6 +5,7 @@
 #include "WildOmission/Components/EquipComponent.h"
 #include "WildOmission/Items/ToolItem.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
 
 // Sets default values
 AHarvestableResource::AHarvestableResource()
@@ -23,8 +24,9 @@ AHarvestableResource::AHarvestableResource()
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 {
 	UInventoryComponent* HarvestingInventoryComponent = HarvestingActor->FindComponentByClass<UInventoryComponent>();
+	UInventoryManipulatorComponent* HarvestingInventoryManipulatorComponent = HarvestingActor->FindComponentByClass<UInventoryManipulatorComponent>();
 	UEquipComponent* HarvestingEquipComponent = HarvestingActor->FindComponentByClass<UEquipComponent>();
-	if (HarvestingInventoryComponent == nullptr || HarvestingEquipComponent == nullptr)
+	if (HarvestingInventoryComponent == nullptr || HarvestingInventoryManipulatorComponent == nullptr || HarvestingEquipComponent == nullptr)
 	{
 		return;
 	}
@@ -44,7 +46,7 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 		ItemToGive.Quantity = 1;
 	}
 
-	HarvestingInventoryComponent->AddItem(ItemToGive);
+	HarvestingInventoryComponent->AddItem(ItemToGive, HarvestingInventoryManipulatorComponent);
 
 	Durability -= ItemYield.Quantity;
 

@@ -3,6 +3,7 @@
 
 #include "CollectableResource.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -29,13 +30,14 @@ ACollectableResource::ACollectableResource()
 void ACollectableResource::Interact(AActor* Interactor)
 {
 	UInventoryComponent* InteractorInventoryComponent = Interactor->FindComponentByClass<UInventoryComponent>();
-	if (InteractorInventoryComponent == nullptr)
+	UInventoryManipulatorComponent* InteractorInventoryManipulatorComponent = Interactor->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (InteractorInventoryComponent == nullptr || InteractorInventoryManipulatorComponent == nullptr)
 	{
 		return;
 	}
 
 	// Add resource to collectors inventory
-	InteractorInventoryComponent->AddItem(Yield);
+	InteractorInventoryComponent->AddItem(Yield, InteractorInventoryManipulatorComponent);
 
 	// Play Collect sound
 	Client_PlayCollectSound();

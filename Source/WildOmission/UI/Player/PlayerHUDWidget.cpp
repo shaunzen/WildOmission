@@ -39,7 +39,7 @@ void UPlayerHUDWidget::NativeConstruct()
 
 	PlayerInventory->Setup(PlayerInventoryComponent);
 
-	RefreshInventoryStates();
+	//RefreshInventoryStates();
 
 	SelectedItem->Hide();
 }
@@ -111,8 +111,13 @@ void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
 void UPlayerHUDWidget::RefreshInventoryStates()
 {
 	// TODO all open inventory menus refresh
+	APawn* PlayerPawn = GetOwningPlayerPawn();
+	if (PlayerPawn == nullptr)
+	{
+		return;
+	}
 	
-	UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerInventory->GetInventoryComponent()->GetManipulator();
+	UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (PlayerInventoryManipulator == nullptr)
 	{
 		return;
@@ -361,19 +366,25 @@ void UPlayerHUDWidget::UpdateSelectedItemLocation()
 
 void UPlayerHUDWidget::MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
 {
-	UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerInventory->GetInventoryComponent()->GetManipulator();
-	if (PlayerInventoryManipulator == nullptr)
+	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = OwnerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventoryManipulatorComponent == nullptr)
 	{
 		return;
 	}
 
 	if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		PlayerInventoryManipulator->Server_DropSelectedItemInWorld(false);
+		OwnerInventoryManipulatorComponent->Server_DropSelectedItemInWorld(false);
 	}
 	else if (MouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		PlayerInventoryManipulator->Server_DropSelectedItemInWorld(true);
+		OwnerInventoryManipulatorComponent->Server_DropSelectedItemInWorld(true);
 	}
 
 	RefreshInventoryStates();

@@ -3,6 +3,7 @@
 
 #include "CraftingComponent.h"
 #include "InventoryComponent.h"
+#include "InventoryManipulatorComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 static UDataTable* RecipeDataTable = nullptr;
@@ -47,7 +48,8 @@ void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraf
 	}
 
 	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
-	if (OwnerInventoryComponent == nullptr)
+	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = GetOwner()->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventoryComponent == nullptr || OwnerInventoryManipulatorComponent == nullptr)
 	{
 		return;
 	}
@@ -67,7 +69,7 @@ void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraf
 		OwnerInventoryComponent->RemoveItem(Ingredient);
 	}
 
-	OwnerInventoryComponent->AddItem(RecipeData->Yield);
+	OwnerInventoryComponent->AddItem(RecipeData->Yield, OwnerInventoryManipulatorComponent);
 }
 
 TArray<FName> UCraftingComponent::GetAllRecipes()
