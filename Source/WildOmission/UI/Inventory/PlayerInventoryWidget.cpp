@@ -44,6 +44,34 @@ void UPlayerInventoryWidget::Refresh()
 	Slots[PlayerInventoryComponent->GetToolbarSelectionIndex()]->SetSelected(true);
 }
 
+void UPlayerInventoryWidget::CreateInventorySlots()
+{
+	uint8 Column = 0;
+	uint8 Row = 0;
+
+	for (uint8 i = 0; i < 24; ++i)
+	{
+		UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, SlotWidgetClass);
+		NewSlot->Setup(this, i + 6);
+
+		InventoryGridPanel->AddChild(NewSlot);
+
+		UUniformGridSlot* GridSlot = Cast<UUniformGridSlot>(NewSlot->Slot);
+
+		GridSlot->SetColumn(Column);
+		GridSlot->SetRow(Row);
+
+		Slots.Add(NewSlot);
+
+		++Column;
+		if (Column > 5)
+		{
+			Column = 0;
+			++Row;
+		}
+	}
+}
+
 void UPlayerInventoryWidget::CreateToolbarSlots()
 {
 	for (uint8 i = 0; i < 6; ++i)

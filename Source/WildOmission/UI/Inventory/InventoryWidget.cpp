@@ -30,23 +30,22 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 	{
 		return;
 	}
-	
 	InventoryComponent = InInventoryComponent;
-
+	
 	// Set default visibility
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UInventoryWidget::CreateInventorySlots()
+void UInventoryWidget::CreateSlots()
 {
 	uint8 Column = 0;
 	uint8 Row = 0;
 
-	for (uint8 i = 0; i < 24; ++i)
+	for (uint8 i = 0; i < InventoryComponent->GetSlotCount(); ++i)
 	{
 		UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, SlotWidgetClass);
-		NewSlot->Setup(this, i + 6);
+		NewSlot->Setup(this, i);
 	
 		InventoryGridPanel->AddChild(NewSlot);
 

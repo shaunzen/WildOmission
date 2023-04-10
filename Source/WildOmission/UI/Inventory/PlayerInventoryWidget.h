@@ -28,6 +28,7 @@ private:
 	UPROPERTY()
 	UPlayerInventoryComponent* PlayerInventoryComponent;
 
+	void CreateInventorySlots();
 	void CreateToolbarSlots();
 
 };

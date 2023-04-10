@@ -83,6 +83,12 @@ void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
 	}
 
 	UInventoryWidget* ContainerWidget = CreateWidget<UInventoryWidget>(this, Container->GetWidgetClass(), FName("ContainerWidget"));
+
+	ContainerWidget->Setup(Container->GetInventoryComponent());
+	ContainerWidget->CreateSlots();
+	ContainerWidget->Open();
+
+
 	UCanvasPanelSlot* ContainerSlot = InventoryPanel->AddChildToCanvas(ContainerWidget);
 	if (ContainerSlot == nullptr)
 	{
@@ -96,6 +102,7 @@ void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
 	ContainerAnchor.Minimum.X = 1.0f;
 	ContainerAnchor.Minimum.Y = 1.0f;
 
+	ContainerSlot->SetAutoSize(true);
 	ContainerSlot->SetAnchors(ContainerAnchor);
 	ContainerSlot->SetAlignment(FVector2D(1.0f, 1.0f));
 	ContainerSlot->SetPosition(FVector2D(-20.0f, -20.0f));

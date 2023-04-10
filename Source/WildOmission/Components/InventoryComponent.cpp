@@ -190,6 +190,11 @@ FInventorySlot* UInventoryComponent::GetSlot(const int32& SlotIndex)
 	return &Slots[SlotIndex];
 }
 
+uint8 UInventoryComponent::GetSlotCount() const
+{
+	return SlotCount;
+}
+
 TArray<FInventorySlot>& UInventoryComponent::GetSlots()
 {
 	return Slots;

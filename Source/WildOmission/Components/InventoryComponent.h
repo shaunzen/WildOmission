@@ -41,6 +41,7 @@ public:
 
 	FInventoryContents* GetContents();
 	FInventorySlot* GetSlot(const int32& SlotIndex);
+	uint8 GetSlotCount() const;
 
 	// TODO this is a temporary function only for testing
 	TArray<FInventorySlot>& GetSlots();

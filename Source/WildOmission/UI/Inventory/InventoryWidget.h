@@ -24,6 +24,8 @@ public:
 	virtual void Refresh();
 	virtual void RefreshSlot(const int32& SlotIndex);
 
+	void CreateSlots();
+
 	void Open();
 	void Close();
 
@@ -42,8 +44,6 @@ protected:
 
 	UPROPERTY()
 	TArray<UInventorySlotWidget*> Slots;
-
-	void CreateInventorySlots();
 
 private:
 	UPROPERTY()
