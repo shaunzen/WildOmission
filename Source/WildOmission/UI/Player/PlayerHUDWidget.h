@@ -74,6 +74,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UPlayerInventoryWidget* PlayerInventory;
 	
+	UPROPERTY()
+	UInventoryWidget* OpenContainerWidget;
+
 	UPROPERTY(Meta = (BindWidget))
 	UCraftingMenuWidget* CraftingMenu;
 

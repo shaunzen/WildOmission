@@ -76,21 +76,21 @@ void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
 	OpenMenuPanel();
 	SwitchToInventoryMenu();
 
-	if (Container->GetWidgetClass() == nullptr)
+	if (OpenContainerWidget != nullptr || Container->GetWidgetClass() == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot open container, Widget class not defined."));
 		return;
 	}
 
-	UInventoryWidget* ContainerWidget = CreateWidget<UInventoryWidget>(this, Container->GetWidgetClass(), FName("ContainerWidget"));
+	OpenContainerWidget = CreateWidget<UInventoryWidget>(this, Container->GetWidgetClass(), FName("OpenContainer"));
 
-	ContainerWidget->Setup(Container->GetInventoryComponent());
-	ContainerWidget->CreateSlots();
-	ContainerWidget->Open();
+	OpenContainerWidget->Setup(Container->GetInventoryComponent());
+	OpenContainerWidget->CreateSlots();
+	OpenContainerWidget->Open();
 
 
-	UCanvasPanelSlot* ContainerSlot = InventoryPanel->AddChildToCanvas(ContainerWidget);
-	if (ContainerSlot == nullptr)
+	UCanvasPanelSlot* OpenContainerSlot = InventoryPanel->AddChildToCanvas(OpenContainerWidget);
+	if (OpenContainerSlot == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to open container, couldn't get container slot"));
 		return;
@@ -102,12 +102,10 @@ void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
 	ContainerAnchor.Minimum.X = 1.0f;
 	ContainerAnchor.Minimum.Y = 1.0f;
 
-	ContainerSlot->SetAutoSize(true);
-	ContainerSlot->SetAnchors(ContainerAnchor);
-	ContainerSlot->SetAlignment(FVector2D(1.0f, 1.0f));
-	ContainerSlot->SetPosition(FVector2D(-20.0f, -20.0f));
-
-	UE_LOG(LogTemp, Warning, TEXT("Opening container %s"), *Container->GetActorNameOrLabel());
+	OpenContainerSlot->SetAutoSize(true);
+	OpenContainerSlot->SetAnchors(ContainerAnchor);
+	OpenContainerSlot->SetAlignment(FVector2D(1.0f, 1.0f));
+	OpenContainerSlot->SetPosition(FVector2D(-20.0f, -20.0f));
 }
 
 void UPlayerHUDWidget::RefreshInventoryStates()
@@ -121,6 +119,11 @@ void UPlayerHUDWidget::RefreshInventoryStates()
 	}
 	
 	PlayerInventory->Refresh();
+
+	if (OpenContainerWidget != nullptr)
+	{
+		OpenContainerWidget->Refresh();
+	}
 	
 	if (PlayerInventoryManipulator->IsDragging())
 	{
@@ -284,6 +287,13 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	bCraftingMenuOpen = false;
 	
 	PlayerInventory->Close();
+	
+	if (OpenContainerWidget != nullptr)
+	{
+		OpenContainerWidget->Close();
+		OpenContainerWidget->RemoveFromParent();
+		OpenContainerWidget = nullptr;
+	}
 	
 	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
 
