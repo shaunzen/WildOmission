@@ -71,6 +71,9 @@ void UPlayerHUDWidget::RefreshAllMenus()
 
 void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
 {
+	OpenMenuPanel();
+	SwitchToInventoryMenu();
+
 	UE_LOG(LogTemp, Warning, TEXT("Opening container %s"), *Container->GetActorNameOrLabel());
 }
 
