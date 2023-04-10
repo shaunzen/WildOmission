@@ -34,6 +34,8 @@ public:
 
 	void RefreshAllMenus();
 	
+	//void OpenContainer(UInventoryComponent* Container);
+
 	// Setters
 	UFUNCTION(BlueprintCallable)
 	void ToggleInventoryMenu();

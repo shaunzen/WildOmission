@@ -42,13 +42,15 @@ public:
 	FInventoryContents* GetContents();
 	FInventorySlot* GetSlot(const int32& SlotIndex);
 
-	// this is a temporary function only for testing
+	// TODO this is a temporary function only for testing
 	TArray<FInventorySlot>& GetSlots();
 	
 	UInventoryManipulatorComponent* GetManipulator() const;
 
 	FWildOmissionInventorySave Save();	
 	void Load(const FWildOmissionInventorySave& InInventorySave);
+
+	UClass* GetWidgetClass() const;
 
 protected:
 
@@ -83,4 +85,8 @@ private:
 	void DropSingle(const int32& ToSlotIndex);
 
 	bool WithinStackSize(const FInventoryItem& Item, const int32& AmountToAdd);
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> WidgetClass;
+
 };

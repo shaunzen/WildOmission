@@ -34,7 +34,7 @@ void AStorageCrate::Tick(float DeltaTime)
 
 void AStorageCrate::Interact(AActor* Interactor)
 {
-	
+	// RPC to client of user trying to open
 }
 
 FString AStorageCrate::PromptText()
