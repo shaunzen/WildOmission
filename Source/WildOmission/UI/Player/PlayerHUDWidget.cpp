@@ -318,7 +318,7 @@ void UPlayerHUDWidget::UpdateInteractionPrompt()
 		return;
 	}
 
-	if (!bInventoryMenuOpen)
+	if (!IsMenuOpen())
 	{
 		InteractionPrompt->SetText(FText::FromString(OwnerInteractionComopnent->GetInteractionString()));
 	}
