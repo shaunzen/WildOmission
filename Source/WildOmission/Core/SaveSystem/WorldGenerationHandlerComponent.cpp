@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "ResourceSaveHandlerComponent.h"
+#include "WorldGenerationHandlerComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
 #include "WildOmission/Resources/HarvestableResource.h"
@@ -11,7 +11,7 @@
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
 // Sets default values for this component's properties
-UResourceSaveHandlerComponent::UResourceSaveHandlerComponent()
+UWorldGenerationHandlerComponent::UWorldGenerationHandlerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -24,83 +24,14 @@ UResourceSaveHandlerComponent::UResourceSaveHandlerComponent()
 	}
 }
 
-void UResourceSaveHandlerComponent::Generate(const FWorldGenerationSettings& GenerationSettings)
+void UWorldGenerationHandlerComponent::Generate(const FWorldGenerationSettings& GenerationSettings)
 {
 	GenerateTrees(GenerationSettings);
 	GenerateNodes(GenerationSettings);
 	GenerateCollectables(GenerationSettings);
 }
 
-void UResourceSaveHandlerComponent::Save(TArray<FHarvestableResourceSave>& OutHarvestableSaves, TArray<FCollectableResourceSave>& OutCollectableSaves)
-{
-	OutHarvestableSaves.Empty();
-	OutCollectableSaves.Empty();
-
-	TArray<AActor*> HarvestableActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AHarvestableResource::StaticClass(), HarvestableActors);
-	
-	if (HarvestableActors.Num() == 0)
-	{
-		return;
-	}
-
-	for (AActor* HarvestableActor : HarvestableActors)
-	{
-		AHarvestableResource* Harvestable = Cast<AHarvestableResource>(HarvestableActor);
-		if (Harvestable == nullptr)
-		{
-			return;
-		}
-
-		FHarvestableResourceSave Save;
-
-		Save.Class = Harvestable->GetClass();
-		Save.Durability = Harvestable->GetDurability();
-		Save.Transform = Harvestable->GetActorTransform();
-
-		OutHarvestableSaves.Add(Save);
-	}
-
-	TArray<AActor*> CollectableActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACollectableResource::StaticClass(), CollectableActors);
-
-	if (CollectableActors.Num() == 0)
-	{
-		return;
-	}
-
-	for (AActor* CollectableActor : CollectableActors)
-	{
-		ACollectableResource* Collectable = Cast<ACollectableResource>(CollectableActor);
-		if (Collectable == nullptr)
-		{
-			return;
-		}
-
-		FCollectableResourceSave Save;
-
-		Save.Class = Collectable->GetClass();
-		Save.Transform = Collectable->GetActorTransform();
-
-		OutCollectableSaves.Add(Save);
-	}
-}
-
-void UResourceSaveHandlerComponent::Load(const TArray<FHarvestableResourceSave>& InHarvestableSaves, const TArray<FCollectableResourceSave>& InCollectableSaves)
-{
-	for (const FHarvestableResourceSave& Harvestable : InHarvestableSaves)
-	{
-		AHarvestableResource* SpawnedHarvestable = GetWorld()->SpawnActor<AHarvestableResource>(Harvestable.Class, Harvestable.Transform);
-		SpawnedHarvestable->SetDurability(Harvestable.Durability);
-	}
-
-	for (const FCollectableResourceSave& Collectable : InCollectableSaves)
-	{
-		ACollectableResource* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableResource>(Collectable.Class, Collectable.Transform);
-	}
-}
-
-FBiomeGenerationData* UResourceSaveHandlerComponent::GetBiomeGenerationData(const FName& BiomeName)
+FBiomeGenerationData* UWorldGenerationHandlerComponent::GetBiomeGenerationData(const FName& BiomeName)
 {
 	if (BiomeGenerationDataTable == nullptr)
 	{
@@ -112,7 +43,7 @@ FBiomeGenerationData* UResourceSaveHandlerComponent::GetBiomeGenerationData(cons
 	return BiomeGenerationDataTable->FindRow<FBiomeGenerationData>(BiomeName, ContextString, true);
 }
 
-void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings& GenerationSettings)
+void UWorldGenerationHandlerComponent::GenerateTrees(const FWorldGenerationSettings& GenerationSettings)
 {
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
@@ -143,7 +74,7 @@ void UResourceSaveHandlerComponent::GenerateTrees(const FWorldGenerationSettings
 	
 }
 
-void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings& GenerationSettings)
+void UWorldGenerationHandlerComponent::GenerateNodes(const FWorldGenerationSettings& GenerationSettings)
 {
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
@@ -173,7 +104,7 @@ void UResourceSaveHandlerComponent::GenerateNodes(const FWorldGenerationSettings
 	}
 }
 
-void UResourceSaveHandlerComponent::GenerateCollectables(const FWorldGenerationSettings& GenerationSettings)
+void UWorldGenerationHandlerComponent::GenerateCollectables(const FWorldGenerationSettings& GenerationSettings)
 {
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
@@ -202,7 +133,7 @@ void UResourceSaveHandlerComponent::GenerateCollectables(const FWorldGenerationS
 	}
 }
 
-bool UResourceSaveHandlerComponent::FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation)
+bool UWorldGenerationHandlerComponent::FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation)
 {
 	int32 HalfWorldCentimetersX = (GenerationSettings.WorldSizeMetersX * 0.5f) * 100;
 	int32 HalfWorldCentimetersY = (GenerationSettings.WorldSizeMetersY * 0.5f) * 100;

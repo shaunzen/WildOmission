@@ -7,24 +7,20 @@
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmission/Core/Structs/BiomeGenerationData.h"
 #include "WildOmissionSaveGame.h"
-#include "ResourceSaveHandlerComponent.generated.h"
+#include "WorldGenerationHandlerComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UResourceSaveHandlerComponent : public UActorComponent
+class WILDOMISSION_API UWorldGenerationHandlerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UResourceSaveHandlerComponent();
+	UWorldGenerationHandlerComponent();
 
 	UFUNCTION()
 	void Generate(const FWorldGenerationSettings& GenerationSettings);
-
-	void Save(TArray<FHarvestableResourceSave>& OutHarvestableSaves, TArray<FCollectableResourceSave>& OutCollectableSaves);
-	
-	void Load(const TArray<FHarvestableResourceSave>& InHarvestableSaves, const TArray<FCollectableResourceSave>& InCollectableSaves);
 
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
 

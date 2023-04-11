@@ -65,45 +65,18 @@ struct FWildOmissionPlayerSave
 };
 
 USTRUCT()
-struct FWorldItemSave
+struct FActorSaveData
 {
 	GENERATED_BODY()
-
-	UPROPERTY()
-	FVector WorldLocation = FVector::ZeroVector;
 	
 	UPROPERTY()
-	FInventoryItem Item;
-
-};
-
-USTRUCT()
-struct FHarvestableResourceSave
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	UClass* Class = nullptr;
+	FName Name;
 	
 	UPROPERTY()
-	int32 Durability = 0;
-
+	FTransform Transform;
+	
 	UPROPERTY()
-	FTransform Transform = FTransform::Identity;
-
-};
-
-USTRUCT()
-struct FCollectableResourceSave
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	UClass* Class = nullptr;
-
-	UPROPERTY()
-	FTransform Transform = FTransform::Identity;
-
+	TArray<uint8> ByteData;
 };
 
 USTRUCT()
@@ -140,15 +113,8 @@ public:
 	FWildOmissionSaveCreationInformation CreationInformation;
 
 	UPROPERTY()
-	TArray<FHarvestableResourceSave> HarvestableResources;
-
-	UPROPERTY()
-	TArray<FCollectableResourceSave> CollectableResources;
-
+	TArray<FActorSaveData> ActorSaves;
+	
 	UPROPERTY()
 	TArray<FWildOmissionPlayerSave> PlayerSaves;
-
-	UPROPERTY()
-	TArray<FWorldItemSave> WorldItems;
-
 };

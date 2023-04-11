@@ -2,9 +2,8 @@
 
 
 #include "SaveHandler.h"
-#include "ResourceSaveHandlerComponent.h"
+#include "WorldGenerationHandlerComponent.h"
 #include "PlayerSaveHandlerComponent.h"
-#include "WorldItemSaveHandlerComponent.h"
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmissionSaveGame.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
@@ -15,10 +14,9 @@ ASaveHandler::ASaveHandler()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	
-	ResourceSaveHandlerComponent = CreateDefaultSubobject<UResourceSaveHandlerComponent>(FName("ResourceSaveHandlerComponent"));
+
+	WorldGenerationHandlerComponent = CreateDefaultSubobject<UWorldGenerationHandlerComponent>(FName("WorldGenerationHandlerComponent"));
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
-	WorldItemSaveHandlerComponent = CreateDefaultSubobject<UWorldItemSaveHandlerComponent>(FName("WorldItemSaveHandlerComponent"));
 }
 
 void ASaveHandler::BeginPlay()
@@ -37,10 +35,9 @@ void ASaveHandler::SaveGame()
 		UE_LOG(LogTemp, Error, TEXT("Aborting save, SaveFile was nullptr."));
 		return;
 	}
-
-	ResourceSaveHandlerComponent->Save(SaveFile->HarvestableResources, SaveFile->CollectableResources);
+	
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
-	WorldItemSaveHandlerComponent->Save(SaveFile->WorldItems);
+	// TODO ActorSaveHandler
 
 	UpdateSaveFile(SaveFile);
 }
@@ -67,8 +64,7 @@ void ASaveHandler::LoadWorld()
 		return;
 	}
 
-	ResourceSaveHandlerComponent->Load(SaveFile->HarvestableResources, SaveFile->CollectableResources);
-	WorldItemSaveHandlerComponent->Load(SaveFile->WorldItems);
+	// TODO ActorSaveHandler
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
@@ -99,12 +95,12 @@ void ASaveHandler::ValidateSave()
 void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
 {
 	FWorldGenerationSettings GenerationSettings;
-	FTimerHandle ResourceGenerationTimerHandle;
-	FTimerDelegate ResourceGenerationTimerDelegate;
+	FTimerHandle WorldGenerationTimerHandle;
+	FTimerDelegate WorldGenerationTimerDelegate;
 	
-	ResourceGenerationTimerDelegate.BindUFunction(ResourceSaveHandlerComponent, FName("Generate"), GenerationSettings);
+	WorldGenerationTimerDelegate.BindUFunction(WorldGenerationHandlerComponent, FName("Generate"), GenerationSettings);
 
-	GetWorld()->GetTimerManager().SetTimer(ResourceGenerationTimerHandle, ResourceGenerationTimerDelegate, 1.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(WorldGenerationTimerHandle, WorldGenerationTimerDelegate, 1.0f, false);
 	
 	SaveToModify->CreationInformation.LevelHasGenerated = true;
 }

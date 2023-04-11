@@ -7,7 +7,7 @@
 #include "SaveHandler.generated.h"
 
 class UWildOmissionSaveGame;
-class UResourceSaveHandlerComponent;
+class UWorldGenerationHandlerComponent;
 class UPlayerSaveHandlerComponent;
 class UWorldItemSaveHandlerComponent;
 
@@ -36,14 +36,11 @@ private:
 	FString CurrentSaveFileName;
 
 	UPROPERTY()
-	UResourceSaveHandlerComponent* ResourceSaveHandlerComponent;
+	UWorldGenerationHandlerComponent* WorldGenerationHandlerComponent;
 
 	UPROPERTY()
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
 	
-	UPROPERTY()
-	UWorldItemSaveHandlerComponent* WorldItemSaveHandlerComponent;
-
 	void GenerateLevel(UWildOmissionSaveGame* SaveToModify);
 
 	void ValidateSave();
