@@ -6,18 +6,20 @@
 #include "GameFramework/Actor.h"
 #include "Blueprint/UserWidget.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
-#include "StorageCrate.generated.h"
+#include "ContainerBase.generated.h"
 
 class UInventoryComponent;
 
 UCLASS()
-class WILDOMISSION_API AStorageCrate : public AActor, public IInteractable
+class WILDOMISSION_API AContainerBase : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AStorageCrate();
+	AContainerBase();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -27,6 +29,9 @@ public:
 	virtual FString PromptText() override;
 	/*End Interactable Interface Implementation*/
 
+	UFUNCTION(Server, Reliable)
+	void Server_UnOccupy();
+
 	UClass* GetWidgetClass() const;
 	UInventoryComponent* GetInventoryComponent() const;
 
@@ -34,7 +39,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
 	
@@ -43,5 +47,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UInventoryComponent* InventoryComponent;
+
+	UPROPERTY(Replicated)
+	bool bOccupied;
 
 };

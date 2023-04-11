@@ -10,6 +10,7 @@ class UTextBlock;
 class UBorder;
 class UCanvasPanel;
 class UWidgetSwitcher;
+class UHorizontalBox;
 
 class UVitalsComponent;
 class UVitalsWidget;
@@ -19,7 +20,7 @@ class UPlayerInventoryWidget;
 class UCraftingMenuWidget;
 class USelectedItemWidget;
 
-class AStorageCrate;
+class AContainerBase;
 
 UCLASS(Abstract)
 class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
@@ -37,7 +38,7 @@ public:
 
 	void RefreshAllMenus();
 	
-	void OpenContainer(AStorageCrate* Container);
+	void OpenContainer(AContainerBase* Container);
 
 	// Setters
 	UFUNCTION(BlueprintCallable)
@@ -69,7 +70,7 @@ private:
 	UWidgetSwitcher* MenuSwitcher;
 
 	UPROPERTY(Meta = (BindWidget))
-	UCanvasPanel* InventoryPanel;
+	UHorizontalBox* InventoryHorizontalBox;
 
 	UPROPERTY(meta = (BindWidget))
 	UPlayerInventoryWidget* PlayerInventory;

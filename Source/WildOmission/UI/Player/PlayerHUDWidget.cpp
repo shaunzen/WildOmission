@@ -5,8 +5,8 @@
 #include "Components/Border.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/WidgetSwitcher.h"
-#include "Components/CanvasPanel.h"
-#include "Components/CanvasPanelSlot.h"
+#include "Components/HorizontalBox.h"
+#include "Components/HorizontalBoxSlot.h"
 #include "WildOmission/UI/Inventory/InventoryWidget.h"
 #include "WildOmission/UI/Inventory/PlayerInventoryWidget.h"
 #include "WildOmission/UI/Inventory/SelectedItemWidget.h"
@@ -17,7 +17,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "VitalsWidget.h"
-#include "WildOmission/Deployables/StorageCrate.h"
+#include "WildOmission/Deployables/ContainerBase.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -38,8 +38,6 @@ void UPlayerHUDWidget::NativeConstruct()
 	}
 
 	PlayerInventory->Setup(PlayerInventoryComponent);
-
-	//RefreshInventoryStates();
 
 	SelectedItem->Hide();
 }
@@ -71,14 +69,14 @@ void UPlayerHUDWidget::RefreshAllMenus()
 	CraftingMenu->Refresh();
 }
 
-void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
+void UPlayerHUDWidget::OpenContainer(AContainerBase* Container)
 {
 	OpenMenuPanel();
 	SwitchToInventoryMenu();
 
 	if (OpenContainerWidget != nullptr || Container->GetWidgetClass() == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot open container, Widget class not defined."));
+		UE_LOG(LogTemp, Warning, TEXT("Cannot open container. Container already open, or Widget class not defined."));
 		return;
 	}
 
@@ -88,29 +86,23 @@ void UPlayerHUDWidget::OpenContainer(AStorageCrate* Container)
 	OpenContainerWidget->CreateSlots();
 	OpenContainerWidget->Open();
 
-
-	UCanvasPanelSlot* OpenContainerSlot = InventoryPanel->AddChildToCanvas(OpenContainerWidget);
+	UHorizontalBoxSlot* OpenContainerSlot = InventoryHorizontalBox->AddChildToHorizontalBox(OpenContainerWidget);
 	if (OpenContainerSlot == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to open container, couldn't get container slot"));
 		return;
 	}
-
-	FAnchors ContainerAnchor;
-	ContainerAnchor.Maximum.Y = 1.0f;
-	ContainerAnchor.Maximum.X = 1.0f;
-	ContainerAnchor.Minimum.X = 1.0f;
-	ContainerAnchor.Minimum.Y = 1.0f;
-
-	OpenContainerSlot->SetAutoSize(true);
-	OpenContainerSlot->SetAnchors(ContainerAnchor);
-	OpenContainerSlot->SetAlignment(FVector2D(1.0f, 1.0f));
-	OpenContainerSlot->SetPosition(FVector2D(-20.0f, -20.0f));
+	
+	FMargin ContainerWidgetPadding;
+	ContainerWidgetPadding.Left = 10.0f;
+	
+	OpenContainerSlot->SetPadding(ContainerWidgetPadding);
+	OpenContainerSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Top);
+	OpenContainerSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Right);
 }
 
 void UPlayerHUDWidget::RefreshInventoryStates()
 {
-	// TODO all open inventory menus refresh
 	APawn* PlayerPawn = GetOwningPlayerPawn();
 	if (PlayerPawn == nullptr)
 	{
@@ -256,7 +248,7 @@ void UPlayerHUDWidget::SwitchToInventoryMenu()
 	bInventoryMenuOpen = true;
 	bCraftingMenuOpen = false;
 
-	MenuSwitcher->SetActiveWidget(InventoryPanel);
+	MenuSwitcher->SetActiveWidget(InventoryHorizontalBox);
 
 	PlayerInventory->Open();
 
@@ -295,6 +287,11 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	
 	if (OpenContainerWidget != nullptr)
 	{
+		if (AContainerBase* OpenedContainer = Cast<AContainerBase>(OpenContainerWidget->GetInventoryComponent()->GetOwner()))
+		{
+			OpenedContainer->Server_UnOccupy();
+		}
+
 		OpenContainerWidget->Close();
 		OpenContainerWidget->RemoveFromParent();
 		OpenContainerWidget = nullptr;

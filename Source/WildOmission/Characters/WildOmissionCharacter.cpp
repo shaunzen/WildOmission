@@ -368,7 +368,7 @@ UCraftingComponent* AWildOmissionCharacter::GetCraftingComponent() const
 // RPC
 //********************************
 
-void AWildOmissionCharacter::Client_OpenContainer_Implementation(AStorageCrate* Container)
+void AWildOmissionCharacter::Client_OpenContainer_Implementation(AContainerBase* Container)
 {
 	if (Container == nullptr || PlayerHUDWidget == nullptr)
 	{

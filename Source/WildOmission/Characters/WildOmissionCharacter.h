@@ -10,7 +10,7 @@
 class UCameraComponent;
 class UCraftingComponent;
 class UNameTagComponent;
-class AStorageCrate;
+class AContainerBase;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
@@ -30,7 +30,7 @@ public:
 	void HandleDeath();
 
 	UFUNCTION(Client, Reliable)
-	void Client_OpenContainer(AStorageCrate* Container);
+	void Client_OpenContainer(AContainerBase* Container);
 	
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;

@@ -1,12 +1,13 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "StorageCrate.h"
+#include "ContainerBase.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
-AStorageCrate::AStorageCrate()
+AContainerBase::AContainerBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -18,45 +19,71 @@ AStorageCrate::AStorageCrate()
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 
 	WidgetClass = nullptr;
+
+	bOccupied = false;
+}
+
+void AContainerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AContainerBase, bOccupied);
 }
 
 // Called when the game starts or when spawned
-void AStorageCrate::BeginPlay()
+void AContainerBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	bOccupied = false;
 }
 
 // Called every frame
-void AStorageCrate::Tick(float DeltaTime)
+void AContainerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void AStorageCrate::Interact(AActor* Interactor)
+void AContainerBase::Interact(AActor* Interactor)
 {
+	if (bOccupied == true)
+	{
+		return;
+	}
+
 	AWildOmissionCharacter* InteractingCharacter = Cast<AWildOmissionCharacter>(Interactor);
 	if (InteractingCharacter == nullptr)
 	{
 		return;
 	}
+	
+	SetOwner(Interactor);
 
 	InteractingCharacter->Client_OpenContainer(this);
-	// RPC to client of user trying to open
+	bOccupied = true;
 }
 
-FString AStorageCrate::PromptText()
+FString AContainerBase::PromptText()
 {
-	return FString("Press 'E' to open Storage Crate");
+	if (bOccupied == false)
+	{
+		return FString("Press 'E' to open Container");
+	}
+
+	return FString("Occupied");
 }
 
-UClass* AStorageCrate::GetWidgetClass() const
+void AContainerBase::Server_UnOccupy_Implementation()
+{
+	bOccupied = false;
+}
+
+UClass* AContainerBase::GetWidgetClass() const
 {
 	return WidgetClass.Get();
 }
 
-UInventoryComponent* AStorageCrate::GetInventoryComponent() const
+UInventoryComponent* AContainerBase::GetInventoryComponent() const
 {
 	return InventoryComponent;
 }
