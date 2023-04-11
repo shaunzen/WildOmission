@@ -123,11 +123,6 @@ FInventoryItem AWorldItem::GetItem() const
 	return Item;
 }
 
-bool AWorldItem::IgnoredInSave() const
-{
-	return IgnoreInSave;
-}
-
 void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	AWorldItem* OtherWorldItem = Cast<AWorldItem>(OtherActor);

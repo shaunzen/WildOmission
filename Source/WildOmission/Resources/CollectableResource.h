@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
+#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "CollectableResource.generated.h"
 
 UCLASS()
-class WILDOMISSION_API ACollectableResource : public AActor, public IInteractable
+class WILDOMISSION_API ACollectableResource : public AActor, public IInteractable, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 	

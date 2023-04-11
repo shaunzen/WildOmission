@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
+#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "WorldItem.generated.h"
 
 UCLASS()
-class WILDOMISSION_API AWorldItem : public AActor, public IInteractable
+class WILDOMISSION_API AWorldItem : public AActor, public IInteractable, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 	
@@ -28,20 +29,16 @@ public:
 	void AddImpulse(FVector Impulse);
 
 	FInventoryItem GetItem() const;
-	bool IgnoredInSave() const;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(Replicated, EditAnywhere)
+	UPROPERTY(Replicated, EditAnywhere, SaveGame)
 	FInventoryItem Item;
 
-	UPROPERTY(EditAnywhere)
-	bool IgnoreInSave;
-
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, SaveGame)
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY()

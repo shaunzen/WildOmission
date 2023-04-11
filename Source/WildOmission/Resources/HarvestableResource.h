@@ -6,10 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "WildOmission/Core/Enums/ToolType.h"
+#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "HarvestableResource.generated.h"
 
 UCLASS()
-class WILDOMISSION_API AHarvestableResource : public AActor
+class WILDOMISSION_API AHarvestableResource : public AActor, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 	
@@ -35,12 +36,13 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> RequiredToolType;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, SaveGame)
 	int32 Durability;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 
+	// TODO is this used?
 	FName Identifier;
 
 };
