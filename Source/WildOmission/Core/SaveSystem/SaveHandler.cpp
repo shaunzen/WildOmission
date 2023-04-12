@@ -3,6 +3,7 @@
 
 #include "SaveHandler.h"
 #include "WorldGenerationHandlerComponent.h"
+#include "ActorSaveHandlerComponent.h"
 #include "PlayerSaveHandlerComponent.h"
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmissionSaveGame.h"
@@ -16,6 +17,9 @@ ASaveHandler::ASaveHandler()
 	PrimaryActorTick.bCanEverTick = false;
 
 	WorldGenerationHandlerComponent = CreateDefaultSubobject<UWorldGenerationHandlerComponent>(FName("WorldGenerationHandlerComponent"));
+	
+	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(FName("ActorSaveHandlerComponent"));
+
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
 }
 
@@ -36,8 +40,8 @@ void ASaveHandler::SaveGame()
 		return;
 	}
 	
+	ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
-	// TODO ActorSaveHandler
 
 	UpdateSaveFile(SaveFile);
 }
@@ -64,7 +68,7 @@ void ASaveHandler::LoadWorld()
 		return;
 	}
 
-	// TODO ActorSaveHandler
+	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves);
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()

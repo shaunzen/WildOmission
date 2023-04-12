@@ -8,8 +8,8 @@
 
 class UWildOmissionSaveGame;
 class UWorldGenerationHandlerComponent;
+class UActorSaveHandlerComponent;
 class UPlayerSaveHandlerComponent;
-class UWorldItemSaveHandlerComponent;
 
 UCLASS()
 class WILDOMISSION_API ASaveHandler : public AActor
@@ -37,6 +37,9 @@ private:
 
 	UPROPERTY()
 	UWorldGenerationHandlerComponent* WorldGenerationHandlerComponent;
+
+	UPROPERTY()
+	UActorSaveHandlerComponent* ActorSaveHandlerComponent;
 
 	UPROPERTY()
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
