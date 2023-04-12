@@ -29,7 +29,7 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 	for (FActorIterator Iterator(GetWorld()); Iterator; ++Iterator)
 	{
 		AActor* Actor = *Iterator;
-		if (IsValid(Actor) || !Actor->Implements<USavableObjectInterface>())
+		if (!IsValid(Actor) || !Actor->Implements<USavableObjectInterface>())
 		{
 			continue;
 		}
