@@ -54,6 +54,11 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 {
 	for (const FActorSaveData& ActorData : InSaves)
 	{
+		if (ActorData.Class == nullptr)
+		{
+			continue;
+		}
+
 		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorData.Class, ActorData.Transform);
 		if (SpawnedActor == nullptr)
 		{
