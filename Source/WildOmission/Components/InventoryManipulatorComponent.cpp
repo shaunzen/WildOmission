@@ -154,21 +154,12 @@ FInventoryItem* UInventoryManipulatorComponent::GetSelectedItemAddress()
 	return &SelectedItem;
 }
 
-void UInventoryManipulatorComponent::RefreshUI()
+void UInventoryManipulatorComponent::BroadcastUpdate()
 {
-	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
-	if (OwnerCharacter == nullptr)
+	if (!InventoryManipulator_OnUpdate.IsBound())
 	{
 		return;
 	}
 
-	// get the player hud
-	UPlayerHUDWidget* OwnerHUDWidget = OwnerCharacter->GetHUDWidget();
-	if (OwnerHUDWidget == nullptr)
-	{
-		return;
-	}
-
-	// call refresh
-	OwnerHUDWidget->RefreshAllMenus();
+	InventoryManipulator_OnUpdate.Broadcast(SelectedItem);
 }

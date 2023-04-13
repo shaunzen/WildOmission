@@ -4,6 +4,27 @@
 #include "SelectedItemWidget.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
+#include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
+
+void USelectedItemWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	APawn* PlayerPawn = GetOwningPlayerPawn();
+	if (PlayerPawn == nullptr)
+	{
+		return;
+	}
+
+	UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (PlayerInventoryManipulator == nullptr)
+	{
+		return;
+	}
+
+	PlayerInventoryManipulator->InventoryManipulator_OnUpdate.AddDynamic(this, &USelectedItemWidget::Refresh);
+}
 
 void USelectedItemWidget::SetItem(UMaterialInstance* ItemIcon, const int32& Quantity)
 {
@@ -35,4 +56,18 @@ FString USelectedItemWidget::GetQuantityString(const int32& Quantity)
 	}
 
 	return QuantityString;
+}
+
+void USelectedItemWidget::Refresh(const FInventoryItem& SelectedItem)
+{
+	if (SelectedItem.Quantity > 0)
+	{
+		Show();
+		FItemData* SelectedItemData = UInventoryComponent::GetItemData(SelectedItem.Name);
+		SetItem(SelectedItemData->Thumbnail, SelectedItem.Quantity);
+	}
+	else
+	{
+		Hide();
+	}
 }

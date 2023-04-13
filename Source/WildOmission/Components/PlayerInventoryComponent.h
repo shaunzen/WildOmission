@@ -44,13 +44,9 @@ public:
 
 	int8 GetToolbarSelectionIndex();
 	
-protected:
-
-	virtual void OnInventoryChange() override;
-
 private:
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnInventoryChange)
+	UPROPERTY(Replicated, ReplicatedUsing = BroadcastInventoryUpdate)
 	int8 ToolbarSelectionIndex;
 
 	UPROPERTY()
@@ -60,6 +56,7 @@ private:
 	// Slot Functions
 	//**************************************************************
 
+	UFUNCTION()
 	void RefreshToolbarSelectionState();
 	
 	bool IsToolbarSlotSelectionValid() const;

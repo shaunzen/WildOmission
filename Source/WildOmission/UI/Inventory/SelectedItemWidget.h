@@ -15,6 +15,8 @@ class WILDOMISSION_API USelectedItemWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	virtual void NativeConstruct() override;
+
 	void SetItem(UMaterialInstance* ItemIcon, const int32& Quantity);
 	
 	void Show();
@@ -30,4 +32,6 @@ private:
 
 	FString GetQuantityString(const int32& Quantity);
 	
+	UFUNCTION()
+	void Refresh(const FInventoryItem& SelectedItem);
 };

@@ -32,7 +32,8 @@ void UPlayerHUDWidget::NativeConstruct()
 	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("MenuBackgroundMouseButtonDown"));
 	
 	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UPlayerInventoryComponent>();
-	if (PlayerInventoryComponent == nullptr)
+	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (PlayerInventoryComponent == nullptr || PlayerInventoryManipulatorComponent == nullptr)
 	{
 		return;
 	}
@@ -61,12 +62,6 @@ bool UPlayerHUDWidget::Initialize()
 	UpdateBrandingText();
 
 	return true;
-}
-
-void UPlayerHUDWidget::RefreshAllMenus()
-{
-	RefreshInventoryStates();
-	CraftingMenu->Refresh();
 }
 
 void UPlayerHUDWidget::OpenContainer(AContainerBase* Container)
@@ -99,39 +94,6 @@ void UPlayerHUDWidget::OpenContainer(AContainerBase* Container)
 	OpenContainerSlot->SetPadding(ContainerWidgetPadding);
 	OpenContainerSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Top);
 	OpenContainerSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Right);
-}
-
-void UPlayerHUDWidget::RefreshInventoryStates()
-{
-	APawn* PlayerPawn = GetOwningPlayerPawn();
-	if (PlayerPawn == nullptr)
-	{
-		return;
-	}
-	
-	UInventoryManipulatorComponent* PlayerInventoryManipulator = PlayerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
-	if (PlayerInventoryManipulator == nullptr)
-	{
-		return;
-	}
-	
-	PlayerInventory->Refresh();
-
-	if (OpenContainerWidget != nullptr)
-	{
-		OpenContainerWidget->Refresh();
-	}
-	
-	if (PlayerInventoryManipulator->IsDragging())
-	{
-		SelectedItem->Show();
-		FItemData* SelectedItemData = UInventoryComponent::GetItemData(PlayerInventoryManipulator->GetSelectedItem().Name);
-		SelectedItem->SetItem(SelectedItemData->Thumbnail, PlayerInventoryManipulator->GetSelectedItem().Quantity);
-	}
-	else
-	{
-		SelectedItem->Hide();
-	}
 }
 
 void UPlayerHUDWidget::ToggleInventoryMenu()
@@ -300,8 +262,6 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
 
 	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
-
-	RefreshInventoryStates();
 }
 
 void UPlayerHUDWidget::UpdateInteractionPrompt()
@@ -383,6 +343,4 @@ void UPlayerHUDWidget::MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const
 	{
 		OwnerInventoryManipulatorComponent->Server_DropSelectedItemInWorld(true);
 	}
-
-	RefreshInventoryStates();
 }

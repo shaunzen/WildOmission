@@ -36,8 +36,6 @@ public:
 
 	virtual bool Initialize() override;
 
-	void RefreshAllMenus();
-	
 	void OpenContainer(AContainerBase* Container);
 
 	// Setters
@@ -100,8 +98,6 @@ private:
 	void SwitchToInventoryMenu();
 	void SwitchToCraftingMenu();
 	void CloseMenuPanel();
-
-	void RefreshInventoryStates();
 
 	void UpdateInteractionPrompt();
 	void UpdateSelectedItemLocation();

@@ -26,18 +26,22 @@ void UPlayerInventoryComponent::BeginPlay()
 	UInventoryManipulatorComponent* OwnerManipulator = OwnerCharacter->FindComponentByClass<UInventoryManipulatorComponent>();
 	
 	ToolbarSelectionIndex = -1;
-	
-	RefreshUI();
 
-	if (!GetOwner()->HasAuthority() || LoadedFromSave == true)
+	if (!GetOwner()->HasAuthority())
 	{
 		return;
 	}
-	FInventoryItem RockItem;
-	RockItem.Name = FName("rock");
-	RockItem.Quantity = 1;
 
-	AddItem(RockItem, OwnerManipulator);
+	Inventory_OnUpdate.AddDynamic(this, &UPlayerInventoryComponent::RefreshToolbarSelectionState);
+
+	if (LoadedFromSave == false)
+	{
+		FInventoryItem RockItem;
+		RockItem.Name = FName("rock");
+		RockItem.Quantity = 1;
+
+		AddItem(RockItem, OwnerManipulator);
+	}
 }
 
 void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -99,19 +103,19 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 void UPlayerInventoryComponent::IncrementToolbarSelection()
 {
 	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex + 1);
-	RefreshUI();
+	BroadcastInventoryUpdate();
 }
 
 void UPlayerInventoryComponent::DecrementToolbarSelection()
 {
 	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex - 1);
-	RefreshUI();
+	BroadcastInventoryUpdate();
 }
 
 void UPlayerInventoryComponent::SetToolbarSelectionIndex(const int8& SelectionIndex)
 {
 	Server_SetToolbarSelectionIndex(SelectionIndex);
-	RefreshUI();
+	BroadcastInventoryUpdate();
 }
 
 void UPlayerInventoryComponent::RemoveHeldItem()
@@ -127,7 +131,7 @@ void UPlayerInventoryComponent::RemoveHeldItem()
 
 	RefreshToolbarSelectionState();
 
-	RefreshUI();
+	BroadcastInventoryUpdate();
 }
 
 //**************************************************************
@@ -142,13 +146,6 @@ int8 UPlayerInventoryComponent::GetToolbarSelectionIndex()
 //**************************************************************
 // Slot Functions
 //**************************************************************
-
-void UPlayerInventoryComponent::OnInventoryChange()
-{
-	Super::OnInventoryChange();
-
-	RefreshToolbarSelectionState();
-}
 
 void UPlayerInventoryComponent::RefreshToolbarSelectionState()
 {

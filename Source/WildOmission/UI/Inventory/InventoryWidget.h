@@ -21,7 +21,10 @@ public:
 	UInventoryWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Setup(UInventoryComponent* InInventoryComponent);
+
+	UFUNCTION()
 	virtual void Refresh();
+	
 	virtual void RefreshSlot(const int32& SlotIndex);
 
 	void CreateSlots();

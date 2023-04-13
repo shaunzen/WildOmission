@@ -7,6 +7,7 @@
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "InventoryManipulatorComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryManipulatorUpdateSignature, const FInventoryItem&, SelectedItem);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UInventoryManipulatorComponent : public UActorComponent
@@ -42,6 +43,8 @@ public:
 
 	bool SelectedItemHasUniqueID(const uint32& UniqueID) const;
 
+	FInventoryManipulatorUpdateSignature InventoryManipulator_OnUpdate;
+
 	FInventoryItem GetSelectedItem();
 	FInventoryItem* GetSelectedItemAddress();
 
@@ -51,13 +54,12 @@ protected:
 
 private:	
 
-	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = RefreshUI)
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = BroadcastUpdate)
 	FInventoryItem SelectedItem;
 
-	UPROPERTY(EditAnywhere, Replicated, ReplicatedUsing = RefreshUI)
+	UPROPERTY(EditAnywhere, Replicated, ReplicatedUsing = BroadcastUpdate)
 	bool Dragging;
 
 	UFUNCTION()
-	void RefreshUI();
-
+	void BroadcastUpdate();
 };

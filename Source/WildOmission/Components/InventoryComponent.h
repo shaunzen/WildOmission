@@ -12,6 +12,8 @@
 
 class UInventoryManipulatorComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdateSignature);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UInventoryComponent : public UActorComponent
 {
@@ -32,6 +34,8 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary = true);
+
+	FInventoryUpdateSignature Inventory_OnUpdate;
 
 	static FItemData* GetItemData(const FName& ItemName);
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
@@ -55,13 +59,11 @@ protected:
 	UPROPERTY(Replicated, VisibleAnywhere)
 	FInventoryContents Contents;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnInventoryChange, VisibleAnywhere)
+	UPROPERTY(Replicated, ReplicatedUsing = BroadcastInventoryUpdate, VisibleAnywhere)
 	TArray<FInventorySlot> Slots;
-	
-	UFUNCTION()
-	virtual void OnInventoryChange();
 
-	virtual void RefreshUI();
+	UFUNCTION()
+	void BroadcastInventoryUpdate();
 
 	bool LoadedFromSave;
 

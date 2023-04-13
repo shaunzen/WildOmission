@@ -35,6 +35,8 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 	// Set default visibility
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
+
+	InInventoryComponent->Inventory_OnUpdate.AddDynamic(this, &UInventoryWidget::Refresh);
 }
 
 void UInventoryWidget::CreateSlots()
