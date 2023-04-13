@@ -24,6 +24,7 @@ class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
 public:
 	UCraftingMenuWidget(const FObjectInitializer& ObjectInializer);
 
+	UFUNCTION()
 	void Refresh();
 
 	void SetSelectedRecipe(const FName& SelectedRecipeName);

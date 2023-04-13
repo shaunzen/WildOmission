@@ -31,12 +31,16 @@ UCraftingMenuWidget::UCraftingMenuWidget(const FObjectInitializer& ObjectInitial
 bool UCraftingMenuWidget::Initialize()
 {
 	bool Success = Super::Initialize();
+	UInventoryComponent* OwnerInventory = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
 	
 	if (Success == false
-		|| CraftButton == nullptr)
+		|| CraftButton == nullptr
+		|| OwnerInventory == nullptr)
 	{
 		return false;
 	}
+
+	OwnerInventory->Inventory_OnUpdate.AddDynamic(this, &UCraftingMenuWidget::Refresh);
 
 	CraftButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::Craft);
 	
