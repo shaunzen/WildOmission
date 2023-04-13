@@ -27,8 +27,6 @@ void UPlayerInventoryComponent::BeginPlay()
 	
 	ToolbarSelectionIndex = -1;
 
-	BroadcastInventoryUpdate();
-
 	if (!GetOwner()->HasAuthority())
 	{
 		return;
