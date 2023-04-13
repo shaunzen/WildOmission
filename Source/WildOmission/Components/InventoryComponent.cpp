@@ -72,7 +72,7 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, UInventoryMan
 		DroppedItem.Quantity = Remaining;
 		Manipulator->SpawnWorldItem(DroppedItem);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("added %s"), *ItemToAdd.Name.ToString());
+
 	BroadcastInventoryUpdate();
 }
 
@@ -223,8 +223,6 @@ void UInventoryComponent::BroadcastInventoryUpdate()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("broadcast inventory update"));
-	
 	OnUpdate.Broadcast();
 }
 

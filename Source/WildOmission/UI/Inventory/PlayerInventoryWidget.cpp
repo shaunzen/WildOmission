@@ -30,7 +30,6 @@ void UPlayerInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 	CreateInventorySlots();
 
 	ToolbarGridPanel->SetVisibility(ESlateVisibility::Visible);
-	UE_LOG(LogTemp, Warning, TEXT("inventory widget setup"));
 }
 
 void UPlayerInventoryWidget::Refresh()
@@ -43,7 +42,6 @@ void UPlayerInventoryWidget::Refresh()
 	}
 
 	Slots[PlayerInventoryComponent->GetToolbarSelectionIndex()]->SetSelected(true);
-	UE_LOG(LogTemp, Warning, TEXT("ref"));
 }
 
 void UPlayerInventoryWidget::CreateInventorySlots()

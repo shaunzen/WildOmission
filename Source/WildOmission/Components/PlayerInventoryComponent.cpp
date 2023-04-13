@@ -27,8 +27,6 @@ void UPlayerInventoryComponent::BeginPlay()
 	
 	ToolbarSelectionIndex = -1;
 
-	UE_LOG(LogTemp, Warning, TEXT("inventory component for player %s begin play"), *GetOwner()->GetActorNameOrLabel());
-
 	BroadcastInventoryUpdate();
 
 	if (!GetOwner()->HasAuthority())
