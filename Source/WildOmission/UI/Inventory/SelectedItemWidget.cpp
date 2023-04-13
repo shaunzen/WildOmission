@@ -23,7 +23,7 @@ void USelectedItemWidget::NativeConstruct()
 		return;
 	}
 
-	PlayerInventoryManipulator->InventoryManipulator_OnUpdate.AddDynamic(this, &USelectedItemWidget::Refresh);
+	PlayerInventoryManipulator->OnSelectionChanged.AddDynamic(this, &USelectedItemWidget::Refresh);
 }
 
 void USelectedItemWidget::SetItem(UMaterialInstance* ItemIcon, const int32& Quantity)

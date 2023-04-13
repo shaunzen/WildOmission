@@ -35,7 +35,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary = true);
 
-	FInventoryUpdateSignature Inventory_OnUpdate;
+	FInventoryUpdateSignature OnUpdate;
 
 	static FItemData* GetItemData(const FName& ItemName);
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
@@ -45,7 +45,6 @@ public:
 	FInventorySlot* GetSlot(const int32& SlotIndex);
 	uint8 GetSlotCount() const;
 
-	// TODO this is a temporary function only for testing
 	TArray<FInventorySlot>& GetSlots();
 	
 	FWildOmissionInventorySave Save();	

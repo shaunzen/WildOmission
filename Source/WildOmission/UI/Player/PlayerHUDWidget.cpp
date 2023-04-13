@@ -39,6 +39,7 @@ void UPlayerHUDWidget::NativeConstruct()
 	}
 
 	PlayerInventory->Setup(PlayerInventoryComponent);
+	PlayerInventory->Refresh();
 
 	SelectedItem->Hide();
 }

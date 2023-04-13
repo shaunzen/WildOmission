@@ -36,7 +36,7 @@ void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
 
-	InInventoryComponent->Inventory_OnUpdate.AddDynamic(this, &UInventoryWidget::Refresh);
+	InInventoryComponent->OnUpdate.AddDynamic(this, &UInventoryWidget::Refresh);
 }
 
 void UInventoryWidget::CreateSlots()
@@ -85,6 +85,11 @@ void UInventoryWidget::Close()
 
 void UInventoryWidget::Refresh()
 {
+	if (InventoryComponent->GetSlots().Num() == 0)
+	{
+		return;
+	}
+
 	for (UInventorySlotWidget* InventorySlot : Slots)
 	{
 		InventorySlot->SetItem(InventoryComponent->GetSlot(InventorySlot->GetIndex())->Item);

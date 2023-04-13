@@ -32,8 +32,6 @@ void UInventoryManipulatorComponent::BeginPlay()
 
 	Dragging = false;
 	SelectedItem.Clear();
-	
-	//RefreshUI();
 }
 
 void UInventoryManipulatorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -52,6 +50,8 @@ void UInventoryManipulatorComponent::StartDragging(const FInventoryItem& ItemToD
 {
 	SelectedItem = ItemToDrag;
 	Dragging = true;
+
+	BroadcastSelectionChanged();
 }
 
 void UInventoryManipulatorComponent::StopDragging()
@@ -63,6 +63,8 @@ void UInventoryManipulatorComponent::StopDragging()
 
 	SelectedItem.Clear();
 	Dragging = false;
+
+	BroadcastSelectionChanged();
 }
 
 void UInventoryManipulatorComponent::SpawnWorldItem(const FInventoryItem& ItemToSpawn)
@@ -154,12 +156,12 @@ FInventoryItem* UInventoryManipulatorComponent::GetSelectedItemAddress()
 	return &SelectedItem;
 }
 
-void UInventoryManipulatorComponent::BroadcastUpdate()
+void UInventoryManipulatorComponent::BroadcastSelectionChanged()
 {
-	if (!InventoryManipulator_OnUpdate.IsBound())
+	if (!OnSelectionChanged.IsBound())
 	{
 		return;
 	}
 
-	InventoryManipulator_OnUpdate.Broadcast(SelectedItem);
+	OnSelectionChanged.Broadcast(SelectedItem);
 }

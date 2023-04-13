@@ -36,6 +36,7 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
 	if (!GetOwner()->HasAuthority() || Slots.Num() == SlotCount)
 	{
 		return;
@@ -71,7 +72,7 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, UInventoryMan
 		DroppedItem.Quantity = Remaining;
 		Manipulator->SpawnWorldItem(DroppedItem);
 	}
-
+	UE_LOG(LogTemp, Warning, TEXT("added %s"), *ItemToAdd.Name.ToString());
 	BroadcastInventoryUpdate();
 }
 
@@ -217,12 +218,14 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 
 void UInventoryComponent::BroadcastInventoryUpdate()
 {
-	if (!Inventory_OnUpdate.IsBound())
+	if (!OnUpdate.IsBound())
 	{
 		return;
 	}
 
-	Inventory_OnUpdate.Broadcast();
+	UE_LOG(LogTemp, Warning, TEXT("broadcast inventory update"));
+	
+	OnUpdate.Broadcast();
 }
 
 bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining)

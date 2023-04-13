@@ -70,13 +70,13 @@ struct FActorSaveData
 	GENERATED_BODY()
 	
 	UPROPERTY()
-	FName Name;
+	FName Name = FName();
 	
 	UPROPERTY()
-	FTransform Transform;
+	FTransform Transform = FTransform::Identity;
 	
 	UPROPERTY()
-	UClass* Class;
+	UClass* Class = nullptr;
 
 	UPROPERTY()
 	TArray<uint8> ByteData;

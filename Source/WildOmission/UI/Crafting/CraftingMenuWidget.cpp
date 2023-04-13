@@ -40,7 +40,7 @@ bool UCraftingMenuWidget::Initialize()
 		return false;
 	}
 
-	OwnerInventory->Inventory_OnUpdate.AddDynamic(this, &UCraftingMenuWidget::Refresh);
+	OwnerInventory->OnUpdate.AddDynamic(this, &UCraftingMenuWidget::Refresh);
 
 	CraftButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::Craft);
 	
