@@ -28,25 +28,26 @@ UCraftingMenuWidget::UCraftingMenuWidget(const FObjectInitializer& ObjectInitial
 	IngredientRowWidgetClass = IngredientRowWidgetBlueprint.Class;
 }
 
-bool UCraftingMenuWidget::Initialize()
+void UCraftingMenuWidget::NativeConstruct()
 {
-	bool Success = Super::Initialize();
-	UInventoryComponent* OwnerInventory = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
-	
-	if (Success == false
-		|| CraftButton == nullptr
-		|| OwnerInventory == nullptr)
+	Super::NativeConstruct();
+	APawn* OwningPawn = GetOwningPlayerPawn();
+	if (OwningPawn == nullptr)
 	{
-		return false;
+		return;
+	}
+
+	UInventoryComponent* OwnerInventory = OwningPawn->FindComponentByClass<UInventoryComponent>();
+	if (OwnerInventory == nullptr)
+	{
+		return;
 	}
 
 	OwnerInventory->OnUpdate.AddDynamic(this, &UCraftingMenuWidget::Refresh);
 
 	CraftButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::Craft);
-	
-	SelectedRecipe = FName("");
 
-	return true;
+	SelectedRecipe = FName("");
 }
 
 void UCraftingMenuWidget::Refresh()

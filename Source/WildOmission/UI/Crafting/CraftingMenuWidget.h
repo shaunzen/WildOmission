@@ -23,15 +23,14 @@ class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	UCraftingMenuWidget(const FObjectInitializer& ObjectInializer);
+	
+	virtual void NativeConstruct() override;
 
 	UFUNCTION()
 	void Refresh();
 
 	void SetSelectedRecipe(const FName& SelectedRecipeName);
 	FName GetSelectedRecipe() const;
-
-protected:
-	virtual bool Initialize() override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
