@@ -23,6 +23,7 @@ class UButton;
 class UTextBlock;
 class UWidgetSwitcher;
 class UEditableTextBox;
+class UCreateWorldButtonWidget;
 
 UCLASS()
 class WILDOMISSION_API UMainMenuWidget : public UUserWidget
@@ -63,8 +64,6 @@ private:
 	UPanelWidget* WorldListBox;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* WorldSelectionPlayButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* WorldSelectionCreateWorldButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* WorldSelectionBrowseServersButton;
 	UPROPERTY(Meta = (BindWidget))
@@ -122,9 +121,10 @@ private:
 	UFUNCTION()
 	void ServerNameOnTextChanged(const FText& Text);
 
-	// TODO Save Row widget class
+	// TODO Make single widget class
 	TSubclassOf<USaveRowWidget> SaveRowWidgetClass;
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
+	TSubclassOf<UCreateWorldButtonWidget> CreateNewWorldButtonClass;
 
 	TOptional<uint32> SelectedSaveIndex;
 	TOptional<uint32> SelectedServerIndex;

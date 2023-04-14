@@ -8,6 +8,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
+#include "CreateWorldButtonWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
@@ -23,6 +24,13 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 		return;
 	}
 	SaveRowWidgetClass = SaveRowWidgetBPClass.Class;
+
+	ConstructorHelpers::FClassFinder<UCreateWorldButtonWidget> CreateNewWorldBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_CreateWorldButton"));
+	if (CreateNewWorldBPClass.Class == nullptr)
+	{
+		return;
+	}
+	CreateNewWorldButtonClass = CreateNewWorldBPClass.Class;
 
 	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_ServerRow"));
 	if (ServerRowWidgetBPClass.Class == nullptr)
@@ -113,6 +121,16 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 
 		WorldListBox->AddChild(Row);
 	}
+
+	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
+	if (CreateWorldButton == nullptr)
+	{
+		return;
+	}
+	
+	CreateWorldButton->GetButton()->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
+
+	WorldListBox->AddChild(CreateWorldButton);
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
