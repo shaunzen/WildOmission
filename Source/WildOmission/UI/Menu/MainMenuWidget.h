@@ -23,6 +23,7 @@ class UButton;
 class UTextBlock;
 class UWidgetSwitcher;
 class UEditableTextBox;
+class UCheckBox;
 class UCreateWorldButtonWidget;
 
 UCLASS()
@@ -68,8 +69,20 @@ private:
 	UButton* WorldSelectionBrowseServersButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* WorldSelectionBackButton;
+	UPROPERTY(Meta = (BindWidget))
+	UCheckBox* MultiplayerCheckBox;
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* HostSettingsMenu;
+	UPROPERTY(Meta = (BindWidget))
+	UEditableTextBox* ServerNameInputBox;
 	
 	/*World Creation Menu*/
+	UPROPERTY(Meta = (BindWidget))
+	UButton* WorldCreationCreateWorldButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* WorldCreationBackButton;
+	UPROPERTY(Meta = (BindWidget))
+	UEditableTextBox* WorldNameInputBox;
 
 	/*Server Browser Menu*/
 
@@ -107,19 +120,19 @@ private:
 	UFUNCTION()
 	void PlaySelectedWorld();
 	UFUNCTION()
-	void CreateSave();
+	void CreateWorld();
 	UFUNCTION()
 	void JoinServer();
-	UFUNCTION()
-	void HostServer();
 	
 	UFUNCTION()
 	void RefreshServerList();
 
 	UFUNCTION()
-	void SaveNameOnTextChanged(const FText& Text);
+	void WorldNameOnTextChanged(const FText& Text);
 	UFUNCTION()
 	void ServerNameOnTextChanged(const FText& Text);
+	UFUNCTION()
+	void MultiplayerCheckboxChanged(bool bIsChecked);
 
 	// TODO Make single widget class
 	TSubclassOf<USaveRowWidget> SaveRowWidgetClass;

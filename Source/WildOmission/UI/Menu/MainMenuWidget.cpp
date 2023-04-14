@@ -8,6 +8,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
+#include "Components/CheckBox.h"
 #include "CreateWorldButtonWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -55,8 +56,14 @@ void UMainMenuWidget::NativeConstruct()
 	WorldSelectionPlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::PlaySelectedWorld);
 	WorldSelectionBrowseServersButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenServerBrowserMenu);
 	WorldSelectionBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+	MultiplayerCheckBox->OnCheckStateChanged.AddDynamic(this, &UMainMenuWidget::MultiplayerCheckboxChanged);
+	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UMainMenuWidget::ServerNameOnTextChanged);
+	HostSettingsMenu->SetVisibility(ESlateVisibility::Collapsed);
 
 	/*World Creation Menu*/
+	WorldCreationCreateWorldButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateWorld);
+	WorldCreationBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+	WorldNameInputBox->OnTextChanged.AddDynamic(this, &UMainMenuWidget::WorldNameOnTextChanged);
 
 	/*Server Browser*/
 }
@@ -275,29 +282,42 @@ void UMainMenuWidget::PlaySelectedWorld()
 		return;
 	}
 
-	FString SaveName;
-	SaveName = GameInstance->GetAllSaveGameSlotNames()[SelectedSaveIndex.GetValue()];
 
-	GameInstance->StartSingleplayer(SaveName);
+	FString SaveName = GameInstance->GetAllSaveGameSlotNames()[SelectedSaveIndex.GetValue()];
+
+	if (MultiplayerCheckBox->IsChecked())
+	{
+		FString ServerName = ServerNameInputBox->GetText().ToString();
+		if (ServerName == FString(""))
+		{
+			return;
+		}
+
+		GameInstance->Host(ServerName, SaveName);
+	}
+	else
+	{
+		GameInstance->StartSingleplayer(SaveName);
+	}
 }
 
-void UMainMenuWidget::CreateSave()
+void UMainMenuWidget::CreateWorld()
 {
 	// Get the name of the save
-	FString NewSaveName;
-	//NewSaveName = SaveNameInputBox->GetText().ToString();
+	FString NewWorldName;
+	NewWorldName = WorldNameInputBox->GetText().ToString();
 
-	if (NewSaveName == FString(""))
+	if (NewWorldName == FString(""))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot create a save without a name."));
+		UE_LOG(LogTemp, Warning, TEXT("Cannot create a world without a name."));
 		return;
 	}
 	
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
 	// Create a new save with that name
-	GameInstance->CreateSave(NewSaveName);
-	// Start singleplayer with that new save
-	GameInstance->StartSingleplayer(NewSaveName);
+	GameInstance->CreateSave(NewWorldName);
+	// Back to Selection Menu
+	OpenWorldSelectionMenu();
 }
 
 void UMainMenuWidget::JoinServer()
@@ -312,19 +332,6 @@ void UMainMenuWidget::JoinServer()
 	GameInstance->Join(SelectedServerIndex.GetValue());
 }
 
-void UMainMenuWidget::HostServer()
-{
-	//UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	//if (GameInstance == nullptr || SelectedSaveIndex.IsSet() == false || ServerNameInputBox->GetText().ToString() == FString(""))
-	//{
-	//	return;
-	//}
-
-	//FString ServerName = ServerNameInputBox->GetText().ToString();
-	//FString SaveName = GameInstance->GetAllSaveGameSlotNames()[SelectedSaveIndex.GetValue()];
-
-	//GameInstance->Host(ServerName, SaveName);
-}
 
 void UMainMenuWidget::RefreshServerList()
 {
@@ -341,26 +348,38 @@ void UMainMenuWidget::RefreshServerList()
 	//GameInstance->RefreshServerList();
 }
 
-void UMainMenuWidget::SaveNameOnTextChanged(const FText& Text)
+void UMainMenuWidget::WorldNameOnTextChanged(const FText& Text)
 {
-	//FString TextString = Text.ToString();
+	FString TextString = Text.ToString();
 
-	//if (TextString.Len() > 16)
-	//{
-	//	TextString = TextString.LeftChop(1);
-	//}
+	if (TextString.Len() > 16)
+	{
+		TextString = TextString.LeftChop(1);
+	}
 
-	//SaveNameInputBox->SetText(FText::FromString(TextString));
+	WorldNameInputBox->SetText(FText::FromString(TextString));
 }
 
 void UMainMenuWidget::ServerNameOnTextChanged(const FText& Text)
 {
-	//FString TextString = Text.ToString();
+	FString TextString = Text.ToString();
 
-	//if (TextString.Len() > 16)
-	//{
-	//	TextString = TextString.LeftChop(1);
-	//}
+	if (TextString.Len() > 16)
+	{
+		TextString = TextString.LeftChop(1);
+	}
 
-	//ServerNameInputBox->SetText(FText::FromString(TextString));
+	ServerNameInputBox->SetText(FText::FromString(TextString));
+}
+
+void UMainMenuWidget::MultiplayerCheckboxChanged(bool bIsChecked)
+{
+	if (bIsChecked == false)
+	{
+		HostSettingsMenu->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else
+	{
+		HostSettingsMenu->SetVisibility(ESlateVisibility::Visible);
+	}
 }
