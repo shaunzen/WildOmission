@@ -32,18 +32,15 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	ServerRowWidgetClass = ServerRowWidgetBPClass.Class;
 }
 
-bool UMainMenuWidget::Initialize()
+void UMainMenuWidget::NativeConstruct()
 {
-	bool Success = Super::Initialize();
-	if (Success == false)
-	{
-		return false;
-	}
+	Super::NativeConstruct();
 
 	// Bind button delegates
+	
 	/*Main Menu*/
 
-	
+
 	/*Singleplayer*/
 
 
@@ -53,8 +50,6 @@ bool UMainMenuWidget::Initialize()
 
 
 	/*Host Server*/
-
-	return true;
 }
 
 void UMainMenuWidget::Setup()
@@ -210,14 +205,43 @@ void UMainMenuWidget::UpdateServerListChildren()
 //****************************
 void UMainMenuWidget::OpenMainMenu()
 {
-	if (MenuSwitcher == nullptr)
+	if (MenuSwitcher == nullptr || MainMenu == nullptr)
 	{
 		return;
 	}
 
-	//MenuSwitcher->SetActiveWidget(MainMenu);
+	MenuSwitcher->SetActiveWidget(MainMenu);
 }
 
+void UMainMenuWidget::OpenWorldSelectionMenu()
+{
+	if (MenuSwitcher == nullptr || WorldSelectionMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
+}
+
+void UMainMenuWidget::OpenWorldCreationMenu()
+{
+	if (MenuSwitcher == nullptr || WorldCreationMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(WorldCreationMenu);
+}
+
+void UMainMenuWidget::OpenServerBrowserMenu()
+{
+	if (MenuSwitcher == nullptr || ServerBrowserMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(ServerBrowserMenu);
+}
 
 void UMainMenuWidget::ExitGame()
 {

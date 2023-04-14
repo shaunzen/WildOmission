@@ -43,9 +43,6 @@ public:
 	void SelectSaveIndex(uint32 Index);
 	void SelectServerIndex(uint32 Index);
 
-protected:
-	virtual bool Initialize() override;
-
 private:
 	//*
 	// Bind Widgets
@@ -54,6 +51,12 @@ private:
 	UWidgetSwitcher* MenuSwitcher;
 
 	/*Main Menu*/
+	UPROPERTY(Meta = (BindWidget))
+	UButton* PlayButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* OptionsButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* ExitButton;
 
 	/*Singleplayer Menu*/
 
@@ -65,13 +68,29 @@ private:
 
 	
 	/*Menus*/
-
-
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* MainMenu;
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* WorldSelectionMenu;
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* ServerBrowserMenu;
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* WorldCreationMenu;
+	
 	//*
 	// Menu Functions
 	//*
 	UFUNCTION()
 	void OpenMainMenu();
+
+	UFUNCTION()
+	void OpenWorldSelectionMenu();
+
+	UFUNCTION()
+	void OpenWorldCreationMenu();
+
+	UFUNCTION()
+	void OpenServerBrowserMenu();
 
 	UFUNCTION()
 	void ExitGame();
