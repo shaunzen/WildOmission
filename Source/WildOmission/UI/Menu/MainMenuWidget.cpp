@@ -39,17 +39,18 @@ void UMainMenuWidget::NativeConstruct()
 	// Bind button delegates
 	
 	/*Main Menu*/
+	PlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+	// TODO Settings Menu
+	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
+	/*World Selection Menu*/
+	WorldSelectionPlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::PlaySelectedWorld);
+	WorldSelectionBrowseServersButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenServerBrowserMenu);
+	WorldSelectionBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 
-	/*Singleplayer*/
+	/*World Creation Menu*/
 
-
-	/*Multiplayer*/
-
-	/*New Save*/
-
-
-	/*Host Server*/
+	/*Server Browser*/
 }
 
 void UMainMenuWidget::Setup()
@@ -80,45 +81,38 @@ void UMainMenuWidget::Teardown()
 
 void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 {
-	//UWorld* World = GetWorld();
-	//if (World == nullptr)
-	//{
-	//	return;
-	//}
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
 	
-	//SaveList->ClearChildren();
-	//HostSaveList->ClearChildren();
+	WorldListBox->ClearChildren();
 	
-	//uint32 i = 0;
-	//for (const FString& SaveName : SaveNames)
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Found Save: %s"), *SaveName);
-	//	
-	//	UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveName, 0));
-	//	USaveRowWidget* Row = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
-	//	USaveRowWidget* HostRow = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
-	//	if (Row == nullptr || HostRow == nullptr || SaveGame == nullptr)
-	//	{
-	//		return;
-	//	}
-	//	
-	//	FString DaysPlayedString = FString::Printf(TEXT("%i Days"), SaveGame->DaysPlayed);
-	//	FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), SaveGame->CreationInformation.Month, SaveGame->CreationInformation.Day, SaveGame->CreationInformation.Year);
+	uint32 i = 0;
+	for (const FString& SaveName : SaveNames)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Save: %s"), *SaveName);
+		
+		UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveName, 0));
+		USaveRowWidget* Row = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
+		if (Row == nullptr || SaveGame == nullptr)
+		{
+			return;
+		}
+		
+		FString DaysPlayedString = FString::Printf(TEXT("%i Days"), SaveGame->DaysPlayed);
+		FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), SaveGame->CreationInformation.Month, SaveGame->CreationInformation.Day, SaveGame->CreationInformation.Year);
 
-	//	Row->SaveName->SetText(FText::FromString(SaveName));
-	//	Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
-	//	Row->DateCreated->SetText(FText::FromString(CreationString));
-	//	Row->Setup(this, i);
+		Row->SaveName->SetText(FText::FromString(SaveName));
+		Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
+		Row->DateCreated->SetText(FText::FromString(CreationString));
+		Row->Setup(this, i);
 
-	//	HostRow->SaveName->SetText(FText::FromString(SaveName));
-	//	HostRow->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
-	//	HostRow->DateCreated->SetText(FText::FromString(CreationString));
-	//	HostRow->Setup(this, i);
-	//	++i;
+		++i;
 
-	//	SaveList->AddChild(Row);
-	//	HostSaveList->AddChild(HostRow);
-	//}
+		WorldListBox->AddChild(Row);
+	}
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
@@ -170,21 +164,19 @@ void UMainMenuWidget::SelectServerIndex(uint32 Index)
 
 void UMainMenuWidget::UpdateSaveListChildren()
 {
-	//for (int32 i = 0; i < SaveList->GetChildrenCount(); ++i)
-	//{
-	//	USaveRowWidget* Row = Cast<USaveRowWidget>(SaveList->GetChildAt(i));
-	//	USaveRowWidget* HostRow = Cast<USaveRowWidget>(HostSaveList->GetChildAt(i));
-	//	
-	//	if (Row == nullptr || HostRow == nullptr)
-	//	{
-	//		return;
-	//	}
+	for (int32 i = 0; i < WorldListBox->GetChildrenCount(); ++i)
+	{
+		USaveRowWidget* Row = Cast<USaveRowWidget>(WorldListBox->GetChildAt(i));
+		
+		if (Row == nullptr)
+		{
+			return;
+		}
 
-	//	bool RowSelected = (SelectedSaveIndex.IsSet() && SelectedSaveIndex.GetValue() == i);
+		bool RowSelected = (SelectedSaveIndex.IsSet() && SelectedSaveIndex.GetValue() == i);
 
-	//	Row->Selected = RowSelected;
-	//	HostRow->Selected = RowSelected;
-	//}
+		Row->Selected = RowSelected;
+	}
 }
 
 void UMainMenuWidget::UpdateServerListChildren()
@@ -215,11 +207,13 @@ void UMainMenuWidget::OpenMainMenu()
 
 void UMainMenuWidget::OpenWorldSelectionMenu()
 {
-	if (MenuSwitcher == nullptr || WorldSelectionMenu == nullptr)
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (MenuSwitcher == nullptr || WorldSelectionMenu == nullptr || GameInstance == nullptr)
 	{
 		return;
 	}
 
+	SetSaveList(GameInstance->GetAllSaveGameSlotNames());
 	MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
 }
 
@@ -253,7 +247,8 @@ void UMainMenuWidget::ExitGame()
 
 	PlayerController->ConsoleCommand(FString("quit"));
 }
-void UMainMenuWidget::LoadSave()
+
+void UMainMenuWidget::PlaySelectedWorld()
 {
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
 	

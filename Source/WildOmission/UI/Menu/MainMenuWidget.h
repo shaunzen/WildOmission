@@ -58,24 +58,34 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ExitButton;
 
-	/*Singleplayer Menu*/
-
-
-	/*Multiplayer Menu*/
-
+	/*World Selection Menu*/
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* WorldListBox;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* WorldSelectionPlayButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* WorldSelectionCreateWorldButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* WorldSelectionBrowseServersButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* WorldSelectionBackButton;
 	
-	/*New Save Menu*/
+	/*World Creation Menu*/
 
-	
+	/*Server Browser Menu*/
+
 	/*Menus*/
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* MainMenu;
+
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* WorldSelectionMenu;
-	UPROPERTY(Meta = (BindWidget))
-	UWidget* ServerBrowserMenu;
+
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* WorldCreationMenu;
+
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* ServerBrowserMenu;
 	
 	//*
 	// Menu Functions
@@ -96,7 +106,7 @@ private:
 	void ExitGame();
 
 	UFUNCTION()
-	void LoadSave();
+	void PlaySelectedWorld();
 	UFUNCTION()
 	void CreateSave();
 	UFUNCTION()
