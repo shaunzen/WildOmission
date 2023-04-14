@@ -31,6 +31,8 @@ class WILDOMISSION_API UMainMenuWidget : public UUserWidget
 
 public:
 	UMainMenuWidget(const FObjectInitializer& ObjectInitializer);
+	
+	virtual void NativeConstruct() override;
 
 	void Setup();
 	void Teardown();
@@ -40,6 +42,7 @@ public:
 	
 	void SelectSaveIndex(uint32 Index);
 	void SelectServerIndex(uint32 Index);
+
 protected:
 	virtual bool Initialize() override;
 
@@ -51,83 +54,27 @@ private:
 	UWidgetSwitcher* MenuSwitcher;
 
 	/*Main Menu*/
-	UPROPERTY(Meta = (BindWidget))
-	UButton* SingleplayerButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* MultiplayerButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* ExitButton;
 
 	/*Singleplayer Menu*/
-	UPROPERTY(Meta = (BindWidget))
-	UButton* SingleplayerSelectSaveButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* SingleplayerNewSaveButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* SingleplayerBackButton;
-	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* SaveList;
+
 
 	/*Multiplayer Menu*/
-	UPROPERTY(Meta = (BindWidget))
-	UButton* MultiplayerJoinButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* MultiplayerHostButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* MultiplayerBackButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* RefreshServerListButton;
-	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* RefreshServerListButtonText;
-	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* ServerList;
+
 	
 	/*New Save Menu*/
-	UPROPERTY(Meta = (BindWidget))
-	UEditableTextBox* SaveNameInputBox;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* NewSaveCreateButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* NewSaveBackButton;
-	
-	/*Host Menu*/
-	UPROPERTY(Meta = (BindWidget))
-	UEditableTextBox* ServerNameInputBox;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* HostMenuHostButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* HostMenuBackButton;
-	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* HostSaveList;
+
 	
 	/*Menus*/
-	UPROPERTY(Meta = (BindWidget))
-	UWidget* MainMenu;
-	UPROPERTY(Meta = (BindWidget))
-	UWidget* SingleplayerMenu;
-	UPROPERTY(Meta = (BindWidget))
-	UWidget* MultiplayerMenu;
-	UPROPERTY(Meta = (BindWidget))
-	UWidget* NewSaveMenu;
-	UPROPERTY(Meta = (BindWidget))
-	UWidget* HostMenu;
+
 
 	//*
 	// Menu Functions
 	//*
 	UFUNCTION()
 	void OpenMainMenu();
-	UFUNCTION()
-	void OpenMultiplayerMenu();
-	UFUNCTION()
-	void OpenSingleplayerMenu();
-	UFUNCTION()
-	void ExitGame();
 
 	UFUNCTION()
-	void OpenNewSaveMenu();
-	UFUNCTION()
-	void OpenHostMenu();
+	void ExitGame();
 
 	UFUNCTION()
 	void LoadSave();

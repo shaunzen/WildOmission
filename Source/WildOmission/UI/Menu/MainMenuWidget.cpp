@@ -35,50 +35,24 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 bool UMainMenuWidget::Initialize()
 {
 	bool Success = Super::Initialize();
-	if (Success == false
-		|| SingleplayerButton == nullptr
-		|| MultiplayerButton == nullptr
-		|| ExitButton == nullptr
-		|| SingleplayerSelectSaveButton == nullptr
-		|| SingleplayerNewSaveButton == nullptr
-		|| SingleplayerBackButton == nullptr
-		|| MultiplayerJoinButton == nullptr
-		|| MultiplayerHostButton == nullptr
-		|| MultiplayerBackButton == nullptr
-		|| RefreshServerListButton == nullptr
-		|| NewSaveCreateButton == nullptr
-		|| NewSaveBackButton == nullptr
-		|| HostMenuHostButton == nullptr
-		|| HostMenuBackButton == nullptr)
+	if (Success == false)
 	{
 		return false;
 	}
 
 	// Bind button delegates
 	/*Main Menu*/
-	SingleplayerButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenSingleplayerMenu);
-	MultiplayerButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMultiplayerMenu);
-	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
+
 	
 	/*Singleplayer*/
-	SingleplayerSelectSaveButton->OnClicked.AddDynamic(this, &UMainMenuWidget::LoadSave);
-	SingleplayerNewSaveButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenNewSaveMenu);
-	SingleplayerBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+
 
 	/*Multiplayer*/
-	MultiplayerJoinButton->OnClicked.AddDynamic(this, &UMainMenuWidget::JoinServer);
-	MultiplayerHostButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenHostMenu);
-	MultiplayerBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
-	RefreshServerListButton->OnClicked.AddDynamic(this, &UMainMenuWidget::RefreshServerList);
+
 	/*New Save*/
-	NewSaveCreateButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateSave);
-	NewSaveBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenSingleplayerMenu);
-	SaveNameInputBox->OnTextChanged.AddDynamic(this, &UMainMenuWidget::SaveNameOnTextChanged);
+
 
 	/*Host Server*/
-	HostMenuHostButton->OnClicked.AddDynamic(this, &UMainMenuWidget::HostServer);
-	HostMenuBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMultiplayerMenu);
-	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UMainMenuWidget::ServerNameOnTextChanged);
 
 	return true;
 }
@@ -111,80 +85,80 @@ void UMainMenuWidget::Teardown()
 
 void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
+	//UWorld* World = GetWorld();
+	//if (World == nullptr)
+	//{
+	//	return;
+	//}
+	
+	//SaveList->ClearChildren();
+	//HostSaveList->ClearChildren();
+	
+	//uint32 i = 0;
+	//for (const FString& SaveName : SaveNames)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Found Save: %s"), *SaveName);
+	//	
+	//	UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveName, 0));
+	//	USaveRowWidget* Row = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
+	//	USaveRowWidget* HostRow = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
+	//	if (Row == nullptr || HostRow == nullptr || SaveGame == nullptr)
+	//	{
+	//		return;
+	//	}
+	//	
+	//	FString DaysPlayedString = FString::Printf(TEXT("%i Days"), SaveGame->DaysPlayed);
+	//	FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), SaveGame->CreationInformation.Month, SaveGame->CreationInformation.Day, SaveGame->CreationInformation.Year);
 
-	SaveList->ClearChildren();
-	HostSaveList->ClearChildren();
+	//	Row->SaveName->SetText(FText::FromString(SaveName));
+	//	Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
+	//	Row->DateCreated->SetText(FText::FromString(CreationString));
+	//	Row->Setup(this, i);
 
-	uint32 i = 0;
-	for (const FString& SaveName : SaveNames)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Found Save: %s"), *SaveName);
-		
-		UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveName, 0));
-		USaveRowWidget* Row = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
-		USaveRowWidget* HostRow = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
-		if (Row == nullptr || HostRow == nullptr || SaveGame == nullptr)
-		{
-			return;
-		}
-		
-		FString DaysPlayedString = FString::Printf(TEXT("%i Days"), SaveGame->DaysPlayed);
-		FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), SaveGame->CreationInformation.Month, SaveGame->CreationInformation.Day, SaveGame->CreationInformation.Year);
+	//	HostRow->SaveName->SetText(FText::FromString(SaveName));
+	//	HostRow->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
+	//	HostRow->DateCreated->SetText(FText::FromString(CreationString));
+	//	HostRow->Setup(this, i);
+	//	++i;
 
-		Row->SaveName->SetText(FText::FromString(SaveName));
-		Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
-		Row->DateCreated->SetText(FText::FromString(CreationString));
-		Row->Setup(this, i);
-
-		HostRow->SaveName->SetText(FText::FromString(SaveName));
-		HostRow->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
-		HostRow->DateCreated->SetText(FText::FromString(CreationString));
-		HostRow->Setup(this, i);
-		++i;
-
-		SaveList->AddChild(Row);
-		HostSaveList->AddChild(HostRow);
-	}
+	//	SaveList->AddChild(Row);
+	//	HostSaveList->AddChild(HostRow);
+	//}
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 {
-	UWorld* World = GetWorld();
+	//UWorld* World = GetWorld();
 
-	if (World == nullptr)
-	{
-		return;
-	}
+	//if (World == nullptr)
+	//{
+	//	return;
+	//}
 
-	ServerList->ClearChildren();
+	//ServerList->ClearChildren();
 
-	uint32 i = 0;
-	for (const FServerData& ServerData : ServerNames)
-	{
-		UServerRowWidget* Row = CreateWidget<UServerRowWidget>(World, ServerRowWidgetClass);
-		if (Row == nullptr)
-		{
-			return;
-		}
+	//uint32 i = 0;
+	//for (const FServerData& ServerData : ServerNames)
+	//{
+	//	UServerRowWidget* Row = CreateWidget<UServerRowWidget>(World, ServerRowWidgetClass);
+	//	if (Row == nullptr)
+	//	{
+	//		return;
+	//	}
 
-		Row->ServerName->SetText(FText::FromString(ServerData.Name));
-		FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
-		Row->HostUser->SetText(FText::FromString(HostString));
-		FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
-		Row->ConnectionFraction->SetText(FText::FromString(FractionString));
-		Row->Setup(this, i);
-		++i;
+	//	Row->ServerName->SetText(FText::FromString(ServerData.Name));
+	//	FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
+	//	Row->HostUser->SetText(FText::FromString(HostString));
+	//	FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
+	//	Row->ConnectionFraction->SetText(FText::FromString(FractionString));
+	//	Row->Setup(this, i);
+	//	++i;
 
-		ServerList->AddChild(Row);
-	}
+	//	ServerList->AddChild(Row);
+	//}
 
-	FString RefreshString = FString("Refresh");
-	RefreshServerListButtonText->SetText(FText::FromString(RefreshString));
+	//FString RefreshString = FString("Refresh");
+	//RefreshServerListButtonText->SetText(FText::FromString(RefreshString));
 }
 
 void UMainMenuWidget::SelectSaveIndex(uint32 Index)
@@ -201,26 +175,26 @@ void UMainMenuWidget::SelectServerIndex(uint32 Index)
 
 void UMainMenuWidget::UpdateSaveListChildren()
 {
-	for (int32 i = 0; i < SaveList->GetChildrenCount(); ++i)
-	{
-		USaveRowWidget* Row = Cast<USaveRowWidget>(SaveList->GetChildAt(i));
-		USaveRowWidget* HostRow = Cast<USaveRowWidget>(HostSaveList->GetChildAt(i));
-		
-		if (Row == nullptr || HostRow == nullptr)
-		{
-			return;
-		}
+	//for (int32 i = 0; i < SaveList->GetChildrenCount(); ++i)
+	//{
+	//	USaveRowWidget* Row = Cast<USaveRowWidget>(SaveList->GetChildAt(i));
+	//	USaveRowWidget* HostRow = Cast<USaveRowWidget>(HostSaveList->GetChildAt(i));
+	//	
+	//	if (Row == nullptr || HostRow == nullptr)
+	//	{
+	//		return;
+	//	}
 
-		bool RowSelected = (SelectedSaveIndex.IsSet() && SelectedSaveIndex.GetValue() == i);
+	//	bool RowSelected = (SelectedSaveIndex.IsSet() && SelectedSaveIndex.GetValue() == i);
 
-		Row->Selected = RowSelected;
-		HostRow->Selected = RowSelected;
-	}
+	//	Row->Selected = RowSelected;
+	//	HostRow->Selected = RowSelected;
+	//}
 }
 
 void UMainMenuWidget::UpdateServerListChildren()
 {
-	for (int32 i = 0; i < ServerList->GetChildrenCount(); ++i)
+	/*for (int32 i = 0; i < ServerList->GetChildrenCount(); ++i)
 	{
 		UServerRowWidget* Row = Cast<UServerRowWidget>(ServerList->GetChildAt(i));
 		if (Row == nullptr)
@@ -228,7 +202,7 @@ void UMainMenuWidget::UpdateServerListChildren()
 			return;
 		}
 		Row->Selected = (SelectedServerIndex.IsSet() && SelectedServerIndex.GetValue() == i);
-	}
+	}*/
 }
 
 //****************************
@@ -241,36 +215,9 @@ void UMainMenuWidget::OpenMainMenu()
 		return;
 	}
 
-	MenuSwitcher->SetActiveWidget(MainMenu);
+	//MenuSwitcher->SetActiveWidget(MainMenu);
 }
 
-void UMainMenuWidget::OpenSingleplayerMenu()
-{
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-
-	if (MenuSwitcher == nullptr || GameInstance == nullptr)
-	{
-		return;
-	}
-	
-	SetSaveList(GameInstance->GetAllSaveGameSlotNames());
-	MenuSwitcher->SetActiveWidget(SingleplayerMenu);
-}
-
-void UMainMenuWidget::OpenMultiplayerMenu()
-{
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	if (MenuSwitcher == nullptr || GameInstance == nullptr)
-	{
-		return;
-	}
-
-	FString WaitingString = FString("...");
-	RefreshServerListButtonText->SetText(FText::FromString(WaitingString));
-
-	MenuSwitcher->SetActiveWidget(MultiplayerMenu);
-	GameInstance->RefreshServerList();
-}
 
 void UMainMenuWidget::ExitGame()
 {
@@ -282,33 +229,6 @@ void UMainMenuWidget::ExitGame()
 
 	PlayerController->ConsoleCommand(FString("quit"));
 }
-
-void UMainMenuWidget::OpenNewSaveMenu()
-{
-	if (MenuSwitcher == nullptr)
-	{
-		return;
-	}
-
-	SaveNameInputBox->SetText(FText::FromString(FString("")));
-	
-	MenuSwitcher->SetActiveWidget(NewSaveMenu);
-}
-
-void UMainMenuWidget::OpenHostMenu()
-{
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	if (MenuSwitcher == nullptr || GameInstance == nullptr)
-	{
-		return;
-	}
-
-	ServerNameInputBox->SetText(FText::FromString(FString("")));
-	
-	SetSaveList(GameInstance->GetAllSaveGameSlotNames());
-	MenuSwitcher->SetActiveWidget(HostMenu);
-}
-
 void UMainMenuWidget::LoadSave()
 {
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
@@ -328,7 +248,7 @@ void UMainMenuWidget::CreateSave()
 {
 	// Get the name of the save
 	FString NewSaveName;
-	NewSaveName = SaveNameInputBox->GetText().ToString();
+	//NewSaveName = SaveNameInputBox->GetText().ToString();
 
 	if (NewSaveName == FString(""))
 	{
@@ -357,53 +277,53 @@ void UMainMenuWidget::JoinServer()
 
 void UMainMenuWidget::HostServer()
 {
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	if (GameInstance == nullptr || SelectedSaveIndex.IsSet() == false || ServerNameInputBox->GetText().ToString() == FString(""))
-	{
-		return;
-	}
+	//UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	//if (GameInstance == nullptr || SelectedSaveIndex.IsSet() == false || ServerNameInputBox->GetText().ToString() == FString(""))
+	//{
+	//	return;
+	//}
 
-	FString ServerName = ServerNameInputBox->GetText().ToString();
-	FString SaveName = GameInstance->GetAllSaveGameSlotNames()[SelectedSaveIndex.GetValue()];
+	//FString ServerName = ServerNameInputBox->GetText().ToString();
+	//FString SaveName = GameInstance->GetAllSaveGameSlotNames()[SelectedSaveIndex.GetValue()];
 
-	GameInstance->Host(ServerName, SaveName);
+	//GameInstance->Host(ServerName, SaveName);
 }
 
 void UMainMenuWidget::RefreshServerList()
 {
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	
-	if (GameInstance == nullptr)
-	{
-		return;
-	}
+	//UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	//
+	//if (GameInstance == nullptr)
+	//{
+	//	return;
+	//}
 
-	FString WaitingString = FString("...");
-	RefreshServerListButtonText->SetText(FText::FromString(WaitingString));
-	
-	GameInstance->RefreshServerList();
+	//FString WaitingString = FString("...");
+	//RefreshServerListButtonText->SetText(FText::FromString(WaitingString));
+	//
+	//GameInstance->RefreshServerList();
 }
 
 void UMainMenuWidget::SaveNameOnTextChanged(const FText& Text)
 {
-	FString TextString = Text.ToString();
+	//FString TextString = Text.ToString();
 
-	if (TextString.Len() > 16)
-	{
-		TextString = TextString.LeftChop(1);
-	}
+	//if (TextString.Len() > 16)
+	//{
+	//	TextString = TextString.LeftChop(1);
+	//}
 
-	SaveNameInputBox->SetText(FText::FromString(TextString));
+	//SaveNameInputBox->SetText(FText::FromString(TextString));
 }
 
 void UMainMenuWidget::ServerNameOnTextChanged(const FText& Text)
 {
-	FString TextString = Text.ToString();
+	//FString TextString = Text.ToString();
 
-	if (TextString.Len() > 16)
-	{
-		TextString = TextString.LeftChop(1);
-	}
+	//if (TextString.Len() > 16)
+	//{
+	//	TextString = TextString.LeftChop(1);
+	//}
 
-	ServerNameInputBox->SetText(FText::FromString(TextString));
+	//ServerNameInputBox->SetText(FText::FromString(TextString));
 }
