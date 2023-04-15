@@ -110,6 +110,16 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 	
 	WorldListBox->ClearChildren();
 	
+	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
+	if (CreateWorldButton == nullptr)
+	{
+		return;
+	}
+
+	CreateWorldButton->GetButton()->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
+
+	WorldListBox->AddChild(CreateWorldButton);
+
 	uint32 i = 0;
 	for (const FString& WorldName : SaveNames)
 	{
@@ -134,16 +144,6 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 
 		WorldListBox->AddChild(Row);
 	}
-
-	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
-	if (CreateWorldButton == nullptr)
-	{
-		return;
-	}
-	
-	CreateWorldButton->GetButton()->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
-
-	WorldListBox->AddChild(CreateWorldButton);
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
