@@ -93,7 +93,7 @@ void ASaveHandler::ValidateSave()
 
 	CurrentSaveFileName = FString("PIE_Save");
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	GameInstance->CreateSave(CurrentSaveFileName);
+	GameInstance->CreateWorld(CurrentSaveFileName);
 }
 
 void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)

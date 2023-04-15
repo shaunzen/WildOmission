@@ -17,7 +17,7 @@ struct FServerData
 	FString HostUsername;
 };
 
-class USaveRowWidget;
+class UWorldRowWidget;
 class UServerRowWidget;
 class UButton;
 class UTextBlock;
@@ -151,7 +151,7 @@ private:
 	void MultiplayerCheckboxChanged(bool bIsChecked);
 
 	// TODO Make single widget class
-	TSubclassOf<USaveRowWidget> SaveRowWidgetClass;
+	TSubclassOf<UWorldRowWidget> WorldRowWidgetClass;
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
 	TSubclassOf<UCreateWorldButtonWidget> CreateNewWorldButtonClass;
 

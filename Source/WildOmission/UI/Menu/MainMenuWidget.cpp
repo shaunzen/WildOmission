@@ -2,7 +2,7 @@
 
 
 #include "MainMenuWidget.h"
-#include "SaveRowWidget.h"
+#include "WorldRowWidget.h"
 #include "ServerRowWidget.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
@@ -19,12 +19,12 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 {
 	bIsFocusable = true;
 	
-	ConstructorHelpers::FClassFinder<USaveRowWidget> SaveRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_SaveRow"));
-	if (SaveRowWidgetBPClass.Class == nullptr)
+	ConstructorHelpers::FClassFinder<UWorldRowWidget> WorldRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_WorldRow"));
+	if (WorldRowWidgetBPClass.Class == nullptr)
 	{
 		return;
 	}
-	SaveRowWidgetClass = SaveRowWidgetBPClass.Class;
+	WorldRowWidgetClass = WorldRowWidgetBPClass.Class;
 
 	ConstructorHelpers::FClassFinder<UCreateWorldButtonWidget> CreateNewWorldBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_CreateWorldButton"));
 	if (CreateNewWorldBPClass.Class == nullptr)
@@ -113,7 +113,7 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 		UE_LOG(LogTemp, Warning, TEXT("Found Save: %s"), *WorldName);
 		
 		UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
-		USaveRowWidget* Row = CreateWidget<USaveRowWidget>(World, SaveRowWidgetClass);
+		UWorldRowWidget* Row = CreateWidget<UWorldRowWidget>(World, WorldRowWidgetClass);
 		if (Row == nullptr || SaveGame == nullptr)
 		{
 			return;
@@ -122,7 +122,7 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 		FString DaysPlayedString = FString::Printf(TEXT("%i Days"), SaveGame->DaysPlayed);
 		FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), SaveGame->CreationInformation.Month, SaveGame->CreationInformation.Day, SaveGame->CreationInformation.Year);
 
-		Row->SaveName->SetText(FText::FromString(WorldName));
+		Row->WorldNameTextBlock->SetText(FText::FromString(WorldName));
 		Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
 		Row->DateCreated->SetText(FText::FromString(CreationString));
 		Row->Setup(this, WorldName);
@@ -194,7 +194,7 @@ void UMainMenuWidget::UpdateSaveListChildren()
 {
 	for (int32 i = 0; i < WorldListBox->GetChildrenCount(); ++i)
 	{
-		USaveRowWidget* Row = Cast<USaveRowWidget>(WorldListBox->GetChildAt(i));
+		UWorldRowWidget* Row = Cast<UWorldRowWidget>(WorldListBox->GetChildAt(i));
 		
 		if (Row == nullptr)
 		{
@@ -241,7 +241,7 @@ void UMainMenuWidget::OpenWorldSelectionMenu()
 		return;
 	}
 
-	SetSaveList(GameInstance->GetAllSaveGameSlotNames());
+	SetSaveList(GameInstance->GetAllWorldNames());
 	MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
 }
 
@@ -326,8 +326,12 @@ void UMainMenuWidget::CreateWorld()
 	}
 	
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	// Create a new save with that name
-	GameInstance->CreateSave(NewWorldName);
+	// Create a new world with that name
+	GameInstance->CreateWorld(NewWorldName);
+	
+	// Set as selected world
+	SelectedWorldName = NewWorldName;
+
 	// Back to Selection Menu
 	OpenWorldMenu();
 }

@@ -28,20 +28,20 @@ public:
 	void ShowGameplayMenuWidget();
 
 	UFUNCTION()
-	void StartSingleplayer(FString SaveName);
+	void StartSingleplayer(const FString& WorldName);
 
 	UFUNCTION()
-	void Host(FString ServerName, FString SaveName);
+	void Host(const FString& ServerName, const FString& WorldName);
 	
 	UFUNCTION()
-	void Join(uint32 Index);
+	void Join(const uint32& Index);
 
 	void StartSession();
 
 	void RefreshServerList();
 
-	static TArray<FString> GetAllSaveGameSlotNames();
-	void CreateSave(const FString& NewSaveName);
+	static TArray<FString> GetAllWorldNames();
+	void CreateWorld(const FString& NewWorldName);
 
 	UFUNCTION(BlueprintCallable)
 	FString GetVersion() const;
@@ -66,7 +66,7 @@ private:
 	FString Version;
 
 	FString DesiredServerName;
-	FString SaveToLoad;
+	FString WorldToLoad;
 	void CreateSession();
 
 	bool OnMainMenu;

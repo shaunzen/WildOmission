@@ -132,7 +132,7 @@ void UWildOmissionGameInstance::RefreshServerList()
 //****************************
 // HOSTING/JOINING
 //****************************
-void UWildOmissionGameInstance::StartSingleplayer(FString SaveName)
+void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 {
 	if (MainMenuWidget == nullptr)
 	{
@@ -151,12 +151,12 @@ void UWildOmissionGameInstance::StartSingleplayer(FString SaveName)
 		return;
 	}
 
-	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Maps/LV_Sandbox?savegame=%s"), *SaveName);
+	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Maps/LV_Sandbox?savegame=%s"), *WorldName);
 	// Server travel to the game level
 	World->ServerTravel(LoadString);
 }
 
-void UWildOmissionGameInstance::Host(FString ServerName, FString SaveName)
+void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& WorldName)
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -164,7 +164,7 @@ void UWildOmissionGameInstance::Host(FString ServerName, FString SaveName)
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Hosting Server Named: %s"), *ServerName);
 	DesiredServerName = ServerName;
-	SaveToLoad = SaveName;
+	WorldToLoad = WorldName;
 	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
 	{
@@ -176,7 +176,7 @@ void UWildOmissionGameInstance::Host(FString ServerName, FString SaveName)
 	}
 }
 
-void UWildOmissionGameInstance::Join(uint32 Index)
+void UWildOmissionGameInstance::Join(const uint32& Index)
 {
 	if (!SessionInterface.IsValid() || !SessionSearch.IsValid() || MainMenuWidget == nullptr)
 	{
@@ -228,7 +228,7 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	{
 		return;
 	}
-	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Maps/LV_Sandbox?listen?savegame=%s"), *SaveToLoad);
+	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Maps/LV_Sandbox?listen?savegame=%s"), *WorldToLoad);
 	// Server travel to the game level
 	World->ServerTravel(LoadString);
 }
@@ -301,7 +301,7 @@ void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetD
 	UE_LOG(LogTemp, Error, TEXT("Damnit larch you forgot to add disconnecting"));
 }
 
-TArray<FString> UWildOmissionGameInstance::GetAllSaveGameSlotNames()
+TArray<FString> UWildOmissionGameInstance::GetAllWorldNames()
 {
 	////////////////////////////////////////////////////////////////////////////////////
 	// Special thanks to Ixiguis on the Unreal Engine forums for this useful function //
@@ -341,7 +341,7 @@ TArray<FString> UWildOmissionGameInstance::GetAllSaveGameSlotNames()
 	return Saves;
 }
 
-void UWildOmissionGameInstance::CreateSave(const FString& NewSaveName)
+void UWildOmissionGameInstance::CreateWorld(const FString& NewWorldName)
 {
 	UWildOmissionSaveGame* NewSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
 
@@ -352,7 +352,7 @@ void UWildOmissionGameInstance::CreateSave(const FString& NewSaveName)
 	NewSaveGame->CreationInformation.Month = Time.GetMonth();
 	NewSaveGame->CreationInformation.Year = Time.GetYear();
 
-	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewSaveName, 0);
+	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewWorldName, 0);
 }
 
 FString UWildOmissionGameInstance::GetVersion() const
