@@ -69,6 +69,9 @@ void UMainMenuWidget::NativeConstruct()
 	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UMainMenuWidget::ServerNameOnTextChanged);
 	
 	/*Server Browser*/
+	ServerJoinButton->OnClicked.AddDynamic(this, &UMainMenuWidget::JoinServer);
+	ServerBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+	RefreshServerListButton->OnClicked.AddDynamic(this, &UMainMenuWidget::RefreshServerList);
 }
 
 void UMainMenuWidget::Setup()
@@ -145,37 +148,37 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 {
-	//UWorld* World = GetWorld();
+	UWorld* World = GetWorld();
 
-	//if (World == nullptr)
-	//{
-	//	return;
-	//}
+	if (World == nullptr)
+	{
+		return;
+	}
 
-	//ServerList->ClearChildren();
+	ServerList->ClearChildren();
 
-	//uint32 i = 0;
-	//for (const FServerData& ServerData : ServerNames)
-	//{
-	//	UServerRowWidget* Row = CreateWidget<UServerRowWidget>(World, ServerRowWidgetClass);
-	//	if (Row == nullptr)
-	//	{
-	//		return;
-	//	}
+	uint32 i = 0;
+	for (const FServerData& ServerData : ServerNames)
+	{
+		UServerRowWidget* Row = CreateWidget<UServerRowWidget>(World, ServerRowWidgetClass);
+		if (Row == nullptr)
+		{
+			return;
+		}
 
-	//	Row->ServerName->SetText(FText::FromString(ServerData.Name));
-	//	FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
-	//	Row->HostUser->SetText(FText::FromString(HostString));
-	//	FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
-	//	Row->ConnectionFraction->SetText(FText::FromString(FractionString));
-	//	Row->Setup(this, i);
-	//	++i;
+		Row->ServerName->SetText(FText::FromString(ServerData.Name));
+		FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
+		Row->HostUser->SetText(FText::FromString(HostString));
+		FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
+		Row->ConnectionFraction->SetText(FText::FromString(FractionString));
+		Row->Setup(this, i);
+		++i;
 
-	//	ServerList->AddChild(Row);
-	//}
+		ServerList->AddChild(Row);
+	}
 
-	//FString RefreshString = FString("Refresh");
-	//RefreshServerListButtonText->SetText(FText::FromString(RefreshString));
+	FString RefreshString = FString("Refresh");
+	RefreshServerListButtonText->SetText(FText::FromString(RefreshString));
 }
 
 void UMainMenuWidget::SetSelectedWorld(const FString& WorldName)
@@ -275,6 +278,7 @@ void UMainMenuWidget::OpenServerBrowserMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(ServerBrowserMenu);
+	RefreshServerList();
 }
 
 void UMainMenuWidget::ExitGame()
@@ -351,17 +355,17 @@ void UMainMenuWidget::JoinServer()
 
 void UMainMenuWidget::RefreshServerList()
 {
-	//UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	//
-	//if (GameInstance == nullptr)
-	//{
-	//	return;
-	//}
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
 
-	//FString WaitingString = FString("...");
-	//RefreshServerListButtonText->SetText(FText::FromString(WaitingString));
-	//
-	//GameInstance->RefreshServerList();
+	FString WaitingString = FString("...");
+	RefreshServerListButtonText->SetText(FText::FromString(WaitingString));
+	
+	GameInstance->RefreshServerList();
 }
 
 void UMainMenuWidget::WorldNameOnTextChanged(const FText& Text)

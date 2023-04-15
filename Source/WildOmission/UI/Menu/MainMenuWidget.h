@@ -91,11 +91,19 @@ private:
 	UWidget* HostSettingsMenu;
 	UPROPERTY(Meta = (BindWidget))
 	UEditableTextBox* ServerNameInputBox;
-	
-
 
 	/*Server Browser Menu*/
-
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* ServerList;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* ServerJoinButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* ServerBackButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* RefreshServerListButton;
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* RefreshServerListButtonText;
+	
 	/*Menus*/
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* MainMenu;
