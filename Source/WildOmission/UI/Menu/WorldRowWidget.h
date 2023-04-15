@@ -4,20 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "SaveRowWidget.generated.h"
+#include "WorldRowWidget.generated.h"
 
 class UTextBlock;
 class UButton;
 class UMainMenuWidget;
 
 UCLASS()
-class WILDOMISSION_API USaveRowWidget : public UUserWidget
+class WILDOMISSION_API UWorldRowWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* SaveName;
+	UTextBlock* WorldNameTextBlock;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* DateCreated;
@@ -28,7 +28,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool Selected = false;
 
-	void Setup(UMainMenuWidget* InParent, uint32 InIndex);
+	void Setup(UMainMenuWidget* InParent, const FString& InWorldName);
+	
+	FString GetWorldName();
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -37,7 +39,7 @@ private:
 	UPROPERTY()
 	UMainMenuWidget* Parent;
 
-	uint32 Index;
+	FString WorldName;
 
 	UFUNCTION()
 	void OnClicked();

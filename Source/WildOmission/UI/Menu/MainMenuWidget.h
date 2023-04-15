@@ -42,7 +42,7 @@ public:
 	void SetSaveList(TArray<FString> SaveNames);
 	void SetServerList(TArray<FServerData> ServerNames);
 	
-	void SelectSaveIndex(uint32 Index);
+	void SetSelectedWorld(const FString& WorldName);
 	void SelectServerIndex(uint32 Index);
 
 private:
@@ -64,18 +64,12 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* WorldListBox;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* WorldSelectionPlayButton;
+	UButton* WorldSelectionSelectButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* WorldSelectionBrowseServersButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* WorldSelectionBackButton;
-	UPROPERTY(Meta = (BindWidget))
-	UCheckBox* MultiplayerCheckBox;
-	UPROPERTY(Meta = (BindWidget))
-	UWidget* HostSettingsMenu;
-	UPROPERTY(Meta = (BindWidget))
-	UEditableTextBox* ServerNameInputBox;
-	
+
 	/*World Creation Menu*/
 	UPROPERTY(Meta = (BindWidget))
 	UButton* WorldCreationCreateWorldButton;
@@ -83,6 +77,22 @@ private:
 	UButton* WorldCreationBackButton;
 	UPROPERTY(Meta = (BindWidget))
 	UEditableTextBox* WorldNameInputBox;
+
+	/*World Menu*/
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* WorldMenuTitle;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* PlayWorldButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* WorldBackButton;
+	UPROPERTY(Meta = (BindWidget))
+	UCheckBox* MultiplayerCheckBox;
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* HostSettingsMenu;
+	UPROPERTY(Meta = (BindWidget))
+	UEditableTextBox* ServerNameInputBox;
+	
+
 
 	/*Server Browser Menu*/
 
@@ -95,7 +105,10 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* WorldCreationMenu;
-
+	
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* WorldMenu;
+	
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* ServerBrowserMenu;
 	
@@ -110,6 +123,9 @@ private:
 
 	UFUNCTION()
 	void OpenWorldCreationMenu();
+
+	UFUNCTION()
+	void OpenWorldMenu();
 
 	UFUNCTION()
 	void OpenServerBrowserMenu();
@@ -139,7 +155,7 @@ private:
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
 	TSubclassOf<UCreateWorldButtonWidget> CreateNewWorldButtonClass;
 
-	TOptional<uint32> SelectedSaveIndex;
+	TOptional<FString> SelectedWorldName;
 	TOptional<uint32> SelectedServerIndex;
 	
 	void UpdateSaveListChildren();
