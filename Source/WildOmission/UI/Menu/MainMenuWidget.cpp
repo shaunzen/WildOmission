@@ -183,6 +183,7 @@ void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 
 void UMainMenuWidget::SetSelectedWorld(const FString& WorldName)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Selected new World: %s"), *WorldName);
 	SelectedWorldName = WorldName;
 	UpdateSaveListChildren();
 }
@@ -201,11 +202,11 @@ void UMainMenuWidget::UpdateSaveListChildren()
 		
 		if (Row == nullptr)
 		{
-			return;
+			continue;
 		}
 
 		bool RowSelected = (SelectedWorldName.IsSet() && SelectedWorldName.GetValue() == Row->GetWorldName());
-
+		UE_LOG(LogTemp, Warning, TEXT("%s RowSelected: %i"), *Row->GetWorldName(), RowSelected)
 		Row->Selected = RowSelected;
 	}
 }
