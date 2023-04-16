@@ -29,6 +29,11 @@ public:
 
 	void HandleDeath();
 
+	UFUNCTION(BlueprintCallable)
+	void StartSwimming();
+	UFUNCTION(BlueprintCallable)
+	void StopSwimming();
+
 	UFUNCTION(Client, Reliable)
 	void Client_OpenContainer(AContainerBase* Container);
 	
@@ -95,6 +100,8 @@ private:
 
 	UPROPERTY()
 	float HeadPitch;
+
+	bool bIsSwimming;
 
 	//*****************************
 	// Input

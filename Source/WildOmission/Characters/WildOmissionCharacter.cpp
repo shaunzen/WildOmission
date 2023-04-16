@@ -17,6 +17,9 @@
 #include "WildOmission/Components/NameTagComponent.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/PhysicsVolume.h"
 
 //********************************
 // Setup/General Actor Functionality
@@ -115,6 +118,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag = CreateDefaultSubobject<UNameTagComponent>(FName("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+
+	bIsSwimming = false;
 }
 
 void AWildOmissionCharacter::BeginPlay()
@@ -124,6 +129,7 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
+	bIsSwimming = false;
 }
 
 void AWildOmissionCharacter::Tick(float DeltaTime)
@@ -145,6 +151,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
+	bIsSwimming = false;
 }
 
 void AWildOmissionCharacter::UnPossessed()
@@ -213,6 +220,18 @@ void AWildOmissionCharacter::HandleDeath()
 	Destroy();
 }
 
+void AWildOmissionCharacter::StartSwimming()
+{
+	GetCharacterMovement()->GetPhysicsVolume()->bWaterVolume = true;
+	bIsSwimming = true;
+}
+
+void AWildOmissionCharacter::StopSwimming()
+{
+	GetCharacterMovement()->GetPhysicsVolume()->bWaterVolume = false;
+	bIsSwimming = false;
+}
+
 //********************************
 // Input
 //********************************
@@ -241,8 +260,16 @@ void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MoveAxis = Value.Get<FVector2D>();
 
-	AddMovementInput(GetActorForwardVector(), MoveAxis.Y);
-	AddMovementInput(GetActorRightVector(), MoveAxis.X);
+	if (!bIsSwimming)
+	{
+		AddMovementInput(GetActorForwardVector(), MoveAxis.Y);
+		AddMovementInput(GetActorRightVector(), MoveAxis.X);
+	}
+	else
+	{
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(GetControlRotation()), MoveAxis.Y);
+		AddMovementInput(UKismetMathLibrary::GetRightVector(GetControlRotation()), MoveAxis.X);
+	}
 }
 
 void AWildOmissionCharacter::Look(const FInputActionValue& Value)
@@ -261,7 +288,7 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::Primary()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || bIsSwimming)
 	{
 		return;
 	}
@@ -271,7 +298,7 @@ void AWildOmissionCharacter::Primary()
 
 void AWildOmissionCharacter::Secondary()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || bIsSwimming)
 	{
 		return;
 	}
