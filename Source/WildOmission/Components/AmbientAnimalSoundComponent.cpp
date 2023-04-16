@@ -20,7 +20,7 @@ void UAmbientAnimalSoundComponent::BeginPlay()
 	Super::BeginPlay();
 
 	FTimerHandle TimerHandle;
-	float Rate = FMath::RandRange(0.3f, 5.0f);
+	float Rate = FMath::RandRange(1.0f, 5.0f);
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UAmbientAnimalSoundComponent::PlaySoundCue, Rate, true);
 }

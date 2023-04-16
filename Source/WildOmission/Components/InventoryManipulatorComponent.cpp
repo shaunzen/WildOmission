@@ -121,8 +121,7 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 
 	if (SelectedItem.Quantity == 0)
 	{
-		SelectedItem.Clear();
-		Dragging = false;
+		StopDragging();
 	}
 
 }

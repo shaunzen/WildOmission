@@ -213,7 +213,7 @@ void UMainMenuWidget::UpdateSaveListChildren()
 
 void UMainMenuWidget::UpdateServerListChildren()
 {
-	/*for (int32 i = 0; i < ServerList->GetChildrenCount(); ++i)
+	for (int32 i = 0; i < ServerList->GetChildrenCount(); ++i)
 	{
 		UServerRowWidget* Row = Cast<UServerRowWidget>(ServerList->GetChildAt(i));
 		if (Row == nullptr)
@@ -221,7 +221,7 @@ void UMainMenuWidget::UpdateServerListChildren()
 			return;
 		}
 		Row->Selected = (SelectedServerIndex.IsSet() && SelectedServerIndex.GetValue() == i);
-	}*/
+	}
 }
 
 //****************************
