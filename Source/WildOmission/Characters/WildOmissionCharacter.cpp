@@ -223,12 +223,14 @@ void AWildOmissionCharacter::HandleDeath()
 void AWildOmissionCharacter::StartSwimming()
 {
 	GetCharacterMovement()->GetPhysicsVolume()->bWaterVolume = true;
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Swimming);
 	bIsSwimming = true;
 }
 
 void AWildOmissionCharacter::StopSwimming()
 {
 	GetCharacterMovement()->GetPhysicsVolume()->bWaterVolume = false;
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	bIsSwimming = false;
 }
 

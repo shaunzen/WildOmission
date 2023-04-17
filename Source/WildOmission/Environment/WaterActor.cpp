@@ -2,6 +2,7 @@
 
 
 #include "WaterActor.h"
+#include "GameFramework/PhysicsVolume.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 
 // Sets default values
@@ -21,7 +22,6 @@ AWaterActor::AWaterActor()
 void AWaterActor::BeginPlay()
 {
 	Super::BeginPlay();
-
 	if (!HasAuthority())
 	{
 		return;
@@ -47,7 +47,6 @@ void AWaterActor::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompone
 	}
 
 	OverlappingCharacter->StartSwimming();
-	UE_LOG(LogTemp, Warning, TEXT("Water Begin Overlap"));
 }
 
 void AWaterActor::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
@@ -59,5 +58,4 @@ void AWaterActor::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent
 	}
 
 	OverlappingCharacter->StopSwimming();
-	UE_LOG(LogTemp, Warning, TEXT("Water End Overlap"));
 }

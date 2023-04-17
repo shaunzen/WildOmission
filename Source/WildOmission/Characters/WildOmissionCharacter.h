@@ -29,9 +29,8 @@ public:
 
 	void HandleDeath();
 
-	UFUNCTION(BlueprintCallable)
 	void StartSwimming();
-	UFUNCTION(BlueprintCallable)
+	
 	void StopSwimming();
 
 	UFUNCTION(Client, Reliable)
