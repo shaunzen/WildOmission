@@ -8,20 +8,20 @@
 // Sets default values
 AWaterActor::AWaterActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
 	RootComponent = MeshComponent;
 	MeshComponent->SetWorldScale3D(FVector(1000.0f, 1000.0f, 50));
 	MeshComponent->SetCollisionProfileName(FName("OverlapAll"));
-
 }
 
 // Called when the game starts or when spawned
 void AWaterActor::BeginPlay()
 {
 	Super::BeginPlay();
+
 	if (!HasAuthority())
 	{
 		return;
