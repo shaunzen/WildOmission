@@ -23,11 +23,13 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Gravel/HumanFootstep_Gravel_Cue"));
 	ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Rock/HumanFootstep_Rock_Cue"));
 	ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Wood/HumanFootstep_Wood_Cue"));
-	
+	ConstructorHelpers::FObjectFinder<USoundBase> WaterSplashSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Water/WaterSplash_Cue"));
+
 	if (GrassFootstepSoundObject.Object == nullptr
 		|| GravelFootstepSoundObject.Object == nullptr
 		|| RockFootstepSoundObject.Object == nullptr
-		|| WoodFootstepSoundObject.Object == nullptr)
+		|| WoodFootstepSoundObject.Object == nullptr
+		|| WaterSplashSoundObject.Object == nullptr)
 	{
 		return;
 	}
@@ -36,6 +38,8 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	GravelFootstepSound = GravelFootstepSoundObject.Object;
 	RockFootstepSound = RockFootstepSoundObject.Object;
 	WoodFootstepSound = WoodFootstepSoundObject.Object;
+	WaterSplashSound = WaterSplashSoundObject.Object;
+
 	StopWalkAnimationWhenFalling = false;
 }
 
@@ -64,6 +68,12 @@ void UHumanAnimInstance::PlayFootstepSound()
 	APawn* PawnOwner = TryGetPawnOwner();
 	if (PawnOwner == nullptr)
 	{
+		return;
+	}
+	
+	if (Swimming == true)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WaterSplashSound, PawnOwner->GetActorLocation());
 		return;
 	}
 

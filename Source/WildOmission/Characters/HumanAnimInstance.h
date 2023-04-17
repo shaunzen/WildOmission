@@ -60,6 +60,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* WoodFootstepSound;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* WaterSplashSound;
 	
 	UPROPERTY(EditDefaultsOnly)
 	bool StopWalkAnimationWhenFalling;
