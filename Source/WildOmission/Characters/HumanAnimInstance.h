@@ -37,6 +37,9 @@ public:
 	bool Falling;
 
 	UPROPERTY(BlueprintReadonly)
+	bool Swimming;
+
+	UPROPERTY(BlueprintReadonly)
 	bool HoldingItem;
 
 	UPROPERTY(BlueprintReadonly)
@@ -66,6 +69,8 @@ private:
 	void CalculateHeadAngle();
 
 	void HandleFalling();
+
+	void HandleSwimming();
 
 	void HandleEquipPose();
 	

@@ -100,8 +100,6 @@ private:
 	UPROPERTY()
 	float HeadPitch;
 
-	bool bIsSwimming;
-
 	//*****************************
 	// Input
 	//*****************************

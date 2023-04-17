@@ -118,8 +118,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag = CreateDefaultSubobject<UNameTagComponent>(FName("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
-
-	bIsSwimming = false;
 }
 
 void AWildOmissionCharacter::BeginPlay()
@@ -129,7 +127,6 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
-	bIsSwimming = false;
 }
 
 void AWildOmissionCharacter::Tick(float DeltaTime)
@@ -151,7 +148,6 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
-	bIsSwimming = false;
 }
 
 void AWildOmissionCharacter::UnPossessed()
@@ -224,14 +220,12 @@ void AWildOmissionCharacter::StartSwimming()
 {
 	GetCharacterMovement()->GetPhysicsVolume()->bWaterVolume = true;
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Swimming);
-	bIsSwimming = true;
 }
 
 void AWildOmissionCharacter::StopSwimming()
 {
 	GetCharacterMovement()->GetPhysicsVolume()->bWaterVolume = false;
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	bIsSwimming = false;
 }
 
 //********************************
@@ -262,7 +256,7 @@ void AWildOmissionCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MoveAxis = Value.Get<FVector2D>();
 
-	if (!bIsSwimming)
+	if (!GetCharacterMovement()->IsSwimming())
 	{
 		AddMovementInput(GetActorForwardVector(), MoveAxis.Y);
 		AddMovementInput(GetActorRightVector(), MoveAxis.X);
@@ -290,7 +284,7 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::Primary()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || bIsSwimming)
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || GetCharacterMovement()->IsSwimming())
 	{
 		return;
 	}
@@ -300,7 +294,7 @@ void AWildOmissionCharacter::Primary()
 
 void AWildOmissionCharacter::Secondary()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || bIsSwimming)
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || GetCharacterMovement()->IsSwimming())
 	{
 		return;
 	}

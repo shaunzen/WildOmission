@@ -16,6 +16,7 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	Speed = 0;
 	Angle = 0;
 	Falling = false;
+	Swimming = false;
 	EquipedItemPose = nullptr;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
@@ -45,6 +46,7 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	CalculateSpeedAndAngle();
 	CalculateHeadAngle();
 	HandleFalling();
+	HandleSwimming();
 	HandleEquipPose();
 }
 
@@ -163,6 +165,17 @@ void UHumanAnimInstance::HandleFalling()
 	}
 
 	Falling = CharacterOwner->GetCharacterMovement()->IsFalling();
+}
+
+void UHumanAnimInstance::HandleSwimming()
+{
+	ACharacter* CharacterOwner = Cast<ACharacter>(TryGetPawnOwner());
+	if (CharacterOwner == nullptr)
+	{
+		return;
+	}
+
+	Swimming = CharacterOwner->GetCharacterMovement()->IsSwimming();
 }
 
 void UHumanAnimInstance::HandleEquipPose()
