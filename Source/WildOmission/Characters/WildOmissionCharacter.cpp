@@ -21,8 +21,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/PhysicsVolume.h"
 
-#include "DrawDebugHelpers.h"
-
 //********************************
 // Setup/General Actor Functionality
 //********************************
@@ -146,7 +144,10 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	}
 
 	Client_UpdateHeadPitch(GetControlRotation().GetNormalized().Pitch);
-
+	if (GetCharacterMovement()->IsSwimming() == false)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DrowningTimerHandle);
+	}
 }
 
 void AWildOmissionCharacter::PossessedBy(AController* NewController)
@@ -224,12 +225,6 @@ void AWildOmissionCharacter::HandleDeath()
 	Destroy();
 }
 
-void AWildOmissionCharacter::StartSwimming()
-{
-	GetCharacterMovement()->GetPhysicsVolume()->bWaterVolume = true;
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Swimming);
-}
-
 void AWildOmissionCharacter::HandleUnderwater()
 {
 	if (HasAuthority() == false)
@@ -253,17 +248,6 @@ void AWildOmissionCharacter::HandleUnderwater()
 		FTimerDelegate DrownTimerDelegate;
 		DrownTimerDelegate.BindUFunction(VitalsComponent, FName("AddHealth"), -20.0f);
 		GetWorld()->GetTimerManager().SetTimer(DrowningTimerHandle, DrownTimerDelegate, 5.0f, true);
-	}
-}
-
-void AWildOmissionCharacter::StopSwimming()
-{
-	GetCharacterMovement()->GetPhysicsVolume()->bWaterVolume = false;
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	
-	if (HasAuthority())
-	{
-		GetWorld()->GetTimerManager().ClearTimer(DrowningTimerHandle);
 	}
 }
 
