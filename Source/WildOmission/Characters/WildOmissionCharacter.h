@@ -100,6 +100,9 @@ private:
 	UPROPERTY()
 	float HeadPitch;
 
+	FTimerHandle DrowningTimerHandle;
+	void HandleUnderwater();
+
 	//*****************************
 	// Input
 	//*****************************

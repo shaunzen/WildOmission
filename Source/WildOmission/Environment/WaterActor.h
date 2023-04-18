@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "WaterActor.generated.h"
 
+class UBoxComponent;
+
 UCLASS()
 class WILDOMISSION_API AWaterActor : public AActor
 {
@@ -24,7 +26,9 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
-
+	UPROPERTY(VisibleAnywhere)
+	UBoxComponent* BoxCollision;
+	
 	UFUNCTION()
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
