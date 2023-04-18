@@ -18,7 +18,9 @@
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Sound/SoundMix.h"
 #include "GameFramework/PhysicsVolume.h"
 
 //********************************
@@ -32,6 +34,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Player/WBP_PlayerHUD"));
 	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerArmsAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_FirstPerson"));
 	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerThirdPersonAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_ThirdPerson"));
+	ConstructorHelpers::FObjectFinder<USoundMix> UnderwaterSoundMixBlueprint(TEXT("/Game/WildOmission/Core/Audio/UnderwaterSoundMix"));
 	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Core/Input/MC_DefaultMappingContext"));
 	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Move"));
 	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Look"));
@@ -49,6 +52,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	if (PlayerHUDWidgetBlueprintClass.Class == nullptr
 		|| PlayerArmsAnimBlueprintClass.Class == nullptr
 		|| PlayerThirdPersonAnimBlueprintClass.Class == nullptr
+		|| UnderwaterSoundMixBlueprint.Object == nullptr
 		|| DefaultMappingContextBlueprint.Object == nullptr
 		|| MoveActionBlueprint.Object == nullptr
 		|| LookActionBlueprint.Object == nullptr
@@ -118,6 +122,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag = CreateDefaultSubobject<UNameTagComponent>(FName("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+
+	UnderwaterSoundMix = UnderwaterSoundMixBlueprint.Object;
 }
 
 void AWildOmissionCharacter::BeginPlay()
@@ -144,10 +150,6 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	}
 
 	Client_UpdateHeadPitch(GetControlRotation().GetNormalized().Pitch);
-	if (GetCharacterMovement()->IsSwimming() == false)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(DrowningTimerHandle);
-	}
 }
 
 void AWildOmissionCharacter::PossessedBy(AController* NewController)
@@ -227,27 +229,17 @@ void AWildOmissionCharacter::HandleDeath()
 
 void AWildOmissionCharacter::HandleUnderwater()
 {
-	if (HasAuthority() == false)
-	{
-		return;
-	}
-
-	// check if underwater
 	FHitResult HitResult;
 	FVector Start = FirstPersonCameraComponent->GetComponentLocation();
 	FVector End = Start + FVector(0.0f, 0.0f, 1000.0f);
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel3))
 	{
-		if (GetWorld()->GetTimerManager().TimerExists(DrowningTimerHandle))
-		{
-			return;
-		}
-
-		// if so start a timer for taking damage
-		FTimerDelegate DrownTimerDelegate;
-		DrownTimerDelegate.BindUFunction(VitalsComponent, FName("AddHealth"), -20.0f);
-		GetWorld()->GetTimerManager().SetTimer(DrowningTimerHandle, DrownTimerDelegate, 5.0f, true);
+		bUnderwater = true;
+	}
+	else
+	{
+		bUnderwater = false;
 	}
 }
 
@@ -378,6 +370,11 @@ USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 float AWildOmissionCharacter::GetHeadPitch() const
 {
 	return HeadPitch;
+}
+
+bool AWildOmissionCharacter::IsUnderwater() const
+{
+	return bUnderwater;
 }
 
 UCameraComponent* AWildOmissionCharacter::GetFirstPersonCameraComponent()

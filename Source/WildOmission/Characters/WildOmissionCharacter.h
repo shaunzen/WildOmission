@@ -29,10 +29,6 @@ public:
 
 	void HandleDeath();
 
-	void StartSwimming();
-	
-	void StopSwimming();
-
 	UFUNCTION(Client, Reliable)
 	void Client_OpenContainer(AContainerBase* Container);
 	
@@ -41,6 +37,9 @@ public:
 
 	UFUNCTION()
 	float GetHeadPitch() const;
+
+	UFUNCTION()
+	bool IsUnderwater() const;
 
 	UFUNCTION()
 	UCameraComponent* GetFirstPersonCameraComponent();
@@ -93,6 +92,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UNameTagComponent* NameTag;
 
+	UPROPERTY(EditDefaultsOnly)
+	USoundMix* UnderwaterSoundMix;
+
 	UPROPERTY()
 	class UPlayerHUDWidget* PlayerHUDWidget;
 	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
@@ -100,7 +102,9 @@ private:
 	UPROPERTY()
 	float HeadPitch;
 
-	FTimerHandle DrowningTimerHandle;
+	UPROPERTY()
+	bool bUnderwater;
+
 	void HandleUnderwater();
 
 	//*****************************
