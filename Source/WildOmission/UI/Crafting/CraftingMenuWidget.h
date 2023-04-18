@@ -43,6 +43,9 @@ private:
 	UImage* SelectedRecipeIconImage;
 
 	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* SelectedRecipeYieldTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* SelectedRecipeDescriptionTextBlock;
 
 	UPROPERTY(Meta = (BindWidget))

@@ -121,6 +121,15 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 
 	SelectedRecipeIconImage->SetBrushFromMaterial(RecipeYieldItemData->Thumbnail);
 	SelectedRecipeIconImage->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+	
+	FString RecipeYieldQuantityString;
+
+	if (RecipeData->Yield.Quantity > 1)
+	{
+		RecipeYieldQuantityString = FString::Printf(TEXT("x%i"), RecipeData->Yield.Quantity);
+	}
+
+	SelectedRecipeYieldTextBlock->SetText(FText::FromString(RecipeYieldQuantityString));
 
 	RefreshIngredientList();
 
