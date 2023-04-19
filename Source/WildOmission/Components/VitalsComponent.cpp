@@ -2,7 +2,9 @@
 
 
 #include "VitalsComponent.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 
@@ -32,6 +34,14 @@ UVitalsComponent::UVitalsComponent()
 
 	ThirstThreshold = 30.0f;
 	HungerThreshold = 30.0f;
+
+	ConstructorHelpers::FObjectFinder<USoundBase> DefaultHurtSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Damage/Human_HurtGeneric_Cue"));
+	if (!DefaultHurtSoundObject.Succeeded())
+	{
+		return;
+	}
+
+	HurtSound = DefaultHurtSoundObject.Object;
 }
 
 // Called when the game starts
@@ -109,6 +119,10 @@ void UVitalsComponent::SetHunger(float Value)
 void UVitalsComponent::AddHealth(float Value)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth + Value, 0.0f, MaxHealth);
+	if (Value < 0.0f)
+	{
+		Client_PlayHurtSound();
+	}
 }
 
 void UVitalsComponent::AddThirst(float Value)
@@ -149,6 +163,16 @@ float UVitalsComponent::GetThirst() const
 float UVitalsComponent::GetHunger() const
 {
 	return CurrentHunger;
+}
+
+void UVitalsComponent::Client_PlayHurtSound_Implementation()
+{
+	if (HurtSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HurtSound, GetOwner()->GetActorLocation());
 }
 
 void UVitalsComponent::OnOwnerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)

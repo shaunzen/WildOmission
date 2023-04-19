@@ -138,6 +138,7 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
+	EndSprint();
 }
 
 void AWildOmissionCharacter::Tick(float DeltaTime)

@@ -95,6 +95,9 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	float HungerThreshold;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* HurtSound;
 	
 	UPROPERTY(Replicated)
 	float CurrentHealth;
@@ -107,6 +110,9 @@ private:
 
 	void CalculateDepletion();
 	
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayHurtSound();
+
 	UFUNCTION()
 	void OnOwnerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
 };
