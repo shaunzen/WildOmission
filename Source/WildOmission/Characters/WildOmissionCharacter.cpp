@@ -20,8 +20,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Sound/SoundMix.h"
-#include "GameFramework/PhysicsVolume.h"
+#include "Net/UnrealNetwork.h"
 
 //********************************
 // Setup/General Actor Functionality
@@ -123,6 +122,13 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag = CreateDefaultSubobject<UNameTagComponent>(FName("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+}
+
+void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWildOmissionCharacter, DesiredMovementSpeed);
 }
 
 void AWildOmissionCharacter::BeginPlay()
@@ -300,14 +306,35 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::StartSprint()
 {
+	Server_Sprint(true);
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	bSprinting = true;
 }
 
 void AWildOmissionCharacter::EndSprint()
 {
+	Server_Sprint(false);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	bSprinting = false;
+}
+
+void AWildOmissionCharacter::OnRep_MovementSpeed()
+{
+	GetCharacterMovement()->MaxWalkSpeed = DesiredMovementSpeed;
+}
+
+void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
+{
+	if (bShouldSprint == true)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+		bSprinting = true;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+		bSprinting = false;
+	}
 }
 
 void AWildOmissionCharacter::Primary()

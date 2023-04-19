@@ -22,6 +22,8 @@ class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
 public:
 	AWildOmissionCharacter();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	virtual void Tick(float DeltaTime) override;
@@ -155,6 +157,15 @@ private:
 	void StartSprint();
 
 	void EndSprint();
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MovementSpeed)
+	float DesiredMovementSpeed;
+
+	UFUNCTION()
+	void OnRep_MovementSpeed();
+
+	UFUNCTION(Server, Reliable)
+	void Server_Sprint(bool bShouldSprint);
 
 	void Primary();
 	
