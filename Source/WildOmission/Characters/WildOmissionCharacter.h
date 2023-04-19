@@ -102,6 +102,9 @@ private:
 	float HeadPitch;
 
 	UPROPERTY()
+	bool bSprinting;
+
+	UPROPERTY()
 	bool bUnderwater;
 
 	void HandleUnderwater();
@@ -148,6 +151,10 @@ private:
 	void Move(const FInputActionValue& Value);
 	
 	void Look(const FInputActionValue& Value);
+
+	void StartSprint();
+
+	void EndSprint();
 
 	void Primary();
 	

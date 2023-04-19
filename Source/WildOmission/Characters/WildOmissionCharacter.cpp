@@ -37,6 +37,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Core/Input/MC_DefaultMappingContext"));
 	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Move"));
 	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Look"));
+	ConstructorHelpers::FObjectFinder<UInputAction> SprintActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Sprint"));
 	ConstructorHelpers::FObjectFinder<UInputAction> JumpActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Jump"));
 	ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Interact"));
 	ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Primary"));
@@ -54,6 +55,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		|| DefaultMappingContextBlueprint.Object == nullptr
 		|| MoveActionBlueprint.Object == nullptr
 		|| LookActionBlueprint.Object == nullptr
+		|| SprintActionBlueprint.Object == nullptr
 		|| JumpActionBlueprint.Object == nullptr
 		|| InteractActionBlueprint.Object == nullptr
 		|| PrimaryActionBlueprint.Object == nullptr
@@ -73,6 +75,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	DefaultMappingContext = DefaultMappingContextBlueprint.Object;
 	MoveAction = MoveActionBlueprint.Object;
 	LookAction = LookActionBlueprint.Object;
+	SprintAction = SprintActionBlueprint.Object;
 	JumpAction = JumpActionBlueprint.Object;
 	InteractAction = InteractActionBlueprint.Object;
 	PrimaryAction = PrimaryActionBlueprint.Object;
@@ -291,6 +294,18 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 	AddControllerYawInput(LookAxis.X);
 	AddControllerPitchInput(LookAxis.Y);
+}
+
+void AWildOmissionCharacter::StartSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	bSprinting = true;
+}
+
+void AWildOmissionCharacter::EndSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	bSprinting = false;
 }
 
 void AWildOmissionCharacter::Primary()
