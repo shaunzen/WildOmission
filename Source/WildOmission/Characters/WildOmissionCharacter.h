@@ -92,9 +92,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UNameTagComponent* NameTag;
 
-	UPROPERTY(EditDefaultsOnly)
-	USoundMix* UnderwaterSoundMix;
-
 	UPROPERTY()
 	class UPlayerHUDWidget* PlayerHUDWidget;
 	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;

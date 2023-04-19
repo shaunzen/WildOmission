@@ -34,7 +34,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Player/WBP_PlayerHUD"));
 	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerArmsAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_FirstPerson"));
 	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerThirdPersonAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_ThirdPerson"));
-	ConstructorHelpers::FObjectFinder<USoundMix> UnderwaterSoundMixBlueprint(TEXT("/Game/WildOmission/Core/Audio/UnderwaterSoundMix"));
 	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Core/Input/MC_DefaultMappingContext"));
 	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Move"));
 	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Look"));
@@ -52,7 +51,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	if (PlayerHUDWidgetBlueprintClass.Class == nullptr
 		|| PlayerArmsAnimBlueprintClass.Class == nullptr
 		|| PlayerThirdPersonAnimBlueprintClass.Class == nullptr
-		|| UnderwaterSoundMixBlueprint.Object == nullptr
 		|| DefaultMappingContextBlueprint.Object == nullptr
 		|| MoveActionBlueprint.Object == nullptr
 		|| LookActionBlueprint.Object == nullptr
@@ -122,8 +120,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag = CreateDefaultSubobject<UNameTagComponent>(FName("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
-
-	UnderwaterSoundMix = UnderwaterSoundMixBlueprint.Object;
 }
 
 void AWildOmissionCharacter::BeginPlay()
@@ -138,11 +134,6 @@ void AWildOmissionCharacter::BeginPlay()
 void AWildOmissionCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (GetCharacterMovement()->IsSwimming())
-	{
-		HandleUnderwater();
-	}
 	
 	if (!HasAuthority())
 	{
@@ -150,6 +141,10 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	}
 
 	Client_UpdateHeadPitch(GetControlRotation().GetNormalized().Pitch);
+	if (GetCharacterMovement()->IsSwimming())
+	{
+		HandleUnderwater();
+	}
 }
 
 void AWildOmissionCharacter::PossessedBy(AController* NewController)
@@ -236,6 +231,7 @@ void AWildOmissionCharacter::HandleUnderwater()
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel3))
 	{
 		bUnderwater = true;
+		HandleDeath();
 	}
 	else
 	{
