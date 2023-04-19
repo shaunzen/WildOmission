@@ -7,6 +7,8 @@
 #include "InputActionValue.h"
 #include "WildOmissionCharacter.generated.h"
 
+class UInputMappingContext;
+class UInputAction;
 class UCameraComponent;
 class UCraftingComponent;
 class UNameTagComponent;
@@ -108,37 +110,40 @@ private:
 	// Input
 	//*****************************
 	UPROPERTY()
-	class UInputMappingContext* DefaultMappingContext;
+	UInputMappingContext* DefaultMappingContext;
 
 	UPROPERTY()
-	class UInputAction* MoveAction;
+	UInputAction* MoveAction;
 
 	UPROPERTY()
-	class UInputAction* LookAction;
+	UInputAction* LookAction;
 	
 	UPROPERTY()
-	class UInputAction* JumpAction;
+	UInputAction* SprintAction;
+
+	UPROPERTY()
+	UInputAction* JumpAction;
 	
 	UPROPERTY()
-	class UInputAction* InteractAction;
+	UInputAction* InteractAction;
 	
 	UPROPERTY()
-	class UInputAction* PrimaryAction;
+	UInputAction* PrimaryAction;
 	
 	UPROPERTY()
-	class UInputAction* SecondaryAction;
+	UInputAction* SecondaryAction;
 	
 	UPROPERTY()
-	class UInputAction* ToggleInventoryMenuAction;
+	UInputAction* ToggleInventoryMenuAction;
 
 	UPROPERTY()
 	UInputAction* ToggleCraftingMenuAction;
 	
 	UPROPERTY()
-	class UInputAction* ToolbarSelectionIncrementAction;
+	UInputAction* ToolbarSelectionIncrementAction;
 	
 	UPROPERTY()
-	class UInputAction* ToolbarSelectionDecrementAction;
+	UInputAction* ToolbarSelectionDecrementAction;
 	
 	void Move(const FInputActionValue& Value);
 	
