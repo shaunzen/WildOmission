@@ -146,6 +146,8 @@ void UHumanAnimInstance::CalculateSpeedAndAngle()
 	}
 	
 	Speed = PawnOwner->GetVelocity().Length();
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Speed %f"), Speed));
+
 	Angle = PawnOwner->GetTransform().InverseTransformVector(PawnOwner->GetVelocity()).Rotation().Yaw;
 	
 	if (StopWalkAnimationWhenFalling == true && Falling == true)
