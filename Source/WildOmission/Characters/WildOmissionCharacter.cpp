@@ -122,6 +122,10 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag = CreateDefaultSubobject<UNameTagComponent>(FName("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+
+	GetCharacterMovement()->JumpZVelocity = 350.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	DesiredMovementSpeed = 300.0f;
 }
 
 void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
