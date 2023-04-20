@@ -15,6 +15,9 @@ class WILDOMISSION_API ADeployableItem : public AEquipableItem
 	GENERATED_BODY()
 	
 public:
+	ADeployableItem();
+	virtual void Tick(float DeltaTime) override;
+
 	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
 	virtual void OnUnequip() override;
 
@@ -22,13 +25,21 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ADeployable> DeployableActor;
+	TSubclassOf<ADeployable> DeployableActorClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	float DeployableRange = 500.0f;
+
+	bool LineTrace(FHitResult& OutHitResult) const;
+
 private:
 	UFUNCTION(Client, Reliable)
 	void Client_SpawnPreview();
+	
 	UFUNCTION(Client, Reliable)
 	void Client_DestroyPreview();
 
 	UPROPERTY()
 	AStaticMeshActor* PreviewActor;
+
 };
