@@ -6,9 +6,9 @@
 #include "EquipableItem.h"
 #include "DeployableItem.generated.h"
 
-/**
- * 
- */
+class ADeployable;
+class AStaticMeshActor;
+
 UCLASS()
 class WILDOMISSION_API ADeployableItem : public AEquipableItem
 {
@@ -21,6 +21,14 @@ public:
 	virtual void Primary() override;
 
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ADeployable> DeployableActor;
+private:
+	UFUNCTION(Client, Reliable)
+	void Client_SpawnPreview();
+	UFUNCTION(Client, Reliable)
+	void Client_DestroyPreview();
 
-	// tsubclassof ADeployable which is the deployable to spawn
+	UPROPERTY()
+	AStaticMeshActor* PreviewActor;
 };
