@@ -30,7 +30,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float DeployableRange = 500.0f;
 
-	bool LineTrace(FHitResult& OutHitResult) const;
+	bool FindPlacableSurface(FHitResult& OutHitResult) const;
 
 private:
 	UFUNCTION(Client, Reliable)
@@ -41,5 +41,7 @@ private:
 
 	UPROPERTY()
 	AStaticMeshActor* PreviewActor;
-
+	
+	UPROPERTY()
+	UMaterialInstance* PreviewMaterial;
 };

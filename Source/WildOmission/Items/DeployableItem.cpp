@@ -7,11 +7,19 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 ADeployableItem::ADeployableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/WildOmission/Art/Deployables/M_DeployablePreview_Inst"));
+	if (PreviewMaterialInstanceBlueprint.Succeeded() == false)
+	{
+		return;
+	}
+
+	PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;
 }
 
 void ADeployableItem::Tick(float DeltaTime)
@@ -24,7 +32,7 @@ void ADeployableItem::Tick(float DeltaTime)
 	}
 	FVector PreviewLocation;
 	FHitResult HitResult;
-	if (LineTrace(HitResult))
+	if (FindPlacableSurface(HitResult))
 	{
 		PreviewLocation = HitResult.ImpactPoint;
 	}
@@ -57,7 +65,7 @@ void ADeployableItem::Primary()
 	// remove this current item from our inventory
 }
 
-bool ADeployableItem::LineTrace(FHitResult& OutHitResult) const
+bool ADeployableItem::FindPlacableSurface(FHitResult& OutHitResult) const
 {
 	if (GetOwnerCharacter() == nullptr)
 	{
@@ -107,8 +115,7 @@ void ADeployableItem::Client_SpawnPreview_Implementation()
 	PreviewActor->SetMobility(EComponentMobility::Movable);
 	PreviewActor->SetActorEnableCollision(false);
 	PreviewActor->GetStaticMeshComponent()->SetStaticMesh(DeployedActorMesh);
-
-	// set material to preview
+	PreviewActor->GetStaticMeshComponent()->SetMaterial(0, PreviewMaterial);
 }
 
 void ADeployableItem::Client_DestroyPreview_Implementation()
