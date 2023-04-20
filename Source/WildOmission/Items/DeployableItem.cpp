@@ -22,12 +22,17 @@ void ADeployableItem::Tick(float DeltaTime)
 	{
 		return;
 	}
-
+	FVector PreviewLocation;
 	FHitResult HitResult;
 	if (LineTrace(HitResult))
 	{
-		PreviewActor->SetActorLocation(HitResult.ImpactPoint);
+		PreviewLocation = HitResult.ImpactPoint;
 	}
+	else
+	{
+		PreviewLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+	}
+	PreviewActor->SetActorLocation(PreviewLocation);
 }
 
 void ADeployableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
@@ -64,6 +69,12 @@ bool ADeployableItem::LineTrace(FHitResult& OutHitResult) const
 	FCollisionQueryParams Params;
 
 	Params.AddIgnoredActor(GetOwner());
+	Params.AddIgnoredActor(this);
+	if (PreviewActor)
+	{
+		Params.AddIgnoredActor(PreviewActor);
+	}
+
 	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_Camera, Params))
 	{
 		return true;
@@ -94,6 +105,7 @@ void ADeployableItem::Client_SpawnPreview_Implementation()
 
 	PreviewActor = GetWorld()->SpawnActor<AStaticMeshActor>(GetOwner()->GetActorLocation() = FVector(0.0f, 0.0f, 500.0f), GetOwner()->GetActorRotation());
 	PreviewActor->SetMobility(EComponentMobility::Movable);
+	PreviewActor->SetActorEnableCollision(false);
 	PreviewActor->GetStaticMeshComponent()->SetStaticMesh(DeployedActorMesh);
 
 	// set material to preview
