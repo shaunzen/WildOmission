@@ -13,6 +13,11 @@ ADeployable::ADeployable()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
+
+	bCanBePlacedOnGround = true;
+	bCanBePlacedOnFloor = true;
+	bCanBePlacedOnWall = false;
+	bCanBePlacedInDoorway = false;
 }
 
 // Called when the game starts or when spawned
@@ -32,4 +37,24 @@ void ADeployable::Tick(float DeltaTime)
 UStaticMesh* ADeployable::GetMesh() const
 {
 	return MeshComponent->GetStaticMesh();
+}
+
+bool ADeployable::CanBePlacedOnGround() const
+{
+	return bCanBePlacedOnGround;
+}
+
+bool ADeployable::CanBePlacedOnFloor() const
+{
+	return bCanBePlacedOnFloor;
+}
+
+bool ADeployable::CanBePlacedOnWall() const
+{
+	return bCanBePlacedOnWall;
+}
+
+bool ADeployable::CanBePlacedInDoorway() const
+{
+	return bCanBePlacedInDoorway;
 }

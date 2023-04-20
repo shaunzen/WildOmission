@@ -13,6 +13,9 @@ ADeployableItem::ADeployableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	DeployableRange = 500.0f;
+	SpawnConditionValid = false;
+	
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/WildOmission/Art/Deployables/M_DeployablePreview_Inst"));
 	if (PreviewMaterialInstanceBlueprint.Succeeded() == false)
 	{
@@ -26,21 +29,7 @@ void ADeployableItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (PreviewActor == nullptr)
-	{
-		return;
-	}
-	FVector PreviewLocation;
-	FHitResult HitResult;
-	if (FindPlacableSurface(HitResult))
-	{
-		PreviewLocation = HitResult.ImpactPoint;
-	}
-	else
-	{
-		PreviewLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
-	}
-	PreviewActor->SetActorLocation(PreviewLocation);
+	UpdatePreview();
 }
 
 void ADeployableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
@@ -65,7 +54,7 @@ void ADeployableItem::Primary()
 	// remove this current item from our inventory
 }
 
-bool ADeployableItem::FindPlacableSurface(FHitResult& OutHitResult) const
+bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
 {
 	if (GetOwnerCharacter() == nullptr)
 	{
@@ -109,13 +98,13 @@ void ADeployableItem::Client_SpawnPreview_Implementation()
 		PreviewActor->Destroy();
 	}
 
-	
-
 	PreviewActor = GetWorld()->SpawnActor<AStaticMeshActor>(GetOwner()->GetActorLocation() = FVector(0.0f, 0.0f, 500.0f), GetOwner()->GetActorRotation());
 	PreviewActor->SetMobility(EComponentMobility::Movable);
 	PreviewActor->SetActorEnableCollision(false);
 	PreviewActor->GetStaticMeshComponent()->SetStaticMesh(DeployedActorMesh);
 	PreviewActor->GetStaticMeshComponent()->SetMaterial(0, PreviewMaterial);
+	PreviewActor->OnActorBeginOverlap.AddDynamic(this, &ADeployableItem::OnPreviewBeginOverlap);
+	PreviewActor->OnActorEndOverlap.AddDynamic(this, &ADeployableItem::OnPreviewEndOverlap);
 }
 
 void ADeployableItem::Client_DestroyPreview_Implementation()
@@ -126,4 +115,36 @@ void ADeployableItem::Client_DestroyPreview_Implementation()
 	}
 
 	PreviewActor->Destroy();
+}
+
+void ADeployableItem::UpdatePreview()
+{
+	if (PreviewActor == nullptr)
+	{
+		return;
+	}
+
+	FVector PreviewLocation;
+	FHitResult HitResult;
+	if (LineTraceOnCameraChannel(HitResult))
+	{
+		PreviewLocation = HitResult.ImpactPoint;
+	}
+	else
+	{
+		PreviewLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+	}
+	PreviewActor->SetActorLocation(PreviewLocation);
+
+	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("CanSpawn"), SpawnConditionValid);
+}
+
+void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	// TODO check spawn condition
+}
+
+void ADeployableItem::OnPreviewEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	// TODO check spawn condition
 }

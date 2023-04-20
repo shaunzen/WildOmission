@@ -28,9 +28,11 @@ protected:
 	TSubclassOf<ADeployable> DeployableActorClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	float DeployableRange = 500.0f;
+	float DeployableRange;
 
-	bool FindPlacableSurface(FHitResult& OutHitResult) const;
+	bool SpawnConditionValid;
+
+	bool LineTraceOnCameraChannel(FHitResult& OutHitResult) const;
 
 private:
 	UFUNCTION(Client, Reliable)
@@ -38,6 +40,13 @@ private:
 	
 	UFUNCTION(Client, Reliable)
 	void Client_DestroyPreview();
+
+	void UpdatePreview();
+
+	UFUNCTION()
+	void OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	UFUNCTION()
+	void OnPreviewEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 	UPROPERTY()
 	AStaticMeshActor* PreviewActor;

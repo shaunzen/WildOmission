@@ -21,11 +21,29 @@ public:
 
 	UStaticMesh* GetMesh() const;
 
+	bool CanBePlacedOnGround() const;
+	bool CanBePlacedOnFloor() const;
+	bool CanBePlacedOnWall() const;
+	bool CanBePlacedInDoorway() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bCanBePlacedOnGround;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bCanBePlacedOnFloor;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bCanBePlacedOnWall;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bCanBePlacedInDoorway;
+
 
 };
