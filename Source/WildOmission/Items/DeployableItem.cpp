@@ -14,7 +14,7 @@ ADeployableItem::ADeployableItem()
 	PrimaryActorTick.bCanEverTick = true;
 
 	DeployableRange = 500.0f;
-	SpawnConditionValid = false;
+	SpawnConditionValid = true;
 	
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/WildOmission/Art/Deployables/M_DeployablePreview_Inst"));
 	if (PreviewMaterialInstanceBlueprint.Succeeded() == false)
@@ -49,6 +49,11 @@ void ADeployableItem::OnUnequip()
 void ADeployableItem::Primary()
 {
 	Super::Primary();
+	
+	// THIS IS ON THE SERVER
+	
+	// figure out where this will be spawned?
+	// how do we can the preview transform from the client?
 
 	// spawn on the server the real deployable item
 	// remove this current item from our inventory
