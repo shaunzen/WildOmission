@@ -10,11 +10,13 @@
 UENUM()
 enum EDeployableType
 {
-	GroundOnly		UMETA(DisplayName = "Ground Only"),
-	FloorOnly		UMETA(DisplayName = "Floor Only"),
-	GroundOrFloor	UMETA(DisplayName = "Ground or Floor"),
-	WallOnly		UMETA(DisplayName = "Wall Only"),
-	DoorwayOnly		UMETA(DisplayName = "Doorway Only")
+	GroundOnly			UMETA(DisplayName = "Ground Only"),
+	FloorOnly			UMETA(DisplayName = "Floor Only"),
+	GroundOrFloor		UMETA(DisplayName = "Ground or Floor"),
+	WallOnly			UMETA(DisplayName = "Wall Only"),
+	DoorwayOnly			UMETA(DisplayName = "Doorway Only"),
+	AnyExceptInvalid	UMETA(DisplayName = "Any Except Invalid"),
+	AnySurface			UMETA(DisplayName = "Any Surface")
 };
 
 UCLASS()

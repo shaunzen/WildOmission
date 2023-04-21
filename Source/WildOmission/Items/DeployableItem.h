@@ -46,6 +46,8 @@ protected:
 	bool GroundOrFloorSpawnConditionValid() const;
 	bool WallOnlySpawnConditionValid() const;
 	bool DoorwayOnlySpawnConditionValid() const;
+	bool AnyExceptInvalidSpawnConditionValid() const;
+	bool AnySurfaceSpawnConditionValid() const;
 
 private:
 	UFUNCTION(Client, Reliable)

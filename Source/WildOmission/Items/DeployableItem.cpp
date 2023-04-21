@@ -193,6 +193,12 @@ bool ADeployableItem::SpawnConditionValid() const
 	case DoorwayOnly:
 		return DoorwayOnlySpawnConditionValid();
 		break;
+	case AnyExceptInvalid:
+		return AnyExceptInvalidSpawnConditionValid();
+		break;
+	case AnySurface:
+		return AnySurfaceSpawnConditionValid();
+		break;
 	}
 
 	return false;
@@ -221,6 +227,16 @@ bool ADeployableItem::WallOnlySpawnConditionValid() const
 bool ADeployableItem::DoorwayOnlySpawnConditionValid() const
 {
 	return OnGround == false && OnFloor == false && OnWall == false && OnDoorway == true && InvalidOverlap == false;
+}
+
+bool ADeployableItem::AnyExceptInvalidSpawnConditionValid() const
+{
+	return (OnGround == true || OnFloor == true || OnWall = true || OnDoorway == true) && InvalidOverlap == false;
+}
+
+bool ADeployableItem::AnySurfaceSpawnConditionValid() const
+{
+	return OnGround == true || OnFloor == true || OnWall == true || OnDoorway == true || InvalidOverlap == true;
 }
 
 void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
