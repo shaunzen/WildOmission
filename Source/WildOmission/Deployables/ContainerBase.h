@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Deployable.h"
+#include "GameFramework/Actor.h"
 #include "Blueprint/UserWidget.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
 #include "ContainerBase.generated.h"
@@ -11,7 +11,7 @@
 class UInventoryComponent;
 
 UCLASS()
-class WILDOMISSION_API AContainerBase : public ADeployable, public IInteractable
+class WILDOMISSION_API AContainerBase : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 	
@@ -39,6 +39,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* Mesh;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Container")
 	TSubclassOf<UUserWidget> WidgetClass;
 
