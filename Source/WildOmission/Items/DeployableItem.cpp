@@ -15,7 +15,6 @@ ADeployableItem::ADeployableItem()
 	PrimaryActorTick.bCanEverTick = true;
 
 	DeployableRange = 500.0f;
-	SpawnConditionValid = true;
 	
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/WildOmission/Art/Deployables/M_DeployablePreview_Inst"));
 	if (PreviewMaterialInstanceBlueprint.Succeeded() == false)
@@ -24,6 +23,12 @@ ADeployableItem::ADeployableItem()
 	}
 
 	PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;
+
+	OnGround = false;
+	OnFloor = false;
+	OnWall = false;
+	OnDoorway = false;
+	InvalidOverlap = false;
 }
 
 void ADeployableItem::Tick(float DeltaTime)
@@ -126,7 +131,8 @@ void ADeployableItem::Client_SpawnPreview_Implementation()
 
 	PreviewActor = GetWorld()->SpawnActor<AStaticMeshActor>(GetOwner()->GetActorLocation() = FVector(0.0f, 0.0f, 500.0f), GetOwner()->GetActorRotation());
 	PreviewActor->SetMobility(EComponentMobility::Movable);
-	PreviewActor->SetActorEnableCollision(false);
+	PreviewActor->GetStaticMeshComponent()->SetCollisionProfileName(FName("OverlapAll"));
+	PreviewActor->GetStaticMeshComponent()->SetGenerateOverlapEvents(true);
 	PreviewActor->GetStaticMeshComponent()->SetStaticMesh(DeployedActorMesh);
 	PreviewActor->GetStaticMeshComponent()->SetMaterial(0, PreviewMaterial);
 	PreviewActor->OnActorBeginOverlap.AddDynamic(this, &ADeployableItem::OnPreviewBeginOverlap);
@@ -158,7 +164,6 @@ void ADeployableItem::UpdatePreview()
 	}
 	else
 	{
-		SpawnConditionValid = false;
 		PreviewLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
 	}
 	PreviewActor->SetActorLocation(PreviewLocation);
@@ -166,16 +171,61 @@ void ADeployableItem::UpdatePreview()
 	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("CanSpawn"), SpawnConditionValid());
 }
 
+
 bool ADeployableItem::SpawnConditionValid() const
 {
+	ADeployable* DefaultDeployable = DeployableActorClass.GetDefaultObject();
 
+	switch (DefaultDeployable->GetPlacementType())
+	{
+	case GroundOnly:
+		return GroundOnlySpawnConditionValid();
+		break;
+	case FloorOnly:
+		return FloorOnlySpawnConditionValid();
+		break;
+	case GroundOrFloor:
+		return GroundOrFloorSpawnConditionValid();
+		break;
+	case WallOnly:
+		return WallOnlySpawnConditionValid();
+		break;
+	case DoorwayOnly:
+		return DoorwayOnlySpawnConditionValid();
+		break;
+	}
+
+	return false;
+}
+
+bool ADeployableItem::GroundOnlySpawnConditionValid() const
+{
+	return OnGround == true && OnFloor == false && OnWall == false && OnDoorway == false && InvalidOverlap == false;
+}
+
+bool ADeployableItem::FloorOnlySpawnConditionValid() const
+{
+	return OnGround == false && OnFloor == true && OnWall == false && OnDoorway == false && InvalidOverlap == false;
+}
+
+bool ADeployableItem::GroundOrFloorSpawnConditionValid() const
+{
+	return (OnGround == true || OnFloor == true) && (OnWall == false && OnDoorway == false && InvalidOverlap == false);
+}
+
+bool ADeployableItem::WallOnlySpawnConditionValid() const
+{
+	return OnGround == false && OnFloor == false && OnWall == true && OnDoorway == false && InvalidOverlap == false;
+}
+
+bool ADeployableItem::DoorwayOnlySpawnConditionValid() const
+{
+	return OnGround == false && OnFloor == false && OnWall == false && OnDoorway == true && InvalidOverlap == false;
 }
 
 void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	// TODO check spawn condition
-	ADeployable* DefaultDeployable = DeployableActorClass.GetDefaultObject();
-
+	UE_LOG(LogTemp, Warning, TEXT("Begin Overlap Other Actor: %s"), *OtherActor->GetActorNameOrLabel());
 	if (OtherActor->ActorHasTag(FName("Ground")))
 	{
 		OnGround = true;
@@ -196,28 +246,11 @@ void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* Oth
 	{
 		InvalidOverlap = true;
 	}
-
-	switch (DefaultDeployable->GetPlacementType())
-	{
-	case GroundOnly:
-
-		break;
-	case FloorOnly:
-		break;
-	case GroundOrFloor:
-		break;
-	case WallOnly:
-		break;
-	case DoorwayOnly:
-
-		break;
-	}
 }
 
 void ADeployableItem::OnPreviewEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	ADeployable* DefaultDeployable = DeployableActorClass.GetDefaultObject();
-
+	UE_LOG(LogTemp, Warning, TEXT("End Overlap Other Actor: %s"), *OtherActor->GetActorNameOrLabel());
 	if (OtherActor->ActorHasTag(FName("Ground")))
 	{
 		OnGround = false;

@@ -39,7 +39,13 @@ protected:
 	bool OnDoorway;
 	bool InvalidOverlap;
 
-	bool SpawnConditionValid();
+	bool SpawnConditionValid() const;
+
+	bool GroundOnlySpawnConditionValid() const;
+	bool FloorOnlySpawnConditionValid() const;
+	bool GroundOrFloorSpawnConditionValid() const;
+	bool WallOnlySpawnConditionValid() const;
+	bool DoorwayOnlySpawnConditionValid() const;
 
 private:
 	UFUNCTION(Client, Reliable)
