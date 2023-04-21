@@ -134,3 +134,13 @@ FTransform AEquipableItem::GetSocketOffset()
 {
 	return SocketOffset;
 }
+
+bool AEquipableItem::PrimaryEnabled() const
+{
+	return bPrimaryEnabled;
+}
+
+bool AEquipableItem::SecondaryEnabled() const
+{
+	return bSecondaryEnabled;
+}

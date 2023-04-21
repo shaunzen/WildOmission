@@ -15,6 +15,7 @@
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/NameTagComponent.h"
+#include "WildOmission/Items/EquipableItem.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -344,7 +345,7 @@ void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
 
 void AWildOmissionCharacter::Primary()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || GetCharacterMovement()->IsSwimming())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || EquipComponent->GetEquipedItem()->PrimaryEnabled() == false || GetCharacterMovement()->IsSwimming())
 	{
 		return;
 	}
@@ -354,7 +355,7 @@ void AWildOmissionCharacter::Primary()
 
 void AWildOmissionCharacter::Secondary()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || GetCharacterMovement()->IsSwimming())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || EquipComponent->GetEquipedItem()->SecondaryEnabled() == false || GetCharacterMovement()->IsSwimming())
 	{
 		return;
 	}

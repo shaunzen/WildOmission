@@ -46,6 +46,9 @@ public:
 
 	FTransform GetSocketOffset();
 
+	bool PrimaryEnabled() const;
+	bool SecondaryEnabled() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -70,6 +73,9 @@ protected:
 
 	UPROPERTY(Replicated)
 	uint32 UniqueID;
+
+	bool bPrimaryEnabled;
+	bool bSecondaryEnabled;
 
 	AWildOmissionCharacter* GetOwnerCharacter() const;
 
