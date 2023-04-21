@@ -345,7 +345,7 @@ void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
 
 void AWildOmissionCharacter::Primary()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || EquipComponent->GetEquipedItem()->PrimaryEnabled() == false || GetCharacterMovement()->IsSwimming())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->PrimaryEnabled() || GetCharacterMovement()->IsSwimming())
 	{
 		return;
 	}
@@ -355,7 +355,7 @@ void AWildOmissionCharacter::Primary()
 
 void AWildOmissionCharacter::Secondary()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || EquipComponent->GetEquipedItem()->SecondaryEnabled() == false || GetCharacterMovement()->IsSwimming())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->SecondaryEnabled() || GetCharacterMovement()->IsSwimming())
 	{
 		return;
 	}

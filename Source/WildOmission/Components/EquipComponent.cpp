@@ -121,6 +121,16 @@ bool UEquipComponent::IsItemEquiped() const
 	return EquipedItem != nullptr;
 }
 
+bool UEquipComponent::PrimaryEnabled() const
+{
+	return IsItemEquiped() && EquipedItem->PrimaryEnabled();
+}
+
+bool UEquipComponent::SecondaryEnabled() const
+{
+	return IsItemEquiped() && EquipedItem->SecondaryEnabled();
+}
+
 // RPC
 void UEquipComponent::Server_Primary_Implementation()
 {

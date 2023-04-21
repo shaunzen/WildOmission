@@ -31,6 +31,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;
 
+	bool PrimaryEnabled() const;
+	bool SecondaryEnabled() const;
+
 	UFUNCTION(Server, Reliable)
 	void Server_Primary();
 

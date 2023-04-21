@@ -34,7 +34,7 @@ ADeployableItem::ADeployableItem()
 void ADeployableItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	UpdatePreview();
 }
 
@@ -167,7 +167,7 @@ void ADeployableItem::UpdatePreview()
 		PreviewLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
 	}
 	PreviewActor->SetActorLocation(PreviewLocation);
-	
+	bPrimaryEnabled = SpawnConditionValid();
 	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), SpawnConditionValid());
 }
 
@@ -231,7 +231,7 @@ bool ADeployableItem::DoorwayOnlySpawnConditionValid() const
 
 bool ADeployableItem::AnyExceptInvalidSpawnConditionValid() const
 {
-	return (OnGround == true || OnFloor == true || OnWall = true || OnDoorway == true) && InvalidOverlap == false;
+	return (OnGround == true || OnFloor == true || OnWall == true || OnDoorway == true) && InvalidOverlap == false;
 }
 
 bool ADeployableItem::AnySurfaceSpawnConditionValid() const
