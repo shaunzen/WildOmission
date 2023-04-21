@@ -30,10 +30,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float DeployableRange;
 
-	bool SpawnConditionValid;
-
 	bool LineTraceOnCameraChannel(FHitResult& OutHitResult) const;
 	FTransform GetSpawnTransform() const;
+
+	bool OnGround;
+	bool OnFloor;
+	bool OnWall;
+	bool OnDoorway;
+	bool InvalidOverlap;
+
+	bool SpawnConditionValid();
 
 private:
 	UFUNCTION(Client, Reliable)

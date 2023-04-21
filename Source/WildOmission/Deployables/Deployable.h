@@ -7,6 +7,16 @@
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "Deployable.generated.h"
 
+UENUM()
+enum EDeployableType
+{
+	GroundOnly		UMETA(DisplayName = "Ground Only"),
+	FloorOnly		UMETA(DisplayName = "Floor Only"),
+	GroundOrFloor	UMETA(DisplayName = "Ground or Floor"),
+	WallOnly		UMETA(DisplayName = "Wall Only"),
+	DoorwayOnly		UMETA(DisplayName = "Doorway Only")
+};
+
 UCLASS()
 class WILDOMISSION_API ADeployable : public AActor, public ISavableObjectInterface
 {
@@ -21,10 +31,7 @@ public:
 
 	UStaticMesh* GetMesh() const;
 
-	bool CanBePlacedOnGround() const;
-	bool CanBePlacedOnFloor() const;
-	bool CanBePlacedOnWall() const;
-	bool CanBePlacedInDoorway() const;
+	TEnumAsByte<EDeployableType> GetPlacementType() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,16 +41,6 @@ protected:
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	bool bCanBePlacedOnGround;
-
-	UPROPERTY(EditDefaultsOnly)
-	bool bCanBePlacedOnFloor;
-
-	UPROPERTY(EditDefaultsOnly)
-	bool bCanBePlacedOnWall;
-
-	UPROPERTY(EditDefaultsOnly)
-	bool bCanBePlacedInDoorway;
-
+	TEnumAsByte<EDeployableType> PlacementType;
 
 };

@@ -5,6 +5,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "WildOmission/Deployables/Deployable.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -50,16 +51,19 @@ void ADeployableItem::Primary()
 {
 	Super::Primary();
 	
-	// THIS IS ON THE SERVER
+	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
+	if (OwnerInventoryComponent == nullptr)
+	{
+		return;
+	}
 	
-	// figure out where this will be spawned?
-	// how do we can the preview transform from the client?
+	// TODO Validate spawn before spawning
+
 	FTransform SpawnTransform = GetSpawnTransform();
 	
 	GetWorld()->SpawnActor<ADeployable>(DeployableActorClass, SpawnTransform);
 
-	// spawn on the server the real deployable item
-	// remove this current item from our inventory
+	OwnerInventoryComponent->RemoveHeldItem();
 }
 
 bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
@@ -159,15 +163,79 @@ void ADeployableItem::UpdatePreview()
 	}
 	PreviewActor->SetActorLocation(PreviewLocation);
 
-	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("CanSpawn"), SpawnConditionValid);
+	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("CanSpawn"), SpawnConditionValid());
+}
+
+bool ADeployableItem::SpawnConditionValid() const
+{
+
 }
 
 void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	// TODO check spawn condition
+	ADeployable* DefaultDeployable = DeployableActorClass.GetDefaultObject();
+
+	if (OtherActor->ActorHasTag(FName("Ground")))
+	{
+		OnGround = true;
+	}
+	else if (OtherActor->ActorHasTag(FName("Floor")))
+	{
+		OnFloor = true;
+	}
+	else if (OtherActor->ActorHasTag(FName("Wall")))
+	{
+		OnWall = true;
+	}
+	else if (OtherActor->ActorHasTag(FName("Doorway")))
+	{
+		OnDoorway = true;
+	}
+	else
+	{
+		InvalidOverlap = true;
+	}
+
+	switch (DefaultDeployable->GetPlacementType())
+	{
+	case GroundOnly:
+
+		break;
+	case FloorOnly:
+		break;
+	case GroundOrFloor:
+		break;
+	case WallOnly:
+		break;
+	case DoorwayOnly:
+
+		break;
+	}
 }
 
 void ADeployableItem::OnPreviewEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	// TODO check spawn condition
+	ADeployable* DefaultDeployable = DeployableActorClass.GetDefaultObject();
+
+	if (OtherActor->ActorHasTag(FName("Ground")))
+	{
+		OnGround = false;
+	}
+	else if (OtherActor->ActorHasTag(FName("Floor")))
+	{
+		OnFloor = false;
+	}
+	else if (OtherActor->ActorHasTag(FName("Wall")))
+	{
+		OnWall = false;
+	}
+	else if (OtherActor->ActorHasTag(FName("Doorway")))
+	{
+		OnDoorway = false;
+	}
+	else
+	{
+		InvalidOverlap = false;
+	}
 }
