@@ -54,6 +54,9 @@ void ADeployableItem::Primary()
 	
 	// figure out where this will be spawned?
 	// how do we can the preview transform from the client?
+	FTransform SpawnTransform = GetSpawnTransform();
+	
+	GetWorld()->SpawnActor<ADeployable>(DeployableActorClass, SpawnTransform);
 
 	// spawn on the server the real deployable item
 	// remove this current item from our inventory
@@ -83,6 +86,20 @@ bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
 	}
 
 	return false;
+}
+
+FTransform ADeployableItem::GetSpawnTransform() const
+{
+	FTransform SpawnTransform;
+	FHitResult HitResult;
+	if (!LineTraceOnCameraChannel(HitResult))
+	{
+		return SpawnTransform;
+	}
+	
+	SpawnTransform.SetLocation(HitResult.ImpactPoint);
+
+	return SpawnTransform;
 }
 
 void ADeployableItem::Client_SpawnPreview_Implementation()
@@ -137,6 +154,7 @@ void ADeployableItem::UpdatePreview()
 	}
 	else
 	{
+		SpawnConditionValid = false;
 		PreviewLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
 	}
 	PreviewActor->SetActorLocation(PreviewLocation);

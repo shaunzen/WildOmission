@@ -33,6 +33,7 @@ protected:
 	bool SpawnConditionValid;
 
 	bool LineTraceOnCameraChannel(FHitResult& OutHitResult) const;
+	FTransform GetSpawnTransform() const;
 
 private:
 	UFUNCTION(Client, Reliable)
