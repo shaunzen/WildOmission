@@ -167,8 +167,8 @@ void ADeployableItem::UpdatePreview()
 		PreviewLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
 	}
 	PreviewActor->SetActorLocation(PreviewLocation);
-
-	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("CanSpawn"), SpawnConditionValid());
+	
+	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), SpawnConditionValid());
 }
 
 

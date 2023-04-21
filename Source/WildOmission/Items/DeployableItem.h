@@ -66,4 +66,5 @@ private:
 	
 	UPROPERTY()
 	UMaterialInstance* PreviewMaterial;
+
 };
