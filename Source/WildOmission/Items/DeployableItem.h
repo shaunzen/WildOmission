@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "EquipableItem.h"
+#include "WildOmission/Deployables/Deployable.h"
 #include "DeployableItem.generated.h"
 
-class ADeployable;
 class AStaticMeshActor;
 
 UCLASS()

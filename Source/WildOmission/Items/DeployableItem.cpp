@@ -3,7 +3,6 @@
 
 #include "DeployableItem.h"
 #include "Engine/StaticMeshActor.h"
-#include "WildOmission/Deployables/Deployable.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -14,15 +13,14 @@ ADeployableItem::ADeployableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	DeployableActorClass = nullptr;
 	DeployableRange = 500.0f;
 	
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/WildOmission/Art/Deployables/M_DeployablePreview_Inst"));
-	if (PreviewMaterialInstanceBlueprint.Succeeded() == false)
+	if (PreviewMaterialInstanceBlueprint.Succeeded())
 	{
-		return;
+		PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;
 	}
-
-	PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;
 
 	OnGround = false;
 	OnFloor = false;
