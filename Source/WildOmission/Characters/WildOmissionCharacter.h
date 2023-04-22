@@ -12,7 +12,7 @@ class UInputAction;
 class UCameraComponent;
 class UCraftingComponent;
 class UNameTagComponent;
-class AContainerBase;
+class AItemContainerBase;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
@@ -34,7 +34,7 @@ public:
 	void HandleDeath();
 
 	UFUNCTION(Client, Reliable)
-	void Client_OpenContainer(AContainerBase* Container);
+	void Client_OpenContainer(AItemContainerBase* Container);
 	
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;

@@ -20,7 +20,7 @@ class UPlayerInventoryWidget;
 class UCraftingMenuWidget;
 class USelectedItemWidget;
 
-class AContainerBase;
+class AItemContainerBase;
 
 UCLASS(Abstract)
 class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
@@ -36,7 +36,7 @@ public:
 
 	virtual bool Initialize() override;
 
-	void OpenContainer(AContainerBase* Container);
+	void OpenContainer(AItemContainerBase* Container);
 
 	// Setters
 	UFUNCTION(BlueprintCallable)

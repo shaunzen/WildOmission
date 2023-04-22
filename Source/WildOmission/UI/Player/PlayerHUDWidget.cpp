@@ -17,7 +17,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "VitalsWidget.h"
-#include "WildOmission/Deployables/ContainerBase.h"
+#include "WildOmission/Deployables/ItemContainerBase.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -66,7 +66,7 @@ bool UPlayerHUDWidget::Initialize()
 	return true;
 }
 
-void UPlayerHUDWidget::OpenContainer(AContainerBase* Container)
+void UPlayerHUDWidget::OpenContainer(AItemContainerBase* Container)
 {
 	OpenMenuPanel();
 	SwitchToInventoryMenu();
@@ -251,7 +251,7 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	
 	if (OpenContainerWidget != nullptr)
 	{
-		if (AContainerBase* OpenedContainer = Cast<AContainerBase>(OpenContainerWidget->GetInventoryComponent()->GetOwner()))
+		if (AItemContainerBase* OpenedContainer = Cast<AItemContainerBase>(OpenContainerWidget->GetInventoryComponent()->GetOwner()))
 		{
 			OpenedContainer->Server_UnOccupy();
 		}

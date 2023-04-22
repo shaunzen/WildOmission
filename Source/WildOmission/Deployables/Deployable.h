@@ -44,13 +44,13 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
 	TEnumAsByte<EDeployableType> PlacementType;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
 	bool SnapToBuildAnchor;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
 	bool UseSurfaceNormal;
 
 };

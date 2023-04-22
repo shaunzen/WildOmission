@@ -4,14 +4,41 @@
 
 #include "CoreMinimal.h"
 #include "Deployable.h"
+#include "Blueprint/UserWidget.h"
+#include "WildOmission/Core/Interfaces/Interactable.h"
 #include "ItemContainerBase.generated.h"
 
-/**
- * 
- */
+class UInventoryComponent;
+
 UCLASS()
-class WILDOMISSION_API AItemContainerBase : public ADeployable
+class WILDOMISSION_API AItemContainerBase : public ADeployable, public IInteractable
 {
 	GENERATED_BODY()
+
+public:
+	AItemContainerBase();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
+	/*Begin Interactable Interface Implementation*/
+	virtual void Interact(AActor* Interactor) override;
+	virtual FString PromptText() override;
+	/*End Interactable Interface Implementation*/
+
+	UFUNCTION(Server, Reliable)
+	void Server_UnOccupy();
+
+	UClass* GetWidgetClass() const;
+	UInventoryComponent* GetInventoryComponent() const;
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> WidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	UInventoryComponent* InventoryComponent;
+
+	UPROPERTY(Replicated)
+	bool bOccupied;
+
 };
