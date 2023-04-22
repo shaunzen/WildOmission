@@ -6,7 +6,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "Net/UnrealNetwork.h"
 
-AItemContainerBase::AItemContainerBase() : ADeployable()
+AItemContainerBase::AItemContainerBase()
 {
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 	WidgetClass = nullptr;

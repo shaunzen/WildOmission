@@ -15,11 +15,11 @@ UInventoryComponent::UInventoryComponent()
 	
 	SetIsReplicatedByDefault(true);
 	
-	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
+	/*static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
 	if (ItemDataTableObject.Succeeded())
 	{
 		ItemDataTable = ItemDataTableObject.Object;
-	}
+	}*/
 
 	SlotCount = 24;
 	LoadedFromSave = false;
