@@ -9,6 +9,7 @@
 #include "InventoryWidget.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 
 void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const int32& InIndex)
 {
@@ -38,7 +39,7 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 
 	if (Item.Quantity != 0)
 	{
-		FItemData* SlotItemData = UInventoryComponent::GetItemData(Item.Name);
+		FItemData* SlotItemData = UWildOmissionStatics::GetItemData(Item.Name);
 		if (SlotItemData == nullptr)
 		{
 			return;

@@ -4,6 +4,7 @@
 #include "InventoryManipulatorComponent.h"
 #include "WildOmission/Items/WorldItem.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "Net/UnrealNetwork.h"
@@ -70,7 +71,7 @@ void UInventoryManipulatorComponent::StopDragging()
 void UInventoryManipulatorComponent::SpawnWorldItem(const FInventoryItem& ItemToSpawn)
 {
 	// Get the data for this item
-	FItemData* ItemData = UInventoryComponent::GetItemData(ItemToSpawn.Name);
+	FItemData* ItemData = UWildOmissionStatics::GetItemData(ItemToSpawn.Name);
 
 	// Spawn a world item actor
 	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();

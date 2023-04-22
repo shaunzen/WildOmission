@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 
 void USelectedItemWidget::NativeConstruct()
 {
@@ -63,7 +64,7 @@ void USelectedItemWidget::Refresh(const FInventoryItem& SelectedItem)
 	if (SelectedItem.Quantity > 0)
 	{
 		Show();
-		FItemData* SelectedItemData = UInventoryComponent::GetItemData(SelectedItem.Name);
+		FItemData* SelectedItemData = UWildOmissionStatics::GetItemData(SelectedItem.Name);
 		SetItem(SelectedItemData->Thumbnail, SelectedItem.Quantity);
 	}
 	else

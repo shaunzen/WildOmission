@@ -9,6 +9,7 @@
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/Core/Structs/ItemStat.h"
 #include "Kismet/GameplayStatics.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -90,7 +91,7 @@ FString AWorldItem::PromptText()
 {
 	FString ItemDisplayName;
 
-	FItemData* ItemData = UInventoryComponent::GetItemData(Item.Name);
+	FItemData* ItemData = UWildOmissionStatics::GetItemData(Item.Name);
 	if (ItemData == nullptr)
 	{
 		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Item.Name.ToString());
@@ -103,7 +104,7 @@ FString AWorldItem::PromptText()
 
 void AWorldItem::SetItem(const FInventoryItem& InItem)
 {
-	FItemData* NewItemData = UInventoryComponent::GetItemData(InItem.Name);
+	FItemData* NewItemData = UWildOmissionStatics::GetItemData(InItem.Name);
 	if (NewItemData == nullptr)
 	{
 		return;
@@ -133,7 +134,7 @@ void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 
 	FInventoryItem OurItem = this->GetItem();
 	FInventoryItem OtherItem = OtherWorldItem->GetItem();
-	FItemData* ItemData = UInventoryComponent::GetItemData(OurItem.Name);
+	FItemData* ItemData = UWildOmissionStatics::GetItemData(OurItem.Name);
 	if (OtherItem.Name != OurItem.Name || ItemData == nullptr || ItemData->StackSize == 1)
 	{
 		return;

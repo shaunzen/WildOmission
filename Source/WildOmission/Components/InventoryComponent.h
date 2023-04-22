@@ -6,7 +6,6 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "WildOmission/Core/Structs/InventoryContents.h"
-#include "WildOmission/Core/Structs/ItemData.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "InventoryComponent.generated.h"
 
@@ -36,8 +35,7 @@ public:
 	void Server_SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary = true);
 
 	FInventoryUpdateSignature OnUpdate;
-
-	static FItemData* GetItemData(const FName& ItemName);
+	
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
 	FInventorySlot* FindSlotContainingItem(const FName& ItemToFind);	
 

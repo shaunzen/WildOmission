@@ -3,23 +3,16 @@
 
 #include "InventoryComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "Net/UnrealNetwork.h"
-
-static UDataTable* ItemDataTable = nullptr;
 
 UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	
 	SetIsReplicatedByDefault(true);
-	
-	/*static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
-	if (ItemDataTableObject.Succeeded())
-	{
-		ItemDataTable = ItemDataTableObject.Object;
-	}*/
 
 	SlotCount = 24;
 	LoadedFromSave = false;
@@ -120,18 +113,6 @@ void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& Slo
 	BroadcastInventoryUpdate();
 }
 
-FItemData* UInventoryComponent::GetItemData(const FName& ItemName)
-{
-	if (ItemDataTable == nullptr)
-	{
-		return nullptr;
-	}
-
-	static const FString ContextString(TEXT("Item Data Context"));
-	
-	return ItemDataTable->FindRow<FItemData>(ItemName, ContextString, true);
-}
-
 FInventoryItem* UInventoryComponent::FindItemWithUniqueID(const uint32& UniqueID)
 {
 	FInventoryItem* FoundItem = nullptr;
@@ -228,7 +209,7 @@ void UInventoryComponent::BroadcastInventoryUpdate()
 
 bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining)
 {
-	FItemData* ItemData = GetItemData(ItemToAdd.Name);
+	FItemData* ItemData = UWildOmissionStatics::GetItemData(ItemToAdd.Name);
 	if (ItemData == nullptr)
 	{
 		return false;
@@ -265,7 +246,7 @@ bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const
 			break;
 		}
 
-		if (Slot.Item.Quantity == GetItemData(ItemName)->StackSize || Slot.Item.Name != ItemName)
+		if (Slot.Item.Quantity == UWildOmissionStatics::GetItemData(ItemName)->StackSize || Slot.Item.Name != ItemName)
 		{
 			continue;
 		}
@@ -428,7 +409,7 @@ void UInventoryComponent::DropAll(const int32& ToSlotIndex, UInventoryManipulato
 
 		Manipulator->StopDragging();
 	}
-	else if (ToSlot.SameItemNameAs(SelectedItem) && GetItemData(SelectedItem.Name)->StackSize != 1) // same item and the stack size for this item is not 1
+	else if (ToSlot.SameItemNameAs(SelectedItem) && UWildOmissionStatics::UWildOmissionStatics::GetItemData(SelectedItem.Name)->StackSize != 1) // same item and the stack size for this item is not 1
 	{
 		if (WithinStackSize(ToSlot.Item, SelectedItem.Quantity)) // todo move to function
 		{
@@ -444,12 +425,12 @@ void UInventoryComponent::DropAll(const int32& ToSlotIndex, UInventoryManipulato
 			int32 OldSlotItemQuantity = ToSlot.Item.Quantity;
 
 			// Update Inventory
-			int32 AmountAdded = GetItemData(ToSlot.Item.Name)->StackSize - ToSlot.Item.Quantity;
-			ToSlot.Item.Quantity = GetItemData(SelectedItem.Name)->StackSize;
+			int32 AmountAdded = UWildOmissionStatics::GetItemData(ToSlot.Item.Name)->StackSize - ToSlot.Item.Quantity;
+			ToSlot.Item.Quantity = UWildOmissionStatics::GetItemData(SelectedItem.Name)->StackSize;
 			Contents.AddItem(SelectedItem.Name, AmountAdded);
 			
 			// Update Selection
-			SelectedItem.Quantity = (OldSlotItemQuantity + SelectedItem.Quantity) - GetItemData(SelectedItem.Name)->StackSize;
+			SelectedItem.Quantity = (OldSlotItemQuantity + SelectedItem.Quantity) - UWildOmissionStatics::GetItemData(SelectedItem.Name)->StackSize;
 			Manipulator->StartDragging(SelectedItem);
 		}
 	}
@@ -515,5 +496,5 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex, UInventoryManipul
 
 bool UInventoryComponent::WithinStackSize(const FInventoryItem& BaseItem, const int32& AmountToAdd)
 {
-	return (BaseItem.Quantity + AmountToAdd) <= GetItemData(BaseItem.Name)->StackSize;
+	return (BaseItem.Quantity + AmountToAdd) <= UWildOmissionStatics::GetItemData(BaseItem.Name)->StackSize;
 }

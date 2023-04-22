@@ -12,6 +12,7 @@
 #include "IngredientRowWidget.h"
 #include "WildOmission/Components/CraftingComponent.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 UCraftingMenuWidget::UCraftingMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -81,7 +82,7 @@ void UCraftingMenuWidget::RefreshRecipesList()
 			return;
 		}
 		
-		FItemData* YieldItemData = UInventoryComponent::GetItemData(RecipeData->Yield.Name);
+		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeData->Yield.Name);
 		if (YieldItemData == nullptr)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Failed to find item data for recipe yeild %s"), *RecipeData->Yield.Name.ToString());
@@ -109,7 +110,7 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 		return;
 	}
 
-	FItemData* RecipeYieldItemData = UInventoryComponent::GetItemData(RecipeData->Yield.Name);
+	FItemData* RecipeYieldItemData = UWildOmissionStatics::GetItemData(RecipeData->Yield.Name);
 	if (RecipeYieldItemData == nullptr)
 	{
 		return;
@@ -163,7 +164,7 @@ void UCraftingMenuWidget::RefreshIngredientList()
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
 		int32 HasAmount = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
-		FItemData* IngredientItemData = UInventoryComponent::GetItemData(Ingredient.Name);
+		FItemData* IngredientItemData = UWildOmissionStatics::GetItemData(Ingredient.Name);
 		if (IngredientItemData == nullptr)
 		{
 			return;

@@ -5,6 +5,7 @@
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 
 // Sets default values
 ACollectableResource::ACollectableResource()
@@ -50,7 +51,7 @@ FString ACollectableResource::PromptText()
 {
 	FString YieldedItemDisplayName;
 
-	FItemData* ItemData = UInventoryComponent::GetItemData(Yield.Name);
+	FItemData* ItemData = UWildOmissionStatics::GetItemData(Yield.Name);
 	if (ItemData == nullptr)
 	{
 		return FString::Printf(TEXT("Press 'E' to harvest %s"), *Yield.Name.ToString());

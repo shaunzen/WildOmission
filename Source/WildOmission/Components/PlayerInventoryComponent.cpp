@@ -4,6 +4,7 @@
 #include "PlayerInventoryComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 #include "WildOmission/Items/WorldItem.h"
 #include "WildOmission/Items/EquipableItem.h"
 #include "WildOmission/Components/EquipComponent.h"
@@ -76,7 +77,7 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 	}
 
 	// get the equipable subclass for this item
-	FItemData* SlotItemData = GetItemData(SelectedSlot.Item.Name);
+	FItemData* SlotItemData = UWildOmissionStatics::GetItemData(SelectedSlot.Item.Name);
 	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
 	{
 		PlayerEquipComponent->Disarm();

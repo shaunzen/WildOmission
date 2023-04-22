@@ -6,6 +6,7 @@
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 
 void AConsumableItem::Primary()
 {
@@ -18,7 +19,7 @@ void AConsumableItem::Primary()
 		return;
 	}
 
-	FItemData* ItemData = UInventoryComponent::GetItemData(ItemName);
+	FItemData* ItemData = UWildOmissionStatics::GetItemData(ItemName);
 	if (ItemData == nullptr)
 	{
 		return;
