@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "EquipableItem.h"
-#include "WildOmission/Deployables/DeployableActor.h"
+#include "WildOmission/Deployables/Deployable.h"
 #include "DeployableItem.generated.h"
 
 class AStaticMeshActor;
@@ -25,7 +25,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ADeployableActor> DeployableActorClass;
+	TSubclassOf<ADeployable> DeployableActorClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	float DeployableRange;

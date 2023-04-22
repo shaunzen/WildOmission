@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Interface.h"
+#include "GameFramework/Actor.h"
+#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "Deployable.generated.h"
 
 UENUM()
@@ -18,37 +19,38 @@ enum EDeployableType
 	AnySurface			UMETA(DisplayName = "Any Surface")
 };
 
-// This class does not need to be modified.
-UINTERFACE(MinimalAPI)
-class UDeployable : public UInterface
+UCLASS()
+class WILDOMISSION_API ADeployable : public AActor, public ISavableObjectInterface
 {
 	GENERATED_BODY()
-};
+	
+public:	
+	// Sets default values for this actor's properties
+	ADeployable();
+	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
-/**
- * 
- */
-class WILDOMISSION_API IDeployable
-{
-	GENERATED_BODY()
-
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
-public:
-
-	virtual UStaticMesh* GetMesh() const = 0;
+	UStaticMesh* GetMesh() const;
 
 	TEnumAsByte<EDeployableType> GetPlacementType() const;
 	bool SnapsToBuildAnchor() const;
 	bool FollowsSurfaceNormal() const;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
-	TEnumAsByte<EDeployableType> PlacementType = EDeployableType::GroundOrFloor;
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
-	bool SnapToBuildAnchor = false;
+	TEnumAsByte<EDeployableType> PlacementType;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
-	bool UseSurfaceNormal = true;
+	bool SnapToBuildAnchor;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
+	bool UseSurfaceNormal;
 
 };

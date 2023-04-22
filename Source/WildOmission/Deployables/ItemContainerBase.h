@@ -3,16 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
 #include "Deployable.h"
+#include "Blueprint/UserWidget.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
-#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "ItemContainerBase.generated.h"
 
 class UInventoryComponent;
 
 UCLASS()
-class WILDOMISSION_API AItemContainerBase : public AActor, public IDeployable, public ISavableObjectInterface, public IInteractable
+class WILDOMISSION_API AItemContainerBase : public ADeployable, public IInteractable
 {
 	GENERATED_BODY()
 
@@ -26,11 +25,6 @@ public:
 	virtual FString PromptText() override;
 	/*End Interactable Interface Implementation*/
 
-	/*Begin Deployable Interface Implementation*/
-	virtual UStaticMesh* GetMesh() const override;
-	/*End Deployable Interface Implementation*/
-
-	
 	UFUNCTION(Server, Reliable)
 	void Server_UnOccupy();
 
@@ -38,9 +32,6 @@ public:
 	UInventoryComponent* GetInventoryComponent() const;
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* MeshComponent;
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> WidgetClass;
 

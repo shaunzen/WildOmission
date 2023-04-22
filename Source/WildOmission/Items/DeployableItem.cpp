@@ -64,7 +64,7 @@ void ADeployableItem::Primary()
 
 	FTransform SpawnTransform = GetSpawnTransform();
 	
-	GetWorld()->SpawnActor<ADeployableActor>(DeployableActorClass, SpawnTransform);
+	GetWorld()->SpawnActor<ADeployable>(DeployableActorClass, SpawnTransform);
 
 	OwnerInventoryComponent->RemoveHeldItem();
 }
@@ -172,7 +172,7 @@ void ADeployableItem::UpdatePreview()
 
 bool ADeployableItem::SpawnConditionValid() const
 {
-	ADeployableActor* DefaultDeployable = DeployableActorClass.GetDefaultObject();
+	ADeployable* DefaultDeployable = DeployableActorClass.GetDefaultObject();
 
 	switch (DefaultDeployable->GetPlacementType())
 	{
