@@ -1,10 +1,10 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Deployable.h"
+#include "DeployableActor.h"
 
 // Sets default values
-ADeployable::ADeployable()
+ADeployableActor::ADeployableActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -20,35 +20,35 @@ ADeployable::ADeployable()
 }
 
 // Called when the game starts or when spawned
-void ADeployable::BeginPlay()
+void ADeployableActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void ADeployable::Tick(float DeltaTime)
+void ADeployableActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-UStaticMesh* ADeployable::GetMesh() const
+UStaticMesh* ADeployableActor::GetMesh() const
 {
 	return MeshComponent->GetStaticMesh();
 }
 
-TEnumAsByte<EDeployableType> ADeployable::GetPlacementType() const
+TEnumAsByte<EDeployableType> ADeployableActor::GetPlacementType() const
 {
 	return PlacementType;
 }
 
-bool ADeployable::SnapsToBuildAnchor() const
+bool ADeployableActor::SnapsToBuildAnchor() const
 {
 	return SnapToBuildAnchor;
 }
 
-bool ADeployable::FollowsSurfaceNormal() const
+bool ADeployableActor::FollowsSurfaceNormal() const
 {
 	return UseSurfaceNormal;
 }

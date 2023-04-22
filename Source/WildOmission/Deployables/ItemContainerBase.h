@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Deployable.h"
+#include "DeployableActor.h"
 #include "Blueprint/UserWidget.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
 #include "ItemContainerBase.generated.h"
@@ -11,7 +11,7 @@
 class UInventoryComponent;
 
 UCLASS()
-class WILDOMISSION_API AItemContainerBase : public ADeployable, public IInteractable
+class WILDOMISSION_API AItemContainerBase : public ADeployableActor, public IInteractable
 {
 	GENERATED_BODY()
 

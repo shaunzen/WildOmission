@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
-#include "Deployable.generated.h"
+#include "DeployableActor.generated.h"
 
 UENUM()
 enum EDeployableType
@@ -20,13 +20,13 @@ enum EDeployableType
 };
 
 UCLASS()
-class WILDOMISSION_API ADeployable : public AActor, public ISavableObjectInterface
+class WILDOMISSION_API ADeployableActor : public AActor, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ADeployable();
+	ADeployableActor();
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
