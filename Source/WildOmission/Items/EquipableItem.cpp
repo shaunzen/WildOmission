@@ -35,6 +35,9 @@ AEquipableItem::AEquipableItem()
 
 	FromSlotIndex = -1;
 	UniqueID = 0;
+
+	bPrimaryEnabled = true;
+	bSecondaryEnabled = true;
 }
 
 void AEquipableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
