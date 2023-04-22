@@ -34,6 +34,8 @@ public:
 	UStaticMesh* GetMesh() const;
 
 	TEnumAsByte<EDeployableType> GetPlacementType() const;
+	bool SnapsToBuildAnchor() const;
+	bool FollowsSurfaceNormal() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,5 +46,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EDeployableType> PlacementType;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool SnapToBuildAnchor;
+	
+	UPROPERTY(EditDefaultsOnly)
+	bool UseSurfaceNormal;
 
 };

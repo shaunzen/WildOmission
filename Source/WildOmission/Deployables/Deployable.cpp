@@ -15,6 +15,8 @@ ADeployable::ADeployable()
 	RootComponent = MeshComponent;
 
 	PlacementType = EDeployableType::GroundOrFloor;
+	SnapToBuildAnchor = false;
+	UseSurfaceNormal = true;
 }
 
 // Called when the game starts or when spawned
@@ -39,4 +41,14 @@ UStaticMesh* ADeployable::GetMesh() const
 TEnumAsByte<EDeployableType> ADeployable::GetPlacementType() const
 {
 	return PlacementType;
+}
+
+bool ADeployable::SnapsToBuildAnchor() const
+{
+	return SnapToBuildAnchor;
+}
+
+bool ADeployable::FollowsSurfaceNormal() const
+{
+	return UseSurfaceNormal;
 }
