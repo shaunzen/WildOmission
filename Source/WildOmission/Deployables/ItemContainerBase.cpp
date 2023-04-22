@@ -6,8 +6,11 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "Net/UnrealNetwork.h"
 
-AItemContainerBase::AItemContainerBase() : ADeployableActor()
+AItemContainerBase::AItemContainerBase()
 {
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
+	RootComponent = MeshComponent;
+
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 	WidgetClass = nullptr;
 	bOccupied = false;
@@ -47,6 +50,11 @@ FString AItemContainerBase::PromptText()
 	}
 
 	return FString("Occupied");
+}
+
+UStaticMesh* AItemContainerBase::GetMesh() const
+{
+	return MeshComponent->GetStaticMesh();
 }
 
 void AItemContainerBase::Server_UnOccupy_Implementation()
