@@ -100,6 +100,7 @@ bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
 FTransform ADeployableItem::GetSpawnTransform() const
 {
 	FTransform SpawnTransform;
+	FRotator SpawnRotation = FRotator::ZeroRotator;
 	FHitResult HitResult;
 	if (!LineTraceOnCameraChannel(HitResult))
 	{
@@ -107,6 +108,12 @@ FTransform ADeployableItem::GetSpawnTransform() const
 	}
 	
 	SpawnTransform.SetLocation(HitResult.ImpactPoint);
+	if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
+	{
+		SpawnRotation = HitResult.ImpactNormal.Rotation();
+	}
+	SpawnRotation.Roll = -GetOwnerCharacter()->GetControlRotation().Yaw;
+	SpawnTransform.SetRotation(SpawnRotation.Quaternion());
 
 	return SpawnTransform;
 }
@@ -156,11 +163,18 @@ void ADeployableItem::UpdatePreview()
 		return;
 	}
 
-	FVector PreviewLocation;
+	FVector PreviewLocation = FVector::ZeroVector;
+	FRotator PreviewRotation = FRotator::ZeroRotator;
+
 	FHitResult HitResult;
 	if (LineTraceOnCameraChannel(HitResult))
 	{
 		PreviewLocation = HitResult.ImpactPoint;
+		if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
+		{
+			PreviewRotation = HitResult.ImpactNormal.Rotation();
+		}
+		PreviewRotation.Roll = -GetOwnerCharacter()->GetControlRotation().Yaw;
 		WithinRange = true;
 	}
 	else
@@ -170,6 +184,7 @@ void ADeployableItem::UpdatePreview()
 	}
 
 	PreviewActor->SetActorLocation(PreviewLocation);
+	PreviewActor->SetActorRotation(PreviewRotation);
 	bPrimaryEnabled = SpawnConditionValid();
 	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), SpawnConditionValid());
 }
