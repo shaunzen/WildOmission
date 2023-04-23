@@ -38,6 +38,7 @@ protected:
 	bool OnWall;
 	bool OnDoorway;
 	bool InvalidOverlap;
+	bool WithinRange;
 
 	bool SpawnConditionValid() const;
 
@@ -66,7 +67,4 @@ private:
 	UPROPERTY()
 	AStaticMeshActor* PreviewActor;
 	
-	UPROPERTY()
-	UMaterialInstance* PreviewMaterial;
-
 };

@@ -9,6 +9,8 @@
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
+static UMaterialInstance* PreviewMaterial = nullptr;
+
 ADeployableItem::ADeployableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,7 +18,7 @@ ADeployableItem::ADeployableItem()
 	DeployableActorClass = nullptr;
 	DeployableRange = 500.0f;
 	
-	ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/WildOmission/Art/Deployables/M_DeployablePreview_Inst"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/WildOmission/Art/Deployables/M_DeployablePreview_Inst"));
 	if (PreviewMaterialInstanceBlueprint.Succeeded())
 	{
 		PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;
@@ -159,11 +161,14 @@ void ADeployableItem::UpdatePreview()
 	if (LineTraceOnCameraChannel(HitResult))
 	{
 		PreviewLocation = HitResult.ImpactPoint;
+		WithinRange = true;
 	}
 	else
 	{
 		PreviewLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+		WithinRange = false;
 	}
+
 	PreviewActor->SetActorLocation(PreviewLocation);
 	bPrimaryEnabled = SpawnConditionValid();
 	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), SpawnConditionValid());
@@ -204,37 +209,37 @@ bool ADeployableItem::SpawnConditionValid() const
 
 bool ADeployableItem::GroundOnlySpawnConditionValid() const
 {
-	return OnGround == true && OnFloor == false && OnWall == false && OnDoorway == false && InvalidOverlap == false;
+	return OnGround == true && OnFloor == false && OnWall == false && OnDoorway == false && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::FloorOnlySpawnConditionValid() const
 {
-	return OnGround == false && OnFloor == true && OnWall == false && OnDoorway == false && InvalidOverlap == false;
+	return OnGround == false && OnFloor == true && OnWall == false && OnDoorway == false && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::GroundOrFloorSpawnConditionValid() const
 {
-	return (OnGround == true || OnFloor == true) && (OnWall == false && OnDoorway == false && InvalidOverlap == false);
+	return (OnGround == true || OnFloor == true) && (OnWall == false && OnDoorway == false && InvalidOverlap == false && WithinRange == true);
 }
 
 bool ADeployableItem::WallOnlySpawnConditionValid() const
 {
-	return OnGround == false && OnFloor == false && OnWall == true && OnDoorway == false && InvalidOverlap == false;
+	return OnGround == false && OnFloor == false && OnWall == true && OnDoorway == false && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::DoorwayOnlySpawnConditionValid() const
 {
-	return OnGround == false && OnFloor == false && OnWall == false && OnDoorway == true && InvalidOverlap == false;
+	return OnGround == false && OnFloor == false && OnWall == false && OnDoorway == true && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::AnyExceptInvalidSpawnConditionValid() const
 {
-	return (OnGround == true || OnFloor == true || OnWall == true || OnDoorway == true) && InvalidOverlap == false;
+	return (OnGround == true || OnFloor == true || OnWall == true || OnDoorway == true) && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::AnySurfaceSpawnConditionValid() const
 {
-	return OnGround == true || OnFloor == true || OnWall == true || OnDoorway == true || InvalidOverlap == true;
+	return (OnGround == true || OnFloor == true || OnWall == true || OnDoorway == true || InvalidOverlap == true) && WithinRange == true;
 }
 
 void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
