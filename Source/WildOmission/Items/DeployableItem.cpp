@@ -9,6 +9,8 @@
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
+#include "DrawDebugHelpers.h"
+
 static UMaterialInstance* PreviewMaterial = nullptr;
 
 ADeployableItem::ADeployableItem()
@@ -66,8 +68,9 @@ void ADeployableItem::Primary()
 
 	FTransform SpawnTransform = GetSpawnTransform();
 	
-	GetWorld()->SpawnActor<ADeployable>(DeployableActorClass, SpawnTransform);
-
+	ADeployable* SpawnedDeployable = GetWorld()->SpawnActor<ADeployable>(DeployableActorClass, SpawnTransform);
+	
+	SpawnedDeployable->SetActorRelativeRotation(SpawnedDeployable->GetActorRotation() + FRotator(0.0f, 90.0f, 0.0f));
 	OwnerInventoryComponent->RemoveHeldItem();
 }
 
@@ -172,9 +175,12 @@ void ADeployableItem::UpdatePreview()
 		PreviewLocation = HitResult.ImpactPoint;
 		if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
 		{
-			PreviewRotation = HitResult.ImpactNormal.Rotation();
+			FVector LineStart = HitResult.ImpactPoint;
+			FVector LineEnd = LineStart + (HitResult.ImpactNormal * 50.0f);
+			DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, 5.0f, 0, 5.0f);
 		}
 		PreviewRotation.Roll = -GetOwnerCharacter()->GetControlRotation().Yaw;
+
 		WithinRange = true;
 	}
 	else
@@ -184,7 +190,7 @@ void ADeployableItem::UpdatePreview()
 	}
 
 	PreviewActor->SetActorLocation(PreviewLocation);
-	PreviewActor->SetActorRotation(PreviewRotation);
+	PreviewActor->SetActorRelativeRotation(PreviewRotation);
 	bPrimaryEnabled = SpawnConditionValid();
 	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), SpawnConditionValid());
 }
