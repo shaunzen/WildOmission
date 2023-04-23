@@ -31,7 +31,7 @@ protected:
 	float DeployableRange;
 
 	bool LineTraceOnCameraChannel(FHitResult& OutHitResult) const;
-	FTransform GetSpawnTransform() const;
+	FTransform GetPlacementTransform();
 
 	bool OnGround;
 	bool OnFloor;

@@ -64,13 +64,10 @@ void ADeployableItem::Primary()
 		return;
 	}
 	
-	// TODO Validate spawn before spawning
-
-	FTransform SpawnTransform = GetSpawnTransform();
+	FTransform SpawnTransform = GetPlacementTransform();
 	
 	ADeployable* SpawnedDeployable = GetWorld()->SpawnActor<ADeployable>(DeployableActorClass, SpawnTransform);
-	
-	SpawnedDeployable->SetActorRelativeRotation(SpawnedDeployable->GetActorRotation() + FRotator(0.0f, 90.0f, 0.0f));
+
 	OwnerInventoryComponent->RemoveHeldItem();
 }
 
@@ -100,25 +97,39 @@ bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
 	return false;
 }
 
-FTransform ADeployableItem::GetSpawnTransform() const
+FTransform ADeployableItem::GetPlacementTransform()
 {
-	FTransform SpawnTransform;
-	FRotator SpawnRotation = FRotator::ZeroRotator;
+	FVector PlacementLocation = FVector::ZeroVector;
+	FRotator PlacementRotation = FRotator::ZeroRotator;
+
+	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
+	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
+	FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
+
 	FHitResult HitResult;
-	if (!LineTraceOnCameraChannel(HitResult))
+	if (LineTraceOnCameraChannel(HitResult))
 	{
-		return SpawnTransform;
+		PlacementLocation = HitResult.ImpactPoint;
+		if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
+		{
+			PlacementUp = HitResult.ImpactNormal;
+		}
+
+		WithinRange = true;
+	}
+	else
+	{
+		PlacementLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+		WithinRange = false;
 	}
 	
-	SpawnTransform.SetLocation(HitResult.ImpactPoint);
-	if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
-	{
-		SpawnRotation = HitResult.ImpactNormal.Rotation();
-	}
-	SpawnRotation.Roll = -GetOwnerCharacter()->GetControlRotation().Yaw;
-	SpawnTransform.SetRotation(SpawnRotation.Quaternion());
+	PlacementRotation = UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
 
-	return SpawnTransform;
+	FTransform PlacementTransform;
+	PlacementTransform.SetLocation(PlacementLocation);
+	PlacementTransform.SetRotation(PlacementRotation.Quaternion());
+
+	return PlacementTransform;
 }
 
 void ADeployableItem::Client_SpawnPreview_Implementation()
@@ -166,35 +177,7 @@ void ADeployableItem::UpdatePreview()
 		return;
 	}
 
-	FVector PreviewLocation = FVector::ZeroVector;
-	FRotator PreviewRotation = FRotator::ZeroRotator;
-
-	FHitResult HitResult;
-	if (LineTraceOnCameraChannel(HitResult))
-	{
-		PreviewLocation = HitResult.ImpactPoint;
-		if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
-		{
-			FVector LineStart = HitResult.ImpactPoint;
-			FVector LineEnd = LineStart + (HitResult.ImpactNormal * 50.0f);
-			//DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, 5.0f, 0, 5.0f);
-			
-			FVector Forward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
-			FVector Right = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
-			FVector Up = HitResult.ImpactNormal;
-			PreviewRotation = UKismetMathLibrary::MakeRotationFromAxes(Forward, Right, Up);
-		}
-		
-		WithinRange = true;
-	}
-	else
-	{
-		PreviewLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
-		WithinRange = false;
-	}
-
-	PreviewActor->SetActorLocation(PreviewLocation);
-	PreviewActor->SetActorRelativeRotation(PreviewRotation);
+	PreviewActor->SetActorTransform(GetPlacementTransform());
 	bPrimaryEnabled = SpawnConditionValid();
 	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), SpawnConditionValid());
 }
@@ -269,7 +252,6 @@ bool ADeployableItem::AnySurfaceSpawnConditionValid() const
 
 void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Begin Overlap Other Actor: %s"), *OtherActor->GetActorNameOrLabel());
 	if (OtherActor->ActorHasTag(FName("Ground")))
 	{
 		OnGround = true;
@@ -294,7 +276,6 @@ void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* Oth
 
 void ADeployableItem::OnPreviewEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("End Overlap Other Actor: %s"), *OtherActor->GetActorNameOrLabel());
 	if (OtherActor->ActorHasTag(FName("Ground")))
 	{
 		OnGround = false;
