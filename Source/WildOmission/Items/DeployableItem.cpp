@@ -177,10 +177,14 @@ void ADeployableItem::UpdatePreview()
 		{
 			FVector LineStart = HitResult.ImpactPoint;
 			FVector LineEnd = LineStart + (HitResult.ImpactNormal * 50.0f);
-			DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, 5.0f, 0, 5.0f);
+			//DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, 5.0f, 0, 5.0f);
+			
+			FVector Forward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
+			FVector Right = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
+			FVector Up = HitResult.ImpactNormal;
+			PreviewRotation = UKismetMathLibrary::MakeRotationFromAxes(Forward, Right, Up);
 		}
-		PreviewRotation.Roll = -GetOwnerCharacter()->GetControlRotation().Yaw;
-
+		
 		WithinRange = true;
 	}
 	else
