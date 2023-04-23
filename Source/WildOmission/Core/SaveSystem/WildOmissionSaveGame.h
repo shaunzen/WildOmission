@@ -80,6 +80,9 @@ struct FActorSaveData
 
 	UPROPERTY()
 	TArray<uint8> ByteData;
+
+	UPROPERTY()
+	FWildOmissionInventorySave Inventory;
 };
 
 USTRUCT()

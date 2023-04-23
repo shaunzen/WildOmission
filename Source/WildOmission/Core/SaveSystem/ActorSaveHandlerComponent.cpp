@@ -4,6 +4,7 @@
 #include "ActorSaveHandlerComponent.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+#include "WildOmission/Components/InventoryComponent.h"
 #include "EngineUtils.h"
 
 // Sets default values for this component's properties
@@ -46,6 +47,11 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 		Archive.ArIsSaveGame = true;
 		Actor->Serialize(Archive);
 		
+		if (UInventoryComponent* InventoryComponent = Actor->FindComponentByClass<UInventoryComponent>())
+		{
+			ActorData.Inventory = InventoryComponent->Save();
+		}
+
 		OutSaves.Add(ActorData);
 	}
 }
@@ -64,6 +70,11 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Failed to load actor from save file: %s"), *ActorData.Name.ToString());
 			return;
+		}
+		
+		if (UInventoryComponent* InventoryComponent = SpawnedActor->FindComponentByClass<UInventoryComponent>())
+		{
+			InventoryComponent->Load(ActorData.Inventory);
 		}
 
 		FMemoryReader MemoryReader(ActorData.ByteData);

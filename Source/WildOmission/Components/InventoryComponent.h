@@ -53,10 +53,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	uint8 SlotCount;
 
-	UPROPERTY(Replicated, VisibleAnywhere)
+	UPROPERTY(Replicated, VisibleAnywhere, SaveGame)
 	FInventoryContents Contents;
 
-	UPROPERTY(Replicated, ReplicatedUsing = BroadcastInventoryUpdate, VisibleAnywhere)
+	UPROPERTY(Replicated, ReplicatedUsing = BroadcastInventoryUpdate, VisibleAnywhere, SaveGame)
 	TArray<FInventorySlot> Slots;
 
 	UFUNCTION()
