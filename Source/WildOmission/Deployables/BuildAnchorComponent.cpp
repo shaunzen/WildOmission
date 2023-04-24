@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Deployables/BuildAnchorComponent.h"
+#include "BuildAnchorComponent.h"
 
 // Sets default values for this component's properties
 UBuildAnchorComponent::UBuildAnchorComponent()
