@@ -93,6 +93,8 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 
 			ActorComponent->Serialize(ComponentArchive);
 		}
+
+		ISavableObjectInterface::Execute_OnActorLoaded(SpawnedActor);
 	}
 }
 

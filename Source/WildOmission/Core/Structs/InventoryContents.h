@@ -12,7 +12,7 @@ struct FInventoryContents
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, SaveGame)
 	TArray<FInventoryItem> Contents;
 
 	// Returns the amount of a given item in the inventory, will return 0 if item isn't present.

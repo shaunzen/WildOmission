@@ -12,16 +12,16 @@ struct FInventoryItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
 	FName Name = FName("");
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
 	int32 Quantity = 0;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, SaveGame)
 	uint32 UniqueID = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
 	TArray<FItemStat> Stats;
 
 	static bool CompareNames(const FInventoryItem& Item, const FName& ItemName);
