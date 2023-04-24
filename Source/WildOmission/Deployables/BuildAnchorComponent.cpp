@@ -10,7 +10,7 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	Type = EBuildAnchorType::FoundationAnchor;
 }
 
 
@@ -23,12 +23,7 @@ void UBuildAnchorComponent::BeginPlay()
 	
 }
 
-
-// Called every frame
-void UBuildAnchorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+TEnumAsByte<EBuildAnchorType> UBuildAnchorComponent::GetType() const
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	return Type;
 }
-

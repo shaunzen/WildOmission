@@ -6,6 +6,14 @@
 #include "Components/SceneComponent.h"
 #include "BuildAnchorComponent.generated.h"
 
+UENUM()
+enum EBuildAnchorType
+{
+	FoundationAnchor	UMETA(DisplayName = "Foundation Anchor"),
+	WallAnchor			UMETA(DisplayName = "Wall Anchor"),
+	DoorAnchor			UMETA(DisplayName = "Door Anchor"),
+	FloorAnchor			UMETA(DisplayName = "Floor Anchor")
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UBuildAnchorComponent : public USceneComponent
@@ -18,12 +26,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	TEnumAsByte<EBuildAnchorType> GetType() const;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:	
-	// TODO type??
-
+	UPROPERTY(EditDefaultsOnly)
+	TEnumAsByte<EBuildAnchorType> Type;
 };
