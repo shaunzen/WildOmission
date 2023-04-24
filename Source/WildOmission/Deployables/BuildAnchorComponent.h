@@ -9,6 +9,7 @@
 UENUM()
 enum EBuildAnchorType
 {
+	None				UMETA(DisplayName = "None"),
 	FoundationAnchor	UMETA(DisplayName = "Foundation Anchor"),
 	WallAnchor			UMETA(DisplayName = "Wall Anchor"),
 	DoorAnchor			UMETA(DisplayName = "Door Anchor"),
@@ -23,9 +24,7 @@ class WILDOMISSION_API UBuildAnchorComponent : public USceneComponent
 public:	
 	// Sets default values for this component's properties
 	UBuildAnchorComponent();
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 	TEnumAsByte<EBuildAnchorType> GetType() const;
 
 protected:

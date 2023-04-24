@@ -36,7 +36,7 @@ protected:
 	bool OnGround;
 	bool OnFloor;
 	bool OnWall;
-	bool OnDoorway;
+	bool InAnchor;
 	bool InvalidOverlap;
 	bool WithinRange;
 
@@ -46,8 +46,7 @@ protected:
 	bool FloorOnlySpawnConditionValid() const;
 	bool GroundOrFloorSpawnConditionValid() const;
 	bool WallOnlySpawnConditionValid() const;
-	bool DoorwayOnlySpawnConditionValid() const;
-	bool AnyExceptInvalidSpawnConditionValid() const;
+	bool AnchorSpawnConditionValid() const;
 	bool AnySurfaceSpawnConditionValid() const;
 
 private:
@@ -66,5 +65,8 @@ private:
 
 	UPROPERTY()
 	AStaticMeshActor* PreviewActor;
+
+	FTransform GetNonSnappingPlacementTransform();
+	FTransform GetSnappingPlacementTransform();
 	
 };

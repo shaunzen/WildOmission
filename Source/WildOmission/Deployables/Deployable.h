@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "BuildAnchorComponent.h"
 #include "Deployable.generated.h"
 
 UENUM()
@@ -34,7 +35,7 @@ public:
 	UStaticMesh* GetMesh() const;
 
 	TEnumAsByte<EDeployableType> GetPlacementType() const;
-	bool SnapsToBuildAnchor() const;
+	TEnumAsByte<EBuildAnchorType> SnapsToBuildAnchor() const;
 	bool FollowsSurfaceNormal() const;
 
 protected:
@@ -48,7 +49,7 @@ protected:
 	TEnumAsByte<EDeployableType> PlacementType;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
-	bool SnapToBuildAnchor;
+	TEnumAsByte<EBuildAnchorType> BuildAnchorToSnapTo;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
 	bool UseSurfaceNormal;

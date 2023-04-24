@@ -29,7 +29,7 @@ ADeployableItem::ADeployableItem()
 	OnGround = false;
 	OnFloor = false;
 	OnWall = false;
-	OnDoorway = false;
+	InAnchor = false;
 	InvalidOverlap = false;
 }
 
@@ -99,9 +99,25 @@ bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
 
 FTransform ADeployableItem::GetPlacementTransform()
 {
+	if (DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor() != EBuildAnchorType::None)
+	{
+		return GetSnappingPlacementTransform();
+	}
+	else
+	{
+		return GetNonSnappingPlacementTransform();
+	}
+}
+
+FTransform ADeployableItem::GetSnappingPlacementTransform()
+{
+	return FTransform();
+}
+
+FTransform ADeployableItem::GetNonSnappingPlacementTransform()
+{
 	FVector PlacementLocation = FVector::ZeroVector;
 	FRotator PlacementRotation = FRotator::ZeroRotator;
-
 	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
 	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
 	FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
@@ -122,7 +138,7 @@ FTransform ADeployableItem::GetPlacementTransform()
 		PlacementLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
 		WithinRange = false;
 	}
-	
+
 	PlacementRotation = UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
 
 	FTransform PlacementTransform;
@@ -201,12 +217,6 @@ bool ADeployableItem::SpawnConditionValid() const
 	case WallOnly:
 		return WallOnlySpawnConditionValid();
 		break;
-	case DoorwayOnly:
-		return DoorwayOnlySpawnConditionValid();
-		break;
-	case AnyExceptInvalid:
-		return AnyExceptInvalidSpawnConditionValid();
-		break;
 	case AnySurface:
 		return AnySurfaceSpawnConditionValid();
 		break;
@@ -217,37 +227,32 @@ bool ADeployableItem::SpawnConditionValid() const
 
 bool ADeployableItem::GroundOnlySpawnConditionValid() const
 {
-	return OnGround == true && OnFloor == false && OnWall == false && OnDoorway == false && InvalidOverlap == false && WithinRange == true;
+	return OnGround == true && OnFloor == false && OnWall == false && InAnchor == false && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::FloorOnlySpawnConditionValid() const
 {
-	return OnGround == false && OnFloor == true && OnWall == false && OnDoorway == false && InvalidOverlap == false && WithinRange == true;
+	return OnGround == false && OnFloor == true && OnWall == false && InAnchor == false && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::GroundOrFloorSpawnConditionValid() const
 {
-	return (OnGround == true || OnFloor == true) && (OnWall == false && OnDoorway == false && InvalidOverlap == false && WithinRange == true);
+	return (OnGround == true || OnFloor == true) && (OnWall == false && InvalidOverlap == false && WithinRange == true);
 }
 
 bool ADeployableItem::WallOnlySpawnConditionValid() const
 {
-	return OnGround == false && OnFloor == false && OnWall == true && OnDoorway == false && InvalidOverlap == false && WithinRange == true;
+	return OnGround == false && OnFloor == false && OnWall == true && InvalidOverlap == false && WithinRange == true;
 }
 
-bool ADeployableItem::DoorwayOnlySpawnConditionValid() const
+bool ADeployableItem::AnchorSpawnConditionValid() const
 {
-	return OnGround == false && OnFloor == false && OnWall == false && OnDoorway == true && InvalidOverlap == false && WithinRange == true;
-}
-
-bool ADeployableItem::AnyExceptInvalidSpawnConditionValid() const
-{
-	return (OnGround == true || OnFloor == true || OnWall == true || OnDoorway == true) && InvalidOverlap == false && WithinRange == true;
+	return InAnchor == true && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::AnySurfaceSpawnConditionValid() const
 {
-	return (OnGround == true || OnFloor == true || OnWall == true || OnDoorway == true || InvalidOverlap == true) && WithinRange == true;
+	return (OnGround == true || OnFloor == true || OnWall == true || InvalidOverlap == true) && WithinRange == true;
 }
 
 void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
@@ -263,10 +268,6 @@ void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* Oth
 	else if (OtherActor->ActorHasTag(FName("Wall")))
 	{
 		OnWall = true;
-	}
-	else if (OtherActor->ActorHasTag(FName("Doorway")))
-	{
-		OnDoorway = true;
 	}
 	else
 	{
@@ -287,10 +288,6 @@ void ADeployableItem::OnPreviewEndOverlap(AActor* OverlappedActor, AActor* Other
 	else if (OtherActor->ActorHasTag(FName("Wall")))
 	{
 		OnWall = false;
-	}
-	else if (OtherActor->ActorHasTag(FName("Doorway")))
-	{
-		OnDoorway = false;
 	}
 	else
 	{

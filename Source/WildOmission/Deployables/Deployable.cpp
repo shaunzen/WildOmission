@@ -15,7 +15,7 @@ ADeployable::ADeployable()
 	RootComponent = MeshComponent;
 
 	PlacementType = EDeployableType::GroundOrFloor;
-	SnapToBuildAnchor = false;
+	BuildAnchorToSnapTo = EBuildAnchorType::None;
 	UseSurfaceNormal = true;
 }
 
@@ -43,9 +43,9 @@ TEnumAsByte<EDeployableType> ADeployable::GetPlacementType() const
 	return PlacementType;
 }
 
-bool ADeployable::SnapsToBuildAnchor() const
+TEnumAsByte<EBuildAnchorType> ADeployable::SnapsToBuildAnchor() const
 {
-	return SnapToBuildAnchor;
+	return BuildAnchorToSnapTo;
 }
 
 bool ADeployable::FollowsSurfaceNormal() const
