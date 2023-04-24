@@ -65,6 +65,18 @@ struct FWildOmissionPlayerSave
 };
 
 USTRUCT()
+struct FActorComponentSaveData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	UClass* Class = nullptr;
+
+	UPROPERTY()
+	TArray<uint8> ByteData;
+};
+
+USTRUCT()
 struct FActorSaveData
 {
 	GENERATED_BODY()
@@ -82,7 +94,8 @@ struct FActorSaveData
 	TArray<uint8> ByteData;
 
 	UPROPERTY()
-	FWildOmissionInventorySave Inventory;
+	TArray<FActorComponentSaveData> ComponentData;
+
 };
 
 USTRUCT()

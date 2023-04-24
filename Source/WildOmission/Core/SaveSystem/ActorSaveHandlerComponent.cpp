@@ -41,15 +41,21 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 		ActorData.Class = Actor->GetClass();
 
 		FMemoryWriter MemoryWriter(ActorData.ByteData);
-
 		FObjectAndNameAsStringProxyArchive Archive(MemoryWriter, true);
-
 		Archive.ArIsSaveGame = true;
 		Actor->Serialize(Archive);
-		
-		if (UInventoryComponent* InventoryComponent = Actor->FindComponentByClass<UInventoryComponent>())
+
+		for (UActorComponent* ActorComponent : Actor->GetComponentsByInterface(USavableObjectInterface::StaticClass()))
 		{
-			ActorData.Inventory = InventoryComponent->Save();
+			FActorComponentSaveData ComponentSaveData;
+			ComponentSaveData.Class = ActorComponent->GetClass();
+			
+			FMemoryWriter ComponentMemoryWriter(ComponentSaveData.ByteData);
+			FObjectAndNameAsStringProxyArchive ComponentArchive(ComponentMemoryWriter, true);
+			ComponentArchive.ArIsSaveGame = true;
+			ActorComponent->Serialize(ComponentArchive);
+
+			ActorData.ComponentData.Add(ComponentSaveData);
 		}
 
 		OutSaves.Add(ActorData);
@@ -72,15 +78,34 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 			return;
 		}
 		
-		if (UInventoryComponent* InventoryComponent = SpawnedActor->FindComponentByClass<UInventoryComponent>())
-		{
-			InventoryComponent->Load(ActorData.Inventory);
-		}
-
 		FMemoryReader MemoryReader(ActorData.ByteData);
 		FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);
 		Archive.ArIsSaveGame = true;
 
 		SpawnedActor->Serialize(Archive);
+
+		for (UActorComponent* ActorComponent : SpawnedActor->GetComponentsByInterface(USavableObjectInterface::StaticClass()))
+		{
+			FActorComponentSaveData ComponentSave = FindComponentDataByClass(ActorData.ComponentData, ActorComponent->GetClass());
+			FMemoryReader ComponentMemoryReader(ComponentSave.ByteData);
+			FObjectAndNameAsStringProxyArchive ComponentArchive(ComponentMemoryReader, true);
+			ComponentArchive.ArIsSaveGame = true;
+
+			ActorComponent->Serialize(ComponentArchive);
+		}
 	}
+}
+
+FActorComponentSaveData UActorSaveHandlerComponent::FindComponentDataByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* ClassToFind)
+{
+	for (const FActorComponentSaveData& ComponentData : ComponentSaveList)
+	{
+		if (ComponentData.Class != ClassToFind)
+		{
+			continue;
+		}
+		return ComponentData;
+	}
+
+	return FActorComponentSaveData();
 }

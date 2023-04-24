@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "WildOmission/Core/Structs/InventoryContents.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
+#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "InventoryComponent.generated.h"
 
 class UInventoryManipulatorComponent;
@@ -14,7 +15,7 @@ class UInventoryManipulatorComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdateSignature);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UInventoryComponent : public UActorComponent
+class WILDOMISSION_API UInventoryComponent : public UActorComponent, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 
