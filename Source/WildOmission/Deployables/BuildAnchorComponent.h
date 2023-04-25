@@ -27,9 +27,6 @@ public:
 	UBuildAnchorComponent();
 	
 	TEnumAsByte<EBuildAnchorType> GetType() const;
-	
-	bool IsOccupied() const;
-	void SetOccupied(bool bOccupied);
 
 	static TArray<UBuildAnchorComponent*> GetAllBuildAnchorsOfTypeFromList(const TArray<UBuildAnchorComponent*>& BuildAnchorList, TEnumAsByte<EBuildAnchorType> TypeToFind);
 	static UBuildAnchorComponent* GetClosestBuildAnchorFromList(const TArray<UBuildAnchorComponent*>& BuildAnchors, const FVector& TestPoint);
@@ -41,8 +38,5 @@ protected:
 private:	
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EBuildAnchorType> Type;
-
-	UPROPERTY(SaveGame)
-	bool Occupied;
 
 };

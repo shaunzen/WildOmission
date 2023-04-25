@@ -11,7 +11,6 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Type = EBuildAnchorType::FoundationAnchor;
-	Occupied = false;
 }
 
 
@@ -27,16 +26,6 @@ void UBuildAnchorComponent::BeginPlay()
 TEnumAsByte<EBuildAnchorType> UBuildAnchorComponent::GetType() const
 {
 	return Type;
-}
-
-bool UBuildAnchorComponent::IsOccupied() const
-{
-	return Occupied;
-}
-
-void UBuildAnchorComponent::SetOccupied(bool bOccupied)
-{
-	Occupied = bOccupied;
 }
 
 TArray<UBuildAnchorComponent*> UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(const TArray<UBuildAnchorComponent*>& BuildAnchorList, TEnumAsByte<EBuildAnchorType> TypeToFind)
@@ -66,11 +55,6 @@ UBuildAnchorComponent* UBuildAnchorComponent::GetClosestBuildAnchorFromList(cons
 			ShortestDistance = Distance;
 			ClosestAnchor = BuildAnchor;
 		}
-	}
-
-	if (ClosestAnchor != nullptr && ClosestAnchor->IsOccupied())
-	{
-		return nullptr;
 	}
 
 	return ClosestAnchor;

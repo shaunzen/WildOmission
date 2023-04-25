@@ -30,6 +30,7 @@ ADeployableItem::ADeployableItem()
 	OnFloor = false;
 	OnWall = false;
 	InAnchor = false;
+	AnchorConflict = false;
 	InvalidOverlap = false;
 }
 
@@ -64,14 +65,9 @@ void ADeployableItem::Primary()
 		return;
 	}
 	
-	UBuildAnchorComponent* AnchorToAttachTo = nullptr;
-	FTransform SpawnTransform = GetPlacementTransform(AnchorToAttachTo);
-	
-	ADeployable* SpawnedDeployable = GetWorld()->SpawnActor<ADeployable>(DeployableActorClass, SpawnTransform);
-	if (AnchorToAttachTo != nullptr)
-	{
-		SpawnedDeployable->AttachToComponent(AnchorToAttachTo, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	}
+	ADeployable* SpawnedDeployable = GetWorld()->SpawnActor<ADeployable>(DeployableActorClass);
+
+	HandlePlacement(SpawnedDeployable);
 
 	OwnerInventoryComponent->RemoveHeldItem();
 }
@@ -102,44 +98,32 @@ bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
 	return false;
 }
 
-FTransform ADeployableItem::GetPlacementTransform(UBuildAnchorComponent* AnchorToAttachTo)
+void ADeployableItem::HandlePlacement(AActor* PlacementActor)
 {
-	FHitResult HitResult;
-	if (!LineTraceOnCameraChannel(HitResult) || DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor() == EBuildAnchorType::None)
+	if (DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor() != None)
 	{
-		return GetNonSnappingPlacementTransform();
+		UBuildAnchorComponent* AnchorToAttachTo = GetPlacementAnchor();
+		if (AnchorToAttachTo)
+		{
+			InAnchor = true;
+			PlacementActor->AttachToComponent(AnchorToAttachTo, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		}
+		else
+		{
+			InAnchor = false;
+			PlacementActor->SetActorTransform(GetPlacementTransform());
+		}
 	}
-
-	ADeployable* LookingAtDeployable = Cast<ADeployable>(HitResult.GetActor());
-	if (LookingAtDeployable == nullptr)
+	else
 	{
-		return GetNonSnappingPlacementTransform();
+		InAnchor = false;
+		PlacementActor->SetActorTransform(GetPlacementTransform());
 	}
-
-	TArray<UBuildAnchorComponent*> BuildAnchors;
-	LookingAtDeployable->GetComponents<UBuildAnchorComponent>(BuildAnchors);
-	if (BuildAnchors.Num() == 0)
-	{
-		return GetNonSnappingPlacementTransform();
-	}
-
-	TArray<UBuildAnchorComponent*> SortedBuildAnchors = UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(BuildAnchors, DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor());
-	if (SortedBuildAnchors.Num() == 0)
-	{
-		return GetNonSnappingPlacementTransform();
-	}
-
-	UBuildAnchorComponent* ClosestBuildAnchor = UBuildAnchorComponent::GetClosestBuildAnchorFromList(SortedBuildAnchors, HitResult.ImpactPoint);
-	if (ClosestBuildAnchor == nullptr || ClosestBuildAnchor->GetNumChildrenComponents() != 0)
-	{
-		return GetNonSnappingPlacementTransform();
-	}
-	InAnchor = true;
-	return ClosestBuildAnchor->GetComponentTransform();
 }
 
-FTransform ADeployableItem::GetNonSnappingPlacementTransform()
+FTransform ADeployableItem::GetPlacementTransform()
 {
+	InAnchor = false;
 	FVector PlacementLocation = FVector::ZeroVector;
 	FRotator PlacementRotation = FRotator::ZeroRotator;
 	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
@@ -169,8 +153,45 @@ FTransform ADeployableItem::GetNonSnappingPlacementTransform()
 	PlacementTransform.SetLocation(PlacementLocation);
 	PlacementTransform.SetRotation(PlacementRotation.Quaternion());
 
-	InAnchor = false;
 	return PlacementTransform;
+}
+
+UBuildAnchorComponent* ADeployableItem::GetPlacementAnchor()
+{
+	FHitResult HitResult;
+	if (!LineTraceOnCameraChannel(HitResult))
+	{
+		return nullptr;
+	}
+
+	ADeployable* LookingAtDeployable = Cast<ADeployable>(HitResult.GetActor());
+	if (LookingAtDeployable == nullptr)
+	{
+		return nullptr;
+	}
+
+	TArray<UBuildAnchorComponent*> BuildAnchors;
+	LookingAtDeployable->GetComponents<UBuildAnchorComponent>(BuildAnchors);
+	if (BuildAnchors.Num() == 0)
+	{
+		return nullptr;
+	}
+
+	TArray<UBuildAnchorComponent*> SortedBuildAnchors = UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(BuildAnchors, DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor());
+	if (SortedBuildAnchors.Num() == 0)
+	{
+		return nullptr;
+	}
+
+	UBuildAnchorComponent* ClosestBuildAnchor = UBuildAnchorComponent::GetClosestBuildAnchorFromList(SortedBuildAnchors, HitResult.ImpactPoint);
+	if (ClosestBuildAnchor == nullptr)
+	{
+		return nullptr;
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("CBA child count %i"), ClosestBuildAnchor->GetNumChildrenComponents());
+	
+	return ClosestBuildAnchor;
 }
 
 void ADeployableItem::Client_SpawnPreview_Implementation()
@@ -218,7 +239,7 @@ void ADeployableItem::UpdatePreview()
 		return;
 	}
 
-	PreviewActor->SetActorTransform(GetPlacementTransform(nullptr));
+	HandlePlacement(PreviewActor);
 	bPrimaryEnabled = SpawnConditionValid();
 	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), SpawnConditionValid());
 }

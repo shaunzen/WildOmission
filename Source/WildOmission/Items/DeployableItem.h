@@ -31,12 +31,17 @@ protected:
 	float DeployableRange;
 
 	bool LineTraceOnCameraChannel(FHitResult& OutHitResult) const;
-	FTransform GetPlacementTransform(UBuildAnchorComponent* AnchorToAttachTo);
+
+	void HandlePlacement(AActor* PlacementActor);
+
+	FTransform GetPlacementTransform();
+	UBuildAnchorComponent* GetPlacementAnchor();
 
 	bool OnGround;
 	bool OnFloor;
 	bool OnWall;
 	bool InAnchor;
+	bool AnchorConflict;
 	bool InvalidOverlap;
 	bool WithinRange;
 
