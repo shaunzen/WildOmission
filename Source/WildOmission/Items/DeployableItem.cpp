@@ -109,11 +109,6 @@ FTransform ADeployableItem::GetPlacementTransform()
 	}
 }
 
-FTransform ADeployableItem::GetSnappingPlacementTransform()
-{
-	return FTransform();
-}
-
 FTransform ADeployableItem::GetNonSnappingPlacementTransform()
 {
 	FVector PlacementLocation = FVector::ZeroVector;
@@ -146,6 +141,89 @@ FTransform ADeployableItem::GetNonSnappingPlacementTransform()
 	PlacementTransform.SetRotation(PlacementRotation.Quaternion());
 
 	return PlacementTransform;
+}
+
+FTransform ADeployableItem::GetSnappingPlacementTransform()
+{
+	
+	switch (DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor())
+	{
+	case EBuildAnchorType::FoundationAnchor:
+		return GetFoundationPlacementTransform();
+		break;
+	case EBuildAnchorType::WallAnchor:
+
+		break;
+	default:
+		return GetNonSnappingPlacementTransform();
+		break;
+	}
+
+	return FTransform();
+
+}
+
+FTransform ADeployableItem::GetFoundationPlacementTransform()
+{
+	FHitResult HitResult;
+	if (!LineTraceOnCameraChannel(HitResult))
+	{
+		return FTransform();
+	}
+	
+	if (!HitResult.GetActor()->ActorHasTag(FName("Foundation")))
+	{
+		return GetNonSnappingPlacementTransform();
+	}
+	
+	ADeployable* LookingAtFoundation = Cast<ADeployable>(HitResult.GetActor());
+	if (LookingAtFoundation == nullptr)
+	{
+		return FTransform();
+	}
+
+	TArray<UActorComponent*> BuildAnchorActorComponents = LookingAtFoundation->GetComponentsByClass(UBuildAnchorComponent::StaticClass());
+	TArray<UBuildAnchorComponent*> FoundationBuildAnchors = GetAllBuildAnchorsOfType(BuildAnchorActorComponents, EBuildAnchorType::FoundationAnchor);
+	UBuildAnchorComponent* ClosestBuildAnchor = GetClosestBuildAnchor(FoundationBuildAnchors, HitResult.ImpactPoint);
+	if (ClosestBuildAnchor == nullptr)
+	{
+		return FTransform();
+	}
+
+	return ClosestBuildAnchor->GetComponentTransform();
+}
+
+TArray<UBuildAnchorComponent*> ADeployableItem::GetAllBuildAnchorsOfType(const TArray<UActorComponent*>& ActorComponentList, TEnumAsByte<EBuildAnchorType> Type)
+{
+	TArray<UBuildAnchorComponent*> BuildAnchorList;
+	for (UActorComponent* ActorComp : ActorComponentList)
+	{
+		UBuildAnchorComponent* BuildAnchorComponent = Cast<UBuildAnchorComponent>(ActorComp);
+		if (BuildAnchorComponent == nullptr || BuildAnchorComponent->GetType() != Type)
+		{
+			continue;
+		}
+		BuildAnchorList.Add(BuildAnchorComponent);
+	}
+	return BuildAnchorList;
+}
+
+UBuildAnchorComponent* ADeployableItem::GetClosestBuildAnchor(const TArray<UBuildAnchorComponent*>& BuildAnchors, const FVector& TestPoint)
+{
+	int32 ShortestDistance = -1;
+	UBuildAnchorComponent* ClosestAnchor = nullptr;
+	for (UBuildAnchorComponent* BuildAnchor : BuildAnchors)
+	{
+		FVector Difference = BuildAnchor->GetComponentLocation() - TestPoint;
+		float Distance = Difference.Length();
+		if (ShortestDistance == -1 || Distance < ShortestDistance)
+		{
+			ShortestDistance = Distance;
+			ClosestAnchor = BuildAnchor;
+		}
+	}
+
+	return ClosestAnchor;
 }
 
 void ADeployableItem::Client_SpawnPreview_Implementation()

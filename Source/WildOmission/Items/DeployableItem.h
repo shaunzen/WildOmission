@@ -68,5 +68,9 @@ private:
 
 	FTransform GetNonSnappingPlacementTransform();
 	FTransform GetSnappingPlacementTransform();
+
+	FTransform GetFoundationPlacementTransform();
 	
+	TArray<UBuildAnchorComponent*> GetAllBuildAnchorsOfType(const TArray<UActorComponent*>& ActorComponentList, TEnumAsByte<EBuildAnchorType> Type);
+	UBuildAnchorComponent* GetClosestBuildAnchor(const TArray<UBuildAnchorComponent*>& BuildAnchors, const FVector& TestPoint);
 };
