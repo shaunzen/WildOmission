@@ -31,7 +31,7 @@ protected:
 	float DeployableRange;
 
 	bool LineTraceOnCameraChannel(FHitResult& OutHitResult) const;
-	FTransform GetPlacementTransform();
+	FTransform GetPlacementTransform(UBuildAnchorComponent* AnchorToAttachTo);
 
 	bool OnGround;
 	bool OnFloor;
@@ -47,6 +47,7 @@ protected:
 	bool GroundOrFloorSpawnConditionValid() const;
 	bool WallOnlySpawnConditionValid() const;
 	bool AnchorSpawnConditionValid() const;
+	bool AnchorOrGroundSpawnConditionValid() const;
 	bool AnySurfaceSpawnConditionValid() const;
 
 private:
@@ -67,8 +68,5 @@ private:
 	AStaticMeshActor* PreviewActor;
 
 	FTransform GetNonSnappingPlacementTransform();
-	FTransform GetSnappingPlacementTransform();
-
-	FTransform GetFoundationPlacementTransform();
 
 };

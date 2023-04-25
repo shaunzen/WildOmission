@@ -39,19 +39,18 @@ void UBuildAnchorComponent::SetOccupied(bool bOccupied)
 	Occupied = bOccupied;
 }
 
-TArray<UBuildAnchorComponent*> UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(const TArray<UActorComponent*>& ActorComponentList, TEnumAsByte<EBuildAnchorType> TypeToFind)
+TArray<UBuildAnchorComponent*> UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(const TArray<UBuildAnchorComponent*>& BuildAnchorList, TEnumAsByte<EBuildAnchorType> TypeToFind)
 {
-	TArray<UBuildAnchorComponent*> BuildAnchorList;
-	for (UActorComponent* ActorComp : ActorComponentList)
+	TArray<UBuildAnchorComponent*> SortedBuildAnchorList;
+	for (UBuildAnchorComponent* BuildAnchorComponent : BuildAnchorList)
 	{
-		UBuildAnchorComponent* BuildAnchorComponent = Cast<UBuildAnchorComponent>(ActorComp);
-		if (BuildAnchorComponent == nullptr || BuildAnchorComponent->GetType() != TypeToFind)
+		if (BuildAnchorComponent->GetType() != TypeToFind)
 		{
 			continue;
 		}
-		BuildAnchorList.Add(BuildAnchorComponent);
+		SortedBuildAnchorList.Add(BuildAnchorComponent);
 	}
-	return BuildAnchorList;
+	return SortedBuildAnchorList;
 }
 
 UBuildAnchorComponent* UBuildAnchorComponent::GetClosestBuildAnchorFromList(const TArray<UBuildAnchorComponent*>& BuildAnchorList, const FVector& TestPoint)

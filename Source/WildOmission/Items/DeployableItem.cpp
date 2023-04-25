@@ -64,9 +64,14 @@ void ADeployableItem::Primary()
 		return;
 	}
 	
-	FTransform SpawnTransform = GetPlacementTransform();
+	UBuildAnchorComponent* AnchorToAttachTo = nullptr;
+	FTransform SpawnTransform = GetPlacementTransform(AnchorToAttachTo);
 	
 	ADeployable* SpawnedDeployable = GetWorld()->SpawnActor<ADeployable>(DeployableActorClass, SpawnTransform);
+	if (AnchorToAttachTo != nullptr)
+	{
+		SpawnedDeployable->AttachToComponent(AnchorToAttachTo, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	}
 
 	OwnerInventoryComponent->RemoveHeldItem();
 }
@@ -97,16 +102,40 @@ bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
 	return false;
 }
 
-FTransform ADeployableItem::GetPlacementTransform()
+FTransform ADeployableItem::GetPlacementTransform(UBuildAnchorComponent* AnchorToAttachTo)
 {
-	if (DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor() != EBuildAnchorType::None)
-	{
-		return GetSnappingPlacementTransform();
-	}
-	else
+	FHitResult HitResult;
+	if (!LineTraceOnCameraChannel(HitResult) || DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor() == EBuildAnchorType::None)
 	{
 		return GetNonSnappingPlacementTransform();
 	}
+
+	ADeployable* LookingAtDeployable = Cast<ADeployable>(HitResult.GetActor());
+	if (LookingAtDeployable == nullptr)
+	{
+		return GetNonSnappingPlacementTransform();
+	}
+
+	TArray<UBuildAnchorComponent*> BuildAnchors;
+	LookingAtDeployable->GetComponents<UBuildAnchorComponent>(BuildAnchors);
+	if (BuildAnchors.Num() == 0)
+	{
+		return GetNonSnappingPlacementTransform();
+	}
+
+	TArray<UBuildAnchorComponent*> SortedBuildAnchors = UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(BuildAnchors, DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor());
+	if (SortedBuildAnchors.Num() == 0)
+	{
+		return GetNonSnappingPlacementTransform();
+	}
+
+	UBuildAnchorComponent* ClosestBuildAnchor = UBuildAnchorComponent::GetClosestBuildAnchorFromList(SortedBuildAnchors, HitResult.ImpactPoint);
+	if (ClosestBuildAnchor == nullptr || ClosestBuildAnchor->GetNumChildrenComponents() != 0)
+	{
+		return GetNonSnappingPlacementTransform();
+	}
+	InAnchor = true;
+	return ClosestBuildAnchor->GetComponentTransform();
 }
 
 FTransform ADeployableItem::GetNonSnappingPlacementTransform()
@@ -140,56 +169,8 @@ FTransform ADeployableItem::GetNonSnappingPlacementTransform()
 	PlacementTransform.SetLocation(PlacementLocation);
 	PlacementTransform.SetRotation(PlacementRotation.Quaternion());
 
+	InAnchor = false;
 	return PlacementTransform;
-}
-
-FTransform ADeployableItem::GetSnappingPlacementTransform()
-{
-	switch (DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor())
-	{
-	case EBuildAnchorType::FoundationAnchor:
-		return GetFoundationPlacementTransform();
-		break;
-	case EBuildAnchorType::WallAnchor:
-
-		break;
-	default:
-		return GetNonSnappingPlacementTransform();
-		break;
-	}
-
-	return FTransform();
-
-}
-
-FTransform ADeployableItem::GetFoundationPlacementTransform()
-{
-	FHitResult HitResult;
-	if (!LineTraceOnCameraChannel(HitResult))
-	{
-		return FTransform();
-	}
-	
-	if (!HitResult.GetActor()->ActorHasTag(FName("Foundation")))
-	{
-		return GetNonSnappingPlacementTransform();
-	}
-	
-	ADeployable* LookingAtFoundation = Cast<ADeployable>(HitResult.GetActor());
-	if (LookingAtFoundation == nullptr)
-	{
-		return FTransform();
-	}
-
-	TArray<UActorComponent*> BuildAnchorActorComponents = LookingAtFoundation->GetComponentsByClass(UBuildAnchorComponent::StaticClass());
-	TArray<UBuildAnchorComponent*> FoundationBuildAnchors = UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(BuildAnchorActorComponents, EBuildAnchorType::FoundationAnchor);
-	UBuildAnchorComponent* ClosestBuildAnchor = UBuildAnchorComponent::GetClosestBuildAnchorFromList(FoundationBuildAnchors, HitResult.ImpactPoint);
-	if (ClosestBuildAnchor == nullptr)
-	{
-		return FTransform();
-	}
-
-	return ClosestBuildAnchor->GetComponentTransform();
 }
 
 void ADeployableItem::Client_SpawnPreview_Implementation()
@@ -237,7 +218,7 @@ void ADeployableItem::UpdatePreview()
 		return;
 	}
 
-	PreviewActor->SetActorTransform(GetPlacementTransform());
+	PreviewActor->SetActorTransform(GetPlacementTransform(nullptr));
 	bPrimaryEnabled = SpawnConditionValid();
 	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), SpawnConditionValid());
 }
@@ -261,6 +242,12 @@ bool ADeployableItem::SpawnConditionValid() const
 	case WallOnly:
 		return WallOnlySpawnConditionValid();
 		break;
+	case Anchor:
+		return AnchorSpawnConditionValid();
+		break;
+	case GroundOrAnchor:
+		return AnchorOrGroundSpawnConditionValid();
+		break;
 	case AnySurface:
 		return AnySurfaceSpawnConditionValid();
 		break;
@@ -281,17 +268,22 @@ bool ADeployableItem::FloorOnlySpawnConditionValid() const
 
 bool ADeployableItem::GroundOrFloorSpawnConditionValid() const
 {
-	return (OnGround == true || OnFloor == true) && (OnWall == false && InvalidOverlap == false && WithinRange == true);
+	return (OnGround == true || OnFloor == true) && (OnWall == false && InAnchor == false && InvalidOverlap == false && WithinRange == true);
 }
 
 bool ADeployableItem::WallOnlySpawnConditionValid() const
 {
-	return OnGround == false && OnFloor == false && OnWall == true && InvalidOverlap == false && WithinRange == true;
+	return OnGround == false && OnFloor == false && OnWall == true && InAnchor == false && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::AnchorSpawnConditionValid() const
 {
 	return InAnchor == true && InvalidOverlap == false && WithinRange == true;
+}
+
+bool ADeployableItem::AnchorOrGroundSpawnConditionValid() const
+{
+	return (OnGround == true || InAnchor == true) && InvalidOverlap == false && WithinRange == true;
 }
 
 bool ADeployableItem::AnySurfaceSpawnConditionValid() const

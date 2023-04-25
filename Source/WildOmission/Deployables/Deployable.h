@@ -15,8 +15,8 @@ enum EDeployableType
 	FloorOnly			UMETA(DisplayName = "Floor Only"),
 	GroundOrFloor		UMETA(DisplayName = "Ground or Floor"),
 	WallOnly			UMETA(DisplayName = "Wall Only"),
-	DoorwayOnly			UMETA(DisplayName = "Doorway Only"),
-	AnyExceptInvalid	UMETA(DisplayName = "Any Except Invalid"),
+	Anchor				UMETA(DisplayName = "Anchor"),
+	GroundOrAnchor		UMETA(DisplayName = "Ground Or Anchor"),
 	AnySurface			UMETA(DisplayName = "Any Surface")
 };
 

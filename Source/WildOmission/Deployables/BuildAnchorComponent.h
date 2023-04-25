@@ -31,7 +31,7 @@ public:
 	bool IsOccupied() const;
 	void SetOccupied(bool bOccupied);
 
-	static TArray<UBuildAnchorComponent*> GetAllBuildAnchorsOfTypeFromList(const TArray<UActorComponent*>& ActorComponentList, TEnumAsByte<EBuildAnchorType> TypeToFind);
+	static TArray<UBuildAnchorComponent*> GetAllBuildAnchorsOfTypeFromList(const TArray<UBuildAnchorComponent*>& BuildAnchorList, TEnumAsByte<EBuildAnchorType> TypeToFind);
 	static UBuildAnchorComponent* GetClosestBuildAnchorFromList(const TArray<UBuildAnchorComponent*>& BuildAnchors, const FVector& TestPoint);
 
 protected:
