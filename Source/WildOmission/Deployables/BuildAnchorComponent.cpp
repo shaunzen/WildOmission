@@ -11,6 +11,7 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Type = EBuildAnchorType::FoundationAnchor;
+	Occupied = false;
 }
 
 
@@ -26,4 +27,52 @@ void UBuildAnchorComponent::BeginPlay()
 TEnumAsByte<EBuildAnchorType> UBuildAnchorComponent::GetType() const
 {
 	return Type;
+}
+
+bool UBuildAnchorComponent::IsOccupied() const
+{
+	return Occupied;
+}
+
+void UBuildAnchorComponent::SetOccupied(bool bOccupied)
+{
+	Occupied = bOccupied;
+}
+
+TArray<UBuildAnchorComponent*> UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(const TArray<UActorComponent*>& ActorComponentList, TEnumAsByte<EBuildAnchorType> TypeToFind)
+{
+	TArray<UBuildAnchorComponent*> BuildAnchorList;
+	for (UActorComponent* ActorComp : ActorComponentList)
+	{
+		UBuildAnchorComponent* BuildAnchorComponent = Cast<UBuildAnchorComponent>(ActorComp);
+		if (BuildAnchorComponent == nullptr || BuildAnchorComponent->GetType() != TypeToFind)
+		{
+			continue;
+		}
+		BuildAnchorList.Add(BuildAnchorComponent);
+	}
+	return BuildAnchorList;
+}
+
+UBuildAnchorComponent* UBuildAnchorComponent::GetClosestBuildAnchorFromList(const TArray<UBuildAnchorComponent*>& BuildAnchorList, const FVector& TestPoint)
+{
+	int32 ShortestDistance = -1;
+	UBuildAnchorComponent* ClosestAnchor = nullptr;
+	for (UBuildAnchorComponent* BuildAnchor : BuildAnchorList)
+	{
+		FVector Difference = BuildAnchor->GetComponentLocation() - TestPoint;
+		float Distance = Difference.Length();
+		if (ShortestDistance == -1 || Distance < ShortestDistance)
+		{
+			ShortestDistance = Distance;
+			ClosestAnchor = BuildAnchor;
+		}
+	}
+
+	if (ClosestAnchor != nullptr && ClosestAnchor->IsOccupied())
+	{
+		return nullptr;
+	}
+
+	return ClosestAnchor;
 }

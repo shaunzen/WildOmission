@@ -145,7 +145,6 @@ FTransform ADeployableItem::GetNonSnappingPlacementTransform()
 
 FTransform ADeployableItem::GetSnappingPlacementTransform()
 {
-	
 	switch (DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor())
 	{
 	case EBuildAnchorType::FoundationAnchor:
@@ -183,47 +182,14 @@ FTransform ADeployableItem::GetFoundationPlacementTransform()
 	}
 
 	TArray<UActorComponent*> BuildAnchorActorComponents = LookingAtFoundation->GetComponentsByClass(UBuildAnchorComponent::StaticClass());
-	TArray<UBuildAnchorComponent*> FoundationBuildAnchors = GetAllBuildAnchorsOfType(BuildAnchorActorComponents, EBuildAnchorType::FoundationAnchor);
-	UBuildAnchorComponent* ClosestBuildAnchor = GetClosestBuildAnchor(FoundationBuildAnchors, HitResult.ImpactPoint);
+	TArray<UBuildAnchorComponent*> FoundationBuildAnchors = UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(BuildAnchorActorComponents, EBuildAnchorType::FoundationAnchor);
+	UBuildAnchorComponent* ClosestBuildAnchor = UBuildAnchorComponent::GetClosestBuildAnchorFromList(FoundationBuildAnchors, HitResult.ImpactPoint);
 	if (ClosestBuildAnchor == nullptr)
 	{
 		return FTransform();
 	}
 
 	return ClosestBuildAnchor->GetComponentTransform();
-}
-
-TArray<UBuildAnchorComponent*> ADeployableItem::GetAllBuildAnchorsOfType(const TArray<UActorComponent*>& ActorComponentList, TEnumAsByte<EBuildAnchorType> Type)
-{
-	TArray<UBuildAnchorComponent*> BuildAnchorList;
-	for (UActorComponent* ActorComp : ActorComponentList)
-	{
-		UBuildAnchorComponent* BuildAnchorComponent = Cast<UBuildAnchorComponent>(ActorComp);
-		if (BuildAnchorComponent == nullptr || BuildAnchorComponent->GetType() != Type)
-		{
-			continue;
-		}
-		BuildAnchorList.Add(BuildAnchorComponent);
-	}
-	return BuildAnchorList;
-}
-
-UBuildAnchorComponent* ADeployableItem::GetClosestBuildAnchor(const TArray<UBuildAnchorComponent*>& BuildAnchors, const FVector& TestPoint)
-{
-	int32 ShortestDistance = -1;
-	UBuildAnchorComponent* ClosestAnchor = nullptr;
-	for (UBuildAnchorComponent* BuildAnchor : BuildAnchors)
-	{
-		FVector Difference = BuildAnchor->GetComponentLocation() - TestPoint;
-		float Distance = Difference.Length();
-		if (ShortestDistance == -1 || Distance < ShortestDistance)
-		{
-			ShortestDistance = Distance;
-			ClosestAnchor = BuildAnchor;
-		}
-	}
-
-	return ClosestAnchor;
 }
 
 void ADeployableItem::Client_SpawnPreview_Implementation()

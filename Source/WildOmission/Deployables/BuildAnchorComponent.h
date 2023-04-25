@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
+#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "BuildAnchorComponent.generated.h"
 
 UENUM()
@@ -17,7 +18,7 @@ enum EBuildAnchorType
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UBuildAnchorComponent : public USceneComponent
+class WILDOMISSION_API UBuildAnchorComponent : public USceneComponent, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 
@@ -26,6 +27,12 @@ public:
 	UBuildAnchorComponent();
 	
 	TEnumAsByte<EBuildAnchorType> GetType() const;
+	
+	bool IsOccupied() const;
+	void SetOccupied(bool bOccupied);
+
+	static TArray<UBuildAnchorComponent*> GetAllBuildAnchorsOfTypeFromList(const TArray<UActorComponent*>& ActorComponentList, TEnumAsByte<EBuildAnchorType> TypeToFind);
+	static UBuildAnchorComponent* GetClosestBuildAnchorFromList(const TArray<UBuildAnchorComponent*>& BuildAnchors, const FVector& TestPoint);
 
 protected:
 	// Called when the game starts
@@ -34,4 +41,8 @@ protected:
 private:	
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EBuildAnchorType> Type;
+
+	UPROPERTY(SaveGame)
+	bool Occupied;
+
 };
