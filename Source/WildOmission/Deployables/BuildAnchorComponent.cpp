@@ -2,6 +2,7 @@
 
 
 #include "BuildAnchorComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UBuildAnchorComponent::UBuildAnchorComponent()
@@ -11,8 +12,15 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Type = EBuildAnchorType::FoundationAnchor;
+	AttachedDeployable = nullptr;
 }
 
+void UBuildAnchorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(UBuildAnchorComponent, AttachedDeployable);
+}
 
 // Called when the game starts
 void UBuildAnchorComponent::BeginPlay()
@@ -26,6 +34,16 @@ void UBuildAnchorComponent::BeginPlay()
 TEnumAsByte<EBuildAnchorType> UBuildAnchorComponent::GetType() const
 {
 	return Type;
+}
+
+ADeployable* UBuildAnchorComponent::GetAttachedDeployable() const
+{
+	return AttachedDeployable;
+}
+
+void UBuildAnchorComponent::AttachDeployable(ADeployable* DeployableToAttach)
+{
+	AttachedDeployable = DeployableToAttach;
 }
 
 TArray<UBuildAnchorComponent*> UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(const TArray<UBuildAnchorComponent*>& BuildAnchorList, TEnumAsByte<EBuildAnchorType> TypeToFind)

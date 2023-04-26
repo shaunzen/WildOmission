@@ -35,7 +35,7 @@ protected:
 	void HandlePlacement(AActor* PlacementActor);
 
 	FTransform GetPlacementTransform();
-	UBuildAnchorComponent* GetPlacementAnchor();
+	UBuildAnchorComponent* GetClosestValidAnchorFromPointOnDeployable(ADeployable* Deployable, const FVector& Point);
 
 	bool OnGround;
 	bool OnFloor;

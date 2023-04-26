@@ -17,6 +17,8 @@ enum EBuildAnchorType
 	FloorAnchor			UMETA(DisplayName = "Floor Anchor")
 };
 
+class ADeployable;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UBuildAnchorComponent : public USceneComponent, public ISavableObjectInterface
 {
@@ -26,8 +28,13 @@ public:
 	// Sets default values for this component's properties
 	UBuildAnchorComponent();
 	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	TEnumAsByte<EBuildAnchorType> GetType() const;
 
+	ADeployable* GetAttachedDeployable() const;
+	void AttachDeployable(ADeployable* DeployableToAttach);
+	
 	static TArray<UBuildAnchorComponent*> GetAllBuildAnchorsOfTypeFromList(const TArray<UBuildAnchorComponent*>& BuildAnchorList, TEnumAsByte<EBuildAnchorType> TypeToFind);
 	static UBuildAnchorComponent* GetClosestBuildAnchorFromList(const TArray<UBuildAnchorComponent*>& BuildAnchors, const FVector& TestPoint);
 
@@ -38,5 +45,8 @@ protected:
 private:	
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EBuildAnchorType> Type;
+
+	UPROPERTY(Replicated, SaveGame)
+	ADeployable* AttachedDeployable;
 
 };

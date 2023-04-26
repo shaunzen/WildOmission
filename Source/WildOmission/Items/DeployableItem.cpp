@@ -102,16 +102,29 @@ void ADeployableItem::HandlePlacement(AActor* PlacementActor)
 {
 	if (DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor() != None)
 	{
-		UBuildAnchorComponent* AnchorToAttachTo = GetPlacementAnchor();
-		if (AnchorToAttachTo)
-		{
-			InAnchor = true;
-			PlacementActor->AttachToComponent(AnchorToAttachTo, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		}
-		else
+		FHitResult HitResult;
+		if (!LineTraceOnCameraChannel(HitResult))
 		{
 			InAnchor = false;
 			PlacementActor->SetActorTransform(GetPlacementTransform());
+			return;
+		}
+		ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
+		if (HitDeployable == nullptr)
+		{
+			InAnchor = false;
+			PlacementActor->SetActorTransform(GetPlacementTransform());
+			return;
+		}
+		UBuildAnchorComponent* AnchorToAttachTo = GetClosestValidAnchorFromPointOnDeployable(HitDeployable, HitResult.ImpactPoint);
+		if (AnchorToAttachTo)
+		{
+			InAnchor = true;
+			if (ADeployable* PlacementDeployable = Cast<ADeployable>(PlacementActor))
+			{
+				AnchorToAttachTo->AttachDeployable(PlacementDeployable);
+			}
+			PlacementActor->SetActorTransform(AnchorToAttachTo->GetComponentTransform());
 		}
 	}
 	else
@@ -156,22 +169,10 @@ FTransform ADeployableItem::GetPlacementTransform()
 	return PlacementTransform;
 }
 
-UBuildAnchorComponent* ADeployableItem::GetPlacementAnchor()
+UBuildAnchorComponent* ADeployableItem::GetClosestValidAnchorFromPointOnDeployable(ADeployable* Deployable, const FVector& Point)
 {
-	FHitResult HitResult;
-	if (!LineTraceOnCameraChannel(HitResult))
-	{
-		return nullptr;
-	}
-
-	ADeployable* LookingAtDeployable = Cast<ADeployable>(HitResult.GetActor());
-	if (LookingAtDeployable == nullptr)
-	{
-		return nullptr;
-	}
-
 	TArray<UBuildAnchorComponent*> BuildAnchors;
-	LookingAtDeployable->GetComponents<UBuildAnchorComponent>(BuildAnchors);
+	Deployable->GetComponents<UBuildAnchorComponent>(BuildAnchors);
 	if (BuildAnchors.Num() == 0)
 	{
 		return nullptr;
@@ -183,14 +184,15 @@ UBuildAnchorComponent* ADeployableItem::GetPlacementAnchor()
 		return nullptr;
 	}
 
-	UBuildAnchorComponent* ClosestBuildAnchor = UBuildAnchorComponent::GetClosestBuildAnchorFromList(SortedBuildAnchors, HitResult.ImpactPoint);
-	if (ClosestBuildAnchor == nullptr)
+	UBuildAnchorComponent* ClosestBuildAnchor = UBuildAnchorComponent::GetClosestBuildAnchorFromList(SortedBuildAnchors, Point);
+	if (ClosestBuildAnchor == nullptr || ClosestBuildAnchor->GetAttachedDeployable() != nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Deployable is already attached to this anchor"));
 		return nullptr;
 	}
 	
-	UE_LOG(LogTemp, Warning, TEXT("CBA child count %i"), ClosestBuildAnchor->GetNumChildrenComponents());
-	
+	UE_LOG(LogTemp, Warning, TEXT("Successfully found unoccupied anchor"));
+
 	return ClosestBuildAnchor;
 }
 
