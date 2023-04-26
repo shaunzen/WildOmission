@@ -61,7 +61,7 @@ void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	{
 		OnGround = true;
 	}
-	else if (OtherComponent->ComponentHasTag(FName("Wall")) || OtherComponent->ComponentHasTag(FName("Foundation")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	else if (OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
 	{
 
 	}
@@ -77,7 +77,7 @@ void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedCompone
 	{
 		OnGround = false;
 	}
-	else if (OtherComponent->ComponentHasTag(FName("Wall")) || OtherComponent->ComponentHasTag(FName("Foundation")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	else if (OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
 	{
 
 	}
