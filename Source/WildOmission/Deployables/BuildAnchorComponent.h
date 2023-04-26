@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "BuildAnchorComponent.generated.h"
 
@@ -20,7 +20,7 @@ enum EBuildAnchorType
 class ADeployable;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UBuildAnchorComponent : public USceneComponent, public ISavableObjectInterface
+class WILDOMISSION_API UBuildAnchorComponent : public UStaticMeshComponent, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 
@@ -28,15 +28,7 @@ public:
 	// Sets default values for this component's properties
 	UBuildAnchorComponent();
 	
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	TEnumAsByte<EBuildAnchorType> GetType() const;
-
-	ADeployable* GetAttachedDeployable() const;
-	void AttachDeployable(ADeployable* DeployableToAttach);
-	
-	static TArray<UBuildAnchorComponent*> GetAllBuildAnchorsOfTypeFromList(const TArray<UBuildAnchorComponent*>& BuildAnchorList, TEnumAsByte<EBuildAnchorType> TypeToFind);
-	static UBuildAnchorComponent* GetClosestBuildAnchorFromList(const TArray<UBuildAnchorComponent*>& BuildAnchors, const FVector& TestPoint);
 
 protected:
 	// Called when the game starts
@@ -45,8 +37,5 @@ protected:
 private:	
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EBuildAnchorType> Type;
-
-	UPROPERTY(Replicated, SaveGame)
-	ADeployable* AttachedDeployable;
 
 };

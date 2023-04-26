@@ -7,7 +7,7 @@
 #include "WildOmission/Deployables/Deployable.h"
 #include "DeployableItem.generated.h"
 
-class AStaticMeshActor;
+class ADeployablePreview;
 
 UCLASS()
 class WILDOMISSION_API ADeployableItem : public AEquipableItem
@@ -30,30 +30,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float DeployableRange;
 
-	bool LineTraceOnCameraChannel(FHitResult& OutHitResult) const;
-
-	void HandlePlacement(AActor* PlacementActor);
+	bool LineTraceOnDeployableChannel(FHitResult& OutHitResult) const;
 
 	FTransform GetPlacementTransform();
-	UBuildAnchorComponent* GetClosestValidAnchorFromPointOnDeployable(ADeployable* Deployable, const FVector& Point);
-
-	bool OnGround;
-	bool OnFloor;
-	bool OnWall;
+	
 	bool InAnchor;
-	bool AnchorConflict;
-	bool InvalidOverlap;
 	bool WithinRange;
 
-	bool SpawnConditionValid() const;
-
-	bool GroundOnlySpawnConditionValid() const;
-	bool FloorOnlySpawnConditionValid() const;
-	bool GroundOrFloorSpawnConditionValid() const;
-	bool WallOnlySpawnConditionValid() const;
-	bool AnchorSpawnConditionValid() const;
-	bool AnchorOrGroundSpawnConditionValid() const;
-	bool AnySurfaceSpawnConditionValid() const;
+	bool IsSpawnConditionValid() const;
 
 private:
 	UFUNCTION(Client, Reliable)
@@ -62,16 +46,9 @@ private:
 	UFUNCTION(Client, Reliable)
 	void Client_DestroyPreview();
 
-	void UpdatePreview();
-
-	UFUNCTION()
-	void OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
-	UFUNCTION()
-	void OnPreviewEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
-
 	UPROPERTY()
-	AStaticMeshActor* PreviewActor;
+	ADeployablePreview* PreviewActor;
 
-	FTransform GetNonSnappingPlacementTransform();
+	FTransform GetFreehandPlacementTransform();
 
 };

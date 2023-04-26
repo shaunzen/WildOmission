@@ -5,13 +5,9 @@
 #include "Engine/StaticMeshActor.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Deployables/DeployablePreview.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
-#include "UObject/ConstructorHelpers.h"
-
-#include "DrawDebugHelpers.h"
-
-static UMaterialInstance* PreviewMaterial = nullptr;
 
 ADeployableItem::ADeployableItem()
 {
@@ -19,26 +15,21 @@ ADeployableItem::ADeployableItem()
 
 	DeployableActorClass = nullptr;
 	DeployableRange = 500.0f;
-	
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/WildOmission/Art/Deployables/M_DeployablePreview_Inst"));
-	if (PreviewMaterialInstanceBlueprint.Succeeded())
-	{
-		PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;
-	}
 
-	OnGround = false;
-	OnFloor = false;
-	OnWall = false;
 	InAnchor = false;
-	AnchorConflict = false;
-	InvalidOverlap = false;
+	WithinRange = false;
 }
 
 void ADeployableItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	UpdatePreview();
+	if (PreviewActor)
+	{
+		PreviewActor->SetActorTransform(GetPlacementTransform());
+		PreviewActor->Update(IsSpawnConditionValid());
+		bPrimaryEnabled = IsSpawnConditionValid();
+	}
 }
 
 void ADeployableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
@@ -66,13 +57,12 @@ void ADeployableItem::Primary()
 	}
 	
 	ADeployable* SpawnedDeployable = GetWorld()->SpawnActor<ADeployable>(DeployableActorClass);
-
-	HandlePlacement(SpawnedDeployable);
+	SpawnedDeployable->SetActorTransform(GetPlacementTransform());
 
 	OwnerInventoryComponent->RemoveHeldItem();
 }
 
-bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
+bool ADeployableItem::LineTraceOnDeployableChannel(FHitResult& OutHitResult) const
 {
 	if (GetOwnerCharacter() == nullptr)
 	{
@@ -90,7 +80,7 @@ bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
 		Params.AddIgnoredActor(PreviewActor);
 	}
 
-	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_Camera, Params))
+	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel4, Params))
 	{
 		return true;
 	}
@@ -98,43 +88,82 @@ bool ADeployableItem::LineTraceOnCameraChannel(FHitResult& OutHitResult) const
 	return false;
 }
 
-void ADeployableItem::HandlePlacement(AActor* PlacementActor)
+FTransform ADeployableItem::GetPlacementTransform()
 {
-	if (DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor() != None)
+	if (DeployableActorClass.GetDefaultObject()->GetPlacementType() == GroundOnly)
 	{
-		FHitResult HitResult;
-		if (!LineTraceOnCameraChannel(HitResult))
-		{
-			InAnchor = false;
-			PlacementActor->SetActorTransform(GetPlacementTransform());
-			return;
-		}
-		ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
-		if (HitDeployable == nullptr)
-		{
-			InAnchor = false;
-			PlacementActor->SetActorTransform(GetPlacementTransform());
-			return;
-		}
-		UBuildAnchorComponent* AnchorToAttachTo = GetClosestValidAnchorFromPointOnDeployable(HitDeployable, HitResult.ImpactPoint);
-		if (AnchorToAttachTo)
-		{
-			InAnchor = true;
-			if (ADeployable* PlacementDeployable = Cast<ADeployable>(PlacementActor))
-			{
-				AnchorToAttachTo->AttachDeployable(PlacementDeployable);
-			}
-			PlacementActor->SetActorTransform(AnchorToAttachTo->GetComponentTransform());
-		}
+		return GetFreehandPlacementTransform();
 	}
 	else
 	{
-		InAnchor = false;
-		PlacementActor->SetActorTransform(GetPlacementTransform());
+		FHitResult HitResult;
+		if (!LineTraceOnDeployableChannel(HitResult))
+		{
+			return GetFreehandPlacementTransform();
+		}
+
+		UBuildAnchorComponent* HitAnchor = Cast<UBuildAnchorComponent>(HitResult.GetComponent());
+		if (HitAnchor == nullptr)
+		{
+			return GetFreehandPlacementTransform();
+		}
+		if (HitAnchor->GetType() != DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor())
+		{
+			return GetFreehandPlacementTransform();
+		}
+
+		WithinRange = true;
+		InAnchor = true;
+		return HitAnchor->GetComponentTransform();
 	}
+	return FTransform();
+
 }
 
-FTransform ADeployableItem::GetPlacementTransform()
+bool ADeployableItem::IsSpawnConditionValid() const
+{
+	switch (DeployableActorClass.GetDefaultObject()->GetPlacementType())
+	{
+	case GroundOnly:
+		return PreviewActor->IsGrounded() && !PreviewActor->IsOverlappingInvalidObject() && WithinRange;
+		break;
+	case AnchorOnly:
+		return InAnchor && !PreviewActor->IsOverlappingInvalidObject() && WithinRange;
+		break;
+	case GroundOrAnchor:
+		return (PreviewActor->IsGrounded() || InAnchor) && !PreviewActor->IsOverlappingInvalidObject() && WithinRange;
+	}
+
+	return false;
+}
+
+void ADeployableItem::Client_SpawnPreview_Implementation()
+{
+	if (DeployableActorClass == nullptr)
+	{
+		return;
+	}
+	
+	if (PreviewActor)
+	{
+		PreviewActor->Destroy();
+	}
+
+	PreviewActor = GetWorld()->SpawnActor<ADeployablePreview>(GetOwner()->GetActorLocation() = FVector(0.0f, 0.0f, 500.0f), GetOwner()->GetActorRotation());
+	PreviewActor->Setup(DeployableActorClass.GetDefaultObject());
+}
+
+void ADeployableItem::Client_DestroyPreview_Implementation()
+{
+	if (PreviewActor == nullptr)
+	{
+		return;
+	}
+
+	PreviewActor->Destroy();
+}
+
+FTransform ADeployableItem::GetFreehandPlacementTransform()
 {
 	InAnchor = false;
 	FVector PlacementLocation = FVector::ZeroVector;
@@ -144,7 +173,7 @@ FTransform ADeployableItem::GetPlacementTransform()
 	FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
 
 	FHitResult HitResult;
-	if (LineTraceOnCameraChannel(HitResult))
+	if (LineTraceOnDeployableChannel(HitResult))
 	{
 		PlacementLocation = HitResult.ImpactPoint;
 		if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
@@ -167,189 +196,4 @@ FTransform ADeployableItem::GetPlacementTransform()
 	PlacementTransform.SetRotation(PlacementRotation.Quaternion());
 
 	return PlacementTransform;
-}
-
-UBuildAnchorComponent* ADeployableItem::GetClosestValidAnchorFromPointOnDeployable(ADeployable* Deployable, const FVector& Point)
-{
-	TArray<UBuildAnchorComponent*> BuildAnchors;
-	Deployable->GetComponents<UBuildAnchorComponent>(BuildAnchors);
-	if (BuildAnchors.Num() == 0)
-	{
-		return nullptr;
-	}
-
-	TArray<UBuildAnchorComponent*> SortedBuildAnchors = UBuildAnchorComponent::GetAllBuildAnchorsOfTypeFromList(BuildAnchors, DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor());
-	if (SortedBuildAnchors.Num() == 0)
-	{
-		return nullptr;
-	}
-
-	UBuildAnchorComponent* ClosestBuildAnchor = UBuildAnchorComponent::GetClosestBuildAnchorFromList(SortedBuildAnchors, Point);
-	if (ClosestBuildAnchor == nullptr || ClosestBuildAnchor->GetAttachedDeployable() != nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Deployable is already attached to this anchor"));
-		return nullptr;
-	}
-	
-	UE_LOG(LogTemp, Warning, TEXT("Successfully found unoccupied anchor"));
-
-	return ClosestBuildAnchor;
-}
-
-void ADeployableItem::Client_SpawnPreview_Implementation()
-{
-	if (DeployableActorClass == nullptr)
-	{
-		return;
-	}
-
-	UStaticMesh* DeployedActorMesh = DeployableActorClass.GetDefaultObject()->GetMesh();
-	if (Mesh == nullptr)
-	{
-		return;
-	}
-	
-	if (PreviewActor)
-	{
-		PreviewActor->Destroy();
-	}
-
-	PreviewActor = GetWorld()->SpawnActor<AStaticMeshActor>(GetOwner()->GetActorLocation() = FVector(0.0f, 0.0f, 500.0f), GetOwner()->GetActorRotation());
-	PreviewActor->SetMobility(EComponentMobility::Movable);
-	PreviewActor->GetStaticMeshComponent()->SetCollisionProfileName(FName("OverlapAll"));
-	PreviewActor->GetStaticMeshComponent()->SetGenerateOverlapEvents(true);
-	PreviewActor->GetStaticMeshComponent()->SetStaticMesh(DeployedActorMesh);
-	PreviewActor->GetStaticMeshComponent()->SetMaterial(0, PreviewMaterial);
-	PreviewActor->OnActorBeginOverlap.AddDynamic(this, &ADeployableItem::OnPreviewBeginOverlap);
-	PreviewActor->OnActorEndOverlap.AddDynamic(this, &ADeployableItem::OnPreviewEndOverlap);
-}
-
-void ADeployableItem::Client_DestroyPreview_Implementation()
-{
-	if (PreviewActor == nullptr)
-	{
-		return;
-	}
-
-	PreviewActor->Destroy();
-}
-
-void ADeployableItem::UpdatePreview()
-{
-	if (PreviewActor == nullptr)
-	{
-		return;
-	}
-
-	HandlePlacement(PreviewActor);
-	bPrimaryEnabled = SpawnConditionValid();
-	PreviewActor->GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), SpawnConditionValid());
-}
-
-
-bool ADeployableItem::SpawnConditionValid() const
-{
-	ADeployable* DefaultDeployable = DeployableActorClass.GetDefaultObject();
-
-	switch (DefaultDeployable->GetPlacementType())
-	{
-	case GroundOnly:
-		return GroundOnlySpawnConditionValid();
-		break;
-	case FloorOnly:
-		return FloorOnlySpawnConditionValid();
-		break;
-	case GroundOrFloor:
-		return GroundOrFloorSpawnConditionValid();
-		break;
-	case WallOnly:
-		return WallOnlySpawnConditionValid();
-		break;
-	case Anchor:
-		return AnchorSpawnConditionValid();
-		break;
-	case GroundOrAnchor:
-		return AnchorOrGroundSpawnConditionValid();
-		break;
-	case AnySurface:
-		return AnySurfaceSpawnConditionValid();
-		break;
-	}
-
-	return false;
-}
-
-bool ADeployableItem::GroundOnlySpawnConditionValid() const
-{
-	return OnGround == true && OnFloor == false && OnWall == false && InAnchor == false && InvalidOverlap == false && WithinRange == true;
-}
-
-bool ADeployableItem::FloorOnlySpawnConditionValid() const
-{
-	return OnGround == false && OnFloor == true && OnWall == false && InAnchor == false && InvalidOverlap == false && WithinRange == true;
-}
-
-bool ADeployableItem::GroundOrFloorSpawnConditionValid() const
-{
-	return (OnGround == true || OnFloor == true) && (OnWall == false && InAnchor == false && InvalidOverlap == false && WithinRange == true);
-}
-
-bool ADeployableItem::WallOnlySpawnConditionValid() const
-{
-	return OnGround == false && OnFloor == false && OnWall == true && InAnchor == false && InvalidOverlap == false && WithinRange == true;
-}
-
-bool ADeployableItem::AnchorSpawnConditionValid() const
-{
-	return InAnchor == true && InvalidOverlap == false && WithinRange == true;
-}
-
-bool ADeployableItem::AnchorOrGroundSpawnConditionValid() const
-{
-	return (OnGround == true || InAnchor == true) && InvalidOverlap == false && WithinRange == true;
-}
-
-bool ADeployableItem::AnySurfaceSpawnConditionValid() const
-{
-	return (OnGround == true || OnFloor == true || OnWall == true || InvalidOverlap == true) && WithinRange == true;
-}
-
-void ADeployableItem::OnPreviewBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
-{
-	if (OtherActor->ActorHasTag(FName("Ground")))
-	{
-		OnGround = true;
-	}
-	else if (OtherActor->ActorHasTag(FName("Floor")))
-	{
-		OnFloor = true;
-	}
-	else if (OtherActor->ActorHasTag(FName("Wall")))
-	{
-		OnWall = true;
-	}
-	else
-	{
-		InvalidOverlap = true;
-	}
-}
-
-void ADeployableItem::OnPreviewEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
-{
-	if (OtherActor->ActorHasTag(FName("Ground")))
-	{
-		OnGround = false;
-	}
-	else if (OtherActor->ActorHasTag(FName("Floor")))
-	{
-		OnFloor = false;
-	}
-	else if (OtherActor->ActorHasTag(FName("Wall")))
-	{
-		OnWall = false;
-	}
-	else
-	{
-		InvalidOverlap = false;
-	}
 }

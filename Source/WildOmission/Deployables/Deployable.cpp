@@ -2,6 +2,7 @@
 
 
 #include "Deployable.h"
+#include "BuildAnchorComponent.h"
 
 // Sets default values
 ADeployable::ADeployable()
@@ -14,7 +15,7 @@ ADeployable::ADeployable()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
 
-	PlacementType = EDeployableType::GroundOrFloor;
+	PlacementType = EDeployableType::GroundOnly;
 	BuildAnchorToSnapTo = EBuildAnchorType::None;
 	UseSurfaceNormal = true;
 }
