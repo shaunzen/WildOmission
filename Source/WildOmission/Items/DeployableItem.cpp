@@ -131,7 +131,7 @@ bool ADeployableItem::IsSpawnConditionValid() const
 		return InAnchor && !PreviewActor->IsOverlappingInvalidObject() && WithinRange;
 		break;
 	case GroundOrAnchor:
-		return (PreviewActor->IsGrounded() || InAnchor) && !PreviewActor->IsOverlappingInvalidObject() && WithinRange;
+		return (PreviewActor->IsGrounded()) && !PreviewActor->IsOverlappingInvalidObject() && WithinRange;
 	}
 
 	return false;

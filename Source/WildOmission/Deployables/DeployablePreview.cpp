@@ -57,9 +57,13 @@ bool ADeployablePreview::IsOverlappingInvalidObject() const
 
 void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherComponent->ComponentHasTag(FName("Ground")))
+	if (OtherActor->ActorHasTag(FName("Ground")))
 	{
 		OnGround = true;
+	}
+	else if (OtherComponent->ComponentHasTag(FName("Wall")) || OtherComponent->ComponentHasTag(FName("Foundation")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	{
+
 	}
 	else
 	{
@@ -69,9 +73,13 @@ void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedCompo
 
 void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	if (OtherComponent->ComponentHasTag(FName("Ground")))
+	if (OtherActor->ActorHasTag(FName("Ground")))
 	{
-		OnGround = false;
+		OnGround = true;
+	}
+	else if (OtherComponent->ComponentHasTag(FName("Wall")) || OtherComponent->ComponentHasTag(FName("Foundation")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	{
+
 	}
 	else
 	{

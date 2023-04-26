@@ -11,6 +11,8 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Type = EBuildAnchorType::FoundationAnchor;
+	SetCollisionProfileName(FName("OverlapAllDynamic"));
+	ComponentTags.Add("BuildAnchor");
 }
 
 // Called when the game starts
