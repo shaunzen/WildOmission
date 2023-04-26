@@ -75,7 +75,7 @@ void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedCompone
 {
 	if (OtherActor->ActorHasTag(FName("Ground")))
 	{
-		OnGround = true;
+		OnGround = false;
 	}
 	else if (OtherComponent->ComponentHasTag(FName("Wall")) || OtherComponent->ComponentHasTag(FName("Foundation")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
 	{

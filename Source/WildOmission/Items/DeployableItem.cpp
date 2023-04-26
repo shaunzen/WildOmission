@@ -122,6 +122,7 @@ FTransform ADeployableItem::GetPlacementTransform()
 
 bool ADeployableItem::IsSpawnConditionValid() const
 {
+	UE_LOG(LogTemp, Warning, TEXT("IsGrounded %i, IsOverlappingInvalidObject %i, InAnchor %i, WithinRange %i"), PreviewActor->IsGrounded(), PreviewActor->IsOverlappingInvalidObject(), InAnchor, WithinRange);
 	switch (DeployableActorClass.GetDefaultObject()->GetPlacementType())
 	{
 	case GroundOnly:
