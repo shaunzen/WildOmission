@@ -115,32 +115,34 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	}
 
 	// Check ground condition
-	if (HitActor->ActorHasTag(FName("Ground")))
+	if (HitActor->ActorHasTag(FName("Ground")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnGround())
 	{
-		OutValidSpawn = DeployableActorClass.GetDefaultObject()->CanSpawnOnGround() && !InvalidOverlapFromPreview;
+		OutValidSpawn = !InvalidOverlapFromPreview;
 		return GetFreehandPlacementTransform();
 	}
 
 	// Check floor condition
-	if (HitActor->ActorHasTag(FName("Floor")))
+	if (HitActor->ActorHasTag(FName("Floor")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnFloor())
 	{
-		OutValidSpawn = DeployableActorClass.GetDefaultObject()->CanSpawnOnFloor()  && !InvalidOverlapFromPreview;
+		OutValidSpawn = !InvalidOverlapFromPreview;
 		return GetFreehandPlacementTransform();
 	}
 
 	// Check wall condition
-	if (HitActor->ActorHasTag(FName("Wall")))
+	if (HitActor->ActorHasTag(FName("Wall")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnWall())
 	{
-		OutValidSpawn = DeployableActorClass.GetDefaultObject()->CanSpawnOnWall() && !InvalidOverlapFromPreview;
+		OutValidSpawn = !InvalidOverlapFromPreview;
 		return GetFreehandPlacementTransform();
 	}
 
 	// Check anchor condition
 	if (UBuildAnchorComponent* HitBuildAnchor = Cast<UBuildAnchorComponent>(HitResult.GetComponent()))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("hmm we seems to be looking at a build anchor??"));
 		OutValidSpawn = HitBuildAnchor->GetType() == DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor() && !InvalidOverlapFromPreview;
 		if (OutValidSpawn == false)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("to bad our spawn condition wasnt valid."));
 			return GetFreehandPlacementTransform();
 		}
 		return HitBuildAnchor->GetComponentTransform();
