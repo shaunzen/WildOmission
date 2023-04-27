@@ -32,13 +32,8 @@ protected:
 
 	bool LineTraceOnDeployableChannel(FHitResult& OutHitResult) const;
 
-	FTransform GetPlacementTransform();
+	FTransform GetPlacementTransform(bool& OutValidSpawn);
 	
-	bool InAnchor;
-	bool WithinRange;
-
-	bool IsSpawnConditionValid() const;
-
 private:
 	UFUNCTION(Client, Reliable)
 	void Client_SpawnPreview();

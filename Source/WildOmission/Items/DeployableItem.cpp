@@ -88,54 +88,51 @@ bool ADeployableItem::LineTraceOnDeployableChannel(FHitResult& OutHitResult) con
 	return false;
 }
 
-FTransform ADeployableItem::GetPlacementTransform()
+FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 {
-	if (DeployableActorClass.GetDefaultObject()->GetPlacementType() == GroundOnly)
+	FHitResult HitResult;
+	if (!LineTraceOnDeployableChannel(HitResult))
 	{
+		OutValidSpawn = false;
 		return GetFreehandPlacementTransform();
 	}
-	else
+	AActor* HitActor = HitResult.GetActor();
+	if (HitActor == nullptr)
 	{
-		FHitResult HitResult;
-		if (!LineTraceOnDeployableChannel(HitResult))
-		{
-			return GetFreehandPlacementTransform();
-		}
-
-		UBuildAnchorComponent* HitAnchor = Cast<UBuildAnchorComponent>(HitResult.GetComponent());
-		if (HitAnchor == nullptr)
-		{
-			return GetFreehandPlacementTransform();
-		}
-		if (HitAnchor->GetType() != DeployableActorClass.GetDefaultObject()->SnapsToBuildAnchor())
-		{
-			return GetFreehandPlacementTransform();
-		}
-
-		WithinRange = true;
-		InAnchor = true;
-		return HitAnchor->GetComponentTransform();
-	}
-	return FTransform();
-
-}
-
-bool ADeployableItem::IsSpawnConditionValid() const
-{
-	UE_LOG(LogTemp, Warning, TEXT("IsGrounded %i, IsOverlappingInvalidObject %i, InAnchor %i, WithinRange %i"), PreviewActor->IsGrounded(), PreviewActor->IsOverlappingInvalidObject(), InAnchor, WithinRange);
-	switch (DeployableActorClass.GetDefaultObject()->GetPlacementType())
-	{
-	case GroundOnly:
-		return PreviewActor->IsGrounded() && !PreviewActor->IsOverlappingInvalidObject() && WithinRange;
-		break;
-	case AnchorOnly:
-		return InAnchor && !PreviewActor->IsOverlappingInvalidObject() && WithinRange;
-		break;
-	case GroundOrAnchor:
-		return (PreviewActor->IsGrounded()) && !PreviewActor->IsOverlappingInvalidObject() && WithinRange;
+		OutValidSpawn = false;
+		return GetFreehandPlacementTransform();
 	}
 
-	return false;
+	// check ground condition
+	if (HitActor->ActorHasTag(FName("Ground")))
+	{
+		OutValidSpawn = DeployableActorClass.GetDefaultObject()->CanSpawnOnGround() && !PreviewActor->IsOverlappingInvalidObject();
+		return GetFreehandPlacementTransform();
+	}
+
+	// check floor condition
+	if (HitActor->ActorHasTag(FName("Floor")))
+	{
+		OutValidSpawn = DeployableActorClass.GetDefaultObject()->CanSpawnOnFloor()  && !PreviewActor->IsOverlappingInvalidObject();
+		return GetFreehandPlacementTransform();
+	}
+
+	// check wall condition
+	if (HitActor->ActorHasTag(FName("Wall")))
+	{
+		OutValidSpawn = DeployableActorClass.GetDefaultObject()->CanSpawnOnWall() && !PreviewActor->IsOverlappingInvalidObject();
+		return GetFreehandPlacementTransform();
+	}
+
+	if (UBuildAnchorComponent* HitBuildAnchor = Cast<UBuildAnchorComponent>(HitResult.GetComponent()))
+	{
+		OutValidSpawn = HitBuildAnchor->GetType() == DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor() && !PreviewActor->IsOverlappingInvalidObject();
+		if (OutValidSpawn == false)
+		{
+			return GetFreehandPlacementTransform();
+		}
+		return HitBuildAnchor->GetComponentTransform();
+	}
 }
 
 void ADeployableItem::Client_SpawnPreview_Implementation()
@@ -166,7 +163,6 @@ void ADeployableItem::Client_DestroyPreview_Implementation()
 
 FTransform ADeployableItem::GetFreehandPlacementTransform()
 {
-	InAnchor = false;
 	FVector PlacementLocation = FVector::ZeroVector;
 	FRotator PlacementRotation = FRotator::ZeroRotator;
 	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
@@ -181,13 +177,10 @@ FTransform ADeployableItem::GetFreehandPlacementTransform()
 		{
 			PlacementUp = HitResult.ImpactNormal;
 		}
-
-		WithinRange = true;
 	}
 	else
 	{
 		PlacementLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
-		WithinRange = false;
 	}
 
 	PlacementRotation = UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);

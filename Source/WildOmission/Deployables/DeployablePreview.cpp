@@ -18,7 +18,6 @@ ADeployablePreview::ADeployablePreview()
 	GetStaticMeshComponent()->SetCollisionProfileName(FName("OverlapAll"));
 	GetStaticMeshComponent()->SetGenerateOverlapEvents(true);
 	
-	OnGround = false;
 	InvalidOverlap = false;
 
 	PreviewingDeployable = nullptr;
@@ -45,11 +44,6 @@ void ADeployablePreview::Update(bool IsSpawnValid)
 	GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(FName("Valid"), IsSpawnValid);
 }
 
-bool ADeployablePreview::IsGrounded() const
-{
-	return OnGround;
-}
-
 bool ADeployablePreview::IsOverlappingInvalidObject() const
 {
 	return InvalidOverlap;
@@ -57,11 +51,7 @@ bool ADeployablePreview::IsOverlappingInvalidObject() const
 
 void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->ActorHasTag(FName("Ground")))
-	{
-		OnGround = true;
-	}
-	else if (OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	if (OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
 	{
 
 	}
@@ -73,11 +63,7 @@ void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedCompo
 
 void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	if (OtherActor->ActorHasTag(FName("Ground")))
-	{
-		OnGround = false;
-	}
-	else if (OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	if (OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
 	{
 
 	}
