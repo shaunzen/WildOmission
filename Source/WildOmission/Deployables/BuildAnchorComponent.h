@@ -28,6 +28,8 @@ public:
 	// Sets default values for this component's properties
 	UBuildAnchorComponent();
 	
+	FTransform GetCorrectedTransform() const;
+
 	TEnumAsByte<EBuildAnchorType> GetType() const;
 
 protected:
@@ -37,5 +39,11 @@ protected:
 private:	
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EBuildAnchorType> Type;
+
+	UFUNCTION()
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
 };

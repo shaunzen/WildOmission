@@ -145,7 +145,7 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 			UE_LOG(LogTemp, Warning, TEXT("to bad our spawn condition wasnt valid."));
 			return GetFreehandPlacementTransform();
 		}
-		return HitBuildAnchor->GetComponentTransform();
+		return HitBuildAnchor->GetCorrectedTransform();
 	}
 
 	return GetFreehandPlacementTransform();

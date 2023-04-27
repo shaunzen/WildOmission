@@ -34,7 +34,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
-
+	// TODO placement sounds
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
 	bool bCanSpawnOnGround;
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
