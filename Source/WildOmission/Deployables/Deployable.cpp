@@ -15,9 +15,11 @@ ADeployable::ADeployable()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
 
-	PlacementType = EDeployableType::GroundOnly;
-	BuildAnchorToSnapTo = EBuildAnchorType::None;
-	UseSurfaceNormal = true;
+	bCanSpawnOnGround = true;
+	bCanSpawnOnFloor = false;
+	bCanSpawnOnWall = false;
+	CanSpawnOnAnchor = EBuildAnchorType::None;
+	bFollowsSurfaceNormal = false;
 }
 
 // Called when the game starts or when spawned
@@ -39,17 +41,27 @@ UStaticMesh* ADeployable::GetMesh() const
 	return MeshComponent->GetStaticMesh();
 }
 
-TEnumAsByte<EDeployableType> ADeployable::GetPlacementType() const
+bool ADeployable::CanSpawnOnGround() const
 {
-	return PlacementType;
+	return bCanSpawnOnGround;
 }
 
-TEnumAsByte<EBuildAnchorType> ADeployable::SnapsToBuildAnchor() const
+bool ADeployable::CanSpawnOnFloor() const
 {
-	return BuildAnchorToSnapTo;
+	return bCanSpawnOnFloor;
+}
+
+bool ADeployable::CanSpawnOnWall() const
+{
+	return bCanSpawnOnWall;
+}
+
+TEnumAsByte<EBuildAnchorType> ADeployable::CanSpawnOnBuildAnchor() const
+{
+	return CanSpawnOnAnchor;
 }
 
 bool ADeployable::FollowsSurfaceNormal() const
 {
-	return UseSurfaceNormal;
+	return bFollowsSurfaceNormal;
 }

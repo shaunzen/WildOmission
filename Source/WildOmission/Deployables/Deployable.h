@@ -8,14 +8,6 @@
 #include "BuildAnchorComponent.h"
 #include "Deployable.generated.h"
 
-UENUM()
-enum EDeployableType
-{
-	GroundOnly		UMETA(DisplayName = "Ground Only"),
-	AnchorOnly		UMETA(DisplayName = "Anchor Only"),
-	GroundOrAnchor	UMETA(DisplayName = "Ground Or Anchor")
-};
-
 UCLASS()
 class WILDOMISSION_API ADeployable : public AActor, public ISavableObjectInterface
 {
@@ -30,8 +22,10 @@ public:
 
 	UStaticMesh* GetMesh() const;
 
-	TEnumAsByte<EDeployableType> GetPlacementType() const;
-	TEnumAsByte<EBuildAnchorType> SnapsToBuildAnchor() const;
+	bool CanSpawnOnGround() const;
+	bool CanSpawnOnFloor() const;
+	bool CanSpawnOnWall() const;
+	TEnumAsByte<EBuildAnchorType> CanSpawnOnBuildAnchor() const;
 	bool FollowsSurfaceNormal() const;
 
 protected:
@@ -42,12 +36,14 @@ protected:
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
-	TEnumAsByte<EDeployableType> PlacementType;
-
+	bool bCanSpawnOnGround;
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
-	TEnumAsByte<EBuildAnchorType> BuildAnchorToSnapTo;
-	
+	bool bCanSpawnOnFloor;
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
-	bool UseSurfaceNormal;
+	bool bCanSpawnOnWall;
+	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
+	TEnumAsByte<EBuildAnchorType> CanSpawnOnAnchor;
+	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
+	bool bFollowsSurfaceNormal;
 
 };
