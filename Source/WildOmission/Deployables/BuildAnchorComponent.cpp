@@ -17,6 +17,8 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	SetCollisionProfileName(FName("OverlapAllDynamic"));
 	CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
+	bHiddenInGame = true;
+
 	ComponentTags.Add("BuildAnchor");
 }
 
@@ -50,7 +52,7 @@ void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Disabling this build anchor."));
+
 	SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECR_Ignore);
 }
 
@@ -61,6 +63,6 @@ void UBuildAnchorComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponen
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Disabling this build anchor."));
+
 	SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECR_Block);
 }
