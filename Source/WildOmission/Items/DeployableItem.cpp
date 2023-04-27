@@ -6,6 +6,7 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Deployables/DeployablePreview.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
 
@@ -83,7 +84,7 @@ bool ADeployableItem::LineTraceOnDeployableChannel(FHitResult& OutHitResult) con
 	{
 		Params.AddIgnoredActor(PreviewActor);
 	}
-
+	
 	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel4, Params))
 	{
 		return true;
@@ -92,8 +93,158 @@ bool ADeployableItem::LineTraceOnDeployableChannel(FHitResult& OutHitResult) con
 	return false;
 }
 
+bool ADeployableItem::LineTraceOnFoundationAnchorChannel(FHitResult& OutHitResult) const
+{
+	if (GetOwnerCharacter() == nullptr)
+	{
+		return false;
+	}
+
+	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+	FCollisionQueryParams Params;
+
+	Params.AddIgnoredActor(GetOwner());
+	Params.AddIgnoredActor(this);
+	if (PreviewActor)
+	{
+		Params.AddIgnoredActor(PreviewActor);
+	}
+
+	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel5, Params))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool ADeployableItem::LineTraceOnWallAnchorChannel(FHitResult& OutHitResult) const
+{
+	if (GetOwnerCharacter() == nullptr)
+	{
+		return false;
+	}
+
+	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+	FCollisionQueryParams Params;
+
+	Params.AddIgnoredActor(GetOwner());
+	Params.AddIgnoredActor(this);
+	if (PreviewActor)
+	{
+		Params.AddIgnoredActor(PreviewActor);
+	}
+
+	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel6, Params))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool ADeployableItem::LineTraceOnFloorAnchorChannel(FHitResult& OutHitResult) const
+{
+	if (GetOwnerCharacter() == nullptr)
+	{
+		return false;
+	}
+
+	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+	FCollisionQueryParams Params;
+
+	Params.AddIgnoredActor(GetOwner());
+	Params.AddIgnoredActor(this);
+	if (PreviewActor)
+	{
+		Params.AddIgnoredActor(PreviewActor);
+	}
+
+	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel7, Params))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool ADeployableItem::LineTraceOnDoorAnchorChannel(FHitResult& OutHitResult) const
+{
+	if (GetOwnerCharacter() == nullptr)
+	{
+		return false;
+	}
+
+	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+	FCollisionQueryParams Params;
+
+	Params.AddIgnoredActor(GetOwner());
+	Params.AddIgnoredActor(this);
+	if (PreviewActor)
+	{
+		Params.AddIgnoredActor(PreviewActor);
+	}
+
+	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel8, Params))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
 FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 {
+	bool InvalidOverlapFromPreview = false;
+	if (PreviewActor)
+	{
+		InvalidOverlapFromPreview = PreviewActor->IsOverlappingInvalidObject();
+	}
+
+	// Check anchor condition
+	FHitResult AnchorHitResult;
+	bool HitAnchor = false;
+	switch (DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor())
+	{
+	case None:
+		break;
+	case FoundationAnchor:
+		HitAnchor = LineTraceOnFoundationAnchorChannel(AnchorHitResult);
+		break;
+	case WallAnchor:
+		HitAnchor = LineTraceOnWallAnchorChannel(AnchorHitResult);
+		break;
+	case FloorAnchor:
+		HitAnchor = LineTraceOnFloorAnchorChannel(AnchorHitResult);
+		break;
+	case DoorAnchor:
+		HitAnchor = LineTraceOnDoorAnchorChannel(AnchorHitResult);
+		break;
+	}
+
+	if (HitAnchor == true)
+	{
+		UBuildAnchorComponent* HitBuildAnchor = Cast<UBuildAnchorComponent>(AnchorHitResult.GetComponent());
+		if (HitBuildAnchor== nullptr)
+		{
+			OutValidSpawn = false;
+			return GetFreehandPlacementTransform();
+		}
+
+		OutValidSpawn = HitBuildAnchor->GetType() == DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor() && !InvalidOverlapFromPreview;
+		if (OutValidSpawn == false)
+		{
+			return GetFreehandPlacementTransform();
+		}
+		
+		return HitBuildAnchor->GetCorrectedTransform();
+	}
+	
 	FHitResult HitResult;
 	if (!LineTraceOnDeployableChannel(HitResult))
 	{
@@ -102,17 +253,13 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	}
 
 	AActor* HitActor = HitResult.GetActor();
-	bool InvalidOverlapFromPreview = false;
+	
 	if (HitActor == nullptr)
 	{
 		OutValidSpawn = false;
 		return GetFreehandPlacementTransform();
 	}
 
-	if (PreviewActor)
-	{
-		InvalidOverlapFromPreview = PreviewActor->IsOverlappingInvalidObject();
-	}
 
 	// Check ground condition
 	if (HitActor->ActorHasTag(FName("Ground")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnGround())
@@ -133,19 +280,6 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	{
 		OutValidSpawn = !InvalidOverlapFromPreview;
 		return GetFreehandPlacementTransform();
-	}
-
-	// Check anchor condition
-	if (UBuildAnchorComponent* HitBuildAnchor = Cast<UBuildAnchorComponent>(HitResult.GetComponent()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("hmm we seems to be looking at a build anchor??"));
-		OutValidSpawn = HitBuildAnchor->GetType() == DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor() && !InvalidOverlapFromPreview;
-		if (OutValidSpawn == false)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("to bad our spawn condition wasnt valid."));
-			return GetFreehandPlacementTransform();
-		}
-		return HitBuildAnchor->GetCorrectedTransform();
 	}
 
 	return GetFreehandPlacementTransform();

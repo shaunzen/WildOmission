@@ -14,7 +14,10 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	Type = EBuildAnchorType::FoundationAnchor;
 	
 	SetRelativeScale3D(FVector(0.9f));
-	SetCollisionProfileName(FName("OverlapAllDynamic"));
+	
+	SetCollisionProfileName(FName("OverlapAll"));
+	SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
+
 	CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 	bHiddenInGame = true;
@@ -27,6 +30,24 @@ void UBuildAnchorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	switch (Type)
+	{
+	case None:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block);
+		break;
+	case FoundationAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Block);
+		break;
+	case WallAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Block);
+		break;
+	case FloorAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel7, ECollisionResponse::ECR_Block);
+		break;
+	case DoorAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel8, ECollisionResponse::ECR_Block);
+		break;
+	}
 	OnComponentBeginOverlap.AddDynamic(this, &UBuildAnchorComponent::OnBeginOverlap);
 	OnComponentEndOverlap.AddDynamic(this, &UBuildAnchorComponent::OnEndOverlap);
 }
@@ -53,7 +74,24 @@ void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 		return;
 	}
 
-	SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECR_Ignore);
+	switch (Type)
+	{
+	case None:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Ignore);
+		break;
+	case FoundationAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Ignore);
+		break;
+	case WallAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Ignore);
+		break;
+	case FloorAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel7, ECollisionResponse::ECR_Ignore);
+		break;
+	case DoorAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel8, ECollisionResponse::ECR_Ignore);
+		break;
+	}
 }
 
 void UBuildAnchorComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
@@ -63,6 +101,23 @@ void UBuildAnchorComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponen
 	{
 		return;
 	}
-
-	SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECR_Block);
+	
+	switch (Type)
+	{
+	case None:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block);
+		break;
+	case FoundationAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Block);
+		break;
+	case WallAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Block);
+		break;
+	case FloorAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel7, ECollisionResponse::ECR_Block);
+		break;
+	case DoorAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel8, ECollisionResponse::ECR_Block);
+		break;
+	}
 }

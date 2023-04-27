@@ -31,6 +31,10 @@ protected:
 	float DeployableRange;
 
 	bool LineTraceOnDeployableChannel(FHitResult& OutHitResult) const;
+	bool LineTraceOnFoundationAnchorChannel(FHitResult& OutHitResult) const;
+	bool LineTraceOnWallAnchorChannel(FHitResult& OutHitResult) const;
+	bool LineTraceOnFloorAnchorChannel(FHitResult& OutHitResult) const;
+	bool LineTraceOnDoorAnchorChannel(FHitResult& OutHitResult) const;
 
 	FTransform GetPlacementTransform(bool& OutValidSpawn);
 	

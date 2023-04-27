@@ -18,6 +18,7 @@ ADeployablePreview::ADeployablePreview()
 	GetStaticMeshComponent()->SetCollisionProfileName(FName("NoCollision"));
 	CollisionCheckMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("Collision Mesh Component"));
 	CollisionCheckMeshComponent->SetupAttachment(GetStaticMeshComponent());
+	CollisionCheckMeshComponent->SetHiddenInGame(true);
 	CollisionCheckMeshComponent->SetCollisionProfileName(FName("OverlapAll"));
 	CollisionCheckMeshComponent->SetGenerateOverlapEvents(true);
 	CollisionCheckMeshComponent->SetRelativeScale3D(FVector(0.9f));
