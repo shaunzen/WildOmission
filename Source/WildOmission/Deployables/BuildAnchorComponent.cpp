@@ -11,7 +11,10 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Type = EBuildAnchorType::FoundationAnchor;
+	
 	SetCollisionProfileName(FName("OverlapAllDynamic"));
+	CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+
 	ComponentTags.Add("BuildAnchor");
 }
 

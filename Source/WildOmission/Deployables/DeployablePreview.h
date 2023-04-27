@@ -18,14 +18,15 @@ public:
 	void Setup(ADeployable* DeployableToPreview);
 	void Update(bool IsSpawnValid);
 
-	bool IsGrounded() const;
 	bool IsOverlappingInvalidObject() const;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* CollisionCheckMeshComponent;
+
 	UPROPERTY()
 	ADeployable* PreviewingDeployable;
 
-	bool OnGround;
 	bool InvalidOverlap;
 
 	UFUNCTION()

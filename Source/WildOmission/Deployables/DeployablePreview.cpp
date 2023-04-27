@@ -15,9 +15,13 @@ ADeployablePreview::ADeployablePreview()
 	}
 
 	SetMobility(EComponentMobility::Movable);
-	GetStaticMeshComponent()->SetCollisionProfileName(FName("OverlapAll"));
-	GetStaticMeshComponent()->SetGenerateOverlapEvents(true);
-	
+	GetStaticMeshComponent()->SetCollisionProfileName(FName("NoCollision"));
+	CollisionCheckMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("Collision Mesh Component"));
+	CollisionCheckMeshComponent->SetupAttachment(GetStaticMeshComponent());
+	CollisionCheckMeshComponent->SetCollisionProfileName(FName("OverlapAll"));
+	CollisionCheckMeshComponent->SetGenerateOverlapEvents(true);
+	CollisionCheckMeshComponent->SetRelativeScale3D(FVector(0.9f));
+
 	InvalidOverlap = false;
 
 	PreviewingDeployable = nullptr;
@@ -35,8 +39,11 @@ void ADeployablePreview::Setup(ADeployable* DeployableToPreview)
 
 	GetStaticMeshComponent()->SetStaticMesh(PreviewingDeployable->GetMesh());
 	GetStaticMeshComponent()->SetMaterial(0, PreviewMaterial);
-	GetStaticMeshComponent()->OnComponentBeginOverlap.AddDynamic(this, &ADeployablePreview::OnMeshBeginOverlap);
-	GetStaticMeshComponent()->OnComponentEndOverlap.AddDynamic(this, &ADeployablePreview::OnMeshEndOverlap);
+	
+	CollisionCheckMeshComponent->SetStaticMesh(PreviewingDeployable->GetMesh());
+
+	CollisionCheckMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ADeployablePreview::OnMeshBeginOverlap);
+	CollisionCheckMeshComponent->OnComponentEndOverlap.AddDynamic(this, &ADeployablePreview::OnMeshEndOverlap);
 }
 
 void ADeployablePreview::Update(bool IsSpawnValid)
@@ -51,24 +58,20 @@ bool ADeployablePreview::IsOverlappingInvalidObject() const
 
 void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	if (OtherActor->ActorHasTag(FName("Ground")) || OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
 	{
+		return;
+	}
 
-	}
-	else
-	{
-		InvalidOverlap = true;
-	}
+	InvalidOverlap = true;
 }
 
 void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	if (OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	if (OtherActor->ActorHasTag(FName("Ground")) || OtherComponent->ComponentHasTag(FName("BuildingPart")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
 	{
-
+		return;
 	}
-	else
-	{
-		InvalidOverlap = false;
-	}
+	
+	InvalidOverlap = false;
 }
