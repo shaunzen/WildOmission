@@ -36,12 +36,12 @@ void ADeployablePreview::Setup(ADeployable* DeployableToPreview)
 		UE_LOG(LogTemp, Warning, TEXT("Cannot create preview from a null deployable."));
 		return;
 	}
-	
+
 	PreviewingDeployable = DeployableToPreview;
 
 	GetStaticMeshComponent()->SetStaticMesh(PreviewingDeployable->GetMesh());
 	GetStaticMeshComponent()->SetMaterial(0, PreviewMaterial);
-	
+
 	CollisionCheckMeshComponent->SetStaticMesh(PreviewingDeployable->GetMesh());
 
 	CollisionCheckMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ADeployablePreview::OnMeshBeginOverlap);
@@ -60,13 +60,10 @@ bool ADeployablePreview::IsOverlappingInvalidObject() const
 
 void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	/*if ((OtherActor->ActorHasTag(FName("Ground")) && !PreviewingDeployable->CanSpawnOnGround())
-		|| (OtherActor->ActorHasTag(FName("Wall")) && !PreviewingDeployable->CanSpawnOnWall())
-		|| (OtherActor->ActorHasTag(FName("Floor")) && !PreviewingDeployable->CanSpawnOnFloor())
-		|| OtherActor != nullptr)
+	if ((OtherActor->ActorHasTag(FName("Ground")) && PreviewingDeployable->CanSpawnOnGround()) || (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(FName("BuildingPart"))))
 	{
-		InvalidOverlap = true;
-	}*/
+		return;
+	}
 
 	OverlapCount++;
 
@@ -75,6 +72,11 @@ void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedCompo
 
 void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
+	if ((OtherActor->ActorHasTag(FName("Ground")) && PreviewingDeployable->CanSpawnOnGround()) || (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(FName("BuildingPart"))))
+	{
+		return;
+	}
+
 	OverlapCount--;
 	
 	if (OverlapCount > 0)
