@@ -24,6 +24,7 @@ ADeployablePreview::ADeployablePreview()
 	CollisionCheckMeshComponent->SetRelativeScale3D(FVector(0.9f));
 
 	InvalidOverlap = false;
+	OverlapCount = 0;
 
 	PreviewingDeployable = nullptr;
 }
@@ -59,21 +60,27 @@ bool ADeployablePreview::IsOverlappingInvalidObject() const
 
 void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if ((PreviewingDeployable->CanSpawnOnGround() && OtherActor->ActorHasTag(FName("Ground"))) || OtherActor->ActorHasTag(FName("Water")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	/*if ((OtherActor->ActorHasTag(FName("Ground")) && !PreviewingDeployable->CanSpawnOnGround())
+		|| (OtherActor->ActorHasTag(FName("Wall")) && !PreviewingDeployable->CanSpawnOnWall())
+		|| (OtherActor->ActorHasTag(FName("Floor")) && !PreviewingDeployable->CanSpawnOnFloor())
+		|| OtherActor != nullptr)
 	{
-		return;
-	}
+		InvalidOverlap = true;
+	}*/
+
+	OverlapCount++;
 
 	InvalidOverlap = true;
 }
 
 void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	if ((PreviewingDeployable->CanSpawnOnGround() && OtherActor->ActorHasTag(FName("Ground"))) || OtherActor->ActorHasTag(FName("Water")) || OtherComponent->ComponentHasTag(FName("BuildAnchor")))
+	OverlapCount--;
+	
+	if (OverlapCount > 0)
 	{
 		return;
 	}
 
-	
 	InvalidOverlap = false;
 }

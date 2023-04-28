@@ -16,6 +16,7 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	SetRelativeScale3D(FVector(0.9f));
 	
 	SetCollisionProfileName(FName("OverlapAll"));
+	SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Ignore);
 	
 	CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
@@ -67,9 +68,12 @@ TEnumAsByte<EBuildAnchorType> UBuildAnchorComponent::GetType() const
 
 void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Build anchor on Actor %s, has overlaped with Actor: %s"), *GetOwner()->GetActorNameOrLabel(), *OtherActor->GetActorNameOrLabel());
+
 	ADeployable* DeployableInPlace = Cast<ADeployable>(OtherActor);
-	if (DeployableInPlace == nullptr || OtherComponent->GetClass() == UBuildAnchorComponent::StaticClass() || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
+	if (DeployableInPlace == nullptr || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("OtherActor %s was not of correct type for us to disable our trace"), *OtherActor->GetActorNameOrLabel());
 		return;
 	}
 
