@@ -60,7 +60,7 @@ bool ADeployablePreview::IsOverlappingInvalidObject() const
 
 void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if ((OtherActor->ActorHasTag(FName("Ground")) && PreviewingDeployable->CanSpawnOnGround()) || (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(FName("BuildingPart"))))
+	if (OtherActor->ActorHasTag(FName("Water")) || (OtherActor->ActorHasTag(FName("Ground")) && PreviewingDeployable->CanSpawnOnGround()) || (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(FName("BuildingPart"))))
 	{
 		return;
 	}
@@ -72,7 +72,7 @@ void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedCompo
 
 void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	if ((OtherActor->ActorHasTag(FName("Ground")) && PreviewingDeployable->CanSpawnOnGround()) || (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(FName("BuildingPart"))))
+	if (OtherActor->ActorHasTag(FName("Water")) || (OtherActor->ActorHasTag(FName("Ground")) && PreviewingDeployable->CanSpawnOnGround()) || (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(FName("BuildingPart"))))
 	{
 		return;
 	}
