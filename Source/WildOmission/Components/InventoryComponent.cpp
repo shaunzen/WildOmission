@@ -195,6 +195,8 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 	Contents.Contents = InInventorySave.Items;
 	Slots = InInventorySave.Slots;
 	LoadedFromSave = true;
+
+	BroadcastInventoryUpdate();
 }
 
 void UInventoryComponent::BroadcastInventoryUpdate()
