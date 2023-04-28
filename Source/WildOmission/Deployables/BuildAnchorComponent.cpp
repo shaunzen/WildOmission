@@ -16,8 +16,7 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	SetRelativeScale3D(FVector(0.9f));
 	
 	SetCollisionProfileName(FName("OverlapAll"));
-	SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
-
+	
 	CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 	bHiddenInGame = true;

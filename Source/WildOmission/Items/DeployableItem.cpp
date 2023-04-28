@@ -67,7 +67,7 @@ void ADeployableItem::Primary()
 	OwnerInventoryComponent->RemoveHeldItem();
 }
 
-bool ADeployableItem::LineTraceOnDeployableChannel(FHitResult& OutHitResult) const
+bool ADeployableItem::LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelToTrace, FHitResult& OutHitResult) const
 {
 	if (GetOwnerCharacter() == nullptr)
 	{
@@ -85,125 +85,20 @@ bool ADeployableItem::LineTraceOnDeployableChannel(FHitResult& OutHitResult) con
 		Params.AddIgnoredActor(PreviewActor);
 	}
 	
-	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel4, Params))
+	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ChannelToTrace, Params))
 	{
 		return true;
 	}
 
 	return false;
 }
-
-bool ADeployableItem::LineTraceOnFoundationAnchorChannel(FHitResult& OutHitResult) const
-{
-	if (GetOwnerCharacter() == nullptr)
-	{
-		return false;
-	}
-
-	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
-	FCollisionQueryParams Params;
-
-	Params.AddIgnoredActor(GetOwner());
-	Params.AddIgnoredActor(this);
-	if (PreviewActor)
-	{
-		Params.AddIgnoredActor(PreviewActor);
-	}
-
-	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel5, Params))
-	{
-		return true;
-	}
-
-	return false;
-}
-
-bool ADeployableItem::LineTraceOnWallAnchorChannel(FHitResult& OutHitResult) const
-{
-	if (GetOwnerCharacter() == nullptr)
-	{
-		return false;
-	}
-
-	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
-	FCollisionQueryParams Params;
-
-	Params.AddIgnoredActor(GetOwner());
-	Params.AddIgnoredActor(this);
-	if (PreviewActor)
-	{
-		Params.AddIgnoredActor(PreviewActor);
-	}
-
-	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel6, Params))
-	{
-		return true;
-	}
-
-	return false;
-}
-
-bool ADeployableItem::LineTraceOnFloorAnchorChannel(FHitResult& OutHitResult) const
-{
-	if (GetOwnerCharacter() == nullptr)
-	{
-		return false;
-	}
-
-	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
-	FCollisionQueryParams Params;
-
-	Params.AddIgnoredActor(GetOwner());
-	Params.AddIgnoredActor(this);
-	if (PreviewActor)
-	{
-		Params.AddIgnoredActor(PreviewActor);
-	}
-
-	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel7, Params))
-	{
-		return true;
-	}
-
-	return false;
-}
-
-bool ADeployableItem::LineTraceOnDoorAnchorChannel(FHitResult& OutHitResult) const
-{
-	if (GetOwnerCharacter() == nullptr)
-	{
-		return false;
-	}
-
-	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
-	FCollisionQueryParams Params;
-
-	Params.AddIgnoredActor(GetOwner());
-	Params.AddIgnoredActor(this);
-	if (PreviewActor)
-	{
-		Params.AddIgnoredActor(PreviewActor);
-	}
-
-	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel8, Params))
-	{
-		return true;
-	}
-
-	return false;
-}
-
 
 FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 {
-	bool InvalidOverlapFromPreview = false;
+	bool InvalidOverlap = false;
 	if (PreviewActor)
 	{
-		InvalidOverlapFromPreview = PreviewActor->IsOverlappingInvalidObject();
+		InvalidOverlap = PreviewActor->IsOverlappingInvalidObject();
 	}
 
 	// Check anchor condition
@@ -214,39 +109,35 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	case None:
 		break;
 	case FoundationAnchor:
-		HitAnchor = LineTraceOnFoundationAnchorChannel(AnchorHitResult);
+		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel5, AnchorHitResult);
 		break;
 	case WallAnchor:
-		HitAnchor = LineTraceOnWallAnchorChannel(AnchorHitResult);
+		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel6, AnchorHitResult);
 		break;
 	case FloorAnchor:
-		HitAnchor = LineTraceOnFloorAnchorChannel(AnchorHitResult);
+		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel7, AnchorHitResult);
 		break;
 	case DoorAnchor:
-		HitAnchor = LineTraceOnDoorAnchorChannel(AnchorHitResult);
+		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel8, AnchorHitResult);
 		break;
 	}
 
 	if (HitAnchor == true)
 	{
 		UBuildAnchorComponent* HitBuildAnchor = Cast<UBuildAnchorComponent>(AnchorHitResult.GetComponent());
-		if (HitBuildAnchor== nullptr)
+		if (HitBuildAnchor == nullptr)
 		{
 			OutValidSpawn = false;
 			return GetFreehandPlacementTransform();
 		}
 
-		OutValidSpawn = HitBuildAnchor->GetType() == DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor() && !InvalidOverlapFromPreview;
-		if (OutValidSpawn == false)
-		{
-			return GetFreehandPlacementTransform();
-		}
+		OutValidSpawn = HitBuildAnchor->GetType() == DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor() && !InvalidOverlap;
 		
 		return HitBuildAnchor->GetCorrectedTransform();
 	}
-	
+
 	FHitResult HitResult;
-	if (!LineTraceOnDeployableChannel(HitResult))
+	if (!LineTraceOnChannel(ECC_Camera, HitResult))
 	{
 		OutValidSpawn = false;
 		return GetFreehandPlacementTransform();
@@ -264,24 +155,25 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	// Check ground condition
 	if (HitActor->ActorHasTag(FName("Ground")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnGround())
 	{
-		OutValidSpawn = !InvalidOverlapFromPreview;
+		OutValidSpawn = !InvalidOverlap;
 		return GetFreehandPlacementTransform();
 	}
 
 	// Check floor condition
 	if (HitActor->ActorHasTag(FName("Floor")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnFloor())
 	{
-		OutValidSpawn = !InvalidOverlapFromPreview;
+		OutValidSpawn = !InvalidOverlap;
 		return GetFreehandPlacementTransform();
 	}
 
 	// Check wall condition
 	if (HitActor->ActorHasTag(FName("Wall")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnWall())
 	{
-		OutValidSpawn = !InvalidOverlapFromPreview;
+		OutValidSpawn = !InvalidOverlap;
 		return GetFreehandPlacementTransform();
 	}
 
+	OutValidSpawn = false;
 	return GetFreehandPlacementTransform();
 }
 
@@ -320,7 +212,7 @@ FTransform ADeployableItem::GetFreehandPlacementTransform()
 	FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
 
 	FHitResult HitResult;
-	if (LineTraceOnDeployableChannel(HitResult))
+	if (LineTraceOnChannel(ECC_Camera, HitResult))
 	{
 		PlacementLocation = HitResult.ImpactPoint;
 		if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
