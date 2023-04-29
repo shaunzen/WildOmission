@@ -38,6 +38,8 @@ public:
 
 	void StartSession();
 
+	void QuitToMenu();
+
 	void RefreshServerList();
 
 	static TArray<FString> GetAllWorldNames();
@@ -67,7 +69,10 @@ private:
 
 	FString DesiredServerName;
 	FString WorldToLoad;
-	void CreateSession();
+	UFUNCTION()
+	void CreateSession(FName SessionName = FName(""), bool Success = true);
+
+	void EndExistingSession();
 
 	bool OnMainMenu;
 

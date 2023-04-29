@@ -57,7 +57,7 @@ void UWildOmissionGameInstance::Init()
 	}
 
 	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateSessionComplete);
-	SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnDestroySessionComplete);
+	//SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnDestroySessionComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 
@@ -111,6 +111,13 @@ void UWildOmissionGameInstance::StartSession()
 	}
 	UE_LOG(LogTemp, Display, TEXT("Starting Session"));
 	SessionInterface->StartSession(SESSION_NAME);
+}
+
+void UWildOmissionGameInstance::QuitToMenu()
+{
+	ReturnToMainMenu();
+	
+	EndExistingSession();
 }
 
 void UWildOmissionGameInstance::RefreshServerList()
@@ -168,7 +175,9 @@ void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& W
 	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
 	{
-		SessionInterface->DestroySession(SESSION_NAME);
+		FOnDestroySessionCompleteDelegate DestroySessionDelegate;
+		DestroySessionDelegate.BindUObject(this, &UWildOmissionGameInstance::CreateSession);
+		SessionInterface->DestroySession(SESSION_NAME, DestroySessionDelegate);
 	}
 	else
 	{
@@ -188,7 +197,7 @@ void UWildOmissionGameInstance::Join(const uint32& Index)
 	UE_LOG(LogTemp, Warning, TEXT("Joining Server Index: %i"), Index);
 }
 
-void UWildOmissionGameInstance::CreateSession()
+void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -205,6 +214,20 @@ void UWildOmissionGameInstance::CreateSession()
 
 	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
+}
+
+void UWildOmissionGameInstance::EndExistingSession()
+{
+	if (!SessionInterface.IsValid())
+	{
+		return;
+	}
+
+	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+	if (ExistingSession != nullptr)
+	{
+		SessionInterface->DestroySession(SESSION_NAME);
+	}
 }
 
 //****************************

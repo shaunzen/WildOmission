@@ -97,7 +97,7 @@ void UGameplayMenuWidget::QuitToMenu()
 		return;
 	}
 
-	GameInstance->ReturnToMainMenu();
+	GameInstance->QuitToMenu();
 }
 
 void UGameplayMenuWidget::SetQuitButtonText(bool PlayerHasAuthority)
