@@ -71,13 +71,9 @@ TEnumAsByte<EBuildAnchorType> UBuildAnchorComponent::GetType() const
 void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ADeployable* DeployableInPlace = Cast<ADeployable>(OtherActor);
-	if (OtherComponent->GetClass() == UBuildAnchorComponent::StaticClass())
+	if (DeployableInPlace && DeployableInPlace->CanSpawnOnBuildAnchor() == this->Type)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Other Component was build anchor"));
-	}
-	else if (OverlappedComponent->GetClass() == UBuildAnchorComponent::StaticClass())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Overlapped Component was build anchor"));
+		UE_LOG(LogTemp, Warning, TEXT("Deployed a %s in this build anchor"), *DeployableInPlace->GetActorNameOrLabel());
 	}
 
 	if (DeployableInPlace == nullptr || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
