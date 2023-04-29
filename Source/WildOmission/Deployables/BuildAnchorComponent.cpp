@@ -16,8 +16,8 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	SetRelativeScale3D(FVector(0.9f));
 	
 	SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel9);
-
 	SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Ignore);
+	SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Block);
 	
 	CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
@@ -71,6 +71,15 @@ TEnumAsByte<EBuildAnchorType> UBuildAnchorComponent::GetType() const
 void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ADeployable* DeployableInPlace = Cast<ADeployable>(OtherActor);
+	if (OtherComponent->GetClass() == UBuildAnchorComponent::StaticClass())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Other Component was build anchor"));
+	}
+	else if (OverlappedComponent->GetClass() == UBuildAnchorComponent::StaticClass())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Overlapped Component was build anchor"));
+	}
+
 	if (DeployableInPlace == nullptr || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
 	{
 		return;
@@ -99,7 +108,7 @@ void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 void UBuildAnchorComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
 	ADeployable* DeployableInPlace = Cast<ADeployable>(OtherActor);
-	if (DeployableInPlace == nullptr || OtherComponent->GetClass() == UBuildAnchorComponent::StaticClass() || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
+	if (DeployableInPlace == nullptr || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
 	{
 		return;
 	}

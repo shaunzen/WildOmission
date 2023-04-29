@@ -14,6 +14,7 @@ ADeployable::ADeployable()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
+	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Overlap);
 
 	bCanSpawnOnGround = true;
 	bCanSpawnOnFloor = false;
