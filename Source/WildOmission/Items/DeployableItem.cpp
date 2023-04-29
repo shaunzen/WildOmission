@@ -58,6 +58,7 @@ void ADeployableItem::Primary()
 	ADeployable* SpawnedDeployable = GetWorld()->SpawnActor<ADeployable>(DeployableActorClass);
 	bool SpawnValid = false;
 	SpawnedDeployable->SetActorTransform(GetPlacementTransform(SpawnValid));
+	SpawnedDeployable->OnSpawn();
 
 	if (SpawnValid == false)
 	{

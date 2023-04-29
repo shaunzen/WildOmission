@@ -3,6 +3,8 @@
 
 #include "Deployable.h"
 #include "BuildAnchorComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 
 // Sets default values
 ADeployable::ADeployable()
@@ -21,6 +23,13 @@ ADeployable::ADeployable()
 	bCanSpawnOnWall = false;
 	CanSpawnOnAnchor = EBuildAnchorType::None;
 	bFollowsSurfaceNormal = false;
+
+	ConstructorHelpers::FObjectFinder<USoundBase> DefaultPlacementSound(TEXT("/Game/WildOmission/Deployables/Audio/Deployable_Placement_Cue"));
+	if (DefaultPlacementSound.Succeeded())
+	{
+		PlacementSound = DefaultPlacementSound.Object;
+		DestructionSound = DefaultPlacementSound.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -28,6 +37,11 @@ void ADeployable::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ADeployable::OnSpawn()
+{
+	Client_PlayPlacementSound();
 }
 
 // Called every frame
@@ -65,4 +79,24 @@ TEnumAsByte<EBuildAnchorType> ADeployable::CanSpawnOnBuildAnchor() const
 bool ADeployable::FollowsSurfaceNormal() const
 {
 	return bFollowsSurfaceNormal;
+}
+
+void ADeployable::Client_PlayPlacementSound_Implementation()
+{
+	if (PlacementSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlacementSound, GetActorLocation());
+}
+
+void ADeployable::Client_PlayDestructionSound_Implementation()
+{
+	if (DestructionSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, GetActorLocation());
 }

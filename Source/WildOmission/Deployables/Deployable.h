@@ -17,6 +17,8 @@ public:
 	// Sets default values for this actor's properties
 	ADeployable();
 	
+	virtual void OnSpawn();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -34,7 +36,13 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
-	// TODO placement sounds
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* PlacementSound;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* DestructionSound;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
 	bool bCanSpawnOnGround;
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
@@ -46,4 +54,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
 	bool bFollowsSurfaceNormal;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayPlacementSound();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayDestructionSound();
 };

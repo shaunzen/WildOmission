@@ -17,6 +17,10 @@ class WILDOMISSION_API ADoor : public ADeployable, public IInteractable
 	
 public:
 	ADoor();
+	
+	virtual void OnSpawn() override;
+
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -25,5 +29,22 @@ public:
 
 private:
 	UPROPERTY(Replicated, SaveGame)
-		bool bIsOpen;
+	bool bIsOpen;
+	UPROPERTY(Replicated, SaveGame)
+	FRotator SpawnRotation;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* OpenSound;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* CloseSound;
+
+	float RotateValue;
+	FRotator DoorRotation;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayOpenSound();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayCloseSound();
 };
