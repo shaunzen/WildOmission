@@ -154,6 +154,22 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 
 		OutValidSpawn = HitBuildAnchor->GetType() == DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor() && !InvalidOverlap;
 		
+		if (DeployableActorClass.GetDefaultObject()->CanRotate())
+		{
+			FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
+			FVector PlacementRight = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
+			FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
+			FRotator DirectionRotation = UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
+			FRotator BaseRotation = HitBuildAnchor->GetCorrectedTransform().GetRotation().Rotator();
+
+			DirectionRotation.Yaw = FMath::RoundToFloat(DirectionRotation.Yaw / 90.0f) * 90.0f;
+			
+			FTransform HitBuildAnchorPlusOffset = HitBuildAnchor->GetCorrectedTransform();
+			HitBuildAnchorPlusOffset.SetRotation(FQuat(DirectionRotation + BaseRotation + FRotator(0.0f, 90.0f, 0.0f)));
+			
+			return HitBuildAnchorPlusOffset;
+		}
+
 		return HitBuildAnchor->GetCorrectedTransform();
 	}
 
