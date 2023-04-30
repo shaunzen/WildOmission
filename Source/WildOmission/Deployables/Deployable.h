@@ -23,6 +23,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UStaticMesh* GetMesh() const;
+	FTransform GetMeshTransform() const;
 
 	bool CanSpawnOnGround() const;
 	bool CanSpawnOnFloor() const;

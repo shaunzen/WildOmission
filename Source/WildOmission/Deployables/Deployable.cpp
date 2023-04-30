@@ -56,6 +56,11 @@ UStaticMesh* ADeployable::GetMesh() const
 	return MeshComponent->GetStaticMesh();
 }
 
+FTransform ADeployable::GetMeshTransform() const
+{
+	return MeshComponent->GetRelativeTransform();
+}
+
 bool ADeployable::CanSpawnOnGround() const
 {
 	return bCanSpawnOnGround;

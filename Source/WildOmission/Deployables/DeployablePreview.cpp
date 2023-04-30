@@ -40,6 +40,7 @@ void ADeployablePreview::Setup(ADeployable* DeployableToPreview)
 	PreviewingDeployable = DeployableToPreview;
 
 	GetStaticMeshComponent()->SetStaticMesh(PreviewingDeployable->GetMesh());
+	GetStaticMeshComponent()->SetRelativeTransform(PreviewingDeployable->GetMeshTransform());
 	GetStaticMeshComponent()->SetMaterial(0, PreviewMaterial);
 
 	CollisionCheckMeshComponent->SetStaticMesh(PreviewingDeployable->GetMesh());
