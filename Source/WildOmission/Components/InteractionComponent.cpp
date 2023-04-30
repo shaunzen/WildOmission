@@ -39,7 +39,10 @@ FString UInteractionComponent::GetInteractionString() const
 bool UInteractionComponent::GetDurabilityInformation(float& OutPercentage) const
 {
 	FHitResult HitResult;
-	if (!LineTraceOnVisibility(HitResult))
+	FVector Start = GetComponentLocation();
+	FVector End = Start + (GetForwardVector() * 100.0f);
+	
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 	{
 		return false;
 	}
