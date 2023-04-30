@@ -30,6 +30,7 @@ public:
 	bool CanSpawnOnWall() const;
 	TEnumAsByte<EBuildAnchorType> CanSpawnOnBuildAnchor() const;
 	bool FollowsSurfaceNormal() const;
+	bool CanRotate() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -54,6 +55,8 @@ protected:
 	TEnumAsByte<EBuildAnchorType> CanSpawnOnAnchor;
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
 	bool bFollowsSurfaceNormal;
+	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
+	bool bCanRotate;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayPlacementSound();

@@ -127,15 +127,18 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	case None:
 		break;
 	case FoundationAnchor:
-		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel5, AnchorHitResult);
+		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel4, AnchorHitResult);
 		break;
 	case WallAnchor:
-		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel6, AnchorHitResult);
+		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel5, AnchorHitResult);
 		break;
 	case FloorAnchor:
-		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel7, AnchorHitResult);
+		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel6, AnchorHitResult);
 		break;
 	case DoorAnchor:
+		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel7, AnchorHitResult);
+		break;
+	case HouseStairsAnchor:
 		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel8, AnchorHitResult);
 		break;
 	}

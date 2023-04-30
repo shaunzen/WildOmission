@@ -23,6 +23,7 @@ ADeployable::ADeployable()
 	bCanSpawnOnWall = false;
 	CanSpawnOnAnchor = EBuildAnchorType::None;
 	bFollowsSurfaceNormal = false;
+	bCanRotate = false;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> DefaultPlacementSound(TEXT("/Game/WildOmission/Deployables/Audio/Deployable_Placement_Cue"));
 	if (DefaultPlacementSound.Succeeded())
@@ -84,6 +85,11 @@ TEnumAsByte<EBuildAnchorType> ADeployable::CanSpawnOnBuildAnchor() const
 bool ADeployable::FollowsSurfaceNormal() const
 {
 	return bFollowsSurfaceNormal;
+}
+
+bool ADeployable::CanRotate() const
+{
+	return bCanRotate;
 }
 
 void ADeployable::Client_PlayPlacementSound_Implementation()
