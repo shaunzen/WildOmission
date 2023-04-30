@@ -159,15 +159,16 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 			FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
 			FVector PlacementRight = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
 			FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
-			FRotator DirectionRotation = UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
-			FRotator BaseRotation = HitBuildAnchor->GetCorrectedTransform().GetRotation().Rotator();
+			
+			FRotator BaseRotation = AnchorHitResult.GetActor()->GetActorRotation();
 
-			DirectionRotation.Yaw = FMath::RoundToFloat(DirectionRotation.Yaw / 90.0f) * 90.0f;
+			FRotator FacePlayerDirectionRotation = UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
+			FacePlayerDirectionRotation.Yaw += BaseRotation.Yaw;
 			
-			FTransform HitBuildAnchorPlusOffset = HitBuildAnchor->GetCorrectedTransform();
-			HitBuildAnchorPlusOffset.SetRotation(FQuat(DirectionRotation + BaseRotation + FRotator(0.0f, 90.0f, 0.0f)));
+			FTransform BuildAnchorFacingPlayer = HitBuildAnchor->GetCorrectedTransform();
+			BuildAnchorFacingPlayer.SetRotation(FacePlayerDirectionRotation.Quaternion());
 			
-			return HitBuildAnchorPlusOffset;
+			return BuildAnchorFacingPlayer;
 		}
 
 		return HitBuildAnchor->GetCorrectedTransform();
