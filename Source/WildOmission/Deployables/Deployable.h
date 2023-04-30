@@ -25,6 +25,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual float TakeDamage(float DamageAmount, const struct FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 	UStaticMesh* GetMesh() const;
 	FTransform GetMeshTransform() const;
 

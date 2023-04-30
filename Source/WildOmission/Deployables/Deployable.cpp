@@ -63,6 +63,20 @@ void ADeployable::Tick(float DeltaTime)
 
 }
 
+float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	CurrentDurability -= DamageAmount;
+
+	if (CurrentDurability < KINDA_SMALL_NUMBER)
+	{
+		this->Destroy();
+	}
+
+	return DamageAmount;
+}
+
 UStaticMesh* ADeployable::GetMesh() const
 {
 	return MeshComponent->GetStaticMesh();

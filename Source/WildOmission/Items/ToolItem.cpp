@@ -8,6 +8,7 @@
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Resources/HarvestableResource.h"
+#include "WildOmission/Deployables/Deployable.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -109,6 +110,20 @@ void AToolItem::Harvest()
 			FPointDamageEvent HitByToolEvent(20.0f, HitResult, OwnerCharacterLookVector, nullptr);
 			HitCharacter->TakeDamage(20.0f, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
 		}
+
+		ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
+		if (HitDeployable)
+		{
+			float DamageAmount = 5.0f;
+			if (ToolType == BUILD)
+			{
+				DamageAmount = 50.0f;
+			}
+
+			FPointDamageEvent HitByToolEvent(DamageAmount * GatherMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
+			HitDeployable->TakeDamage(DamageAmount * GatherMultiplier, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
+		}
+
 		Client_PlayHarvestSound(HitResult.ImpactPoint);
 		ApplyDamage();
 	}
