@@ -48,4 +48,8 @@ private:
 
 	FTransform GetFreehandPlacementTransform();
 
+	FRotator GetFacePlayerRotation(const FVector& Up = FVector::UpVector) const;
+	
+	float GetOffsetFromNearestSnapDegree(const float& InAxis) const;
+
 };

@@ -156,19 +156,14 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 		
 		if (DeployableActorClass.GetDefaultObject()->CanRotate())
 		{
-			FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
-			FVector PlacementRight = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
-			FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
+			float FacePlayerYaw = GetFacePlayerRotation().Yaw;
+			FacePlayerYaw = FMath::RoundToFloat(FacePlayerYaw / 90.0f) * 90.0f;
+			float AnchorOffsetFromNearestSnap = GetOffsetFromNearestSnapDegree(AnchorHitResult.GetActor()->GetActorRotation().Yaw);
 			
-			FRotator BaseRotation = AnchorHitResult.GetActor()->GetActorRotation();
-
-			FRotator FacePlayerDirectionRotation = UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
-			FacePlayerDirectionRotation.Yaw += BaseRotation.Yaw;
+			FTransform BuildAnchorThatFacesPlayer = HitBuildAnchor->GetCorrectedTransform();
+			BuildAnchorThatFacesPlayer.SetRotation(FQuat(FRotator(0.0f, FacePlayerYaw + AnchorOffsetFromNearestSnap, 0.0f)));
 			
-			FTransform BuildAnchorFacingPlayer = HitBuildAnchor->GetCorrectedTransform();
-			BuildAnchorFacingPlayer.SetRotation(FacePlayerDirectionRotation.Quaternion());
-			
-			return BuildAnchorFacingPlayer;
+			return BuildAnchorThatFacesPlayer;
 		}
 
 		return HitBuildAnchor->GetCorrectedTransform();
@@ -245,9 +240,7 @@ FTransform ADeployableItem::GetFreehandPlacementTransform()
 {
 	FVector PlacementLocation = FVector::ZeroVector;
 	FRotator PlacementRotation = FRotator::ZeroRotator;
-	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
-	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
-	FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
+	FVector PlacementUp = FVector::UpVector;
 
 	FHitResult HitResult;
 	if (LineTraceOnChannel(ECC_Camera, HitResult))
@@ -263,11 +256,29 @@ FTransform ADeployableItem::GetFreehandPlacementTransform()
 		PlacementLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
 	}
 
-	PlacementRotation = UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
+	PlacementRotation = GetFacePlayerRotation(PlacementUp);
 
 	FTransform PlacementTransform;
 	PlacementTransform.SetLocation(PlacementLocation);
 	PlacementTransform.SetRotation(PlacementRotation.Quaternion());
 
 	return PlacementTransform;
+}
+
+FRotator ADeployableItem::GetFacePlayerRotation(const FVector& Up) const
+{
+	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
+	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
+	FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
+	
+	return UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
+}
+
+float ADeployableItem::GetOffsetFromNearestSnapDegree(const float& InAxis) const
+{
+	float SnapTicks = InAxis / 90.0f;
+	float WholeTicksFromNearestSnapDegree= FMath::Floor(SnapTicks);
+	float OffsetPercentFromNearestSnapDegree = SnapTicks - WholeTicksFromNearestSnapDegree;
+
+	return OffsetPercentFromNearestSnapDegree * 90.0f;
 }
