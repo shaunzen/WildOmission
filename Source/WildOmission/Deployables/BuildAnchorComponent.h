@@ -14,7 +14,8 @@ enum EBuildAnchorType
 	FoundationAnchor	UMETA(DisplayName = "Foundation Anchor"),
 	WallAnchor			UMETA(DisplayName = "Wall Anchor"),
 	FloorAnchor			UMETA(DisplayName = "Floor Anchor"),
-	DoorAnchor			UMETA(DisplayName = "Door Anchor")
+	DoorAnchor			UMETA(DisplayName = "Door Anchor"),
+	HouseStairsAnchor	UMETA(DisplayName = "House Stairs Anchor")
 };
 
 class ADeployable;

@@ -48,6 +48,9 @@ void UBuildAnchorComponent::BeginPlay()
 	case DoorAnchor:
 		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel8, ECollisionResponse::ECR_Block);
 		break;
+	case HouseStairsAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Block);
+		break;
 	}
 
 	OnComponentBeginOverlap.AddDynamic(this, &UBuildAnchorComponent::OnBeginOverlap);
@@ -93,6 +96,9 @@ void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	case DoorAnchor:
 		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel8, ECollisionResponse::ECR_Ignore);
 		break;
+	case HouseStairsAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Ignore);
+		break;
 	}
 }
 
@@ -120,6 +126,9 @@ void UBuildAnchorComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponen
 		break;
 	case DoorAnchor:
 		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel8, ECollisionResponse::ECR_Block);
+		break;
+	case HouseStairsAnchor:
+		SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Block);
 		break;
 	}
 }
