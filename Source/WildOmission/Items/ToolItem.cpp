@@ -95,7 +95,7 @@ void AToolItem::Harvest()
 	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Camera, CollisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
 		AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
 		

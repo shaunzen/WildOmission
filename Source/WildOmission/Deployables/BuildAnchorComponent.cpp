@@ -16,6 +16,7 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	SetRelativeScale3D(FVector(0.9f));
 	
 	SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel9);
+	SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Ignore);
 	SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Block);
 	
