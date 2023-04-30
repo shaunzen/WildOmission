@@ -3,6 +3,7 @@
 
 #include "InteractionComponent.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
+#include "WildOmission/Core/Interfaces/DurabilityInterface.h"
 
 UInteractionComponent::UInteractionComponent()
 {
@@ -33,6 +34,24 @@ void UInteractionComponent::Interact()
 FString UInteractionComponent::GetInteractionString() const
 {
 	return InteractionString;
+}
+
+bool UInteractionComponent::GetDurabilityInformation(float& OutPercentage) const
+{
+	FHitResult HitResult;
+	if (!LineTraceOnVisibility(HitResult))
+	{
+		return false;
+	}
+
+	IDurabilityInterface* DurabilityInterfaceActor = Cast<IDurabilityInterface>(HitResult.GetActor());
+	if (DurabilityInterfaceActor == nullptr)
+	{
+		return false;
+	}
+
+	OutPercentage = DurabilityInterfaceActor->GetDurabilityPercentage();
+	return true;
 }
 
 void UInteractionComponent::UpdateInteractionPrompt()

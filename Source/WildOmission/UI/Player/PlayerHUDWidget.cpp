@@ -7,6 +7,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/ProgressBar.h"
 #include "WildOmission/UI/Inventory/InventoryWidget.h"
 #include "WildOmission/UI/Inventory/PlayerInventoryWidget.h"
 #include "WildOmission/UI/Inventory/SelectedItemWidget.h"
@@ -50,6 +51,7 @@ void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	UpdateInteractionPrompt();
+	UpdateDurabilityPrompt();
 	UpdateSelectedItemLocation();
 }
 
@@ -288,6 +290,31 @@ void UPlayerHUDWidget::UpdateInteractionPrompt()
 	{
 		InteractionPrompt->SetText(FText::FromString(FString("")));
 	}
+}
+
+void UPlayerHUDWidget::UpdateDurabilityPrompt()
+{
+	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	UInteractionComponent* OwnerInteractionComopnent = OwnerPawn->FindComponentByClass<UInteractionComponent>();
+	if (OwnerInteractionComopnent == nullptr)
+	{
+		return;
+	}
+	
+	float DurabilityPercent = 0.0f;
+	if (OwnerInteractionComopnent->GetDurabilityInformation(DurabilityPercent) && !IsMenuOpen())
+	{
+		DurabilityBar->SetVisibility(ESlateVisibility::Visible);
+		DurabilityBar->SetPercent(DurabilityPercent);
+		return;
+	}
+
+	DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UPlayerHUDWidget::UpdateSelectedItemLocation()

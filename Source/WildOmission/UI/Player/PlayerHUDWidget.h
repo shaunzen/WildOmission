@@ -11,6 +11,7 @@ class UBorder;
 class UCanvasPanel;
 class UWidgetSwitcher;
 class UHorizontalBox;
+class UProgressBar;
 
 class UVitalsComponent;
 class UVitalsWidget;
@@ -60,6 +61,9 @@ public:
 private:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InteractionPrompt;
+
+	UPROPERTY(Meta = (BindWidget))
+	UProgressBar* DurabilityBar;
 	
 	UPROPERTY(meta = (BindWidget))
 	UBorder* MenuBackgroundBorder;
@@ -100,6 +104,7 @@ private:
 	void CloseMenuPanel();
 
 	void UpdateInteractionPrompt();
+	void UpdateDurabilityPrompt();
 	void UpdateSelectedItemLocation();
 
 	UFUNCTION()

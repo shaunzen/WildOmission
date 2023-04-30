@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "WildOmission/Core/Interfaces/DurabilityInterface.h"
 #include "BuildAnchorComponent.h"
 #include "Deployable.generated.h"
 
 UCLASS()
-class WILDOMISSION_API ADeployable : public AActor, public ISavableObjectInterface
+class WILDOMISSION_API ADeployable : public AActor, public IDurabilityInterface, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 	
@@ -19,11 +20,15 @@ public:
 	
 	virtual void OnSpawn();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UStaticMesh* GetMesh() const;
 	FTransform GetMeshTransform() const;
+
+	virtual float GetDurabilityPercentage() override;
 
 	bool CanSpawnOnGround() const;
 	bool CanSpawnOnFloor() const;
@@ -44,6 +49,12 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	USoundBase* DestructionSound;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MaxDurability;
+
+	UPROPERTY(Replicated, SaveGame)
+	float CurrentDurability;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Placement Settings")
 	bool bCanSpawnOnGround;

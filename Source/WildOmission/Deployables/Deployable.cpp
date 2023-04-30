@@ -5,6 +5,7 @@
 #include "BuildAnchorComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ADeployable::ADeployable()
@@ -17,6 +18,8 @@ ADeployable::ADeployable()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Overlap);
+
+	MaxDurability = 100.0f;
 
 	bCanSpawnOnGround = true;
 	bCanSpawnOnFloor = false;
@@ -42,7 +45,15 @@ void ADeployable::BeginPlay()
 
 void ADeployable::OnSpawn()
 {
+	CurrentDurability = MaxDurability;
 	Client_PlayPlacementSound();
+}
+
+void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADeployable, CurrentDurability);
 }
 
 // Called every frame
@@ -60,6 +71,11 @@ UStaticMesh* ADeployable::GetMesh() const
 FTransform ADeployable::GetMeshTransform() const
 {
 	return MeshComponent->GetRelativeTransform();
+}
+
+float ADeployable::GetDurabilityPercentage()
+{
+	return CurrentDurability / MaxDurability;
 }
 
 bool ADeployable::CanSpawnOnGround() const
