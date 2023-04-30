@@ -21,6 +21,8 @@ public:
 	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
 	virtual void OnUnequip() override;
 
+	virtual void Destroyed() override;
+
 	virtual void Primary() override;
 
 protected:

@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 ADeployableItem::ADeployableItem()
 {
@@ -16,6 +17,12 @@ ADeployableItem::ADeployableItem()
 
 	DeployableActorClass = nullptr;
 	DeployableRange = 500.0f;
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> HammerStaticMesh(TEXT("/Game/WildOmission/Art/Items/SM_Hammer"));
+	if (HammerStaticMesh.Succeeded())
+	{
+		Mesh->SetStaticMesh(HammerStaticMesh.Object);
+	}
 }
 
 void ADeployableItem::Tick(float DeltaTime)
@@ -43,6 +50,16 @@ void ADeployableItem::OnUnequip()
 	Super::OnUnequip();
 
 	Client_DestroyPreview();
+}
+
+void ADeployableItem::Destroyed()
+{
+	Super::Destroyed();
+
+	if (PreviewActor)
+	{
+		PreviewActor->Destroy();
+	}
 }
 
 void ADeployableItem::Primary()
