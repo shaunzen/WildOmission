@@ -49,8 +49,6 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 		{
 			FActorComponentSaveData ComponentSaveData;
 			ComponentSaveData.Name = ActorComponent->GetFName();
-			UE_LOG(LogTemp, Warning, TEXT("Comp name %s"), *ActorComponent->GetFName().ToString());
-
 			ComponentSaveData.Class = ActorComponent->GetClass();
 			
 			FMemoryWriter ComponentMemoryWriter(ComponentSaveData.ByteData);

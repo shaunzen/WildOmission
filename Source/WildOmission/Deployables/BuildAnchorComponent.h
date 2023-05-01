@@ -29,6 +29,8 @@ public:
 	// Sets default values for this component's properties
 	UBuildAnchorComponent();
 	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	FTransform GetCorrectedTransform() const;
 
 	TEnumAsByte<EBuildAnchorType> GetType() const;
@@ -40,6 +42,12 @@ protected:
 private:	
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EBuildAnchorType> Type;
+
+	UPROPERTY(Replicated, ReplicatedUsing = "OnRep_IsOccupied", SaveGame)
+	bool IsOccupied;
+
+	UFUNCTION()
+	void OnRep_IsOccupied();
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
