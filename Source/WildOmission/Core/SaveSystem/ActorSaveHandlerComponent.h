@@ -27,6 +27,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 private:
-	FActorComponentSaveData FindComponentDataByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* Class);
+	TArray<FActorComponentSaveData> FindComponentsByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* Class);
+	FActorComponentSaveData FindComponentDataByName(const TArray<FActorComponentSaveData>& ComponentSaveList, const FName& ComponentName, UClass* ComponentClass = nullptr);
 
 };

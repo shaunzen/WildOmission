@@ -48,6 +48,9 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 		for (UActorComponent* ActorComponent : Actor->GetComponentsByInterface(USavableObjectInterface::StaticClass()))
 		{
 			FActorComponentSaveData ComponentSaveData;
+			ComponentSaveData.Name = ActorComponent->GetFName();
+			UE_LOG(LogTemp, Warning, TEXT("Comp name %s"), ActorComponent->GetFName().ToString());
+
 			ComponentSaveData.Class = ActorComponent->GetClass();
 			
 			FMemoryWriter ComponentMemoryWriter(ComponentSaveData.ByteData);
@@ -86,7 +89,7 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 
 		for (UActorComponent* ActorComponent : SpawnedActor->GetComponentsByInterface(USavableObjectInterface::StaticClass()))
 		{
-			FActorComponentSaveData ComponentSave = FindComponentDataByClass(ActorData.ComponentData, ActorComponent->GetClass());
+			FActorComponentSaveData ComponentSave = FindComponentDataByName(ActorData.ComponentData, ActorComponent->GetFName(), ActorComponent->GetClass());
 			FMemoryReader ComponentMemoryReader(ComponentSave.ByteData);
 			FObjectAndNameAsStringProxyArchive ComponentArchive(ComponentMemoryReader, true);
 			ComponentArchive.ArIsSaveGame = true;
@@ -98,14 +101,31 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 	}
 }
 
-FActorComponentSaveData UActorSaveHandlerComponent::FindComponentDataByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* ClassToFind)
+TArray<FActorComponentSaveData> UActorSaveHandlerComponent::FindComponentsByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* ClassToFind)
 {
+	TArray<FActorComponentSaveData> SortedList;
+
 	for (const FActorComponentSaveData& ComponentData : ComponentSaveList)
 	{
 		if (ComponentData.Class != ClassToFind)
 		{
 			continue;
 		}
+		SortedList.Add(ComponentData);
+	}
+
+	return SortedList;
+}
+
+FActorComponentSaveData UActorSaveHandlerComponent::FindComponentDataByName(const TArray<FActorComponentSaveData>& ComponentSaveList, const FName& ComponentName, UClass* ComponentClass)
+{
+	for (const FActorComponentSaveData& ComponentData : ComponentSaveList)
+	{
+		if (ComponentData.Name != ComponentName || (ComponentClass != nullptr && ComponentData.Class != ComponentClass))
+		{
+			continue;
+		}
+
 		return ComponentData;
 	}
 

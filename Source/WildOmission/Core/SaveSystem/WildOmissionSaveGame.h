@@ -70,6 +70,9 @@ struct FActorComponentSaveData
 	GENERATED_BODY()
 
 	UPROPERTY()
+	FName Name;
+
+	UPROPERTY()
 	UClass* Class = nullptr;
 
 	UPROPERTY()
