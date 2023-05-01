@@ -6,13 +6,16 @@
 #include "InventoryWidget.h"
 #include "FurnaceWidget.generated.h"
 
-/**
- * 
- */
+class UButton;
+class UTextBlock;
+
 UCLASS()
 class WILDOMISSION_API UFurnaceWidget : public UInventoryWidget
 {
 	GENERATED_BODY()
+public:
+	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -20,5 +23,8 @@ private:
 	
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* ToggleText;
+
+	UFUNCTION()
+	void ToggleButtonPressed();
 
 };
