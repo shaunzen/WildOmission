@@ -23,13 +23,15 @@ UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) 
 	SlotWidgetClass = InventorySlotBPWidgetClass.Class;
 }
 
-void UInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
+void UInventoryWidget::Setup(UPlayerHUDWidget* InParentHUD, UInventoryComponent* InInventoryComponent)
 {
 	// Check if inventory and slot are valid pointers
 	if (InInventoryComponent == nullptr || SlotWidgetClass == nullptr)
 	{
 		return;
 	}
+	ParentPlayerHUD = InParentHUD;
+
 	InventoryComponent = InInventoryComponent;
 	
 	// Set default visibility
@@ -100,6 +102,11 @@ void UInventoryWidget::Refresh()
 void UInventoryWidget::RefreshSlot(const int32& SlotIndex)
 {
 	Slots[SlotIndex]->SetItem(InventoryComponent->GetSlot(SlotIndex)->Item);
+}
+
+UPlayerHUDWidget* UInventoryWidget::GetParentHUD()
+{
+	return ParentPlayerHUD;
 }
 
 UInventoryComponent* UInventoryWidget::GetInventoryComponent()

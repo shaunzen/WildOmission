@@ -54,6 +54,9 @@ private:
 	UPROPERTY()
 	int32 Index;
 	
+	FName CurrentItemName;
+	int32 CurrentItemQuantity;
+
 	UPROPERTY()
 	bool Selected;
 };

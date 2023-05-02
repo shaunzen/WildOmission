@@ -11,6 +11,7 @@
 #include "WildOmission/UI/Inventory/InventoryWidget.h"
 #include "WildOmission/UI/Inventory/PlayerInventoryWidget.h"
 #include "WildOmission/UI/Inventory/SelectedItemWidget.h"
+#include "WildOmission/UI/Inventory/HoveredItemNameTag.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/UI/Crafting/CraftingMenuWidget.h"
@@ -39,7 +40,7 @@ void UPlayerHUDWidget::NativeConstruct()
 		return;
 	}
 
-	PlayerInventory->Setup(PlayerInventoryComponent);
+	PlayerInventory->Setup(this, PlayerInventoryComponent);
 
 	PlayerInventory->Refresh();
 
@@ -52,7 +53,7 @@ void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	UpdateInteractionPrompt();
 	UpdateDurabilityPrompt();
-	UpdateSelectedItemLocation();
+	UpdateFollowMousePointerWidgets();
 }
 
 bool UPlayerHUDWidget::Initialize()
@@ -81,7 +82,7 @@ void UPlayerHUDWidget::OpenContainer(AItemContainerBase* Container)
 
 	OpenContainerWidget = CreateWidget<UInventoryWidget>(this, Container->GetWidgetClass(), FName("OpenContainer"));
 
-	OpenContainerWidget->Setup(Container->GetInventoryComponent());
+	OpenContainerWidget->Setup(this, Container->GetInventoryComponent());
 	OpenContainerWidget->CreateSlots();
 	OpenContainerWidget->Open();
 
@@ -179,6 +180,11 @@ bool UPlayerHUDWidget::IsCraftingMenuOpen() const
 UPlayerInventoryWidget* UPlayerHUDWidget::GetPlayerInventoryWidget()
 {
 	return PlayerInventory;
+}
+
+UHoveredItemNameTag* UPlayerHUDWidget::GetHoveredItemNameTag() const
+{
+	return HoveredItemNameTag;
 }
 
 void UPlayerHUDWidget::UpdateBrandingText()
@@ -317,11 +323,12 @@ void UPlayerHUDWidget::UpdateDurabilityPrompt()
 	DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UPlayerHUDWidget::UpdateSelectedItemLocation()
+void UPlayerHUDWidget::UpdateFollowMousePointerWidgets()
 {	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	UCanvasPanelSlot* SelectedItemSlot = Cast<UCanvasPanelSlot>(SelectedItem->Slot);
-	if (PlayerController == nullptr || SelectedItemSlot == nullptr || GEngine->GameViewport == 0)
+	UCanvasPanelSlot* HoveredItemSlot = Cast<UCanvasPanelSlot>(HoveredItemNameTag->Slot);
+	if (PlayerController == nullptr || SelectedItemSlot == nullptr || HoveredItemSlot == nullptr|| GEngine->GameViewport == 0)
 	{
 		return;
 	}
@@ -339,15 +346,24 @@ void UPlayerHUDWidget::UpdateSelectedItemLocation()
 	NormalizedMousePosition = MousePosition / ViewportSize;
 
 	// Create anchor from destination
-	FAnchors NewAnchor;
-	NewAnchor.Minimum.X = NormalizedMousePosition.X;
-	NewAnchor.Minimum.Y = NormalizedMousePosition.Y;
-	NewAnchor.Maximum.X = NormalizedMousePosition.X;
-	NewAnchor.Maximum.Y = NormalizedMousePosition.Y;
+	FAnchors SelectedItemAnchor;
+	SelectedItemAnchor.Minimum.X = NormalizedMousePosition.X;
+	SelectedItemAnchor.Minimum.Y = NormalizedMousePosition.Y;
+	SelectedItemAnchor.Maximum.X = NormalizedMousePosition.X;
+	SelectedItemAnchor.Maximum.Y = NormalizedMousePosition.Y;
+
+
+	FAnchors HoveredItemAnchor;
+	HoveredItemAnchor.Minimum.X = NormalizedMousePosition.X;
+	HoveredItemAnchor.Minimum.Y = NormalizedMousePosition.Y - (NormalizedMousePosition.Y * 0.1);
+	HoveredItemAnchor.Maximum.X = NormalizedMousePosition.X;
+	HoveredItemAnchor.Maximum.Y = NormalizedMousePosition.Y - (NormalizedMousePosition.Y * 0.1);
 
 	// Update slot anchor and position
-	SelectedItemSlot->SetAnchors(NewAnchor);
+	SelectedItemSlot->SetAnchors(SelectedItemAnchor);
 	SelectedItemSlot->SetPosition(FVector2D::ZeroVector);
+	HoveredItemSlot->SetAnchors(HoveredItemAnchor);
+	HoveredItemSlot->SetPosition(FVector2D::ZeroVector);
 }
 
 void UPlayerHUDWidget::MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)

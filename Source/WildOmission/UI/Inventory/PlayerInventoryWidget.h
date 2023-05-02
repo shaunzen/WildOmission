@@ -16,7 +16,7 @@ class WILDOMISSION_API UPlayerInventoryWidget : public UInventoryWidget
 public:
 	UPlayerInventoryWidget(const FObjectInitializer& ObjectInitializer);
 	
-	virtual void Setup(UInventoryComponent* InInventoryComponent) override;
+	virtual void Setup(UPlayerHUDWidget* InParentHUD, UInventoryComponent* InInventoryComponent) override;
 
 	virtual void Refresh() override;
 

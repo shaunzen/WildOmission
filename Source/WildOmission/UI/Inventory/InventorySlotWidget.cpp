@@ -8,6 +8,8 @@
 #include "Components/ProgressBar.h"
 #include "InventoryWidget.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "WildOmission/UI/Inventory/HoveredItemNameTag.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 
@@ -39,6 +41,9 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 
 	if (Item.Quantity != 0)
 	{
+		CurrentItemName = Item.Name;
+		CurrentItemQuantity = Item.Quantity;
+
 		FItemData* SlotItemData = UWildOmissionStatics::GetItemData(Item.Name);
 		if (SlotItemData == nullptr)
 		{
@@ -64,6 +69,8 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 	}
 	else
 	{
+		CurrentItemName = FName();
+		CurrentItemQuantity = 0;
 		ItemIconBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 		DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
 	}
@@ -109,12 +116,48 @@ void UInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
+	if (CurrentItemQuantity == 0)
+	{
+		return;
+	}
+
+	UPlayerHUDWidget* OwnerHUD = Owner->GetParentHUD();
+	if (OwnerHUD == nullptr)
+	{
+		return;
+	}
+
+	UHoveredItemNameTag* HoveredItemNameTag = OwnerHUD->GetHoveredItemNameTag();
+	if (HoveredItemNameTag == nullptr)
+	{
+		return;
+	}
+	FItemData* ItemData = UWildOmissionStatics::GetItemData(CurrentItemName);
+	if (ItemData == nullptr)
+	{
+		return;
+	}
+
+	HoveredItemNameTag->Show(ItemData->DisplayName);
 }
 
 void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
 
+	UPlayerHUDWidget* OwnerHUD = Owner->GetParentHUD();
+	if (OwnerHUD == nullptr)
+	{
+		return;
+	}
+
+	UHoveredItemNameTag* HoveredItemNameTag = OwnerHUD->GetHoveredItemNameTag();
+	if (HoveredItemNameTag == nullptr)
+	{
+		return;
+	}
+
+	HoveredItemNameTag->Hide();
 }
 
 int32 UInventorySlotWidget::GetIndex() const

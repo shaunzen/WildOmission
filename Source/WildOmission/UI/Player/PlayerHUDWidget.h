@@ -20,6 +20,7 @@ class UInventoryWidget;
 class UPlayerInventoryWidget;
 class UCraftingMenuWidget;
 class USelectedItemWidget;
+class UHoveredItemNameTag;
 
 class AItemContainerBase;
 
@@ -48,7 +49,8 @@ public:
 
 	// Getters
 	UPlayerInventoryWidget* GetPlayerInventoryWidget();
-	
+	UHoveredItemNameTag* GetHoveredItemNameTag() const;
+
 	UFUNCTION(BlueprintCallable)
 	bool IsMenuOpen() const;
 
@@ -86,6 +88,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	USelectedItemWidget* SelectedItem;
 	
+	UPROPERTY(Meta = (BindWidget))
+	UHoveredItemNameTag* HoveredItemNameTag;
+
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
 
@@ -105,7 +110,7 @@ private:
 
 	void UpdateInteractionPrompt();
 	void UpdateDurabilityPrompt();
-	void UpdateSelectedItemLocation();
+	void UpdateFollowMousePointerWidgets();
 
 	UFUNCTION()
 	void MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent);

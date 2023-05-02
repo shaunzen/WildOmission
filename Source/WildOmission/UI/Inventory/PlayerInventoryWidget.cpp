@@ -11,9 +11,9 @@ UPlayerInventoryWidget::UPlayerInventoryWidget(const FObjectInitializer& ObjectI
 
 }
 
-void UPlayerInventoryWidget::Setup(UInventoryComponent* InInventoryComponent)
+void UPlayerInventoryWidget::Setup(UPlayerHUDWidget* InParentHUD, UInventoryComponent* InInventoryComponent)
 {
-	Super::Setup(InInventoryComponent);
+	Super::Setup(InParentHUD, InInventoryComponent);
 
 	if (InInventoryComponent == nullptr)
 	{
