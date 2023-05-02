@@ -109,6 +109,8 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 		Owner->GetInventoryComponent()->Server_SlotInteraction(this->Index, OwnerInventoryManipulatorComponent, false);
 	}
 
+	HideHoveredItemNameTag();
+
 	return FReply::Handled();
 }
 
@@ -116,13 +118,40 @@ void UInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
+	ShowHoveredItemNameTag();
+}
+
+void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	HideHoveredItemNameTag();
+}
+
+int32 UInventorySlotWidget::GetIndex() const
+{
+	return Index;
+}
+
+void UInventorySlotWidget::SetSelected(bool InSelected)
+{
+	Selected = InSelected;
+}
+
+bool UInventorySlotWidget::IsSelected() const
+{
+	return Selected;
+}
+
+void UInventorySlotWidget::ShowHoveredItemNameTag()
+{
 	if (CurrentItemQuantity == 0)
 	{
 		return;
 	}
 
 	UPlayerHUDWidget* OwnerHUD = Owner->GetParentHUD();
-	if (OwnerHUD == nullptr)
+	if (OwnerHUD == nullptr || OwnerHUD->SelectedItemVisible())
 	{
 		return;
 	}
@@ -141,10 +170,8 @@ void UInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const
 	HoveredItemNameTag->Show(ItemData->DisplayName);
 }
 
-void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+void UInventorySlotWidget::HideHoveredItemNameTag()
 {
-	Super::NativeOnMouseLeave(InMouseEvent);
-
 	UPlayerHUDWidget* OwnerHUD = Owner->GetParentHUD();
 	if (OwnerHUD == nullptr)
 	{
@@ -158,19 +185,4 @@ void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	}
 
 	HoveredItemNameTag->Hide();
-}
-
-int32 UInventorySlotWidget::GetIndex() const
-{
-	return Index;
-}
-
-void UInventorySlotWidget::SetSelected(bool InSelected)
-{
-	Selected = InSelected;
-}
-
-bool UInventorySlotWidget::IsSelected() const
-{
-	return Selected;
 }

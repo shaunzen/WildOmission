@@ -50,6 +50,7 @@ public:
 	// Getters
 	UPlayerInventoryWidget* GetPlayerInventoryWidget();
 	UHoveredItemNameTag* GetHoveredItemNameTag() const;
+	bool SelectedItemVisible() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsMenuOpen() const;

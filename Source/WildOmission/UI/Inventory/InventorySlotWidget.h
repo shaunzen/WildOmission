@@ -59,4 +59,8 @@ private:
 
 	UPROPERTY()
 	bool Selected;
+
+	void ShowHoveredItemNameTag();
+	void HideHoveredItemNameTag();
+
 };

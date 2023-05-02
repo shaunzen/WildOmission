@@ -126,6 +126,7 @@ void UPlayerHUDWidget::ToggleInventoryMenu()
 	}
 	else if (IsInventoryMenuOpen())
 	{
+		HoveredItemNameTag->Hide();
 		OwnerInventoryManipulator->Server_DropSelectedItemInWorld(false);
 		CloseMenuPanel();
 	}
@@ -152,6 +153,7 @@ void UPlayerHUDWidget::ToggleCraftingMenu()
 	}
 	else if (IsInventoryMenuOpen())
 	{
+		HoveredItemNameTag->Hide();
 		OwnerInventoryManipulator->Server_DropSelectedItemInWorld(false);
 		SwitchToCraftingMenu();
 	}
@@ -185,6 +187,11 @@ UPlayerInventoryWidget* UPlayerHUDWidget::GetPlayerInventoryWidget()
 UHoveredItemNameTag* UPlayerHUDWidget::GetHoveredItemNameTag() const
 {
 	return HoveredItemNameTag;
+}
+
+bool UPlayerHUDWidget::SelectedItemVisible() const
+{
+	return SelectedItem->GetVisibility() == ESlateVisibility::HitTestInvisible;
 }
 
 void UPlayerHUDWidget::UpdateBrandingText()
@@ -355,9 +362,9 @@ void UPlayerHUDWidget::UpdateFollowMousePointerWidgets()
 
 	FAnchors HoveredItemAnchor;
 	HoveredItemAnchor.Minimum.X = NormalizedMousePosition.X;
-	HoveredItemAnchor.Minimum.Y = NormalizedMousePosition.Y - (NormalizedMousePosition.Y * 0.1);
+	HoveredItemAnchor.Minimum.Y = NormalizedMousePosition.Y - (NormalizedMousePosition.Y * 0.03);
 	HoveredItemAnchor.Maximum.X = NormalizedMousePosition.X;
-	HoveredItemAnchor.Maximum.Y = NormalizedMousePosition.Y - (NormalizedMousePosition.Y * 0.1);
+	HoveredItemAnchor.Maximum.Y = NormalizedMousePosition.Y - (NormalizedMousePosition.Y * 0.03);
 
 	// Update slot anchor and position
 	SelectedItemSlot->SetAnchors(SelectedItemAnchor);
