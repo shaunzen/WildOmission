@@ -31,14 +31,13 @@ ACollectableResource::ACollectableResource()
 void ACollectableResource::Interact(AActor* Interactor)
 {
 	UInventoryComponent* InteractorInventoryComponent = Interactor->FindComponentByClass<UInventoryComponent>();
-	UInventoryManipulatorComponent* InteractorInventoryManipulatorComponent = Interactor->FindComponentByClass<UInventoryManipulatorComponent>();
-	if (InteractorInventoryComponent == nullptr || InteractorInventoryManipulatorComponent == nullptr)
+	if (InteractorInventoryComponent == nullptr)
 	{
 		return;
 	}
 
 	// Add resource to collectors inventory
-	InteractorInventoryComponent->AddItem(Yield, InteractorInventoryManipulatorComponent);
+	InteractorInventoryComponent->AddItem(Yield);
 
 	// Play Collect sound
 	Client_PlayCollectSound();

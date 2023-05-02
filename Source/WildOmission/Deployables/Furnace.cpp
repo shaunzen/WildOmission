@@ -84,12 +84,6 @@ void AFurnace::SmeltingTick()
 
 void AFurnace::SmeltItems()
 {
-	UInventoryManipulatorComponent* OwnerManipulatorComponent = GetOwner()->FindComponentByClass<UInventoryManipulatorComponent>();
-	if (OwnerManipulatorComponent == nullptr)
-	{
-		return;
-	}
-
 	int32 AmountOfFuel = GetInventoryComponent()->GetContents()->GetItemQuantity(FName("wood"));
 	if (AmountOfFuel < 2)
 	{
@@ -113,6 +107,6 @@ void AFurnace::SmeltItems()
 		FInventoryItem SmeltedMetalToAdd;
 		SmeltedMetalToAdd.Name = FName("metal");
 		SmeltedMetalToAdd.Quantity = 1;
-		GetInventoryComponent()->AddItem(SmeltedMetalToAdd, OwnerManipulatorComponent);
+		GetInventoryComponent()->AddItem(SmeltedMetalToAdd, this);
 	}
 }

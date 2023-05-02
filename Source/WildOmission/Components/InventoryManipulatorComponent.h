@@ -26,7 +26,6 @@ public:
 
 	void StartDragging(const FInventoryItem& ItemToDrag);
 	void StopDragging();
-	void SpawnWorldItem(const FInventoryItem& ItemToSpawn);
 
 	//**************************************************************
 	// User Interaction

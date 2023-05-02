@@ -45,7 +45,7 @@ void UInventoryComponent::BeginPlay()
 	LoadedFromSave = false;
 }
 
-void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, UInventoryManipulatorComponent* Manipulator)
+void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems)
 {
 	// The amount of items we were unable to add
 	int32 Remaining;
@@ -63,7 +63,17 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, UInventoryMan
 	{
 		FInventoryItem DroppedItem = ItemToAdd;
 		DroppedItem.Quantity = Remaining;
-		Manipulator->SpawnWorldItem(DroppedItem);
+
+		AActor* DropperActor = nullptr;
+		if (ActorToSpawnDropedItems == nullptr)
+		{
+			DropperActor = GetOwner();
+		}
+		else
+		{
+			DropperActor = ActorToSpawnDropedItems;
+		}
+		UWildOmissionStatics::SpawnWorldItem(GetWorld(), DroppedItem, DropperActor);
 	}
 
 	BroadcastInventoryUpdate();

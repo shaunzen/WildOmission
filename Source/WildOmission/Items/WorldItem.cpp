@@ -71,14 +71,13 @@ void AWorldItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 void AWorldItem::Interact(AActor* Interactor)
 {
 	UInventoryComponent* InteractorInventoryComponent = Interactor->FindComponentByClass<UInventoryComponent>();
-	UInventoryManipulatorComponent* InteractorInventoryManipulatorComponent = Interactor->FindComponentByClass<UInventoryManipulatorComponent>();
-	if (InteractorInventoryComponent == nullptr || InteractorInventoryManipulatorComponent == nullptr)
+	if (InteractorInventoryComponent == nullptr)
 	{
 		return;
 	}
 
 	// Add to their inventory
-	InteractorInventoryComponent->AddItem(Item, InteractorInventoryManipulatorComponent);
+	InteractorInventoryComponent->AddItem(Item);
 
 	// Play Pickup sound
 	Client_PlayPickupSound();

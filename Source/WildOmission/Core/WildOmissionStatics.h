@@ -18,4 +18,5 @@ public:
 
 	UWildOmissionStatics();
 	static FItemData* GetItemData(const FName& ItemName);
+	static void SpawnWorldItem(UWorld* WorldContextObject, const struct FInventoryItem& ItemToSpawn, AActor* SpawningActor);
 };

@@ -27,7 +27,7 @@ public:
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable)
-	void AddItem(const FInventoryItem& ItemToAdd, UInventoryManipulatorComponent* Manipulator);
+	void AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems = nullptr);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem(const FInventoryItem& ItemToRemove);	

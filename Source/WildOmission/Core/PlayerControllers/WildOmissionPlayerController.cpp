@@ -13,6 +13,7 @@
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "WildOmission/UI/Player/DeathMenuWidget.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 AWildOmissionPlayerController::AWildOmissionPlayerController()
@@ -80,7 +81,7 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave
 
 	if (PlayerSave.SelectedItem.Quantity > 0)
 	{
-		WildOmissionCharacter->GetInventoryManipulatorComponent()->SpawnWorldItem(PlayerSave.SelectedItem);
+		UWildOmissionStatics::SpawnWorldItem(GetWorld(), PlayerSave.SelectedItem, WildOmissionCharacter);
 	}
 }
 

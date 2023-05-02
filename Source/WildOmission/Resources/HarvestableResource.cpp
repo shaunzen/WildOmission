@@ -24,9 +24,8 @@ AHarvestableResource::AHarvestableResource()
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 {
 	UInventoryComponent* HarvestingInventoryComponent = HarvestingActor->FindComponentByClass<UInventoryComponent>();
-	UInventoryManipulatorComponent* HarvestingInventoryManipulatorComponent = HarvestingActor->FindComponentByClass<UInventoryManipulatorComponent>();
 	UEquipComponent* HarvestingEquipComponent = HarvestingActor->FindComponentByClass<UEquipComponent>();
-	if (HarvestingInventoryComponent == nullptr || HarvestingInventoryManipulatorComponent == nullptr || HarvestingEquipComponent == nullptr)
+	if (HarvestingInventoryComponent == nullptr || HarvestingEquipComponent == nullptr)
 	{
 		return;
 	}
@@ -46,7 +45,7 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 		ItemToGive.Quantity = 1;
 	}
 
-	HarvestingInventoryComponent->AddItem(ItemToGive, HarvestingInventoryManipulatorComponent);
+	HarvestingInventoryComponent->AddItem(ItemToGive);
 
 	Durability -= ItemYield.Quantity;
 

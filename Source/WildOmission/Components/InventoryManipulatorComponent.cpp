@@ -68,32 +68,6 @@ void UInventoryManipulatorComponent::StopDragging()
 	BroadcastSelectionChanged();
 }
 
-void UInventoryManipulatorComponent::SpawnWorldItem(const FInventoryItem& ItemToSpawn)
-{
-	// Get the data for this item
-	FItemData* ItemData = UWildOmissionStatics::GetItemData(ItemToSpawn.Name);
-
-	// Spawn a world item actor
-	AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>();
-	if (ItemData == nullptr || WorldItem == nullptr)
-	{
-		return;
-	}
-
-	WorldItem->SetOwner(GetOwner());
-
-	FVector SpawnLocation;
-	FVector PhysicsImpulse;
-
-	SpawnLocation = GetOwner()->GetActorLocation();
-	PhysicsImpulse = GetOwner()->GetActorForwardVector() * 5000.0f;
-
-	// Update world items properties
-	WorldItem->SetActorLocation(SpawnLocation);
-	WorldItem->SetItem(ItemToSpawn);
-	WorldItem->AddImpulse(PhysicsImpulse);
-}
-
 //**************************************************************
 // User Interaction
 //**************************************************************
@@ -111,12 +85,12 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 	if (Single == true)
 	{
 		ItemToSpawn.Quantity = 1;
-		SpawnWorldItem(ItemToSpawn);
+		UWildOmissionStatics::SpawnWorldItem(GetWorld(), ItemToSpawn, GetOwner());
 		SelectedItem.Quantity -= 1;
 	}
 	else
 	{
-		SpawnWorldItem(ItemToSpawn);
+		UWildOmissionStatics::SpawnWorldItem(GetWorld(), ItemToSpawn, GetOwner());
 		SelectedItem.Clear();
 	}
 

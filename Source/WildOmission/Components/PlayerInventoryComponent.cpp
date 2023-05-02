@@ -41,7 +41,7 @@ void UPlayerInventoryComponent::BeginPlay()
 		RockItem.Name = FName("rock");
 		RockItem.Quantity = 1;
 
-		AddItem(RockItem, OwnerManipulator);
+		AddItem(RockItem);
 	}
 }
 
