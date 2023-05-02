@@ -8,6 +8,7 @@
 
 class UBorder;
 class UTextBlock;
+class UProgressBar;
 
 UCLASS()
 class WILDOMISSION_API USelectedItemWidget : public UUserWidget
@@ -29,6 +30,9 @@ private:
 	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* QuantityText;
+
+	UPROPERTY(Meta = (BindWidget))
+	UProgressBar* DurabilityBar;
 
 	FString GetQuantityString(const int32& Quantity);
 	

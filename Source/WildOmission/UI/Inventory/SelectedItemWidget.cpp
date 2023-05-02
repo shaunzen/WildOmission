@@ -4,6 +4,7 @@
 #include "SelectedItemWidget.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
@@ -31,6 +32,18 @@ void USelectedItemWidget::SetItem(UMaterialInstance* ItemIcon, const int32& Quan
 {
 	IconBorder->SetBrushFromMaterial(ItemIcon);
 	QuantityText->SetText(FText::FromString(GetQuantityString(Quantity)));
+
+	if (SlotItemData->GetStat(FName("Durability")) > 0)
+	{
+		DurabilityBar->SetVisibility(ESlateVisibility::Visible);
+		float Percent;
+		Percent = (float)Item.GetStat(FName("Durability")) / (float)SlotItemData->GetStat(FName("Durability"));
+		DurabilityBar->SetPercent(Percent);
+	}
+	else
+	{
+		DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void USelectedItemWidget::Show()
