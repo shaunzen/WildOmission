@@ -32,18 +32,6 @@ void USelectedItemWidget::SetItem(UMaterialInstance* ItemIcon, const int32& Quan
 {
 	IconBorder->SetBrushFromMaterial(ItemIcon);
 	QuantityText->SetText(FText::FromString(GetQuantityString(Quantity)));
-
-	if (SlotItemData->GetStat(FName("Durability")) > 0)
-	{
-		DurabilityBar->SetVisibility(ESlateVisibility::Visible);
-		float Percent;
-		Percent = (float)Item.GetStat(FName("Durability")) / (float)SlotItemData->GetStat(FName("Durability"));
-		DurabilityBar->SetPercent(Percent);
-	}
-	else
-	{
-		DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
-	}
 }
 
 void USelectedItemWidget::Show()
@@ -79,6 +67,24 @@ void USelectedItemWidget::Refresh(const FInventoryItem& SelectedItem)
 		Show();
 		FItemData* SelectedItemData = UWildOmissionStatics::GetItemData(SelectedItem.Name);
 		SetItem(SelectedItemData->Thumbnail, SelectedItem.Quantity);
+		
+		FItemData* SlotItemData = UWildOmissionStatics::GetItemData(SelectedItem.Name);
+		if (SlotItemData == nullptr)
+		{
+			return;
+		}
+		
+		if (SlotItemData->GetStat(FName("Durability")) > 0)
+		{
+			DurabilityBar->SetVisibility(ESlateVisibility::Visible);
+			float Percent;
+			Percent = (float)SelectedItem.GetStat(FName("Durability")) / (float)SlotItemData->GetStat(FName("Durability"));
+			DurabilityBar->SetPercent(Percent);
+		}
+		else
+		{
+			DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 	else
 	{

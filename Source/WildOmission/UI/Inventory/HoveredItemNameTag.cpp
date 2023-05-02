@@ -1,5 +1,5 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "UI/Inventory/HoveredItemNameTag.h"
+#include "HoveredItemNameTag.h"
 
