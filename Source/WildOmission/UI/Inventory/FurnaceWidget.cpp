@@ -22,7 +22,23 @@ void UFurnaceWidget::NativeConstruct()
 void UFurnaceWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+	AFurnace* ThisFurnace = Cast<AFurnace>(GetInventoryComponent()->GetOwner());
+	if (ThisFurnace == nullptr)
+	{
+		return;
+	}
 
+	FString ToggleString = FString();
+	if (ThisFurnace->IsTurnedOn())
+	{
+		ToggleString = FString("Turn Off");
+	}
+	else
+	{
+		ToggleString = FString("Turn On");
+	}
+
+	ToggleText->SetText(FText::FromString(ToggleString));
 }
 
 void UFurnaceWidget::ToggleButtonPressed()
@@ -40,5 +56,5 @@ void UFurnaceWidget::ToggleButtonPressed()
 	}
 
 	// toggle its on state
-	ThisFurnace->Server_ToggleState();
+	ThisFurnace->Server_ToggleState(!ThisFurnace->IsTurnedOn());
 }

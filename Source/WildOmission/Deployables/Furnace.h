@@ -21,13 +21,19 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(Server, Reliable)
-	void Server_ToggleState();
+	void Server_ToggleState(bool bState);
+
+	bool IsTurnedOn() const;
+
 protected:
 	
 	virtual void OnTurnedOn();
 	virtual void OnTurnedOff();
 
 private:
+	UPROPERTY(EditDefaultsOnly)
+	float SmeltTimeInSeconds;
+
 	UPROPERTY(Replicated)
 	bool bTurnedOn;
 

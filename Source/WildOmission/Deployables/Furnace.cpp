@@ -5,12 +5,17 @@
 #include "WildOmission/Components/InventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 
+// TODO temp
+#include "WildOmission/Components/InventoryManipulatorComponent.h"
+
 AFurnace::AFurnace()
 {
 	bCanSpawnOnGround = true;
 	bCanSpawnOnFloor = true;
 	bCanSpawnOnWall = false;
 	bFollowsSurfaceNormal = true;
+
+	SmeltTimeInSeconds = 5.0f;
 }
 
 void AFurnace::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -30,9 +35,9 @@ void AFurnace::Tick(float DeltaTime)
 	}
 }
 
-void AFurnace::Server_ToggleState_Implementation()
+void AFurnace::Server_ToggleState_Implementation(bool bState)
 {
-	bTurnedOn = !bTurnedOn;
+	bTurnedOn = bState;
 
 	if (bTurnedOn)
 	{
@@ -40,9 +45,14 @@ void AFurnace::Server_ToggleState_Implementation()
 	}
 	else
 	{
-		// clear any timers
+		GetWorld()->GetTimerManager().ClearTimer(SmeltTimerHandle);
 		OnTurnedOff();
 	}
+}
+
+bool AFurnace::IsTurnedOn() const
+{
+	return bTurnedOn;
 }
 
 void AFurnace::OnTurnedOn()
@@ -63,19 +73,46 @@ void AFurnace::SmeltingTick()
 	}
 
 	int32 AmountOfFuel = GetInventoryComponent()->GetContents()->GetItemQuantity(FName("wood"));
-	
-	// is there any fuel?
-		// turn off if not
+	if (AmountOfFuel < 2)
+	{
+		Server_ToggleState(false);
+		return;
+	}
 
-	// set timer for five seconds
-
-
-
+	GetWorld()->GetTimerManager().SetTimer(SmeltTimerHandle, this, &AFurnace::SmeltItems, SmeltTimeInSeconds, false);
 }
 
 void AFurnace::SmeltItems()
 {
-	// on timer fire remove wood
-	// if something is smeltable remove it
-	// and add its smelted form
+	UInventoryManipulatorComponent* OwnerManipulatorComponent = GetOwner()->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerManipulatorComponent == nullptr)
+	{
+		return;
+	}
+
+	int32 AmountOfFuel = GetInventoryComponent()->GetContents()->GetItemQuantity(FName("wood"));
+	if (AmountOfFuel < 2)
+	{
+		Server_ToggleState(false);
+		return;
+	}
+
+	FInventoryItem FuelToRemove;
+	FuelToRemove.Name = FName("wood");
+	FuelToRemove.Quantity = 2;
+	GetInventoryComponent()->RemoveItem(FuelToRemove);
+
+	int32 AmountOfMetalOre = GetInventoryComponent()->GetContents()->GetItemQuantity(FName("metal_ore"));
+	if (AmountOfMetalOre > 0)
+	{
+		FInventoryItem MetalOreToRemove;
+		MetalOreToRemove.Name = FName("metal_ore");
+		MetalOreToRemove.Quantity = 1;
+		GetInventoryComponent()->RemoveItem(MetalOreToRemove);
+
+		FInventoryItem SmeltedMetalToAdd;
+		SmeltedMetalToAdd.Name = FName("metal");
+		SmeltedMetalToAdd.Quantity = 1;
+		GetInventoryComponent()->AddItem(SmeltedMetalToAdd, OwnerManipulatorComponent);
+	}
 }
