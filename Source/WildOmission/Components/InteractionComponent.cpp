@@ -36,27 +36,6 @@ FString UInteractionComponent::GetInteractionString() const
 	return InteractionString;
 }
 
-bool UInteractionComponent::GetDurabilityInformation(float& OutPercentage) const
-{
-	FHitResult HitResult;
-	FVector Start = GetComponentLocation();
-	FVector End = Start + (GetForwardVector() * 100.0f);
-	
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
-	{
-		return false;
-	}
-
-	IDurabilityInterface* DurabilityInterfaceActor = Cast<IDurabilityInterface>(HitResult.GetActor());
-	if (DurabilityInterfaceActor == nullptr)
-	{
-		return false;
-	}
-
-	OutPercentage = DurabilityInterfaceActor->GetDurabilityPercentage();
-	return true;
-}
-
 void UInteractionComponent::UpdateInteractionPrompt()
 {
 	FHitResult HitResult;

@@ -28,7 +28,7 @@ public:
 
 	virtual void Secondary() override;
 
-	virtual void Harvest();
+	virtual void OnPrimaryAnimationClimax();
 
 	UFUNCTION(BlueprintCallable)
 	UAnimMontage* GetPrimaryMontage() const;
@@ -54,6 +54,9 @@ protected:
 	UFUNCTION()
 	void ApplyDamage();
 	
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayHitSound(const FVector& HitLocation);
+
 	FInventoryItem* FindInInventory();
 
 private:
@@ -61,11 +64,9 @@ private:
 	UAnimMontage* PrimaryMontage;
 
 	UPROPERTY(EditDefaultsOnly)
-	USoundBase* HarvestSound;
+	USoundBase* HitSound;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayPrimaryMontage();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayHarvestSound(const FVector& HarvestLocation);
 };

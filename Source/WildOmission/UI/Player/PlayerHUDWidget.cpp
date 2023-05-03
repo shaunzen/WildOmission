@@ -307,27 +307,27 @@ void UPlayerHUDWidget::UpdateInteractionPrompt()
 
 void UPlayerHUDWidget::UpdateDurabilityPrompt()
 {
-	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
-	if (OwnerPawn == nullptr)
-	{
-		return;
-	}
+	//APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
+	//if (OwnerPawn == nullptr)
+	//{
+	//	return;
+	//}
 
-	UInteractionComponent* OwnerInteractionComopnent = OwnerPawn->FindComponentByClass<UInteractionComponent>();
-	if (OwnerInteractionComopnent == nullptr)
-	{
-		return;
-	}
-	
-	float DurabilityPercent = 0.0f;
-	if (OwnerInteractionComopnent->GetDurabilityInformation(DurabilityPercent) && !IsMenuOpen())
-	{
-		DurabilityBar->SetVisibility(ESlateVisibility::Visible);
-		DurabilityBar->SetPercent(DurabilityPercent);
-		return;
-	}
+	//UInteractionComponent* OwnerInteractionComopnent = OwnerPawn->FindComponentByClass<UInteractionComponent>();
+	//if (OwnerInteractionComopnent == nullptr)
+	//{
+	//	return;
+	//}
+	//
+	//float DurabilityPercent = 0.0f;
+	//if (OwnerInteractionComopnent->GetDurabilityInformation(DurabilityPercent) && !IsMenuOpen())
+	//{
+	//	DurabilityBar->SetVisibility(ESlateVisibility::Visible);
+	//	DurabilityBar->SetPercent(DurabilityPercent);
+	//	return;
+	//}
 
-	DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
+	//DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UPlayerHUDWidget::UpdateFollowMousePointerWidgets()

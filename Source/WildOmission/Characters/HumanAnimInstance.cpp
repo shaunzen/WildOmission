@@ -113,7 +113,7 @@ void UHumanAnimInstance::PlayFootstepSound()
 	}
 }
 
-void UHumanAnimInstance::HarvestResource()
+void UHumanAnimInstance::OnPrimaryMontageClimax()
 {
 	// get owner equip comp and tell it to harvest
 	APawn* PawnOwner = TryGetPawnOwner();
@@ -134,7 +134,7 @@ void UHumanAnimInstance::HarvestResource()
 		return;
 	}
 
-	EquipedTool->Harvest();
+	EquipedTool->OnPrimaryAnimationClimax();
 }
 
 void UHumanAnimInstance::CalculateSpeedAndAngle()

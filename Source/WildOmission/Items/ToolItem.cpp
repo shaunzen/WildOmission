@@ -15,7 +15,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
-#include "DrawDebugHelpers.h"
 
 AToolItem::AToolItem()
 {
@@ -27,15 +26,15 @@ AToolItem::AToolItem()
 
 	Durability = 1000;
 
-	ConstructorHelpers::FObjectFinder<USoundBase> HarvestSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> HitSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
 	ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_SwingTool_Montage"));
 
-	if (HarvestSoundObject.Object == nullptr || PrimaryMontageObject.Object == nullptr)
+	if (HitSoundObject.Object == nullptr || PrimaryMontageObject.Object == nullptr)
 	{
 		return;
 	}
 
-	HarvestSound = HarvestSoundObject.Object;
+	HitSound = HitSoundObject.Object;
 	PrimaryMontage = PrimaryMontageObject.Object;
 }
 
@@ -78,7 +77,7 @@ void AToolItem::Primary()
 	Client_PlayPrimaryMontage();
 }
 
-void AToolItem::Harvest()
+void AToolItem::OnPrimaryAnimationClimax()
 {
 	if (!HasAuthority())
 	{
@@ -95,38 +94,36 @@ void AToolItem::Harvest()
 	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
-		AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
-		
-		if (HitHarvestable && (HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
-		{
-			HitHarvestable->OnHarvest(GetOwner());
-		}
-
-		AWildOmissionCharacter* HitCharacter = Cast<AWildOmissionCharacter>(HitResult.GetActor());
-		if (HitCharacter)
-		{
-			FPointDamageEvent HitByToolEvent(20.0f, HitResult, OwnerCharacterLookVector, nullptr);
-			HitCharacter->TakeDamage(20.0f, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
-		}
-
-		ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
-		if (HitDeployable)
-		{
-			float DamageAmount = 5.0f;
-			if (ToolType == BUILD)
-			{
-				DamageAmount = 50.0f;
-			}
-
-			FPointDamageEvent HitByToolEvent(DamageAmount * GatherMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
-			HitDeployable->TakeDamage(DamageAmount * GatherMultiplier, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
-		}
-
-		Client_PlayHarvestSound(HitResult.ImpactPoint);
-		ApplyDamage();
+		return;
 	}
+
+	AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
+
+	if (HitHarvestable && (HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
+	{
+		HitHarvestable->OnHarvest(GetOwner());
+	}
+
+	AWildOmissionCharacter* HitCharacter = Cast<AWildOmissionCharacter>(HitResult.GetActor());
+	if (HitCharacter)
+	{
+		FPointDamageEvent HitByToolEvent(20.0f, HitResult, OwnerCharacterLookVector, nullptr);
+		HitCharacter->TakeDamage(20.0f, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
+	}
+
+	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
+	if (HitDeployable)
+	{
+		float DamageAmount = 5.0f;
+
+		FPointDamageEvent HitByToolEvent(DamageAmount * GatherMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
+		HitDeployable->TakeDamage(DamageAmount * GatherMultiplier, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
+	}
+
+	Client_PlayHitSound(HitResult.ImpactPoint);
+	ApplyDamage();
 }
 
 void AToolItem::Secondary()
@@ -163,6 +160,7 @@ void AToolItem::ApplyDamage()
 	}
 }
 
+// TODO make static
 FInventoryItem* AToolItem::FindInInventory()
 {
 	UInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UInventoryComponent>();
@@ -197,12 +195,12 @@ void AToolItem::Client_PlayPrimaryMontage_Implementation()
 	OwnerEquipComponent->PlayPrimaryMontage();
 }
 
-void AToolItem::Client_PlayHarvestSound_Implementation(const FVector& HarvestLocation)
+void AToolItem::Client_PlayHitSound_Implementation(const FVector& HitLocation)
 {
-	if (HarvestSound == nullptr)
+	if (HitSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HarvestSound, HarvestLocation);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, HitLocation);
 }

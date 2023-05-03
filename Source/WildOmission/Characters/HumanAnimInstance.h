@@ -22,7 +22,7 @@ public:
 	void PlayFootstepSound();
 
 	UFUNCTION(BlueprintCallable)
-	void HarvestResource();
+	void OnPrimaryMontageClimax();
 
 	UPROPERTY(BlueprintReadonly)
 	float Speed;

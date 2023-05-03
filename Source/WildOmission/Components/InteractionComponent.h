@@ -22,8 +22,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FString GetInteractionString() const;
 
-	bool GetDurabilityInformation(float& OutPercentage) const;
-
 private:
 
 	UPROPERTY(EditDefaultsOnly)
