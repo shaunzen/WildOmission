@@ -7,9 +7,6 @@
 #include "Components/AudioComponent.h"
 #include "Net/UnrealNetwork.h"
 
-// TODO temp
-#include "WildOmission/Components/InventoryManipulatorComponent.h"
-
 AFurnace::AFurnace()
 {
 	bCanSpawnOnGround = true;
@@ -47,15 +44,12 @@ void AFurnace::Server_ToggleState_Implementation(bool bState)
 {
 	bTurnedOn = bState;
 
-	if (bTurnedOn)
-	{
-		Client_OnTurnedOn();
-	}
-	else
+	if(bTurnedOn == false)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(SmeltTimerHandle);
-		Client_OnTurnedOff();
 	}
+
+	OnRep_TurnedOn();
 }
 
 bool AFurnace::IsTurnedOn() const
@@ -63,15 +57,30 @@ bool AFurnace::IsTurnedOn() const
 	return bTurnedOn;
 }
 
-void AFurnace::Client_OnTurnedOn_Implementation()
+void AFurnace::OnTurnedOn()
 {
 	// TODO turn on effects
-
+	Light->SetVisibility(true);
+	AudioComponent->Play();
 }
 
-void AFurnace::Client_OnTurnedOff_Implementation()
+void AFurnace::OnTurnedOff()
 {
 	// TODO turn off effects
+	Light->SetVisibility(false);
+	AudioComponent->Stop();
+}
+
+void AFurnace::OnRep_TurnedOn()
+{
+	if (bTurnedOn)
+	{
+		OnTurnedOn();
+	}
+	else
+	{
+		OnTurnedOff();
+	}
 }
 
 void AFurnace::SmeltingTick()

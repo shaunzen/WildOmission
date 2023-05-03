@@ -27,11 +27,8 @@ public:
 
 protected:
 	
-	UFUNCTION(NetMulticast, Reliable)
-	virtual void Client_OnTurnedOn();
-
-	UFUNCTION(NetMulticast, Reliable)
-	virtual void Client_OnTurnedOff();
+	virtual void OnTurnedOn();
+	virtual void OnTurnedOff();
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -43,7 +40,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, ReplicatedUsing = "OnRep_TurnedOn")
 	bool bTurnedOn;
 
 	FTimerHandle SmeltTimerHandle;
@@ -52,5 +49,8 @@ private:
 
 	UFUNCTION()
 	void SmeltItems();
+
+	UFUNCTION()
+	void OnRep_TurnedOn();
 
 };
