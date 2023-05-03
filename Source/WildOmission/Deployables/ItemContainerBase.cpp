@@ -11,6 +11,8 @@ AItemContainerBase::AItemContainerBase()
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 	WidgetClass = nullptr;
 	bOccupied = false;
+
+	ContainerName = FString("Container");
 }
 
 void AItemContainerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -43,7 +45,7 @@ FString AItemContainerBase::PromptText()
 {
 	if (bOccupied == false)
 	{
-		return FString("Press 'E' to open Container");
+		return FString::Printf(TEXT("Press 'E' to open %s"), *ContainerName);
 	}
 
 	return FString("Occupied");

@@ -41,4 +41,7 @@ protected:
 	UPROPERTY(Replicated)
 	bool bOccupied;
 
+	UPROPERTY()
+	FString ContainerName;
+
 };

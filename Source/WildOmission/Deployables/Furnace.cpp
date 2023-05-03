@@ -16,6 +16,8 @@ AFurnace::AFurnace()
 
 	SmeltTimeInSeconds = 5.0f;
 
+	ContainerName = FString("Furnace");
+
 	Light = CreateDefaultSubobject<UPointLightComponent>(FName("Light"));
 	Light->SetupAttachment(RootComponent);
 
@@ -28,6 +30,13 @@ void AFurnace::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AFurnace, bTurnedOn);
+}
+
+void AFurnace::BeginPlay()
+{
+	Super::BeginPlay();
+
+	OnRep_TurnedOn();
 }
 
 void AFurnace::Tick(float DeltaTime)
