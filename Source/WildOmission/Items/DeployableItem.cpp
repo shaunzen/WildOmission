@@ -170,7 +170,7 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	}
 
 	FHitResult HitResult;
-	if (!LineTraceOnChannel(ECC_Camera, HitResult))
+	if (!LineTraceOnChannel(ECC_Visibility, HitResult))
 	{
 		OutValidSpawn = false;
 		return GetFreehandPlacementTransform();
@@ -243,7 +243,7 @@ FTransform ADeployableItem::GetFreehandPlacementTransform()
 	FVector PlacementUp = FVector::UpVector;
 
 	FHitResult HitResult;
-	if (LineTraceOnChannel(ECC_Camera, HitResult))
+	if (LineTraceOnChannel(ECC_Visibility, HitResult))
 	{
 		PlacementLocation = HitResult.ImpactPoint;
 		if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
@@ -269,7 +269,7 @@ FRotator ADeployableItem::GetFacePlayerRotation(const FVector& Up) const
 {
 	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
 	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
-	FVector PlacementUp = FVector(0.0f, 0.0f, 1.0f);
+	FVector PlacementUp = Up;
 	
 	return UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
 }
