@@ -62,3 +62,26 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax()
 	Client_PlayHitSound(HitResult.ImpactPoint);
 	ApplyDamage();
 }
+
+bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutPercent) const
+{
+	FHitResult HitResult;
+	
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
+	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
+
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+	{
+		return false;
+	}
+
+	IDurabilityInterface* DurabilityInterfaceActor = Cast<IDurabilityInterface>(HitResult.GetActor());
+	if (DurabilityInterfaceActor == nullptr)
+	{
+		return false;
+	}
+
+	OutPercent = DurabilityInterfaceActor->GetDurabilityPercentage();
+	return true;
+}

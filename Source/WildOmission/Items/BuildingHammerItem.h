@@ -19,4 +19,5 @@ public:
 
 	virtual void OnPrimaryAnimationClimax() override;
 
+	bool GetLookingAtItemDurability(float& OutPercent) const;
 };
