@@ -3,6 +3,8 @@
 
 #include "Furnace.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "Components/PointLightComponent.h"
+#include "Components/AudioComponent.h"
 #include "Net/UnrealNetwork.h"
 
 // TODO temp
@@ -16,6 +18,12 @@ AFurnace::AFurnace()
 	bFollowsSurfaceNormal = true;
 
 	SmeltTimeInSeconds = 5.0f;
+
+	Light = CreateDefaultSubobject<UPointLightComponent>(FName("Light"));
+	Light->SetupAttachment(RootComponent);
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(FName("AudioComponent"));
+	AudioComponent->SetupAttachment(RootComponent);
 }
 
 void AFurnace::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -41,12 +49,12 @@ void AFurnace::Server_ToggleState_Implementation(bool bState)
 
 	if (bTurnedOn)
 	{
-		OnTurnedOn();
+		Client_OnTurnedOn();
 	}
 	else
 	{
 		GetWorld()->GetTimerManager().ClearTimer(SmeltTimerHandle);
-		OnTurnedOff();
+		Client_OnTurnedOff();
 	}
 }
 
@@ -55,12 +63,13 @@ bool AFurnace::IsTurnedOn() const
 	return bTurnedOn;
 }
 
-void AFurnace::OnTurnedOn()
+void AFurnace::Client_OnTurnedOn_Implementation()
 {
 	// TODO turn on effects
+
 }
 
-void AFurnace::OnTurnedOff()
+void AFurnace::Client_OnTurnedOff_Implementation()
 {
 	// TODO turn off effects
 }

@@ -6,9 +6,9 @@
 #include "ItemContainerBase.h"
 #include "Furnace.generated.h"
 
-/**
- * 
- */
+class UPointLightComponent;
+class UAudioComponent;
+
 UCLASS()
 class WILDOMISSION_API AFurnace : public AItemContainerBase
 {
@@ -27,12 +27,21 @@ public:
 
 protected:
 	
-	virtual void OnTurnedOn();
-	virtual void OnTurnedOff();
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void Client_OnTurnedOn();
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void Client_OnTurnedOff();
 
 private:
 	UPROPERTY(EditDefaultsOnly)
 	float SmeltTimeInSeconds;
+
+	UPROPERTY(VisibleAnywhere)
+	UPointLightComponent* Light;
+
+	UPROPERTY(VisibleAnywhere)
+	UAudioComponent* AudioComponent;
 
 	UPROPERTY(Replicated)
 	bool bTurnedOn;
