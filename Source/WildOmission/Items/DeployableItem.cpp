@@ -267,9 +267,10 @@ FTransform ADeployableItem::GetFreehandPlacementTransform()
 
 FRotator ADeployableItem::GetFacePlayerRotation(const FVector& Up) const
 {
-	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
-	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(GetOwnerCharacter()->GetControlRotation());
 	FVector PlacementUp = Up;
+	FRotator PlacementUpRotationOffset = FRotator(PlacementUp.Rotation().Pitch - 90.0f, 0.0f, PlacementUp.Rotation().Roll - 90.0f);
+	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f) - PlacementUpRotationOffset);
+	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
 	
 	return UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
 }
