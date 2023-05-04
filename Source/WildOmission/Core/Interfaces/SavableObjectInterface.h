@@ -24,5 +24,5 @@ class WILDOMISSION_API ISavableObjectInterface
 public:
 
 	UFUNCTION(BlueprintNativeEvent)
-		void OnActorLoaded();
+		void OnLoadComplete();
 };

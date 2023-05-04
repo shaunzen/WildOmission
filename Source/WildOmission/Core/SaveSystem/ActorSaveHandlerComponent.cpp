@@ -95,9 +95,10 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 			ComponentArchive.ArIsSaveGame = true;
 
 			ActorComponent->Serialize(ComponentArchive);
+			ISavableObjectInterface::Execute_OnLoadComplete(ActorComponent);
 		}
 
-		ISavableObjectInterface::Execute_OnActorLoaded(SpawnedActor);
+		ISavableObjectInterface::Execute_OnLoadComplete(SpawnedActor);
 	}
 }
 
