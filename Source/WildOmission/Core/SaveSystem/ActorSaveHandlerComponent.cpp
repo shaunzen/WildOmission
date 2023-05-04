@@ -45,7 +45,8 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 		Archive.ArIsSaveGame = true;
 		Actor->Serialize(Archive);
 
-		for (UActorComponent* ActorComponent : Actor->GetComponentsByInterface(USavableObjectInterface::StaticClass()))
+		TArray<UActorComponent*> SavableComponents = Actor->GetComponentsByInterface(USavableObjectInterface::StaticClass());
+		for (UActorComponent* ActorComponent : SavableComponents)
 		{
 			FActorComponentSaveData ComponentSaveData;
 			ComponentSaveData.Name = ActorComponent->GetFName();
@@ -85,7 +86,8 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 
 		SpawnedActor->Serialize(Archive);
 
-		for (UActorComponent* ActorComponent : SpawnedActor->GetComponentsByInterface(USavableObjectInterface::StaticClass()))
+		TArray<UActorComponent*> SavableComponents = SpawnedActor->GetComponentsByInterface(USavableObjectInterface::StaticClass());
+		for (UActorComponent* ActorComponent : SavableComponents)
 		{
 			FActorComponentSaveData ComponentSave = FindComponentDataByName(ActorData.ComponentData, ActorComponent->GetFName(), ActorComponent->GetClass());
 			FMemoryReader ComponentMemoryReader(ComponentSave.ByteData);
