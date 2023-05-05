@@ -8,9 +8,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 
-void AConsumableItem::Primary()
+void AConsumableItem::OnPrimaryPressed()
 {
-	Super::Primary();
+	Super::OnPrimaryPressed();
 
 	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwnerCharacter()->FindComponentByClass<UPlayerInventoryComponent>();
 	UVitalsComponent* OwnerVitalsComponent = GetOwnerCharacter()->FindComponentByClass<UVitalsComponent>();

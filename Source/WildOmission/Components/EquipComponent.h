@@ -26,6 +26,7 @@ public:
 	void DestroyEquipedItem();
 
 	void PlayPrimaryMontage();
+	bool PrimaryMontagePlaying() const;
 
 	UFUNCTION(BlueprintCallable)
 	class AEquipableItem* GetEquipedItem();

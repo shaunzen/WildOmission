@@ -23,7 +23,7 @@ public:
 
 	virtual void Destroyed() override;
 
-	virtual void Primary() override;
+	virtual void OnPrimaryPressed() override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

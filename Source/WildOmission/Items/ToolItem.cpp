@@ -70,9 +70,15 @@ void AToolItem::OnUnequip()
 
 }
 
-void AToolItem::Primary()
+void AToolItem::OnPrimaryHeld()
 {
-	Super::Primary();
+	Super::OnPrimaryHeld();
+	
+	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr || OwnerEquipComponent->PrimaryMontagePlaying())
+	{
+		return;
+	}
 
 	Client_PlayPrimaryMontage();
 }
@@ -124,11 +130,6 @@ void AToolItem::OnPrimaryAnimationClimax()
 
 	Client_PlayHitSound(HitResult.ImpactPoint);
 	ApplyDamage();
-}
-
-void AToolItem::Secondary()
-{
-	Super::Secondary();
 }
 
 UAnimMontage* AToolItem::GetPrimaryMontage() const

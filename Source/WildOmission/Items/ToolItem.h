@@ -24,9 +24,7 @@ public:
 	// Called before the item is unequiped
 	virtual void OnUnequip() override;
 
-	virtual void Primary() override;
-
-	virtual void Secondary() override;
+	virtual void OnPrimaryHeld() override;
 
 	virtual void OnPrimaryAnimationClimax();
 

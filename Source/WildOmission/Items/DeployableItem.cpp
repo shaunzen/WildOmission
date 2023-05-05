@@ -62,9 +62,9 @@ void ADeployableItem::Destroyed()
 	}
 }
 
-void ADeployableItem::Primary()
+void ADeployableItem::OnPrimaryPressed()
 {
-	Super::Primary();
+	Super::OnPrimaryPressed();
 
 	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)

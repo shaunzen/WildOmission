@@ -132,6 +132,29 @@ void UEquipComponent::PlayPrimaryMontage()
 	ThirdPersonAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage());
 }
 
+bool UEquipComponent::PrimaryMontagePlaying() const
+{
+	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
+	if (EquipedTool == nullptr)
+	{
+		return false;
+	}
+
+	UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
+	if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
+	{
+		return false;
+	}
+
+	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
+	if (ThirdPersonAnimInstance == nullptr)
+	{
+		return false;
+	}
+
+	return FirstPersonArmsAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage()) && ThirdPersonAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage());
+}
+
 AEquipableItem* UEquipComponent::GetEquipedItem()
 {
 	return EquipedItem;

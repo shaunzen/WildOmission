@@ -14,7 +14,7 @@ class WILDOMISSION_API AConsumableItem : public AEquipableItem
 	GENERATED_BODY()
 
 public:
-	virtual void Primary() override;
+	virtual void OnPrimaryPressed() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly)
