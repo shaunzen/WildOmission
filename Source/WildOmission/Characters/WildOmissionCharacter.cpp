@@ -272,8 +272,10 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndSprint);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
 	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, InteractionComponent, &UInteractionComponent::Interact);
-	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Primary);
-	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Secondary);
+	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::PrimaryPressed);
+	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::PrimaryReleased);
+	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::SecondaryPressed);
+	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::SecondaryReleased);
 	EnhancedInputComponent->BindAction(ToggleInventoryMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleInventoryMenu);
 	EnhancedInputComponent->BindAction(ToggleCraftingMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleCraftingMenu);
 	EnhancedInputComponent->BindAction(ToolbarSelectionIncrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionIncrement);
@@ -343,7 +345,7 @@ void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
 	}
 }
 
-void AWildOmissionCharacter::Primary()
+void AWildOmissionCharacter::PrimaryPressed()
 {
 	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->PrimaryEnabled() || GetCharacterMovement()->IsSwimming())
 	{
@@ -353,7 +355,12 @@ void AWildOmissionCharacter::Primary()
 	EquipComponent->Server_Primary();
 }
 
-void AWildOmissionCharacter::Secondary()
+void AWildOmissionCharacter::PrimaryReleased()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Primary Ended"));
+}
+
+void AWildOmissionCharacter::SecondaryPressed()
 {
 	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->SecondaryEnabled() || GetCharacterMovement()->IsSwimming())
 	{
@@ -361,6 +368,11 @@ void AWildOmissionCharacter::Secondary()
 	}
 
 	EquipComponent->Server_Secondary();
+}
+
+void AWildOmissionCharacter::SecondaryReleased()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Secondary Ended"));
 }
 
 void AWildOmissionCharacter::ToggleInventoryMenu()

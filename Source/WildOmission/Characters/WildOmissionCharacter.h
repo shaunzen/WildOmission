@@ -167,9 +167,11 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_Sprint(bool bShouldSprint);
 
-	void Primary();
-	
-	void Secondary();
+	void PrimaryPressed();
+	void PrimaryReleased();
+
+	void SecondaryPressed();
+	void SecondaryReleased();
 
 	void ToggleInventoryMenu();
 	
