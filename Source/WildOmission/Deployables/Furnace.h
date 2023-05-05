@@ -42,7 +42,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;
 
-	UPROPERTY(Replicated, ReplicatedUsing = "OnRep_TurnedOn")
+	UPROPERTY(Replicated, ReplicatedUsing = "OnRep_TurnedOn", SaveGame)
 	bool bTurnedOn;
 
 	FTimerHandle SmeltTimerHandle;
@@ -54,5 +54,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_TurnedOn();
+
+	UFUNCTION()
+	virtual void OnLoadComplete_Implementation() override;
 
 };

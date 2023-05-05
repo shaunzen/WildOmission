@@ -39,6 +39,11 @@ void AFurnace::BeginPlay()
 	OnRep_TurnedOn();
 }
 
+void AFurnace::OnLoadComplete_Implementation()
+{
+	OnRep_TurnedOn();
+}
+
 void AFurnace::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
