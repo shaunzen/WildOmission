@@ -29,10 +29,14 @@ public:
 	virtual void OnUnequip();
 
 	// Primary function of the item. example(Eat, Shoot, Heal)
-	virtual void Primary();
+	virtual void OnPrimaryPressed();
+	virtual void OnPrimaryHeld();
+	virtual void OnPrimaryReleased();
 
 	// Secondary function of the item. example(Nothing, Aim, Heal others)
-	virtual void Secondary();
+	virtual void OnSecondaryPressed();
+	virtual void OnSecondaryHeld();
+	virtual void OnSecondaryReleased();
 
 	UStaticMesh* GetMesh();
 	

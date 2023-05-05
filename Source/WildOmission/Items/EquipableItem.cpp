@@ -83,12 +83,32 @@ void AEquipableItem::OnUnequip()
 	Client_PlayEquipSound();
 }
 
-void AEquipableItem::Primary()
+void AEquipableItem::OnPrimaryPressed()
 {
 
 }
 
-void AEquipableItem::Secondary()
+void AEquipableItem::OnPrimaryHeld()
+{
+
+}
+
+void AEquipableItem::OnPrimaryReleased()
+{
+
+}
+
+void AEquipableItem::OnSecondaryPressed()
+{
+
+}
+
+void AEquipableItem::OnSecondaryHeld()
+{
+
+}
+
+void AEquipableItem::OnSecondaryReleased()
 {
 
 }

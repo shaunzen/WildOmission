@@ -16,7 +16,7 @@ UEquipComponent::UEquipComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 	
 	SetIsReplicatedByDefault(true);
 
@@ -32,6 +32,21 @@ void UEquipComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UEquipComponent, EquipedItem);
+}
+
+void UEquipComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	if (EquipedItem && PrimaryHeld)
+	{
+		EquipedItem->OnPrimaryHeld();
+	}
+
+	if (EquipedItem && SecondaryHeld)
+	{
+		EquipedItem->OnSecondaryHeld();
+	}
 }
 
 void UEquipComponent::BeginPlay()
@@ -147,7 +162,7 @@ void UEquipComponent::Server_PrimaryPressed_Implementation()
 		return;
 	}
 
-	EquipedItem->Primary();
+	EquipedItem->OnPrimaryPressed();
 
 	OnRep_EquipedItem();
 }
@@ -155,6 +170,15 @@ void UEquipComponent::Server_PrimaryPressed_Implementation()
 void UEquipComponent::Server_PrimaryReleased_Implementation()
 {
 	PrimaryHeld = false;
+
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnPrimaryReleased();
+
+	OnRep_EquipedItem();
 }
 
 void UEquipComponent::Server_SecondaryPressed_Implementation()
@@ -166,7 +190,7 @@ void UEquipComponent::Server_SecondaryPressed_Implementation()
 		return;
 	}
 
-	EquipedItem->Secondary();
+	EquipedItem->OnSecondaryPressed();
 
 	OnRep_EquipedItem();
 }
@@ -174,6 +198,15 @@ void UEquipComponent::Server_SecondaryPressed_Implementation()
 void UEquipComponent::Server_SecondaryReleased_Implementation()
 {
 	SecondaryHeld = false;
+
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnSecondaryReleased();
+
+	OnRep_EquipedItem();
 }
 
 void UEquipComponent::OnRep_EquipedItem()

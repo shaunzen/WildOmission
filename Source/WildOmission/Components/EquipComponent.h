@@ -14,8 +14,10 @@ class WILDOMISSION_API UEquipComponent : public USceneComponent
 public:	
 	// Sets default values for this component's properties
 	UEquipComponent();
-	
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> Item, const int8& FromSlotIndex, const uint32& UniqueID);
 
