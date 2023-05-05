@@ -82,7 +82,7 @@ void UPlayerHUDWidget::OpenContainer(AItemContainerBase* Container)
 		return;
 	}
 
-	OpenContainerWidget = CreateWidget<UInventoryWidget>(this, Container->GetWidgetClass(), FName("OpenContainer"));
+	OpenContainerWidget = CreateWidget<UInventoryWidget>(this, Container->GetWidgetClass());
 
 	OpenContainerWidget->Setup(this, Container->GetInventoryComponent());
 	OpenContainerWidget->CreateSlots();
