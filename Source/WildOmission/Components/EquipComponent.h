@@ -35,10 +35,14 @@ public:
 	bool SecondaryEnabled() const;
 
 	UFUNCTION(Server, Reliable)
-	void Server_Primary();
-
+	void Server_PrimaryPressed();
 	UFUNCTION(Server, Reliable)
-	void Server_Secondary();
+	void Server_PrimaryReleased();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_SecondaryPressed();
+	UFUNCTION(Server, Reliable)
+	void Server_SecondaryReleased();
 
 protected:
 	virtual void BeginPlay() override;
@@ -58,5 +62,8 @@ private:
 
 	UFUNCTION()
 	void RefreshEquipedSlot();
+
+	bool PrimaryHeld;
+	bool SecondaryHeld;
 
 };

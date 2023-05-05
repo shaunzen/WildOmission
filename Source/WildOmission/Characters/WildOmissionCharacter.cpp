@@ -352,12 +352,17 @@ void AWildOmissionCharacter::PrimaryPressed()
 		return;
 	}
 
-	EquipComponent->Server_Primary();
+	EquipComponent->Server_PrimaryPressed();
 }
 
 void AWildOmissionCharacter::PrimaryReleased()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Primary Ended"));
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->PrimaryEnabled() || GetCharacterMovement()->IsSwimming())
+	{
+		return;
+	}
+
+	EquipComponent->Server_PrimaryReleased();
 }
 
 void AWildOmissionCharacter::SecondaryPressed()
@@ -367,12 +372,17 @@ void AWildOmissionCharacter::SecondaryPressed()
 		return;
 	}
 
-	EquipComponent->Server_Secondary();
+	EquipComponent->Server_SecondaryPressed();
 }
 
 void AWildOmissionCharacter::SecondaryReleased()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Secondary Ended"));
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->SecondaryEnabled() || GetCharacterMovement()->IsSwimming())
+	{
+		return;
+	}
+
+	EquipComponent->Server_SecondaryReleased();
 }
 
 void AWildOmissionCharacter::ToggleInventoryMenu()

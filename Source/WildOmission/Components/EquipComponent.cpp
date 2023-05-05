@@ -22,6 +22,9 @@ UEquipComponent::UEquipComponent()
 
 	FirstPersonItemMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("FirstPersonItemMeshComponent"));
 	FirstPersonItemMeshComponent->SetCastShadow(false);
+
+	PrimaryHeld = false;
+	SecondaryHeld = false;
 }
 
 void UEquipComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -38,6 +41,9 @@ void UEquipComponent::BeginPlay()
 	OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
 
 	FirstPersonItemMeshComponent->AttachToComponent(OwnerCharacter->GetArmsMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
+
+	PrimaryHeld = false;
+	SecondaryHeld = false;
 }
 
 void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> Item, const int8& FromSlotIndex, const uint32& UniqueID)
@@ -132,8 +138,10 @@ bool UEquipComponent::SecondaryEnabled() const
 }
 
 // RPC
-void UEquipComponent::Server_Primary_Implementation()
+void UEquipComponent::Server_PrimaryPressed_Implementation()
 {
+	PrimaryHeld = true;
+
 	if (EquipedItem == nullptr)
 	{
 		return;
@@ -144,8 +152,15 @@ void UEquipComponent::Server_Primary_Implementation()
 	OnRep_EquipedItem();
 }
 
-void UEquipComponent::Server_Secondary_Implementation()
+void UEquipComponent::Server_PrimaryReleased_Implementation()
 {
+	PrimaryHeld = false;
+}
+
+void UEquipComponent::Server_SecondaryPressed_Implementation()
+{
+	SecondaryHeld = true;
+
 	if (EquipedItem == nullptr)
 	{
 		return;
@@ -154,6 +169,11 @@ void UEquipComponent::Server_Secondary_Implementation()
 	EquipedItem->Secondary();
 
 	OnRep_EquipedItem();
+}
+
+void UEquipComponent::Server_SecondaryReleased_Implementation()
+{
+	SecondaryHeld = false;
 }
 
 void UEquipComponent::OnRep_EquipedItem()
