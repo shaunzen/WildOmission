@@ -11,6 +11,7 @@
 #include "WildOmission/Components/EquipComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "WildOmission/Deployables/ItemContainerBase.h"
 #include "WildOmission/Components/CraftingComponent.h"
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
@@ -34,6 +35,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Player/WBP_PlayerHUD"));
 	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerArmsAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_FirstPerson"));
 	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerThirdPersonAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_ThirdPerson"));
+	ConstructorHelpers::FClassFinder<AItemContainerBase> PlayerRagdollBlueprint(TEXT("/Game/WildOmission/Characters/Human/BP_Human_Ragdoll"));
 	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Core/Input/MC_DefaultMappingContext"));
 	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Move"));
 	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Look"));
@@ -52,6 +54,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	if (PlayerHUDWidgetBlueprintClass.Class == nullptr
 		|| PlayerArmsAnimBlueprintClass.Class == nullptr
 		|| PlayerThirdPersonAnimBlueprintClass.Class == nullptr
+		|| PlayerRagdollBlueprint.Class == nullptr
 		|| DefaultMappingContextBlueprint.Object == nullptr
 		|| MoveActionBlueprint.Object == nullptr
 		|| LookActionBlueprint.Object == nullptr
@@ -89,6 +92,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	GetMesh()->SetAnimClass(PlayerThirdPersonAnimBlueprintClass.Class);
 
 	PlayerHUDWidget = nullptr;
+
+	RagdollClass = PlayerRagdollBlueprint.Class;
 
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(FName("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(RootComponent);
@@ -234,6 +239,15 @@ void AWildOmissionCharacter::HandleDeath()
 	OurController->Client_ShowDeathMenu();
 
 	// Create lootable container with inventory
+	// Is Spawning kinda in the air, might want to fix that
+	AItemContainerBase* SpawnedRagdoll = GetWorld()->SpawnActor<AItemContainerBase>(RagdollClass, GetActorTransform());
+	if (SpawnedRagdoll == nullptr)
+	{
+		return;
+	}
+
+	// Set Items to be this players items
+
 	Destroy();
 }
 

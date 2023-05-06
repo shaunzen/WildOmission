@@ -101,6 +101,9 @@ private:
 	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	UPROPERTY()
+	TSubclassOf<AItemContainerBase> RagdollClass;
+
+	UPROPERTY()
 	float HeadPitch;
 
 	UPROPERTY()
