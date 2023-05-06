@@ -103,19 +103,34 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 
 void UPlayerInventoryComponent::IncrementToolbarSelection()
 {
-	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex + 1);
-	BroadcastInventoryUpdate();
+	SetToolbarSelectionIndex(ToolbarSelectionIndex + 1);
 }
 
 void UPlayerInventoryComponent::DecrementToolbarSelection()
 {
-	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex - 1);
-	BroadcastInventoryUpdate();
+	SetToolbarSelectionIndex(ToolbarSelectionIndex - 1);
 }
 
-void UPlayerInventoryComponent::SetToolbarSelectionIndex(const int8& SelectionIndex)
+void UPlayerInventoryComponent::SetToolbarSelectionIndex(int8 SelectionIndex)
 {
-	Server_SetToolbarSelectionIndex(SelectionIndex);
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_SetToolbarSelectionIndex(SelectionIndex);
+	}
+
+	if (SelectionIndex == -2 || SelectionIndex > 5)
+	{
+		SelectionIndex = 0;
+	}
+	else if (SelectionIndex < 0)
+	{
+		SelectionIndex = 5;
+	}
+
+	ToolbarSelectionIndex = SelectionIndex;
+
+	RefreshToolbarSelectionState();
+
 	BroadcastInventoryUpdate();
 }
 
@@ -171,16 +186,5 @@ bool UPlayerInventoryComponent::IsToolbarSlotSelectionValid() const
 
 void UPlayerInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(int8 SelectionIndex)
 {
-	if (SelectionIndex == -2 || SelectionIndex > 5)
-	{
-		SelectionIndex = 0;
-	}
-	else if (SelectionIndex < 0)
-	{
-		SelectionIndex = 5;
-	}
-
-	ToolbarSelectionIndex = SelectionIndex;
-
-	RefreshToolbarSelectionState();
+	SetToolbarSelectionIndex(SelectionIndex);
 }

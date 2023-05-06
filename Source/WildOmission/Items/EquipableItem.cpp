@@ -75,12 +75,18 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName
 
 	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 
-	Client_PlayEquipSound();
+	if (GetOwner()->HasAuthority())
+	{
+		Client_PlayEquipSound();
+	}
 }
 
 void AEquipableItem::OnUnequip()
 {
-	Client_PlayEquipSound();
+	if (GetOwner()->HasAuthority())
+	{
+		Client_PlayEquipSound();
+	}
 }
 
 void AEquipableItem::OnPrimaryPressed()

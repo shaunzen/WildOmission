@@ -34,7 +34,7 @@ public:
 	void IncrementToolbarSelection();
 	void DecrementToolbarSelection();
 
-	void SetToolbarSelectionIndex(const int8& SelectionIndex);
+	void SetToolbarSelectionIndex(int8 SelectionIndex);
 
 	void RemoveHeldItem();
 
