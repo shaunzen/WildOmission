@@ -22,13 +22,18 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 void UInteractionComponent::Interact()
 {
 	FHitResult HitResult;
-	if (LineTraceOnVisibility(HitResult))
+	if (!LineTraceOnVisibility(HitResult))
 	{
-		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
-		{
-			Server_Interact(HitResult.GetActor());
-		}
+		return;
 	}
+
+	IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor());
+	if (Interactable == nullptr)
+	{
+		return;
+	}
+
+	Server_Interact(HitResult.GetActor());
 }
 
 FString UInteractionComponent::GetInteractionString() const
@@ -39,21 +44,20 @@ FString UInteractionComponent::GetInteractionString() const
 void UInteractionComponent::UpdateInteractionPrompt()
 {
 	FHitResult HitResult;
-	if (LineTraceOnVisibility(HitResult))
-	{
-		if (IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor()))
-		{
-			InteractionString = Interactable->PromptText();
-		}
-		else
-		{
-			InteractionString = FString("");
-		}
-	}
-	else
+	if (!LineTraceOnVisibility(HitResult))
 	{
 		InteractionString = FString("");
+		return;
 	}
+
+	IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor());
+	if (Interactable == nullptr)
+	{
+		InteractionString = FString("");
+		return;
+	}
+	
+	InteractionString = Interactable->PromptText();
 }
 
 bool UInteractionComponent::LineTraceOnVisibility(FHitResult& OutHitResult) const
@@ -61,8 +65,9 @@ bool UInteractionComponent::LineTraceOnVisibility(FHitResult& OutHitResult) cons
 	FVector Start = GetComponentLocation();
 	FVector End = Start + (GetForwardVector() * InteractionRange);
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
-
-	return GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_Visibility, Sphere);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this->GetOwner());
+	return GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_Visibility, Sphere, Params);
 }
 
 void UInteractionComponent::Server_Interact_Implementation(AActor* ActorToInteract)
