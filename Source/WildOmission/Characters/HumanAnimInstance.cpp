@@ -84,6 +84,7 @@ void UHumanAnimInstance::PlayFootstepSound()
 
 	Params.bTraceComplex = true;
 	Params.bReturnPhysicalMaterial = true;
+	Params.AddIgnoredActor(PawnOwner);
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Visibility, Params))
 	{
