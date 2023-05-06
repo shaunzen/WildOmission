@@ -152,6 +152,24 @@ private:
 	
 	UPROPERTY()
 	UInputAction* ToolbarSelectionDecrementAction;
+
+	UPROPERTY()
+	UInputAction* ToolbarSelection1Action;
+	
+	UPROPERTY()
+	UInputAction* ToolbarSelection2Action;
+	
+	UPROPERTY()
+	UInputAction* ToolbarSelection3Action;
+	
+	UPROPERTY()
+	UInputAction* ToolbarSelection4Action;
+	
+	UPROPERTY()
+	UInputAction* ToolbarSelection5Action;
+	
+	UPROPERTY()
+	UInputAction* ToolbarSelection6Action;
 	
 	void Move(const FInputActionValue& Value);
 	
@@ -183,6 +201,13 @@ private:
 	void ToolbarSelectionIncrement();
 	
 	void ToolbarSelectionDecrement();
+
+	void SelectToolbarSlot1();
+	void SelectToolbarSlot2();
+	void SelectToolbarSlot3();
+	void SelectToolbarSlot4();
+	void SelectToolbarSlot5();
+	void SelectToolbarSlot6();
 
 	//********************************	
 	// Setup Member functions

@@ -48,6 +48,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FObjectFinder<UInputAction> ToggleCraftingMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleCraftingMenu"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionIncrement"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionDecrement"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection1Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection1"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection2Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection2"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection3Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection3"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection4Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection4"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection5Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection5"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection6Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection6"));
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerArmsMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_HumanFirstPersonArms"));
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerThirdPersonMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_Human"));
 
@@ -67,6 +73,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		|| ToggleCraftingMenuActionBlueprint.Object == nullptr
 		|| ToolbarSelectionIncrementBlueprint.Object == nullptr
 		|| ToolbarSelectionDecrementBlueprint.Object == nullptr
+		|| ToolbarSelection1Blueprint.Object == nullptr
+		|| ToolbarSelection2Blueprint.Object == nullptr
+		|| ToolbarSelection3Blueprint.Object == nullptr
+		|| ToolbarSelection4Blueprint.Object == nullptr
+		|| ToolbarSelection5Blueprint.Object == nullptr
+		|| ToolbarSelection6Blueprint.Object == nullptr
 		|| PlayerArmsMeshObject.Object == nullptr
 		|| PlayerThirdPersonMeshObject.Object == nullptr)
 	{
@@ -87,6 +99,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ToggleCraftingMenuAction = ToggleCraftingMenuActionBlueprint.Object;
 	ToolbarSelectionIncrementAction = ToolbarSelectionIncrementBlueprint.Object;
 	ToolbarSelectionDecrementAction = ToolbarSelectionDecrementBlueprint.Object;
+	ToolbarSelection1Action = ToolbarSelection1Blueprint.Object;
+	ToolbarSelection2Action = ToolbarSelection2Blueprint.Object;
+	ToolbarSelection3Action = ToolbarSelection3Blueprint.Object;
+	ToolbarSelection4Action = ToolbarSelection4Blueprint.Object;
+	ToolbarSelection5Action = ToolbarSelection5Blueprint.Object;
+	ToolbarSelection6Action = ToolbarSelection6Blueprint.Object;
 
 	GetMesh()->SetSkeletalMesh(PlayerThirdPersonMeshObject.Object);
 	GetMesh()->SetAnimClass(PlayerThirdPersonAnimBlueprintClass.Class);
@@ -295,6 +313,12 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(ToggleCraftingMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleCraftingMenu);
 	EnhancedInputComponent->BindAction(ToolbarSelectionIncrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionIncrement);
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
+	EnhancedInputComponent->BindAction(ToolbarSelection1Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot1);
+	EnhancedInputComponent->BindAction(ToolbarSelection2Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot2);
+	EnhancedInputComponent->BindAction(ToolbarSelection3Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot3);
+	EnhancedInputComponent->BindAction(ToolbarSelection4Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot4);
+	EnhancedInputComponent->BindAction(ToolbarSelection5Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot5);
+	EnhancedInputComponent->BindAction(ToolbarSelection6Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot6);
 }
 
 void AWildOmissionCharacter::Move(const FInputActionValue& Value)
@@ -372,11 +396,6 @@ void AWildOmissionCharacter::PrimaryPressed()
 
 void AWildOmissionCharacter::PrimaryReleased()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->PrimaryEnabled() || GetCharacterMovement()->IsSwimming())
-	{
-		return;
-	}
-
 	EquipComponent->Server_PrimaryReleased();
 }
 
@@ -392,11 +411,6 @@ void AWildOmissionCharacter::SecondaryPressed()
 
 void AWildOmissionCharacter::SecondaryReleased()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->SecondaryEnabled() || GetCharacterMovement()->IsSwimming())
-	{
-		return;
-	}
-
 	EquipComponent->Server_SecondaryReleased();
 }
 
@@ -407,6 +421,9 @@ void AWildOmissionCharacter::ToggleInventoryMenu()
 		return;
 	}
 
+	EquipComponent->Server_PrimaryReleased();
+	EquipComponent->Server_SecondaryReleased();
+
 	PlayerHUDWidget->ToggleInventoryMenu();
 }
 
@@ -416,6 +433,9 @@ void AWildOmissionCharacter::ToggleCraftingMenu()
 	{
 		return;
 	}
+
+	EquipComponent->Server_PrimaryReleased();
+	EquipComponent->Server_SecondaryReleased();
 
 	PlayerHUDWidget->ToggleCraftingMenu();
 }
@@ -438,6 +458,66 @@ void AWildOmissionCharacter::ToolbarSelectionDecrement()
 	}
 
 	InventoryComponent->DecrementToolbarSelection();
+}
+
+void AWildOmissionCharacter::SelectToolbarSlot1()
+{
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
+	InventoryComponent->SetToolbarSelectionIndex(0);
+}
+
+void AWildOmissionCharacter::SelectToolbarSlot2()
+{
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
+	InventoryComponent->SetToolbarSelectionIndex(1);
+}
+
+void AWildOmissionCharacter::SelectToolbarSlot3()
+{
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
+	InventoryComponent->SetToolbarSelectionIndex(2);
+}
+
+void AWildOmissionCharacter::SelectToolbarSlot4()
+{
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
+	InventoryComponent->SetToolbarSelectionIndex(3);
+}
+
+void AWildOmissionCharacter::SelectToolbarSlot5()
+{
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
+	InventoryComponent->SetToolbarSelectionIndex(4);
+}
+
+void AWildOmissionCharacter::SelectToolbarSlot6()
+{
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
+	InventoryComponent->SetToolbarSelectionIndex(5);
 }
 
 //********************************

@@ -192,6 +192,11 @@ void UEquipComponent::Server_PrimaryPressed_Implementation()
 
 void UEquipComponent::Server_PrimaryReleased_Implementation()
 {
+	if (PrimaryHeld == false)
+	{
+		return;
+	}
+
 	PrimaryHeld = false;
 
 	if (EquipedItem == nullptr)
@@ -220,6 +225,11 @@ void UEquipComponent::Server_SecondaryPressed_Implementation()
 
 void UEquipComponent::Server_SecondaryReleased_Implementation()
 {
+	if (SecondaryHeld == false)
+	{
+		return;
+	}
+
 	SecondaryHeld = false;
 
 	if (EquipedItem == nullptr)
