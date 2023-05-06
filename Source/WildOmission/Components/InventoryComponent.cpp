@@ -94,8 +94,13 @@ void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove)
 	BroadcastInventoryUpdate();
 }
 
-void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary)
+void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary)
 {
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_SlotInteraction(SlotIndex, Manipulator, Primary);
+	}
+
 	// This is gross
 	if (!Manipulator->IsDragging())
 	{
@@ -121,6 +126,11 @@ void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& Slo
 	}
 
 	BroadcastInventoryUpdate();
+}
+
+void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary)
+{
+	SlotInteraction(SlotIndex, Manipulator, Primary);
 }
 
 FInventoryItem* UInventoryComponent::FindItemWithUniqueID(const uint32& UniqueID)

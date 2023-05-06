@@ -32,9 +32,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem(const FInventoryItem& ItemToRemove);	
 
-	UFUNCTION(Server, Reliable)
-	void Server_SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary = true);
-
+	void SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary = true);
+	
 	FInventoryUpdateSignature OnUpdate;
 	
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
@@ -77,5 +76,8 @@ private:
 	void DropSingle(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator);
 
 	bool WithinStackSize(const FInventoryItem& Item, const int32& AmountToAdd);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary = true);
 
 };

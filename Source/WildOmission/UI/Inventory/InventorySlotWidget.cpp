@@ -102,11 +102,11 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		Owner->GetInventoryComponent()->Server_SlotInteraction(this->Index, OwnerInventoryManipulatorComponent, true);
+		Owner->GetInventoryComponent()->SlotInteraction(this->Index, OwnerInventoryManipulatorComponent, true);
 	}
 	else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		Owner->GetInventoryComponent()->Server_SlotInteraction(this->Index, OwnerInventoryManipulatorComponent, false);
+		Owner->GetInventoryComponent()->SlotInteraction(this->Index, OwnerInventoryManipulatorComponent, false);
 	}
 
 	HideHoveredItemNameTag();
