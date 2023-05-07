@@ -22,15 +22,14 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UInventoryComponent, Contents);
-	DOREPLIFETIME(UInventoryComponent, Slots);
+	DOREPLIFETIME(UInventoryComponent, ServerState);
 }
 
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!GetOwner()->HasAuthority() || Slots.Num() == SlotCount)
+	if (Slots.Num() == SlotCount)
 	{
 		return;
 	}
@@ -42,7 +41,16 @@ void UInventoryComponent::BeginPlay()
 		Slots[i].Index = i;
 	}
 
-	LoadedFromSave = false;
+	if (GetOwner()->HasAuthority())
+	{
+		ServerState.Slots.SetNum(SlotCount, false);
+		for (int32 i = 0; i < SlotCount; ++i)
+		{
+			ServerState.Slots[i].Index = i;
+		}
+		
+		LoadedFromSave = false;
+	}
 }
 
 void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems)
@@ -57,7 +65,7 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* Actor
 
 	// Calculate how many were added and add that amount to our contents
 	AmountAdded = ItemToAdd.Quantity - Remaining;
-	Contents.AddItem(ItemToAdd.Name, AmountAdded);
+	ServerState.Contents.AddItem(ItemToAdd.Name, AmountAdded);
 
 	if (AddSuccess == false)
 	{
@@ -88,7 +96,7 @@ void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove)
 	AmountSuccessfullyRemoved = ItemToRemove.Quantity - Remaining;
 
 	// Remove from contents
-	Contents.RemoveItem(ItemToRemove.Name, AmountSuccessfullyRemoved);
+	ServerState.Contents.RemoveItem(ItemToRemove.Name, AmountSuccessfullyRemoved);
 
 	// Call inventory change
 	BroadcastInventoryUpdate();
@@ -98,7 +106,18 @@ void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryMani
 {
 	if (!GetOwner()->HasAuthority())
 	{
-		Server_SlotInteraction(SlotIndex, Manipulator, Primary);
+		// Create an interaction
+		FInventorySlotInteraction CurrentInteraction;
+		CurrentInteraction.SlotIndex = SlotIndex;
+		CurrentInteraction.Manipulator = Manipulator;
+		CurrentInteraction.Primary = Primary;
+		CurrentInteraction.Time = GetWorld()->TimeSeconds;
+
+		// Send it to the server
+		Server_SlotInteraction(CurrentInteraction);
+
+		// Add it to our unacknowlaged interactions
+		UnacknowalgedInteractions.Add(CurrentInteraction);
 	}
 
 	// This is gross
@@ -106,31 +125,55 @@ void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryMani
 	{
 		if (Primary)
 		{
-			DragAll(SlotIndex, Manipulator);
+			DragAll(SlotIndex, Manipulator, Slots, Contents);
 		}
 		else
 		{
-			DragSplit(SlotIndex, Manipulator);
+			DragSplit(SlotIndex, Manipulator, Slots, Contents);
 		}
 	}
 	else
 	{
 		if (Primary)
 		{
-			DropAll(SlotIndex, Manipulator);
+			DropAll(SlotIndex, Manipulator, Slots, Contents);
 		}
 		else
 		{
-			DropSingle(SlotIndex, Manipulator);
+			DropSingle(SlotIndex, Manipulator, Slots, Contents);
 		}
 	}
 
 	BroadcastInventoryUpdate();
 }
 
-void UInventoryComponent::Server_SlotInteraction_Implementation(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary)
+void UInventoryComponent::Server_SlotInteraction_Implementation(FInventorySlotInteraction Interaction)
 {
-	SlotInteraction(SlotIndex, Manipulator, Primary);
+	// Update our server state
+	ServerState.LastInteraction = Interaction;
+
+	if (!Interaction.Manipulator->IsDragging())
+	{
+		if (Interaction.Primary)
+		{
+			DragAll(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
+		}
+		else
+		{
+			DragSplit(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
+		}
+	}
+	else
+	{
+		if (Interaction.Primary)
+		{
+			DropAll(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
+		}
+		else
+		{
+			DropSingle(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
+		}
+	}
 }
 
 FInventoryItem* UInventoryComponent::FindItemWithUniqueID(const uint32& UniqueID)
@@ -202,21 +245,54 @@ FWildOmissionInventorySave UInventoryComponent::Save()
 	FWildOmissionInventorySave Save;
 
 	// Save Contents List
-	Save.Items = Contents.Contents;
+	Save.Items = ServerState.Contents.Contents;
 	
 	// Save Slots
-	Save.Slots = Slots;
+	Save.Slots = ServerState.Slots;
 
 	return Save;
 }
 
 void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave)
 {
-	Contents.Contents = InInventorySave.Items;
-	Slots = InInventorySave.Slots;
+	ServerState.Contents.Contents = InInventorySave.Items;
+	ServerState.Slots = InInventorySave.Slots;
 	LoadedFromSave = true;
 
 	BroadcastInventoryUpdate();
+}
+
+void UInventoryComponent::OnRep_ServerState()
+{
+	switch (GetOwnerRole())
+	{
+	case ROLE_AutonomousProxy:
+		Slots = ServerState.Slots;
+		Contents = ServerState.Contents;
+		ClearAcknowlagedInteractions(ServerState.LastInteraction);
+		break;
+	case ROLE_SimulatedProxy:
+		Slots = ServerState.Slots;
+		Contents = ServerState.Contents;
+		break;
+	default:
+		break;
+	}
+}
+
+void UInventoryComponent::ClearAcknowlagedInteractions(const FInventorySlotInteraction& LastInteraction)
+{
+	TArray<FInventorySlotInteraction> NewInteractionsList;
+
+	for (const FInventorySlotInteraction& Interaction : UnacknowalgedInteractions)
+	{
+		if (Interaction.Time > LastInteraction.Time)
+		{
+			NewInteractionsList.Add(Interaction);
+		}
+	}
+
+	UnacknowalgedInteractions = NewInteractionsList;
 }
 
 void UInventoryComponent::BroadcastInventoryUpdate()
@@ -261,7 +337,7 @@ bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32&
 
 bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const int32& ItemStackSize, int32& QuantityToAdd)
 {
-	for (FInventorySlot& Slot : Slots)
+	for (FInventorySlot& Slot : ServerState.Slots)
 	{
 		if (QuantityToAdd == 0)
 		{
@@ -295,7 +371,7 @@ bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const
 
 bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, const int32& ItemStackSize, const TArray<FItemStat>& Stats, int32& QuantityToAdd)
 {
-	for (FInventorySlot& Slot : Slots)
+	for (FInventorySlot& Slot : ServerState.Slots)
 	{
 		if (QuantityToAdd == 0)
 		{
@@ -335,7 +411,7 @@ bool UInventoryComponent::RemoveItemFromSlots(const FName& ItemName, const int32
 {
 	Remaining = Quantity;
 
-	for (FInventorySlot& Slot : Slots)
+	for (FInventorySlot& Slot : ServerState.Slots)
 	{
 		if (Slot.Item.Name != ItemName)
 		{
@@ -368,9 +444,9 @@ bool UInventoryComponent::RemoveItemFromSlots(const FName& ItemName, const int32
 	return Remaining == 0;
 }
 
-void UInventoryComponent::DragAll(const int32& FromSlotIndex, UInventoryManipulatorComponent* Manipulator)
+void UInventoryComponent::DragAll(const int32& FromSlotIndex, UInventoryManipulatorComponent* Manipulator, TArray<FInventorySlot>& SlotsToModify, FInventoryContents& ContentsToModify)
 {
-	FInventorySlot& FromSlot = Slots[FromSlotIndex];
+	FInventorySlot& FromSlot = SlotsToModify[FromSlotIndex];
 
 	if (FromSlot.IsEmpty())
 	{
@@ -379,14 +455,14 @@ void UInventoryComponent::DragAll(const int32& FromSlotIndex, UInventoryManipula
 
 	Manipulator->StartDragging(FromSlot.Item);
 
-	Contents.RemoveItem(FromSlot.Item.Name, FromSlot.Item.Quantity);
+	ContentsToModify.RemoveItem(FromSlot.Item.Name, FromSlot.Item.Quantity);
 
 	FromSlot.ClearItem();
 }
 
-void UInventoryComponent::DragSplit(const int32& FromSlotIndex, UInventoryManipulatorComponent* Manipulator)
+void UInventoryComponent::DragSplit(const int32& FromSlotIndex, UInventoryManipulatorComponent* Manipulator, TArray<FInventorySlot>& SlotsToModify, FInventoryContents& ContentsToModify)
 {
-	FInventorySlot& FromSlot = Slots[FromSlotIndex];
+	FInventorySlot& FromSlot = SlotsToModify[FromSlotIndex];
 
 	if (FromSlot.IsEmpty())
 	{
@@ -411,23 +487,23 @@ void UInventoryComponent::DragSplit(const int32& FromSlotIndex, UInventoryManipu
 
 
 	Manipulator->StartDragging(NewSelection);
-	Contents.RemoveItem(NewSelection.Name, NewSelection.Quantity);
+	ContentsToModify.RemoveItem(NewSelection.Name, NewSelection.Quantity);
 
 	FInventoryItem NewSlotItem = FromSlot.Item;
 	NewSlotItem.Quantity = HalfQuantity;
 	FromSlot.Item = NewSlotItem;
 }
 
-void UInventoryComponent::DropAll(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator)
+void UInventoryComponent::DropAll(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator, TArray<FInventorySlot>& SlotsToModify, FInventoryContents& ContentsToModify)
 {
-	FInventorySlot& ToSlot = Slots[ToSlotIndex];
+	FInventorySlot& ToSlot = SlotsToModify[ToSlotIndex];
 	FInventoryItem SelectedItem = Manipulator->GetSelectedItem();
 
 	if (ToSlot.IsEmpty())
 	{
 		ToSlot.Item = SelectedItem;
 
-		Contents.AddItem(SelectedItem.Name, SelectedItem.Quantity);
+		ContentsToModify.AddItem(SelectedItem.Name, SelectedItem.Quantity);
 
 		Manipulator->StopDragging();
 	}
@@ -437,7 +513,7 @@ void UInventoryComponent::DropAll(const int32& ToSlotIndex, UInventoryManipulato
 		{
 			// Update Inventory
 			ToSlot.Item.Quantity += SelectedItem.Quantity;
-			Contents.AddItem(Manipulator->GetSelectedItem().Name, Manipulator->GetSelectedItem().Quantity);
+			ContentsToModify.AddItem(Manipulator->GetSelectedItem().Name, Manipulator->GetSelectedItem().Quantity);
 			
 			// Update Selection
 			Manipulator->StopDragging();
@@ -449,7 +525,7 @@ void UInventoryComponent::DropAll(const int32& ToSlotIndex, UInventoryManipulato
 			// Update Inventory
 			int32 AmountAdded = UWildOmissionStatics::GetItemData(ToSlot.Item.Name)->StackSize - ToSlot.Item.Quantity;
 			ToSlot.Item.Quantity = UWildOmissionStatics::GetItemData(SelectedItem.Name)->StackSize;
-			Contents.AddItem(SelectedItem.Name, AmountAdded);
+			ContentsToModify.AddItem(SelectedItem.Name, AmountAdded);
 			
 			// Update Selection
 			SelectedItem.Quantity = (OldSlotItemQuantity + SelectedItem.Quantity) - UWildOmissionStatics::GetItemData(SelectedItem.Name)->StackSize;
@@ -462,8 +538,8 @@ void UInventoryComponent::DropAll(const int32& ToSlotIndex, UInventoryManipulato
 		FInventoryItem OldSlotItem = ToSlot.Item;
 
 		// Update Inventory
-		Contents.RemoveItem(OldSlotItem.Name, OldSlotItem.Quantity);
-		Contents.AddItem(SelectedItem.Name, SelectedItem.Quantity);
+		ContentsToModify.RemoveItem(OldSlotItem.Name, OldSlotItem.Quantity);
+		ContentsToModify.AddItem(SelectedItem.Name, SelectedItem.Quantity);
 		ToSlot.Item = SelectedItem;
 
 		// Update Selection
@@ -476,14 +552,14 @@ void UInventoryComponent::DropAll(const int32& ToSlotIndex, UInventoryManipulato
 	}
 }
 
-void UInventoryComponent::DropSingle(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator)
+void UInventoryComponent::DropSingle(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator, TArray<FInventorySlot>& SlotsToModify, FInventoryContents& ContentsToModify)
 {
 	if (!Manipulator->IsDragging())
 	{
 		return;
 	}
 
-	FInventorySlot& ToSlot = Slots[ToSlotIndex];
+	FInventorySlot& ToSlot = SlotsToModify[ToSlotIndex];
 	FInventoryItem SelectedItem = Manipulator->GetSelectedItem();
 
 	if (ToSlot.IsEmpty())
@@ -491,7 +567,7 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex, UInventoryManipul
 		// Update Inventory
 		ToSlot.Item.Name = SelectedItem.Name;
 		ToSlot.Item.Quantity = 1;
-		Contents.AddItem(SelectedItem.Name, 1);
+		ContentsToModify.AddItem(SelectedItem.Name, 1);
 
 		// Update Selection
 		FInventoryItem NewSelection = SelectedItem;
@@ -502,7 +578,7 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex, UInventoryManipul
 	{
 		// Update Inventory
 		ToSlot.Item.Quantity += 1;
-		Contents.AddItem(SelectedItem.Name, 1);
+		ContentsToModify.AddItem(SelectedItem.Name, 1);
 
 		// Update Selection
 		FInventoryItem NewSelection = SelectedItem;
