@@ -29,7 +29,7 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GetOwner()->HasAuthority() || ServerState.Slots.Num() == SlotCount)
+	if (!GetOwner()->HasAuthority() || ServerState.Slots.Num() == SlotCount)
 	{
 		return;
 	}
@@ -257,27 +257,19 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 
 void UInventoryComponent::OnRep_ServerState()
 {
-	switch (GetOwnerRole())
+	ClearAcknowlagedInteractions(ServerState.LastInteraction);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Number Of Interactions Unacknowlaged %i"), UnacknowalgedInteractions.Num());
+
+	if (UnacknowalgedInteractions.Num() == 0)
 	{
-	case ROLE_AutonomousProxy:
-		ClearAcknowlagedInteractions(ServerState.LastInteraction);
-		if (UnacknowalgedInteractions.Num() == 0)
-		{
-			Slots = ServerState.Slots;
-			Contents = ServerState.Contents;
-		}
-		break;
-	case ROLE_SimulatedProxy:
 		Slots = ServerState.Slots;
 		Contents = ServerState.Contents;
-		break;
-	case ROLE_Authority:
-		Slots = ServerState.Slots;
-		Contents = ServerState.Contents;
-		break;
-	default:
-		break;
+
+		UE_LOG(LogTemp, Warning, TEXT("Making Server State current state."));
 	}
+
+	BroadcastInventoryUpdate();
 }
 
 void UInventoryComponent::ClearAcknowlagedInteractions(const FInventorySlotInteraction& LastInteraction)
