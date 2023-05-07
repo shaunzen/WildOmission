@@ -175,7 +175,7 @@ FInventoryItem* UInventoryComponent::FindItemWithUniqueID(const uint32& UniqueID
 {
 	FInventoryItem* FoundItem = nullptr;
 
-	for (FInventorySlot& Slot : Slots)
+	for (FInventorySlot& Slot : ServerState.Slots)
 	{
 		if (Slot.IsEmpty())
 		{
@@ -197,7 +197,7 @@ FInventorySlot* UInventoryComponent::FindSlotContainingItem(const FName& ItemToF
 {
 	FInventorySlot* FoundSlot = nullptr;
 
-	for (FInventorySlot& Slot : Slots)
+	for (FInventorySlot& Slot : ServerState.Slots)
 	{
 		if (Slot.IsEmpty())
 		{

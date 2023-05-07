@@ -23,11 +23,6 @@ ABuildingHammerItem::ABuildingHammerItem()
 
 void ABuildingHammerItem::OnPrimaryAnimationClimax()
 {
-	if (!HasAuthority())
-	{
-		return;
-	}
-
 	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
 
 	FHitResult HitResult;
@@ -39,6 +34,13 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax()
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
+	{
+		return;
+	}
+
+	PlayHitSound(HitResult.ImpactPoint);
+
+	if (!HasAuthority())
 	{
 		return;
 	}
@@ -59,7 +61,6 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax()
 		HitDeployable->TakeDamage(DamageAmount, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
 	}
 
-	Client_PlayHitSound(HitResult.ImpactPoint);
 	ApplyDamage();
 }
 

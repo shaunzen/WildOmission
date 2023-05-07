@@ -52,8 +52,8 @@ protected:
 	UFUNCTION()
 	void ApplyDamage();
 	
-	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayHitSound(const FVector& HitLocation);
+	
+	void PlayHitSound(const FVector& HitLocation);
 
 	FInventoryItem* FindInInventory();
 

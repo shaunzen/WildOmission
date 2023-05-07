@@ -85,10 +85,7 @@ void AToolItem::OnPrimaryHeld()
 
 void AToolItem::OnPrimaryAnimationClimax()
 {
-	if (!HasAuthority())
-	{
-		return;
-	}
+
 	
 	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
 
@@ -101,6 +98,13 @@ void AToolItem::OnPrimaryAnimationClimax()
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
+	{
+		return;
+	}
+
+	PlayHitSound(HitResult.ImpactPoint);
+
+	if (!HasAuthority())
 	{
 		return;
 	}
@@ -128,7 +132,6 @@ void AToolItem::OnPrimaryAnimationClimax()
 		HitDeployable->TakeDamage(DamageAmount * GatherMultiplier, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
 	}
 
-	Client_PlayHitSound(HitResult.ImpactPoint);
 	ApplyDamage();
 }
 
@@ -196,7 +199,7 @@ void AToolItem::Client_PlayPrimaryMontage_Implementation()
 	OwnerEquipComponent->PlayPrimaryMontage();
 }
 
-void AToolItem::Client_PlayHitSound_Implementation(const FVector& HitLocation)
+void AToolItem::PlayHitSound(const FVector& HitLocation)
 {
 	if (HitSound == nullptr)
 	{
