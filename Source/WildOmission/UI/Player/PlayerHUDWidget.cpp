@@ -129,7 +129,7 @@ void UPlayerHUDWidget::ToggleInventoryMenu()
 	else if (IsInventoryMenuOpen())
 	{
 		HoveredItemNameTag->Hide();
-		OwnerInventoryManipulator->Server_DropSelectedItemInWorld(false);
+		OwnerInventoryManipulator->DropSelectedItemInWorld(false);
 		CloseMenuPanel();
 	}
 }
@@ -156,7 +156,7 @@ void UPlayerHUDWidget::ToggleCraftingMenu()
 	else if (IsInventoryMenuOpen())
 	{
 		HoveredItemNameTag->Hide();
-		OwnerInventoryManipulator->Server_DropSelectedItemInWorld(false);
+		OwnerInventoryManipulator->DropSelectedItemInWorld(false);
 		SwitchToCraftingMenu();
 	}
 	else if (IsCraftingMenuOpen())
@@ -406,10 +406,10 @@ void UPlayerHUDWidget::MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const
 
 	if (MouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		OwnerInventoryManipulatorComponent->Server_DropSelectedItemInWorld(false);
+		OwnerInventoryManipulatorComponent->DropSelectedItemInWorld(false);
 	}
 	else if (MouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		OwnerInventoryManipulatorComponent->Server_DropSelectedItemInWorld(true);
+		OwnerInventoryManipulatorComponent->DropSelectedItemInWorld(true);
 	}
 }

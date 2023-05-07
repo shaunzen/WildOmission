@@ -45,13 +45,6 @@ void UPlayerInventoryComponent::BeginPlay()
 	}
 }
 
-void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UPlayerInventoryComponent, ToolbarSelectionIndex);
-}
-
 //**************************************************************
 // General Management
 //**************************************************************
@@ -113,11 +106,6 @@ void UPlayerInventoryComponent::DecrementToolbarSelection()
 
 void UPlayerInventoryComponent::SetToolbarSelectionIndex(int8 SelectionIndex)
 {
-	if (!GetOwner()->HasAuthority())
-	{
-		Server_SetToolbarSelectionIndex(SelectionIndex);
-	}
-
 	if (SelectionIndex == -2 || SelectionIndex > 5)
 	{
 		SelectionIndex = 0;
@@ -129,14 +117,16 @@ void UPlayerInventoryComponent::SetToolbarSelectionIndex(int8 SelectionIndex)
 
 	ToolbarSelectionIndex = SelectionIndex;
 
-	RefreshToolbarSelectionState();
-
+	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex);
+	
 	BroadcastInventoryUpdate();
 }
 
 void UPlayerInventoryComponent::RemoveHeldItem()
 {
-	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
+	FInventorySlot& SelectedSlot = ServerState.Slots[ToolbarSelectionIndex];
+
+	ServerState.Contents.RemoveItem(SelectedSlot.Item.Name, 1);
 
 	--SelectedSlot.Item.Quantity;
 
@@ -170,7 +160,7 @@ void UPlayerInventoryComponent::RefreshToolbarSelectionState()
 		return;
 	}
 
-	FInventorySlot& SelectedSlot = Slots[ToolbarSelectionIndex];
+	FInventorySlot& SelectedSlot = ServerState.Slots[ToolbarSelectionIndex];
 
 	RefreshPlayerEquip(SelectedSlot);
 }
@@ -184,7 +174,14 @@ bool UPlayerInventoryComponent::IsToolbarSlotSelectionValid() const
 // RPC
 //**************************************************************
 
+bool UPlayerInventoryComponent::Server_SetToolbarSelectionIndex_Validate(int8 SelectionIndex)
+{
+	return SelectionIndex >= 0 && SelectionIndex <= 5;
+}
+
 void UPlayerInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(int8 SelectionIndex)
 {
-	SetToolbarSelectionIndex(SelectionIndex);
+	ToolbarSelectionIndex = SelectionIndex;
+
+	RefreshToolbarSelectionState();
 }

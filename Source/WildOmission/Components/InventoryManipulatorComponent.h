@@ -29,8 +29,7 @@ public:
 	// User Interaction
 	//**************************************************************
 
-	UFUNCTION(Server, Reliable)
-	void Server_DropSelectedItemInWorld(bool Single);
+	void DropSelectedItemInWorld(bool Single);
 
 	//**************************************************************
 	// Getters
@@ -56,6 +55,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	bool Dragging;
+
+	UFUNCTION(Server, Reliable)
+	void Server_DropSelectedItemInWorld(bool Single);
 
 	UFUNCTION()
 	void BroadcastSelectionChanged();

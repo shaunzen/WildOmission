@@ -63,13 +63,42 @@ void UInventoryManipulatorComponent::StopDragging()
 // User Interaction
 //**************************************************************
 
+void UInventoryManipulatorComponent::DropSelectedItemInWorld(bool Single)
+{
+	Server_DropSelectedItemInWorld(Single);
+
+	if (!Dragging)
+	{
+		return;
+	}
+
+	FInventoryItem ItemToSpawn;
+	ItemToSpawn = SelectedItem;
+
+	if (Single == true)
+	{
+		ItemToSpawn.Quantity = 1;
+		SelectedItem.Quantity -= 1;
+	}
+	else
+	{
+		SelectedItem.Clear();
+	}
+
+	if (SelectedItem.Quantity == 0)
+	{
+		StopDragging();
+	}
+
+}
+
 void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementation(bool Single)
 {
 	if (!Dragging)
 	{
 		return;
 	}
-	
+
 	FInventoryItem ItemToSpawn;
 	ItemToSpawn = SelectedItem;
 

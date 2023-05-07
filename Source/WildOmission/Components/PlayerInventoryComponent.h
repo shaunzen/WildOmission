@@ -19,8 +19,6 @@ public:
 	
 	virtual void BeginPlay() override;
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	//**************************************************************
 	// General Management
 	//**************************************************************
@@ -46,7 +44,7 @@ public:
 	
 private:
 
-	UPROPERTY(Replicated, ReplicatedUsing = BroadcastInventoryUpdate)
+	UPROPERTY()
 	int8 ToolbarSelectionIndex;
 
 	UPROPERTY()
@@ -65,7 +63,7 @@ private:
 	// RPC
 	//**************************************************************
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_SetToolbarSelectionIndex(int8 SelectionIndex);
 
 };
