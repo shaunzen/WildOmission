@@ -113,6 +113,8 @@ private:
 	void UpdateDurabilityPrompt();
 	void UpdateFollowMousePointerWidgets();
 
+	void SetMouseCursorToCenter();
+
 	UFUNCTION()
 	void MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
 

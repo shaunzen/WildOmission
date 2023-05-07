@@ -50,6 +50,17 @@ void UGameplayMenuWidget::Show()
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = true;
 
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	int32 ViewportSizeX = 0;
+	int32 ViewportSizeY = 0;
+	PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+	PlayerController->SetMouseLocation(ViewportSizeX / 2, ViewportSizeY / 2);
+
 	Save();
 }
 

@@ -221,6 +221,7 @@ void UPlayerHUDWidget::OpenMenuPanel()
 	InputModeData.SetHideCursorDuringCapture(false);
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = true;
+	SetMouseCursorToCenter();
 	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Visible);
 }
 
@@ -373,6 +374,20 @@ void UPlayerHUDWidget::UpdateFollowMousePointerWidgets()
 	SelectedItemSlot->SetPosition(FVector2D::ZeroVector);
 	HoveredItemSlot->SetAnchors(HoveredItemAnchor);
 	HoveredItemSlot->SetPosition(FVector2D::ZeroVector);
+}
+
+void UPlayerHUDWidget::SetMouseCursorToCenter()
+{
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	int32 ViewportSizeX = 0;
+	int32 ViewportSizeY = 0;
+	PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+	PlayerController->SetMouseLocation(ViewportSizeX / 2, ViewportSizeY / 2);
 }
 
 void UPlayerHUDWidget::MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
