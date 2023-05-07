@@ -18,8 +18,6 @@ public:
 	// Sets default values for this component's properties
 	UInventoryManipulatorComponent();
 	
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	//**************************************************************
 	// General Management
 	//**************************************************************
@@ -53,10 +51,10 @@ protected:
 
 private:	
 
-	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = BroadcastSelectionChanged)
+	UPROPERTY(VisibleAnywhere)
 	FInventoryItem SelectedItem;
 
-	UPROPERTY(EditAnywhere, Replicated, ReplicatedUsing = BroadcastSelectionChanged)
+	UPROPERTY(EditAnywhere)
 	bool Dragging;
 
 	UFUNCTION()

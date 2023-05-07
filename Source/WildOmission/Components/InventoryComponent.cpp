@@ -95,20 +95,22 @@ void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove)
 
 void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary)
 {
-	if (!GetOwner()->HasAuthority())
+	// Create an interaction
+	FInventorySlotInteraction CurrentInteraction;
+	CurrentInteraction.SlotIndex = SlotIndex;
+	CurrentInteraction.Manipulator = Manipulator;
+	CurrentInteraction.Primary = Primary;
+	CurrentInteraction.Time = GetWorld()->TimeSeconds;
+
+	// Send it to the server
+	Server_SlotInteraction(CurrentInteraction);
+
+	// Add it to our unacknowlaged interactions
+	UnacknowalgedInteractions.Add(CurrentInteraction);
+
+	if (GetOwner()->HasAuthority())
 	{
-		// Create an interaction
-		FInventorySlotInteraction CurrentInteraction;
-		CurrentInteraction.SlotIndex = SlotIndex;
-		CurrentInteraction.Manipulator = Manipulator;
-		CurrentInteraction.Primary = Primary;
-		CurrentInteraction.Time = GetWorld()->TimeSeconds;
-
-		// Send it to the server
-		Server_SlotInteraction(CurrentInteraction);
-
-		// Add it to our unacknowlaged interactions
-		UnacknowalgedInteractions.Add(CurrentInteraction);
+		return;
 	}
 
 	// This is gross
