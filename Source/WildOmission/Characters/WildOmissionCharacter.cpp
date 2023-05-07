@@ -48,12 +48,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FObjectFinder<UInputAction> ToggleCraftingMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleCraftingMenu"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionIncrement"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionDecrement"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection1Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection1"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection2Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection2"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection3Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection3"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection4Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection4"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection5Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection5"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection6Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelection6"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection1Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect1"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection2Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect2"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection3Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect3"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection4Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect4"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection5Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect5"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection6Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect6"));
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerArmsMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_HumanFirstPersonArms"));
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerThirdPersonMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_Human"));
 

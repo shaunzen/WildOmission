@@ -260,7 +260,6 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = false;
-	
 	bInventoryMenuOpen = false;
 	bCraftingMenuOpen = false;
 	
