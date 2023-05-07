@@ -29,28 +29,19 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (Slots.Num() == SlotCount)
+	if (GetOwner()->HasAuthority() || ServerState.Slots.Num() == SlotCount)
 	{
 		return;
 	}
 
 	// Initialize slots
-	Slots.SetNum(SlotCount, false);
+	ServerState.Slots.SetNum(SlotCount, false);
 	for (int32 i = 0; i < SlotCount; ++i)
 	{
-		Slots[i].Index = i;
+		ServerState.Slots[i].Index = i;
 	}
 
-	if (GetOwner()->HasAuthority())
-	{
-		ServerState.Slots.SetNum(SlotCount, false);
-		for (int32 i = 0; i < SlotCount; ++i)
-		{
-			ServerState.Slots[i].Index = i;
-		}
-		
-		LoadedFromSave = false;
-	}
+	LoadedFromSave = false;
 }
 
 void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems)
@@ -84,7 +75,7 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* Actor
 		UWildOmissionStatics::SpawnWorldItem(GetWorld(), DroppedItem, DropperActor);
 	}
 
-	BroadcastInventoryUpdate();
+	OnRep_ServerState();
 }
 
 void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove)
@@ -99,7 +90,7 @@ void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove)
 	ServerState.Contents.RemoveItem(ItemToRemove.Name, AmountSuccessfullyRemoved);
 
 	// Call inventory change
-	BroadcastInventoryUpdate();
+	OnRep_ServerState();
 }
 
 void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary)
@@ -174,6 +165,8 @@ void UInventoryComponent::Server_SlotInteraction_Implementation(FInventorySlotIn
 			DropSingle(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
 		}
 	}
+
+	OnRep_ServerState();
 }
 
 FInventoryItem* UInventoryComponent::FindItemWithUniqueID(const uint32& UniqueID)
@@ -259,7 +252,7 @@ void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave
 	ServerState.Slots = InInventorySave.Slots;
 	LoadedFromSave = true;
 
-	BroadcastInventoryUpdate();
+	OnRep_ServerState();
 }
 
 void UInventoryComponent::OnRep_ServerState()
@@ -267,11 +260,18 @@ void UInventoryComponent::OnRep_ServerState()
 	switch (GetOwnerRole())
 	{
 	case ROLE_AutonomousProxy:
-		Slots = ServerState.Slots;
-		Contents = ServerState.Contents;
 		ClearAcknowlagedInteractions(ServerState.LastInteraction);
+		if (UnacknowalgedInteractions.Num() == 0)
+		{
+			Slots = ServerState.Slots;
+			Contents = ServerState.Contents;
+		}
 		break;
 	case ROLE_SimulatedProxy:
+		Slots = ServerState.Slots;
+		Contents = ServerState.Contents;
+		break;
+	case ROLE_Authority:
 		Slots = ServerState.Slots;
 		Contents = ServerState.Contents;
 		break;

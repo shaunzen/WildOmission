@@ -95,7 +95,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, SaveGame)
 	TArray<FInventorySlot> Slots;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ServerState)
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_ServerState)
 	FInventoryState ServerState;
 
 	UFUNCTION()

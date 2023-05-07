@@ -12,10 +12,10 @@ struct FInventorySlot
 {
 	GENERATED_BODY()
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(VisibleAnywhere, SaveGame)
 	FInventoryItem Item = FInventoryItem();
 	
-	UPROPERTY(SaveGame)
+	UPROPERTY(VisibleAnywhere, SaveGame)
 	int32 Index = 0;
 
 	void SetItem(const FInventoryItem& InItem);
