@@ -9,6 +9,8 @@
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "WorldItem.generated.h"
 
+class UActorDespawnComponent;
+
 UCLASS()
 class WILDOMISSION_API AWorldItem : public AActor, public IInteractable, public ISavableObjectInterface
 {
@@ -37,6 +39,9 @@ protected:
 private:
 	UPROPERTY(Replicated, EditAnywhere, SaveGame)
 	FInventoryItem Item;
+
+	UPROPERTY(VisibleAnywhere)
+	UActorDespawnComponent* DespawnComponent;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
 	UStaticMeshComponent* MeshComponent;

@@ -6,24 +6,17 @@
 #include "ItemContainerBase.h"
 #include "TemporaryItemContainer.generated.h"
 
-/**
- * 
- */
+class UActorDespawnComponent;
+
 UCLASS()
 class WILDOMISSION_API ATemporaryItemContainer : public AItemContainerBase
 {
 	GENERATED_BODY()
-
 public:
 	ATemporaryItemContainer();
 
-	virtual void Tick(float DeltaTime) override;
-
-protected:
-	virtual void BeginPlay();
-
 private:
-	UPROPERTY(EditAnywhere, SaveGame)
-	float DespawnTimeSeconds;
+	UPROPERTY(VisibleAnywhere)
+	UActorDespawnComponent* DespawnComponent;
 
 };

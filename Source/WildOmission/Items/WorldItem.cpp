@@ -7,6 +7,7 @@
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
+#include "WildOmission/Components/ActorDespawnComponent.h"
 #include "WildOmission/Core/Structs/ItemStat.h"
 #include "Kismet/GameplayStatics.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
@@ -34,6 +35,10 @@ AWorldItem::AWorldItem()
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 	MeshComponent->SetNotifyRigidBodyCollision(true);
 	MeshComponent->SetIsReplicated(true);
+
+	// Setup Despawner
+	DespawnComponent = CreateDefaultSubobject<UActorDespawnComponent>(FName("DespawnComponent"));
+	DespawnComponent->SetDespawnTime(300.0f);
 
 	ConstructorHelpers::FObjectFinder<USoundBase> ClumpSoundObject(TEXT("/Game/WildOmission/Items/WorldItems/Audio/ItemClump_Cue"));
 	ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Pickup/Pickup_Cue"));
