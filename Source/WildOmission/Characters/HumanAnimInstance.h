@@ -16,7 +16,7 @@ public:
 	
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayMontage(UAnimMontage* Montage);
+	void PlayMontage(UAnimMontage* Montage, float InMontagePlayRate = 1.0f);
 
 	UFUNCTION(BlueprintCallable)
 	void PlayFootstepSound();

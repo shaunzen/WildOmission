@@ -121,7 +121,7 @@ void UEquipComponent::PlayPrimaryMontage()
 		return;
 	}
 
-	FirstPersonArmsAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage());
+	FirstPersonArmsAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
 
 	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
 	if (ThirdPersonAnimInstance == nullptr)
@@ -129,7 +129,7 @@ void UEquipComponent::PlayPrimaryMontage()
 		return;
 	}
 
-	ThirdPersonAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage());
+	ThirdPersonAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
 }
 
 bool UEquipComponent::PrimaryMontagePlaying() const

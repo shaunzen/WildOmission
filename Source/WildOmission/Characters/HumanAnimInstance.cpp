@@ -54,13 +54,13 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	HandleEquipPose();
 }
 
-void UHumanAnimInstance::PlayMontage(UAnimMontage* Montage)
+void UHumanAnimInstance::PlayMontage(UAnimMontage* Montage, float InMontagePlayRate)
 {
 	if (Montage_IsPlaying(Montage))
 	{
 		return;
 	}
-	Montage_Play(Montage);
+	Montage_Play(Montage, InMontagePlayRate);
 }
 
 void UHumanAnimInstance::PlayFootstepSound()

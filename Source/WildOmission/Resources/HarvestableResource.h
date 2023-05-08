@@ -22,12 +22,9 @@ public:
 	
 	TEnumAsByte<EToolType> GetRequiredToolType() const;
 	
-	int32 GetDurability() const;
+	int32 GetTotalYield() const;
 	
-	void SetDurability(const int32& InDurability);
-
-	FName GetIdentifier() const;
-	void SetIdentifier(const FName& InIdentifier);
+	void SetTotalYield(const int32& InTotalYield);
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -37,12 +34,9 @@ private:
 	TEnumAsByte<EToolType> RequiredToolType;
 	
 	UPROPERTY(EditDefaultsOnly, SaveGame)
-	int32 Durability;
+	int32 TotalYield;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
-
-	// TODO is this used?
-	FName Identifier;
 
 };

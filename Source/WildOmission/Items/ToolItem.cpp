@@ -22,9 +22,9 @@ AToolItem::AToolItem()
 
 	GatherMultiplier = 1.0f;
 	EffectiveRangeCentimeters = 150.0f;
-	SwingTimeSeconds = 1.0f;
+	SwingSpeedRate = 1.0f;
 
-	Durability = 1000;
+	Durability = 100;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> HitSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
 	ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_SwingTool_Montage"));
@@ -85,8 +85,6 @@ void AToolItem::OnPrimaryHeld()
 
 void AToolItem::OnPrimaryAnimationClimax()
 {
-
-	
 	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
 
 	FHitResult HitResult;
@@ -145,9 +143,14 @@ float AToolItem::GetGatherMultiplier() const
 	return GatherMultiplier;
 }
 
+float AToolItem::GetSwingSpeedRate() const
+{
+	return SwingSpeedRate;
+}
+
 void AToolItem::ApplyDamage()
 {
-	Durability -= 10;
+	Durability -= 1;
 
 	FInventoryItem* InventoryItem = FindInInventory();
 	InventoryItem->SetStat(FName("Durability"), Durability);

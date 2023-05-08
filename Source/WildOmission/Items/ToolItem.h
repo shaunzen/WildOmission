@@ -32,6 +32,8 @@ public:
 	UAnimMontage* GetPrimaryMontage() const;
 
 	float GetGatherMultiplier() const;
+	
+	float GetSwingSpeedRate() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -44,7 +46,7 @@ protected:
 	float EffectiveRangeCentimeters;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float SwingTimeSeconds;
+	float SwingSpeedRate;
 
 	UPROPERTY(Replicated)
 	int32 Durability;
