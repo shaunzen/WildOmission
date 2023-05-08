@@ -136,8 +136,7 @@ void UPlayerInventoryComponent::RemoveHeldItem()
 	}
 
 	RefreshToolbarSelectionState();
-
-	BroadcastInventoryUpdate();
+	OnRep_ServerState();
 }
 
 //**************************************************************

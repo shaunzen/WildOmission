@@ -261,14 +261,10 @@ void UInventoryComponent::OnRep_ServerState()
 {
 	ClearAcknowlagedInteractions(ServerState.LastInteraction);
 	
-	UE_LOG(LogTemp, Warning, TEXT("Number Of Interactions Unacknowlaged %i"), UnacknowalgedInteractions.Num());
-
 	if (UnacknowalgedInteractions.Num() == 0)
 	{
 		Slots = ServerState.Slots;
 		Contents = ServerState.Contents;
-
-		UE_LOG(LogTemp, Warning, TEXT("Making Server State current state."));
 	}
 
 	BroadcastInventoryUpdate();
