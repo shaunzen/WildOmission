@@ -18,7 +18,7 @@ AHarvestableResource::AHarvestableResource()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMeshComponent"));
 	RootComponent = MeshComponent;
 
-	TotalYield = 100;
+	Durability = 35;
 }
 
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
@@ -47,9 +47,9 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 
 	HarvestingInventoryComponent->AddItem(ItemToGive);
 
-	TotalYield -= ItemYield.Quantity;
+	Durability--;
 
-	if (TotalYield <= 0.0f)
+	if (Durability <= 0)
 	{
 		Destroy();
 	}
@@ -60,12 +60,12 @@ TEnumAsByte<EToolType> AHarvestableResource::GetRequiredToolType() const
 	return RequiredToolType;
 }
 
-int32 AHarvestableResource::GetTotalYield() const
+int32 AHarvestableResource::GetDurability() const
 {
-	return TotalYield;
+	return Durability;
 }
 
-void AHarvestableResource::SetTotalYield(const int32& InTotalYield)
+void AHarvestableResource::SetDurability(const int32& InDurability)
 {
-	TotalYield = InTotalYield;
+	Durability = InDurability;
 }

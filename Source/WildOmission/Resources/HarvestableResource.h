@@ -22,9 +22,9 @@ public:
 	
 	TEnumAsByte<EToolType> GetRequiredToolType() const;
 	
-	int32 GetTotalYield() const;
+	int32 GetDurability() const;
 	
-	void SetTotalYield(const int32& InTotalYield);
+	void SetDurability(const int32& InDurability);
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -34,7 +34,7 @@ private:
 	TEnumAsByte<EToolType> RequiredToolType;
 	
 	UPROPERTY(EditDefaultsOnly, SaveGame)
-	int32 TotalYield;
+	int32 Durability;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
