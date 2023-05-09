@@ -25,6 +25,8 @@ public:
 
 	void DestroyEquipedItem();
 
+	void PlayEquipMontage();
+
 	void PlayPrimaryMontage();
 	bool PrimaryMontagePlaying() const;
 

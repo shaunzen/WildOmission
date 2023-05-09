@@ -46,6 +46,8 @@ public:
 
 	uint32 GetUniqueItemID() const;
 
+	UAnimMontage* GetEquipMontage() const;
+
 	UAnimSequence* GetEquipPose() const;
 
 	FTransform GetSocketOffset();
@@ -85,6 +87,9 @@ protected:
 	bool bSecondaryEnabled;
 
 	AWildOmissionCharacter* GetOwnerCharacter() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayEquipMontage();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayEquipSound();

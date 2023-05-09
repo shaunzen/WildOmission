@@ -5,6 +5,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "WildOmission/Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -82,6 +83,8 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName
 	UniqueID = InUniqueID;
 
 	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
+
+	Client_PlayEquipMontage();
 }
 
 void AEquipableItem::OnUnequip()
@@ -132,6 +135,17 @@ AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter() const
 	return Cast<AWildOmissionCharacter>(GetOwner());
 }
 
+void AEquipableItem::Client_PlayEquipMontage_Implementation()
+{
+	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerEquipComponent->PlayEquipMontage();
+}
+
 void AEquipableItem::Client_PlayEquipSound_Implementation()
 {
 	if (GetWorld() == nullptr || EquipSound == nullptr)
@@ -155,6 +169,11 @@ int8 AEquipableItem::GetFromSlotIndex() const
 uint32 AEquipableItem::GetUniqueItemID() const
 {
 	return UniqueID;
+}
+
+UAnimMontage* AEquipableItem::GetEquipMontage() const
+{
+	return EquipMontage;
 }
 
 UAnimSequence* AEquipableItem::GetEquipPose() const

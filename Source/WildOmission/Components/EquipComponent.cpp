@@ -107,6 +107,31 @@ void UEquipComponent::DestroyEquipedItem()
 	EquipedItem = nullptr;
 }
 
+void UEquipComponent::PlayEquipMontage()
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+
+	UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
+	if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
+	{
+		return;
+	}
+
+	FirstPersonArmsAnimInstance->PlayMontage(EquipedItem->GetEquipMontage());
+
+	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
+	if (ThirdPersonAnimInstance == nullptr)
+	{
+		return;
+	}
+
+	ThirdPersonAnimInstance->PlayMontage(EquipedItem->GetEquipMontage());
+}
+
 void UEquipComponent::PlayPrimaryMontage()
 {
 	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
