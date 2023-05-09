@@ -22,16 +22,24 @@ AEquipableItem::AEquipableItem()
 
 	RootComponent = Mesh;
 
-	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
-	ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_HoldTool"));
+	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundAsset(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
+	ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_EquipTool_01_Montage"));
+	ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseAsset(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_HoldTool_01"));
 
-	if (EquipSoundObject.Object == nullptr || EquipPoseObject.Object == nullptr)
+	if (EquipSoundAsset.Succeeded())
 	{
-		return;
+		EquipSound = EquipSoundAsset.Object;
 	}
 
-	EquipSound = EquipSoundObject.Object;
-	EquipPose = EquipPoseObject.Object;
+	if (EquipMontageAsset.Succeeded())
+	{
+		EquipMontage = EquipMontageAsset.Object;
+	}
+
+	if (EquipPoseAsset.Succeeded())
+	{
+		EquipPose = EquipPoseAsset.Object;
+	}
 
 	FromSlotIndex = -1;
 	UniqueID = 0;
@@ -74,11 +82,6 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName
 	UniqueID = InUniqueID;
 
 	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
-
-	if (GetOwner()->HasAuthority())
-	{
-		Client_PlayEquipSound();
-	}
 }
 
 void AEquipableItem::OnUnequip()

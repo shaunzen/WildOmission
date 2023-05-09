@@ -63,11 +63,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FTransform SocketOffset;
 	
-	UPROPERTY(EditAnywhere)
-	USoundBase* EquipSound;
-	
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* EquipMontage;
+
 	UPROPERTY(EditDefaultsOnly)
 	UAnimSequence* EquipPose;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* EquipSound;
 
 	UPROPERTY(Replicated)
 	FName ItemName;
