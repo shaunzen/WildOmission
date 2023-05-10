@@ -212,7 +212,83 @@ bool UEquipComponent::SecondaryEnabled() const
 	return IsItemEquiped() && LocallyEquipedItem->SecondaryEnabled();
 }
 
-// RPC
+void UEquipComponent::PrimaryPressed()
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_PrimaryPressed();
+	}
+
+	PrimaryHeld = true;
+
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnPrimaryPressed();
+}
+
+void UEquipComponent::PrimaryReleased()
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_PrimaryReleased();
+	}
+
+	if (PrimaryHeld == false)
+	{
+		return;
+	}
+
+	PrimaryHeld = false;
+
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnPrimaryReleased();
+}
+
+void UEquipComponent::SecondaryPressed()
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_SecondaryPressed();
+	}
+
+	SecondaryHeld = true;
+
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnSecondaryPressed();
+}
+
+void UEquipComponent::SecondaryReleased()
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_SecondaryReleased();
+	}
+
+	if (SecondaryHeld == false)
+	{
+		return;
+	}
+
+	SecondaryHeld = false;
+
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnSecondaryReleased();
+}
 
 void UEquipComponent::OnRep_EquipedItem()
 {
@@ -285,72 +361,26 @@ void UEquipComponent::RefreshEquipedSlotUI()
 	PlayerInventoryWidget->RefreshSlot(EquipedItem->GetFromSlotIndex());
 }
 
-
-
-
+//******************************************
+//	RPC
+//******************************************
 
 void UEquipComponent::Server_PrimaryPressed_Implementation()
 {
-	PrimaryHeld = true;
-
-	if (EquipedItem == nullptr)
-	{
-		return;
-	}
-
-	EquipedItem->OnPrimaryPressed();
-
-	OnRep_EquipedItem();
+	PrimaryPressed();
 }
 
 void UEquipComponent::Server_PrimaryReleased_Implementation()
 {
-	if (PrimaryHeld == false)
-	{
-		return;
-	}
-
-	PrimaryHeld = false;
-
-	if (EquipedItem == nullptr)
-	{
-		return;
-	}
-
-	EquipedItem->OnPrimaryReleased();
-
-	OnRep_EquipedItem();
+	PrimaryReleased();
 }
 
 void UEquipComponent::Server_SecondaryPressed_Implementation()
 {
-	SecondaryHeld = true;
-
-	if (EquipedItem == nullptr)
-	{
-		return;
-	}
-
-	EquipedItem->OnSecondaryPressed();
-
-	OnRep_EquipedItem();
+	SecondaryPressed();
 }
 
 void UEquipComponent::Server_SecondaryReleased_Implementation()
 {
-	if (SecondaryHeld == false)
-	{
-		return;
-	}
-
-	SecondaryHeld = false;
-
-	if (EquipedItem == nullptr)
-	{
-		return;
-	}
-
-	EquipedItem->OnSecondaryReleased();
-
-	OnRep_EquipedItem();
+	SecondaryReleased();
 }

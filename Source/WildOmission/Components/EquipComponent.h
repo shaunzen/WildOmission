@@ -41,15 +41,11 @@ public:
 	bool PrimaryEnabled() const;
 	bool SecondaryEnabled() const;
 
-	UFUNCTION(Server, Reliable)
-	void Server_PrimaryPressed();
-	UFUNCTION(Server, Reliable)
-	void Server_PrimaryReleased();
-	
-	UFUNCTION(Server, Reliable)
-	void Server_SecondaryPressed();
-	UFUNCTION(Server, Reliable)
-	void Server_SecondaryReleased();
+	void PrimaryPressed();
+	void PrimaryReleased();
+
+	void SecondaryPressed();
+	void SecondaryReleased();
 
 protected:
 	virtual void BeginPlay() override;
@@ -78,4 +74,13 @@ private:
 	bool PrimaryHeld;
 	bool SecondaryHeld;
 
+	UFUNCTION(Server, Reliable)
+	void Server_PrimaryPressed();
+	UFUNCTION(Server, Reliable)
+	void Server_PrimaryReleased();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SecondaryPressed();
+	UFUNCTION(Server, Reliable)
+	void Server_SecondaryReleased();
 };
