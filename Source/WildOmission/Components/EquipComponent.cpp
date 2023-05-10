@@ -38,12 +38,12 @@ void UEquipComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if (EquipedItem && PrimaryHeld)
+	if (IsEquipedItemValid() && PrimaryHeld)
 	{
 		EquipedItem->OnPrimaryHeld();
 	}
 
-	if (EquipedItem && SecondaryHeld)
+	if (IsEquipedItemValid()  && SecondaryHeld)
 	{
 		EquipedItem->OnSecondaryHeld();
 	}
@@ -70,7 +70,7 @@ void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableIte
 
 	if (OwnerCharacter->IsLocallyControlled())
 	{
-		EquipFirstPersonViewModel(ItemClass);
+		EquipFirstPersonViewModel(ItemClass, UniqueID);
 	}
 
 	if (GetOwner()->HasAuthority())
@@ -87,7 +87,7 @@ void UEquipComponent::Disarm()
 {
 	if (OwnerCharacter && OwnerCharacter->IsLocallyControlled())
 	{
-		EquipFirstPersonViewModel(nullptr);
+		EquipFirstPersonViewModel(nullptr, 0);
 	}
 
 	if (GetOwner()->HasAuthority() && IsItemEquiped())
@@ -221,7 +221,7 @@ void UEquipComponent::PrimaryPressed()
 
 	PrimaryHeld = true;
 
-	if (EquipedItem == nullptr)
+	if (!IsEquipedItemValid())
 	{
 		return;
 	}
@@ -243,7 +243,7 @@ void UEquipComponent::PrimaryReleased()
 
 	PrimaryHeld = false;
 
-	if (EquipedItem == nullptr)
+	if (!IsEquipedItemValid())
 	{
 		return;
 	}
@@ -260,7 +260,7 @@ void UEquipComponent::SecondaryPressed()
 
 	SecondaryHeld = true;
 
-	if (EquipedItem == nullptr)
+	if (!IsEquipedItemValid())
 	{
 		return;
 	}
@@ -281,8 +281,8 @@ void UEquipComponent::SecondaryReleased()
 	}
 
 	SecondaryHeld = false;
-
-	if (EquipedItem == nullptr)
+	
+	if (!IsEquipedItemValid())
 	{
 		return;
 	}
@@ -307,7 +307,7 @@ void UEquipComponent::OnRep_EquipedItem()
 	}
 }
 
-void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass)
+void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass, const uint32& UniqueID)
 {
 	if (OwnerCharacter == nullptr)
 	{
@@ -317,6 +317,8 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 	if (ItemClass != nullptr)
 	{
 		LocalEquipedItemDefaultClass = ItemClass.GetDefaultObject();
+		LocalEquipedItemDefaultClass->SetUniqueItemID(UniqueID);
+
 		if (LocalEquipedItemDefaultClass == nullptr)
 		{
 			return;
@@ -357,6 +359,11 @@ void UEquipComponent::RefreshEquipedSlotUI()
 	}
 
 	PlayerInventoryWidget->RefreshSlot(EquipedItem->GetFromSlotIndex());
+}
+
+bool UEquipComponent::IsEquipedItemValid() const
+{
+	return EquipedItem != nullptr && LocalEquipedItemDefaultClass != nullptr || EquipedItem->GetClass() == LocalEquipedItemDefaultClass->GetClass();
 }
 
 //******************************************

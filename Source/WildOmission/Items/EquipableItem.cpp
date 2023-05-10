@@ -166,6 +166,11 @@ int8 AEquipableItem::GetFromSlotIndex() const
 	return FromSlotIndex;
 }
 
+void AEquipableItem::SetUniqueItemID(const uint32& InUniqueID)
+{
+	UniqueID = InUniqueID;
+}
+
 uint32 AEquipableItem::GetUniqueItemID() const
 {
 	return UniqueID;

@@ -69,13 +69,15 @@ private:
 	UFUNCTION()
 	void OnRep_EquipedItem();
 
-	void EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass);
+	void EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass, const uint32& UniqueID);
 
 	UFUNCTION()
 	void RefreshEquipedSlotUI();
 
 	bool PrimaryHeld;
 	bool SecondaryHeld;
+
+	bool IsEquipedItemValid() const;
 
 	UFUNCTION(Server, Reliable)
 	void Server_PrimaryPressed();

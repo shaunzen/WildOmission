@@ -81,11 +81,13 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 	AEquipableItem* CurrentEquipedDefaultClass = PlayerEquipComponent->GetLocalEquipedItemDefaultClass();
 
 	// is this item the same as we are already holding
-	if (!OwnerCharacter->IsLocallyControlled() && CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
+	if (OwnerCharacter->HasAuthority() && CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
 	{
 		return;
 	}
-	else if (OwnerCharacter->IsLocallyControlled() && CurrentEquipedDefaultClass && SlotItemData->EquipItemClass.Get() == CurrentEquipedDefaultClass->GetClass() && (CurrentEquipedItem && SelectedSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueID()))
+
+	// Locallized version of same item check
+	if (OwnerCharacter->IsLocallyControlled() && CurrentEquipedDefaultClass && SlotItemData->EquipItemClass.Get() == CurrentEquipedDefaultClass->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedDefaultClass->GetUniqueItemID())
 	{
 		return;
 	}

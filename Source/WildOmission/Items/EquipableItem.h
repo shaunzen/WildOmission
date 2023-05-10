@@ -44,6 +44,8 @@ public:
 
 	int8 GetFromSlotIndex() const;
 
+	void SetUniqueItemID(const uint32& InUniqueID);
+
 	uint32 GetUniqueItemID() const;
 
 	UAnimMontage* GetEquipMontage() const;
