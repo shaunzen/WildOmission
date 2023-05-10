@@ -27,7 +27,7 @@ public:
 
 	void DestroyEquipedItem();
 
-	void PlayEquipMontage();
+	void PlayEquipMontage(bool FirstPersonOnly = false);
 
 	void PlayPrimaryMontage();
 	bool PrimaryMontagePlaying() const;

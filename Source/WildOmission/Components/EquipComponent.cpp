@@ -115,29 +115,33 @@ void UEquipComponent::DestroyEquipedItem()
 	EquipedItem = nullptr;
 }
 
-void UEquipComponent::PlayEquipMontage()
+void UEquipComponent::PlayEquipMontage(bool FirstPersonOnly)
 {
-	if (EquipedItem == nullptr)
+	if (LocallyEquipedItem == nullptr)
 	{
 		return;
 	}
 
-
-	UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
-	if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
+	if (FirstPersonOnly)
 	{
-		return;
+		UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
+		if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
+		{
+			return;
+		}
+
+		FirstPersonArmsAnimInstance->PlayMontage(LocallyEquipedItem->GetEquipMontage());
 	}
-
-	FirstPersonArmsAnimInstance->PlayMontage(EquipedItem->GetEquipMontage());
-
-	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
-	if (ThirdPersonAnimInstance == nullptr)
+	else
 	{
-		return;
-	}
+		UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
+		if (ThirdPersonAnimInstance == nullptr)
+		{
+			return;
+		}
 
-	ThirdPersonAnimInstance->PlayMontage(EquipedItem->GetEquipMontage());
+		ThirdPersonAnimInstance->PlayMontage(LocallyEquipedItem->GetEquipMontage());
+	}
 }
 
 void UEquipComponent::PlayPrimaryMontage()
@@ -221,13 +225,11 @@ void UEquipComponent::OnRep_EquipedItem()
 	{
 		RefreshEquipedSlotUI();
 		
-		EquipFirstPersonViewModel(EquipedItem->GetClass());
+		LocallyEquipedItem = EquipedItem;
 
 		EquipedItem->SetLocalVisibility(!OwnerCharacter->IsLocallyControlled());
-	}
-	else
-	{
-		EquipFirstPersonViewModel(nullptr);
+
+		PlayEquipMontage(false);
 	}
 }
 
@@ -252,7 +254,7 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 		FirstPersonItemMeshComponent->SetRelativeLocation(LocallyEquipedItem->GetSocketOffset().GetLocation());
 		FirstPersonItemMeshComponent->SetRelativeRotation(LocallyEquipedItem->GetSocketOffset().GetRotation());
 
-		// play equip animation locally
+		PlayEquipMontage(true);
 	}
 	else
 	{
