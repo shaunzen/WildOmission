@@ -67,6 +67,6 @@ private:
 	USoundBase* HitSound;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayPrimaryMontage();
+	void Client_PlayThirdPersonPrimaryMontage();
 
 };

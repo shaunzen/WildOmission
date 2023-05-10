@@ -391,12 +391,12 @@ void AWildOmissionCharacter::PrimaryPressed()
 		return;
 	}
 
-	EquipComponent->Server_PrimaryPressed();
+	EquipComponent->PrimaryPressed();
 }
 
 void AWildOmissionCharacter::PrimaryReleased()
 {
-	EquipComponent->Server_PrimaryReleased();
+	EquipComponent->PrimaryReleased();
 }
 
 void AWildOmissionCharacter::SecondaryPressed()
@@ -406,12 +406,12 @@ void AWildOmissionCharacter::SecondaryPressed()
 		return;
 	}
 
-	EquipComponent->Server_SecondaryPressed();
+	EquipComponent->SecondaryPressed();
 }
 
 void AWildOmissionCharacter::SecondaryReleased()
 {
-	EquipComponent->Server_SecondaryReleased();
+	EquipComponent->SecondaryReleased();
 }
 
 void AWildOmissionCharacter::ToggleInventoryMenu()
@@ -421,8 +421,8 @@ void AWildOmissionCharacter::ToggleInventoryMenu()
 		return;
 	}
 
-	EquipComponent->Server_PrimaryReleased();
-	EquipComponent->Server_SecondaryReleased();
+	EquipComponent->PrimaryReleased();
+	EquipComponent->SecondaryReleased();
 
 	PlayerHUDWidget->ToggleInventoryMenu();
 }
@@ -434,8 +434,8 @@ void AWildOmissionCharacter::ToggleCraftingMenu()
 		return;
 	}
 
-	EquipComponent->Server_PrimaryReleased();
-	EquipComponent->Server_SecondaryReleased();
+	EquipComponent->PrimaryReleased();
+	EquipComponent->SecondaryReleased();
 
 	PlayerHUDWidget->ToggleCraftingMenu();
 }

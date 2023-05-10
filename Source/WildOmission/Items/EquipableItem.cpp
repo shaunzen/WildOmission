@@ -84,7 +84,7 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName
 
 	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 
-	// TODO play third person animation for all clients
+	Client_PlayThirdPersonEquipMontage();
 }
 
 void AEquipableItem::OnUnequip()
@@ -135,7 +135,7 @@ AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter() const
 	return Cast<AWildOmissionCharacter>(GetOwner());
 }
 
-void AEquipableItem::Client_PlayEquipMontage_Implementation()
+void AEquipableItem::Client_PlayThirdPersonEquipMontage_Implementation()
 {
 	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
 	if (OwnerEquipComponent == nullptr)
@@ -143,7 +143,7 @@ void AEquipableItem::Client_PlayEquipMontage_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayEquipMontage();
+	OwnerEquipComponent->PlayEquipMontage(false);
 }
 
 void AEquipableItem::Client_PlayEquipSound_Implementation()

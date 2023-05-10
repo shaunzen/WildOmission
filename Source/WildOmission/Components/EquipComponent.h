@@ -27,16 +27,19 @@ public:
 
 	void DestroyEquipedItem();
 
-	void PlayEquipMontage(bool FirstPersonOnly = false);
+	void PlayEquipMontage(bool FirstPerson);
 
-	void PlayPrimaryMontage();
+	void PlayPrimaryMontage(bool FirstPerson);
 	bool PrimaryMontagePlaying() const;
 
 	UFUNCTION(BlueprintCallable)
 	AEquipableItem* GetLocallyEquipedItem();
 
 	UFUNCTION(BlueprintCallable)
-	bool IsItemEquiped() const;
+	bool IsItemEquipedLocally() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsLocallyEquipedItemSameAsServer() const;
 
 	bool PrimaryEnabled() const;
 	bool SecondaryEnabled() const;

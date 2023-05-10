@@ -80,7 +80,12 @@ void AToolItem::OnPrimaryHeld()
 		return;
 	}
 
-	Client_PlayPrimaryMontage();
+	if (GetOwnerCharacter()->IsLocallyControlled())
+	{
+		OwnerEquipComponent->PlayPrimaryMontage(true);
+	}
+
+	Client_PlayThirdPersonPrimaryMontage();
 }
 
 void AToolItem::OnPrimaryAnimationClimax()
@@ -191,7 +196,7 @@ FInventoryItem* AToolItem::FindInInventory()
 	return InventoryItem;
 }
 
-void AToolItem::Client_PlayPrimaryMontage_Implementation()
+void AToolItem::Client_PlayThirdPersonPrimaryMontage_Implementation()
 {
 	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
 	if (OwnerEquipComponent == nullptr)
@@ -199,7 +204,7 @@ void AToolItem::Client_PlayPrimaryMontage_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayPrimaryMontage();
+	OwnerEquipComponent->PlayPrimaryMontage(false);
 }
 
 void AToolItem::PlayHitSound(const FVector& HitLocation)

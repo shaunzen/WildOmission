@@ -89,7 +89,7 @@ protected:
 	AWildOmissionCharacter* GetOwnerCharacter() const;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayEquipMontage();
+	void Client_PlayThirdPersonEquipMontage();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayEquipSound();

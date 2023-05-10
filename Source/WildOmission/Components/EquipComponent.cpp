@@ -85,7 +85,7 @@ void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableIte
 
 void UEquipComponent::Disarm()
 {
-	if (!IsItemEquiped())
+	if (!IsItemEquipedLocally())
 	{
 		return;
 	}
@@ -97,6 +97,11 @@ void UEquipComponent::Disarm()
 
 	if (GetOwner()->HasAuthority())
 	{
+		if (EquipedItem == nullptr)
+		{
+			return;
+		}
+
 		EquipedItem->OnUnequip();
 		DestroyEquipedItem();
 
@@ -106,7 +111,7 @@ void UEquipComponent::Disarm()
 
 void UEquipComponent::DestroyEquipedItem()
 {
-	if (!IsItemEquiped())
+	if (EquipedItem == nullptr)
 	{
 		return;
 	}
@@ -144,29 +149,34 @@ void UEquipComponent::PlayEquipMontage(bool FirstPersonOnly)
 	}
 }
 
-void UEquipComponent::PlayPrimaryMontage()
+void UEquipComponent::PlayPrimaryMontage(bool FirstPerson)
 {
-	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
+	AToolItem* EquipedTool = Cast<AToolItem>(LocallyEquipedItem);
 	if (EquipedTool == nullptr)
 	{
 		return;
 	}
 
-	UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
-	if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
+	if (FirstPerson)
 	{
-		return;
+		UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
+		if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
+		{
+			return;
+		}
+
+		FirstPersonArmsAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
 	}
-
-	FirstPersonArmsAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
-
-	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
-	if (ThirdPersonAnimInstance == nullptr)
+	else
 	{
-		return;
-	}
+		UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
+		if (ThirdPersonAnimInstance == nullptr)
+		{
+			return;
+		}
 
-	ThirdPersonAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
+		ThirdPersonAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
+	}
 }
 
 bool UEquipComponent::PrimaryMontagePlaying() const
@@ -197,19 +207,24 @@ AEquipableItem* UEquipComponent::GetLocallyEquipedItem()
 	return LocallyEquipedItem;
 }
 
-bool UEquipComponent::IsItemEquiped() const
+bool UEquipComponent::IsItemEquipedLocally() const
 {
 	return LocallyEquipedItem != nullptr;
 }
 
+bool UEquipComponent::IsLocallyEquipedItemSameAsServer() const
+{
+	return LocallyEquipedItem && LocallyEquipedItem == EquipedItem;
+}
+
 bool UEquipComponent::PrimaryEnabled() const
 {
-	return IsItemEquiped() && LocallyEquipedItem->PrimaryEnabled();
+	return IsLocallyEquipedItemSameAsServer() && LocallyEquipedItem->PrimaryEnabled();
 }
 
 bool UEquipComponent::SecondaryEnabled() const
 {
-	return IsItemEquiped() && LocallyEquipedItem->SecondaryEnabled();
+	return IsLocallyEquipedItemSameAsServer() && LocallyEquipedItem->SecondaryEnabled();
 }
 
 void UEquipComponent::PrimaryPressed()
@@ -301,11 +316,18 @@ void UEquipComponent::OnRep_EquipedItem()
 	{
 		RefreshEquipedSlotUI();
 		
-		LocallyEquipedItem = EquipedItem;
-
 		EquipedItem->SetLocalVisibility(!OwnerCharacter->IsLocallyControlled());
 
 		PlayEquipMontage(false);
+	}
+	else
+	{
+		if (OwnerCharacter->IsLocallyControlled())
+		{
+			return;
+		}
+
+		LocallyEquipedItem = nullptr;
 	}
 }
 
