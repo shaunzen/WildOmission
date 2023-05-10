@@ -33,13 +33,13 @@ public:
 	bool PrimaryMontagePlaying() const;
 
 	UFUNCTION(BlueprintCallable)
-	AEquipableItem* GetLocallyEquipedItem();
+	AEquipableItem* GetEquipedItem();
 
 	UFUNCTION(BlueprintCallable)
-	bool IsItemEquipedLocally() const;
+	AEquipableItem* GetLocalEquipedItemDefaultClass();
 
 	UFUNCTION(BlueprintCallable)
-	bool IsLocallyEquipedItemSameAsServer() const;
+	bool IsItemEquiped() const;
 
 	bool PrimaryEnabled() const;
 	bool SecondaryEnabled() const;
@@ -61,7 +61,7 @@ private:
 	AEquipableItem* EquipedItem;
 
 	UPROPERTY()
-	AEquipableItem* LocallyEquipedItem;
+	AEquipableItem* LocalEquipedItemDefaultClass;
 
 	UPROPERTY()
 	class AWildOmissionCharacter* OwnerCharacter;

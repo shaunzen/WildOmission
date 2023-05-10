@@ -85,23 +85,13 @@ void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableIte
 
 void UEquipComponent::Disarm()
 {
-	if (!IsItemEquipedLocally())
-	{
-		return;
-	}
-
 	if (OwnerCharacter && OwnerCharacter->IsLocallyControlled())
 	{
 		EquipFirstPersonViewModel(nullptr);
 	}
 
-	if (GetOwner()->HasAuthority())
+	if (GetOwner()->HasAuthority() && IsItemEquiped())
 	{
-		if (EquipedItem == nullptr)
-		{
-			return;
-		}
-
 		EquipedItem->OnUnequip();
 		DestroyEquipedItem();
 
@@ -120,14 +110,9 @@ void UEquipComponent::DestroyEquipedItem()
 	EquipedItem = nullptr;
 }
 
-void UEquipComponent::PlayEquipMontage(bool FirstPersonOnly)
+void UEquipComponent::PlayEquipMontage(bool FirstPerson)
 {
-	if (LocallyEquipedItem == nullptr)
-	{
-		return;
-	}
-
-	if (FirstPersonOnly)
+	if (FirstPerson && LocalEquipedItemDefaultClass)
 	{
 		UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
 		if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
@@ -135,9 +120,9 @@ void UEquipComponent::PlayEquipMontage(bool FirstPersonOnly)
 			return;
 		}
 
-		FirstPersonArmsAnimInstance->PlayMontage(LocallyEquipedItem->GetEquipMontage());
+		FirstPersonArmsAnimInstance->PlayMontage(LocalEquipedItemDefaultClass->GetEquipMontage());
 	}
-	else
+	else if (!FirstPerson && EquipedItem)
 	{
 		UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
 		if (ThirdPersonAnimInstance == nullptr)
@@ -145,13 +130,13 @@ void UEquipComponent::PlayEquipMontage(bool FirstPersonOnly)
 			return;
 		}
 
-		ThirdPersonAnimInstance->PlayMontage(LocallyEquipedItem->GetEquipMontage());
+		ThirdPersonAnimInstance->PlayMontage(EquipedItem->GetEquipMontage());
 	}
 }
 
 void UEquipComponent::PlayPrimaryMontage(bool FirstPerson)
 {
-	AToolItem* EquipedTool = Cast<AToolItem>(LocallyEquipedItem);
+	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
 	if (EquipedTool == nullptr)
 	{
 		return;
@@ -181,7 +166,7 @@ void UEquipComponent::PlayPrimaryMontage(bool FirstPerson)
 
 bool UEquipComponent::PrimaryMontagePlaying() const
 {
-	AToolItem* EquipedTool = Cast<AToolItem>(LocallyEquipedItem);
+	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
 	if (EquipedTool == nullptr)
 	{
 		return false;
@@ -202,29 +187,29 @@ bool UEquipComponent::PrimaryMontagePlaying() const
 	return FirstPersonArmsAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage()) || ThirdPersonAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage());
 }
 
-AEquipableItem* UEquipComponent::GetLocallyEquipedItem()
+AEquipableItem* UEquipComponent::GetEquipedItem()
 {
-	return LocallyEquipedItem;
+	return EquipedItem;
 }
 
-bool UEquipComponent::IsItemEquipedLocally() const
+AEquipableItem* UEquipComponent::GetLocalEquipedItemDefaultClass()
 {
-	return LocallyEquipedItem != nullptr;
+	return LocalEquipedItemDefaultClass;
 }
 
-bool UEquipComponent::IsLocallyEquipedItemSameAsServer() const
+bool UEquipComponent::IsItemEquiped() const
 {
-	return LocallyEquipedItem && LocallyEquipedItem == EquipedItem;
+	return EquipedItem != nullptr;
 }
 
 bool UEquipComponent::PrimaryEnabled() const
 {
-	return IsLocallyEquipedItemSameAsServer() && LocallyEquipedItem->PrimaryEnabled();
+	return IsItemEquiped() && EquipedItem->PrimaryEnabled();
 }
 
 bool UEquipComponent::SecondaryEnabled() const
 {
-	return IsLocallyEquipedItemSameAsServer() && LocallyEquipedItem->SecondaryEnabled();
+	return IsItemEquiped() && EquipedItem->SecondaryEnabled();
 }
 
 void UEquipComponent::PrimaryPressed()
@@ -320,15 +305,6 @@ void UEquipComponent::OnRep_EquipedItem()
 
 		PlayEquipMontage(false);
 	}
-	else
-	{
-		if (OwnerCharacter->IsLocallyControlled())
-		{
-			return;
-		}
-
-		LocallyEquipedItem = nullptr;
-	}
 }
 
 void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass)
@@ -340,23 +316,23 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 
 	if (ItemClass != nullptr)
 	{
-		LocallyEquipedItem = ItemClass.GetDefaultObject();
-		if (LocallyEquipedItem == nullptr)
+		LocalEquipedItemDefaultClass = ItemClass.GetDefaultObject();
+		if (LocalEquipedItemDefaultClass == nullptr)
 		{
 			return;
 		}
 
-		FirstPersonItemMeshComponent->SetStaticMesh(LocallyEquipedItem->GetMesh());
+		FirstPersonItemMeshComponent->SetStaticMesh(LocalEquipedItemDefaultClass->GetMesh());
 
 		FirstPersonItemMeshComponent->SetVisibility(OwnerCharacter->IsLocallyControlled());
-		FirstPersonItemMeshComponent->SetRelativeLocation(LocallyEquipedItem->GetSocketOffset().GetLocation());
-		FirstPersonItemMeshComponent->SetRelativeRotation(LocallyEquipedItem->GetSocketOffset().GetRotation());
+		FirstPersonItemMeshComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
+		FirstPersonItemMeshComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
 
 		PlayEquipMontage(true);
 	}
 	else
 	{
-		LocallyEquipedItem = nullptr;
+		LocalEquipedItemDefaultClass = nullptr;
 		FirstPersonItemMeshComponent->SetVisibility(false);
 	}
 }
