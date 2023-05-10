@@ -363,7 +363,7 @@ void UEquipComponent::RefreshEquipedSlotUI()
 
 bool UEquipComponent::IsEquipedItemValid() const
 {
-	return EquipedItem != nullptr && LocalEquipedItemDefaultClass != nullptr || EquipedItem->GetClass() == LocalEquipedItemDefaultClass->GetClass();
+	return EquipedItem != nullptr && LocalEquipedItemDefaultClass != nullptr && EquipedItem->GetClass() == LocalEquipedItemDefaultClass->GetClass();
 }
 
 //******************************************
