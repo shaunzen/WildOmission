@@ -30,7 +30,7 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 		return;
 	}
 
-	AToolItem* HarvestingTool = Cast<AToolItem>(HarvestingEquipComponent->GetEquipedItem());
+	AToolItem* HarvestingTool = Cast<AToolItem>(HarvestingEquipComponent->GetLocallyEquipedItem());
 	if (HarvestingTool == nullptr)
 	{
 		return;

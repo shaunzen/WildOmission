@@ -84,7 +84,7 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName
 
 	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 
-	Client_PlayEquipMontage();
+	// TODO play third person animation for all clients
 }
 
 void AEquipableItem::OnUnequip()

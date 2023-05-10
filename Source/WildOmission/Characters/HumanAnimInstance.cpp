@@ -129,7 +129,7 @@ void UHumanAnimInstance::OnPrimaryMontageClimax()
 		return;
 	}
 
-	AToolItem* EquipedTool = Cast<AToolItem>(OwnerEquipComponent->GetEquipedItem());
+	AToolItem* EquipedTool = Cast<AToolItem>(OwnerEquipComponent->GetLocallyEquipedItem());
 	if (EquipedTool == nullptr)
 	{
 		return;
@@ -203,11 +203,11 @@ void UHumanAnimInstance::HandleEquipPose()
 		return;
 	}
 
-	if (PlayerEquipComponent->GetEquipedItem() == nullptr)
+	if (PlayerEquipComponent->GetLocallyEquipedItem() == nullptr)
 	{
 		EquipedItemPose = nullptr;
 		return;
 	}
 
-	EquipedItemPose = PlayerEquipComponent->GetEquipedItem()->GetEquipPose();	
+	EquipedItemPose = PlayerEquipComponent->GetLocallyEquipedItem()->GetEquipPose();	
 }

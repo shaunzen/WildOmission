@@ -77,7 +77,7 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 		return;
 	}
 
-	AEquipableItem* CurrentEquipedItem = PlayerEquipComponent->GetEquipedItem();
+	AEquipableItem* CurrentEquipedItem = PlayerEquipComponent->GetLocallyEquipedItem();
 
 	// is this item the same as we are already holding
 	if (CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
@@ -118,7 +118,8 @@ void UPlayerInventoryComponent::SetToolbarSelectionIndex(int8 SelectionIndex)
 	ToolbarSelectionIndex = SelectionIndex;
 
 	Server_SetToolbarSelectionIndex(ToolbarSelectionIndex);
-	
+
+	RefreshToolbarSelectionState();
 	BroadcastInventoryUpdate();
 }
 

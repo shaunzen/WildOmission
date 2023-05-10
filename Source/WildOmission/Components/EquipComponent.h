@@ -6,6 +6,8 @@
 #include "Components/SceneComponent.h"
 #include "EquipComponent.generated.h"
 
+class AEquipableItem;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UEquipComponent : public USceneComponent
 {
@@ -19,7 +21,7 @@ public:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> Item, const int8& FromSlotIndex, const uint32& UniqueID);
+	void EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID);
 
 	void Disarm();
 
@@ -31,7 +33,7 @@ public:
 	bool PrimaryMontagePlaying() const;
 
 	UFUNCTION(BlueprintCallable)
-	class AEquipableItem* GetEquipedItem();
+	AEquipableItem* GetLocallyEquipedItem();
 
 	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;
@@ -57,7 +59,10 @@ private:
 	UStaticMeshComponent* FirstPersonItemMeshComponent;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_EquipedItem)
-	class AEquipableItem* EquipedItem;
+	AEquipableItem* EquipedItem;
+
+	UPROPERTY()
+	AEquipableItem* LocallyEquipedItem;
 
 	UPROPERTY()
 	class AWildOmissionCharacter* OwnerCharacter;
@@ -65,8 +70,10 @@ private:
 	UFUNCTION()
 	void OnRep_EquipedItem();
 
+	void EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass);
+
 	UFUNCTION()
-	void RefreshEquipedSlot();
+	void RefreshEquipedSlotUI();
 
 	bool PrimaryHeld;
 	bool SecondaryHeld;

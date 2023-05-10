@@ -61,19 +61,24 @@ void UEquipComponent::BeginPlay()
 	SecondaryHeld = false;
 }
 
-void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> Item, const int8& FromSlotIndex, const uint32& UniqueID)
+void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID)
 {
 	if (OwnerCharacter == nullptr)
 	{
 		return;
 	}
 
-	EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(Item, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
-
-	EquipedItem->Equip(OwnerCharacter, ItemName, FromSlotIndex, UniqueID);
+	if (OwnerCharacter->IsLocallyControlled())
+	{
+		EquipFirstPersonViewModel(ItemClass);
+	}
 
 	if (GetOwner()->HasAuthority())
 	{
+		EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(ItemClass, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
+
+		EquipedItem->Equip(OwnerCharacter, ItemName, FromSlotIndex, UniqueID);
+
 		OnRep_EquipedItem();
 	}
 }
@@ -85,13 +90,16 @@ void UEquipComponent::Disarm()
 		return;
 	}
 
-	EquipedItem->OnUnequip();
-	EquipedItem->Destroy();
-
-	EquipedItem = nullptr;
+	if (OwnerCharacter && OwnerCharacter->IsLocallyControlled())
+	{
+		EquipFirstPersonViewModel(nullptr);
+	}
 
 	if (GetOwner()->HasAuthority())
 	{
+		EquipedItem->OnUnequip();
+		DestroyEquipedItem();
+
 		OnRep_EquipedItem();
 	}
 }
@@ -159,7 +167,7 @@ void UEquipComponent::PlayPrimaryMontage()
 
 bool UEquipComponent::PrimaryMontagePlaying() const
 {
-	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
+	AToolItem* EquipedTool = Cast<AToolItem>(LocallyEquipedItem);
 	if (EquipedTool == nullptr)
 	{
 		return false;
@@ -177,30 +185,108 @@ bool UEquipComponent::PrimaryMontagePlaying() const
 		return false;
 	}
 
-	return FirstPersonArmsAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage()) && ThirdPersonAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage());
+	return FirstPersonArmsAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage()) || ThirdPersonAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage());
 }
 
-AEquipableItem* UEquipComponent::GetEquipedItem()
+AEquipableItem* UEquipComponent::GetLocallyEquipedItem()
 {
-	return EquipedItem;
+	return LocallyEquipedItem;
 }
 
 bool UEquipComponent::IsItemEquiped() const
 {
-	return EquipedItem != nullptr;
+	return LocallyEquipedItem != nullptr;
 }
 
 bool UEquipComponent::PrimaryEnabled() const
 {
-	return IsItemEquiped() && EquipedItem->PrimaryEnabled();
+	return IsItemEquiped() && LocallyEquipedItem->PrimaryEnabled();
 }
 
 bool UEquipComponent::SecondaryEnabled() const
 {
-	return IsItemEquiped() && EquipedItem->SecondaryEnabled();
+	return IsItemEquiped() && LocallyEquipedItem->SecondaryEnabled();
 }
 
 // RPC
+
+void UEquipComponent::OnRep_EquipedItem()
+{
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	if (EquipedItem)
+	{
+		RefreshEquipedSlotUI();
+		
+		EquipFirstPersonViewModel(EquipedItem->GetClass());
+
+		EquipedItem->SetLocalVisibility(!OwnerCharacter->IsLocallyControlled());
+	}
+	else
+	{
+		EquipFirstPersonViewModel(nullptr);
+	}
+}
+
+void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass)
+{
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	if (ItemClass != nullptr)
+	{
+		LocallyEquipedItem = ItemClass.GetDefaultObject();
+		if (LocallyEquipedItem == nullptr)
+		{
+			return;
+		}
+
+		FirstPersonItemMeshComponent->SetStaticMesh(LocallyEquipedItem->GetMesh());
+
+		FirstPersonItemMeshComponent->SetVisibility(OwnerCharacter->IsLocallyControlled());
+		FirstPersonItemMeshComponent->SetRelativeLocation(LocallyEquipedItem->GetSocketOffset().GetLocation());
+		FirstPersonItemMeshComponent->SetRelativeRotation(LocallyEquipedItem->GetSocketOffset().GetRotation());
+
+		// play equip animation locally
+	}
+	else
+	{
+		LocallyEquipedItem = nullptr;
+		FirstPersonItemMeshComponent->SetVisibility(false);
+	}
+}
+
+void UEquipComponent::RefreshEquipedSlotUI()
+{
+	if (OwnerCharacter == nullptr)
+	{
+		return;
+	}
+
+	UPlayerHUDWidget* PlayerHUD = OwnerCharacter->GetHUDWidget();
+	if (PlayerHUD == nullptr)
+	{
+		return;
+	}
+	
+	UPlayerInventoryWidget* PlayerInventoryWidget = PlayerHUD->GetPlayerInventoryWidget();
+	if (PlayerInventoryWidget == nullptr)
+	{
+		return;
+	}
+
+	PlayerInventoryWidget->RefreshSlot(EquipedItem->GetFromSlotIndex());
+}
+
+
+
+
+
 void UEquipComponent::Server_PrimaryPressed_Implementation()
 {
 	PrimaryHeld = true;
@@ -265,52 +351,4 @@ void UEquipComponent::Server_SecondaryReleased_Implementation()
 	EquipedItem->OnSecondaryReleased();
 
 	OnRep_EquipedItem();
-}
-
-void UEquipComponent::OnRep_EquipedItem()
-{
-	if (OwnerCharacter == nullptr)
-	{
-		return;
-	}
-
-	if (EquipedItem)
-	{
-		RefreshEquipedSlot();
-
-		FirstPersonItemMeshComponent->SetStaticMesh(EquipedItem->GetMesh());
-
-		FirstPersonItemMeshComponent->SetVisibility(OwnerCharacter->IsLocallyControlled());
-		FirstPersonItemMeshComponent->SetRelativeLocation(EquipedItem->GetSocketOffset().GetLocation());
-		FirstPersonItemMeshComponent->SetRelativeRotation(EquipedItem->GetSocketOffset().GetRotation());
-
-		EquipedItem->SetLocalVisibility(!OwnerCharacter->IsLocallyControlled());
-	}
-	else
-	{
-		FirstPersonItemMeshComponent->SetVisibility(false);
-	}
-
-}
-
-void UEquipComponent::RefreshEquipedSlot()
-{
-	if (OwnerCharacter == nullptr)
-	{
-		return;
-	}
-
-	UPlayerHUDWidget* PlayerHUD = OwnerCharacter->GetHUDWidget();
-	if (PlayerHUD == nullptr)
-	{
-		return;
-	}
-	
-	UPlayerInventoryWidget* PlayerInventoryWidget = PlayerHUD->GetPlayerInventoryWidget();
-	if (PlayerInventoryWidget == nullptr)
-	{
-		return;
-	}
-
-	PlayerInventoryWidget->RefreshSlot(EquipedItem->GetFromSlotIndex());
 }

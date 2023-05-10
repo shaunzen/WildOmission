@@ -322,7 +322,7 @@ void UPlayerHUDWidget::UpdateDurabilityPrompt()
 	}
 
 	float DurabilityPercent = 0.0f;
-	ABuildingHammerItem* HeldBuildingHammer = Cast<ABuildingHammerItem>(OwnerEquipComponent->GetEquipedItem());
+	ABuildingHammerItem* HeldBuildingHammer = Cast<ABuildingHammerItem>(OwnerEquipComponent->GetLocallyEquipedItem());
 	if (HeldBuildingHammer && HeldBuildingHammer->GetLookingAtItemDurability(DurabilityPercent) && !IsMenuOpen())
 	{
 		DurabilityBar->SetVisibility(ESlateVisibility::Visible);
