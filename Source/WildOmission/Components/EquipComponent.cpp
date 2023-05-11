@@ -226,8 +226,6 @@ void UEquipComponent::PrimaryPressed()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Primary Pressed for character: %s"), *GetOwner()->GetActorNameOrLabel());
-
 	EquipedItem->OnPrimaryPressed();
 }
 

@@ -88,14 +88,7 @@ void AEquipableItem::OnUnequip()
 
 void AEquipableItem::OnPrimaryPressed()
 {
-	if (!HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PrimaryPressedClient"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PrimaryPressedServer"));
-	}
+
 }
 
 void AEquipableItem::OnPrimaryHeld()
@@ -135,6 +128,11 @@ AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter() const
 
 void AEquipableItem::Client_PlayThirdPersonEquipMontage_Implementation()
 {
+	if (GetOwnerCharacter()->IsLocallyControlled())
+	{
+		return;
+	}
+
 	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
 	if (OwnerEquipComponent == nullptr)
 	{
