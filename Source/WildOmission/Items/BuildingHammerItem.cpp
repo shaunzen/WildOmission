@@ -21,7 +21,7 @@ ABuildingHammerItem::ABuildingHammerItem()
 	EffectiveRangeCentimeters = 300.0f;
 }
 
-void ABuildingHammerItem::OnPrimaryAnimationClimax()
+void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
 	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
 
@@ -38,9 +38,12 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax()
 		return;
 	}
 
-	PlayHitSound(HitResult.ImpactPoint);
+	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
+	{
+		PlayHitSound(HitResult.ImpactPoint);
+	}
 
-	if (!HasAuthority())
+	if (!HasAuthority() || FromFirstPersonInstance)
 	{
 		return;
 	}

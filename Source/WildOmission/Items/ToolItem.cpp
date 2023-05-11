@@ -88,12 +88,12 @@ void AToolItem::OnPrimaryHeld()
 	Client_PlayThirdPersonPrimaryMontage();
 }
 
-void AToolItem::OnPrimaryAnimationClimax()
+void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
 	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
 
 	FHitResult HitResult;
-	
+
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetOwner());
 
@@ -105,9 +105,12 @@ void AToolItem::OnPrimaryAnimationClimax()
 		return;
 	}
 
-	PlayHitSound(HitResult.ImpactPoint);
+	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
+	{
+		PlayHitSound(HitResult.ImpactPoint);
+	}
 
-	if (!HasAuthority())
+	if (!HasAuthority() || FromFirstPersonInstance)
 	{
 		return;
 	}

@@ -43,9 +43,6 @@ public:
 	bool HoldingItem;
 
 	UPROPERTY(BlueprintReadonly)
-	bool HoldingTwoHandedItem;
-
-	UPROPERTY(BlueprintReadonly)
 	UAnimSequence* EquipedItemPose;
 
 private:
@@ -65,7 +62,7 @@ private:
 	USoundBase* WaterSplashSound;
 	
 	UPROPERTY(EditDefaultsOnly)
-	bool StopWalkAnimationWhenFalling;
+	bool FirstPersonInstance;
 
 	void CalculateSpeedAndAngle();
 	

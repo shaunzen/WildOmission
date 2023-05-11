@@ -26,7 +26,7 @@ public:
 
 	virtual void OnPrimaryHeld() override;
 
-	virtual void OnPrimaryAnimationClimax();
+	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance);
 
 	UFUNCTION(BlueprintCallable)
 	UAnimMontage* GetPrimaryMontage() const;

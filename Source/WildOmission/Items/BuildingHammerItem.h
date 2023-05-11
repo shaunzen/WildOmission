@@ -17,7 +17,7 @@ class WILDOMISSION_API ABuildingHammerItem : public AToolItem
 public:
 	ABuildingHammerItem();
 
-	virtual void OnPrimaryAnimationClimax() override;
+	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
 
 	bool GetLookingAtItemDurability(float& OutPercent) const;
 };

@@ -40,7 +40,7 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	WoodFootstepSound = WoodFootstepSoundObject.Object;
 	WaterSplashSound = WaterSplashSoundObject.Object;
 
-	StopWalkAnimationWhenFalling = false;
+	FirstPersonInstance = false;
 }
 
 void UHumanAnimInstance::NativeUpdateAnimation(float DeltaTime)
@@ -135,7 +135,7 @@ void UHumanAnimInstance::OnPrimaryMontageClimax()
 		return;
 	}
 
-	EquipedTool->OnPrimaryAnimationClimax();
+	EquipedTool->OnPrimaryAnimationClimax(FirstPersonInstance);
 }
 
 void UHumanAnimInstance::CalculateSpeedAndAngle()
@@ -150,7 +150,7 @@ void UHumanAnimInstance::CalculateSpeedAndAngle()
 	
 	Angle = PawnOwner->GetTransform().InverseTransformVector(PawnOwner->GetVelocity()).Rotation().Yaw;
 	
-	if (StopWalkAnimationWhenFalling == true && Falling == true)
+	if (FirstPersonInstance == true && Falling == true)
 	{
 		Speed = 0.0f;
 		Angle = 0.0f;
