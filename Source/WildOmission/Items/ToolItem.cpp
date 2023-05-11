@@ -73,7 +73,12 @@ void AToolItem::OnUnequip()
 void AToolItem::OnPrimaryHeld()
 {
 	Super::OnPrimaryHeld();
-	
+
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+
 	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
 	if (OwnerEquipComponent == nullptr || OwnerEquipComponent->PrimaryMontagePlaying())
 	{
