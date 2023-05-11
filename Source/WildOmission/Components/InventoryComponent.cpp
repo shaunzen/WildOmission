@@ -261,7 +261,7 @@ void UInventoryComponent::OnRep_ServerState()
 {
 	ClearAcknowlagedInteractions(ServerState.LastInteraction);
 	
-	if (UnacknowalgedInteractions.Num() == 0 || ServerState.LastInteraction.Time == 0)
+	if (GetOwner()->HasAuthority() || UnacknowalgedInteractions.Num() == 0 || ServerState.LastInteraction.Time == 0)
 	{
 		Slots = ServerState.Slots;
 		Contents = ServerState.Contents;
