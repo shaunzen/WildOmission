@@ -69,6 +69,11 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutPercent) const
 {
+	if (GetOwnerCharacter() == nullptr)
+	{
+		return;
+	}
+	
 	FHitResult HitResult;
 	
 	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
