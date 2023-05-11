@@ -74,7 +74,7 @@ void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableIte
 	}
 
 	if (GetOwner()->HasAuthority())
-	{
+	{	
 		EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(ItemClass, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
 
 		EquipedItem->Equip(OwnerCharacter, ItemName, FromSlotIndex, UniqueID);
@@ -226,6 +226,8 @@ void UEquipComponent::PrimaryPressed()
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Primary Pressed for character: %s"), *GetOwner()->GetActorNameOrLabel());
+
 	EquipedItem->OnPrimaryPressed();
 }
 
@@ -363,7 +365,12 @@ void UEquipComponent::RefreshEquipedSlotUI()
 
 bool UEquipComponent::IsEquipedItemValid() const
 {
-	return EquipedItem != nullptr && LocalEquipedItemDefaultClass != nullptr && EquipedItem->GetClass() == LocalEquipedItemDefaultClass->GetClass();
+	if (OwnerCharacter->IsLocallyControlled())
+	{
+		return EquipedItem != nullptr && LocalEquipedItemDefaultClass != nullptr && EquipedItem->GetClass() == LocalEquipedItemDefaultClass->GetClass();
+	}
+
+	return EquipedItem != nullptr;
 }
 
 //******************************************

@@ -39,7 +39,6 @@ protected:
 private:
 	UFUNCTION(Client, Reliable)
 	void Client_SpawnPreview();
-	
 	UFUNCTION(Client, Reliable)
 	void Client_DestroyPreview();
 

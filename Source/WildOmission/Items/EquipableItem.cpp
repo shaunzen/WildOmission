@@ -23,14 +23,8 @@ AEquipableItem::AEquipableItem()
 
 	RootComponent = Mesh;
 
-	ConstructorHelpers::FObjectFinder<USoundBase> EquipSoundAsset(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/EquipDefault/Equip_Default_Cue"));
 	ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_EquipTool_01_Montage"));
 	ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseAsset(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_HoldTool_01"));
-
-	if (EquipSoundAsset.Succeeded())
-	{
-		EquipSound = EquipSoundAsset.Object;
-	}
 
 	if (EquipMontageAsset.Succeeded())
 	{
@@ -89,15 +83,19 @@ void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName
 
 void AEquipableItem::OnUnequip()
 {
-	if (GetOwner()->HasAuthority())
-	{
-		Client_PlayEquipSound();
-	}
+
 }
 
 void AEquipableItem::OnPrimaryPressed()
 {
-
+	if (!HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PrimaryPressedClient"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PrimaryPressedServer"));
+	}
 }
 
 void AEquipableItem::OnPrimaryHeld()
@@ -144,16 +142,6 @@ void AEquipableItem::Client_PlayThirdPersonEquipMontage_Implementation()
 	}
 
 	OwnerEquipComponent->PlayEquipMontage(false);
-}
-
-void AEquipableItem::Client_PlayEquipSound_Implementation()
-{
-	if (GetWorld() == nullptr || EquipSound == nullptr)
-	{
-		return;
-	}
-
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), EquipSound, GetActorLocation());
 }
 
 void AEquipableItem::SetLocalVisibility(bool bVisible)

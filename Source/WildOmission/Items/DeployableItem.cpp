@@ -41,7 +41,7 @@ void ADeployableItem::Tick(float DeltaTime)
 void ADeployableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
 {
 	Super::Equip(InOwnerCharacter, InItemName, InFromSlotIndex, InUniqueID);
-	
+
 	Client_SpawnPreview();
 }
 
@@ -66,6 +66,11 @@ void ADeployableItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
 	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)
 	{

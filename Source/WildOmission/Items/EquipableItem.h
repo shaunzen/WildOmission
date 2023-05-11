@@ -93,7 +93,4 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayThirdPersonEquipMontage();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayEquipSound();
-
 };
