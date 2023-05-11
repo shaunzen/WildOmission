@@ -45,6 +45,13 @@ void UPlayerInventoryComponent::BeginPlay()
 	}
 }
 
+void UPlayerInventoryComponent::OnRep_ServerState()
+{
+	Super::OnRep_ServerState();
+
+	RefreshToolbarSelectionState();
+}
+
 //**************************************************************
 // General Management
 //**************************************************************

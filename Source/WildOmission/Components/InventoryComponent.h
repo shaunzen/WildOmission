@@ -99,7 +99,7 @@ protected:
 	FInventoryState ServerState;
 
 	UFUNCTION()
-	void OnRep_ServerState();
+	virtual void OnRep_ServerState();
 
 	UFUNCTION()
 	void BroadcastInventoryUpdate();

@@ -42,6 +42,10 @@ public:
 
 	int8 GetToolbarSelectionIndex();
 	
+protected:
+
+	virtual void OnRep_ServerState() override;
+
 private:
 
 	UPROPERTY()
