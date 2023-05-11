@@ -4,6 +4,7 @@
 #include "WildOmissionCharacter.h"
 #include "HumanAnimInstance.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
@@ -118,8 +119,14 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
+	FirstPersonSpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(FName("FirstPersonSpringArmComponent"));
+	FirstPersonSpringArmComponent->TargetArmLength = 0.0f;
+	FirstPersonSpringArmComponent->bEnableCameraRotationLag = true;
+	FirstPersonSpringArmComponent->CameraRotationLagSpeed = 25.0f;
+	FirstPersonSpringArmComponent->SetupAttachment(FirstPersonCameraComponent);
+
 	FirstPersonArmsMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonArmsComponent"));
-	FirstPersonArmsMeshComponent->SetupAttachment(FirstPersonCameraComponent);
+	FirstPersonArmsMeshComponent->SetupAttachment(FirstPersonSpringArmComponent);
 	FirstPersonArmsMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	FirstPersonArmsMeshComponent->SetSkeletalMesh(PlayerArmsMeshObject.Object);
 	FirstPersonArmsMeshComponent->SetAnimClass(PlayerArmsAnimBlueprintClass.Class);

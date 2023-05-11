@@ -10,6 +10,7 @@
 class UInputMappingContext;
 class UInputAction;
 class UCameraComponent;
+class USpringArmComponent;
 class UCraftingComponent;
 class UNameTagComponent;
 class AItemContainerBase;
@@ -72,6 +73,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* FirstPersonCameraComponent;
 	
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* FirstPersonSpringArmComponent;
+
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* FirstPersonArmsMeshComponent;
 
