@@ -110,7 +110,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		PlayHitSound(HitResult.ImpactPoint);
 	}
 
-	if (!HasAuthority() || FromFirstPersonInstance)
+	if (!HasAuthority())
 	{
 		return;
 	}
@@ -201,6 +201,11 @@ FInventoryItem* AToolItem::FindInInventory()
 
 void AToolItem::Client_PlayThirdPersonPrimaryMontage_Implementation()
 {
+	if (GetOwnerCharacter()->IsLocallyControlled())
+	{
+		return;
+	}
+
 	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
 	if (OwnerEquipComponent == nullptr)
 	{
