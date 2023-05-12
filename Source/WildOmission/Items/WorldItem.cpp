@@ -22,6 +22,7 @@ AWorldItem::AWorldItem()
 
 	// Set this actor to replicate
 	bReplicates = true;
+	SetReplicateMovement(true);
 
 	// Setup default values
 	Item.Name = FName(TEXT("Item"));
