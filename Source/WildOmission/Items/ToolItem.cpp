@@ -103,21 +103,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	CollisionParams.AddIgnoredActor(GetOwner());
 
 	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
-	
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
-
-	if (HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Host Start Vector: %s"), *Start.ToCompactString());
-		UE_LOG(LogTemp, Warning, TEXT("Host Forward Vector: %s"), *OwnerCharacterLookVector.ToCompactString());
-		UE_LOG(LogTemp, Warning, TEXT("Host End Vector: %s"), *End.ToCompactString());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Client Start Vector: %s"), *Start.ToCompactString());
-		UE_LOG(LogTemp, Warning, TEXT("Client Forward Vector: %s"), *OwnerCharacterLookVector.ToCompactString());
-		UE_LOG(LogTemp, Warning, TEXT("Client End Vector: %s"), *End.ToCompactString());
-	}
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
@@ -126,10 +112,6 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
 	{
-		if (!HasAuthority())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Playing hit sound for client."));
-		}
 		PlayHitSound(HitResult.ImpactPoint);
 	}
 

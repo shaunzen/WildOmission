@@ -38,7 +38,7 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 
-	if (!GetOwnerCharacter()->IsLocallyControlled() || FromFirstPersonInstance)
+	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
 	{
 		PlayHitSound(HitResult.ImpactPoint);
 	}
@@ -76,11 +76,14 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutPercent) const
 	
 	FHitResult HitResult;
 	
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(GetOwner());
+
 	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
 	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
 		return false;
 	}
