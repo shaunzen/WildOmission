@@ -140,6 +140,12 @@ void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryMani
 	BroadcastInventoryUpdate();
 }
 
+void UInventoryComponent::OnLoadComplete_Implementation()
+{
+	ServerState.Contents = Contents;
+	ServerState.Slots = Slots;
+}
+
 void UInventoryComponent::Server_SlotInteraction_Implementation(FInventorySlotInteraction Interaction)
 {
 	// Update our server state

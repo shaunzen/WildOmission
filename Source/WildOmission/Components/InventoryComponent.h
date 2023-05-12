@@ -123,6 +123,9 @@ private:
 
 	void ClearAcknowlagedInteractions(const FInventorySlotInteraction& LastInteraction);
 
+	UFUNCTION()
+	virtual void OnLoadComplete_Implementation() override;
+
 	UFUNCTION(Server, Reliable)
 	void Server_SlotInteraction(FInventorySlotInteraction Interaction);
 
