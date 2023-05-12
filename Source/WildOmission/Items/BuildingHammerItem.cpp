@@ -23,7 +23,7 @@ ABuildingHammerItem::ABuildingHammerItem()
 
 void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetReplicatedControlRotation());
 
 	FHitResult HitResult;
 
@@ -38,12 +38,12 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 
-	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
+	if (!GetOwnerCharacter()->IsLocallyControlled() || FromFirstPersonInstance)
 	{
 		PlayHitSound(HitResult.ImpactPoint);
 	}
 
-	if (!HasAuthority() || FromFirstPersonInstance)
+	if (!HasAuthority())
 	{
 		return;
 	}
@@ -71,7 +71,7 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutPercent) const
 {
 	if (GetOwnerCharacter() == nullptr)
 	{
-		return;
+		return false;
 	}
 	
 	FHitResult HitResult;

@@ -44,6 +44,9 @@ public:
 	float GetHeadPitch() const;
 
 	UFUNCTION()
+	FRotator GetReplicatedControlRotation() const;
+
+	UFUNCTION()
 	bool IsUnderwater() const;
 
 	UFUNCTION()
@@ -108,7 +111,7 @@ private:
 	TSubclassOf<AItemContainerBase> RagdollClass;
 
 	UPROPERTY()
-	float HeadPitch;
+	FRotator ReplicatedControlRotation;
 
 	UPROPERTY()
 	bool bSprinting;
@@ -224,6 +227,6 @@ private:
 	void SetupPlayerHUD();
 
 	UFUNCTION(NetMulticast, Unreliable)
-	void Client_UpdateHeadPitch(const float& NewHeadPitch);
+	void Client_UpdateReplicatedControlRotation(const FRotator& NewControlRotation);
 
 };

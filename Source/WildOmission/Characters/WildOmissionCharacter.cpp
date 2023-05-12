@@ -185,7 +185,8 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 		return;
 	}
 
-	Client_UpdateHeadPitch(GetControlRotation().GetNormalized().Pitch);
+	Client_UpdateReplicatedControlRotation(GetControlRotation());
+
 	if (GetCharacterMovement()->IsSwimming())
 	{
 		HandleUnderwater();
@@ -539,7 +540,12 @@ USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 
 float AWildOmissionCharacter::GetHeadPitch() const
 {
-	return HeadPitch;
+	return ReplicatedControlRotation.GetNormalized().Pitch;
+}
+
+FRotator AWildOmissionCharacter::GetReplicatedControlRotation() const
+{
+	return ReplicatedControlRotation;
 }
 
 bool AWildOmissionCharacter::IsUnderwater() const
@@ -591,7 +597,7 @@ void AWildOmissionCharacter::Client_OpenContainer_Implementation(AItemContainerB
 	PlayerHUDWidget->OpenContainer(Container);
 }
 
-void AWildOmissionCharacter::Client_UpdateHeadPitch_Implementation(const float& NewHeadPitch)
+void AWildOmissionCharacter::Client_UpdateReplicatedControlRotation_Implementation(const FRotator& NewControlRotation)
 {
-	HeadPitch = NewHeadPitch;
+	ReplicatedControlRotation = NewControlRotation;
 }
