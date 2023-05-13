@@ -107,6 +107,9 @@ struct FWildOmissionSaveCreationInformation
 	GENERATED_BODY()
 
 	UPROPERTY()
+	FString Name = FString();
+
+	UPROPERTY()
 	bool LevelHasGenerated = false;
 
 	UPROPERTY()

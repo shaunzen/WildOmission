@@ -120,12 +120,26 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 
 	WorldListBox->AddChild(CreateWorldButton);
 
-	uint32 i = 0;
+	// TODO make function
+	TArray<UWildOmissionSaveGame*> SortedSaveGames;
 	for (const FString& WorldName : SaveNames)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Found Save: %s"), *WorldName);
-		
 		UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
+		if (SaveGame == nullptr)
+		{
+			continue;
+		}
+		SortedSaveGames.Add(SaveGame);
+	}
+	Algo::Sort(SortedSaveGames, IsSaveMoreRecentlyPlayed);
+
+	for (UWildOmissionSaveGame* SaveGame : SortedSaveGames)
+	{
+		if (SaveGame == nullptr)
+		{
+			continue;
+		}
+
 		UWorldRowWidget* Row = CreateWidget<UWorldRowWidget>(World, WorldRowWidgetClass);
 		if (Row == nullptr || SaveGame == nullptr)
 		{
@@ -135,12 +149,10 @@ void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
 		FString DaysPlayedString = FString::Printf(TEXT("%i Days"), SaveGame->DaysPlayed);
 		FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), SaveGame->CreationInformation.Month, SaveGame->CreationInformation.Day, SaveGame->CreationInformation.Year);
 
-		Row->WorldNameTextBlock->SetText(FText::FromString(WorldName));
+		Row->WorldNameTextBlock->SetText(FText::FromString(SaveGame->CreationInformation.Name));
 		Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
 		Row->DateCreated->SetText(FText::FromString(CreationString));
-		Row->Setup(this, WorldName);
-
-		++i;
+		Row->Setup(this, SaveGame->CreationInformation.Name);
 
 		WorldListBox->AddChild(Row);
 	}
@@ -222,6 +234,11 @@ void UMainMenuWidget::UpdateServerListChildren()
 		}
 		Row->Selected = (SelectedServerIndex.IsSet() && SelectedServerIndex.GetValue() == i);
 	}
+}
+
+bool UMainMenuWidget::IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB)
+{
+	return SaveA->LastPlayedTime > SaveB->LastPlayedTime;
 }
 
 //****************************

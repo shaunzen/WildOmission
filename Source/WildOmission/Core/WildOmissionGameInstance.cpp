@@ -373,6 +373,7 @@ void UWildOmissionGameInstance::CreateWorld(const FString& NewWorldName)
 
 	NewSaveGame->LastPlayedTime = Time;
 
+	NewSaveGame->CreationInformation.Name = NewWorldName;
 	NewSaveGame->CreationInformation.Day = Time.GetDay();
 	NewSaveGame->CreationInformation.Month = Time.GetMonth();
 	NewSaveGame->CreationInformation.Year = Time.GetYear();

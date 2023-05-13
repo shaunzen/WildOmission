@@ -25,6 +25,7 @@ class UWidgetSwitcher;
 class UEditableTextBox;
 class UCheckBox;
 class UCreateWorldButtonWidget;
+class UWildOmissionSaveGame;
 
 UCLASS()
 class WILDOMISSION_API UMainMenuWidget : public UUserWidget
@@ -169,4 +170,5 @@ private:
 	void UpdateSaveListChildren();
 	void UpdateServerListChildren();
 
+	static bool IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB);
 };
