@@ -170,5 +170,6 @@ private:
 	void UpdateSaveListChildren();
 	void UpdateServerListChildren();
 
+	TArray<UWildOmissionSaveGame*> GetWorldsSortedByLastPlayed(const TArray<FString>& NameList);
 	static bool IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB);
 };
