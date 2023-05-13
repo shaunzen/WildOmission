@@ -28,9 +28,14 @@ void UServerBrowserWidget::NativeConstruct()
 		return;
 	}
 
-	JoinButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::JoinServer);
+	JoinButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::JoinServer);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
-	RefreshListButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::RefreshServerList);
+	RefreshListButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::RefreshList);
+}
+
+void UServerBrowserWidget::Open()
+{
+	RefreshList();
 }
 
 void UServerBrowserWidget::SetServerList(TArray<FServerData> ServerNames)
@@ -100,4 +105,16 @@ void UServerBrowserWidget::RefreshList()
 	RefreshListButtonText->SetText(FText::FromString(WaitingString));
 
 	GameInstance->RefreshServerList();
+}
+
+void UServerBrowserWidget::JoinServer()
+{
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+
+	if (GameInstance == nullptr || SelectedServerIndex.IsSet() == false)
+	{
+		return;
+	}
+
+	GameInstance->Join(SelectedServerIndex.GetValue());
 }

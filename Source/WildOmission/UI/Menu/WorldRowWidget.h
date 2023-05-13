@@ -37,7 +37,7 @@ private:
 	UButton* RowButton;
 
 	UPROPERTY()
-	UMainMenuWidget* Parent;
+	UWorldSelectionWidget* Parent;
 
 	FString WorldName;
 

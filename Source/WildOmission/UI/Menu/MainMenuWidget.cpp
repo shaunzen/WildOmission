@@ -2,63 +2,33 @@
 
 
 #include "MainMenuWidget.h"
-#include "WorldRowWidget.h"
-#include "ServerRowWidget.h"
-#include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
-#include "Components/EditableTextBox.h"
-#include "Components/TextBlock.h"
-#include "Components/CheckBox.h"
-#include "CreateWorldButtonWidget.h"
-#include "UObject/ConstructorHelpers.h"
-#include "Kismet/GameplayStatics.h"
-#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
+#include "Components/Button.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
+#include "WorldSelectionWidget.h"
+#include "ServerBrowserWidget.h"
+#include "WorldMenuWidget.h"
+#include "CreateWorldWidget.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	bIsFocusable = true;
-	
 
-
-
-
-	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_ServerRow"));
-	if (ServerRowWidgetBPClass.Class == nullptr)
-	{
-		return;
-	}
-	ServerRowWidgetClass = ServerRowWidgetBPClass.Class;
 }
 
 void UMainMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	// Bind button delegates
-	
-	/*Main Menu*/
 	PlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 	// TODO Settings Menu
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
-	/*World Selection Menu*/
-	
-	/*World Creation Menu*/
-	WorldCreationCreateWorldButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateWorld);
-	WorldCreationBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
-	WorldNameInputBox->OnTextChanged.AddDynamic(this, &UMainMenuWidget::WorldNameOnTextChanged);
+}
 
-	/*World Menu*/
-	PlayWorldButton->OnClicked.AddDynamic(this, &UMainMenuWidget::PlaySelectedWorld);
-	WorldBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
-	MultiplayerCheckBox->OnCheckStateChanged.AddDynamic(this, &UMainMenuWidget::MultiplayerCheckboxChanged);
-	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UMainMenuWidget::ServerNameOnTextChanged);
-	
-	/*Server Browser*/
-	ServerJoinButton->OnClicked.AddDynamic(this, &UMainMenuWidget::JoinServer);
-	ServerBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
-	RefreshServerListButton->OnClicked.AddDynamic(this, &UMainMenuWidget::RefreshServerList);
+void UMainMenuWidget::SetServerList(TArray<FServerData> InServerData)
+{
+	ServerBrowserMenu->SetServerList(InServerData);
 }
 
 void UMainMenuWidget::Setup()
@@ -87,108 +57,6 @@ void UMainMenuWidget::Teardown()
 	}
 }
 
-void UMainMenuWidget::SetSaveList(TArray<FString> SaveNames)
-{
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
-	
-	WorldListBox->ClearChildren();
-	
-	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
-	if (CreateWorldButton == nullptr)
-	{
-		return;
-	}
-
-	CreateWorldButton->GetButton()->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
-
-	WorldListBox->AddChild(CreateWorldButton);
-
-	TArray<UWildOmissionSaveGame*> SortedWorlds = GetWorldsSortedByLastPlayed(SaveNames);
-
-	for (UWildOmissionSaveGame* SaveGame : SortedWorlds)
-	{
-		if (SaveGame == nullptr)
-		{
-			continue;
-		}
-
-		UWorldRowWidget* Row = CreateWidget<UWorldRowWidget>(World, WorldRowWidgetClass);
-		if (Row == nullptr || SaveGame == nullptr)
-		{
-			return;
-		}
-		
-		FString DaysPlayedString = FString::Printf(TEXT("%i Days"), SaveGame->DaysPlayed);
-		FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), SaveGame->CreationInformation.Month, SaveGame->CreationInformation.Day, SaveGame->CreationInformation.Year);
-
-		Row->WorldNameTextBlock->SetText(FText::FromString(SaveGame->CreationInformation.Name));
-		Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
-		Row->DateCreated->SetText(FText::FromString(CreationString));
-		Row->Setup(this, SaveGame->CreationInformation.Name);
-
-		WorldListBox->AddChild(Row);
-	}
-}
-
-void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
-{
-	UWorld* World = GetWorld();
-
-	if (World == nullptr)
-	{
-		return;
-	}
-
-	ServerList->ClearChildren();
-
-	uint32 i = 0;
-	for (const FServerData& ServerData : ServerNames)
-	{
-		UServerRowWidget* Row = CreateWidget<UServerRowWidget>(World, ServerRowWidgetClass);
-		if (Row == nullptr)
-		{
-			return;
-		}
-
-		Row->ServerName->SetText(FText::FromString(ServerData.Name));
-		FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
-		Row->HostUser->SetText(FText::FromString(HostString));
-		FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
-		Row->ConnectionFraction->SetText(FText::FromString(FractionString));
-		Row->Setup(this, i);
-		++i;
-
-		ServerList->AddChild(Row);
-	}
-
-	FString RefreshString = FString("Refresh");
-	RefreshServerListButtonText->SetText(FText::FromString(RefreshString));
-}
-
-
-
-void UMainMenuWidget::SelectServerIndex(uint32 Index)
-{
-	SelectedServerIndex = Index;
-	UpdateServerListChildren();
-}
-
-void UMainMenuWidget::UpdateServerListChildren()
-{
-	for (int32 i = 0; i < ServerList->GetChildrenCount(); ++i)
-	{
-		UServerRowWidget* Row = Cast<UServerRowWidget>(ServerList->GetChildAt(i));
-		if (Row == nullptr)
-		{
-			return;
-		}
-		Row->Selected = (SelectedServerIndex.IsSet() && SelectedServerIndex.GetValue() == i);
-	}
-}
 
 
 //****************************
@@ -212,7 +80,7 @@ void UMainMenuWidget::OpenWorldSelectionMenu()
 		return;
 	}
 
-	SetSaveList(GameInstance->GetAllWorldNames());
+	WorldSelectionMenu->SetWorldList(GameInstance->GetAllWorldNames());
 	MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
 }
 
@@ -228,14 +96,18 @@ void UMainMenuWidget::OpenWorldCreationMenu()
 
 void UMainMenuWidget::OpenWorldMenu()
 {
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	if (GameInstance == nullptr || MenuSwitcher == nullptr || WorldMenu == nullptr || SelectedWorldName.IsSet() == false)
+	if (MenuSwitcher == nullptr || WorldMenu == nullptr || WorldSelectionMenu->SelectedWorldName.IsSet() == false)
 	{
 		return;
 	}
 
+	OpenWorldMenuForWorld(WorldSelectionMenu->SelectedWorldName.GetValue());
+}
+
+void UMainMenuWidget::OpenWorldMenuForWorld(const FString& WorldName)
+{
 	MenuSwitcher->SetActiveWidget(WorldMenu);
-	WorldMenuTitle->SetText(FText::FromString(SelectedWorldName.GetValue()));
+	WorldMenu->Open(WorldName);
 }
 
 void UMainMenuWidget::OpenServerBrowserMenu()
@@ -246,7 +118,7 @@ void UMainMenuWidget::OpenServerBrowserMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(ServerBrowserMenu);
-	RefreshServerList();
+	ServerBrowserMenu->Open();
 }
 
 void UMainMenuWidget::ExitGame()
@@ -258,109 +130,4 @@ void UMainMenuWidget::ExitGame()
 	}
 
 	PlayerController->ConsoleCommand(FString("quit"));
-}
-
-void UMainMenuWidget::PlaySelectedWorld()
-{
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	
-	if (GameInstance == nullptr || SelectedWorldName.IsSet() == false)
-	{
-		return;
-	}
-
-	if (MultiplayerCheckBox->IsChecked())
-	{
-		FString ServerName = ServerNameInputBox->GetText().ToString();
-		if (ServerName == FString(""))
-		{
-			return;
-		}
-
-		GameInstance->Host(ServerName, SelectedWorldName.GetValue());
-	}
-	else
-	{
-		GameInstance->StartSingleplayer(SelectedWorldName.GetValue());
-	}
-}
-
-void UMainMenuWidget::CreateWorld()
-{
-	// Get the name of the save
-	FString NewWorldName;
-	NewWorldName = WorldNameInputBox->GetText().ToString();
-
-	if (NewWorldName == FString(""))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot create a world without a name."));
-		return;
-	}
-	
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	// Create a new world with that name
-	GameInstance->CreateWorld(NewWorldName);
-	
-	// Set as selected world
-	SelectedWorldName = NewWorldName;
-
-	// Back to Selection Menu
-	OpenWorldMenu();
-}
-
-void UMainMenuWidget::JoinServer()
-{
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-
-	if (GameInstance == nullptr || SelectedServerIndex.IsSet() == false)
-	{
-		return;
-	}
-
-	GameInstance->Join(SelectedServerIndex.GetValue());
-}
-
-
-void UMainMenuWidget::RefreshServerList()
-{
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	
-	if (GameInstance == nullptr)
-	{
-		return;
-	}
-
-	FString WaitingString = FString("...");
-	RefreshServerListButtonText->SetText(FText::FromString(WaitingString));
-	
-	GameInstance->RefreshServerList();
-}
-
-void UMainMenuWidget::WorldNameOnTextChanged(const FText& Text)
-{
-	FString TextString = Text.ToString();
-
-	if (TextString.Len() > 16)
-	{
-		TextString = TextString.LeftChop(1);
-	}
-
-	WorldNameInputBox->SetText(FText::FromString(TextString));
-}
-
-void UMainMenuWidget::ServerNameOnTextChanged(const FText& Text)
-{
-	FString TextString = Text.ToString();
-
-	if (TextString.Len() > 16)
-	{
-		TextString = TextString.LeftChop(1);
-	}
-
-	ServerNameInputBox->SetText(FText::FromString(TextString));
-}
-
-void UMainMenuWidget::MultiplayerCheckboxChanged(bool bIsChecked)
-{
-	HostSettingsMenu->SetIsEnabled(bIsChecked);
 }

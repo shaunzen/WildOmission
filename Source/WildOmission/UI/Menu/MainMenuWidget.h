@@ -4,18 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "WildOmission/Core/Structs/ServerData.h"
 #include "MainMenuWidget.generated.h"
 
-
-class UWorldRowWidget;
-class UServerRowWidget;
-class UButton;
-class UTextBlock;
 class UWidgetSwitcher;
-class UEditableTextBox;
-class UCheckBox;
-class UCreateWorldButtonWidget;
-class UWildOmissionSaveGame;
+class UButton;
+class UWorldSelectionWidget;
+class UCreateWorldWidget;
+class UWorldMenuWidget;
+class UServerBrowserWidget;
 
 UCLASS()
 class WILDOMISSION_API UMainMenuWidget : public UUserWidget
@@ -26,6 +23,29 @@ public:
 	UMainMenuWidget(const FObjectInitializer& ObjectInitializer);
 	
 	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	void OpenMainMenu();
+
+	UFUNCTION()
+	void OpenWorldSelectionMenu();
+
+	UFUNCTION()
+	void OpenWorldCreationMenu();
+
+	UFUNCTION()
+	void OpenWorldMenu();
+	
+	UFUNCTION()
+	void OpenWorldMenuForWorld(const FString& WorldName);
+
+	UFUNCTION()
+	void OpenServerBrowserMenu();
+
+	UFUNCTION()
+	void ExitGame();
+
+	void SetServerList(TArray<FServerData> InServerData);
 
 	void Setup();
 	void Teardown();
@@ -45,80 +65,20 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ExitButton;
 
-	/*World Creation Menu*/
-	UPROPERTY(Meta = (BindWidget))
-	UButton* WorldCreationCreateWorldButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* WorldCreationBackButton;
-	UPROPERTY(Meta = (BindWidget))
-	UEditableTextBox* WorldNameInputBox;
-
-	/*World Menu*/
-	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* WorldMenuTitle;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* PlayWorldButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* WorldBackButton;
-	UPROPERTY(Meta = (BindWidget))
-	UCheckBox* MultiplayerCheckBox;
-	UPROPERTY(Meta = (BindWidget))
-	UWidget* HostSettingsMenu;
-	UPROPERTY(Meta = (BindWidget))
-	UEditableTextBox* ServerNameInputBox;
-
 	/*Menus*/
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* MainMenu;
 
 	UPROPERTY(Meta = (BindWidget))
-	UWidget* WorldSelectionMenu;
+	UWorldSelectionWidget* WorldSelectionMenu;
 
 	UPROPERTY(Meta = (BindWidget))
-	UWidget* WorldCreationMenu;
+	UCreateWorldWidget* WorldCreationMenu;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UWidget* WorldMenu;
+	UWorldMenuWidget* WorldMenu;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UWidget* ServerBrowserMenu;
-	
-	//*
-	// Menu Functions
-	//*
-	UFUNCTION()
-	void OpenMainMenu();
-
-	UFUNCTION()
-	void OpenWorldSelectionMenu();
-
-	UFUNCTION()
-	void OpenWorldCreationMenu();
-
-	UFUNCTION()
-	void OpenWorldMenu();
-
-	UFUNCTION()
-	void OpenServerBrowserMenu();
-
-	UFUNCTION()
-	void ExitGame();
-
-	UFUNCTION()
-	void PlaySelectedWorld();
-	UFUNCTION()
-	void CreateWorld();
-	UFUNCTION()
-	void JoinServer();
-	
-	UFUNCTION()
-	void RefreshServerList();
-
-	UFUNCTION()
-	void WorldNameOnTextChanged(const FText& Text);
-	UFUNCTION()
-	void ServerNameOnTextChanged(const FText& Text);
-	UFUNCTION()
-	void MultiplayerCheckboxChanged(bool bIsChecked);
+	UServerBrowserWidget* ServerBrowserMenu;
 
 };

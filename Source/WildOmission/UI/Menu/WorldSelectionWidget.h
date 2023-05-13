@@ -8,6 +8,7 @@
 
 class UButton;
 class UWorldRowWidget;
+class UCreateWorldButtonWidget;
 class UWildOmissionSaveGame;
 
 UCLASS()
@@ -22,6 +23,8 @@ public:
 
 	void SetWorldList(const TArray<FString>& WorldNames);
 	void SetSelectedWorld(const FString& WorldName);
+
+	TOptional<FString> SelectedWorldName;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -39,7 +42,6 @@ private:
 	TSubclassOf<UWorldRowWidget> WorldRowWidgetClass;
 	TSubclassOf<UCreateWorldButtonWidget> CreateNewWorldButtonClass;
 
-	TOptional<FString> SelectedWorldName;
 
 	void UpdateListChildren();
 

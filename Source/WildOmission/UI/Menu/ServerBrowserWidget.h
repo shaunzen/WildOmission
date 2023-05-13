@@ -4,18 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "WildOmission/Core/Structs/ServerData.h"
 #include "ServerBrowserWidget.generated.h"
-
-USTRUCT()
-struct FServerData
-{
-	GENERATED_BODY()
-
-	FString Name;
-	uint16 CurrentPlayers;
-	uint16 MaxPlayers;
-	FString HostUsername;
-};
 
 class UButton;
 class UTextBlock;
@@ -30,6 +20,8 @@ public:
 	UServerBrowserWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeConstruct() override;
+	
+	void Open();
 
 	void SetServerList(TArray<FServerData> ServerNames);
 	void SelectServerIndex(uint32 Index);
@@ -55,7 +47,6 @@ private:
 	TOptional<uint32> SelectedServerIndex;
 	
 	void UpdateServerListChildren();
-
+	void JoinServer();
 	void RefreshList();
-
 }; 
