@@ -9,15 +9,9 @@
 #include "Components/TextBlock.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 
-void UWorldMenuWidget::NativeConstruct()
+void UWorldMenuWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
-	Super::NativeConstruct();
-
-	UMainMenuWidget* ParentMenu = Cast<UMainMenuWidget>(GetParent());
-	if (ParentMenu == nullptr)
-	{
-		return;
-	}
+	ParentMenu = InMainMenuParent;
 
 	PlayButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::PlayButtonClicked);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);

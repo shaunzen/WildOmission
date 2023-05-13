@@ -26,16 +26,9 @@ UWorldSelectionWidget::UWorldSelectionWidget(const FObjectInitializer& ObjectIni
 	}
 }
 
-void UWorldSelectionWidget::NativeConstruct()
+void UWorldSelectionWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
-	Super::NativeConstruct();
-
-	UMainMenuWidget* ParentMenu = Cast<UMainMenuWidget>(GetParent());
-	
-	if (ParentMenu == nullptr)
-	{
-		return;
-	}
+	ParentMenu = InMainMenuParent;
 
 	SelectButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldMenu);
 	BrowseServersButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenServerBrowserMenu);
@@ -54,13 +47,6 @@ void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 
 	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
 	if (CreateWorldButton == nullptr)
-	{
-		return;
-	}
-
-	UMainMenuWidget* ParentMenu = Cast<UMainMenuWidget>(GetParent());
-	
-	if (ParentMenu == nullptr)
 	{
 		return;
 	}

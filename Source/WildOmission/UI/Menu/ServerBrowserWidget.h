@@ -10,6 +10,7 @@
 class UButton;
 class UTextBlock;
 class UServerRowWidget;
+class UMainMenuWidget;
 
 UCLASS()
 class WILDOMISSION_API UServerBrowserWidget : public UUserWidget
@@ -19,8 +20,8 @@ class WILDOMISSION_API UServerBrowserWidget : public UUserWidget
 public:
 	UServerBrowserWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual void NativeConstruct() override;
-	
+	void Setup(UMainMenuWidget* InMainMenuParent);
+
 	void Open();
 
 	void SetServerList(TArray<FServerData> ServerNames);
@@ -41,6 +42,9 @@ private:
 	
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* RefreshListButtonText;
+
+	UPROPERTY()
+	UMainMenuWidget* ParentMenu;
 
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
 

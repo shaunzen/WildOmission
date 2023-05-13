@@ -10,6 +10,7 @@ class UTextBlock;
 class UButton;
 class UCheckBox;
 class UEditableTextBox;
+class UMainMenuWidget;
 
 UCLASS()
 class WILDOMISSION_API UWorldMenuWidget : public UUserWidget
@@ -17,8 +18,8 @@ class WILDOMISSION_API UWorldMenuWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual void NativeConstruct() override;
-	
+	void Setup(UMainMenuWidget* InMainMenuParent);
+
 	void Open(const FString& InWorldName);
 
 private:
@@ -39,6 +40,9 @@ private:
 	
 	UPROPERTY(Meta = (BindWidget))
 	UEditableTextBox* ServerNameInputBox;
+
+	UPROPERTY()
+	UMainMenuWidget* ParentMenu;
 
 	FString WorldName;
 

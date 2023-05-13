@@ -8,15 +8,9 @@
 #include "WorldSelectionWidget.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 
-void UCreateWorldWidget::NativeConstruct()
+void UCreateWorldWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
-	Super::NativeConstruct();
-
-	UMainMenuWidget* ParentMenu = Cast<UMainMenuWidget>(GetParent());
-	if (ParentMenu == nullptr)
-	{
-		return;
-	}
+	ParentMenu = InMainMenuParent;
 
 	CreateWorldButton->OnClicked.AddDynamic(this, &UCreateWorldWidget::CreateWorld);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
@@ -38,12 +32,6 @@ void UCreateWorldWidget::CreateWorld()
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
 	// Create a new world with that name
 	GameInstance->CreateWorld(NewWorldName);
-
-	UMainMenuWidget* ParentMenu = Cast<UMainMenuWidget>(GetParent());
-	if (ParentMenu == nullptr)
-	{
-		return;
-	}
 
 	// To World Menu
 	ParentMenu->OpenWorldMenuForWorld(NewWorldName);

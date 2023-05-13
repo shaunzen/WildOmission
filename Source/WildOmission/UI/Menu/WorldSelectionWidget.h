@@ -10,6 +10,7 @@ class UButton;
 class UWorldRowWidget;
 class UCreateWorldButtonWidget;
 class UWildOmissionSaveGame;
+class UMainMenuWidget;
 
 UCLASS()
 class WILDOMISSION_API UWorldSelectionWidget : public UUserWidget
@@ -19,7 +20,7 @@ class WILDOMISSION_API UWorldSelectionWidget : public UUserWidget
 public:
 	UWorldSelectionWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual void NativeConstruct() override;
+	void Setup(UMainMenuWidget* InMainMenuParent);
 
 	void SetWorldList(const TArray<FString>& WorldNames);
 	void SetSelectedWorld(const FString& WorldName);
@@ -39,13 +40,15 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* BackButton;
 
+	UPROPERTY()
+	UMainMenuWidget* ParentMenu;
+
 	TSubclassOf<UWorldRowWidget> WorldRowWidgetClass;
 	TSubclassOf<UCreateWorldButtonWidget> CreateNewWorldButtonClass;
-
 
 	void UpdateListChildren();
 
 	TArray<UWildOmissionSaveGame*> GetWorldsSortedByLastPlayed(const TArray<FString>& NameList);
 	static bool IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB);
-
+	
 };

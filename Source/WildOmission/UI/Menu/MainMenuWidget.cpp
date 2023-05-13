@@ -24,6 +24,11 @@ void UMainMenuWidget::NativeConstruct()
 	// TODO Settings Menu
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
+	WorldSelectionMenu->Setup(this);
+	ServerBrowserMenu->Setup(this);
+	WorldMenu->Setup(this);
+	WorldCreationMenu->Setup(this);
+
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> InServerData)

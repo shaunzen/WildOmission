@@ -8,6 +8,7 @@
 
 class UButton;
 class UEditableTextBox;
+class UMainMenuWidget;
 
 UCLASS()
 class WILDOMISSION_API UCreateWorldWidget : public UUserWidget
@@ -15,7 +16,7 @@ class WILDOMISSION_API UCreateWorldWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	virtual void NativeConstruct() override;
+	void Setup(UMainMenuWidget* InMainMenuParent);
 
 private:	
 	UPROPERTY(Meta = (BindWidget))
@@ -27,6 +28,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UEditableTextBox* WorldNameInputBox;
 	
+	UPROPERTY()
+	UMainMenuWidget* ParentMenu;
+
 	UFUNCTION()
 	void CreateWorld();
 	

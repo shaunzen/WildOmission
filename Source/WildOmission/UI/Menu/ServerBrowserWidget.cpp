@@ -18,15 +18,9 @@ UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectIniti
 	}
 }
 
-void UServerBrowserWidget::NativeConstruct()
+void UServerBrowserWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
-	Super::NativeConstruct();
-
-	UMainMenuWidget* ParentMenu = Cast<UMainMenuWidget>(GetParent());
-	if (ParentMenu == nullptr)
-	{
-		return;
-	}
+	ParentMenu = InMainMenuParent;
 
 	JoinButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::JoinServer);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
