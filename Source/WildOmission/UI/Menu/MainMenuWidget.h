@@ -26,22 +26,16 @@ public:
 
 	UFUNCTION()
 	void OpenMainMenu();
-
 	UFUNCTION()
 	void OpenWorldSelectionMenu();
-
 	UFUNCTION()
 	void OpenWorldCreationMenu();
-
 	UFUNCTION()
 	void OpenWorldMenu();
-	
 	UFUNCTION()
 	void OpenWorldMenuForWorld(const FString& WorldName);
-
 	UFUNCTION()
 	void OpenServerBrowserMenu();
-
 	UFUNCTION()
 	void ExitGame();
 
@@ -51,13 +45,10 @@ public:
 	void Teardown();
 
 private:
-	//*
-	// Bind Widgets
-	//*
+
 	UPROPERTY(Meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
 
-	/*Main Menu*/
 	UPROPERTY(Meta = (BindWidget))
 	UButton* PlayButton;
 	UPROPERTY(Meta = (BindWidget))
@@ -65,19 +56,14 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ExitButton;
 
-	/*Menus*/
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* MainMenu;
-
 	UPROPERTY(Meta = (BindWidget))
 	UWorldSelectionWidget* WorldSelectionMenu;
-
 	UPROPERTY(Meta = (BindWidget))
 	UCreateWorldWidget* WorldCreationMenu;
-	
 	UPROPERTY(Meta = (BindWidget))
 	UWorldMenuWidget* WorldMenu;
-	
 	UPROPERTY(Meta = (BindWidget))
 	UServerBrowserWidget* ServerBrowserMenu;
 

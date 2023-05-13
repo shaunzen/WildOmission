@@ -13,7 +13,6 @@
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	bIsFocusable = true;
-
 }
 
 void UMainMenuWidget::NativeConstruct()
@@ -28,7 +27,6 @@ void UMainMenuWidget::NativeConstruct()
 	ServerBrowserMenu->Setup(this);
 	WorldMenu->Setup(this);
 	WorldCreationMenu->Setup(this);
-
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> InServerData)
@@ -62,11 +60,6 @@ void UMainMenuWidget::Teardown()
 	}
 }
 
-
-
-//****************************
-// Menu Functions
-//****************************
 void UMainMenuWidget::OpenMainMenu()
 {
 	if (MenuSwitcher == nullptr || MainMenu == nullptr)
