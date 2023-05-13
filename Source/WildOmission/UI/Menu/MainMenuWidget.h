@@ -6,16 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "MainMenuWidget.generated.h"
 
-USTRUCT()
-struct FServerData
-{
-	GENERATED_BODY()
-
-	FString Name;
-	uint16 CurrentPlayers;
-	uint16 MaxPlayers;
-	FString HostUsername;
-};
 
 class UWorldRowWidget;
 class UServerRowWidget;
@@ -39,12 +29,6 @@ public:
 
 	void Setup();
 	void Teardown();
-
-	void SetSaveList(TArray<FString> SaveNames);
-	void SetServerList(TArray<FServerData> ServerNames);
-	
-	void SetSelectedWorld(const FString& WorldName);
-	void SelectServerIndex(uint32 Index);
 
 private:
 	//*
@@ -83,18 +67,6 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UEditableTextBox* ServerNameInputBox;
 
-	/*Server Browser Menu*/
-	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* ServerList;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* ServerJoinButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* ServerBackButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* RefreshServerListButton;
-	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* RefreshServerListButtonText;
-	
 	/*Menus*/
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* MainMenu;
@@ -148,14 +120,5 @@ private:
 	void ServerNameOnTextChanged(const FText& Text);
 	UFUNCTION()
 	void MultiplayerCheckboxChanged(bool bIsChecked);
-
-	// TODO Make single widget class
-	TSubclassOf<UWorldRowWidget> WorldRowWidgetClass;
-	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
-	TSubclassOf<UCreateWorldButtonWidget> CreateNewWorldButtonClass;
-
-	TOptional<uint32> SelectedServerIndex;
-	
-	void UpdateServerListChildren();
 
 };

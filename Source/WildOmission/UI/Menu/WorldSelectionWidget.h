@@ -21,6 +21,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	void SetWorldList(const TArray<FString>& WorldNames);
+	void SetSelectedWorld(const FString& WorldName);
 
 private:
 	UPROPERTY(Meta = (BindWidget))

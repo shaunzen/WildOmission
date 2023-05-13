@@ -169,12 +169,7 @@ void UMainMenuWidget::SetServerList(TArray<FServerData> ServerNames)
 	RefreshServerListButtonText->SetText(FText::FromString(RefreshString));
 }
 
-void UMainMenuWidget::SetSelectedWorld(const FString& WorldName)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Selected new World: %s"), *WorldName);
-	SelectedWorldName = WorldName;
-	UpdateSaveListChildren();
-}
+
 
 void UMainMenuWidget::SelectServerIndex(uint32 Index)
 {
@@ -195,36 +190,6 @@ void UMainMenuWidget::UpdateServerListChildren()
 	}
 }
 
-TArray<UWildOmissionSaveGame*> UMainMenuWidget::GetWorldsSortedByLastPlayed(const TArray<FString>& NamesList)
-{
-	TArray<UWildOmissionSaveGame*> SortedSaveGames;
-	for (const FString& WorldName : NamesList)
-	{
-		UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
-		if (SaveGame == nullptr)
-		{
-			continue;
-		}
-
-		// If this save was created before pre alpha 0.7.3, populate its Name Value
-		if (SaveGame->CreationInformation.Name == FString())
-		{
-			SaveGame->CreationInformation.Name = WorldName;
-			UGameplayStatics::SaveGameToSlot(SaveGame, WorldName, 0);
-		}
-		
-		SortedSaveGames.Add(SaveGame);
-	}
-
-	Algo::Sort(SortedSaveGames, IsSaveMoreRecentlyPlayed);
-
-	return SortedSaveGames;
-}
-
-bool UMainMenuWidget::IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB)
-{
-	return SaveA->LastPlayedTime > SaveB->LastPlayedTime;
-}
 
 //****************************
 // Menu Functions

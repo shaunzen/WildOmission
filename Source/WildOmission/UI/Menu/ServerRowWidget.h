@@ -8,7 +8,7 @@
 
 class UTextBlock;
 class UButton;
-class UMainMenuWidget;
+class UServerBrowserWidget;
 
 UCLASS()
 class WILDOMISSION_API UServerRowWidget : public UUserWidget
@@ -28,14 +28,14 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool Selected = false;
 
-	void Setup(UMainMenuWidget* InParent, uint32 InIndex);
+	void Setup(UServerBrowserWidget* InParent, uint32 InIndex);
 
 private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* RowButton;
 
 	UPROPERTY()
-	UMainMenuWidget* Parent;
+	UServerBrowserWidget* Parent;
 
 	uint32 Index;
 

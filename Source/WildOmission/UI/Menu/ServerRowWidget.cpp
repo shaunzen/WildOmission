@@ -3,9 +3,9 @@
 
 #include "ServerRowWidget.h"
 #include "Components/Button.h"
-#include "MainMenuWidget.h"
+#include "ServerBrowserWidget.h"
 
-void UServerRowWidget::Setup(UMainMenuWidget* InParent, uint32 InIndex)
+void UServerRowWidget::Setup(UServerBrowserWidget* InParent, uint32 InIndex)
 {
 	Parent = InParent;
 	Index = InIndex;

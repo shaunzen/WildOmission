@@ -96,6 +96,12 @@ void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 	}
 }
 
+void UWorldSelectionWidget::SetSelectedWorld(const FString& WorldName)
+{
+	SelectedWorldName = WorldName;
+	UpdateListChildren();
+}
+
 void UWorldSelectionWidget::UpdateListChildren()
 {
 	for (int32 i = 0; i < WorldListBox->GetChildrenCount(); ++i)
@@ -108,8 +114,8 @@ void UWorldSelectionWidget::UpdateListChildren()
 		}
 
 		bool RowSelected = (SelectedWorldName.IsSet() && SelectedWorldName.GetValue() == Row->GetWorldName());
-		UE_LOG(LogTemp, Warning, TEXT("%s RowSelected: %i"), *Row->GetWorldName(), RowSelected)
-			Row->Selected = RowSelected;
+		
+		Row->Selected = RowSelected;
 	}
 }
 
