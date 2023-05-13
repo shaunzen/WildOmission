@@ -46,6 +46,8 @@ private:
 	
 	void GenerateLevel(UWildOmissionSaveGame* SaveToModify);
 
+	void RegenerateResources();
+
 	void ValidateSave();
 
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);

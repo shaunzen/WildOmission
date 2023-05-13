@@ -21,8 +21,5 @@ struct FWorldGenerationSettings
 	int32 WorldHeightMeters = 100;
 
 	UPROPERTY(EditDefaultsOnly)
-	float TreeDensity = 0.005f;
-	
-	UPROPERTY(EditDefaultsOnly)
-	float NodeDensity = 0.003f;
+	float SpawnLimiter = 1;
 };

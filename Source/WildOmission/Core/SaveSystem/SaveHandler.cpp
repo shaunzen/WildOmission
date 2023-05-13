@@ -29,6 +29,9 @@ void ASaveHandler::BeginPlay()
 
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
+
+	FTimerHandle RegenerationTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, this, &ASaveHandler::RegenerateResources, 120.0f, true);
 }
 
 void ASaveHandler::SaveGame()
@@ -109,6 +112,12 @@ void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
 	GetWorld()->GetTimerManager().SetTimer(WorldGenerationTimerHandle, WorldGenerationTimerDelegate, 1.0f, false);
 	
 	SaveToModify->CreationInformation.LevelHasGenerated = true;
+}
+
+void ASaveHandler::RegenerateResources()
+{
+	FWorldGenerationSettings GenerationSettings;
+	WorldGenerationHandlerComponent->RegenerateResources(GenerationSettings);
 }
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)

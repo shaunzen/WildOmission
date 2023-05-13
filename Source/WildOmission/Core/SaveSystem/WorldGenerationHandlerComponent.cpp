@@ -31,6 +31,14 @@ void UWorldGenerationHandlerComponent::Generate(const FWorldGenerationSettings& 
 	GenerateCollectables(GenerationSettings);
 }
 
+void UWorldGenerationHandlerComponent::RegenerateResources(const FWorldGenerationSettings& GenerationSettings)
+{
+	FWorldGenerationSettings RegenerationSettings = GenerationSettings;
+	RegenerationSettings.SpawnLimiter = 0.1f;
+	
+	Generate(RegenerationSettings);
+}
+
 FBiomeGenerationData* UWorldGenerationHandlerComponent::GetBiomeGenerationData(const FName& BiomeName)
 {
 	if (BiomeGenerationDataTable == nullptr)
@@ -56,7 +64,7 @@ void UWorldGenerationHandlerComponent::GenerateTrees(const FWorldGenerationSetti
 
 	for (const FHarvestableResourceData& Tree : BiomeData->Trees)
 	{
-		int32 AmountOfTreeToSpawn = FMath::RoundToInt32((WorldAreaMeters * Tree.DensityPerMeter) / BiomeData->Trees.Num());
+		int32 AmountOfTreeToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Tree.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Trees.Num());
 		for (int32 i = 0; i < AmountOfTreeToSpawn; i++)
 		{
 			FVector LocationToSpawn = FVector::ZeroVector;
@@ -87,7 +95,7 @@ void UWorldGenerationHandlerComponent::GenerateNodes(const FWorldGenerationSetti
 
 	for (const FHarvestableResourceData& Node : BiomeData->Nodes)
 	{
-		int32 AmountOfNodeToSpawn = FMath::RoundToInt32((WorldAreaMeters * Node.DensityPerMeter) / BiomeData->Nodes.Num());
+		int32 AmountOfNodeToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Node.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Nodes.Num());
 		for (int32 i = 0; i < AmountOfNodeToSpawn; i++)
 		{
 			FVector LocationToSpawn = FVector::ZeroVector;
@@ -117,7 +125,7 @@ void UWorldGenerationHandlerComponent::GenerateCollectables(const FWorldGenerati
 
 	for (const FCollectableResourceData& Collectable : BiomeData->Collectables)
 	{
-		int32 AmountOfCollectableToSpawn = FMath::RoundToInt32((WorldAreaMeters * Collectable.DensityPerMeter) / BiomeData->Nodes.Num());
+		int32 AmountOfCollectableToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Collectable.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Nodes.Num());
 		for (int32 i = 0; i < AmountOfCollectableToSpawn; i++)
 		{
 			FVector LocationToSpawn = FVector::ZeroVector;

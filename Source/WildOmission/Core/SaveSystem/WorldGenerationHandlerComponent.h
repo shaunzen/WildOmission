@@ -22,6 +22,9 @@ public:
 	UFUNCTION()
 	void Generate(const FWorldGenerationSettings& GenerationSettings);
 
+	UFUNCTION()
+	void RegenerateResources(const FWorldGenerationSettings& GenerationSettings);
+
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
 
 private:
