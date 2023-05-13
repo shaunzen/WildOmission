@@ -40,6 +40,8 @@ void ASaveHandler::SaveGame()
 		return;
 	}
 	
+	SaveFile->LastPlayedTime = FDateTime::Now();
+
 	ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 

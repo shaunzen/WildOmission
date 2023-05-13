@@ -132,6 +132,9 @@ public:
 	uint32 DaysPlayed = 0;
 	
 	UPROPERTY()
+	FDateTime LastPlayedTime;
+
+	UPROPERTY()
 	FWildOmissionSaveCreationInformation CreationInformation;
 
 	UPROPERTY()
