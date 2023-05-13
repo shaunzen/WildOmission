@@ -8,7 +8,7 @@
 #include "WorldSelectionWidget.h"
 #include "ServerBrowserWidget.h"
 #include "WorldMenuWidget.h"
-#include "CreateWorldWidget.h"
+#include "WorldCreationWidget.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {

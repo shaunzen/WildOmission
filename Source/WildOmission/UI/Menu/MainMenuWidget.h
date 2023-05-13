@@ -10,7 +10,7 @@
 class UWidgetSwitcher;
 class UButton;
 class UWorldSelectionWidget;
-class UCreateWorldWidget;
+class UWorldCreationWidget;
 class UWorldMenuWidget;
 class UServerBrowserWidget;
 
@@ -61,7 +61,7 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UWorldSelectionWidget* WorldSelectionMenu;
 	UPROPERTY(Meta = (BindWidget))
-	UCreateWorldWidget* WorldCreationMenu;
+	UWorldCreationWidget* WorldCreationMenu;
 	UPROPERTY(Meta = (BindWidget))
 	UWorldMenuWidget* WorldMenu;
 	UPROPERTY(Meta = (BindWidget))

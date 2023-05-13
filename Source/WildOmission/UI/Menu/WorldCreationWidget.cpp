@@ -1,23 +1,23 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "CreateWorldWidget.h"
+#include "WorldCreationWidget.h"
 #include "MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "WorldSelectionWidget.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 
-void UCreateWorldWidget::Setup(UMainMenuWidget* InMainMenuParent)
+void UWorldCreationWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
 	ParentMenu = InMainMenuParent;
 
-	CreateWorldButton->OnClicked.AddDynamic(this, &UCreateWorldWidget::CreateWorld);
+	CreateWorldButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::CreateWorld);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
-	WorldNameInputBox->OnTextChanged.AddDynamic(this, &UCreateWorldWidget::WorldNameOnTextChanged);
+	WorldNameInputBox->OnTextChanged.AddDynamic(this, &UWorldCreationWidget::WorldNameOnTextChanged);
 }
 
-void UCreateWorldWidget::CreateWorld()
+void UWorldCreationWidget::CreateWorld()
 {
 	// Get the name of the save
 	FString NewWorldName;
@@ -37,7 +37,7 @@ void UCreateWorldWidget::CreateWorld()
 	ParentMenu->OpenWorldMenuForWorld(NewWorldName);
 }
 
-void UCreateWorldWidget::WorldNameOnTextChanged(const FText& Text)
+void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)
 {
 	FString TextString = Text.ToString();
 
