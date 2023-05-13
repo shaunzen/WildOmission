@@ -8,7 +8,7 @@
 
 class UTextBlock;
 class UButton;
-class UMainMenuWidget;
+class UWorldSelectionWidget;
 
 UCLASS()
 class WILDOMISSION_API UWorldRowWidget : public UUserWidget
@@ -28,7 +28,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool Selected = false;
 
-	void Setup(UMainMenuWidget* InParent, const FString& InWorldName);
+	void Setup(UWorldSelectionWidget* InParent, const FString& InWorldName);
 	
 	FString GetWorldName();
 

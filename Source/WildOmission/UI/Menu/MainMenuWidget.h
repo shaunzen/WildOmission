@@ -61,16 +61,6 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ExitButton;
 
-	/*World Selection Menu*/
-	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* WorldListBox;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* WorldSelectionSelectButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* WorldSelectionBrowseServersButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* WorldSelectionBackButton;
-
 	/*World Creation Menu*/
 	UPROPERTY(Meta = (BindWidget))
 	UButton* WorldCreationCreateWorldButton;
@@ -164,12 +154,8 @@ private:
 	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
 	TSubclassOf<UCreateWorldButtonWidget> CreateNewWorldButtonClass;
 
-	TOptional<FString> SelectedWorldName;
 	TOptional<uint32> SelectedServerIndex;
 	
-	void UpdateSaveListChildren();
 	void UpdateServerListChildren();
 
-	TArray<UWildOmissionSaveGame*> GetWorldsSortedByLastPlayed(const TArray<FString>& NameList);
-	static bool IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB);
 };

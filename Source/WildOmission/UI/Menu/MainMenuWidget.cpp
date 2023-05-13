@@ -19,19 +19,9 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 {
 	bIsFocusable = true;
 	
-	ConstructorHelpers::FClassFinder<UWorldRowWidget> WorldRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_WorldRow"));
-	if (WorldRowWidgetBPClass.Class == nullptr)
-	{
-		return;
-	}
-	WorldRowWidgetClass = WorldRowWidgetBPClass.Class;
 
-	ConstructorHelpers::FClassFinder<UCreateWorldButtonWidget> CreateNewWorldBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_CreateWorldButton"));
-	if (CreateNewWorldBPClass.Class == nullptr)
-	{
-		return;
-	}
-	CreateNewWorldButtonClass = CreateNewWorldBPClass.Class;
+
+
 
 	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_ServerRow"));
 	if (ServerRowWidgetBPClass.Class == nullptr)
@@ -53,9 +43,6 @@ void UMainMenuWidget::NativeConstruct()
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
 	/*World Selection Menu*/
-	WorldSelectionSelectButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
-	WorldSelectionBrowseServersButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenServerBrowserMenu);
-	WorldSelectionBackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 	
 	/*World Creation Menu*/
 	WorldCreationCreateWorldButton->OnClicked.AddDynamic(this, &UMainMenuWidget::CreateWorld);
@@ -193,23 +180,6 @@ void UMainMenuWidget::SelectServerIndex(uint32 Index)
 {
 	SelectedServerIndex = Index;
 	UpdateServerListChildren();
-}
-
-void UMainMenuWidget::UpdateSaveListChildren()
-{
-	for (int32 i = 0; i < WorldListBox->GetChildrenCount(); ++i)
-	{
-		UWorldRowWidget* Row = Cast<UWorldRowWidget>(WorldListBox->GetChildAt(i));
-		
-		if (Row == nullptr)
-		{
-			continue;
-		}
-
-		bool RowSelected = (SelectedWorldName.IsSet() && SelectedWorldName.GetValue() == Row->GetWorldName());
-		UE_LOG(LogTemp, Warning, TEXT("%s RowSelected: %i"), *Row->GetWorldName(), RowSelected)
-		Row->Selected = RowSelected;
-	}
 }
 
 void UMainMenuWidget::UpdateServerListChildren()

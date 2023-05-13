@@ -3,9 +3,9 @@
 
 #include "WorldRowWidget.h"
 #include "Components/Button.h"
-#include "MainMenuWidget.h"
+#include "WorldSelectionWidget.h"
 
-void UWorldRowWidget::Setup(UMainMenuWidget* InParent, const FString& InWorldName)
+void UWorldRowWidget::Setup(UWorldSelectionWidget* InParent, const FString& InWorldName)
 {
 	Parent = InParent;
 	WorldName = InWorldName;
