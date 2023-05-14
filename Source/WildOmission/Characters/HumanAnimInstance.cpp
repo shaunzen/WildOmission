@@ -107,6 +107,15 @@ void UHumanAnimInstance::PlayFootstepSound()
 		case SurfaceType4: // Wood
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), WoodFootstepSound, HitResult.Location);
 			break;
+		case SurfaceType5: // Leaves
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GrassFootstepSound, HitResult.Location);
+			break;
+		case SurfaceType6: // Cloth
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), WoodFootstepSound, HitResult.Location);
+			break;
+		case SurfaceType7: // Metal
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
+			break;
 		case SurfaceType_Default:
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
 			break;
