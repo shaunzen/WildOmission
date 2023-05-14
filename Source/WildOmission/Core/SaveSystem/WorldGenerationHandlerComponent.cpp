@@ -4,6 +4,7 @@
 #include "WorldGenerationHandlerComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
+#include "SaveHandler.h"
 #include "WildOmission/Resources/HarvestableResource.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
@@ -36,7 +37,8 @@ void UWorldGenerationHandlerComponent::RegenerateResources(const FWorldGeneratio
 	FWorldGenerationSettings RegenerationSettings = GenerationSettings;
 	RegenerationSettings.SpawnLimiter = 0.1f;
 	
-	Generate(RegenerationSettings);
+	GenerateNodes(RegenerationSettings);
+	GenerateCollectables(RegenerationSettings);
 }
 
 FBiomeGenerationData* UWorldGenerationHandlerComponent::GetBiomeGenerationData(const FName& BiomeName)

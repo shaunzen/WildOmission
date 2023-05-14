@@ -30,8 +30,9 @@ void ASaveHandler::BeginPlay()
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
 
+	// Set this to a more reasonable time when releasing, this is only 5 seconds for testing.
 	FTimerHandle RegenerationTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, this, &ASaveHandler::RegenerateResources, 120.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, this, &ASaveHandler::RegenerateResources, 5.0f, true);
 }
 
 void ASaveHandler::SaveGame()
@@ -106,8 +107,8 @@ void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
 	FWorldGenerationSettings GenerationSettings;
 	FTimerHandle WorldGenerationTimerHandle;
 	FTimerDelegate WorldGenerationTimerDelegate;
-	
-	WorldGenerationTimerDelegate.BindUFunction(WorldGenerationHandlerComponent, FName("Generate"), GenerationSettings);
+
+	WorldGenerationTimerDelegate.BindUFunction(WorldGenerationHandlerComponent, FName("Generate"), GenerationSettings, SaveToModify);
 
 	GetWorld()->GetTimerManager().SetTimer(WorldGenerationTimerHandle, WorldGenerationTimerDelegate, 1.0f, false);
 	
@@ -117,6 +118,18 @@ void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
 void ASaveHandler::RegenerateResources()
 {
 	FWorldGenerationSettings GenerationSettings;
+
+	TArray<AActor*> AllNodesInWorld;
+	TArray<AActor*> AllCollectablesInWorld;
+	
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Node"), AllNodesInWorld);
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Collectable"), AllCollectablesInWorld);
+
+	if (AllNodesInWorld.Num() > GenerationSettings.MinNodeCount || AllCollectablesInWorld.Num() > GenerationSettings.MinCollectableCount)
+	{
+		return;
+	}
+
 	WorldGenerationHandlerComponent->RegenerateResources(GenerationSettings);
 }
 

@@ -51,4 +51,5 @@ private:
 	void ValidateSave();
 
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
+
 };

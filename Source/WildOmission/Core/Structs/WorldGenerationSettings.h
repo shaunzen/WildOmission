@@ -22,4 +22,11 @@ struct FWorldGenerationSettings
 
 	UPROPERTY(EditDefaultsOnly)
 	float SpawnLimiter = 1;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 MinNodeCount = 30;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 MinCollectableCount = 20;
+
 };
