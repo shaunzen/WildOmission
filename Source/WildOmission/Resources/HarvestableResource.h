@@ -29,6 +29,9 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	FInventoryItem ItemYield;
+
+	UPROPERTY(EditDefaultsOnly)
+	FInventoryItem SpecialItemDrop;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> RequiredToolType;
@@ -38,5 +41,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
+
+	FInventoryItem HandleYield(float GatherMultiplier);
+	bool ShouldGiveSpecialItemDrop();
 
 };

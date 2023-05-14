@@ -18,7 +18,7 @@ AHarvestableResource::AHarvestableResource()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMeshComponent"));
 	RootComponent = MeshComponent;
 
-	Durability = 35;
+	Durability = 10;
 }
 
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
@@ -36,16 +36,13 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 		return;
 	}
 
-	FInventoryItem ItemToGive;
-	ItemToGive = ItemYield;
-	ItemToGive.Quantity = ItemYield.Quantity * HarvestingTool->GetGatherMultiplier();
+	
+	HarvestingInventoryComponent->AddItem(HandleYield(HarvestingTool->GetGatherMultiplier()));
 
-	if (ItemToGive.Quantity <= 0)
+	if (ShouldGiveSpecialItemDrop())
 	{
-		ItemToGive.Quantity = 1;
+		HarvestingInventoryComponent->AddItem(SpecialItemDrop);
 	}
-
-	HarvestingInventoryComponent->AddItem(ItemToGive);
 
 	Durability--;
 
@@ -53,6 +50,36 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor)
 	{
 		Destroy();
 	}
+}
+
+FInventoryItem AHarvestableResource::HandleYield(float GatherMultiplier)
+{
+	FInventoryItem ItemToGive;
+	ItemToGive = ItemYield;
+	ItemToGive.Quantity = ItemYield.Quantity * GatherMultiplier;
+
+	if (ItemToGive.Quantity <= 0)
+	{
+		ItemToGive.Quantity = 1;
+	}
+
+	return ItemToGive;
+}
+
+bool AHarvestableResource::ShouldGiveSpecialItemDrop()
+{
+	if (SpecialItemDrop.Quantity == 0 || SpecialItemDrop.Name == FName())
+	{
+		return false;
+	}
+
+	int32 GiveSpecialItemValue = FMath::RandRange(0, 100);
+	if (GiveSpecialItemValue > 85)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 TEnumAsByte<EToolType> AHarvestableResource::GetRequiredToolType() const

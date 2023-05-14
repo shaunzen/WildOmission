@@ -128,7 +128,7 @@ AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter() const
 
 void AEquipableItem::Client_PlayThirdPersonEquipMontage_Implementation()
 {
-	if (GetOwnerCharacter()->IsLocallyControlled())
+	if (GetOwnerCharacter() == nullptr || GetOwnerCharacter()->IsLocallyControlled())
 	{
 		return;
 	}
