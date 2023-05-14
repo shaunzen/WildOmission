@@ -20,12 +20,12 @@ ACollectableResource::ACollectableResource()
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 
 	ConstructorHelpers::FObjectFinder<USoundBase> CollectSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Pickup/Pickup_Cue"));
-	if (!CollectSoundObject.Succeeded())
+	if (CollectSoundObject.Succeeded())
 	{
-		return;
+		CollectSound = CollectSoundObject.Object;
 	}
 
-	CollectSound = CollectSoundObject.Object;
+	Tags.Add(FName("Collectable"));
 }
 
 void ACollectableResource::Interact(AActor* Interactor)
