@@ -23,8 +23,8 @@ void UServerBrowserWidget::Setup(UMainMenuWidget* InMainMenuParent)
 	ParentMenu = InMainMenuParent;
 
 	JoinButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::JoinServer);
-	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
 	RefreshListButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::RefreshList);
+	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
 }
 
 void UServerBrowserWidget::Open()
@@ -34,7 +34,6 @@ void UServerBrowserWidget::Open()
 
 void UServerBrowserWidget::SetServerList(TArray<FServerData> ServerNames)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Server Name count %i"), ServerNames.Num());
 	UWorld* World = GetWorld();
 
 	if (World == nullptr)

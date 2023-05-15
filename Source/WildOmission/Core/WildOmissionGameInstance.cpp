@@ -316,12 +316,8 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		}
 		ServerNames.Add(Data);
 	}
-	MainMenuWidget->SetServerList(ServerNames);
-}
 
-void UWildOmissionGameInstance::OnFindFriendSessionComplete(int32 LocalUser, bool Success, const TArray<FOnlineSessionSearchResult>& Results)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Found %i session from friends"), Results.Num()));
+	MainMenuWidget->SetServerList(ServerNames);
 }
 
 void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)

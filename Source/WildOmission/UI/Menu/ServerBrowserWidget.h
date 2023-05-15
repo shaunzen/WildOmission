@@ -50,7 +50,12 @@ private:
 
 	TOptional<uint32> SelectedServerIndex;
 	
+	UFUNCTION()
 	void UpdateServerListChildren();
+	
+	UFUNCTION()
 	void JoinServer();
+
+	UFUNCTION()
 	void RefreshList();
 }; 
