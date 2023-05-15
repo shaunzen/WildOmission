@@ -5,6 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "OnlineSessionSettings.h"
+#include "Interfaces/OnlineFriendsInterface.h" 
 #include "WildOmission/UI/Menu/MainMenuWidget.h"
 #include "WildOmission/UI/Menu/GameplayMenuWidget.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
@@ -43,13 +44,14 @@ void UWildOmissionGameInstance::Init()
 	Super::Init();
 
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
-
+	
 	if (Subsystem == nullptr)
 	{
 		return;
 	}
 
 	SessionInterface = Subsystem->GetSessionInterface();
+	FriendsInterface = Subsystem->GetFriendsInterface();
 
 	if (!SessionInterface.IsValid() || GEngine == 0)
 	{
@@ -123,6 +125,7 @@ void UWildOmissionGameInstance::QuitToMenu()
 void UWildOmissionGameInstance::RefreshServerList()
 {
 	UE_LOG(LogTemp, Display, TEXT("Refreshing Server List"));
+	
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid() == false)
 	{
@@ -132,8 +135,19 @@ void UWildOmissionGameInstance::RefreshServerList()
 	// Uncomment for lan results using null
 	//SessionSearch->bIsLanQuery = true;
 	SessionSearch->MaxSearchResults = 100;
+
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+
+	TArray<TSharedRef<FOnlineFriend>> OnlineFriends;
+	FriendsInterface->GetFriendsList(0, FString("Friends"), OnlineFriends);
+	TArray<FUniqueNetIdRef> FriendNetIdList;
+	for (TSharedRef<FOnlineFriend> OnlineFriend : OnlineFriends)
+	{
+		FOnlineFriend& ThisOnlineFriend = OnlineFriend.Get();
+
+		SessionInterface->FindFriendSession(0, ThisOnlineFriend.GetUserId().Get());
+	}
 }
 
 //****************************
@@ -208,12 +222,10 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = false;
 	SessionSettings.NumPublicConnections = 5;
-	SessionSettings.bShouldAdvertise = true;
+	SessionSettings.bShouldAdvertise = !FriendsOnlySession;
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.bUseLobbiesIfAvailable = true;
 	SessionSettings.bAllowJoinInProgress = true;
-	SessionSettings.bAllowInvites = true;
-	SessionSettings.bAllowJoinViaPresenceFriendsOnly = FriendsOnlySession;
 
 	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);

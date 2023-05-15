@@ -34,6 +34,7 @@ void UServerBrowserWidget::Open()
 
 void UServerBrowserWidget::SetServerList(TArray<FServerData> ServerNames)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Server Name count %i"), ServerNames.Num());
 	UWorld* World = GetWorld();
 
 	if (World == nullptr)
