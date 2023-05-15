@@ -30,9 +30,8 @@ void ASaveHandler::BeginPlay()
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
 
-	// Set this to a more reasonable time when releasing, this is only 5 seconds for testing.
 	FTimerHandle RegenerationTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, this, &ASaveHandler::RegenerateResources, 5.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, this, &ASaveHandler::RegenerateResources, 120.0f, true);
 }
 
 void ASaveHandler::SaveGame()
