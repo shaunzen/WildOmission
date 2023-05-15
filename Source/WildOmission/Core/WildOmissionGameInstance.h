@@ -31,7 +31,7 @@ public:
 	void StartSingleplayer(const FString& WorldName);
 
 	UFUNCTION()
-	void Host(const FString& ServerName, const FString& WorldName);
+	void Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false);
 	
 	UFUNCTION()
 	void Join(const uint32& Index);
@@ -69,6 +69,8 @@ private:
 
 	FString DesiredServerName;
 	FString WorldToLoad;
+	bool FriendsOnlySession;
+
 	UFUNCTION()
 	void CreateSession(FName SessionName = FName(""), bool Success = true);
 

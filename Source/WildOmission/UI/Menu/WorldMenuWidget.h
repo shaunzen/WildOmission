@@ -36,6 +36,9 @@ private:
 	UCheckBox* MultiplayerCheckBox;
 	
 	UPROPERTY(Meta = (BindWidget))
+	UCheckBox* FriendsOnlyCheckBox;
+	
+	UPROPERTY(Meta = (BindWidget))
 	UWidget* HostSettingsMenu;
 	
 	UPROPERTY(Meta = (BindWidget))

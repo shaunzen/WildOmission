@@ -163,7 +163,7 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 	World->ServerTravel(LoadString);
 }
 
-void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& WorldName)
+void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly)
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -172,6 +172,7 @@ void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& W
 	UE_LOG(LogTemp, Warning, TEXT("Hosting Server Named: %s"), *ServerName);
 	DesiredServerName = ServerName;
 	WorldToLoad = WorldName;
+	FriendsOnlySession = FriendsOnly;
 	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
 	{
@@ -211,6 +212,8 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.bUseLobbiesIfAvailable = true;
 	SessionSettings.bAllowJoinInProgress = true;
+	SessionSettings.bAllowInvites = true;
+	SessionSettings.bAllowJoinViaPresenceFriendsOnly = FriendsOnlySession;
 
 	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);

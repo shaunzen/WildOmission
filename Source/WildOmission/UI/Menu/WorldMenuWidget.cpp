@@ -71,7 +71,7 @@ void UWorldMenuWidget::PlayButtonClicked()
 			return;
 		}
 
-		GameInstance->Host(ServerName, WorldName);
+		GameInstance->Host(ServerName, WorldName, FriendsOnlyCheckBox->IsChecked());
 	}
 	else
 	{
