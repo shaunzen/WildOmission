@@ -40,6 +40,7 @@ public:
 	void ExitGame();
 
 	void SetServerList(TArray<FServerData> InServerData);
+	void SetFriendServerList(TArray<FServerData> InFriendServerData);
 
 	void Setup();
 	void Teardown();

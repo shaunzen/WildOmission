@@ -9,11 +9,13 @@
 #include "WildOmission/UI/Menu/MainMenuWidget.h"
 #include "WildOmission/UI/Menu/GameplayMenuWidget.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
 // Static session information
 const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
+const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
@@ -62,7 +64,6 @@ void UWildOmissionGameInstance::Init()
 	//SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnDestroySessionComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
-
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);	
 }
 
@@ -135,19 +136,9 @@ void UWildOmissionGameInstance::RefreshServerList()
 	// Uncomment for lan results using null
 	//SessionSearch->bIsLanQuery = true;
 	SessionSearch->MaxSearchResults = 100;
-
+	
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
-
-	TArray<TSharedRef<FOnlineFriend>> OnlineFriends;
-	FriendsInterface->GetFriendsList(0, FString("Friends"), OnlineFriends);
-	TArray<FUniqueNetIdRef> FriendNetIdList;
-	for (TSharedRef<FOnlineFriend> OnlineFriend : OnlineFriends)
-	{
-		FOnlineFriend& ThisOnlineFriend = OnlineFriend.Get();
-
-		SessionInterface->FindFriendSession(0, ThisOnlineFriend.GetUserId().Get());
-	}
 }
 
 //****************************
@@ -222,11 +213,14 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = false;
 	SessionSettings.NumPublicConnections = 5;
-	SessionSettings.bShouldAdvertise = !FriendsOnlySession;
+	SessionSettings.bShouldAdvertise = true;
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.bUseLobbiesIfAvailable = true;
 	SessionSettings.bAllowJoinInProgress = true;
+	SessionSettings.bAllowJoinViaPresence = true;
+	SessionSettings.bAllowJoinViaPresenceFriendsOnly = false;
 
+	SessionSettings.Set(FRIENDS_ONLY_SETTINGS_KEY, FriendsOnlySession, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
@@ -293,6 +287,20 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 	TArray<FServerData> ServerNames;
 	for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
 	{
+		bool IsThisFriendsOnlySession;
+		if (SearchResult.Session.SessionSettings.Get(FRIENDS_ONLY_SETTINGS_KEY, IsThisFriendsOnlySession))
+		{
+			bool IsHostFriend = FriendsInterface->IsFriend(0, *SearchResult.Session.OwningUserId, FString());
+			if (IsThisFriendsOnlySession == true && IsHostFriend == false)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			continue;
+		}
+
 		FServerData Data;
 		Data.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
 		Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
@@ -309,6 +317,11 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		ServerNames.Add(Data);
 	}
 	MainMenuWidget->SetServerList(ServerNames);
+}
+
+void UWildOmissionGameInstance::OnFindFriendSessionComplete(int32 LocalUser, bool Success, const TArray<FOnlineSessionSearchResult>& Results)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Found %i session from friends"), Results.Num()));
 }
 
 void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
