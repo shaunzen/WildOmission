@@ -41,7 +41,7 @@ void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)
 {
 	FString TextString = Text.ToString();
 
-	if (TextString.Len() > 16)
+	if (TextString.Len() > 32)
 	{
 		TextString = TextString.LeftChop(1);
 	}

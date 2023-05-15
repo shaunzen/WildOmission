@@ -8,6 +8,7 @@
 #include "Components/CheckBox.h"
 #include "Components/TextBlock.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
+#include "GameFramework/PlayerState.h"
 
 void UWorldMenuWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
@@ -24,13 +25,23 @@ void UWorldMenuWidget::Open(const FString& InWorldName)
 	WorldName = InWorldName;
 
 	Title->SetText(FText::FromString(WorldName));
+
+	// Setting Placeholder Server Name
+	FString PlaceholderServerName;
+	APlayerState* PlayerState = GetOwningPlayerState();
+	if (PlayerState == nullptr)
+	{
+		return;
+	}
+	PlaceholderServerName = FString::Printf(TEXT("%s's Server"), *PlayerState->GetPlayerName());
+	ServerNameInputBox->SetText(FText::FromString(PlaceholderServerName));
 }
 
 void UWorldMenuWidget::ServerNameOnTextChanged(const FText& Text)
 {
 	FString TextString = Text.ToString();
 
-	if (TextString.Len() > 16)
+	if (TextString.Len() > 32)
 	{
 		TextString = TextString.LeftChop(1);
 	}
