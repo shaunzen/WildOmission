@@ -15,5 +15,11 @@ void AWildOmissionGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 void AWildOmissionGameState::SendChatMessage(APlayerState* Sender, const FString& Message)
 {
 	FString SenderName = Sender->GetPlayerName();
+
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("%s is sending %s"), *SenderName, *Message));
+}
+
+void AWildOmissionGameState::Server_SendChatMessage_Implementation(APlayerState* Sender, const FString& Message)
+{
+
 }
