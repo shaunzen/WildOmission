@@ -21,6 +21,6 @@ struct FChatMessage
 	FString Message;
 
 	UPROPERTY()
-	float TimeSent;
+	double TimeSent;
 
 };
