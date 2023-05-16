@@ -26,6 +26,8 @@ void UGameChatWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	MessageContainer->ClearChildren();
+
 	Close();
 	SendMessageButton->OnClicked.AddDynamic(this, &UGameChatWidget::SendMessage);
 	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
@@ -69,6 +71,12 @@ void UGameChatWidget::Open(UPlayerHUDWidget* InParentHUD)
 	ParentHUD = InParentHUD;
 	Opened = true;
 	MessagePanel->SetVisibility(ESlateVisibility::Visible);
+
+	// Show all old messages
+	for (UWidget* Widget : MessageContainer->GetAllChildren())
+	{
+		Widget->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
 void UGameChatWidget::Close()
