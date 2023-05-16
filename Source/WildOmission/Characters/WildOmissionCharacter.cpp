@@ -428,7 +428,7 @@ void AWildOmissionCharacter::SecondaryReleased()
 
 void AWildOmissionCharacter::ToggleInventoryMenu()
 {
-	if (PlayerHUDWidget == nullptr)
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsChatMenuOpen())
 	{
 		return;
 	}
@@ -441,7 +441,7 @@ void AWildOmissionCharacter::ToggleInventoryMenu()
 
 void AWildOmissionCharacter::ToggleCraftingMenu()
 {
-	if (PlayerHUDWidget == nullptr)
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsChatMenuOpen())
 	{
 		return;
 	}
@@ -454,7 +454,7 @@ void AWildOmissionCharacter::ToggleCraftingMenu()
 
 void AWildOmissionCharacter::ToggleChat()
 {
-	if (PlayerHUDWidget == nullptr)
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsChatMenuOpen())
 	{
 		return;
 	}
