@@ -14,6 +14,7 @@
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "WildOmission/UI/Player/DeathMenuWidget.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
+#include "WildOmission/Core/WildOmissionGameState.h"
 #include "UObject/ConstructorHelpers.h"
 
 AWildOmissionPlayerController::AWildOmissionPlayerController()
@@ -113,6 +114,18 @@ FString AWildOmissionPlayerController::GetUniqueID()
 	}
 
 	return ID;
+}
+
+void AWildOmissionPlayerController::Server_SendChatMessage_Implementation(APlayerState* Sender, const FString& Message)
+{
+	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
+	if (GameState == nullptr || Sender == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to send chat message, couldn't get state."));
+		return;
+	}
+
+	GameState->AddChatMessage(Sender, Message);
 }
 
 void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()

@@ -8,7 +8,8 @@
 void UChatMessageWidget::Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeSent)
 {
 	ParentChatWidget = InParent;
-	PlayerNameText->SetText(FText::FromString(PlayerName));
+	FString PlayerNameString = FString::Printf(TEXT("%s: "), *PlayerName);
+	PlayerNameText->SetText(FText::FromString(PlayerNameString));
 	MessageText->SetText(FText::FromString(Message));
 	TimeSent = InTimeSent;
 }

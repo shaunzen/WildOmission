@@ -22,17 +22,7 @@ void AWildOmissionGameState::OnRep_ChatMessages()
 	OnNewMessage.Broadcast();
 }
 
-void AWildOmissionGameState::SendChatMessage(APlayerState* Sender, const FString& Message)
-{
-	Server_SendChatMessage(Sender, Message);
-}
-
-void AWildOmissionGameState::GetChatMessages(TArray<FChatMessage>& OutChatMessages)
-{
-	OutChatMessages = ChatMessages;
-}
-
-void AWildOmissionGameState::Server_SendChatMessage_Implementation(APlayerState* Sender, const FString& Message)
+void AWildOmissionGameState::AddChatMessage(APlayerState* Sender, const FString& Message)
 {
 	if (Sender == nullptr)
 	{
@@ -46,4 +36,11 @@ void AWildOmissionGameState::Server_SendChatMessage_Implementation(APlayerState*
 	NewMessage.TimeSent = GetWorld()->GetRealTimeSeconds();
 
 	ChatMessages.Push(NewMessage);
+
+	OnRep_ChatMessages();
+}
+
+void AWildOmissionGameState::GetChatMessages(TArray<FChatMessage>& OutChatMessages)
+{
+	OutChatMessages = ChatMessages;
 }

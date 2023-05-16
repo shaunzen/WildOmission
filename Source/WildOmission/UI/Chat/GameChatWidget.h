@@ -9,6 +9,7 @@
 class UEditableTextBox;
 class UButton;
 class UChatMessageWidget;
+class UPlayerHUDWidget;
 
 UCLASS()
 class WILDOMISSION_API UGameChatWidget : public UUserWidget
@@ -21,7 +22,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	// Switches to typing message state
-	void Open();
+	void Open(UPlayerHUDWidget* InParentHUD);
 	// Switches back to overview state
 	void Close();
 
@@ -43,6 +44,8 @@ private:
 	TSubclassOf<UChatMessageWidget> ChatMessageClass;
 
 	bool Opened;
+
+	UPlayerHUDWidget* ParentHUD;
 
 	UFUNCTION()
 	void SendMessage();

@@ -28,6 +28,10 @@ public:
 
 	FString GetUniqueID();
 
+	UFUNCTION(Server, Reliable)
+	void Server_SendChatMessage(APlayerState* Sender, const FString& Message);
+
+
 	//*****************************
 	// Console functions
 	UFUNCTION(Exec)

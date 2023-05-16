@@ -3,9 +3,11 @@
 
 #include "GameChatWidget.h"
 #include "ChatMessageWidget.h"
+#include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "WildOmission/Core/WildOmissionGameState.h"
+#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "GameFramework/PlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -48,10 +50,23 @@ void UGameChatWidget::RefreshMessages()
 	TArray<FChatMessage> Messages;
 	GameState->GetChatMessages(Messages);
 
+	for (const FChatMessage& Message : Messages)
+	{
+		UChatMessageWidget* MessageWidget = CreateWidget<UChatMessageWidget>(this, ChatMessageClass);
+		if (MessageWidget == nullptr)
+		{
+			continue;
+		}
+
+		MessageWidget->Setup(this, Message.SenderName, Message.Message, Message.TimeSent);
+
+		MessageContainer->AddChild(MessageWidget);
+	}
 }
 
-void UGameChatWidget::Open()
+void UGameChatWidget::Open(UPlayerHUDWidget* InParentHUD)
 {
+	ParentHUD = InParentHUD;
 	Opened = true;
 	MessagePanel->SetVisibility(ESlateVisibility::Visible);
 }
@@ -70,18 +85,20 @@ bool UGameChatWidget::IsOpen() const
 void UGameChatWidget::SendMessage()
 {
 	// Return if no message was typed
-	if (MessageBox->GetText().ToString().Len() == 0)
+	if (MessageBox->GetText().ToString().Len() == 0 || ParentHUD == nullptr || GetOwningPlayer() == nullptr || GetOwningPlayerState() == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot send nothing in game chat."));
 		return;
 	}
 
-	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
-	if (GameState == nullptr || GetOwningPlayerState() == nullptr)
+	AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(GetOwningPlayer());
+	if (PlayerController == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to send chat message, couldn't get state."));
 		return;
 	}
 
-	GameState->SendChatMessage(GetOwningPlayerState(), MessageBox->GetText().ToString());
+	PlayerController->Server_SendChatMessage(GetOwningPlayerState(), MessageBox->GetText().ToString());
+
+	MessageBox->SetText(FText());
+	ParentHUD->ToggleChatMenu();
 }

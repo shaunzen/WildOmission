@@ -182,7 +182,7 @@ void UPlayerHUDWidget::ToggleChatMenu()
 	if (!IsMenuOpen())
 	{
 		OpenMenuPanel(false);
-		Chat->Open();
+		Chat->Open(this);
 	}
 	else if (Chat->IsOpen())
 	{
