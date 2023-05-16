@@ -2,7 +2,6 @@
 
 
 #include "WildOmissionGameState.h"
-#include "WildOmission/Core/Structs/ChatMessage.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 

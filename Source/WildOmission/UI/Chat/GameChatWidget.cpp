@@ -4,6 +4,9 @@
 #include "GameChatWidget.h"
 #include "ChatMessageWidget.h"
 #include "Components/Button.h"
+#include "Components/EditableTextBox.h"
+#include "WildOmission/Core/WildOmissionGameState.h"
+#include "GameFramework/PlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 
 UGameChatWidget::UGameChatWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -49,5 +52,19 @@ bool UGameChatWidget::IsOpen() const
 
 void UGameChatWidget::SendMessage()
 {
-	// if no message was typed, return
+	// Return if no message was typed
+	if (MessageBox->GetText().ToString().Len() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot send nothing in game chat."));
+		return;
+	}
+
+	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
+	if (GameState == nullptr || GetOwningPlayerState() == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to send chat message, couldn't get state."));
+		return;
+	}
+
+	GameState->SendChatMessage(GetOwningPlayerState(), MessageBox->GetText().ToString());
 }

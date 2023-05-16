@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
+#include "WildOmission/Core/Structs/ChatMessage.h"
 #include "WildOmissionGameState.generated.h"
-
-struct FChatMessage;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionGameState : public AGameStateBase
