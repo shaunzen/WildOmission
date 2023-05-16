@@ -89,7 +89,7 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	
 	APawn* PlayerPawn = GetOwningPlayerPawn();
-	if (PlayerPawn == nullptr)
+	if (PlayerPawn == nullptr || !Owner->GetParentHUD()->IsInventoryMenuOpen())
 	{
 		return FReply::Handled();
 	}

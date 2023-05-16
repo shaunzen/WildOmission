@@ -454,7 +454,7 @@ void AWildOmissionCharacter::ToggleCraftingMenu()
 
 void AWildOmissionCharacter::ToggleChat()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsChatMenuOpen())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
 	}
