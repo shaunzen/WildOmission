@@ -17,9 +17,8 @@ class WILDOMISSION_API UGameChatWidget : public UUserWidget
 
 public:
 	UGameChatWidget(const FObjectInitializer& ObjectInitializer);
-	virtual void NativeConstruct() override;
 
-	void RefreshMessages();
+	virtual void NativeConstruct() override;
 
 	// Switches to typing message state
 	void Open();
@@ -47,5 +46,8 @@ private:
 
 	UFUNCTION()
 	void SendMessage();
+
+	UFUNCTION()
+	void RefreshMessages();
 
 };

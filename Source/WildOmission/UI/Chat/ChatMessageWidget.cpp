@@ -2,11 +2,20 @@
 
 
 #include "ChatMessageWidget.h"
+#include "GameChatWidget.h"
 #include "Components/TextBlock.h"
 
-void UChatMessageWidget::Setup(const FString& PlayerName, const FString& Message, const int32& Index)
+void UChatMessageWidget::Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeSent)
 {
+	ParentChatWidget = InParent;
 	PlayerNameText->SetText(FText::FromString(PlayerName));
 	MessageText->SetText(FText::FromString(Message));
-	MessageIndex = Index;
+	TimeSent = InTimeSent;
+}
+
+void UChatMessageWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	// TODO determine show/hide state
 }

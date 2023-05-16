@@ -7,21 +7,28 @@
 #include "ChatMessageWidget.generated.h"
 
 class UTextBlock;
+class UGameChatWidget;
 
 UCLASS()
 class WILDOMISSION_API UChatMessageWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void Setup(const FString& PlayerName, const FString& Message, const int32& Index);
+	void Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeSent);
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
+	
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* PlayerNameText;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* MessageText;
 	
-	int32 MessageIndex;
+	double TimeSent;
+	
+	UPROPERTY()
+	UGameChatWidget* ParentChatWidget;
 
 };

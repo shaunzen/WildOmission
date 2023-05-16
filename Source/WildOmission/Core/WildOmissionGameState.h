@@ -21,6 +21,8 @@ public:
 	
 	FChatReplicatedSignature OnNewMessage;
 
+	void GetChatMessages(TArray<FChatMessage>& OutChatMessages);
+
 private:
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChatMessages)
 	TArray<FChatMessage> ChatMessages;

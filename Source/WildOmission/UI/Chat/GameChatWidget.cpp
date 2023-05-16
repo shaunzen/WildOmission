@@ -26,10 +26,27 @@ void UGameChatWidget::NativeConstruct()
 
 	Close();
 	SendMessageButton->OnClicked.AddDynamic(this, &UGameChatWidget::SendMessage);
+	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
+	if (GameState == nullptr)
+	{
+		return;
+	}
+	GameState->OnNewMessage.AddDynamic(this, &UGameChatWidget::RefreshMessages);
+
 }
 
 void UGameChatWidget::RefreshMessages()
 {
+	MessageContainer->ClearChildren();
+
+	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
+	if (GameState == nullptr)
+	{
+		return;
+	}
+
+	TArray<FChatMessage> Messages;
+	GameState->GetChatMessages(Messages);
 
 }
 

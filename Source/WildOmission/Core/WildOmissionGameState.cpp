@@ -27,6 +27,11 @@ void AWildOmissionGameState::SendChatMessage(APlayerState* Sender, const FString
 	Server_SendChatMessage(Sender, Message);
 }
 
+void AWildOmissionGameState::GetChatMessages(TArray<FChatMessage>& OutChatMessages)
+{
+	OutChatMessages = ChatMessages;
+}
+
 void AWildOmissionGameState::Server_SendChatMessage_Implementation(APlayerState* Sender, const FString& Message)
 {
 	if (Sender == nullptr)
