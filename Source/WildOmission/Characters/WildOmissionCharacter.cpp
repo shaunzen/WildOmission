@@ -47,6 +47,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	ConstructorHelpers::FObjectFinder<UInputAction> SecondaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Secondary"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToggleInventoryMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleInventoryMenu"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToggleCraftingMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleCraftingMenu"));
+	ConstructorHelpers::FObjectFinder<UInputAction> ToggleChatActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleChat"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionIncrement"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionDecrement"));
 	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection1Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect1"));
@@ -72,6 +73,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		|| SecondaryActionBlueprint.Object == nullptr
 		|| ToggleInventoryMenuActionBlueprint.Object == nullptr
 		|| ToggleCraftingMenuActionBlueprint.Object == nullptr
+		|| ToggleChatActionBlueprint.Object == nullptr
 		|| ToolbarSelectionIncrementBlueprint.Object == nullptr
 		|| ToolbarSelectionDecrementBlueprint.Object == nullptr
 		|| ToolbarSelection1Blueprint.Object == nullptr
@@ -98,6 +100,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	SecondaryAction = SecondaryActionBlueprint.Object;
 	ToggleInventoryMenuAction = ToggleInventoryMenuActionBlueprint.Object;
 	ToggleCraftingMenuAction = ToggleCraftingMenuActionBlueprint.Object;
+	ToggleChatAction = ToggleChatActionBlueprint.Object;
 	ToolbarSelectionIncrementAction = ToolbarSelectionIncrementBlueprint.Object;
 	ToolbarSelectionDecrementAction = ToolbarSelectionDecrementBlueprint.Object;
 	ToolbarSelection1Action = ToolbarSelection1Blueprint.Object;
@@ -319,6 +322,7 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::SecondaryReleased);
 	EnhancedInputComponent->BindAction(ToggleInventoryMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleInventoryMenu);
 	EnhancedInputComponent->BindAction(ToggleCraftingMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleCraftingMenu);
+	EnhancedInputComponent->BindAction(ToggleChatAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleChat);
 	EnhancedInputComponent->BindAction(ToolbarSelectionIncrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionIncrement);
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 	EnhancedInputComponent->BindAction(ToolbarSelection1Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot1);
@@ -446,6 +450,19 @@ void AWildOmissionCharacter::ToggleCraftingMenu()
 	EquipComponent->SecondaryReleased();
 
 	PlayerHUDWidget->ToggleCraftingMenu();
+}
+
+void AWildOmissionCharacter::ToggleChat()
+{
+	if (PlayerHUDWidget == nullptr)
+	{
+		return;
+	}
+
+	EquipComponent->PrimaryReleased();
+	EquipComponent->SecondaryReleased();
+
+	PlayerHUDWidget->ToggleChatMenu();
 }
 
 void AWildOmissionCharacter::ToolbarSelectionIncrement()

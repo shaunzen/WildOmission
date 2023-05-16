@@ -21,9 +21,19 @@ public:
 
 	void RefreshMessages();
 
+	// Switches to typing message state
+	void Open();
+	// Switches back to overview state
+	void Close();
+
+	bool IsOpen() const;
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* MessageContainer;
+	
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* MessagePanel;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UEditableTextBox* MessageBox;
@@ -32,6 +42,8 @@ private:
 	UButton* SendMessageButton;
 	
 	TSubclassOf<UChatMessageWidget> ChatMessageClass;
+
+	bool Opened;
 
 	UFUNCTION()
 	void SendMessage();

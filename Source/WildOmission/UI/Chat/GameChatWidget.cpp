@@ -2,6 +2,7 @@
 
 
 #include "GameChatWidget.h"
+#include "ChatMessageWidget.h"
 #include "Components/Button.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -12,18 +13,38 @@ UGameChatWidget::UGameChatWidget(const FObjectInitializer& ObjectInitializer) : 
 	{
 		ChatMessageClass = ChatMessageBlueprint.Class;
 	}
+
+	Opened = false;
 }
 
 void UGameChatWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	Close();
 	SendMessageButton->OnClicked.AddDynamic(this, &UGameChatWidget::SendMessage);
 }
 
 void UGameChatWidget::RefreshMessages()
 {
 
+}
+
+void UGameChatWidget::Open()
+{
+	Opened = true;
+	MessagePanel->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UGameChatWidget::Close()
+{
+	Opened = false;
+	MessagePanel->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+bool UGameChatWidget::IsOpen() const
+{
+	return Opened;
 }
 
 void UGameChatWidget::SendMessage()

@@ -21,7 +21,7 @@ class UPlayerInventoryWidget;
 class UCraftingMenuWidget;
 class USelectedItemWidget;
 class UHoveredItemNameTag;
-
+class UGameChatWidget;
 class AItemContainerBase;
 
 UCLASS(Abstract)
@@ -47,6 +47,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ToggleCraftingMenu();
 
+	UFUNCTION(BlueprintCallable)
+	void ToggleChatMenu();
+
 	// Getters
 	UPlayerInventoryWidget* GetPlayerInventoryWidget();
 	UHoveredItemNameTag* GetHoveredItemNameTag() const;
@@ -60,6 +63,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsCraftingMenuOpen() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsChatMenuOpen() const;
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -92,6 +98,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UHoveredItemNameTag* HoveredItemNameTag;
 
+	UPROPERTY(Meta = (BindWidget))
+	UGameChatWidget* Chat;
+
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
 
@@ -104,7 +113,7 @@ private:
 
 	void UpdateBrandingText();
 
-	void OpenMenuPanel();
+	void OpenMenuPanel(bool ShowBackground = true);
 	void SwitchToInventoryMenu();
 	void SwitchToCraftingMenu();
 	void CloseMenuPanel();

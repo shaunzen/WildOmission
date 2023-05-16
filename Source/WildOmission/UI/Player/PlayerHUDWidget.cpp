@@ -17,6 +17,7 @@
 #include "WildOmission/Components/EquipComponent.h"
 #include "WildOmission/Items/BuildingHammerItem.h"
 #include "WildOmission/UI/Crafting/CraftingMenuWidget.h"
+#include "WildOmission/UI/Chat/GameChatWidget.h"
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
@@ -132,6 +133,11 @@ void UPlayerHUDWidget::ToggleInventoryMenu()
 		OwnerInventoryManipulator->DropSelectedItemInWorld(false);
 		CloseMenuPanel();
 	}
+	else
+	{
+		Chat->Close();
+		SwitchToInventoryMenu();
+	}
 }
 
 void UPlayerHUDWidget::ToggleCraftingMenu()
@@ -164,11 +170,30 @@ void UPlayerHUDWidget::ToggleCraftingMenu()
 		SwitchToInventoryMenu();
 		CloseMenuPanel();
 	}
+	else
+	{
+		Chat->Close();
+		SwitchToCraftingMenu();
+	}
+}
+
+void UPlayerHUDWidget::ToggleChatMenu()
+{
+	if (!IsMenuOpen())
+	{
+		OpenMenuPanel(false);
+		Chat->Open();
+	}
+	else if (Chat->IsOpen())
+	{
+		Chat->Close();
+		CloseMenuPanel();
+	}
 }
 
 bool UPlayerHUDWidget::IsMenuOpen() const
 {
-	return bInventoryMenuOpen || bCraftingMenuOpen;
+	return bInventoryMenuOpen || bCraftingMenuOpen || IsChatMenuOpen();
 }
 
 bool UPlayerHUDWidget::IsInventoryMenuOpen() const
@@ -179,6 +204,11 @@ bool UPlayerHUDWidget::IsInventoryMenuOpen() const
 bool UPlayerHUDWidget::IsCraftingMenuOpen() const
 {
 	return bCraftingMenuOpen;
+}
+
+bool UPlayerHUDWidget::IsChatMenuOpen() const
+{
+	return Chat->IsOpen();
 }
 
 UPlayerInventoryWidget* UPlayerHUDWidget::GetPlayerInventoryWidget()
@@ -208,7 +238,7 @@ void UPlayerHUDWidget::UpdateBrandingText()
 	BrandingTextBlock->SetText(FText::FromString(BrandingString));
 }
 
-void UPlayerHUDWidget::OpenMenuPanel()
+void UPlayerHUDWidget::OpenMenuPanel(bool ShowBackground)
 {
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
@@ -222,7 +252,11 @@ void UPlayerHUDWidget::OpenMenuPanel()
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = true;
 	SetMouseCursorToCenter();
-	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Visible);
+
+	if (ShowBackground)
+	{
+		MenuBackgroundBorder->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
 void UPlayerHUDWidget::SwitchToInventoryMenu()

@@ -153,6 +153,9 @@ private:
 
 	UPROPERTY()
 	UInputAction* ToggleCraftingMenuAction;
+
+	UPROPERTY()
+	UInputAction* ToggleChatAction;
 	
 	UPROPERTY()
 	UInputAction* ToolbarSelectionIncrementAction;
@@ -204,6 +207,8 @@ private:
 	void ToggleInventoryMenu();
 	
 	void ToggleCraftingMenu();
+
+	void ToggleChat();
 
 	void ToolbarSelectionIncrement();
 	
