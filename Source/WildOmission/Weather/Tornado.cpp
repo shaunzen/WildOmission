@@ -19,9 +19,10 @@ ATornado::ATornado()
 
 	RadialSuctionComponent = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent"));
 	RadialSuctionComponent->ForceStrength = -999999.0f;
-	RadialSuctionComponent->Radius = 8000.0f;
+	RadialSuctionComponent->Radius = 4000.0f;
+	RadialSuctionComponent->Falloff = ERadialImpulseFalloff::RIF_Linear;
 	RadialSuctionComponent->SetupAttachment(MeshComponent);
-	RadialSuctionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
+	RadialSuctionComponent->SetRelativeLocation(FVector(1000.0f, 0.0f, 3000.0f));
 
 	RotationSpeed = 30.0f;
 	MovementSpeed = 1000.0f;
