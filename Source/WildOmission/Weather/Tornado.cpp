@@ -56,7 +56,7 @@ void ATornado::HandleMovement()
 	FVector VectorTowardTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
 	float DistanceFromTarget = FVector::Distance(TargetLocation, CurrentLocation);
 	
-	if (DistanceFromTarget < KINDA_SMALL_NUMBER)
+	if (DistanceFromTarget < 100.0f)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Getting new target location."));
 		GetNewTargetLocation();
