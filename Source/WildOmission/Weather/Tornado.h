@@ -24,5 +24,13 @@ protected:
 private:	
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float RotationSpeed;
 
+	UPROPERTY(EditDefaultsOnly)
+	float MovementSpeed;
+
+	void HandleMovement();
+	void HandleRotation();
 };
