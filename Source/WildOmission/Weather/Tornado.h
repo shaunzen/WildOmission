@@ -17,6 +17,9 @@ public:
 	ATornado();
 
 	virtual void Tick(float DeltaTime) override;
+
+	void OnSpawn();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,6 +33,11 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float MovementSpeed;
+
+	FVector TargetLocation;
+	FVector OldTargetLocation;
+
+	void GetNewTargetLocation();
 
 	void HandleMovement();
 	void HandleRotation();

@@ -8,6 +8,7 @@
 
 class ASaveHandler;
 class AWildOmissionCharacter;
+class ATornado;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase
@@ -15,6 +16,8 @@ class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	AWildOmissionGameMode();
+
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 	virtual void StartPlay() override;
@@ -29,6 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void ResetLocationOfAllConnectedPlayers();
 
+	UFUNCTION(BlueprintCallable, Exec)
+	void SpawnTornado();
+
 	ASaveHandler* GetSaveHandler();
 
 	TArray<APlayerController*> GetAllPlayerControllers();
@@ -42,5 +48,8 @@ public:
 private:
 	UPROPERTY()
 	ASaveHandler* SaveHandler;
+	
+	UPROPERTY()
+	TSubclassOf<ATornado> TornadoClass;
 
 };

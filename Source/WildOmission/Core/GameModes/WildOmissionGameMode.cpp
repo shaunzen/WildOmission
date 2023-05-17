@@ -9,6 +9,17 @@
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
+#include "WildOmission/Weather/Tornado.h"
+#include "UObject/ConstructorHelpers.h"
+
+AWildOmissionGameMode::AWildOmissionGameMode()
+{
+	ConstructorHelpers::FClassFinder<ATornado> TornadoBlueprint(TEXT("/Game/WildOmission/Weather/BP_Tornado"));
+	if (TornadoBlueprint.Succeeded())
+	{
+		TornadoClass = TornadoBlueprint.Class;
+	}
+}
 
 void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
@@ -62,6 +73,12 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 
 		PlayerController->GetPawn()->SetActorLocation(FVector(0.0f, 0.0f, 1000.0f));
 	}
+}
+
+void AWildOmissionGameMode::SpawnTornado()
+{
+	ATornado* SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass);
+	SpawnedTornado->OnSpawn();
 }
 
 ASaveHandler* AWildOmissionGameMode::GetSaveHandler()
