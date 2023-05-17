@@ -84,9 +84,14 @@ UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
 	return SaveFile;
 }
 
-UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler()
+UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
 {
 	return PlayerSaveHandlerComponent;
+}
+
+UWorldGenerationHandlerComponent* ASaveHandler::GetWorldGenerationHandler() const
+{
+	return WorldGenerationHandlerComponent;
 }
 
 void ASaveHandler::ValidateSave()

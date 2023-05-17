@@ -25,6 +25,8 @@ public:
 	UFUNCTION()
 	void RegenerateResources(const FWorldGenerationSettings& GenerationSettings);
 
+	FVector2D GetWorldSizeMeters();
+
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
 
 private:

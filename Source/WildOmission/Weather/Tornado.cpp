@@ -12,6 +12,7 @@ ATornado::ATornado()
 	SetReplicateMovement(true);
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
+	RootComponent = MeshComponent;
 
 	RotationSpeed = 30.0f;
 	MovementSpeed = 400.0f;
@@ -23,9 +24,16 @@ void ATornado::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ATornado::OnSpawn()
+void ATornado::OnSpawn(FVector2D InWorldSize)
 {
+	// Convert World Size from Meters to Centimeters
+	WorldSize = InWorldSize * FVector2D(100.0f);
 
+	TargetLocation = GetRandomLocationInWorld();
+	
+	SetActorLocation(TargetLocation);
+	
+	GetNewTargetLocation();
 }
 
 // Called every frame
@@ -43,15 +51,18 @@ void ATornado::Tick(float DeltaTime)
 
 void ATornado::HandleMovement()
 {
-	FVector CurrentPosition = GetActorLocation();
+	FVector CurrentLocation = GetActorLocation();
 	
-	if (GetActorLocation() == TargetLocation)
+	float DistanceFromTarget = FVector::Distance(CurrentLocation, TargetLocation);
+	float DistanceFromOldTarget = FVector::Distance(CurrentLocation, OldTargetLocation);
+	if (DistanceFromTarget < KINDA_SMALL_NUMBER)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Getting new target location."));
 		GetNewTargetLocation();
 	}
 
-	SetActorLocation(FMath::Lerp(CurrentPosition, TargetLocation, 0.01f));
+
+	SetActorLocation(FMath::Lerp(CurrentLocation, TargetLocation, 0.01f * DistanceFromOldTarget));
 }
 
 void ATornado::HandleRotation()
@@ -68,10 +79,15 @@ void ATornado::HandleRotation()
 
 void ATornado::GetNewTargetLocation()
 {
-	float X, Y;
-	X = FMath::RandRange(-50000.0f, 50000.0f);
-	Y = FMath::RandRange(-50000.0f, 50000.0f);
-
 	OldTargetLocation = TargetLocation;
-	TargetLocation = FVector(X, Y, 0.0f);
+	TargetLocation = GetRandomLocationInWorld();
+}
+
+FVector ATornado::GetRandomLocationInWorld()
+{
+	float X, Y;
+	X = FMath::RandRange(-WorldSize.X, WorldSize.X);
+	Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
+
+	return FVector(X, Y, 0.0f);
 }

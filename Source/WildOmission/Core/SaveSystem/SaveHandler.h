@@ -28,7 +28,8 @@ public:
 
 	void LoadWorld();
 	
-	UPlayerSaveHandlerComponent* GetPlayerHandler();
+	UPlayerSaveHandlerComponent* GetPlayerHandler() const;
+	UWorldGenerationHandlerComponent* GetWorldGenerationHandler() const;
 
 	UWildOmissionSaveGame* GetSaveFile();
 

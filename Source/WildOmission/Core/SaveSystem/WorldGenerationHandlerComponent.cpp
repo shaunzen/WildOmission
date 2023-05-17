@@ -41,6 +41,12 @@ void UWorldGenerationHandlerComponent::RegenerateResources(const FWorldGeneratio
 	GenerateCollectables(RegenerationSettings);
 }
 
+FVector2D UWorldGenerationHandlerComponent::GetWorldSizeMeters()
+{
+	FWorldGenerationSettings Settings;
+	return FVector2D(Settings.WorldSizeMetersX, Settings.WorldSizeMetersY);
+}
+
 FBiomeGenerationData* UWorldGenerationHandlerComponent::GetBiomeGenerationData(const FName& BiomeName)
 {
 	if (BiomeGenerationDataTable == nullptr)

@@ -18,7 +18,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void OnSpawn();
+	void OnSpawn(FVector2D InWorldSize);
 
 protected:
 	// Called when the game starts or when spawned
@@ -36,8 +36,10 @@ private:
 
 	FVector TargetLocation;
 	FVector OldTargetLocation;
+	FVector2D WorldSize;
 
 	void GetNewTargetLocation();
+	FVector GetRandomLocationInWorld();
 
 	void HandleMovement();
 	void HandleRotation();

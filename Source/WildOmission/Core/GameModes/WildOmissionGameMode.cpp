@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/Weather/Tornado.h"
+#include "WildOmission/Core/SaveSystem/WorldGenerationHandlerComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 AWildOmissionGameMode::AWildOmissionGameMode()
@@ -78,7 +79,8 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 void AWildOmissionGameMode::SpawnTornado()
 {
 	ATornado* SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass);
-	SpawnedTornado->OnSpawn();
+
+	SpawnedTornado->OnSpawn(SaveHandler->GetWorldGenerationHandler()->GetWorldSizeMeters());
 }
 
 ASaveHandler* AWildOmissionGameMode::GetSaveHandler()
