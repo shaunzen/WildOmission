@@ -2,6 +2,7 @@
 
 
 #include "Tornado.h"
+#include "PhysicsEngine/RadialForceComponent.h"
 
 // Sets default values
 ATornado::ATornado()
@@ -13,7 +14,14 @@ ATornado::ATornado()
 	bAlwaysRelevant = true;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
+	MeshComponent->SetCollisionProfileName(FName("OverlapAllDynamic"));
 	RootComponent = MeshComponent;
+
+	RadialSuctionComponent = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent"));
+	RadialSuctionComponent->ForceStrength = -999999.0f;
+	RadialSuctionComponent->Radius = 8000.0f;
+	RadialSuctionComponent->SetupAttachment(MeshComponent);
+	RadialSuctionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
 
 	RotationSpeed = 30.0f;
 	MovementSpeed = 1000.0f;

@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Tornado.generated.h"
 
+class URadialForceComponent;
+
 //TODO make savable
 UCLASS()
 class WILDOMISSION_API ATornado : public AActor
@@ -28,6 +30,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 	
+	UPROPERTY(VisibleAnywhere)
+	URadialForceComponent* RadialSuctionComponent;
+
 	UPROPERTY(EditDefaultsOnly)
 	float RotationSpeed;
 
