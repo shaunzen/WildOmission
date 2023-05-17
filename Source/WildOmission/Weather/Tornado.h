@@ -34,8 +34,12 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float MovementSpeed;
 
+	UPROPERTY(VisibleAnywhere)
 	FVector TargetLocation;
+	
+	UPROPERTY(VisibleAnywhere)
 	FVector OldTargetLocation;
+
 	FVector2D WorldSize;
 
 	void GetNewTargetLocation();

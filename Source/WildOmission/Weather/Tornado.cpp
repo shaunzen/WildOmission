@@ -10,12 +10,13 @@ ATornado::ATornado()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	SetReplicateMovement(true);
+	bAlwaysRelevant = true;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
 	RootComponent = MeshComponent;
 
 	RotationSpeed = 30.0f;
-	MovementSpeed = 400.0f;
+	MovementSpeed = 1000.0f;
 }
 
 // Called when the game starts or when spawned
@@ -52,17 +53,17 @@ void ATornado::Tick(float DeltaTime)
 void ATornado::HandleMovement()
 {
 	FVector CurrentLocation = GetActorLocation();
+	FVector VectorTowardTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
+	float DistanceFromTarget = FVector::Distance(TargetLocation, CurrentLocation);
 	
-	float DistanceFromTarget = FVector::Distance(CurrentLocation, TargetLocation);
-	float DistanceFromOldTarget = FVector::Distance(CurrentLocation, OldTargetLocation);
 	if (DistanceFromTarget < KINDA_SMALL_NUMBER)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Getting new target location."));
 		GetNewTargetLocation();
 	}
 
-
-	SetActorLocation(FMath::Lerp(CurrentLocation, TargetLocation, 0.01f * DistanceFromOldTarget));
+	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * GetWorld()->GetDeltaSeconds());
+	SetActorLocation(NewLocation);
 }
 
 void ATornado::HandleRotation()
