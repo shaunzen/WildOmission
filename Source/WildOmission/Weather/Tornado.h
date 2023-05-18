@@ -31,7 +31,16 @@ private:
 	UStaticMeshComponent* MeshComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	URadialForceComponent* RadialSuctionComponent;
+	USceneComponent* RadialSuctionAnchor;
+
+	UPROPERTY(VisibleAnywhere)
+	URadialForceComponent* RadialSuctionComponent1;
+	UPROPERTY(VisibleAnywhere)
+	URadialForceComponent* RadialSuctionComponent2;
+	UPROPERTY(VisibleAnywhere)
+	URadialForceComponent* RadialSuctionComponent3;
+	UPROPERTY(VisibleAnywhere)
+	URadialForceComponent* RadialSuctionComponent4;
 
 	UPROPERTY(EditDefaultsOnly)
 	float RotationSpeed;
