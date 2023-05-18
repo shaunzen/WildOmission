@@ -29,6 +29,7 @@ public:
 
 protected:
 
-	float BaseWindDamage = 10.0f;
+	// Applied continuously, don't put too high.
+	float BaseWindDamage = 5.0f;
 
 };

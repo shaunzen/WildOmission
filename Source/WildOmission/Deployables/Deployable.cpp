@@ -66,7 +66,7 @@ void ADeployable::Tick(float DeltaTime)
 
 void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
 {
-	float DamageToApply = BaseWindDamage * DamageMultiplier;
+	float DamageToApply = BaseWindDamage * DamageMultiplier * GetWorld()->GetDeltaSeconds();
 	FRadialDamageEvent DamageEvent;
 	this->TakeDamage(DamageToApply, DamageEvent, nullptr, WindCauser);
 }

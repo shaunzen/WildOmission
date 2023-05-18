@@ -121,7 +121,7 @@ void ATornado::HandleDamage()
 {
 	TArray<FOverlapResult> Overlaps;
 	FVector WindOrigin = DistanceSuctionComponent->GetComponentLocation();
-	float WindRadius = DistanceSuctionComponent->Radius;
+	float WindRadius = DistanceSuctionComponent->Radius * 0.5f;
 	FCollisionObjectQueryParams ObjectParams(ECollisionChannel::ECC_WorldDynamic);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());
@@ -135,14 +135,15 @@ void ATornado::HandleDamage()
 		{
 			continue;
 		}
+		
 		// Get the closest point on the outer wall to the actor
-			// get a normal pointing toward the actor, multiply by half radius of sphere
+		FVector DirectionTowardActorFromCenter = (Overlap.GetActor()->GetActorLocation() - WindOrigin).GetSafeNormal();
+		FVector ClosestPointOnRadius = DirectionTowardActorFromCenter * (WindRadius * 0.5f);
 
-		// get the distance from the point and the actor
-		// devide that by the half radius, and thats the multiplier
+		float WindStrengthOnActor = FVector::Distance(ClosestPointOnRadius, Overlap.GetActor()->GetActorLocation());
 		float DamageMultiplier;
-		DamageMultiplier = ActorDistanceFromWind / DamagedByWindActor->GetBaseWindDamage();
-
+		DamageMultiplier = WindStrengthOnActor / (WindRadius * 0.5f);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Applying Damage with multiplier %f"), DamageMultiplier));
 		DamagedByWindActor->ApplyWindDamage(this, DamageMultiplier);
 	}
 }
