@@ -135,8 +135,11 @@ void ATornado::HandleDamage()
 		{
 			continue;
 		}
-		float ActorDistanceFromWind = FVector::Distance(WindOrigin, Overlap.GetActor()->GetActorLocation());
-		
+		// Get the closest point on the outer wall to the actor
+			// get a normal pointing toward the actor, multiply by half radius of sphere
+
+		// get the distance from the point and the actor
+		// devide that by the half radius, and thats the multiplier
 		float DamageMultiplier;
 		DamageMultiplier = ActorDistanceFromWind / DamagedByWindActor->GetBaseWindDamage();
 
