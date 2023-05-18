@@ -6,11 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "WildOmission/Core/Interfaces/DurabilityInterface.h"
+#include "WildOmission/Core/Interfaces/DamagedByWind.h"
 #include "BuildAnchorComponent.h"
 #include "Deployable.generated.h"
 
 UCLASS()
-class WILDOMISSION_API ADeployable : public AActor, public IDurabilityInterface, public ISavableObjectInterface
+class WILDOMISSION_API ADeployable : public AActor, public IDurabilityInterface, public IDamagedByWind, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 	
@@ -24,6 +25,8 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void ApplyWindDamage(AActor* WindCauser, float DamageMultiplier = 1.0f) override;
 
 	virtual float TakeDamage(float DamageAmount, const struct FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 

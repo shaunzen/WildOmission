@@ -42,6 +42,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	URadialForceComponent* RadialSuctionComponent4;
 
+	UPROPERTY(VisibleAnywhere)
+	URadialForceComponent* DistanceSuctionComponent;
+
 	UPROPERTY(EditDefaultsOnly)
 	float RotationSpeed;
 
@@ -60,5 +63,7 @@ private:
 	FVector GetRandomLocationInWorld();
 
 	void HandleMovement();
+	void HandleDamage();
 	void HandleRotation();
+
 };

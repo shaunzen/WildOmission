@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 ADeployable::ADeployable()
@@ -61,6 +62,13 @@ void ADeployable::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
+{
+	float DamageToApply = BaseWindDamage * DamageMultiplier;
+	FRadialDamageEvent DamageEvent;
+	this->TakeDamage(DamageToApply, DamageEvent, nullptr, WindCauser);
 }
 
 float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)

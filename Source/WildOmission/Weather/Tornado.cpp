@@ -3,6 +3,7 @@
 
 #include "Tornado.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "WildOmission/Core/Interfaces/DamagedByWind.h"
 
 // Sets default values
 ATornado::ATornado()
@@ -53,6 +54,14 @@ ATornado::ATornado()
 	RadialSuctionComponent4->SetupAttachment(RadialSuctionAnchor);
 	RadialSuctionComponent4->SetRelativeLocation(FVector(0.0f, -2000.0f, 0.0f));
 
+	DistanceSuctionComponent = CreateDefaultSubobject<URadialForceComponent>(FName("DistanceSuctionComponent"));
+	DistanceSuctionComponent->ForceStrength = -99999.0f;
+	DistanceSuctionComponent->Radius = 30000.0f;
+	DistanceSuctionComponent->Falloff = ERadialImpulseFalloff::RIF_Linear;
+	DistanceSuctionComponent->DestructibleDamage = 10.0f;
+	DistanceSuctionComponent->SetupAttachment(RadialSuctionAnchor);
+	DistanceSuctionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
+
 
 	RotationSpeed = 30.0f;
 	MovementSpeed = 1000.0f;
@@ -62,6 +71,8 @@ ATornado::ATornado()
 void ATornado::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//TODO bind overlaps to do damage to buildings
 }
 
 void ATornado::OnSpawn(FVector2D InWorldSize)
@@ -84,6 +95,7 @@ void ATornado::Tick(float DeltaTime)
 	if (HasAuthority())
 	{
 		HandleMovement();
+		HandleDamage();
 	}
 	
 	HandleRotation();
@@ -103,6 +115,33 @@ void ATornado::HandleMovement()
 
 	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * GetWorld()->GetDeltaSeconds());
 	SetActorLocation(NewLocation);
+}
+
+void ATornado::HandleDamage()
+{
+	TArray<FOverlapResult> Overlaps;
+	FVector WindOrigin = DistanceSuctionComponent->GetComponentLocation();
+	float WindRadius = DistanceSuctionComponent->Radius;
+	FCollisionObjectQueryParams ObjectParams(ECollisionChannel::ECC_WorldDynamic);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
+
+	GetWorld()->OverlapMultiByObjectType(Overlaps, WindOrigin, FQuat::Identity, ObjectParams, FCollisionShape::MakeSphere(WindRadius), Params);
+
+	for (const FOverlapResult& Overlap : Overlaps)
+	{
+		IDamagedByWind* DamagedByWindActor = Cast<IDamagedByWind>(Overlap.GetActor());
+		if (DamagedByWindActor == nullptr)
+		{
+			continue;
+		}
+		float ActorDistanceFromWind = FVector::Distance(WindOrigin, Overlap.GetActor()->GetActorLocation());
+		
+		float DamageMultiplier;
+		DamageMultiplier = ActorDistanceFromWind / DamagedByWindActor->GetBaseWindDamage();
+
+		DamagedByWindActor->ApplyWindDamage(this, DamageMultiplier);
+	}
 }
 
 void ATornado::HandleRotation()

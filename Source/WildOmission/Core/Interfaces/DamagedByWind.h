@@ -22,4 +22,13 @@ class WILDOMISSION_API IDamagedByWind
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+
+	virtual void ApplyWindDamage(AActor* WindCauser, float DamageMultiplier = 1.0f) = 0;
+
+	float GetBaseWindDamage() const;
+
+protected:
+
+	float BaseWindDamage = 10.0f;
+
 };
