@@ -56,7 +56,7 @@ ATornado::ATornado()
 
 	DistanceSuctionComponent = CreateDefaultSubobject<URadialForceComponent>(FName("DistanceSuctionComponent"));
 	DistanceSuctionComponent->ForceStrength = -99999.0f;
-	DistanceSuctionComponent->Radius = 30000.0f;
+	DistanceSuctionComponent->Radius = 20000.0f;
 	DistanceSuctionComponent->Falloff = ERadialImpulseFalloff::RIF_Linear;
 	DistanceSuctionComponent->DestructibleDamage = 10.0f;
 	DistanceSuctionComponent->SetupAttachment(RadialSuctionAnchor);
@@ -135,14 +135,10 @@ void ATornado::HandleDamage()
 		{
 			continue;
 		}
-		
-		// Get the closest point on the outer wall to the actor
-		FVector DirectionTowardActorFromCenter = (Overlap.GetActor()->GetActorLocation() - WindOrigin).GetSafeNormal();
-		FVector ClosestPointOnRadius = DirectionTowardActorFromCenter * (WindRadius * 0.5f);
 
-		float WindStrengthOnActor = FVector::Distance(ClosestPointOnRadius, Overlap.GetActor()->GetActorLocation());
-		float DamageMultiplier;
-		DamageMultiplier = WindStrengthOnActor / (WindRadius * 0.5f);
+		float DistanceFromOrigin = FVector::Distance(Overlap.GetActor()->GetActorLocation(), WindOrigin);
+		float DamageMultiplier = (WindRadius / DistanceFromOrigin) - 1.0f;
+		
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Applying Damage with multiplier %f"), DamageMultiplier));
 		DamagedByWindActor->ApplyWindDamage(this, DamageMultiplier);
 	}
