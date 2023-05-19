@@ -5,7 +5,7 @@
 #include "ChatMessageWidget.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "Components/Button.h"
-#include "ChatMessageBox.h"
+#include "Components/EditableTextBox.h"
 #include "WildOmission/Core/WildOmissionGameState.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "GameFramework/PlayerState.h"
@@ -27,10 +27,9 @@ void UGameChatWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	MessageContainer->ClearChildren();
-	
 	Close();
-	MessageBox->SetOwner(this);
-	SendMessageButton->OnClicked.AddDynamic(this, &UGameChatWidget::SendMessage);
+	MessageBox->OnTextCommitted.AddDynamic(this, &UGameChatWidget::OnMessageBoxTextCommitted);
+	SendMessageButton->OnClicked.AddDynamic(this, &UGameChatWidget::AttemptSendMessage);
 	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
 	if (GameState == nullptr)
 	{
@@ -91,7 +90,12 @@ bool UGameChatWidget::IsOpen() const
 	return Opened;
 }
 
-void UGameChatWidget::SendMessage()
+void UGameChatWidget::OnMessageBoxTextCommitted(const FText& MessageBoxText, ETextCommit::Type CommitMethod)
+{
+	AttemptSendMessage();
+}
+
+void UGameChatWidget::AttemptSendMessage()
 {
 	// Return if no message was typed
 	if (MessageBox->GetText().ToString().Len() == 0 || ParentHUD == nullptr || GetOwningPlayer() == nullptr || GetOwningPlayerState() == nullptr)
