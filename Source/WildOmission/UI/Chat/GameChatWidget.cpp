@@ -71,6 +71,7 @@ void UGameChatWidget::Open(UPlayerHUDWidget* InParentHUD)
 	ParentHUD = InParentHUD;
 	Opened = true;
 	MessagePanel->SetVisibility(ESlateVisibility::Visible);
+	MessageBox->SetFocus();
 
 	// Show all old messages
 	for (UWidget* Widget : MessageContainer->GetAllChildren())
