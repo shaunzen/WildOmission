@@ -109,7 +109,7 @@ void ATornado::HandleMovement()
 	
 	if (DistanceFromTarget < 100.0f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Getting new target location."));
+		UE_LOG(LogTemp, Warning, TEXT("Getting new tornado target location."));
 		GetNewTargetLocation();
 	}
 
@@ -139,7 +139,6 @@ void ATornado::HandleDamage()
 		float DistanceFromOrigin = FVector::Distance(Overlap.GetActor()->GetActorLocation(), WindOrigin);
 		float DamageMultiplier = (WindRadius / DistanceFromOrigin) - 1.0f;
 		
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Applying Damage with multiplier %f"), DamageMultiplier));
 		DamagedByWindActor->ApplyWindDamage(this, DamageMultiplier);
 	}
 }
