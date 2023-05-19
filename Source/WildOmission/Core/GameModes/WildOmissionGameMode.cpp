@@ -64,7 +64,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 		return;
 	}
 
-	WOGameState->AddChatMessage(NewPlayerState, FString("Has Joined The Game."));
+	WOGameState->AddChatMessage(NewPlayerState, FString("Has Joined The Game."), true);
 }
 
 void AWildOmissionGameMode::Logout(AController* Exiting)
@@ -83,7 +83,7 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 		return;
 	}
 
-	WOGameState->AddChatMessage(ExitingPlayerState, FString("Has Left The Game."));
+	WOGameState->AddChatMessage(ExitingPlayerState, FString("Has Left The Game."), true);
 }
 
 void AWildOmissionGameMode::SaveGame()
