@@ -5,6 +5,7 @@
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
+#include "WildOmission/Core/WildOmissionGameState.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -50,11 +51,39 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	
 	SaveHandler->GetPlayerHandler()->Load(NewPlayer);
+
+	AWildOmissionGameState* WOGameState = GetGameState<AWildOmissionGameState>();
+	if (WOGameState == nullptr)
+	{
+		return;
+	}
+
+	APlayerState* NewPlayerState = NewPlayer->GetPlayerState<APlayerState>();
+	if (NewPlayerState == nullptr)
+	{
+		return;
+	}
+
+	WOGameState->AddChatMessage(NewPlayerState, FString("Has Joined The Game."));
 }
 
 void AWildOmissionGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
+	
+	AWildOmissionGameState* WOGameState = GetGameState<AWildOmissionGameState>();
+	if (WOGameState == nullptr)
+	{
+		return;
+	}
+
+	APlayerState* ExitingPlayerState = Exiting->GetPlayerState<APlayerState>();
+	if (ExitingPlayerState == nullptr)
+	{
+		return;
+	}
+
+	WOGameState->AddChatMessage(ExitingPlayerState, FString("Has Left The Game."));
 }
 
 void AWildOmissionGameMode::SaveGame()
