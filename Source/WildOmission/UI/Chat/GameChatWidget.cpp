@@ -53,9 +53,16 @@ void UGameChatWidget::RefreshMessages()
 
 	TArray<FChatMessage> Messages;
 	GameState->GetChatMessages(Messages);
-
-	for (const FChatMessage& Message : Messages)
+	
+	if (Messages.IsEmpty())
 	{
+		return;
+	}
+
+	for (int32 i = Messages.Num()-1; i > -1; --i)
+	{
+		const FChatMessage& Message = Messages[i];
+
 		if (Message.ConnectionUpdate == true && Message.SenderName == OurPlayerNetName)
 		{
 			continue;

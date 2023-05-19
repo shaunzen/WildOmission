@@ -36,7 +36,13 @@ void AWildOmissionGameState::AddChatMessage(APlayerState* Sender, const FString&
 	NewMessage.TimeSent = GetWorld()->GetRealTimeSeconds();
 	NewMessage.ConnectionUpdate = bConnectionUpdate;
 
-	ChatMessages.Push(NewMessage);
+	ChatMessages.Insert(NewMessage, 0);
+
+	if (ChatMessages.Num() > 5)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cleaning old messages."));
+		ChatMessages.RemoveAt(ChatMessages.Num() - 1);
+	}
 
 	OnRep_ChatMessages();
 }
