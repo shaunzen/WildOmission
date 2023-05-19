@@ -5,7 +5,7 @@
 #include "ChatMessageWidget.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "Components/Button.h"
-#include "Components/EditableTextBox.h"
+#include "ChatMessageBox.h"
 #include "WildOmission/Core/WildOmissionGameState.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "GameFramework/PlayerState.h"
@@ -27,8 +27,9 @@ void UGameChatWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	MessageContainer->ClearChildren();
-
+	
 	Close();
+	MessageBox->SetOwner(this);
 	SendMessageButton->OnClicked.AddDynamic(this, &UGameChatWidget::SendMessage);
 	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
 	if (GameState == nullptr)
@@ -36,7 +37,6 @@ void UGameChatWidget::NativeConstruct()
 		return;
 	}
 	GameState->OnNewMessage.AddDynamic(this, &UGameChatWidget::RefreshMessages);
-
 }
 
 void UGameChatWidget::RefreshMessages()
@@ -72,7 +72,7 @@ void UGameChatWidget::Open(UPlayerHUDWidget* InParentHUD)
 	Opened = true;
 	MessagePanel->SetVisibility(ESlateVisibility::Visible);
 	MessageBox->SetFocus();
-
+	
 	// Show all old messages
 	for (UWidget* Widget : MessageContainer->GetAllChildren())
 	{

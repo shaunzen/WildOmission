@@ -10,6 +10,7 @@ class UEditableTextBox;
 class UButton;
 class UChatMessageWidget;
 class UPlayerHUDWidget;
+class UChatMessageBox;
 
 UCLASS()
 class WILDOMISSION_API UGameChatWidget : public UUserWidget
@@ -28,6 +29,9 @@ public:
 
 	bool IsOpen() const;
 
+	UFUNCTION()
+	void SendMessage();
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* MessageContainer;
@@ -36,7 +40,7 @@ private:
 	UWidget* MessagePanel;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UEditableTextBox* MessageBox;
+	UChatMessageBox* MessageBox;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UButton* SendMessageButton;
@@ -46,9 +50,6 @@ private:
 	bool Opened;
 
 	UPlayerHUDWidget* ParentHUD;
-
-	UFUNCTION()
-	void SendMessage();
 
 	UFUNCTION()
 	void RefreshMessages();
