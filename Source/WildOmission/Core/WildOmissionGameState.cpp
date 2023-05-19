@@ -22,7 +22,7 @@ void AWildOmissionGameState::OnRep_ChatMessages()
 	OnNewMessage.Broadcast();
 }
 
-void AWildOmissionGameState::AddChatMessage(APlayerState* Sender, const FString& Message)
+void AWildOmissionGameState::AddChatMessage(APlayerState* Sender, const FString& Message, bool bConnectionUpdate)
 {
 	if (Sender == nullptr)
 	{
@@ -34,6 +34,7 @@ void AWildOmissionGameState::AddChatMessage(APlayerState* Sender, const FString&
 	NewMessage.SenderName = Sender->GetPlayerName();
 	NewMessage.Message = Message;
 	NewMessage.TimeSent = GetWorld()->GetRealTimeSeconds();
+	NewMessage.ConnectionUpdate = bConnectionUpdate;
 
 	ChatMessages.Push(NewMessage);
 

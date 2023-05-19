@@ -43,16 +43,24 @@ void UGameChatWidget::RefreshMessages()
 	MessageContainer->ClearChildren();
 
 	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
-	if (GameState == nullptr)
+	APlayerState* OwnerPlayerState = GetOwningPlayerState();
+	if (GameState == nullptr || OwnerPlayerState == nullptr)
 	{
 		return;
 	}
+
+	FString OurPlayerNetName = OwnerPlayerState->GetPlayerName();
 
 	TArray<FChatMessage> Messages;
 	GameState->GetChatMessages(Messages);
 
 	for (const FChatMessage& Message : Messages)
 	{
+		if (Message.ConnectionUpdate == true && Message.SenderName == OurPlayerNetName)
+		{
+			continue;
+		}
+
 		UChatMessageWidget* MessageWidget = CreateWidget<UChatMessageWidget>(this, ChatMessageClass);
 		if (MessageWidget == nullptr)
 		{

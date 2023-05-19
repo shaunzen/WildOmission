@@ -17,7 +17,7 @@ class WILDOMISSION_API AWildOmissionGameState : public AGameStateBase
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void AddChatMessage(APlayerState* Sender, const FString& Message);
+	void AddChatMessage(APlayerState* Sender, const FString& Message, bool bConnectionUpdate = false);
 	
 	FChatReplicatedSignature OnNewMessage;
 

@@ -15,12 +15,15 @@ struct FChatMessage
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FString SenderName;
+	FString SenderName = FString("NAN");
 
 	UPROPERTY()
-	FString Message;
+	FString Message = FString();
 
 	UPROPERTY()
-	double TimeSent;
+	double TimeSent = 0.0;
+
+	UPROPERTY()
+	bool ConnectionUpdate = false;
 
 };
