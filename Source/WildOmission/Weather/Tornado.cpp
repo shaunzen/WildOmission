@@ -137,7 +137,7 @@ void ATornado::HandleDamage()
 		}
 
 		float DistanceFromOrigin = FVector::Distance(Overlap.GetActor()->GetActorLocation(), WindOrigin);
-		float DamageMultiplier = (WindRadius / DistanceFromOrigin) - 1.0f;
+		float DamageMultiplier = FMath::Clamp((WindRadius / DistanceFromOrigin) - 1.0f, 0.0f, 1.0f);
 		
 		DamagedByWindActor->ApplyWindDamage(this, DamageMultiplier);
 	}

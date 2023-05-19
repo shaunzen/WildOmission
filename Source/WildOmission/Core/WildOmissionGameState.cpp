@@ -38,7 +38,7 @@ void AWildOmissionGameState::AddChatMessage(APlayerState* Sender, const FString&
 
 	ChatMessages.Insert(NewMessage, 0);
 
-	if (ChatMessages.Num() > 5)
+	if (ChatMessages.Num() > 30)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cleaning old messages."));
 		ChatMessages.RemoveAt(ChatMessages.Num() - 1);
