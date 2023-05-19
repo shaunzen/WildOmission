@@ -72,7 +72,14 @@ void ATornado::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//TODO bind overlaps to do damage to buildings
+	if (!HasAuthority())
+	{
+		RadialSuctionComponent1->Deactivate();
+		RadialSuctionComponent2->Deactivate();
+		RadialSuctionComponent3->Deactivate();
+		RadialSuctionComponent4->Deactivate();
+		DistanceSuctionComponent->Deactivate();
+	}
 }
 
 void ATornado::OnSpawn(FVector2D InWorldSize)
@@ -146,7 +153,7 @@ void ATornado::HandleDamage()
 void ATornado::HandleRotation()
 {
 	float NewYaw = MeshComponent->GetRelativeRotation().Yaw - (RotationSpeed * GetWorld()->GetDeltaSeconds());
-	float NewSuctionYaw = RadialSuctionAnchor->GetRelativeRotation().Yaw - (RotationSpeed * GetWorld()->GetDeltaSeconds());
+	float NewSuctionYaw = RadialSuctionAnchor->GetRelativeRotation().Yaw - ((RotationSpeed * 4) * GetWorld()->GetDeltaSeconds());
 
 	if (NewYaw < -360.0f)
 	{
