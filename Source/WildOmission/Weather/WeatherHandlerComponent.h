@@ -6,8 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "WeatherHandlerComponent.generated.h"
 
-class UVolumetricCloudComponent;
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UWeatherHandlerComponent : public UActorComponent
 {
@@ -25,10 +23,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:	
-	UPROPERTY(VisibleAnywhere)
-	UVolumetricCloudComponent* CloudComponent;
-	
-	UPROPERTY()
-	UMaterialInstance* CloudMaterial;
+
 		
 };
