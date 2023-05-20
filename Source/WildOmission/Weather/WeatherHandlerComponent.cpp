@@ -10,7 +10,9 @@ UWeatherHandlerComponent::UWeatherHandlerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	MinTimeBetweenStorms = 300.0f;
+	MaxTimeBetweenStorms = 3600.0f;
+	NextStormChanceTime = 0.0f;
 }
 
 
@@ -19,6 +21,10 @@ void UWeatherHandlerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (NextStormChanceTime == 0.0f)
+	{
+		GetNewStormChanceTime();
+	}
 }
 
 
@@ -27,6 +33,37 @@ void UWeatherHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	NextStormChanceTime -= DeltaTime;
+	if (NextStormChanceTime < KINDA_SMALL_NUMBER)
+	{
+		TrySpawnStorm();
+		GetNewStormChanceTime();
+	}
 }
 
+float UWeatherHandlerComponent::GetNextStormChanceTime() const
+{
+	return NextStormChanceTime;
+}
+
+void UWeatherHandlerComponent::SetNextStormChanceTime(float NewTime)
+{
+	NextStormChanceTime = NewTime;
+}
+
+void UWeatherHandlerComponent::GetNewStormChanceTime()
+{
+	NextStormChanceTime = FMath::RandRange(MinTimeBetweenStorms, MaxTimeBetweenStorms);
+}
+
+void UWeatherHandlerComponent::TrySpawnStorm()
+{
+	bool WillSpawn = FMath::RandBool();
+
+	if (WillSpawn == false)
+	{
+		return;
+	}
+
+	// spawn storm actor
+}

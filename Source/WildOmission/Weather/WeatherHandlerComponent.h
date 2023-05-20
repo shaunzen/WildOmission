@@ -18,11 +18,22 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	float GetNextStormChanceTime() const;
+	void SetNextStormChanceTime(float NewTime);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:	
+	UPROPERTY(EditDefaultsOnly)
+	float MinTimeBetweenStorms;
+	UPROPERTY(EditDefaultsOnly)
+	float MaxTimeBetweenStorms;
 
-		
+	UPROPERTY(VisibleAnywhere)
+	float NextStormChanceTime;
+
+	void GetNewStormChanceTime();
+	void TrySpawnStorm();
 };
