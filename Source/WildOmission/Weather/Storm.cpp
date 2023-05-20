@@ -8,9 +8,12 @@ AStorm::AStorm()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	StormRootComponent = CreateDefaultSubobject<USceneComponent>(FName("StormRootComponent"));
+	RootComponent = StormRootComponent;
 
 	CloudMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("CloudMeshComponent"));
-	RootComponent = CloudMeshComponent;
+	CloudMeshComponent->SetupAttachment(StormRootComponent);
+	CloudMeshComponent->SetWorldScale3D(FVector(300, 300, 20));
 }
 
 // Called when the game starts or when spawned
@@ -40,7 +43,7 @@ void AStorm::Tick(float DeltaTime)
 void AStorm::GetStartLocation(FVector& OutLocation)
 {
 	int32 WorldSide = FMath::RandRange(0, 3);
-	float StormAltitude = 3000.0f;
+	float StormAltitude = 4000.0f;
 
 	switch (WorldSide)
 	{

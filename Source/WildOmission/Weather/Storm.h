@@ -29,5 +29,9 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
+	USceneComponent* StormRootComponent;
+	
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CloudMeshComponent;
+
 };
