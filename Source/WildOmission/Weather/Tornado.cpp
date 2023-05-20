@@ -82,12 +82,12 @@ void ATornado::BeginPlay()
 	}
 }
 
-void ATornado::OnSpawn(FVector2D InWorldSize)
+void ATornado::OnSpawn(const FVector2D& InStormSize)
 {
-	// Convert World Size from Meters to Centimeters
-	WorldSize = InWorldSize * FVector2D(100.0f);
+	
+	StormSize = InStormSize;
 
-	TargetLocation = FVector::ZeroVector;//GetRandomLocationInWorld();
+	TargetLocation = GetRandomLocationInStorm();
 
 	SetActorLocation(TargetLocation);
 	
@@ -172,14 +172,15 @@ void ATornado::HandleRotation()
 void ATornado::GetNewTargetLocation()
 {
 	OldTargetLocation = TargetLocation;
-	TargetLocation = GetRandomLocationInWorld();
+	TargetLocation = GetRandomLocationInStorm();
 }
 
-FVector ATornado::GetRandomLocationInWorld()
+FVector ATornado::GetRandomLocationInStorm()
 {
+	FVector2D HalfStormSize = StormSize * 0.5f;
 	float X, Y;
-	X = FMath::RandRange(-WorldSize.X, WorldSize.X);
-	Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
+	X = FMath::RandRange(-HalfStormSize.X, HalfStormSize.X);
+	Y = FMath::RandRange(-HalfStormSize.Y, HalfStormSize.Y);
 
 	return FVector(X, Y, 0.0f);
 }

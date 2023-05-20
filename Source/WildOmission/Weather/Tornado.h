@@ -20,7 +20,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void OnSpawn(FVector2D InWorldSize);
+	void OnSpawn(const FVector2D& InStormSize);
 
 protected:
 	// Called when the game starts or when spawned
@@ -57,10 +57,10 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	FVector OldTargetLocation;
 
-	FVector2D WorldSize;
+	FVector2D StormSize;
 
 	void GetNewTargetLocation();
-	FVector GetRandomLocationInWorld();
+	FVector GetRandomLocationInStorm();
 
 	void HandleMovement();
 	void HandleDamage();

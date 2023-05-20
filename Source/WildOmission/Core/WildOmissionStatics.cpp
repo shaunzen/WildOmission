@@ -4,6 +4,9 @@
 #include "WildOmissionStatics.h"
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "WildOmission/Items/WorldItem.h"
+#include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
+#include "WildOmission/Core/SaveSystem/SaveHandler.h"
+#include "WildOmission/Core/SaveSystem/WorldGenerationHandlerComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
 
@@ -59,4 +62,24 @@ void UWildOmissionStatics::SpawnWorldItem(UWorld* WorldContextObject, const FInv
 	WorldItem->SetActorLocation(SpawnLocation);
 	WorldItem->SetItem(ItemToSpawn);
 	WorldItem->AddImpulse(PhysicsImpulse);
+}
+
+void UWildOmissionStatics::GetWorldSize(UWorld* WorldContextObject, FVector2D& OutWorldSize)
+{
+	if (WorldContextObject == nullptr)
+	{
+		return;
+	}
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(WorldContextObject->GetAuthGameMode());
+	if (GameMode == nullptr)
+	{
+		return;
+	}
+	ASaveHandler* SaveHandler = GameMode->GetSaveHandler();
+	if (SaveHandler == nullptr)
+	{
+		return;
+	}
+
+	OutWorldSize = SaveHandler->GetWorldGenerationHandler()->GetWorldSizeMeters();
 }

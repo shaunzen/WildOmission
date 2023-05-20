@@ -17,11 +17,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void OnSpawn();
+	void OnSpawn(const FVector2D& InWorldSize);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void GetStartLocation(FVector& OutStartLocation);
 
+	FVector2D WorldSize;
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* CloudMeshComponent;
 };

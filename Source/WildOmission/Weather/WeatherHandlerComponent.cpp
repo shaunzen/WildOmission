@@ -4,6 +4,7 @@
 #include "WeatherHandlerComponent.h"
 #include "Storm.h"
 #include "UObject/ConstructorHelpers.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 
 // Sets default values for this component's properties
 UWeatherHandlerComponent::UWeatherHandlerComponent()
@@ -73,6 +74,10 @@ void UWeatherHandlerComponent::TrySpawnStorm()
 		return;
 	}
 
+	FVector2D WorldSize;
+
+	UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
+
 	AStorm* SpawnedStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
-	SpawnedStorm->OnSpawn();
+	SpawnedStorm->OnSpawn(WorldSize);
 }
