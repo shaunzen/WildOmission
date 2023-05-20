@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "WeatherHandlerComponent.generated.h"
 
+class AStorm;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UWeatherHandlerComponent : public UActorComponent
 {
@@ -33,6 +35,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float NextStormChanceTime;
+
+	UPROPERTY()
+	TSubclassOf<AStorm> StormClass;
 
 	void GetNewStormChanceTime();
 	void TrySpawnStorm();

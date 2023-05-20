@@ -2,6 +2,8 @@
 
 
 #include "WeatherHandlerComponent.h"
+#include "Storm.h"
+#include "UObject/ConstructorHelpers.h"
 
 // Sets default values for this component's properties
 UWeatherHandlerComponent::UWeatherHandlerComponent()
@@ -9,6 +11,12 @@ UWeatherHandlerComponent::UWeatherHandlerComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+
+	ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/WildOmission/Weather/BP_Storm"));
+	if (StormBlueprint.Succeeded())
+	{
+		StormClass = StormBlueprint.Class;
+	}
 
 	MinTimeBetweenStorms = 300.0f;
 	MaxTimeBetweenStorms = 3600.0f;
@@ -65,5 +73,6 @@ void UWeatherHandlerComponent::TrySpawnStorm()
 		return;
 	}
 
-	// spawn storm actor
+	AStorm* SpawnedStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
+	SpawnedStorm->OnSpawn();
 }
