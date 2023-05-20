@@ -33,7 +33,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxTimeBetweenStorms;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	float NextStormChanceTime;
 
 	UPROPERTY()

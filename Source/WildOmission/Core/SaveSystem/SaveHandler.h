@@ -36,16 +36,16 @@ public:
 private:
 	FString CurrentSaveFileName;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UWorldGenerationHandlerComponent* WorldGenerationHandlerComponent;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UActorSaveHandlerComponent* ActorSaveHandlerComponent;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UWeatherHandlerComponent* WeatherHandlerComponent;
 
 	void GenerateLevel(UWildOmissionSaveGame* SaveToModify);
