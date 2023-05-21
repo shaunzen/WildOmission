@@ -5,7 +5,6 @@
 #include "WorldGenerationHandlerComponent.h"
 #include "ActorSaveHandlerComponent.h"
 #include "PlayerSaveHandlerComponent.h"
-#include "WildOmission/Weather/WeatherHandlerComponent.h"
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmissionSaveGame.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
@@ -22,8 +21,6 @@ ASaveHandler::ASaveHandler()
 	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(FName("ActorSaveHandlerComponent"));
 
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
-
-	WeatherHandlerComponent = CreateDefaultSubobject<UWeatherHandlerComponent>(FName("WeatherHandlerComponent"));
 
 }
 

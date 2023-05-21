@@ -7,6 +7,7 @@
 #include "WildOmissionGameMode.generated.h"
 
 class ASaveHandler;
+class AWeatherManager;
 class AWildOmissionCharacter;
 
 UCLASS()
@@ -29,7 +30,8 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void ResetLocationOfAllConnectedPlayers();
 
-	ASaveHandler* GetSaveHandler();
+	ASaveHandler* GetSaveHandler() const;
+	AWeatherManager* GetWeatherManager() const;
 
 	TArray<APlayerController*> GetAllPlayerControllers();
 
@@ -42,5 +44,10 @@ public:
 private:
 	UPROPERTY()
 	ASaveHandler* SaveHandler;
+
+	// TimeManager
+
+	UPROPERTY()
+	AWeatherManager* WeatherManager;
 	
 };

@@ -3,28 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-#include "WeatherHandlerComponent.generated.h"
+#include "GameFramework/Actor.h"
+#include "WeatherManager.generated.h"
 
 class AStorm;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UWeatherHandlerComponent : public UActorComponent
+UCLASS()
+class WILDOMISSION_API AWeatherManager : public AActor
 {
 	GENERATED_BODY()
-
+	
 public:	
-	// Sets default values for this component's properties
-	UWeatherHandlerComponent();
-
+	// Sets default values for this actor's properties
+	AWeatherManager();
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void Tick(float DeltaTime) override;
 
 	float GetNextStormChanceTime() const;
 	void SetNextStormChanceTime(float NewTime);
 
 protected:
-	// Called when the game starts
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:	
@@ -41,4 +40,5 @@ private:
 
 	void GetNewStormChanceTime();
 	void TrySpawnStorm();
+
 };

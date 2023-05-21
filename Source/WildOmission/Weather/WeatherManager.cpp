@@ -1,18 +1,16 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "WeatherHandlerComponent.h"
+#include "WeatherManager.h"
 #include "Storm.h"
 #include "UObject/ConstructorHelpers.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 
-// Sets default values for this component's properties
-UWeatherHandlerComponent::UWeatherHandlerComponent()
+// Sets default values
+AWeatherManager::AWeatherManager()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/WildOmission/Weather/BP_Storm"));
 	if (StormBlueprint.Succeeded())
 	{
@@ -24,9 +22,8 @@ UWeatherHandlerComponent::UWeatherHandlerComponent()
 	NextStormChanceTime = 0.0f;
 }
 
-
-// Called when the game starts
-void UWeatherHandlerComponent::BeginPlay()
+// Called when the game starts or when spawned
+void AWeatherManager::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -36,11 +33,10 @@ void UWeatherHandlerComponent::BeginPlay()
 	}
 }
 
-
 // Called every frame
-void UWeatherHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void AWeatherManager::Tick(float DeltaTime)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::Tick(DeltaTime);
 
 	NextStormChanceTime -= DeltaTime;
 	if (NextStormChanceTime < KINDA_SMALL_NUMBER)
@@ -50,22 +46,22 @@ void UWeatherHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	}
 }
 
-float UWeatherHandlerComponent::GetNextStormChanceTime() const
+float AWeatherManager::GetNextStormChanceTime() const
 {
 	return NextStormChanceTime;
 }
 
-void UWeatherHandlerComponent::SetNextStormChanceTime(float NewTime)
+void AWeatherManager::SetNextStormChanceTime(float NewTime)
 {
 	NextStormChanceTime = NewTime;
 }
 
-void UWeatherHandlerComponent::GetNewStormChanceTime()
+void AWeatherManager::GetNewStormChanceTime()
 {
 	NextStormChanceTime = FMath::RandRange(MinTimeBetweenStorms, MaxTimeBetweenStorms);
 }
 
-void UWeatherHandlerComponent::TrySpawnStorm()
+void AWeatherManager::TrySpawnStorm()
 {
 	bool WillSpawn = FMath::RandBool();
 

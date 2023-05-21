@@ -3,6 +3,7 @@
 
 #include "WildOmissionGameMode.h"
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
+#include "WildOmission/Weather/WeatherManager.h"
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "WildOmission/Core/WildOmissionGameState.h"
@@ -19,6 +20,7 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	FString SaveFile = UGameplayStatics::ParseOption(Options, "SaveGame");
 
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
+	WeatherManager = GetWorld()->SpawnActor<AWeatherManager>();
 
 	if (SaveHandler == nullptr)
 	{
@@ -94,9 +96,14 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 	}
 }
 
-ASaveHandler* AWildOmissionGameMode::GetSaveHandler()
+ASaveHandler* AWildOmissionGameMode::GetSaveHandler() const
 {
 	return SaveHandler;
+}
+
+AWeatherManager* AWildOmissionGameMode::GetWeatherManager() const
+{
+	return WeatherManager;
 }
 
 void AWildOmissionGameMode::LogPlayerInventoryComponents()
