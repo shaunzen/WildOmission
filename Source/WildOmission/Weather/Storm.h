@@ -23,7 +23,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void GetStartLocation(FVector& OutStartLocation);
+	void GetSpawnLocation(FVector& OutStartLocation);
 
 	FVector2D WorldSize;
 
@@ -33,5 +33,18 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CloudMeshComponent;
+
+
+	FVector SpawnLocation;
+	FVector TargetLocation;
+	float DistanceToTravel;
+
+	float DistanceTraveled;
+
+	float MovementSpeed;
+	FVector MovementVector;
+
+	float Severity;
+	float SeverityMultiplier;
 
 };

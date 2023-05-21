@@ -14,7 +14,7 @@ AStorm::AStorm()
 	CloudMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("CloudMeshComponent"));
 	CloudMeshComponent->SetupAttachment(StormRootComponent);
 	CloudMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 2500.0f));
-	CloudMeshComponent->SetWorldScale3D(FVector(500 , 500, 50));
+	CloudMeshComponent->SetWorldScale3D(FVector(750.0f , 750.0f, 50.0f));
 }
 
 // Called when the game starts or when spawned
@@ -29,9 +29,17 @@ void AStorm::OnSpawn(const FVector2D& InWorldSize)
 	// Convert to centimeters
 	WorldSize = InWorldSize * 100.0f;
 
-	FVector StartLocation;
-	GetStartLocation(StartLocation);
-	SetActorLocation(StartLocation);
+	GetSpawnLocation(SpawnLocation);
+	SetActorLocation(SpawnLocation);
+
+	TargetLocation = FVector(-SpawnLocation.X, -SpawnLocation.Y, SpawnLocation.Z);
+	DistanceToTravel = FVector::Distance(SpawnLocation, TargetLocation);
+	DistanceTraveled = 0.0f;
+	
+	MovementSpeed = 300.0f;
+
+	Severity = 0.0f;
+	SeverityMultiplier = 0.0f;
 }
 
 // Called every frame
@@ -39,9 +47,21 @@ void AStorm::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	FVector CurrentLocation = GetActorLocation();
+	FVector VectorTowardTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
+
+	DistanceTraveled = FVector::Distance(CurrentLocation, SpawnLocation);
+
+	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * GetWorld()->GetDeltaSeconds());
+	SetActorLocation(NewLocation);
 }
 
-void AStorm::GetStartLocation(FVector& OutLocation)
+void AStorm::GetSpawnLocation(FVector& OutLocation)
 {
 	int32 WorldSide = FMath::RandRange(0, 3);
 	float StormAltitude = 7000.0f;
