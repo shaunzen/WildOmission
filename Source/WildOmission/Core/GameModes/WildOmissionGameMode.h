@@ -30,6 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void ResetLocationOfAllConnectedPlayers();
 
+	UFUNCTION(BlueprintCallable, Exec)
+	void SpawnStorm();
+
 	ASaveHandler* GetSaveHandler() const;
 	AWeatherManager* GetWeatherManager() const;
 

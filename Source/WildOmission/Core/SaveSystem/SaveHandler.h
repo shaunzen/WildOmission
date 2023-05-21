@@ -10,7 +10,7 @@ class UWildOmissionSaveGame;
 class UWorldGenerationHandlerComponent;
 class UActorSaveHandlerComponent;
 class UPlayerSaveHandlerComponent;
-class UWeatherHandlerComponent;
+
 UCLASS()
 class WILDOMISSION_API ASaveHandler : public AActor
 {
@@ -44,9 +44,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
-	
-	UPROPERTY(VisibleAnywhere)
-	UWeatherHandlerComponent* WeatherHandlerComponent;
 
 	void GenerateLevel(UWildOmissionSaveGame* SaveToModify);
 

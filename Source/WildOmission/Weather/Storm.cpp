@@ -13,7 +13,8 @@ AStorm::AStorm()
 
 	CloudMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("CloudMeshComponent"));
 	CloudMeshComponent->SetupAttachment(StormRootComponent);
-	CloudMeshComponent->SetWorldScale3D(FVector(300, 300, 20));
+	CloudMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 2500.0f));
+	CloudMeshComponent->SetWorldScale3D(FVector(500 , 500, 50));
 }
 
 // Called when the game starts or when spawned
@@ -43,7 +44,7 @@ void AStorm::Tick(float DeltaTime)
 void AStorm::GetStartLocation(FVector& OutLocation)
 {
 	int32 WorldSide = FMath::RandRange(0, 3);
-	float StormAltitude = 4000.0f;
+	float StormAltitude = 7000.0f;
 
 	switch (WorldSide)
 	{

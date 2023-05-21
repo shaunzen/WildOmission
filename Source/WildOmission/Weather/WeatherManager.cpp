@@ -70,6 +70,11 @@ void AWeatherManager::TrySpawnStorm()
 		return;
 	}
 
+	SpawnStorm();
+}
+
+void AWeatherManager::SpawnStorm()
+{
 	FVector2D WorldSize;
 
 	UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);

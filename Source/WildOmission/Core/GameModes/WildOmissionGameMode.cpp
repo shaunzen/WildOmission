@@ -96,6 +96,16 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 	}
 }
 
+void AWildOmissionGameMode::SpawnStorm()
+{
+	if (WeatherManager == nullptr)
+	{
+		return;
+	}
+
+	WeatherManager->SpawnStorm();
+}
+
 ASaveHandler* AWildOmissionGameMode::GetSaveHandler() const
 {
 	return SaveHandler;

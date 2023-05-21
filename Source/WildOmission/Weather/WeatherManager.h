@@ -22,6 +22,8 @@ public:
 	float GetNextStormChanceTime() const;
 	void SetNextStormChanceTime(float NewTime);
 
+	void SpawnStorm();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
