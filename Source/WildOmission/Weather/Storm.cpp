@@ -2,12 +2,19 @@
 
 
 #include "Storm.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+#include "Tornado.h"
+#include "UObject/ConstructorHelpers.h"
 
 // Sets default values
 AStorm::AStorm()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainSystemBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_Rain"));
+	
 	StormRootComponent = CreateDefaultSubobject<USceneComponent>(FName("StormRootComponent"));
 	RootComponent = StormRootComponent;
 
@@ -15,6 +22,17 @@ AStorm::AStorm()
 	CloudMeshComponent->SetupAttachment(StormRootComponent);
 	CloudMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 2500.0f));
 	CloudMeshComponent->SetWorldScale3D(FVector(1000.0f , 1000.0f, 50.0f));
+
+	RainParticleComponent = CreateDefaultSubobject<UNiagaraComponent>(FName("RainParticleComponent"));
+	RainParticleComponent->SetupAttachment(StormRootComponent);
+	RainParticleComponent->SetActive(false);
+	if (RainSystemBlueprint.Succeeded())
+	{
+		RainParticleComponent->SetAsset(RainSystemBlueprint.Object);
+	}
+	
+	RainSeverityThreshold = 30.0f;
+	TornadoSeverityThreshold = 90.0f;
 }
 
 // Called when the game starts or when spawned
@@ -36,7 +54,10 @@ void AStorm::OnSpawn(const FVector2D& InWorldSize)
 	DistanceToTravel = FVector::Distance(SpawnLocation, TargetLocation);
 	DistanceTraveled = 0.0f;
 	
-	MovementSpeed = 300.0f;
+	Severity = 0.0f;
+
+	MovementSpeed = FMath::RandRange(300.0f, 1000.0f);
+	SeverityMultiplier = (FMath::RandRange(0.0f, 100.0f)/1000.0f);
 }
 
 // Called every frame
@@ -49,6 +70,19 @@ void AStorm::Tick(float DeltaTime)
 		return;
 	}
 
+	HandleMovement();
+
+	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
+	if (!RainParticleComponent->IsActive() && Severity > RainSeverityThreshold)
+	{
+		RainParticleComponent->Activate();
+	}
+
+	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
+}
+
+void AStorm::HandleMovement()
+{
 	FVector CurrentLocation = GetActorLocation();
 	FVector VectorTowardTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
 
@@ -61,6 +95,13 @@ void AStorm::Tick(float DeltaTime)
 	{
 		HandleDestruction();
 	}
+}
+
+void AStorm::HandleDestruction()
+{
+	// If there is any tornados, destroy them
+
+	Destroy();
 }
 
 void AStorm::GetSpawnLocation(FVector& OutLocation)
@@ -89,11 +130,4 @@ void AStorm::GetSpawnLocation(FVector& OutLocation)
 	}
 
 	OutLocation.Z = StormAltitude;
-}
-
-void AStorm::HandleDestruction()
-{
-	// If there is any tornados, destroy them
-
-	Destroy();
 }

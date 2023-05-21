@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Storm.generated.h"
 
+class UNiagaraComponent;
+
 UCLASS()
 class WILDOMISSION_API AStorm : public AActor
 {
@@ -34,6 +36,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CloudMeshComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* RainParticleComponent;
 
 	FVector SpawnLocation;
 	FVector TargetLocation;
@@ -43,7 +47,17 @@ private:
 	float MovementSpeed;
 	FVector MovementVector;
 
+	UPROPERTY(EditAnywhere)
+	float Severity;
+	float SeverityMultiplier;
 
+	UPROPERTY(EditDefaultsOnly)
+	float RainSeverityThreshold;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float TornadoSeverityThreshold;
+
+	void HandleMovement();
 	void HandleDestruction();
 
 };
