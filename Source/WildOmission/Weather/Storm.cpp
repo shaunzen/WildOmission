@@ -14,7 +14,7 @@ AStorm::AStorm()
 	CloudMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("CloudMeshComponent"));
 	CloudMeshComponent->SetupAttachment(StormRootComponent);
 	CloudMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 2500.0f));
-	CloudMeshComponent->SetWorldScale3D(FVector(750.0f , 750.0f, 50.0f));
+	CloudMeshComponent->SetWorldScale3D(FVector(1000.0f , 1000.0f, 50.0f));
 }
 
 // Called when the game starts or when spawned
@@ -37,9 +37,6 @@ void AStorm::OnSpawn(const FVector2D& InWorldSize)
 	DistanceTraveled = 0.0f;
 	
 	MovementSpeed = 300.0f;
-
-	Severity = 0.0f;
-	SeverityMultiplier = 0.0f;
 }
 
 // Called every frame
@@ -59,6 +56,11 @@ void AStorm::Tick(float DeltaTime)
 
 	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * GetWorld()->GetDeltaSeconds());
 	SetActorLocation(NewLocation);
+
+	if (DistanceTraveled >= DistanceToTravel)
+	{
+		HandleDestruction();
+	}
 }
 
 void AStorm::GetSpawnLocation(FVector& OutLocation)
@@ -69,22 +71,29 @@ void AStorm::GetSpawnLocation(FVector& OutLocation)
 	switch (WorldSide)
 	{
 	case 0: // Top
-		OutLocation.Y = WorldSize.Y * 2.0f;
+		OutLocation.Y = WorldSize.Y * 5.0f;
 		OutLocation.X = FMath::RandRange(-WorldSize.X, WorldSize.X);
 		break;
 	case 1: // Bottom
-		OutLocation.Y = -(WorldSize.Y * 2.0f);
+		OutLocation.Y = -(WorldSize.Y * 5.0f);
 		OutLocation.X = FMath::RandRange(-WorldSize.X, WorldSize.X);
 		break;
 	case 2:	// Left
 		OutLocation.Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
-		OutLocation.X = WorldSize.X * 2.0f;
+		OutLocation.X = WorldSize.X * 5.0f;
 		break;
 	case 3: // Right
 		OutLocation.Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
-		OutLocation.X = -(WorldSize.X * 2.0f);
+		OutLocation.X = -(WorldSize.X * 5.0f);
 		break;
 	}
 
 	OutLocation.Z = StormAltitude;
+}
+
+void AStorm::HandleDestruction()
+{
+	// If there is any tornados, destroy them
+
+	Destroy();
 }

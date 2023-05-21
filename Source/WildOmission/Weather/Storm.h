@@ -38,13 +38,12 @@ private:
 	FVector SpawnLocation;
 	FVector TargetLocation;
 	float DistanceToTravel;
-
 	float DistanceTraveled;
 
 	float MovementSpeed;
 	FVector MovementVector;
 
-	float Severity;
-	float SeverityMultiplier;
+
+	void HandleDestruction();
 
 };
