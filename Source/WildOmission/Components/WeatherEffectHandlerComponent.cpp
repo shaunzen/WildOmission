@@ -44,28 +44,44 @@ void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick T
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
 	{
+		DisableRainfallEffects();
 		return;
 	}
 
 	AStorm* HitStorm = Cast<AStorm>(HitResult.GetActor());
 	if (HitStorm == nullptr)
 	{
+		DisableRainfallEffects();
 		return;
 	}
 
 	float RainDensity = 0.0f;
-	if (HitStorm->IsRaining(RainDensity))
+	if (!HitStorm->IsRaining(RainDensity))
 	{
-		if (SpawnedRainComponent == nullptr)
-		{
-			SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, GetOwner()->GetRootComponent(), FName(), FVector(0.0f, 0.0f, 500.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
-		}
-		SpawnedRainComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
+		DisableRainfallEffects();
+		return;
 	}
-	else if (SpawnedRainComponent != nullptr)
-	{
-		SpawnedRainComponent->DestroyComponent();
-		SpawnedRainComponent = nullptr;
-	}
+
+	EnableRainfallEffects(RainDensity);
 }
 
+void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
+{
+	if (SpawnedRainComponent == nullptr)
+	{
+		SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, GetOwner()->GetRootComponent(), FName(), FVector(0.0f, 0.0f, 1000.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+	}
+
+	SpawnedRainComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
+}
+
+void UWeatherEffectHandlerComponent::DisableRainfallEffects()
+{
+	if (SpawnedRainComponent == nullptr)
+	{
+		return;
+	}
+
+	SpawnedRainComponent->DestroyComponent();
+	SpawnedRainComponent = nullptr;
+}

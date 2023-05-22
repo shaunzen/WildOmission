@@ -33,4 +33,7 @@ private:
 	UPROPERTY()
 	UNiagaraComponent* SpawnedRainComponent;
 
+	void EnableRainfallEffects(float RainDensity);
+	void DisableRainfallEffects();
+
 };
