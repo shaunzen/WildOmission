@@ -20,7 +20,6 @@ AStorm::AStorm()
 
 	CloudMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("CloudMeshComponent"));
 	CloudMeshComponent->SetupAttachment(StormRootComponent);
-	CloudMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 2500.0f));
 	CloudMeshComponent->SetWorldScale3D(FVector(1000.0f , 1000.0f, 50.0f));
 
 	RainParticleComponent = CreateDefaultSubobject<UNiagaraComponent>(FName("RainParticleComponent"));
@@ -75,7 +74,14 @@ void AStorm::Tick(float DeltaTime)
 
 	HandleMovement();
 
+	// Update severity values
 	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
+	
+	// Update cloud height based on severity
+	float CloudZHeight = FMath::Lerp(50.0f, 200.0f, Severity / 100.0f);
+	CloudMeshComponent->SetWorldScale3D(FVector(CloudMeshComponent->GetRelativeScale3D().X, CloudMeshComponent->GetRelativeScale3D().Y, CloudZHeight));
+	
+	// Handle Rain spawning
 	if (!RainParticleComponent->IsActive() && Severity > RainSeverityThreshold)
 	{
 		RainParticleComponent->Activate();
@@ -110,7 +116,7 @@ void AStorm::HandleDestruction()
 void AStorm::GetSpawnLocation(FVector& OutLocation)
 {
 	int32 WorldSide = FMath::RandRange(0, 3);
-	float StormAltitude = 7000.0f;
+	float StormAltitude = 20000.0f;
 
 	switch (WorldSide)
 	{
