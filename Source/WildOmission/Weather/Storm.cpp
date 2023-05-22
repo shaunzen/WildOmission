@@ -130,7 +130,7 @@ void AStorm::SpawnTornado()
 	FVector BoxExtent;
 	GetActorBounds(true, Origin, BoxExtent);
 
-	SpawnedTornado->OnSpawn(BoxExtent.Length());
+	SpawnedTornado->OnSpawn(BoxExtent.Length() - (BoxExtent.Length() * 0.2f));
 }
 
 void AStorm::HandleDestruction()
