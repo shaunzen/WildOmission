@@ -27,6 +27,12 @@ AStorm::AStorm()
 	TornadoSeverityThreshold = 90.0f;
 
 	Tags.Add(FName("StormCloud"));
+
+	ConstructorHelpers::FClassFinder<ATornado> TornadoBlueprint(TEXT("/Game/WildOmission/Weather/BP_Tornado"));
+	if (TornadoBlueprint.Succeeded())
+	{
+		TornadoClass = TornadoBlueprint.Class;
+	}
 }
 
 
@@ -109,6 +115,22 @@ void AStorm::HandleSeverity()
 {
 	// Update severity values
 	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
+
+	if (Severity > TornadoSeverityThreshold && SpawnedTornado == nullptr)
+	{
+		SpawnTornado();
+	}
+}
+
+void AStorm::SpawnTornado()
+{
+	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass);
+	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	FVector Origin;
+	FVector BoxExtent;
+	GetActorBounds(true, Origin, BoxExtent);
+
+	SpawnedTornado->OnSpawn(BoxExtent.Length());
 }
 
 void AStorm::HandleDestruction()

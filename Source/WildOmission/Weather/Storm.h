@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Storm.generated.h"
 
-class UNiagaraComponent;
+class ATornado;
 
 UCLASS()
 class WILDOMISSION_API AStorm : public AActor
@@ -63,7 +63,13 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float TornadoSeverityThreshold;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ATornado> TornadoClass;
+
+	UPROPERTY(Replicated)
+	ATornado* SpawnedTornado;
+
 	void HandleMovement();
 	void HandleSeverity();
-
+	void SpawnTornado();
 };

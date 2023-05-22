@@ -82,10 +82,10 @@ void ATornado::BeginPlay()
 	}
 }
 
-void ATornado::OnSpawn(const FVector2D& InStormSize)
+void ATornado::OnSpawn(const float& InStormRadius)
 {
 	
-	StormSize = InStormSize;
+	StormRadius = InStormRadius;
 
 	TargetLocation = GetRandomLocationInStorm();
 
@@ -177,10 +177,10 @@ void ATornado::GetNewTargetLocation()
 
 FVector ATornado::GetRandomLocationInStorm()
 {
-	FVector2D HalfStormSize = StormSize * 0.5f;
+	float HalfRadius = StormRadius * 0.5f;
 	float X, Y;
-	X = FMath::RandRange(-HalfStormSize.X, HalfStormSize.X);
-	Y = FMath::RandRange(-HalfStormSize.Y, HalfStormSize.Y);
+	X = FMath::RandRange(-HalfRadius, HalfRadius);
+	Y = FMath::RandRange(-HalfRadius, HalfRadius);
 
 	return FVector(X, Y, 0.0f);
 }
