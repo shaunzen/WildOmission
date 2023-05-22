@@ -21,6 +21,7 @@ AStorm::AStorm()
 	CloudMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("CloudMeshComponent"));
 	CloudMeshComponent->SetupAttachment(StormRootComponent);
 	CloudMeshComponent->SetWorldScale3D(FVector(1000.0f , 1000.0f, 50.0f));
+	CloudMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECR_Block);
 
 	RainSeverityThreshold = 30.0f;
 	TornadoSeverityThreshold = 90.0f;

@@ -42,7 +42,7 @@ void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick T
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());
 
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2, Params))
 	{
 		DisableRainfallEffects();
 		return;
