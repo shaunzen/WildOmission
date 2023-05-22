@@ -58,6 +58,7 @@ private:
 	float TornadoSeverityThreshold;
 
 	void HandleMovement();
+	void HandleSeverity();
 	void HandleDestruction();
 
 };

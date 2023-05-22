@@ -73,21 +73,7 @@ void AStorm::Tick(float DeltaTime)
 	}
 
 	HandleMovement();
-
-	// Update severity values
-	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
-	
-	// Update cloud height based on severity
-	float CloudZHeight = FMath::Lerp(50.0f, 200.0f, Severity / 100.0f);
-	CloudMeshComponent->SetWorldScale3D(FVector(CloudMeshComponent->GetRelativeScale3D().X, CloudMeshComponent->GetRelativeScale3D().Y, CloudZHeight));
-	
-	// Handle Rain spawning
-	if (!RainParticleComponent->IsActive() && Severity > RainSeverityThreshold)
-	{
-		RainParticleComponent->Activate();
-	}
-
-	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
+	HandleSeverity();
 }
 
 void AStorm::HandleMovement()
@@ -104,6 +90,33 @@ void AStorm::HandleMovement()
 	{
 		HandleDestruction();
 	}
+}
+
+void AStorm::HandleSeverity()
+{
+	// Update severity values
+	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
+
+	// Update cloud scale based on severity
+	FVector CloudScale = FVector::ZeroVector;
+	CloudScale.X = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
+	CloudScale.Y = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
+	CloudScale.Z = FMath::Lerp(50.0f, 700.0f, Severity / 100.0f);
+	CloudMeshComponent->SetWorldScale3D(CloudScale);
+
+	// Update Rain Parameters
+	float RainRange = CloudScale.X * 25.0f;
+	float RainDensity = RainRange * (Severity / 50.0f);
+	RainParticleComponent->SetFloatParameter(FName("RainRange"), RainRange);
+	RainParticleComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
+
+	// Handle Rain spawning
+	if (!RainParticleComponent->IsActive() && Severity > RainSeverityThreshold)
+	{
+		RainParticleComponent->Activate();
+	}
+
+	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
 }
 
 void AStorm::HandleDestruction()
