@@ -58,7 +58,8 @@ void AStorm::OnSpawn(const FVector2D& InWorldSize)
 	Severity = 0.0f;
 
 	MovementSpeed = FMath::RandRange(300.0f, 1000.0f);
-	SeverityMultiplier = (FMath::RandRange(0.0f, 500.0f) / 1000.0f);
+	SeverityMultiplier = (FMath::RandRange(0.0f, 100.0f) / 1000.0f);
+
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0, FColor::Red, FString::Printf(TEXT("MovementSpeed: %f"), MovementSpeed));
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0, FColor::Red, FString::Printf(TEXT("SeverityMultiplier: %f"), SeverityMultiplier));
 
@@ -68,6 +69,15 @@ void AStorm::OnSpawn(const FVector2D& InWorldSize)
 void AStorm::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Update cloud scale based on severity
+	FVector CloudScale = FVector::ZeroVector;
+	CloudScale.X = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
+	CloudScale.Y = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
+	CloudScale.Z = FMath::Lerp(50.0f, 700.0f, Severity / 100.0f);
+	CloudMeshComponent->SetWorldScale3D(CloudScale);
+
+	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
 
 	if (!HasAuthority())
 	{
@@ -98,15 +108,6 @@ void AStorm::HandleSeverity()
 {
 	// Update severity values
 	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
-
-	// Update cloud scale based on severity
-	FVector CloudScale = FVector::ZeroVector;
-	CloudScale.X = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
-	CloudScale.Y = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
-	CloudScale.Z = FMath::Lerp(50.0f, 700.0f, Severity / 100.0f);
-	CloudMeshComponent->SetWorldScale3D(CloudScale);
-
-	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
 }
 
 void AStorm::HandleDestruction()
