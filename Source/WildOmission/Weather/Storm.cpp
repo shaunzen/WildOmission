@@ -32,6 +32,8 @@ AStorm::AStorm()
 	
 	RainSeverityThreshold = 30.0f;
 	TornadoSeverityThreshold = 90.0f;
+
+	Tags.Add(FName("StormCloud"));
 }
 
 // Called when the game starts or when spawned
@@ -104,18 +106,6 @@ void AStorm::HandleSeverity()
 	CloudScale.Z = FMath::Lerp(50.0f, 700.0f, Severity / 100.0f);
 	CloudMeshComponent->SetWorldScale3D(CloudScale);
 
-	// Update Rain Parameters
-	float RainRange = CloudScale.X * 25.0f;
-	float RainDensity = (RainRange * 10.0f) * (Severity / 50.0f);
-	RainParticleComponent->SetFloatParameter(FName("RainRange"), RainRange);
-	RainParticleComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
-
-	// Handle Rain spawning
-	if (!RainParticleComponent->IsActive() && Severity > RainSeverityThreshold)
-	{
-		RainParticleComponent->Activate();
-	}
-
 	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
 }
 
@@ -152,4 +142,10 @@ void AStorm::GetSpawnLocation(FVector& OutLocation)
 	}
 
 	OutLocation.Z = StormAltitude;
+}
+
+bool AStorm::IsRaining(float& OutDensity) const
+{
+	OutDensity = FMath::Lerp(100.0f, 1000.0f, Severity / 100.0f);
+	return Severity > RainSeverityThreshold;
 }

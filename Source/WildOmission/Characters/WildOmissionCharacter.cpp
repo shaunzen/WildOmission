@@ -17,6 +17,7 @@
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/NameTagComponent.h"
+#include "WildOmission/Components/WeatherEffectHandlerComponent.h"
 #include "WildOmission/Items/EquipableItem.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
@@ -156,6 +157,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag = CreateDefaultSubobject<UNameTagComponent>(FName("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+
+	WeatherEffectHandler = CreateDefaultSubobject<UWeatherEffectHandlerComponent>(FName("WeatherEffectHandler"));
 
 	GetCharacterMovement()->JumpZVelocity = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;

@@ -14,6 +14,7 @@ class USpringArmComponent;
 class UCraftingComponent;
 class UNameTagComponent;
 class AItemContainerBase;
+class UWeatherEffectHandlerComponent;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
@@ -102,6 +103,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UNameTagComponent* NameTag;
+
+	UPROPERTY(VisibleAnywhere)
+	UWeatherEffectHandlerComponent* WeatherEffectHandler;
 
 	UPROPERTY()
 	class UPlayerHUDWidget* PlayerHUDWidget;

@@ -21,6 +21,9 @@ public:
 
 	void OnSpawn(const FVector2D& InWorldSize);
 
+	UFUNCTION(BlueprintCallable)
+	bool IsRaining(float& OutDensity) const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,9 +38,6 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CloudMeshComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* RainParticleComponent;
 
 	FVector SpawnLocation;
 	FVector TargetLocation;
