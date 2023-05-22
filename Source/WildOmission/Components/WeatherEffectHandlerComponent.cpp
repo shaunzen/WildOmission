@@ -2,6 +2,9 @@
 
 
 #include "WeatherEffectHandlerComponent.h"
+#include "WildOmission/Weather/Storm.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 // Sets default values for this component's properties
 UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
@@ -10,7 +13,11 @@ UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainSystemBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_Rain"));
+	if (RainSystemBlueprint.Succeeded())
+	{
+		RainParticleSystem = RainSystemBlueprint.Object;
+	}
 }
 
 
@@ -28,7 +35,37 @@ void UWeatherEffectHandlerComponent::BeginPlay()
 void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	FHitResult HitResult;
+	FVector Start = GetOwner()->GetActorLocation();
+	FVector End = Start + FVector::UpVector * 100000.0f;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
 
-	// ...
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	{
+		return;
+	}
+
+	AStorm* HitStorm = Cast<AStorm>(HitResult.GetActor());
+	if (HitStorm == nullptr)
+	{
+		return;
+	}
+
+	float RainDensity = 0.0f;
+	if (HitStorm->IsRaining(RainDensity))
+	{
+		if (SpawnedRainComponent == nullptr)
+		{
+			SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, GetOwner()->GetRootComponent(), FName(), FVector(0.0f, 0.0f, 500.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		}
+		SpawnedRainComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
+	}
+	else if (SpawnedRainComponent != nullptr)
+	{
+		SpawnedRainComponent->DestroyComponent();
+		SpawnedRainComponent = nullptr;
+	}
 }
 

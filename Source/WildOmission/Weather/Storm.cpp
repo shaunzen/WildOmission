@@ -2,8 +2,6 @@
 
 
 #include "Storm.h"
-#include "NiagaraFunctionLibrary.h"
-#include "NiagaraComponent.h"
 #include "Tornado.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -13,8 +11,6 @@ AStorm::AStorm()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainSystemBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_Rain"));
-	
 	StormRootComponent = CreateDefaultSubobject<USceneComponent>(FName("StormRootComponent"));
 	RootComponent = StormRootComponent;
 
@@ -22,14 +18,6 @@ AStorm::AStorm()
 	CloudMeshComponent->SetupAttachment(StormRootComponent);
 	CloudMeshComponent->SetWorldScale3D(FVector(1000.0f , 1000.0f, 50.0f));
 
-	RainParticleComponent = CreateDefaultSubobject<UNiagaraComponent>(FName("RainParticleComponent"));
-	RainParticleComponent->SetupAttachment(StormRootComponent);
-	RainParticleComponent->SetActive(false);
-	if (RainSystemBlueprint.Succeeded())
-	{
-		RainParticleComponent->SetAsset(RainSystemBlueprint.Object);
-	}
-	
 	RainSeverityThreshold = 30.0f;
 	TornadoSeverityThreshold = 90.0f;
 
@@ -146,6 +134,6 @@ void AStorm::GetSpawnLocation(FVector& OutLocation)
 
 bool AStorm::IsRaining(float& OutDensity) const
 {
-	OutDensity = FMath::Lerp(100.0f, 1000.0f, Severity / 100.0f);
+	OutDensity = FMath::Lerp(100.0f, 2000.0f, Severity / 100.0f);
 	return Severity > RainSeverityThreshold;
 }

@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "WeatherEffectHandlerComponent.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UWeatherEffectHandlerComponent : public UActorComponent
@@ -22,5 +24,13 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-		
+	
+	UPROPERTY(EditDefaultsOnly)
+	UNiagaraSystem* RainParticleSystem;
+
+private:
+
+	UPROPERTY()
+	UNiagaraComponent* SpawnedRainComponent;
+
 };
