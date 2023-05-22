@@ -106,7 +106,7 @@ void AStorm::HandleSeverity()
 
 	// Update Rain Parameters
 	float RainRange = CloudScale.X * 25.0f;
-	float RainDensity = RainRange * (Severity / 50.0f);
+	float RainDensity = (RainRange * 10.0f) * (Severity / 50.0f);
 	RainParticleComponent->SetFloatParameter(FName("RainRange"), RainRange);
 	RainParticleComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
 
