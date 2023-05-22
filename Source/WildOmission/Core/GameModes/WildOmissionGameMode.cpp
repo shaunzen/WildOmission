@@ -11,6 +11,7 @@
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
+#include "WildOmission/Weather/Storm.h"
 #include "WildOmission/Core/SaveSystem/WorldGenerationHandlerComponent.h"
 
 void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -96,14 +97,35 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 	}
 }
 
-void AWildOmissionGameMode::SpawnStorm()
+void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 {
 	if (WeatherManager == nullptr)
 	{
 		return;
 	}
 
-	WeatherManager->SpawnStorm();
+	AStorm* SpawnedStorm = WeatherManager->SpawnStorm();
+	
+	if (WeatherToSet == FString("Rain"))
+	{
+		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
+		NewStormLocation.X = 0.0f;
+		NewStormLocation.Y = 0.0f;
+		SpawnedStorm->SetActorLocation(NewStormLocation);
+		SpawnedStorm->SetSeverity(30.0f);
+	}
+	else if (WeatherToSet == FString("Tornado"))
+	{
+		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
+		NewStormLocation.X = 0.0f;
+		NewStormLocation.Y = 0.0f;
+		SpawnedStorm->SetActorLocation(NewStormLocation);
+		SpawnedStorm->SetSeverity(90.0f);
+	}
+	else if (WeatherToSet == FString("Clear"))
+	{
+		WeatherManager->ClearAllStorms();
+	}
 }
 
 ASaveHandler* AWildOmissionGameMode::GetSaveHandler() const

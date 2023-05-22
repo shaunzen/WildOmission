@@ -31,7 +31,7 @@ public:
 	void ResetLocationOfAllConnectedPlayers();
 
 	UFUNCTION(BlueprintCallable, Exec)
-	void SpawnStorm();
+	void Weather(const FString& WeatherToSet);
 
 	ASaveHandler* GetSaveHandler() const;
 	AWeatherManager* GetWeatherManager() const;

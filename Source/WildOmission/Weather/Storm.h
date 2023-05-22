@@ -21,8 +21,12 @@ public:
 
 	void OnSpawn(const FVector2D& InWorldSize);
 
+	void SetSeverity(float NewSeverity);
+
 	UFUNCTION(BlueprintCallable)
 	bool IsRaining(float& OutDensity) const;
+
+	void HandleDestruction();
 
 protected:
 	// Called when the game starts or when spawned
@@ -59,6 +63,5 @@ private:
 
 	void HandleMovement();
 	void HandleSeverity();
-	void HandleDestruction();
 
 };

@@ -4,6 +4,7 @@
 #include "WeatherManager.h"
 #include "Storm.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 
 // Sets default values
@@ -73,7 +74,7 @@ void AWeatherManager::TrySpawnStorm()
 	SpawnStorm();
 }
 
-void AWeatherManager::SpawnStorm()
+AStorm* AWeatherManager::SpawnStorm()
 {
 	FVector2D WorldSize;
 
@@ -81,4 +82,23 @@ void AWeatherManager::SpawnStorm()
 
 	AStorm* SpawnedStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
 	SpawnedStorm->OnSpawn(WorldSize);
+
+	return SpawnedStorm;
+}
+
+void AWeatherManager::ClearAllStorms()
+{
+	TArray<AActor*> StormActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStorm::StaticClass(), StormActors);
+	
+	for (AActor* StormActor : StormActors)
+	{
+		AStorm* Storm = Cast<AStorm>(StormActor);
+		if (Storm == nullptr)
+		{
+			continue;
+		}
+
+		Storm->HandleDestruction();
+	}
 }

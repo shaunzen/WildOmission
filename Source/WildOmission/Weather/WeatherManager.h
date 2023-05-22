@@ -22,7 +22,10 @@ public:
 	float GetNextStormChanceTime() const;
 	void SetNextStormChanceTime(float NewTime);
 
-	void SpawnStorm();
+	// Returns the storm that was spawned
+	AStorm* SpawnStorm();
+
+	void ClearAllStorms();
 
 protected:
 	// Called when the game starts or when spawned
