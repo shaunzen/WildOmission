@@ -26,7 +26,7 @@ public:
 	
 	void SetDurability(const int32& InDurability);
 
-private:
+protected:
 	UPROPERTY(EditDefaultsOnly)
 	FInventoryItem ItemYield;
 
