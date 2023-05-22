@@ -44,6 +44,11 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	
 	SaveHandler->GetPlayerHandler()->Load(NewPlayer);
 
+	if (GetWorld()->IsPlayInEditor())
+	{
+		return;
+	}
+
 	AWildOmissionGameState* WOGameState = GetGameState<AWildOmissionGameState>();
 	if (WOGameState == nullptr)
 	{
@@ -63,6 +68,11 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 	
+	if (GetWorld()->IsPlayInEditor())
+	{
+		return;
+	}
+
 	AWildOmissionGameState* WOGameState = GetGameState<AWildOmissionGameState>();
 	if (WOGameState == nullptr)
 	{
