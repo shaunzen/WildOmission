@@ -46,7 +46,7 @@ void AStorm::OnSpawn(const FVector2D& InWorldSize)
 	Severity = 0.0f;
 
 	MovementSpeed = FMath::RandRange(300.0f, 1000.0f);
-	SeverityMultiplier = (FMath::RandRange(0.0f, 100.0f)/1000.0f);
+	SeverityMultiplier = (FMath::RandRange(0.0f, 500.0f) / 1000.0f);
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0, FColor::Red, FString::Printf(TEXT("MovementSpeed: %f"), MovementSpeed));
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0, FColor::Red, FString::Printf(TEXT("SeverityMultiplier: %f"), SeverityMultiplier));
 
