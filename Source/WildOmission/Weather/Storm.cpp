@@ -137,3 +137,8 @@ bool AStorm::IsRaining(float& OutDensity) const
 	OutDensity = FMath::Lerp(100.0f, 2000.0f, Severity / 100.0f);
 	return Severity > RainSeverityThreshold;
 }
+
+void AStorm::SetSeverity(float NewSeverity)
+{
+	Severity = NewSeverity;
+}
