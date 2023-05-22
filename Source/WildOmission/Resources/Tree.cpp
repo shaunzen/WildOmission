@@ -6,7 +6,7 @@
 
 ATree::ATree()
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> StumpMeshObject(TEXT("/Game/WildOmission/Art/Enviroment/SM_Tree_Stump"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> StumpMeshObject(TEXT("/Game/WildOmission/Art/Environment/Foliage/Trees/SM_Tree_Stump"));
 	if (StumpMeshObject.Succeeded())
 	{
 		StumpMesh = StumpMeshObject.Object;

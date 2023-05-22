@@ -4,6 +4,7 @@
 #include "Tornado.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "WildOmission/Core/Interfaces/DamagedByWind.h"
+#include "WildOmission/Core/Interfaces/InteractsWithTornado.h"
 
 // Sets default values
 ATornado::ATornado()
@@ -79,7 +80,10 @@ void ATornado::BeginPlay()
 		RadialSuctionComponent3->Deactivate();
 		RadialSuctionComponent4->Deactivate();
 		DistanceSuctionComponent->Deactivate();
+		return;
 	}
+
+	MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ATornado::OnActorOverlapVortex);
 }
 
 void ATornado::OnSpawn(const float& InStormRadius)
@@ -106,6 +110,17 @@ void ATornado::Tick(float DeltaTime)
 	}
 	
 	HandleRotation();
+}
+
+void ATornado::OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	IInteractsWithTornado* InteractsWithActor = Cast<IInteractsWithTornado>(OtherActor);
+	if (InteractsWithActor == nullptr)
+	{
+		return;
+	}
+
+	InteractsWithActor->OnContactWithTornado();
 }
 
 void ATornado::HandleMovement()

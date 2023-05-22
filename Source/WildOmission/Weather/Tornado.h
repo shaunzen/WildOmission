@@ -62,6 +62,8 @@ private:
 	void GetNewTargetLocation();
 	FVector GetRandomLocationInStorm();
 
+	UFUNCTION()
+	void OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	void HandleMovement();
 	void HandleDamage();
 	void HandleRotation();
