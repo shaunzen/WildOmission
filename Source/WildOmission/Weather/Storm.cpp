@@ -3,6 +3,7 @@
 
 #include "Storm.h"
 #include "Tornado.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values
@@ -10,7 +11,9 @@ AStorm::AStorm()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+	bReplicates = true;
+	SetReplicateMovement(true);
+
 	StormRootComponent = CreateDefaultSubobject<USceneComponent>(FName("StormRootComponent"));
 	RootComponent = StormRootComponent;
 
@@ -22,6 +25,14 @@ AStorm::AStorm()
 	TornadoSeverityThreshold = 90.0f;
 
 	Tags.Add(FName("StormCloud"));
+}
+
+
+void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStorm, Severity);
 }
 
 // Called when the game starts or when spawned

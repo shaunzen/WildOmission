@@ -19,6 +19,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void OnSpawn(const FVector2D& InWorldSize);
 
 	void SetSeverity(float NewSeverity);
@@ -51,7 +53,7 @@ private:
 	float MovementSpeed;
 	FVector MovementVector;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, Replicated, SaveGame)
 	float Severity;
 	float SeverityMultiplier;
 
