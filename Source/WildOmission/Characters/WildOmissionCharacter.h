@@ -235,6 +235,8 @@ private:
 	
 	void SetupPlayerHUD();
 
+	void SetupWeatherEffectHandler();
+
 	UFUNCTION(NetMulticast, Unreliable)
 	void Client_UpdateReplicatedControlRotation(const FRotator& NewControlRotation);
 

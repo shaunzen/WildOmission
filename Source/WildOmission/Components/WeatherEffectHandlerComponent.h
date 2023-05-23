@@ -33,6 +33,9 @@ private:
 	UPROPERTY()
 	UNiagaraComponent* SpawnedRainComponent;
 
+	UPROPERTY()
+	UExponentialHeightFogComponent* Fog;
+
 	void EnableRainfallEffects(float RainDensity);
 	void DisableRainfallEffects();
 

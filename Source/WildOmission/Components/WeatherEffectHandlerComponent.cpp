@@ -3,8 +3,11 @@
 
 #include "WeatherEffectHandlerComponent.h"
 #include "WildOmission/Weather/Storm.h"
+#include "Engine/ExponentialHeightFog.h"
+#include "Components/ExponentialHeightFogComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
@@ -26,8 +29,17 @@ void UWeatherEffectHandlerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	AActor* HeightFogActor = UGameplayStatics::GetActorOfClass(GetWorld(), AExponentialHeightFog::StaticClass());
+	if (HeightFogActor == nullptr)
+	{
+		return;
+	}
+
+	Fog = HeightFogActor->FindComponentByClass<UExponentialHeightFogComponent>();
+	if (Fog)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found fog!"));
+	}
 }
 
 

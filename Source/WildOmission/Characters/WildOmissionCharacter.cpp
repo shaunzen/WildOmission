@@ -158,7 +158,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 
-	WeatherEffectHandler = CreateDefaultSubobject<UWeatherEffectHandlerComponent>(FName("WeatherEffectHandler"));
+	WeatherEffectHandler = nullptr;
 
 	GetCharacterMovement()->JumpZVelocity = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
@@ -179,6 +179,7 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
+	SetupWeatherEffectHandler();
 	EndSprint();
 }
 
@@ -206,6 +207,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
+	SetupWeatherEffectHandler();
 }
 
 void AWildOmissionCharacter::UnPossessed()
@@ -248,6 +250,22 @@ void AWildOmissionCharacter::SetupPlayerHUD()
 
 	PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
 	PlayerHUDWidget->AddToViewport();
+}
+
+void AWildOmissionCharacter::SetupWeatherEffectHandler()
+{
+	if (!IsLocallyControlled() || WeatherEffectHandler != nullptr)
+	{
+		return;
+	}
+
+	WeatherEffectHandler = NewObject<UWeatherEffectHandlerComponent>(this, UWeatherEffectHandlerComponent::StaticClass(), FName("WeatherEffectHandler"));
+	if (WeatherEffectHandler == nullptr)
+	{
+		return;
+	}
+
+	WeatherEffectHandler->RegisterComponent();
 }
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
