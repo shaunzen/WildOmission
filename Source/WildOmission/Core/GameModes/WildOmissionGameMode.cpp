@@ -121,7 +121,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
 		NewStormLocation.X = 0.0f;
 		NewStormLocation.Y = 0.0f;
-		SpawnedStorm->SetActorLocation(NewStormLocation);
+		//SpawnedStorm->SetActorLocation(NewStormLocation);
 		SpawnedStorm->SetSeverity(30.0f);
 	}
 	else if (WeatherToSet == FString("Tornado"))
