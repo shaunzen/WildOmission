@@ -85,7 +85,8 @@ void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 	}
 
 	SpawnedRainComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
-	Fog->FogHeightFalloff = 0.001f;
+	Fog->SetFogDensity(0.05f);
+	Fog->SetFogHeightFalloff(0.001f);
 }
 
 void UWeatherEffectHandlerComponent::DisableRainfallEffects()
@@ -98,5 +99,6 @@ void UWeatherEffectHandlerComponent::DisableRainfallEffects()
 	SpawnedRainComponent->DestroyComponent();
 	SpawnedRainComponent = nullptr;
 
-	Fog->FogHeightFalloff = 0.2f;
+	Fog->SetFogDensity(0.02f);
+	Fog->SetFogHeightFalloff(0.2f);
 }
