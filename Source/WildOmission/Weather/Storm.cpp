@@ -2,7 +2,6 @@
 
 
 #include "Storm.h"
-#include "Tornado.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
@@ -65,6 +64,7 @@ void AStorm::Serialize(FArchive& Ar)
 		else
 		{
 			TornadoSave = SpawnedTornado->GetSaveInformation();
+			TornadoSave.WasSpawned = true;
 		}
 	}
 	Super::Serialize(Ar);
@@ -158,10 +158,16 @@ void AStorm::HandleSeverity()
 	}
 }
 
-void AStorm::SpawnTornado()
+void AStorm::SpawnTornado(bool bFromSave)
 {
 	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass);
 	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	if (bFromSave)
+	{
+		SpawnedTornado->LoadSaveInformation(TornadoSave);
+		return;
+	}
+
 	FVector Origin;
 	FVector BoxExtent;
 	GetActorBounds(true, Origin, BoxExtent);
@@ -222,4 +228,12 @@ void AStorm::SetLocalPlayerUnderneath(bool IsUnder)
 void AStorm::SetSeverity(float NewSeverity)
 {
 	Severity = NewSeverity;
+}
+
+void AStorm::OnLoadComplete_Implementation()
+{
+	if (TornadoSave.WasSpawned)
+	{
+		SpawnTornado(true);
+	}
 }

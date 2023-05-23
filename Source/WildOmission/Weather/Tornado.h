@@ -17,22 +17,25 @@ struct FTornadoSaveInformation
 	bool WasSpawned = false;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RotationSpeed;
+	FTransform Transform = FTransform();
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	float MovementSpeed;
+	float RotationSpeed = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	FVector TargetLocation;
+	float MovementSpeed = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	FVector OldTargetLocation;
+	FVector TargetLocation = FVector::ZeroVector;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	float StormRadius;
+	FVector OldTargetLocation = FVector::ZeroVector;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RemainingLifetime;
+	float StormRadius = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	float RemainingLifetime = 0.0f;
 };
 
 UCLASS()

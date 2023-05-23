@@ -103,16 +103,20 @@ void ATornado::OnSpawn(const float& InStormRadius)
 FTornadoSaveInformation ATornado::GetSaveInformation()
 {
 	FTornadoSaveInformation NewSave;
+	NewSave.Transform = GetActorTransform();
 	NewSave.MovementSpeed = MovementSpeed;
 	NewSave.OldTargetLocation = OldTargetLocation;
 	NewSave.RemainingLifetime = RemainingLifetime;
 	NewSave.RotationSpeed = RotationSpeed;
 	NewSave.StormRadius = StormRadius;
 	NewSave.TargetLocation = TargetLocation;
+
+	return NewSave;
 }
 
 void ATornado::LoadSaveInformation(const FTornadoSaveInformation& InSave)
 {
+	SetActorTransform(InSave.Transform);
 	MovementSpeed = InSave.MovementSpeed;
 	OldTargetLocation = InSave.OldTargetLocation;
 	RemainingLifetime = InSave.RemainingLifetime;

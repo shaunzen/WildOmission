@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "Tornado.h"
 #include "Storm.generated.h"
 
 class ATornado;
@@ -91,5 +92,9 @@ private:
 
 	void HandleMovement();
 	void HandleSeverity();
-	void SpawnTornado();
+	void SpawnTornado(bool bFromSave = false);
+
+	UFUNCTION()
+	virtual void OnLoadComplete_Implementation() override;
+
 };
