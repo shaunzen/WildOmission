@@ -7,6 +7,7 @@
 #include "Storm.generated.h"
 
 class ATornado;
+class UNiagaraComponent;
 
 UCLASS()
 class WILDOMISSION_API AStorm : public AActor
@@ -28,6 +29,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsRaining(float& OutDensity) const;
 
+	void SetLocalPlayerUnderneath(bool IsUnder);
+
 	void HandleDestruction();
 
 protected:
@@ -44,6 +47,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CloudMeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* RainHazeComponent;
 
 	FVector SpawnLocation;
 	FVector TargetLocation;
@@ -68,6 +74,8 @@ private:
 
 	UPROPERTY(Replicated)
 	ATornado* SpawnedTornado;
+
+	bool LocalPlayerUnder;
 
 	void HandleMovement();
 	void HandleSeverity();

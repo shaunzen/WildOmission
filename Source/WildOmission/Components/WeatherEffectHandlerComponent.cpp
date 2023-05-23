@@ -61,6 +61,7 @@ void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick T
 	}
 
 	AStorm* HitStorm = Cast<AStorm>(HitResult.GetActor());
+	PreviouslyHitStorm = HitStorm;
 	if (HitStorm == nullptr)
 	{
 		DisableRainfallEffects();
@@ -88,6 +89,11 @@ void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 
 	Fog->SetFogDensity(0.05f);
 	Fog->SetFogHeightFalloff(0.001f);
+
+	if (PreviouslyHitStorm != nullptr)
+	{
+		PreviouslyHitStorm->SetLocalPlayerUnderneath(true);
+	}
 }
 
 void UWeatherEffectHandlerComponent::DisableRainfallEffects()
@@ -102,4 +108,9 @@ void UWeatherEffectHandlerComponent::DisableRainfallEffects()
 
 	Fog->SetFogDensity(0.02f);
 	Fog->SetFogHeightFalloff(0.2f);
+
+	if (PreviouslyHitStorm != nullptr)
+	{
+		PreviouslyHitStorm->SetLocalPlayerUnderneath(false);
+	}
 }

@@ -4,6 +4,8 @@
 #include "Storm.h"
 #include "Tornado.h"
 #include "Net/UnrealNetwork.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values
@@ -23,6 +25,9 @@ AStorm::AStorm()
 	CloudMeshComponent->SetWorldScale3D(FVector(1000.0f , 1000.0f, 50.0f));
 	CloudMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECR_Block);
 
+	RainHazeComponent = CreateDefaultSubobject<UNiagaraComponent>(FName("RainHazeComponent"));
+	RainHazeComponent->SetupAttachment(StormRootComponent);
+
 	RainSeverityThreshold = 30.0f;
 	TornadoSeverityThreshold = 90.0f;
 
@@ -32,6 +37,12 @@ AStorm::AStorm()
 	if (TornadoBlueprint.Succeeded())
 	{
 		TornadoClass = TornadoBlueprint.Class;
+	}
+
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainHazeBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_RainHaze"));
+	if (RainHazeBlueprint.Succeeded())
+	{
+		RainHazeComponent->SetAsset(RainHazeBlueprint.Object);
 	}
 }
 
@@ -115,6 +126,15 @@ void AStorm::HandleSeverity()
 {
 	// Update severity values
 	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
+	
+	if (Severity > RainSeverityThreshold && LocalPlayerUnder == false)
+	{
+		RainHazeComponent->Activate();
+	}
+	else
+	{
+		RainHazeComponent->Deactivate();
+	}
 
 	if (Severity > TornadoSeverityThreshold && SpawnedTornado == nullptr)
 	{
@@ -172,6 +192,11 @@ bool AStorm::IsRaining(float& OutDensity) const
 {
 	OutDensity = FMath::Lerp(100.0f, 2000.0f, Severity / 100.0f);
 	return Severity > RainSeverityThreshold;
+}
+
+void AStorm::SetLocalPlayerUnderneath(bool IsUnder)
+{
+	LocalPlayerUnder = IsUnder;
 }
 
 void AStorm::SetSeverity(float NewSeverity)

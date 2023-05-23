@@ -8,6 +8,7 @@
 
 class UNiagaraSystem;
 class UNiagaraComponent;
+class AStorm;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UWeatherEffectHandlerComponent : public UActorComponent
@@ -35,6 +36,9 @@ private:
 
 	UPROPERTY()
 	UExponentialHeightFogComponent* Fog;
+
+	UPROPERTY()
+	AStorm* PreviouslyHitStorm;
 
 	void EnableRainfallEffects(float RainDensity);
 	void DisableRainfallEffects();
