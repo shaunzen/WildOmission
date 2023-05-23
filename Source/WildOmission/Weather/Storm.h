@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "Storm.generated.h"
 
 class ATornado;
 class UNiagaraComponent;
 
 UCLASS()
-class WILDOMISSION_API AStorm : public AActor
+class WILDOMISSION_API AStorm : public AActor, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 	
@@ -21,6 +22,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void Serialize(FArchive& Ar) override;
 
 	void OnSpawn(const FVector2D& InWorldSize);
 
@@ -39,6 +41,7 @@ protected:
 
 	void GetSpawnLocation(FVector& OutStartLocation);
 
+	UPROPERTY(SaveGame)
 	FVector2D WorldSize;
 
 private:
@@ -51,16 +54,22 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* RainHazeComponent;
 
+	UPROPERTY(SaveGame)
 	FVector SpawnLocation;
+	UPROPERTY(SaveGame)
 	FVector TargetLocation;
+	UPROPERTY(SaveGame)
 	float DistanceToTravel;
+	UPROPERTY(SaveGame)
 	float DistanceTraveled;
-
+	UPROPERTY(SaveGame)
 	float MovementSpeed;
+	UPROPERTY(SaveGame)
 	FVector MovementVector;
 
 	UPROPERTY(VisibleAnywhere, Replicated, SaveGame)
 	float Severity;
+	UPROPERTY(SaveGame)
 	float SeverityMultiplier;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -71,6 +80,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ATornado> TornadoClass;
+
+	UPROPERTY(SaveGame)
+	FTornadoSaveInformation TornadoSave;
 
 	UPROPERTY(Replicated)
 	ATornado* SpawnedTornado;

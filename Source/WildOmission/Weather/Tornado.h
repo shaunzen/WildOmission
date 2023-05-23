@@ -8,7 +8,33 @@
 
 class URadialForceComponent;
 
-//TODO make savable
+USTRUCT()
+struct FTornadoSaveInformation
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	bool WasSpawned = false;
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	float RotationSpeed;
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	float MovementSpeed;
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	FVector TargetLocation;
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	FVector OldTargetLocation;
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	float StormRadius;
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	float RemainingLifetime;
+};
+
 UCLASS()
 class WILDOMISSION_API ATornado : public AActor
 {
@@ -21,6 +47,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void OnSpawn(const float& InStormRadius);
+
+	FTornadoSaveInformation GetSaveInformation();
+
+	void LoadSaveInformation(const FTornadoSaveInformation& InSave);
 
 protected:
 	// Called when the game starts or when spawned
@@ -45,10 +75,10 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	URadialForceComponent* DistanceSuctionComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 	float RotationSpeed;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 	float MovementSpeed;
 
 	UPROPERTY(VisibleAnywhere)
@@ -57,7 +87,11 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	FVector OldTargetLocation;
 
+	UPROPERTY(VisibleAnywhere)
 	float StormRadius;
+
+	UPROPERTY(VisibleAnywhere)
+	float RemainingLifetime;
 
 	void GetNewTargetLocation();
 	FVector GetRandomLocationInStorm();

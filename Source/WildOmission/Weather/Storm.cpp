@@ -54,6 +54,22 @@ void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME(AStorm, Severity);
 }
 
+void AStorm::Serialize(FArchive& Ar)
+{
+	if (Ar.IsSaving())
+	{
+		if (SpawnedTornado == nullptr)
+		{
+			TornadoSave = FTornadoSaveInformation();
+		}
+		else
+		{
+			TornadoSave = SpawnedTornado->GetSaveInformation();
+		}
+	}
+	Super::Serialize(Ar);
+}
+
 // Called when the game starts or when spawned
 void AStorm::BeginPlay()
 {
@@ -156,6 +172,10 @@ void AStorm::SpawnTornado()
 void AStorm::HandleDestruction()
 {
 	// If there is any tornados, destroy them
+	if (SpawnedTornado != nullptr)
+	{
+		SpawnedTornado->Destroy();
+	}
 
 	Destroy();
 }

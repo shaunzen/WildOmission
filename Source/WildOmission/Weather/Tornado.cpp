@@ -96,6 +96,29 @@ void ATornado::OnSpawn(const float& InStormRadius)
 	SetActorLocation(TargetLocation);
 	
 	GetNewTargetLocation();
+
+	RemainingLifetime = FMath::RandRange(20.0f, 250.0f);
+}
+
+FTornadoSaveInformation ATornado::GetSaveInformation()
+{
+	FTornadoSaveInformation NewSave;
+	NewSave.MovementSpeed = MovementSpeed;
+	NewSave.OldTargetLocation = OldTargetLocation;
+	NewSave.RemainingLifetime = RemainingLifetime;
+	NewSave.RotationSpeed = RotationSpeed;
+	NewSave.StormRadius = StormRadius;
+	NewSave.TargetLocation = TargetLocation;
+}
+
+void ATornado::LoadSaveInformation(const FTornadoSaveInformation& InSave)
+{
+	MovementSpeed = InSave.MovementSpeed;
+	OldTargetLocation = InSave.OldTargetLocation;
+	RemainingLifetime = InSave.RemainingLifetime;
+	RotationSpeed = InSave.RotationSpeed;
+	StormRadius = InSave.StormRadius;
+	TargetLocation = InSave.TargetLocation;
 }
 
 // Called every frame
@@ -107,6 +130,12 @@ void ATornado::Tick(float DeltaTime)
 	{
 		HandleMovement();
 		HandleDamage();
+		RemainingLifetime -= DeltaTime;
+
+		if (RemainingLifetime < KINDA_SMALL_NUMBER)
+		{
+			Destroy();
+		}
 	}
 	
 	HandleRotation();
