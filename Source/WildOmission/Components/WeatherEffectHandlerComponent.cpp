@@ -92,19 +92,23 @@ void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 		SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, GetOwner()->GetRootComponent(), FName(), FVector(0.0f, 0.0f, 1000.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	}
 	SpawnedRainComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
+
 	if (SpawnedRainAudioComponent == nullptr)
 	{
 		SpawnedRainAudioComponent = UGameplayStatics::SpawnSoundAttached(RainSound, GetOwner()->GetRootComponent());
 	}
 	SpawnedRainAudioComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
+
 	FHitResult HitResult;
-	bool InCover = LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && CastToStorm(HitResult.GetActor()) == nullptr;
-	if (InCover)
+	if (LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && CastToStorm(HitResult.GetActor()) == nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Player undercover"));
 		SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), 200.0f);
+		SpawnedRainComponent->bHiddenInGame = true;
 	}
 	else
 	{
+		SpawnedRainComponent->bHiddenInGame = false;
 		SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), 1000.0f);
 	}
 
