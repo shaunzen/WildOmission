@@ -56,15 +56,15 @@ void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick T
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	FHitResult HitResult;
-	if (LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_GameTraceChannel2, HitResult))
+	if (!LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_GameTraceChannel2, HitResult))
 	{
 		DisableRainfallEffects();
 		return;
 	}
 
 
-	AStorm* HitStorm = nullptr;
-	if (!ActorIsStorm(HitResult.GetActor(), HitStorm))
+	AStorm* HitStorm = CastToStorm(HitResult.GetActor());
+	if (HitStorm == nullptr)
 	{
 		DisableRainfallEffects();
 		return;
@@ -98,7 +98,7 @@ void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 	}
 	SpawnedRainAudioComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
 	FHitResult HitResult;
-	bool InCover = LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && !ActorIsStorm(HitResult.GetActor(), nullptr);
+	bool InCover = LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && CastToStorm(HitResult.GetActor()) == nullptr;
 	if (InCover)
 	{
 		SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), 200.0f);
@@ -127,6 +127,7 @@ void UWeatherEffectHandlerComponent::DisableRainfallEffects()
 	}
 	if (SpawnedRainAudioComponent)
 	{
+		SpawnedRainAudioComponent->Stop();
 		SpawnedRainAudioComponent->DestroyComponent();
 		SpawnedRainAudioComponent = nullptr;
 	}
@@ -137,18 +138,12 @@ void UWeatherEffectHandlerComponent::DisableRainfallEffects()
 	}
 }
 
-bool UWeatherEffectHandlerComponent::ActorIsStorm(AActor* InActor, AStorm* OutStorm)
+AStorm* UWeatherEffectHandlerComponent::CastToStorm(AActor* InActor)
 {
-	OutStorm = Cast<AStorm>(InActor);
-	if (OutStorm == nullptr)
-	{
-		return false;
-	}
-
-	return true;
+	return Cast<AStorm>(InActor);
 }
 
-bool UWeatherEffectHandlerComponent::LineTraceIntoSkyOnChannel(const ECollisionChannel& ChannelToTrace, FHitResult& OutHitResult) const
+bool UWeatherEffectHandlerComponent::LineTraceIntoSkyOnChannel(ECollisionChannel ChannelToTrace, FHitResult& OutHitResult) const
 {
 	FVector Start = GetOwner()->GetActorLocation();
 	FVector End = Start + FVector::UpVector * 100000.0f;
