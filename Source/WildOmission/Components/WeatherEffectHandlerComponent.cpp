@@ -8,6 +8,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
+//#include "MetasoundSource.h"
 
 // Sets default values for this component's properties
 UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
@@ -20,6 +22,11 @@ UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
 	if (RainSystemBlueprint.Succeeded())
 	{
 		RainParticleSystem = RainSystemBlueprint.Object;
+	}
+	ConstructorHelpers::FObjectFinder<USoundBase> RainSoundBlueprint(TEXT("/Game/WildOmission/Weather/Sound/MS_RainFall"));
+	if (RainSoundBlueprint.Succeeded())
+	{
+		RainSound = RainSoundBlueprint.Object;
 	}
 }
 
@@ -93,6 +100,15 @@ void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 	if (PreviouslyHitStorm != nullptr)
 	{
 		PreviouslyHitStorm->SetLocalPlayerUnderneath(true);
+	}
+
+	if (SpawnedRainAudioComponent == nullptr)
+	{
+		SpawnedRainAudioComponent = UGameplayStatics::SpawnSoundAttached(RainSound, GetOwner()->GetRootComponent());
+	}
+	else
+	{
+		//UMetasoundSource* RainMetasound = Cast<UMetasoundSource>(SpawnedRainAudioComponent->GetSound());
 	}
 }
 

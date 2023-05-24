@@ -35,6 +35,12 @@ private:
 	UNiagaraComponent* SpawnedRainComponent;
 
 	UPROPERTY()
+	UAudioComponent* SpawnedRainAudioComponent;
+
+	UPROPERTY()
+	USoundBase* RainSound;
+
+	UPROPERTY()
 	UExponentialHeightFogComponent* Fog;
 
 	UPROPERTY()
