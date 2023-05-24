@@ -104,6 +104,7 @@ void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player undercover"));
 		SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), 200.0f);
+		SpawnedRainAudioComponent->get
 		SpawnedRainComponent->bHiddenInGame = true;
 	}
 	else
