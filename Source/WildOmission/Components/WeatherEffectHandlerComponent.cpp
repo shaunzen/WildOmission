@@ -64,7 +64,7 @@ void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick T
 
 
 	AStorm* HitStorm = nullptr;
-	if (ActorIsStorm(HitResult.GetActor(), HitStorm))
+	if (!ActorIsStorm(HitResult.GetActor(), HitStorm))
 	{
 		DisableRainfallEffects();
 		return;
@@ -98,7 +98,15 @@ void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 	}
 	SpawnedRainAudioComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
 	FHitResult HitResult;
-	SpawnedRainAudioComponent->SetBoolParameter(FName("InCover"), LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && !ActorIsStorm(HitResult.GetActor(), nullptr));
+	bool InCover = LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && !ActorIsStorm(HitResult.GetActor(), nullptr);
+	if (InCover)
+	{
+		SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), 200.0f);
+	}
+	else
+	{
+		SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), 1000.0f);
+	}
 
 	if (PreviouslyHitStorm != nullptr)
 	{
@@ -129,7 +137,7 @@ void UWeatherEffectHandlerComponent::DisableRainfallEffects()
 	}
 }
 
-bool UWeatherEffectHandlerComponent::ActorIsStorm(AActor* InActor, AStorm* OutStorm) const
+bool UWeatherEffectHandlerComponent::ActorIsStorm(AActor* InActor, AStorm* OutStorm)
 {
 	OutStorm = Cast<AStorm>(InActor);
 	if (OutStorm == nullptr)
