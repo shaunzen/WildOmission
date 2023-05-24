@@ -9,7 +9,7 @@
 #include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/AudioComponent.h"
-//#include "MetasoundSource.h"
+#include "MetasoundSource.h"
 
 // Sets default values for this component's properties
 UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
@@ -23,7 +23,7 @@ UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
 	{
 		RainParticleSystem = RainSystemBlueprint.Object;
 	}
-	ConstructorHelpers::FObjectFinder<USoundBase> RainSoundBlueprint(TEXT("/Game/WildOmission/Weather/Sound/MS_RainFall"));
+	ConstructorHelpers::FObjectFinder<UMetaSoundSource> RainSoundBlueprint(TEXT("/Game/WildOmission/Weather/Sound/MS_RainFall"));
 	if (RainSoundBlueprint.Succeeded())
 	{
 		RainSound = RainSoundBlueprint.Object;
@@ -56,24 +56,21 @@ void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick T
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	FHitResult HitResult;
-	FVector Start = GetOwner()->GetActorLocation();
-	FVector End = Start + FVector::UpVector * 100000.0f;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(GetOwner());
-
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2, Params))
+	if (LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_GameTraceChannel2, HitResult))
 	{
 		DisableRainfallEffects();
 		return;
 	}
 
-	AStorm* HitStorm = Cast<AStorm>(HitResult.GetActor());
+
+	AStorm* HitStorm = nullptr;
+	if (ActorIsStorm(HitResult.GetActor(), HitStorm))
+	{
+		DisableRainfallEffects();
+		return;
+	}
+
 	PreviouslyHitStorm = HitStorm;
-	if (HitStorm == nullptr)
-	{
-		DisableRainfallEffects();
-		return;
-	}
 
 	float RainDensity = 0.0f;
 	if (!HitStorm->IsRaining(RainDensity))
@@ -87,46 +84,68 @@ void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick T
 
 void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 {
+	Fog->SetFogDensity(0.05f);
+	Fog->SetFogHeightFalloff(0.001f);
+
 	if (SpawnedRainComponent == nullptr)
 	{
 		SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, GetOwner()->GetRootComponent(), FName(), FVector(0.0f, 0.0f, 1000.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	}
-
 	SpawnedRainComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
-
-	Fog->SetFogDensity(0.05f);
-	Fog->SetFogHeightFalloff(0.001f);
+	if (SpawnedRainAudioComponent == nullptr)
+	{
+		SpawnedRainAudioComponent = UGameplayStatics::SpawnSoundAttached(RainSound, GetOwner()->GetRootComponent());
+	}
+	SpawnedRainAudioComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
+	FHitResult HitResult;
+	SpawnedRainAudioComponent->SetBoolParameter(FName("InCover"), LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && !ActorIsStorm(HitResult.GetActor(), nullptr));
 
 	if (PreviouslyHitStorm != nullptr)
 	{
 		PreviouslyHitStorm->SetLocalPlayerUnderneath(true);
 	}
 
-	if (SpawnedRainAudioComponent == nullptr)
-	{
-		SpawnedRainAudioComponent = UGameplayStatics::SpawnSoundAttached(RainSound, GetOwner()->GetRootComponent());
-	}
-	else
-	{
-		//UMetasoundSource* RainMetasound = Cast<UMetasoundSource>(SpawnedRainAudioComponent->GetSound());
-	}
 }
 
 void UWeatherEffectHandlerComponent::DisableRainfallEffects()
 {
-	if (SpawnedRainComponent == nullptr)
-	{
-		return;
-	}
-
-	SpawnedRainComponent->DestroyComponent();
-	SpawnedRainComponent = nullptr;
-
 	Fog->SetFogDensity(0.02f);
 	Fog->SetFogHeightFalloff(0.2f);
 
-	if (PreviouslyHitStorm != nullptr)
+	if (SpawnedRainComponent)
+	{
+		SpawnedRainComponent->DestroyComponent();
+		SpawnedRainComponent = nullptr;
+	}
+	if (SpawnedRainAudioComponent)
+	{
+		SpawnedRainAudioComponent->DestroyComponent();
+		SpawnedRainAudioComponent = nullptr;
+	}
+	if (PreviouslyHitStorm)
 	{
 		PreviouslyHitStorm->SetLocalPlayerUnderneath(false);
+		PreviouslyHitStorm = nullptr;
 	}
+}
+
+bool UWeatherEffectHandlerComponent::ActorIsStorm(AActor* InActor, AStorm* OutStorm) const
+{
+	OutStorm = Cast<AStorm>(InActor);
+	if (OutStorm == nullptr)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool UWeatherEffectHandlerComponent::LineTraceIntoSkyOnChannel(const ECollisionChannel& ChannelToTrace, FHitResult& OutHitResult) const
+{
+	FVector Start = GetOwner()->GetActorLocation();
+	FVector End = Start + FVector::UpVector * 100000.0f;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
+
+	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ChannelToTrace, Params);
 }

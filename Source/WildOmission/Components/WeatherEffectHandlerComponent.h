@@ -49,4 +49,7 @@ private:
 	void EnableRainfallEffects(float RainDensity);
 	void DisableRainfallEffects();
 
+	bool ActorIsStorm(AActor* InActor, AStorm* OutStorm) const;
+	bool LineTraceIntoSkyOnChannel(const ECollisionChannel& ChannelToTrace, FHitResult& OutHitResult) const;
+
 };
