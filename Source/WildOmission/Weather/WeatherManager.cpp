@@ -19,7 +19,7 @@ AWeatherManager::AWeatherManager()
 	}
 
 	MinTimeBetweenStorms = 300.0f;
-	MaxTimeBetweenStorms = 3600.0f;
+	MaxTimeBetweenStorms = 600.0f;
 	NextStormChanceTime = 0.0f;
 }
 
