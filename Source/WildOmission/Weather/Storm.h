@@ -75,7 +75,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float RainSeverityThreshold;
-	
 	UPROPERTY(EditDefaultsOnly)
 	float TornadoSeverityThreshold;
 
@@ -91,9 +90,12 @@ private:
 	ATornado* SpawnedTornado;
 
 	bool LocalPlayerUnder;
+	float NextLightningStrikeTime;
 
 	void HandleMovement();
 	void HandleSeverity();
+	void HandleLightning();
+	void SpawnLightning();
 	void SpawnTornado(bool bFromSave = false);
 
 	UFUNCTION()

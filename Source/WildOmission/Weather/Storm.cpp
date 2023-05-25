@@ -127,6 +127,7 @@ void AStorm::Tick(float DeltaTime)
 
 	HandleMovement();
 	HandleSeverity();
+	HandleLightning();
 }
 
 void AStorm::HandleMovement()
@@ -163,6 +164,22 @@ void AStorm::HandleSeverity()
 	{
 		SpawnTornado();
 	}
+}
+
+void AStorm::HandleLightning()
+{
+	if (NextLightningStrikeTime < KINDA_SMALL_NUMBER)
+	{
+		NextLightningStrikeTime = FMath::RandRange(1.0f, 30.0f);
+		SpawnLightning();
+	}
+	NextLightningStrikeTime -= GetWorld()->GetDeltaSeconds();
+}
+
+void AStorm::SpawnLightning()
+{
+	// get random point
+	// spawn there
 }
 
 void AStorm::SpawnTornado(bool bFromSave)
