@@ -192,7 +192,7 @@ void AStorm::SpawnLightning()
 	LocationToSpawn.Y = FMath::RandRange(-HalfStormRadius, HalfStormRadius) + GetActorLocation().Y;
 	
 	FRotator RotationToSpawn = FRotator::ZeroRotator;
-	RotationToSpawn.Pitch = FMath::RandRange(90.0f, 270.0f);
+	RotationToSpawn.Pitch = FMath::RandRange(120.0f, 240.0f);
 	RotationToSpawn.Roll = FMath::RandRange(0.0f, 360.0f);
 	GetWorld()->SpawnActor<ALightning>(LightningClass, LocationToSpawn, RotationToSpawn);
 }
