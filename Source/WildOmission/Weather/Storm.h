@@ -8,7 +8,7 @@
 #include "Tornado.h"
 #include "Storm.generated.h"
 
-class ATornado;
+class ALightning;
 class UNiagaraComponent;
 
 UCLASS()
@@ -79,6 +79,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float TornadoSeverityThreshold;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ALightning> LightningClass;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ATornado> TornadoClass;
 

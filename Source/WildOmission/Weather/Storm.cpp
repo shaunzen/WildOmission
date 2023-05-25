@@ -2,6 +2,7 @@
 
 
 #include "Storm.h"
+#include "Lightning.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
@@ -36,6 +37,12 @@ AStorm::AStorm()
 	if (TornadoBlueprint.Succeeded())
 	{
 		TornadoClass = TornadoBlueprint.Class;
+	}
+
+	ConstructorHelpers::FClassFinder<ALightning> LightningBlueprint(TEXT("/Game/WildOmission/Weather/BP_Lightning"));
+	if (LightningBlueprint.Succeeded())
+	{
+		LightningClass = LightningBlueprint.Class;
 	}
 
 	ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainHazeBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_RainHaze"));

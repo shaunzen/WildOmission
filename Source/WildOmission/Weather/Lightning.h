@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Lightning.generated.h"
 
+class UPointLightComponent;
+
 UCLASS()
 class WILDOMISSION_API ALightning : public AActor
 {
@@ -24,9 +26,14 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* MeshComponent;
+	
+	UPROPERTY(VisibleAnywhere)
 	UPointLightComponent* LightComponent;
 	
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* ThunderSound;
+
+	float KillTimer;
 
 };
