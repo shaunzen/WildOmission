@@ -2,7 +2,7 @@
 
 
 #include "Lightning.h"
-#include "Components/PointLightComponent.h"
+#include "Components/DirectionalLightComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -16,8 +16,10 @@ ALightning::ALightning()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
 	RootComponent = MeshComponent;
 	
-	LightComponent = CreateDefaultSubobject<UPointLightComponent>(FName("LightComponent"));
-	LightComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -100.0f));
+	LightComponent = CreateDefaultSubobject<UDirectionalLightComponent>(FName("LightComponent"));
+	LightComponent->bAtmosphereSunLight = false;
+	LightComponent->ForwardShadingPriority = -1;
+	LightComponent->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
 	LightComponent->SetupAttachment(MeshComponent);
 
 	KillTimer = 0.2f;

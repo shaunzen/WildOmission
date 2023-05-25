@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Lightning.generated.h"
 
-class UPointLightComponent;
+class UDirectionalLightComponent;
 
 UCLASS()
 class WILDOMISSION_API ALightning : public AActor
@@ -29,7 +29,7 @@ private:
 	UStaticMeshComponent* MeshComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	UPointLightComponent* LightComponent;
+	UDirectionalLightComponent* LightComponent;
 	
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* ThunderSound;

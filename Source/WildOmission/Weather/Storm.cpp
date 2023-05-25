@@ -170,7 +170,7 @@ void AStorm::HandleLightning()
 {
 	if (NextLightningStrikeTime < KINDA_SMALL_NUMBER)
 	{
-		NextLightningStrikeTime = FMath::RandRange(1.0f, 30.0f);
+		NextLightningStrikeTime = FMath::RandRange(1.0f, 5.0f);
 		SpawnLightning();
 	}
 	NextLightningStrikeTime -= GetWorld()->GetDeltaSeconds();
@@ -178,8 +178,24 @@ void AStorm::HandleLightning()
 
 void AStorm::SpawnLightning()
 {
-	// get random point
-	// spawn there
+	if (LightningClass == nullptr)
+	{
+		return;
+	}
+
+	FVector Origin;
+	FVector BoxExtent;
+	GetActorBounds(true, Origin, BoxExtent);
+	float HalfStormRadius = (BoxExtent.Length() - (BoxExtent.Length() * 0.2f) * 0.5f);
+	FVector LocationToSpawn = GetActorLocation();
+	LocationToSpawn.X = FMath::RandRange(-HalfStormRadius, HalfStormRadius);
+	LocationToSpawn.Y = FMath::RandRange(-HalfStormRadius, HalfStormRadius);
+	
+	FRotator RotationToSpawn = FRotator::ZeroRotator;
+	RotationToSpawn.Pitch = FMath::RandRange(90.0f, 270.0f);
+	RotationToSpawn.Roll = FMath::RandRange(0.0f, 360.0f);
+	GetWorld()->SpawnActor<ALightning>(LightningClass, LocationToSpawn, RotationToSpawn);
+	UE_LOG(LogTemp, Warning, TEXT("Spawned Lightning!"));
 }
 
 void AStorm::SpawnTornado(bool bFromSave)
