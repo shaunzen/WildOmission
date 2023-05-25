@@ -28,6 +28,7 @@ UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
 	{
 		RainSound = RainSoundBlueprint.Object;
 	}
+	RainSoundCutoff = 20000.0f;
 }
 
 
@@ -102,16 +103,14 @@ void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 	FHitResult HitResult;
 	if (LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && CastToStorm(HitResult.GetActor()) == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player undercover"));
-		SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), 200.0f);
-		SpawnedRainAudioComponent->get
-		SpawnedRainComponent->bHiddenInGame = true;
+		RainSoundCutoff = FMath::Clamp(FMath::Lerp(RainSoundCutoff, 500.0f, 5.0f * GetWorld()->GetDeltaSeconds()), 500.0f, 20000.0f);
 	}
 	else
 	{
-		SpawnedRainComponent->bHiddenInGame = false;
-		SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), 1000.0f);
+		RainSoundCutoff = FMath::Clamp(FMath::Lerp(RainSoundCutoff, 20000.0f, 5.0f * GetWorld()->GetDeltaSeconds()), 500.0f, 20000.0f);
 	}
+
+	SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), RainSoundCutoff);
 
 	if (PreviouslyHitStorm != nullptr)
 	{
