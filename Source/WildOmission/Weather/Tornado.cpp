@@ -95,7 +95,7 @@ void ATornado::OnSpawn(const float& InStormRadius)
 	
 	GetNewTargetLocation();
 
-	TotalLifetime = FMath::RandRange(10.0f, 15.0f);
+	TotalLifetime = FMath::RandRange(120.0f, 300.0f);
 	RemainingLifetime = TotalLifetime;
 
 	RadialSuctionComponent1->Activate();
@@ -179,17 +179,15 @@ void ATornado::HandleMovement()
 	float TotalTimeAlive = TotalLifetime - RemainingLifetime;
 
 	float ZAxis = 0.0f;
-
 	if (TotalTimeAlive < 5.0f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Going Down"));
 		ZAxis = FMath::Lerp(10000.0f, 0.0f, TotalTimeAlive / 5.0f);
 	}
 	else if (RemainingLifetime < 5.0f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Going Up"));
 		ZAxis = FMath::Lerp(0.0f, 10000.0f, (5.0f / RemainingLifetime) - 1.0f);
 	}
+
 	NewLocation.Z = ZAxis;
 
 	SetActorLocation(NewLocation);
