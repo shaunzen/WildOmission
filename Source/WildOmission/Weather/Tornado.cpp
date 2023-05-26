@@ -73,22 +73,20 @@ void ATornado::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!HasAuthority())
-	{
-		RadialSuctionComponent1->Deactivate();
-		RadialSuctionComponent2->Deactivate();
-		RadialSuctionComponent3->Deactivate();
-		RadialSuctionComponent4->Deactivate();
-		DistanceSuctionComponent->Deactivate();
-		return;
-	}
+	RadialSuctionComponent1->Deactivate();
+	RadialSuctionComponent2->Deactivate();
+	RadialSuctionComponent3->Deactivate();
+	RadialSuctionComponent4->Deactivate();
+	DistanceSuctionComponent->Deactivate();
 
-	MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ATornado::OnActorOverlapVortex);
+	if (HasAuthority())
+	{
+		MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ATornado::OnActorOverlapVortex);
+	}
 }
 
 void ATornado::OnSpawn(const float& InStormRadius)
 {
-	
 	StormRadius = InStormRadius;
 
 	TargetLocation = GetRandomLocationInStorm();
@@ -97,7 +95,14 @@ void ATornado::OnSpawn(const float& InStormRadius)
 	
 	GetNewTargetLocation();
 
-	RemainingLifetime = FMath::RandRange(20.0f, 250.0f);
+	TotalLifetime = FMath::RandRange(10.0f, 15.0f);
+	RemainingLifetime = TotalLifetime;
+
+	RadialSuctionComponent1->Activate();
+	RadialSuctionComponent2->Activate();
+	RadialSuctionComponent3->Activate();
+	RadialSuctionComponent4->Activate();
+	DistanceSuctionComponent->Activate();
 }
 
 FTornadoSaveInformation ATornado::GetSaveInformation()
@@ -106,6 +111,7 @@ FTornadoSaveInformation ATornado::GetSaveInformation()
 	NewSave.Transform = GetActorTransform();
 	NewSave.MovementSpeed = MovementSpeed;
 	NewSave.OldTargetLocation = OldTargetLocation;
+	NewSave.TotalLifetime = TotalLifetime;
 	NewSave.RemainingLifetime = RemainingLifetime;
 	NewSave.RotationSpeed = RotationSpeed;
 	NewSave.StormRadius = StormRadius;
@@ -119,6 +125,7 @@ void ATornado::LoadSaveInformation(const FTornadoSaveInformation& InSave)
 	SetActorTransform(InSave.Transform);
 	MovementSpeed = InSave.MovementSpeed;
 	OldTargetLocation = InSave.OldTargetLocation;
+	TotalLifetime = InSave.TotalLifetime;
 	RemainingLifetime = InSave.RemainingLifetime;
 	RotationSpeed = InSave.RotationSpeed;
 	StormRadius = InSave.StormRadius;
@@ -158,7 +165,7 @@ void ATornado::OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AA
 
 void ATornado::HandleMovement()
 {
-	FVector CurrentLocation = GetActorLocation();
+	FVector CurrentLocation = FVector(GetActorLocation().X, GetActorLocation().Y, 0.0f);
 	FVector VectorTowardTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
 	float DistanceFromTarget = FVector::Distance(TargetLocation, CurrentLocation);
 	
@@ -169,6 +176,22 @@ void ATornado::HandleMovement()
 	}
 
 	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * GetWorld()->GetDeltaSeconds());
+	float TotalTimeAlive = TotalLifetime - RemainingLifetime;
+
+	float ZAxis = 0.0f;
+
+	if (TotalTimeAlive < 5.0f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Going Down"));
+		ZAxis = FMath::Lerp(10000.0f, 0.0f, TotalTimeAlive / 5.0f);
+	}
+	else if (RemainingLifetime < 5.0f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Going Up"));
+		ZAxis = FMath::Lerp(0.0f, 10000.0f, (5.0f / RemainingLifetime) - 1.0f);
+	}
+	NewLocation.Z = ZAxis;
+
 	SetActorLocation(NewLocation);
 }
 

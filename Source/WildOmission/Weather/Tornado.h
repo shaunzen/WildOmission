@@ -35,6 +35,9 @@ struct FTornadoSaveInformation
 	float StormRadius = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
+	float TotalLifetime = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
 	float RemainingLifetime = 0.0f;
 };
 
@@ -95,6 +98,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float RemainingLifetime;
+
+	UPROPERTY(VisibleAnywhere)
+	float TotalLifetime;
 
 	void GetNewTargetLocation();
 	FVector GetRandomLocationInStorm();
