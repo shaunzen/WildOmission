@@ -206,6 +206,8 @@ void AStorm::HandleWind()
 	{
 		TornadoLocation = SpawnedTornado->GetActorLocation();
 		UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(TornadoLocation.X, TornadoLocation.Y, 0.0f, 1.0f));
+		FLinearColor TornadoPosColor = UKismetMaterialLibrary::GetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"));
+		UE_LOG(LogTemp, Warning, TEXT("Tornado Loc X: %f, Y: %f"), TornadoPosColor.R, TornadoPosColor.G);
 		return;
 	}
 
