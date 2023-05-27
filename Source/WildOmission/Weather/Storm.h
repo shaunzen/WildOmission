@@ -84,6 +84,9 @@ private:
 	TSubclassOf<ATornado> TornadoClass;
 
 	UPROPERTY(SaveGame)
+	bool HasSpawnedTornado;
+
+	UPROPERTY(SaveGame)
 	FTornadoSaveInformation TornadoSave;
 
 	UPROPERTY(Replicated)
@@ -94,6 +97,7 @@ private:
 
 	void HandleMovement();
 	void HandleSeverity();
+	void HandleWind();
 	void HandleLightning();
 	void SpawnLightning();
 	void SpawnTornado(bool bFromSave = false);

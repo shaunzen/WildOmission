@@ -6,7 +6,11 @@
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
 #include "UObject/ConstructorHelpers.h"
+
+static UMaterialParameterCollection* MPC_WindCollection = nullptr;
 
 // Sets default values
 AStorm::AStorm()
@@ -31,24 +35,33 @@ AStorm::AStorm()
 	RainSeverityThreshold = 30.0f;
 	TornadoSeverityThreshold = 90.0f;
 
+	SpawnedTornado = nullptr;
+	HasSpawnedTornado = false;
+
 	Tags.Add(FName("StormCloud"));
 
-	ConstructorHelpers::FClassFinder<ATornado> TornadoBlueprint(TEXT("/Game/WildOmission/Weather/BP_Tornado"));
+	static ConstructorHelpers::FClassFinder<ATornado> TornadoBlueprint(TEXT("/Game/WildOmission/Weather/BP_Tornado"));
 	if (TornadoBlueprint.Succeeded())
 	{
 		TornadoClass = TornadoBlueprint.Class;
 	}
 
-	ConstructorHelpers::FClassFinder<ALightning> LightningBlueprint(TEXT("/Game/WildOmission/Weather/BP_Lightning"));
+	static ConstructorHelpers::FClassFinder<ALightning> LightningBlueprint(TEXT("/Game/WildOmission/Weather/BP_Lightning"));
 	if (LightningBlueprint.Succeeded())
 	{
 		LightningClass = LightningBlueprint.Class;
 	}
 
-	ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainHazeBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_RainHaze"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainHazeBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_RainHaze"));
 	if (RainHazeBlueprint.Succeeded())
 	{
 		RainHazeComponent->SetAsset(RainHazeBlueprint.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> WindParameterCollectionBlueprint(TEXT("/Game/WildOmission/Weather/MPC_Wind"));
+	if (WindParameterCollectionBlueprint.Succeeded())
+	{
+		MPC_WindCollection = WindParameterCollectionBlueprint.Object;
 	}
 }
 
@@ -101,9 +114,7 @@ void AStorm::OnSpawn(const FVector2D& InWorldSize)
 	MovementSpeed = FMath::RandRange(300.0f, 1000.0f);
 	SeverityMultiplier = (FMath::RandRange(0.0f, 100.0f) / 1000.0f);
 
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0, FColor::Red, FString::Printf(TEXT("MovementSpeed: %f"), MovementSpeed));
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0, FColor::Red, FString::Printf(TEXT("SeverityMultiplier: %f"), SeverityMultiplier));
-
+	UE_LOG(LogTemp, Display, TEXT("Spawned Storm with MovementSpeed: %f, and SeverityMultiplier: %f"), MovementSpeed, SeverityMultiplier);
 }
 
 // Called every frame
@@ -127,6 +138,7 @@ void AStorm::Tick(float DeltaTime)
 
 	HandleMovement();
 	HandleSeverity();
+	HandleWind();
 	HandleLightning();
 }
 
@@ -160,10 +172,35 @@ void AStorm::HandleSeverity()
 		RainHazeComponent->Deactivate();
 	}
 
-	if (Severity > TornadoSeverityThreshold && SpawnedTornado == nullptr)
+	if (Severity > TornadoSeverityThreshold && SpawnedTornado == nullptr && HasSpawnedTornado == false)
 	{
 		SpawnTornado();
 	}
+}
+
+void AStorm::HandleWind()
+{
+	float RemainingDistance = DistanceToTravel - DistanceTraveled;
+	float DistanceFadeRatio = DistanceToTravel * 0.2f;
+	
+	float NormalizedSeverity = Severity / 100.0f;
+	float MaxWindStrength = 7.0f;
+
+	float FadeInOutMultiplier = 0.0f;
+	if (DistanceTraveled < DistanceFadeRatio)
+	{
+		FadeInOutMultiplier = DistanceTraveled / 1000.0f;
+	}
+	else if (RemainingDistance < DistanceFadeRatio)
+	{
+		FadeInOutMultiplier = (1000.0f / RemainingDistance) - 1.0f;
+	}
+
+	float WindStrength = FMath::Clamp(MaxWindStrength * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrength);
+	FVector WindDirection = GetActorLocation() - FVector::ZeroVector;
+
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("WindStrength"), WindStrength);
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("WindDirection"), FLinearColor(WindDirection.X, WindDirection.Y, WindDirection.Z, 1.0f));
 }
 
 void AStorm::HandleLightning()
@@ -212,6 +249,7 @@ void AStorm::SpawnTornado(bool bFromSave)
 	GetActorBounds(true, Origin, BoxExtent);
 
 	SpawnedTornado->OnSpawn(BoxExtent.Length() - (BoxExtent.Length() * 0.2f));
+	HasSpawnedTornado = true;
 }
 
 void AStorm::HandleDestruction()
