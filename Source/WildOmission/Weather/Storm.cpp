@@ -186,7 +186,7 @@ void AStorm::HandleWind()
 	float NormalizedSeverity = Severity / 100.0f;
 	float MaxWindStrength = 7.0f;
 
-	float FadeInOutMultiplier = 0.0f;
+	float FadeInOutMultiplier = 1.0f;
 	if (DistanceTraveled < DistanceFadeRatio)
 	{
 		FadeInOutMultiplier = DistanceTraveled / 1000.0f;
@@ -197,10 +197,10 @@ void AStorm::HandleWind()
 	}
 
 	float WindStrength = FMath::Clamp(MaxWindStrength * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrength);
-	FVector WindDirection = GetActorLocation() - FVector::ZeroVector;
+	FVector NormalizedWindDirection = (GetActorLocation() - FVector::ZeroVector).GetSafeNormal();
 
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("WindStrength"), WindStrength);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("WindDirection"), FLinearColor(WindDirection.X, WindDirection.Y, 0.0f, 1.0f));
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("WindDirection"), FLinearColor(FMath::CeilToFloat(NormalizedWindDirection.X), FMath::CeilToFloat(NormalizedWindDirection.Y), 0.0f, 1.0f));
 }
 
 void AStorm::HandleLightning()
