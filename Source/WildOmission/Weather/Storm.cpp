@@ -200,7 +200,7 @@ void AStorm::HandleWind()
 	FVector WindDirection = GetActorLocation() - FVector::ZeroVector;
 
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("WindStrength"), WindStrength);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("WindDirection"), FLinearColor(WindDirection.X, WindDirection.Y, WindDirection.Z, 1.0f));
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("WindDirection"), FLinearColor(WindDirection.X, WindDirection.Y, 0.0f, 1.0f));
 }
 
 void AStorm::HandleLightning()
