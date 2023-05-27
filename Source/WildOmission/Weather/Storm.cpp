@@ -198,9 +198,18 @@ void AStorm::HandleWind()
 
 	float WindStrength = FMath::Clamp(MaxWindStrength * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrength);
 	FVector NormalizedWindDirection = (GetActorLocation() - FVector::ZeroVector).GetSafeNormal();
+	FVector TornadoLocation = FVector::ZeroVector;
 
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("WindStrength"), WindStrength);
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("WindDirection"), FLinearColor(FMath::CeilToFloat(NormalizedWindDirection.X), FMath::CeilToFloat(NormalizedWindDirection.Y), 0.0f, 1.0f));
+	if (SpawnedTornado)
+	{
+		TornadoLocation = SpawnedTornado->GetActorLocation();
+		UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(TornadoLocation.X, TornadoLocation.Y, 0.0f, 1.0f));
+		return;
+	}
+
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(TornadoLocation.X, TornadoLocation.Y, 0.0f, 0.0f));
 }
 
 void AStorm::HandleLightning()
