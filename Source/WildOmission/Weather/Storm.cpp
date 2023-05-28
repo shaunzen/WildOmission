@@ -184,7 +184,7 @@ void AStorm::HandleWind()
 	float DistanceFadeRatio = DistanceToTravel * 0.2f;
 	
 	float NormalizedSeverity = Severity / 100.0f;
-	float MaxWindStrength = 7.0f;
+	float MaxWindStrengthFromStorm = 3.0f;
 
 	float FadeInOutMultiplier = 1.0f;
 	if (DistanceTraveled < DistanceFadeRatio)
@@ -196,7 +196,7 @@ void AStorm::HandleWind()
 		FadeInOutMultiplier = (1000.0f / RemainingDistance) - 1.0f;
 	}
 
-	float WindStrength = FMath::Clamp(MaxWindStrength * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrength);
+	float WindStrength = FMath::Clamp(MaxWindStrengthFromStorm * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrengthFromStorm);
 	FVector NormalizedWindDirection = (GetActorLocation() - FVector::ZeroVector).GetSafeNormal();
 	FVector TornadoLocation = FVector::ZeroVector;
 
@@ -271,6 +271,10 @@ void AStorm::HandleDestruction()
 		SpawnedTornado->Destroy();
 	}
 
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("WindStrength"), 0.3f);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), 0.0f);
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+	
 	Destroy();
 }
 
