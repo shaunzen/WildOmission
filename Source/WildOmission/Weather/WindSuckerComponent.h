@@ -41,4 +41,7 @@ private:
 	void RemoveObjectTypeToAffect(TEnumAsByte<enum EObjectTypeQuery> ObjectType);
 	void AddCollisionChannelToAffect(enum ECollisionChannel CollisionChannel);
 	void UpdateCollisionObjectQueryParams();
+
+	bool HasLineOfSightToComponent(UPrimitiveComponent* InComponent) const;
+
 };

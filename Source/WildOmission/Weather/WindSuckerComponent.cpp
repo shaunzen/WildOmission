@@ -68,6 +68,11 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 		for (UPrimitiveComponent* PrimitiveComponent : AffectedComponents)
 		{
+			if (!HasLineOfSightToComponent(PrimitiveComponent))
+			{
+				continue;
+			}
+
 			PrimitiveComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
 
 			// see if this is a target for a movement component
@@ -133,4 +138,29 @@ void UWindSuckerComponent::RemoveObjectTypeToAffect(TEnumAsByte<enum EObjectType
 void UWindSuckerComponent::UpdateCollisionObjectQueryParams()
 {
 	CollisionObjectQueryParams = FCollisionObjectQueryParams(ObjectTypesToAffect);
+}
+
+bool UWindSuckerComponent::HasLineOfSightToComponent(UPrimitiveComponent* InComponent) const
+{
+	FVector TowardComponentVector = (GetComponentLocation() - InComponent->GetComponentLocation()).GetSafeNormal();
+	float DistanceFromComponent = FVector::Distance(GetComponentLocation(), InComponent->GetComponentLocation());
+
+
+	FHitResult HitResult;
+	FVector Start = GetComponentLocation();
+	FVector End = Start + (TowardComponentVector * DistanceFromComponent);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this->GetOwner());
+
+	if (!GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_Visibility, FCollisionShape::MakeSphere(16.0f), Params))
+	{
+		return false;
+	}
+
+	if (HitResult.GetComponent() == nullptr || InComponent == nullptr)
+	{
+		return false;
+	}
+
+	return HitResult.GetComponent() == InComponent;
 }
