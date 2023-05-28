@@ -68,17 +68,17 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 		for (UPrimitiveComponent* PrimitiveComponent : AffectedComponents)
 		{
-			if (!HasLineOfSightToComponent(PrimitiveComponent))
-			{
-				continue;
-			}
-
 			PrimitiveComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
 
 			// see if this is a target for a movement component
 			AActor* ComponentOwner = PrimitiveComponent->GetOwner();
 			if (ComponentOwner)
 			{
+				if (!HasLineOfSightToActor(ComponentOwner))
+				{
+					continue;
+				}
+
 				TInlineComponentArray<UMovementComponent*> MovementComponents;
 				ComponentOwner->GetComponents(MovementComponents);
 				for (const auto& MovementComponent : MovementComponents)
@@ -140,10 +140,10 @@ void UWindSuckerComponent::UpdateCollisionObjectQueryParams()
 	CollisionObjectQueryParams = FCollisionObjectQueryParams(ObjectTypesToAffect);
 }
 
-bool UWindSuckerComponent::HasLineOfSightToComponent(UPrimitiveComponent* InComponent) const
+bool UWindSuckerComponent::HasLineOfSightToActor(AActor* InActor) const
 {
-	FVector TowardComponentVector = (GetComponentLocation() - InComponent->GetComponentLocation()).GetSafeNormal();
-	float DistanceFromComponent = FVector::Distance(GetComponentLocation(), InComponent->GetComponentLocation());
+	FVector TowardComponentVector = (InActor->GetActorLocation() - GetComponentLocation()).GetSafeNormal();
+	float DistanceFromComponent = FVector::Distance(GetComponentLocation(), InActor->GetActorLocation());
 
 
 	FHitResult HitResult;
@@ -152,15 +152,15 @@ bool UWindSuckerComponent::HasLineOfSightToComponent(UPrimitiveComponent* InComp
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this->GetOwner());
 
-	if (!GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_Visibility, FCollisionShape::MakeSphere(16.0f), Params))
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
 	{
 		return false;
 	}
 
-	if (HitResult.GetComponent() == nullptr || InComponent == nullptr)
+	if (HitResult.GetActor() == nullptr || InActor == nullptr)
 	{
 		return false;
 	}
 
-	return HitResult.GetComponent() == InComponent;
+	return HitResult.GetActor() == InActor;
 }

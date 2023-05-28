@@ -42,6 +42,6 @@ private:
 	void AddCollisionChannelToAffect(enum ECollisionChannel CollisionChannel);
 	void UpdateCollisionObjectQueryParams();
 
-	bool HasLineOfSightToComponent(UPrimitiveComponent* InComponent) const;
+	bool HasLineOfSightToActor(AActor* InActor) const;
 
 };
