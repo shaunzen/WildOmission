@@ -71,6 +71,9 @@ void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStorm, Severity);
+	DOREPLIFETIME(AStorm, DistanceToTravel);
+	DOREPLIFETIME(AStorm, DistanceTraveled);
+	DOREPLIFETIME(AStorm, MovementVector);
 }
 
 void AStorm::Serialize(FArchive& Ar)
@@ -131,6 +134,8 @@ void AStorm::Tick(float DeltaTime)
 
 	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
 
+	HandleWind();
+
 	if (!HasAuthority())
 	{
 		return;
@@ -138,7 +143,6 @@ void AStorm::Tick(float DeltaTime)
 
 	HandleMovement();
 	HandleSeverity();
-	HandleWind();
 	HandleLightning();
 }
 
@@ -197,11 +201,10 @@ void AStorm::HandleWind()
 	}
 
 	float WindStrength = FMath::Clamp(MaxWindStrengthFromStorm * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrengthFromStorm);
-	FVector NormalizedWindDirection = (GetActorLocation() - FVector::ZeroVector).GetSafeNormal();
 	FVector TornadoLocation = FVector::ZeroVector;
 
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("WindStrength"), WindStrength);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("WindDirection"), FLinearColor(FMath::CeilToFloat(NormalizedWindDirection.X), FMath::CeilToFloat(NormalizedWindDirection.Y), 0.0f, 1.0f));
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("WindDirection"), FLinearColor(MovementVector.X, MovementVector.Y, 0.0f, 1.0f));
 	if (SpawnedTornado)
 	{
 		TornadoLocation = SpawnedTornado->GetActorLocation();

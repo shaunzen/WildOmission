@@ -59,13 +59,13 @@ private:
 	FVector SpawnLocation;
 	UPROPERTY(SaveGame)
 	FVector TargetLocation;
-	UPROPERTY(SaveGame)
+	UPROPERTY(Replicated, SaveGame)
 	float DistanceToTravel;
-	UPROPERTY(SaveGame)
+	UPROPERTY(Replicated, SaveGame)
 	float DistanceTraveled;
 	UPROPERTY(SaveGame)
 	float MovementSpeed;
-	UPROPERTY(SaveGame)
+	UPROPERTY(Replicated, SaveGame)
 	FVector MovementVector;
 
 	UPROPERTY(VisibleAnywhere, Replicated, SaveGame)
