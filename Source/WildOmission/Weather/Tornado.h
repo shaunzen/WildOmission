@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Tornado.generated.h"
 
-class URadialForceComponent;
+class UWindSuckerComponent;
 
 USTRUCT()
 struct FTornadoSaveInformation
@@ -70,16 +70,16 @@ private:
 	USceneComponent* RadialSuctionAnchor;
 
 	UPROPERTY(VisibleAnywhere)
-	URadialForceComponent* RadialSuctionComponent1;
+	UWindSuckerComponent* RadialSuctionComponent1;
 	UPROPERTY(VisibleAnywhere)
-	URadialForceComponent* RadialSuctionComponent2;
+	UWindSuckerComponent* RadialSuctionComponent2;
 	UPROPERTY(VisibleAnywhere)
-	URadialForceComponent* RadialSuctionComponent3;
+	UWindSuckerComponent* RadialSuctionComponent3;
 	UPROPERTY(VisibleAnywhere)
-	URadialForceComponent* RadialSuctionComponent4;
+	UWindSuckerComponent* RadialSuctionComponent4;
 
 	UPROPERTY(VisibleAnywhere)
-	URadialForceComponent* DistanceSuctionComponent;
+	UWindSuckerComponent* DistanceSuctionComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	float RotationSpeed;
