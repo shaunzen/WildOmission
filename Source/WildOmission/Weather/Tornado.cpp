@@ -2,7 +2,7 @@
 
 
 #include "Tornado.h"
-#include "PhysicsEngine/RadialForceComponent.h"
+#include "WindSuckerComponent.h"
 #include "WildOmission/Core/Interfaces/DamagedByWind.h"
 #include "WildOmission/Core/Interfaces/InteractsWithTornado.h"
 
@@ -19,45 +19,31 @@ ATornado::ATornado()
 	MeshComponent->SetCollisionProfileName(FName("OverlapAllDynamic"));
 	RootComponent = MeshComponent;
 
-	RadialSuctionAnchor = CreateDefaultSubobject<USceneComponent>(FName("RadialSuctionAnchor"));
-	RadialSuctionAnchor->SetupAttachment(MeshComponent);
-	RadialSuctionAnchor->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
+	SuctionAnchor = CreateDefaultSubobject<USceneComponent>(FName("SuctionAnchor"));
+	SuctionAnchor->SetupAttachment(MeshComponent);
+	SuctionAnchor->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
 
-	RadialSuctionComponent1 = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent1"));
-	RadialSuctionComponent1->ForceStrength = -999999.0f;
-	RadialSuctionComponent1->Radius = 3000.0f;
-	RadialSuctionComponent1->Falloff = ERadialImpulseFalloff::RIF_Linear;
-	RadialSuctionComponent1->SetupAttachment(RadialSuctionAnchor);
-	RadialSuctionComponent1->SetRelativeLocation(FVector(2000.0f, 0.0f, 0.0f));
+	CloseSuctionComponent1 = CreateDefaultSubobject<UWindSuckerComponent>(FName("CloseSuctionComponent1"));
+	CloseSuctionComponent1->SetupAttachment(SuctionAnchor);
+	CloseSuctionComponent1->SetRelativeLocation(FVector(2000.0f, 0.0f, 0.0f));
 	
-	RadialSuctionComponent2 = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent2"));
-	RadialSuctionComponent2->ForceStrength = -999999.0f;
-	RadialSuctionComponent2->Radius = 3000.0f;
-	RadialSuctionComponent2->Falloff = ERadialImpulseFalloff::RIF_Linear;
-	RadialSuctionComponent2->SetupAttachment(RadialSuctionAnchor);
-	RadialSuctionComponent2->SetRelativeLocation(FVector(-2000.0f, 0.0f, 0.0f));
+	CloseSuctionComponent2 = CreateDefaultSubobject<UWindSuckerComponent>(FName("CloseSuctionComponent2"));
+	CloseSuctionComponent2->SetupAttachment(SuctionAnchor);
+	CloseSuctionComponent2->SetRelativeLocation(FVector(-2000.0f, 0.0f, 0.0f));
 
-	RadialSuctionComponent3 = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent3"));
-	RadialSuctionComponent3->ForceStrength = -999999.0f;
-	RadialSuctionComponent3->Radius = 3000.0f;
-	RadialSuctionComponent3->Falloff = ERadialImpulseFalloff::RIF_Linear;
-	RadialSuctionComponent3->SetupAttachment(RadialSuctionAnchor);
-	RadialSuctionComponent3->SetRelativeLocation(FVector(0.0f, 2000.0f, 0.0f));
+	CloseSuctionComponent3 = CreateDefaultSubobject<UWindSuckerComponent>(FName("CloseSuctionComponent3"));
+	CloseSuctionComponent3->SetupAttachment(SuctionAnchor);
+	CloseSuctionComponent3->SetRelativeLocation(FVector(0.0f, 2000.0f, 0.0f));
 
-	RadialSuctionComponent4 = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent4"));
-	RadialSuctionComponent4->ForceStrength = -999999.0f;
-	RadialSuctionComponent4->Radius = 3000.0f;
-	RadialSuctionComponent4->Falloff = ERadialImpulseFalloff::RIF_Linear;
-	RadialSuctionComponent4->SetupAttachment(RadialSuctionAnchor);
-	RadialSuctionComponent4->SetRelativeLocation(FVector(0.0f, -2000.0f, 0.0f));
+	CloseSuctionComponent4 = CreateDefaultSubobject<UWindSuckerComponent>(FName("CloseSuctionComponent4"));
+	CloseSuctionComponent4->SetupAttachment(SuctionAnchor);
+	CloseSuctionComponent4->SetRelativeLocation(FVector(0.0f, -2000.0f, 0.0f));
 
-	DistanceSuctionComponent = CreateDefaultSubobject<URadialForceComponent>(FName("DistanceSuctionComponent"));
-	DistanceSuctionComponent->ForceStrength = -99999.0f;
-	DistanceSuctionComponent->Radius = 20000.0f;
-	DistanceSuctionComponent->Falloff = ERadialImpulseFalloff::RIF_Linear;
-	DistanceSuctionComponent->SetupAttachment(RadialSuctionAnchor);
-	DistanceSuctionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
-
+	FarSuctionComponent= CreateDefaultSubobject<UWindSuckerComponent>(FName("FarSuctionComponent"));
+	FarSuctionComponent->SetRadius(20000.0f);
+	FarSuctionComponent->SetForceStrength(-99999.0f);
+	FarSuctionComponent->SetupAttachment(SuctionAnchor);
+	FarSuctionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
 
 	RotationSpeed = 30.0f;
 	MovementSpeed = 1000.0f;
@@ -68,11 +54,11 @@ void ATornado::BeginPlay()
 {
 	Super::BeginPlay();
 
-	RadialSuctionComponent1->Deactivate();
-	RadialSuctionComponent2->Deactivate();
-	RadialSuctionComponent3->Deactivate();
-	RadialSuctionComponent4->Deactivate();
-	DistanceSuctionComponent->Deactivate();
+	CloseSuctionComponent1->Deactivate();
+	CloseSuctionComponent2->Deactivate();
+	CloseSuctionComponent3->Deactivate();
+	CloseSuctionComponent4->Deactivate();
+	FarSuctionComponent->Deactivate();
 
 	if (HasAuthority())
 	{
@@ -93,11 +79,11 @@ void ATornado::OnSpawn(const float& InStormRadius)
 	TotalLifetime = FMath::RandRange(120.0f, 300.0f);
 	RemainingLifetime = TotalLifetime;
 
-	RadialSuctionComponent1->Activate();
-	RadialSuctionComponent2->Activate();
-	RadialSuctionComponent3->Activate();
-	RadialSuctionComponent4->Activate();
-	DistanceSuctionComponent->Activate();
+	CloseSuctionComponent1->Activate();
+	CloseSuctionComponent2->Activate();
+	CloseSuctionComponent3->Activate();
+	CloseSuctionComponent4->Activate();
+	FarSuctionComponent->Activate();
 }
 
 FTornadoSaveInformation ATornado::GetSaveInformation()
@@ -191,8 +177,8 @@ void ATornado::HandleMovement()
 void ATornado::HandleDamage()
 {
 	TArray<FOverlapResult> Overlaps;
-	FVector WindOrigin = DistanceSuctionComponent->GetComponentLocation();
-	float WindRadius = DistanceSuctionComponent->Radius * 0.5f;
+	FVector WindOrigin = FarSuctionComponent->GetComponentLocation();
+	float WindRadius = FarSuctionComponent->GetRadius() * 0.5f;
 	FCollisionObjectQueryParams ObjectParams(ECollisionChannel::ECC_WorldDynamic);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());
@@ -217,7 +203,7 @@ void ATornado::HandleDamage()
 void ATornado::HandleRotation()
 {
 	float NewYaw = MeshComponent->GetRelativeRotation().Yaw - (RotationSpeed * GetWorld()->GetDeltaSeconds());
-	float NewSuctionYaw = RadialSuctionAnchor->GetRelativeRotation().Yaw - ((RotationSpeed * 4) * GetWorld()->GetDeltaSeconds());
+	float NewSuctionYaw = SuctionAnchor->GetRelativeRotation().Yaw - ((RotationSpeed * 4) * GetWorld()->GetDeltaSeconds());
 
 	if (NewYaw < -360.0f)
 	{
@@ -230,7 +216,7 @@ void ATornado::HandleRotation()
 	}
 
 	MeshComponent->SetRelativeRotation(FRotator(0.0f, NewYaw, 0.0f));
-	RadialSuctionAnchor->SetRelativeRotation(FRotator(0.0f, NewSuctionYaw, 0.0f));
+	SuctionAnchor->SetRelativeRotation(FRotator(0.0f, NewSuctionYaw, 0.0f));
 }
 
 void ATornado::GetNewTargetLocation()

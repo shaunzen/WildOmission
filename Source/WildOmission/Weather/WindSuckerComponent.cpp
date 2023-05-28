@@ -14,7 +14,7 @@ UWindSuckerComponent::UWindSuckerComponent()
 	Radius = 3000.0f;
 	Falloff = RIF_Linear;
 	ForceStrength = -999999.0f;
-	bAutoActivate = true;
+	bAutoActivate = false;
 
 	// by default we affect all 'dynamic' objects that can currently be affected by forces
 	AddCollisionChannelToAffect(ECC_Pawn);
@@ -87,6 +87,26 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			}
 		}
 	}
+}
+
+void UWindSuckerComponent::SetRadius(float InRadius)
+{
+	Radius = InRadius;
+}
+
+void UWindSuckerComponent::SetForceStrength(float InForceStrength)
+{
+	ForceStrength = InForceStrength;
+}
+
+float UWindSuckerComponent::GetRadius() const
+{
+	return Radius;
+}
+
+float UWindSuckerComponent::GetForceStrength() const
+{
+	return ForceStrength;
 }
 
 void UWindSuckerComponent::AddCollisionChannelToAffect(enum ECollisionChannel CollisionChannel)
