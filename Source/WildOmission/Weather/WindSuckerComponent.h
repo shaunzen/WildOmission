@@ -3,23 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PhysicsEngine/RadialForceComponent.h"
+#include "Components/SceneComponent.h"
 #include "WindSuckerComponent.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class WILDOMISSION_API UWindSuckerComponent : public URadialForceComponent
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class WILDOMISSION_API UWindSuckerComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
-public:
+public:	
+	// Sets default values for this component's properties
 	UWindSuckerComponent();
 
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
 
-private:
-	bool HasLineOfSightToComponent(UPrimitiveComponent* InComponent) const;
+public:	
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+		
 };

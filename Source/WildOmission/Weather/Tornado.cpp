@@ -2,7 +2,7 @@
 
 
 #include "Tornado.h"
-#include "WindSuckerComponent.h"
+#include "PhysicsEngine/RadialForceComponent.h"
 #include "WildOmission/Core/Interfaces/DamagedByWind.h"
 #include "WildOmission/Core/Interfaces/InteractsWithTornado.h"
 
@@ -23,23 +23,35 @@ ATornado::ATornado()
 	RadialSuctionAnchor->SetupAttachment(MeshComponent);
 	RadialSuctionAnchor->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
 
-	RadialSuctionComponent1 = CreateDefaultSubobject<UWindSuckerComponent>(FName("RadialSuctionComponent1"));
+	RadialSuctionComponent1 = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent1"));
+	RadialSuctionComponent1->ForceStrength = -999999.0f;
+	RadialSuctionComponent1->Radius = 3000.0f;
+	RadialSuctionComponent1->Falloff = ERadialImpulseFalloff::RIF_Linear;
 	RadialSuctionComponent1->SetupAttachment(RadialSuctionAnchor);
 	RadialSuctionComponent1->SetRelativeLocation(FVector(2000.0f, 0.0f, 0.0f));
 	
-	RadialSuctionComponent2 = CreateDefaultSubobject<UWindSuckerComponent>(FName("RadialSuctionComponent2"));
+	RadialSuctionComponent2 = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent2"));
+	RadialSuctionComponent2->ForceStrength = -999999.0f;
+	RadialSuctionComponent2->Radius = 3000.0f;
+	RadialSuctionComponent2->Falloff = ERadialImpulseFalloff::RIF_Linear;
 	RadialSuctionComponent2->SetupAttachment(RadialSuctionAnchor);
 	RadialSuctionComponent2->SetRelativeLocation(FVector(-2000.0f, 0.0f, 0.0f));
 
-	RadialSuctionComponent3 = CreateDefaultSubobject<UWindSuckerComponent>(FName("RadialSuctionComponent3"));
+	RadialSuctionComponent3 = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent3"));
+	RadialSuctionComponent3->ForceStrength = -999999.0f;
+	RadialSuctionComponent3->Radius = 3000.0f;
+	RadialSuctionComponent3->Falloff = ERadialImpulseFalloff::RIF_Linear;
 	RadialSuctionComponent3->SetupAttachment(RadialSuctionAnchor);
 	RadialSuctionComponent3->SetRelativeLocation(FVector(0.0f, 2000.0f, 0.0f));
 
-	RadialSuctionComponent4 = CreateDefaultSubobject<UWindSuckerComponent>(FName("RadialSuctionComponent4"));
+	RadialSuctionComponent4 = CreateDefaultSubobject<URadialForceComponent>(FName("RadialSuctionComponent4"));
+	RadialSuctionComponent4->ForceStrength = -999999.0f;
+	RadialSuctionComponent4->Radius = 3000.0f;
+	RadialSuctionComponent4->Falloff = ERadialImpulseFalloff::RIF_Linear;
 	RadialSuctionComponent4->SetupAttachment(RadialSuctionAnchor);
 	RadialSuctionComponent4->SetRelativeLocation(FVector(0.0f, -2000.0f, 0.0f));
 
-	DistanceSuctionComponent = CreateDefaultSubobject<UWindSuckerComponent>(FName("DistanceSuctionComponent"));
+	DistanceSuctionComponent = CreateDefaultSubobject<URadialForceComponent>(FName("DistanceSuctionComponent"));
 	DistanceSuctionComponent->ForceStrength = -99999.0f;
 	DistanceSuctionComponent->Radius = 20000.0f;
 	DistanceSuctionComponent->Falloff = ERadialImpulseFalloff::RIF_Linear;
