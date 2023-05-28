@@ -205,12 +205,12 @@ void AStorm::HandleWind()
 	if (SpawnedTornado)
 	{
 		TornadoLocation = SpawnedTornado->GetActorLocation();
+		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), 1.0f);
 		UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(TornadoLocation.X, TornadoLocation.Y, 0.0f, 1.0f));
-		FLinearColor TornadoPosColor = UKismetMaterialLibrary::GetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"));
-		UE_LOG(LogTemp, Warning, TEXT("Tornado Loc X: %f, Y: %f"), TornadoPosColor.R, TornadoPosColor.G);
 		return;
 	}
 
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), 0.0f);
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(TornadoLocation.X, TornadoLocation.Y, 0.0f, 0.0f));
 }
 
@@ -247,7 +247,7 @@ void AStorm::SpawnLightning()
 
 void AStorm::SpawnTornado(bool bFromSave)
 {
-	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass);
+	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass, FVector(0.0f,0.0f, 999999.0f), FRotator::ZeroRotator);
 	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	if (bFromSave)
 	{
