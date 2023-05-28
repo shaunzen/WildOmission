@@ -16,13 +16,23 @@ public:
 	// Sets default values for this component's properties
 	UWindSuckerComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+	
+	TArray<TEnumAsByte<enum EObjectTypeQuery> > ObjectTypesToAffect;
+	FCollisionObjectQueryParams CollisionObjectQueryParams;
+
+private:	
+	float Radius;
+	float ForceStrength;
+	TEnumAsByte<enum ERadialImpulseFalloff> Falloff;	
+
+	void AddObjectTypeToAffect(TEnumAsByte<enum EObjectTypeQuery> ObjectType);
+	void RemoveObjectTypeToAffect(TEnumAsByte<enum EObjectTypeQuery> ObjectType);
+	void AddCollisionChannelToAffect(enum ECollisionChannel CollisionChannel);
+	void UpdateCollisionObjectQueryParams();
 };
