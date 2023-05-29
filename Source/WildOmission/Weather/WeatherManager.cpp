@@ -133,6 +133,7 @@ void AWeatherManager::HandleWind()
 
 void AWeatherManager::SetWindParameters()
 {
+	//UE_LOG(LogTemp, Warning, TEXT("Wind Settings(GlobalWindStrength: %f, GlobalWindDirection: %s, TornadoOnGround: %f, TornadoLocation: %s"), GlobalWindStrength, *GlobalWindDirection.ToString(), TornadoOnGround, *TornadoLocation.ToString());
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindStrength"), GlobalWindStrength);
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindDirection"), FLinearColor(GlobalWindDirection.X, GlobalWindDirection.Y, 0.0f, 1.0f));
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), TornadoOnGround);

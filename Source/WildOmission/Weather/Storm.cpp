@@ -142,11 +142,11 @@ void AStorm::Tick(float DeltaTime)
 void AStorm::HandleMovement()
 {
 	FVector CurrentLocation = GetActorLocation();
-	FVector VectorTowardTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
+	MovementVector = (TargetLocation - CurrentLocation).GetSafeNormal();
 
 	DistanceTraveled = FVector::Distance(CurrentLocation, SpawnLocation);
 
-	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * GetWorld()->GetDeltaSeconds());
+	FVector NewLocation = CurrentLocation + (MovementVector * MovementSpeed * GetWorld()->GetDeltaSeconds());
 	SetActorLocation(NewLocation);
 
 	if (DistanceTraveled >= DistanceToTravel)
