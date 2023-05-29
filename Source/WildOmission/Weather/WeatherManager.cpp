@@ -34,6 +34,11 @@ AWeatherManager::AWeatherManager()
 	MinTimeBetweenStorms = 300.0f;
 	MaxTimeBetweenStorms = 600.0f;
 	NextStormChanceTime = 0.0f;
+
+	GlobalWindStrength = 0.3f;
+	GlobalWindDirection = FVector2D(1.0f, 0.0f);
+	TornadoOnGround = 0;
+	TornadoLocation = FVector2D::ZeroVector;
 }
 
 // Called when the game starts or when spawned
@@ -85,10 +90,10 @@ void AWeatherManager::HandleWind()
 {
 	if (SpawnedStorms.IsEmpty())
 	{
-		GlobalWindStrength = FMath::Clamp(MaxWindStrengthFromStorm * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrengthFromStorm);
-		GlobalWindDirection = FVector2D(CurrentStorm->GetMovementVector().X, CurrentStorm->GetMovementVector().Y);
-		TornadoLocation = FVector2D::ZeroVector;
+		GlobalWindStrength = 0.3f;
+		GlobalWindDirection = FVector2D(1.0f, 0.0f);
 		TornadoOnGround = 0.0f;
+		TornadoLocation = FVector2D::ZeroVector;
 		return;
 	}
 
@@ -116,8 +121,8 @@ void AWeatherManager::HandleWind()
 
 	GlobalWindStrength = FMath::Clamp(MaxWindStrengthFromStorm * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrengthFromStorm);	
 	GlobalWindDirection = FVector2D(CurrentStorm->GetMovementVector().X, CurrentStorm->GetMovementVector().Y);
-	TornadoLocation = FVector2D::ZeroVector;
 	TornadoOnGround = 0.0f;
+	TornadoLocation = FVector2D::ZeroVector;
 
 	if (CurrentStorm->GetSpawnedTornado() != nullptr)
 	{
