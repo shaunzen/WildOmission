@@ -30,6 +30,12 @@ public:
 
 	void SetSeverity(float NewSeverity);
 
+	float GetSeverity() const;
+	float GetDistanceToTravel() const;
+	float GetDistanceTraveled() const;
+	FVector GetMovementVector() const;
+	ATornado* GetSpawnedTornado() const;
+
 	UFUNCTION(BlueprintCallable)
 	bool IsRaining(float& OutDensity) const;
 

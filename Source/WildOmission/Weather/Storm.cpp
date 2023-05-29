@@ -91,7 +91,7 @@ void AStorm::BeginPlay()
 
 	if (HasAuthority())
 	{
-		WeatherManager = UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherManager::StaticClass());
+		WeatherManager = Cast<AWeatherManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherManager::StaticClass()));
 	}
 }
 
@@ -128,8 +128,6 @@ void AStorm::Tick(float DeltaTime)
 	CloudMeshComponent->SetWorldScale3D(CloudScale);
 
 	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
-
-	HandleWind();
 
 	if (!HasAuthority())
 	{
@@ -234,9 +232,6 @@ void AStorm::HandleDestruction()
 		SpawnedTornado->Destroy();
 	}
 
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("WindStrength"), 0.3f);
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), 0.0f);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 	WeatherManager->RemoveStormFromList(this);
 	Destroy();
 }
@@ -283,6 +278,31 @@ void AStorm::SetLocalPlayerUnderneath(bool IsUnder)
 void AStorm::SetSeverity(float NewSeverity)
 {
 	Severity = NewSeverity;
+}
+
+float AStorm::GetSeverity() const
+{
+	return Severity;
+}
+
+float AStorm::GetDistanceToTravel() const
+{
+	return DistanceToTravel;
+}
+
+float AStorm::GetDistanceTraveled() const
+{
+	return DistanceTraveled;
+}
+
+FVector AStorm::GetMovementVector() const
+{
+	return MovementVector;
+}
+
+ATornado* AStorm::GetSpawnedTornado() const
+{
+	return SpawnedTornado;
 }
 
 void AStorm::OnLoadComplete_Implementation()

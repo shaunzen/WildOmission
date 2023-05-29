@@ -63,6 +63,7 @@ private:
 	TArray<AStorm*> SpawnedStorms;
 
 	void HandleWind();
+	void SetWindParameters();
 	void GetNewStormChanceTime();
 	void TrySpawnStorm();
 
