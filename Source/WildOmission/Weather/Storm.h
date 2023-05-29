@@ -8,6 +8,7 @@
 #include "Tornado.h"
 #include "Storm.generated.h"
 
+class AWeatherManager;
 class ALightning;
 class UNiagaraComponent;
 
@@ -59,13 +60,13 @@ private:
 	FVector SpawnLocation;
 	UPROPERTY(SaveGame)
 	FVector TargetLocation;
-	UPROPERTY(Replicated, SaveGame)
+	UPROPERTY(SaveGame)
 	float DistanceToTravel;
-	UPROPERTY(Replicated, SaveGame)
+	UPROPERTY(SaveGame)
 	float DistanceTraveled;
 	UPROPERTY(SaveGame)
 	float MovementSpeed;
-	UPROPERTY(Replicated, SaveGame)
+	UPROPERTY(SaveGame)
 	FVector MovementVector;
 
 	UPROPERTY(VisibleAnywhere, Replicated, SaveGame)
@@ -92,12 +93,14 @@ private:
 	UPROPERTY(Replicated)
 	ATornado* SpawnedTornado;
 
+	UPROPERTY()
+	AWeatherManager* WeatherManager;
+
 	bool LocalPlayerUnder;
 	float NextLightningStrikeTime;
 
 	void HandleMovement();
 	void HandleSeverity();
-	void HandleWind();
 	void HandleLightning();
 	void SpawnLightning();
 	void SpawnTornado(bool bFromSave = false);

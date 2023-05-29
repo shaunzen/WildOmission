@@ -19,6 +19,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	float GetNextStormChanceTime() const;
 	void SetNextStormChanceTime(float NewTime);
 
@@ -26,6 +28,8 @@ public:
 	AStorm* SpawnStorm();
 
 	void ClearAllStorms();
+
+	void RemoveStormFromList(AStorm* StormToRemove);
 
 protected:
 	// Called when the game starts or when spawned
@@ -43,6 +47,22 @@ private:
 	UPROPERTY()
 	TSubclassOf<AStorm> StormClass;
 
+	UPROPERTY(Replicated)
+	float GlobalWindStrength;
+	
+	UPROPERTY(Replicated)
+	FVector2D GlobalWindDirection;
+	
+	UPROPERTY(Replicated)
+	float TornadoOnGround;
+	
+	UPROPERTY(Replicated)
+	FVector2D TornadoLocation;
+	
+	UPROPERTY()
+	TArray<AStorm*> SpawnedStorms;
+
+	void HandleWind();
 	void GetNewStormChanceTime();
 	void TrySpawnStorm();
 

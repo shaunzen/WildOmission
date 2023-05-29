@@ -2,15 +2,14 @@
 
 
 #include "Storm.h"
+#include "WeatherManager.h"
 #include "Lightning.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "Kismet/KismetMaterialLibrary.h"
-#include "Materials/MaterialParameterCollection.h"
+#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
-static UMaterialParameterCollection* MPC_WindCollection = nullptr;
 
 // Sets default values
 AStorm::AStorm()
@@ -57,12 +56,6 @@ AStorm::AStorm()
 	{
 		RainHazeComponent->SetAsset(RainHazeBlueprint.Object);
 	}
-
-	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> WindParameterCollectionBlueprint(TEXT("/Game/WildOmission/Weather/MPC_Wind"));
-	if (WindParameterCollectionBlueprint.Succeeded())
-	{
-		MPC_WindCollection = WindParameterCollectionBlueprint.Object;
-	}
 }
 
 
@@ -71,9 +64,7 @@ void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStorm, Severity);
-	DOREPLIFETIME(AStorm, DistanceToTravel);
-	DOREPLIFETIME(AStorm, DistanceTraveled);
-	DOREPLIFETIME(AStorm, MovementVector);
+	DOREPLIFETIME(AStorm, SpawnedTornado);
 }
 
 void AStorm::Serialize(FArchive& Ar)
@@ -97,7 +88,11 @@ void AStorm::Serialize(FArchive& Ar)
 void AStorm::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (HasAuthority())
+	{
+		WeatherManager = UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherManager::StaticClass());
+	}
 }
 
 void AStorm::OnSpawn(const FVector2D& InWorldSize)
@@ -182,41 +177,6 @@ void AStorm::HandleSeverity()
 	}
 }
 
-void AStorm::HandleWind()
-{
-	float RemainingDistance = DistanceToTravel - DistanceTraveled;
-	float DistanceFadeRatio = DistanceToTravel * 0.2f;
-	
-	float NormalizedSeverity = Severity / 100.0f;
-	float MaxWindStrengthFromStorm = 3.0f;
-
-	float FadeInOutMultiplier = 1.0f;
-	if (DistanceTraveled < DistanceFadeRatio)
-	{
-		FadeInOutMultiplier = DistanceTraveled / 1000.0f;
-	}
-	else if (RemainingDistance < DistanceFadeRatio)
-	{
-		FadeInOutMultiplier = (1000.0f / RemainingDistance) - 1.0f;
-	}
-
-	float WindStrength = FMath::Clamp(MaxWindStrengthFromStorm * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrengthFromStorm);
-	FVector TornadoLocation = FVector::ZeroVector;
-
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("WindStrength"), WindStrength);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("WindDirection"), FLinearColor(MovementVector.X, MovementVector.Y, 0.0f, 1.0f));
-	if (SpawnedTornado)
-	{
-		TornadoLocation = SpawnedTornado->GetActorLocation();
-		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), 1.0f);
-		UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(TornadoLocation.X, TornadoLocation.Y, 0.0f, 1.0f));
-		return;
-	}
-
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), 0.0f);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(TornadoLocation.X, TornadoLocation.Y, 0.0f, 0.0f));
-}
-
 void AStorm::HandleLightning()
 {
 	if (NextLightningStrikeTime < KINDA_SMALL_NUMBER)
@@ -277,7 +237,7 @@ void AStorm::HandleDestruction()
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("WindStrength"), 0.3f);
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), 0.0f);
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
-	
+	WeatherManager->RemoveStormFromList(this);
 	Destroy();
 }
 
