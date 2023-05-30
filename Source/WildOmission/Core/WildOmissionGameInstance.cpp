@@ -20,7 +20,7 @@ const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
 	// Version Information Here
-	Version = FString("Pre Alpha 0.7.4_01");
+	Version = FString("Pre Alpha 0.7.5");
 
 	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_MainMenu"));
 	
