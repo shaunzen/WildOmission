@@ -8,6 +8,25 @@
 
 class AStorm;
 
+USTRUCT()
+struct FWindParameters
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	float GlobalWindStrength = 0.3f;
+
+	UPROPERTY()
+	FVector2D GlobalWindDirection = FVector2D(1.0f, 0.0f);
+
+	UPROPERTY()
+	float TornadoOnGround = 0.0f;
+
+	UPROPERTY()
+	FVector2D TornadoLocation = FVector2D::ZeroVector;
+
+};
+
 UCLASS()
 class WILDOMISSION_API AWeatherManager : public AActor
 {
@@ -18,8 +37,6 @@ public:
 	AWeatherManager();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	float GetNextStormChanceTime() const;
 	void SetNextStormChanceTime(float NewTime);
@@ -46,25 +63,19 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<AStorm> StormClass;
-
-	UPROPERTY(Replicated)
-	float GlobalWindStrength;
-	
-	UPROPERTY(Replicated)
-	FVector2D GlobalWindDirection;
-	
-	UPROPERTY(Replicated)
-	float TornadoOnGround;
-	
-	UPROPERTY(Replicated)
-	FVector2D TornadoLocation;
 	
 	UPROPERTY()
 	TArray<AStorm*> SpawnedStorms;
 
-	void HandleWind();
-	void SetWindParameters();
+	UPROPERTY()
+	FWindParameters WindParameters;
+
+	void CalculateWindParameters();
+
 	void GetNewStormChanceTime();
 	void TrySpawnStorm();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void Client_UpdateWindParameters(const FWindParameters& NewParameters);
 
 };

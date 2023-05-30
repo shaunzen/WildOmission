@@ -18,6 +18,7 @@ AWeatherManager::AWeatherManager()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+	bAlwaysRelevant = true;
 
 	static ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/WildOmission/Weather/BP_Storm"));
 	if (StormBlueprint.Succeeded())
@@ -34,11 +35,6 @@ AWeatherManager::AWeatherManager()
 	MinTimeBetweenStorms = 300.0f;
 	MaxTimeBetweenStorms = 600.0f;
 	NextStormChanceTime = 0.0f;
-
-	GlobalWindStrength = 0.3f;
-	GlobalWindDirection = FVector2D(1.0f, 0.0f);
-	TornadoOnGround = 0;
-	TornadoLocation = FVector2D::ZeroVector;
 }
 
 // Called when the game starts or when spawned
@@ -64,7 +60,7 @@ void AWeatherManager::Tick(float DeltaTime)
 	
 	if (HasAuthority())
 	{
-		HandleWind();
+		CalculateWindParameters();
 		NextStormChanceTime -= DeltaTime;
 		if (NextStormChanceTime < KINDA_SMALL_NUMBER)
 		{
@@ -72,28 +68,18 @@ void AWeatherManager::Tick(float DeltaTime)
 			GetNewStormChanceTime();
 		}
 	}
-
-	SetWindParameters();
 }
 
-void AWeatherManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void AWeatherManager::CalculateWindParameters()
 {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	FWindParameters NewParams;
 
-	DOREPLIFETIME(AWeatherManager, GlobalWindStrength);
-	DOREPLIFETIME(AWeatherManager, GlobalWindDirection);
-	DOREPLIFETIME(AWeatherManager, TornadoOnGround);
-	DOREPLIFETIME(AWeatherManager, TornadoLocation);
-}
-
-void AWeatherManager::HandleWind()
-{
 	if (SpawnedStorms.IsEmpty())
 	{
-		GlobalWindStrength = 0.3f;
-		GlobalWindDirection = FVector2D(1.0f, 0.0f);
-		TornadoOnGround = 0.0f;
-		TornadoLocation = FVector2D::ZeroVector;
+		NewParams.GlobalWindStrength = 0.3f;
+		NewParams.GlobalWindDirection = FVector2D(1.0f, 0.0f);
+		NewParams.TornadoOnGround = 0.0f;
+		NewParams.TornadoLocation = FVector2D::ZeroVector;
 		return;
 	}
 
@@ -107,8 +93,7 @@ void AWeatherManager::HandleWind()
 	float DistanceFadeRatio = CurrentStorm->GetDistanceToTravel() * 0.2f;
 
 	float NormalizedSeverity = CurrentStorm->GetSeverity() / 100.0f;
-	float MaxWindStrengthFromStorm = 3.0f;
-
+	
 	float FadeInOutMultiplier = 1.0f;
 	if (CurrentStorm->GetDistanceTraveled() < DistanceFadeRatio)
 	{
@@ -119,25 +104,28 @@ void AWeatherManager::HandleWind()
 		FadeInOutMultiplier = (1000.0f / RemainingDistance) - 1.0f;
 	}
 
-	GlobalWindStrength = FMath::Clamp(MaxWindStrengthFromStorm * NormalizedSeverity * FadeInOutMultiplier, 0.3f, MaxWindStrengthFromStorm);	
-	GlobalWindDirection = FVector2D(CurrentStorm->GetMovementVector().X, CurrentStorm->GetMovementVector().Y);
-	TornadoOnGround = 0.0f;
-	TornadoLocation = FVector2D::ZeroVector;
+	NewParams.GlobalWindStrength = FMath::Clamp(NormalizedSeverity * FadeInOutMultiplier, 0.3f, 1.0f);
+	NewParams.GlobalWindDirection = FVector2D(CurrentStorm->GetMovementVector().X, CurrentStorm->GetMovementVector().Y);
+	NewParams.TornadoOnGround = 0.0f;
+	NewParams.TornadoLocation = FVector2D::ZeroVector;
 
 	if (CurrentStorm->GetSpawnedTornado() != nullptr)
 	{
-		TornadoLocation = FVector2D(CurrentStorm->GetSpawnedTornado()->GetActorLocation().X, CurrentStorm->GetSpawnedTornado()->GetActorLocation().Y);
-		TornadoOnGround = 1.0f;
+		NewParams.TornadoLocation = FVector2D(CurrentStorm->GetSpawnedTornado()->GetActorLocation().X, CurrentStorm->GetSpawnedTornado()->GetActorLocation().Y);
+		NewParams.TornadoOnGround = 1.0f;
 	}
+
+	Client_UpdateWindParameters(NewParams);
 }
 
-void AWeatherManager::SetWindParameters()
+void AWeatherManager::Client_UpdateWindParameters_Implementation(const FWindParameters& NewParameters)
 {
+	WindParameters = NewParameters;
 	//UE_LOG(LogTemp, Warning, TEXT("Wind Settings(GlobalWindStrength: %f, GlobalWindDirection: %s, TornadoOnGround: %f, TornadoLocation: %s"), GlobalWindStrength, *GlobalWindDirection.ToString(), TornadoOnGround, *TornadoLocation.ToString());
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindStrength"), GlobalWindStrength);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindDirection"), FLinearColor(GlobalWindDirection.X, GlobalWindDirection.Y, 0.0f, 1.0f));
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), TornadoOnGround);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(TornadoLocation.X, TornadoLocation.Y, 0.0f, 1.0f));
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindStrength"), WindParameters.GlobalWindStrength);
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindDirection"), FLinearColor(WindParameters.GlobalWindDirection.X, WindParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), WindParameters.TornadoOnGround);
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(WindParameters.TornadoLocation.X, WindParameters.TornadoLocation.Y, 0.0f, 1.0f));
 }
 
 void AWeatherManager::RemoveStormFromList(AStorm* StormToRemove)
