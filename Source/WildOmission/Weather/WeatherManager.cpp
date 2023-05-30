@@ -8,7 +8,6 @@
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
-#include "Net/UnrealNetwork.h"
 
 static UMaterialParameterCollection* MPC_WindCollection = nullptr;
 
@@ -25,15 +24,15 @@ AWeatherManager::AWeatherManager()
 	{
 		StormClass = StormBlueprint.Class;
 	}
-
 	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> WindParameterCollectionBlueprint(TEXT("/Game/WildOmission/Weather/MPC_Wind"));
 	if (WindParameterCollectionBlueprint.Succeeded())
 	{
 		MPC_WindCollection = WindParameterCollectionBlueprint.Object;
 	}
 
+	CurrentStorm = nullptr;
 	MinStormSpawnTime = 300.0f;
-	MaxStormSpawnTime= 600.0f;
+	MaxStormSpawnTime = 600.0f;
 	NextStormSpawnTime = 0.0f;
 }
 
@@ -42,15 +41,6 @@ void AWeatherManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	if (NextStormSpawnTime == 0.0f)
-	{
-
-	}
 }
 
 // Called every frame
@@ -154,4 +144,30 @@ void AWeatherManager::Client_UpdateWindParameters_Implementation(const FWindPara
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindDirection"), FLinearColor(WindParameters.GlobalWindDirection.X, WindParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), WindParameters.TornadoOnGround);
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(WindParameters.TornadoLocation.X, WindParameters.TornadoLocation.Y, 0.0f, 1.0f));
+}
+
+AStorm* AWeatherManager::GetCurrentStorm() const
+{
+	return CurrentStorm;
+}
+
+void AWeatherManager::SetCurrentStorm(AStorm* NewCurrentStorm)
+{
+	if (CurrentStorm)
+	{
+		CurrentStorm->HandleDestruction();
+		CurrentStorm = nullptr;
+	}
+
+	CurrentStorm = NewCurrentStorm;
+}
+
+float AWeatherManager::GetNextStormSpawnTime() const
+{
+	return NextStormSpawnTime;
+}
+
+void AWeatherManager::SetNextStormSpawnTime(float NewSpawnTime)
+{
+	NextStormSpawnTime = FMath::Clamp(NewSpawnTime, 0.0f, MaxStormSpawnTime);
 }

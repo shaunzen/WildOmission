@@ -40,6 +40,12 @@ public:
 
 	AStorm* SpawnStorm();
 	void ClearStorm();
+	
+	AStorm* GetCurrentStorm() const;
+	void SetCurrentStorm(AStorm* NewCurrentStorm);
+	
+	float GetNextStormSpawnTime() const;
+	void SetNextStormSpawnTime(float NewSpawnTime);
 
 protected:
 	// Called when the game starts or when spawned

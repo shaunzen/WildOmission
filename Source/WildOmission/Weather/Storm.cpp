@@ -307,6 +307,13 @@ ATornado* AStorm::GetSpawnedTornado() const
 
 void AStorm::OnLoadComplete_Implementation()
 {
+	if (WeatherManager == nullptr)
+	{
+		return;
+	}
+	
+	WeatherManager->SetCurrentStorm(this);
+
 	if (TornadoSave.WasSpawned)
 	{
 		SpawnTornado(true);
