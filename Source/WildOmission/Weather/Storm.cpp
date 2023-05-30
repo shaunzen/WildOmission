@@ -34,9 +34,23 @@ AStorm::AStorm()
 
 	RainSeverityThreshold = 30.0f;
 	TornadoSeverityThreshold = 90.0f;
+	
+	SpawnLocation = FVector::ZeroVector;
+	MovementVector = FVector::ZeroVector;
+	MovementSpeed = 0.0f;
+	SeverityMultiplier = 0.0f;
+	Severity = 0.0f;
+	TornadoSave = FTornadoSaveInformation();
 
 	SpawnedTornado = nullptr;
 	HasSpawnedTornado = false;
+
+	WeatherManager = nullptr;
+	LocalPlayerUnder = false;
+	NextLightningStrikeTime = 0.0f;
+
+	LightningClass = nullptr;
+	TornadoClass = nullptr;
 
 	Tags.Add(FName("StormCloud"));
 
@@ -57,42 +71,26 @@ AStorm::AStorm()
 	}
 }
 
-void AStorm::Serialize(FArchive& Ar)
-{
-	if (Ar.IsSaving())
-	{
-		if (SpawnedTornado == nullptr)
-		{
-			TornadoSave = FTornadoSaveInformation();
-		}
-		else
-		{
-			TornadoSave = SpawnedTornado->GetSaveInformation();
-			TornadoSave.WasSpawned = true;
-		}
-	}
-	Super::Serialize(Ar);
-}
-
 // Called when the game starts or when spawned
 void AStorm::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority())
+	if (!HasAuthority())
 	{
-		WeatherManager = Cast<AWeatherManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherManager::StaticClass()));
-		UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
-		WorldSize = WorldSize * 100.0f;
+		return;
 	}
+
+	WeatherManager = Cast<AWeatherManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherManager::StaticClass()));
 }
 
 void AStorm::HandleSpawn()
 {
-	GetSpawnLocation(SpawnLocation);
+	GetSpawnLocation();
+
 	SetActorLocation(SpawnLocation);
 
-	TargetLocation = FVector(-SpawnLocation.X, -SpawnLocation.Y, SpawnLocation.Z);
+	CalculateTargetLocation();
 	CalculateTravelDistance();
 	TraveledDistance = 0.0f;
 	
@@ -108,15 +106,8 @@ void AStorm::HandleSpawn()
 void AStorm::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// Update cloud scale based on severity
-	FVector CloudScale = FVector::ZeroVector;
-	CloudScale.X = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
-	CloudScale.Y = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
-	CloudScale.Z = FMath::Lerp(50.0f, 700.0f, Severity / 100.0f);
-	CloudMeshComponent->SetWorldScale3D(CloudScale);
-
-	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
+	
+	HandleCloudAppearance();
 
 	if (!HasAuthority())
 	{
@@ -126,6 +117,29 @@ void AStorm::Tick(float DeltaTime)
 	HandleMovement();
 	HandleSeverity();
 	HandleLightning();
+}
+
+void AStorm::HandleDestruction()
+{
+	// If there is any tornados, destroy them
+	if (SpawnedTornado != nullptr)
+	{
+		SpawnedTornado->Destroy();
+	}
+
+	Destroy();
+}
+
+void AStorm::HandleCloudAppearance()
+{
+	FVector CloudScale = FVector::ZeroVector;
+	CloudScale.X = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
+	CloudScale.Y = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
+	CloudScale.Z = FMath::Lerp(50.0f, 700.0f, Severity / 100.0f);
+	CloudMeshComponent->SetWorldScale3D(CloudScale);
+
+	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
+	RainHazeComponent->SetActive(Severity > RainSeverityThreshold && LocalPlayerUnder == false);
 }
 
 void AStorm::HandleMovement()
@@ -147,16 +161,7 @@ void AStorm::HandleMovement()
 void AStorm::HandleSeverity()
 {
 	// Update severity values
-	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
-	
-	if (Severity > RainSeverityThreshold && LocalPlayerUnder == false)
-	{
-		RainHazeComponent->Activate();
-	}
-	else
-	{
-		RainHazeComponent->Deactivate();
-	}
+	Client_UpdateSeverity(FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f));
 
 	if (Severity > TornadoSeverityThreshold && SpawnedTornado == nullptr && HasSpawnedTornado == false)
 	{
@@ -166,12 +171,14 @@ void AStorm::HandleSeverity()
 
 void AStorm::HandleLightning()
 {
-	if (NextLightningStrikeTime < KINDA_SMALL_NUMBER)
-	{
-		NextLightningStrikeTime = FMath::RandRange(1.0f, 30.0f);
-		SpawnLightning();
-	}
 	NextLightningStrikeTime -= GetWorld()->GetDeltaSeconds();
+	if (NextLightningStrikeTime > KINDA_SMALL_NUMBER)
+	{
+		return;
+	}
+
+	NextLightningStrikeTime = FMath::RandRange(1.0f, 30.0f);
+	SpawnLightning();
 }
 
 void AStorm::SpawnLightning()
@@ -213,43 +220,94 @@ void AStorm::SpawnTornado(bool bFromSave)
 	HasSpawnedTornado = true;
 }
 
-void AStorm::HandleDestruction()
-{
-	// If there is any tornados, destroy them
-	if (SpawnedTornado != nullptr)
-	{
-		SpawnedTornado->Destroy();
-	}
 
-	Destroy();
-}
 
-void AStorm::GetSpawnLocation(FVector& OutLocation)
+void AStorm::GetSpawnLocation()
 {
+	FVector2D WorldSize = FVector2D::ZeroVector;
+	UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
+	WorldSize = WorldSize * 100.0f;
+
 	int32 WorldSide = FMath::RandRange(0, 3);
 	float StormAltitude = 20000.0f;
 
 	switch (WorldSide)
 	{
 	case 0: // Top
-		OutLocation.Y = WorldSize.Y * 5.0f;
-		OutLocation.X = FMath::RandRange(-WorldSize.X, WorldSize.X);
+		SpawnLocation.Y = WorldSize.Y * 5.0f;
+		SpawnLocation.X = FMath::RandRange(-WorldSize.X, WorldSize.X);
 		break;
 	case 1: // Bottom
-		OutLocation.Y = -(WorldSize.Y * 5.0f);
-		OutLocation.X = FMath::RandRange(-WorldSize.X, WorldSize.X);
+		SpawnLocation.Y = -(WorldSize.Y * 5.0f);
+		SpawnLocation.X = FMath::RandRange(-WorldSize.X, WorldSize.X);
 		break;
 	case 2:	// Left
-		OutLocation.Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
-		OutLocation.X = WorldSize.X * 5.0f;
+		SpawnLocation.Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
+		SpawnLocation.X = WorldSize.X * 5.0f;
 		break;
 	case 3: // Right
-		OutLocation.Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
-		OutLocation.X = -(WorldSize.X * 5.0f);
+		SpawnLocation.Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
+		SpawnLocation.X = -(WorldSize.X * 5.0f);
 		break;
 	}
 
-	OutLocation.Z = StormAltitude;
+	SpawnLocation.Z = StormAltitude;
+}
+
+void AStorm::Serialize(FArchive& Ar)
+{
+	if (Ar.IsSaving())
+	{
+		if (SpawnedTornado == nullptr)
+		{
+			TornadoSave = FTornadoSaveInformation();
+		}
+		else
+		{
+			TornadoSave = SpawnedTornado->GetSaveInformation();
+			TornadoSave.WasSpawned = true;
+		}
+	}
+	Super::Serialize(Ar);
+}
+
+void AStorm::OnLoadComplete_Implementation()
+{
+	if (WeatherManager == nullptr)
+	{
+		return;
+	}
+	
+	WeatherManager->SetCurrentStorm(this);
+
+	CalculateTargetLocation();
+	CalculateTravelDistance();
+	CalculateTraveledDistance();
+
+	if (TornadoSave.WasSpawned)
+	{
+		SpawnTornado(true);
+	}
+}
+
+void AStorm::Client_UpdateSeverity_Implementation(float NewSeverity)
+{
+	Severity = NewSeverity;
+}
+
+void AStorm::CalculateTargetLocation()
+{
+	TargetLocation = FVector(-SpawnLocation.X, -SpawnLocation.Y, SpawnLocation.Z);
+}
+
+void AStorm::CalculateTravelDistance()
+{
+	TravelDistance = FVector::Distance(SpawnLocation, TargetLocation);
+}
+
+void AStorm::CalculateTraveledDistance()
+{
+	TraveledDistance = FVector::Distance(GetActorLocation(), SpawnLocation);
 }
 
 bool AStorm::IsRaining(float& OutDensity) const
@@ -291,38 +349,4 @@ FVector AStorm::GetMovementVector() const
 ATornado* AStorm::GetSpawnedTornado() const
 {
 	return SpawnedTornado;
-}
-
-void AStorm::OnLoadComplete_Implementation()
-{
-	if (WeatherManager == nullptr)
-	{
-		return;
-	}
-	
-	WeatherManager->SetCurrentStorm(this);
-
-	CalculateTargetLocation();
-	CalculateTravelDistance();
-	CalculateTraveledDistance();
-
-	if (TornadoSave.WasSpawned)
-	{
-		SpawnTornado(true);
-	}
-}
-
-void AStorm::CalculateTargetLocation()
-{
-	TargetLocation = -SpawnLocation;
-}
-
-void AStorm::CalculateTravelDistance()
-{
-	TravelDistance = FVector::Distance(SpawnLocation, TargetLocation);
-}
-
-void AStorm::CalculateTraveledDistance()
-{
-	TraveledDistance = FVector::Distance(GetActorLocation(), SpawnLocation);
 }

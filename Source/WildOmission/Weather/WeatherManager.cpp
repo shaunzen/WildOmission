@@ -76,7 +76,7 @@ AStorm* AWeatherManager::SpawnStorm()
 	UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
 
 	CurrentStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
-	CurrentStorm->OnSpawn(WorldSize);
+	CurrentStorm->HandleSpawn();
 
 	return CurrentStorm;
 }
@@ -107,15 +107,15 @@ void AWeatherManager::CalculateWindParameters()
 		return;
 	}
 
-	float RemainingDistance = CurrentStorm->GetDistanceToTravel() - CurrentStorm->GetDistanceTraveled();
-	float DistanceFadeRatio = CurrentStorm->GetDistanceToTravel() * 0.2f;
+	float RemainingDistance = CurrentStorm->GetTravelDistance() - CurrentStorm->GetTraveledDistance();
+	float DistanceFadeRatio = CurrentStorm->GetTravelDistance() * 0.2f;
 
 	float NormalizedSeverity = CurrentStorm->GetSeverity() / 100.0f;
 
 	float FadeInOutMultiplier = 1.0f;
-	if (CurrentStorm->GetDistanceTraveled() < DistanceFadeRatio)
+	if (CurrentStorm->GetTraveledDistance() < DistanceFadeRatio)
 	{
-		FadeInOutMultiplier = CurrentStorm->GetDistanceTraveled() / 1000.0f;
+		FadeInOutMultiplier = CurrentStorm->GetTraveledDistance() / 1000.0f;
 	}
 	else if (RemainingDistance < DistanceFadeRatio)
 	{

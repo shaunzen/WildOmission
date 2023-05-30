@@ -55,9 +55,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void GetSpawnLocation(FVector& OutStartLocation);
-
-	FVector2D WorldSize;
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -95,12 +92,8 @@ private:
 	FVector TargetLocation;
 	float TravelDistance;
 	float TraveledDistance;
+	UPROPERTY()
 	ATornado* SpawnedTornado;
-
-
-	void CalculateTargetLocation();
-	void CalculateTravelDistance();
-	void CalculateTraveledDistance();
 
 	UPROPERTY()
 	AWeatherManager* WeatherManager;
@@ -108,6 +101,16 @@ private:
 	bool LocalPlayerUnder;
 	float NextLightningStrikeTime;
 
+	void GetSpawnLocation();
+	void CalculateTargetLocation();
+	void CalculateTravelDistance();
+	void CalculateTraveledDistance();
+
+	// Client-Side Logic
+	void HandleCloudAppearance();
+	void HandleRainHaze();
+
+	// Server-Side Logic
 	void HandleMovement();
 	void HandleSeverity();
 	void HandleLightning();
@@ -116,5 +119,7 @@ private:
 
 	UFUNCTION()
 	virtual void OnLoadComplete_Implementation() override;
+	UFUNCTION(NetMulticast, Unreliable)
+	void Client_UpdateSeverity(float NewSeverity);
 
 };
