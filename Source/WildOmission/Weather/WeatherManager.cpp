@@ -68,7 +68,7 @@ AStorm* AWeatherManager::SpawnStorm()
 {
 	if (CurrentStorm)
 	{
-		return;
+		return CurrentStorm;
 	}
 
 	FVector2D WorldSize;

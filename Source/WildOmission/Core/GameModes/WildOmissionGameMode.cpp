@@ -134,7 +134,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 	}
 	else if (WeatherToSet == FString("Clear"))
 	{
-		WeatherManager->ClearAllStorms();
+		WeatherManager->ClearStorm();
 	}
 }
 

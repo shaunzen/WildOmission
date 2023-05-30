@@ -12,6 +12,18 @@ class AWeatherManager;
 class ALightning;
 class UNiagaraComponent;
 
+USTRUCT()
+struct FStormState
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	float Severity;
+
+	UPROPERTY()
+	ATornado* SpawnedTornado;
+};
+
 UCLASS()
 class WILDOMISSION_API AStorm : public AActor, public ISavableObjectInterface
 {

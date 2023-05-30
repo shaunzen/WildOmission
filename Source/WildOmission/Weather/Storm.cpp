@@ -151,7 +151,7 @@ void AStorm::HandleMovement()
 
 	if (DistanceTraveled >= DistanceToTravel)
 	{
-		HandleDestruction();
+		WeatherManager->ClearStorm();
 	}
 }
 
@@ -232,7 +232,6 @@ void AStorm::HandleDestruction()
 		SpawnedTornado->Destroy();
 	}
 
-	WeatherManager->RemoveStormFromList(this);
 	Destroy();
 }
 
