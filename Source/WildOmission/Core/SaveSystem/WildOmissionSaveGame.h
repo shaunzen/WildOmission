@@ -102,6 +102,16 @@ struct FActorSaveData
 };
 
 USTRUCT()
+struct FWeatherManagerSave
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	float NextStormSpawnTime = 0.0f;
+
+};
+
+USTRUCT()
 struct FWildOmissionSaveCreationInformation
 {
 	GENERATED_BODY()
@@ -136,6 +146,9 @@ public:
 	
 	UPROPERTY()
 	FDateTime LastPlayedTime;
+
+	UPROPERTY()
+	FWeatherManagerSave WeatherManagerSave;
 
 	UPROPERTY()
 	FWildOmissionSaveCreationInformation CreationInformation;

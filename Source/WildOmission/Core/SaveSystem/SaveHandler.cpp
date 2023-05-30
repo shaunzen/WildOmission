@@ -7,6 +7,8 @@
 #include "PlayerSaveHandlerComponent.h"
 #include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmissionSaveGame.h"
+#include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
+#include "WildOmission/Weather/WeatherManager.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -43,9 +45,18 @@ void ASaveHandler::SaveGame()
 		UE_LOG(LogTemp, Error, TEXT("Aborting save, SaveFile was nullptr."));
 		return;
 	}
-	
-	SaveFile->LastPlayedTime = FDateTime::Now();
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Aborting save, couldn't get gamemode."));
+		return;
+	}
 
+	SaveFile->LastPlayedTime = FDateTime::Now();
+	if (GameMode->GetWeatherManager())
+	{
+		SaveFile->WeatherManagerSave.NextStormSpawnTime = GameMode->GetWeatherManager()->GetNextStormSpawnTime();
+	}
 	ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 
@@ -65,6 +76,11 @@ void ASaveHandler::LoadWorld()
 	{
 		return;
 	}
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr)
+	{
+		return;
+	}
 
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
@@ -74,6 +90,10 @@ void ASaveHandler::LoadWorld()
 		return;
 	}
 
+	if (GameMode->GetWeatherManager())
+	{
+		GameMode->GetWeatherManager()->SetNextStormSpawnTime(SaveFile->WeatherManagerSave.NextStormSpawnTime);
+	}
 	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves);
 }
 
