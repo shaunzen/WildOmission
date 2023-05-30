@@ -32,9 +32,9 @@ AWeatherManager::AWeatherManager()
 		MPC_WindCollection = WindParameterCollectionBlueprint.Object;
 	}
 
-	MinTimeBetweenStorms = 300.0f;
-	MaxTimeBetweenStorms = 600.0f;
-	NextStormChanceTime = 0.0f;
+	MinStormSpawnTime = 300.0f;
+	MaxStormSpawnTime= 600.0f;
+	NextStormSpawnTime = 0.0f;
 }
 
 // Called when the game starts or when spawned
@@ -47,9 +47,9 @@ void AWeatherManager::BeginPlay()
 		return;
 	}
 
-	if (NextStormChanceTime == 0.0f)
+	if (NextStormSpawnTime == 0.0f)
 	{
-		GetNewStormChanceTime();
+
 	}
 }
 
@@ -58,34 +58,62 @@ void AWeatherManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if (HasAuthority())
+	if (!HasAuthority())
 	{
-		CalculateWindParameters();
-		NextStormChanceTime -= DeltaTime;
-		if (NextStormChanceTime < KINDA_SMALL_NUMBER)
-		{
-			TrySpawnStorm();
-			GetNewStormChanceTime();
-		}
+		return;
 	}
+
+	CalculateWindParameters();
+
+	NextStormSpawnTime -= DeltaTime;
+
+	if (CanSpawnStorm())
+	{
+		NextStormSpawnTime = FMath::RandRange(MinStormSpawnTime, MaxStormSpawnTime);
+		SpawnStorm();
+	}
+}
+
+AStorm* AWeatherManager::SpawnStorm()
+{
+	if (CurrentStorm)
+	{
+		return;
+	}
+
+	FVector2D WorldSize;
+
+	UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
+
+	CurrentStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
+	CurrentStorm->OnSpawn(WorldSize);
+
+	return CurrentStorm;
+}
+
+void AWeatherManager::ClearStorm()
+{
+	if (CurrentStorm == nullptr)
+	{
+		return;
+	}
+
+	CurrentStorm->HandleDestruction();
+	CurrentStorm = nullptr;
+}
+
+bool AWeatherManager::CanSpawnStorm() const
+{
+	return NextStormSpawnTime < KINDA_SMALL_NUMBER && CurrentStorm == nullptr;
 }
 
 void AWeatherManager::CalculateWindParameters()
 {
 	FWindParameters NewParams;
 
-	if (SpawnedStorms.IsEmpty())
-	{
-		NewParams.GlobalWindStrength = 0.3f;
-		NewParams.GlobalWindDirection = FVector2D(1.0f, 0.0f);
-		NewParams.TornadoOnGround = 0.0f;
-		NewParams.TornadoLocation = FVector2D::ZeroVector;
-		return;
-	}
-
-	AStorm* CurrentStorm = SpawnedStorms[0];
 	if (CurrentStorm == nullptr)
 	{
+		Client_UpdateWindParameters(NewParams);
 		return;
 	}
 
@@ -93,7 +121,7 @@ void AWeatherManager::CalculateWindParameters()
 	float DistanceFadeRatio = CurrentStorm->GetDistanceToTravel() * 0.2f;
 
 	float NormalizedSeverity = CurrentStorm->GetSeverity() / 100.0f;
-	
+
 	float FadeInOutMultiplier = 1.0f;
 	if (CurrentStorm->GetDistanceTraveled() < DistanceFadeRatio)
 	{
@@ -121,73 +149,9 @@ void AWeatherManager::CalculateWindParameters()
 void AWeatherManager::Client_UpdateWindParameters_Implementation(const FWindParameters& NewParameters)
 {
 	WindParameters = NewParameters;
-	//UE_LOG(LogTemp, Warning, TEXT("Wind Settings(GlobalWindStrength: %f, GlobalWindDirection: %s, TornadoOnGround: %f, TornadoLocation: %s"), GlobalWindStrength, *GlobalWindDirection.ToString(), TornadoOnGround, *TornadoLocation.ToString());
+
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindStrength"), WindParameters.GlobalWindStrength);
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindDirection"), FLinearColor(WindParameters.GlobalWindDirection.X, WindParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), WindParameters.TornadoOnGround);
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(WindParameters.TornadoLocation.X, WindParameters.TornadoLocation.Y, 0.0f, 1.0f));
-}
-
-void AWeatherManager::RemoveStormFromList(AStorm* StormToRemove)
-{
-	if (StormToRemove == nullptr)
-	{
-		return;
-	}
-	
-	SpawnedStorms.Remove(StormToRemove);
-}
-
-float AWeatherManager::GetNextStormChanceTime() const
-{
-	return NextStormChanceTime;
-}
-
-void AWeatherManager::SetNextStormChanceTime(float NewTime)
-{
-	NextStormChanceTime = NewTime;
-}
-
-void AWeatherManager::GetNewStormChanceTime()
-{
-	NextStormChanceTime = FMath::RandRange(MinTimeBetweenStorms, MaxTimeBetweenStorms);
-}
-
-void AWeatherManager::TrySpawnStorm()
-{
-	bool WillSpawn = FMath::RandBool();
-
-	if (WillSpawn == false)
-	{
-		return;
-	}
-
-	SpawnStorm();
-}
-
-AStorm* AWeatherManager::SpawnStorm()
-{
-	FVector2D WorldSize;
-
-	UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
-
-	AStorm* SpawnedStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
-	SpawnedStorm->OnSpawn(WorldSize);
-
-	SpawnedStorms.Add(SpawnedStorm);
-	
-	return SpawnedStorm;
-}
-
-void AWeatherManager::ClearAllStorms()
-{
-	for (AStorm* Storm: SpawnedStorms)
-	{
-		if (Storm == nullptr)
-		{
-			continue;
-		}
-
-		Storm->HandleDestruction();
-	}
 }

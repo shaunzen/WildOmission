@@ -38,42 +38,31 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	float GetNextStormChanceTime() const;
-	void SetNextStormChanceTime(float NewTime);
-
-	// Returns the storm that was spawned
 	AStorm* SpawnStorm();
-
-	void ClearAllStorms();
-
-	void RemoveStormFromList(AStorm* StormToRemove);
+	void ClearStorm();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:	
-	UPROPERTY(EditDefaultsOnly)
-	float MinTimeBetweenStorms;
-	UPROPERTY(EditDefaultsOnly)
-	float MaxTimeBetweenStorms;
-
 	UPROPERTY(EditAnywhere)
-	float NextStormChanceTime;
+	float NextStormSpawnTime;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
+	float MinStormSpawnTime;
+	UPROPERTY(EditDefaultsOnly)
+	float MaxStormSpawnTime;
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AStorm> StormClass;
 	
 	UPROPERTY()
-	TArray<AStorm*> SpawnedStorms;
+	AStorm* CurrentStorm;
+	bool CanSpawnStorm() const;
 
 	UPROPERTY()
 	FWindParameters WindParameters;
-
 	void CalculateWindParameters();
-
-	void GetNewStormChanceTime();
-	void TrySpawnStorm();
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void Client_UpdateWindParameters(const FWindParameters& NewParameters);
