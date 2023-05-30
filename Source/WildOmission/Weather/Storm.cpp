@@ -208,19 +208,13 @@ void AStorm::SpawnTornado(bool bFromSave)
 	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	if (bFromSave)
 	{
-		SpawnedTornado->LoadSaveInformation(TornadoSave);
+		SpawnedTornado->LoadSaveInformation(TornadoSave, this);
 		return;
 	}
 
-	FVector Origin;
-	FVector BoxExtent;
-	GetActorBounds(true, Origin, BoxExtent);
-
-	SpawnedTornado->OnSpawn(BoxExtent.Length() - (BoxExtent.Length() * 0.2f));
+	SpawnedTornado->HandleSpawn(this);
 	HasSpawnedTornado = true;
 }
-
-
 
 void AStorm::GetSpawnLocation()
 {

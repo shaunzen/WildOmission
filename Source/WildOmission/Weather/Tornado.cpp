@@ -2,6 +2,7 @@
 
 
 #include "Tornado.h"
+#include "Storm.h"
 #include "WindSuckerComponent.h"
 #include "WildOmission/Core/Interfaces/DamagedByWind.h"
 #include "WildOmission/Core/Interfaces/InteractsWithTornado.h"
@@ -66,15 +67,14 @@ void ATornado::BeginPlay()
 	}
 }
 
-void ATornado::OnSpawn(const float& InStormRadius)
+void ATornado::HandleSpawn(AStorm* InOwnerStorm)
 {
-	StormRadius = InStormRadius;
+	OwnerStorm = InOwnerStorm;
 
-	TargetLocation = GetRandomLocationInStorm();
-
-	SetActorLocation(TargetLocation);
+	GetStormRadius();
+	SetActorLocation(GetRandomLocationInStorm());
 	
-	GetNewTargetLocation();
+	TargetLocation = GetRandomLocationInStorm();
 
 	TotalLifetime = FMath::RandRange(120.0f, 300.0f);
 	RemainingLifetime = TotalLifetime;
@@ -91,25 +91,23 @@ FTornadoSaveInformation ATornado::GetSaveInformation()
 	FTornadoSaveInformation NewSave;
 	NewSave.Transform = GetActorTransform();
 	NewSave.MovementSpeed = MovementSpeed;
-	NewSave.OldTargetLocation = OldTargetLocation;
 	NewSave.TotalLifetime = TotalLifetime;
 	NewSave.RemainingLifetime = RemainingLifetime;
 	NewSave.RotationSpeed = RotationSpeed;
-	NewSave.StormRadius = StormRadius;
 	NewSave.TargetLocation = TargetLocation;
 
 	return NewSave;
 }
 
-void ATornado::LoadSaveInformation(const FTornadoSaveInformation& InSave)
+void ATornado::LoadSaveInformation(const FTornadoSaveInformation& InSave, AStorm* InOwnerStorm)
 {
+	OwnerStorm = InOwnerStorm;
+
 	SetActorTransform(InSave.Transform);
 	MovementSpeed = InSave.MovementSpeed;
-	OldTargetLocation = InSave.OldTargetLocation;
 	TotalLifetime = InSave.TotalLifetime;
 	RemainingLifetime = InSave.RemainingLifetime;
 	RotationSpeed = InSave.RotationSpeed;
-	StormRadius = InSave.StormRadius;
 	TargetLocation = InSave.TargetLocation;
 }
 
@@ -153,7 +151,7 @@ void ATornado::HandleMovement()
 	if (DistanceFromTarget < 100.0f)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Getting new tornado target location."));
-		GetNewTargetLocation();
+		TargetLocation = GetRandomLocationInStorm();
 	}
 
 	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * GetWorld()->GetDeltaSeconds());
@@ -219,12 +217,6 @@ void ATornado::HandleRotation()
 	SuctionAnchor->SetRelativeRotation(FRotator(0.0f, NewSuctionYaw, 0.0f));
 }
 
-void ATornado::GetNewTargetLocation()
-{
-	OldTargetLocation = TargetLocation;
-	TargetLocation = GetRandomLocationInStorm();
-}
-
 FVector ATornado::GetRandomLocationInStorm()
 {
 	float HalfRadius = StormRadius * 0.5f;
@@ -233,4 +225,18 @@ FVector ATornado::GetRandomLocationInStorm()
 	Y = FMath::RandRange(-HalfRadius, HalfRadius);
 
 	return FVector(X, Y, 0.0f);
+}
+
+void ATornado::GetStormRadius()
+{
+	if (OwnerStorm == nullptr)
+	{
+		return;
+	}
+
+	FVector Origin;
+	FVector BoxExtent;
+	OwnerStorm->GetActorBounds(true, Origin, BoxExtent);
+
+	StormRadius = BoxExtent.Length() - (BoxExtent.Length() * 0.2f);
 }

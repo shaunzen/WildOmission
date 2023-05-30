@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Tornado.generated.h"
 
+class AStorm;
 class UWindSuckerComponent;
 
 USTRUCT()
@@ -29,12 +30,6 @@ struct FTornadoSaveInformation
 	FVector TargetLocation = FVector::ZeroVector;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	FVector OldTargetLocation = FVector::ZeroVector;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float StormRadius = 0.0f;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
 	float TotalLifetime = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
@@ -52,11 +47,11 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void OnSpawn(const float& InStormRadius);
+	void HandleSpawn(AStorm* OwnerStorm);
 
 	FTornadoSaveInformation GetSaveInformation();
 
-	void LoadSaveInformation(const FTornadoSaveInformation& InSave);
+	void LoadSaveInformation(const FTornadoSaveInformation& InSave, AStorm* OwnerStorm);
 
 protected:
 	// Called when the game starts or when spawned
@@ -88,9 +83,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	FVector TargetLocation;
-	
-	UPROPERTY(VisibleAnywhere)
-	FVector OldTargetLocation;
 
 	UPROPERTY(VisibleAnywhere)
 	float StormRadius;
@@ -101,13 +93,18 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float TotalLifetime;
 
-	void GetNewTargetLocation();
+	UPROPERTY()
+	AStorm* OwnerStorm;
+
 	FVector GetRandomLocationInStorm();
 
 	UFUNCTION()
 	void OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	void HandleMovement();
 	void HandleDamage();
 	void HandleRotation();
+
+	void GetStormRadius();
 
 };

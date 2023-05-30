@@ -12,18 +12,6 @@ class AWeatherManager;
 class ALightning;
 class UNiagaraComponent;
 
-USTRUCT()
-struct FStormState
-{
-	GENERATED_BODY()
-	
-	UPROPERTY()
-	float Severity;
-
-	UPROPERTY()
-	ATornado* SpawnedTornado;
-};
-
 UCLASS()
 class WILDOMISSION_API AStorm : public AActor, public ISavableObjectInterface
 {
@@ -108,7 +96,6 @@ private:
 
 	// Client-Side Logic
 	void HandleCloudAppearance();
-	void HandleRainHaze();
 
 	// Server-Side Logic
 	void HandleMovement();
