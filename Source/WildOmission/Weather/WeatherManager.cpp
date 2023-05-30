@@ -18,6 +18,11 @@ AWeatherManager::AWeatherManager()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	bAlwaysRelevant = true;
+	
+	CurrentStorm = nullptr;
+	MinStormSpawnTime = 300.0f;
+	MaxStormSpawnTime = 3600.0f;
+	NextStormSpawnTime = 0.0f;
 
 	static ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/WildOmission/Weather/BP_Storm"));
 	if (StormBlueprint.Succeeded())
@@ -29,11 +34,6 @@ AWeatherManager::AWeatherManager()
 	{
 		MPC_WindCollection = WindParameterCollectionBlueprint.Object;
 	}
-
-	CurrentStorm = nullptr;
-	MinStormSpawnTime = 300.0f;
-	MaxStormSpawnTime = 600.0f;
-	NextStormSpawnTime = 0.0f;
 }
 
 // Called when the game starts or when spawned

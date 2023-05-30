@@ -34,26 +34,22 @@ public:
 	AStorm();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Serialize(FArchive& Ar) override;
 
-	void OnSpawn(const FVector2D& InWorldSize);
-
-	void SetSeverity(float NewSeverity);
+	void HandleSpawn();
+	void HandleDestruction();
 
 	float GetSeverity() const;
-	float GetDistanceToTravel() const;
-	float GetDistanceTraveled() const;
+	void SetSeverity(float NewSeverity);
+
+	float GetTravelDistance() const;
+	float GetTraveledDistance() const;
 	FVector GetMovementVector() const;
 	ATornado* GetSpawnedTornado() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsRaining(float& OutDensity) const;
-
 	void SetLocalPlayerUnderneath(bool IsUnder);
-
-	void HandleDestruction();
 
 protected:
 	// Called when the game starts or when spawned
@@ -61,55 +57,50 @@ protected:
 
 	void GetSpawnLocation(FVector& OutStartLocation);
 
-	UPROPERTY(SaveGame)
 	FVector2D WorldSize;
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* StormRootComponent;
-	
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CloudMeshComponent;
-
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* RainHazeComponent;
-
-	UPROPERTY(SaveGame)
-	FVector SpawnLocation;
-	UPROPERTY(SaveGame)
-	FVector TargetLocation;
-	UPROPERTY(SaveGame)
-	float DistanceToTravel;
-	UPROPERTY(SaveGame)
-	float DistanceTraveled;
-	UPROPERTY(SaveGame)
-	float MovementSpeed;
-	UPROPERTY(SaveGame)
-	FVector MovementVector;
-
-	UPROPERTY(VisibleAnywhere, Replicated, SaveGame)
-	float Severity;
-	UPROPERTY(SaveGame)
-	float SeverityMultiplier;
-
-	UPROPERTY(EditDefaultsOnly)
-	float RainSeverityThreshold;
-	UPROPERTY(EditDefaultsOnly)
-	float TornadoSeverityThreshold;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ALightning> LightningClass;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ATornado> TornadoClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	float RainSeverityThreshold;
+	UPROPERTY(EditDefaultsOnly)
+	float TornadoSeverityThreshold;
+	
+	UPROPERTY(SaveGame)
+	FVector SpawnLocation;
+	UPROPERTY(SaveGame)
+	FVector MovementVector;
+	UPROPERTY(SaveGame)
+	float MovementSpeed;
+	UPROPERTY(SaveGame)
+	float SeverityMultiplier;
+	UPROPERTY(SaveGame)
+	float Severity;
+	UPROPERTY(SaveGame)
+	FTornadoSaveInformation TornadoSave;
 	UPROPERTY(SaveGame)
 	bool HasSpawnedTornado;
 
-	UPROPERTY(SaveGame)
-	FTornadoSaveInformation TornadoSave;
-
-	UPROPERTY(Replicated)
+	FVector TargetLocation;
+	float TravelDistance;
+	float TraveledDistance;
 	ATornado* SpawnedTornado;
+
+
+	void CalculateTargetLocation();
+	void CalculateTravelDistance();
+	void CalculateTraveledDistance();
 
 	UPROPERTY()
 	AWeatherManager* WeatherManager;

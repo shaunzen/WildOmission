@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -44,27 +45,16 @@ AStorm::AStorm()
 	{
 		TornadoClass = TornadoBlueprint.Class;
 	}
-
 	static ConstructorHelpers::FClassFinder<ALightning> LightningBlueprint(TEXT("/Game/WildOmission/Weather/BP_Lightning"));
 	if (LightningBlueprint.Succeeded())
 	{
 		LightningClass = LightningBlueprint.Class;
 	}
-
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainHazeBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_RainHaze"));
 	if (RainHazeBlueprint.Succeeded())
 	{
 		RainHazeComponent->SetAsset(RainHazeBlueprint.Object);
 	}
-}
-
-
-void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AStorm, Severity);
-	DOREPLIFETIME(AStorm, SpawnedTornado);
 }
 
 void AStorm::Serialize(FArchive& Ar)
@@ -92,20 +82,19 @@ void AStorm::BeginPlay()
 	if (HasAuthority())
 	{
 		WeatherManager = Cast<AWeatherManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherManager::StaticClass()));
+		UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
+		WorldSize = WorldSize * 100.0f;
 	}
 }
 
-void AStorm::OnSpawn(const FVector2D& InWorldSize)
+void AStorm::HandleSpawn()
 {
-	// Convert to centimeters
-	WorldSize = InWorldSize * 100.0f;
-
 	GetSpawnLocation(SpawnLocation);
 	SetActorLocation(SpawnLocation);
 
 	TargetLocation = FVector(-SpawnLocation.X, -SpawnLocation.Y, SpawnLocation.Z);
-	DistanceToTravel = FVector::Distance(SpawnLocation, TargetLocation);
-	DistanceTraveled = 0.0f;
+	CalculateTravelDistance();
+	TraveledDistance = 0.0f;
 	
 	Severity = 0.0f;
 
@@ -144,12 +133,12 @@ void AStorm::HandleMovement()
 	FVector CurrentLocation = GetActorLocation();
 	MovementVector = (TargetLocation - CurrentLocation).GetSafeNormal();
 
-	DistanceTraveled = FVector::Distance(CurrentLocation, SpawnLocation);
+	CalculateTraveledDistance();
 
 	FVector NewLocation = CurrentLocation + (MovementVector * MovementSpeed * GetWorld()->GetDeltaSeconds());
 	SetActorLocation(NewLocation);
 
-	if (DistanceTraveled >= DistanceToTravel)
+	if (TraveledDistance >= TravelDistance)
 	{
 		WeatherManager->ClearStorm();
 	}
@@ -284,14 +273,14 @@ float AStorm::GetSeverity() const
 	return Severity;
 }
 
-float AStorm::GetDistanceToTravel() const
+float AStorm::GetTravelDistance() const
 {
-	return DistanceToTravel;
+	return TravelDistance;
 }
 
-float AStorm::GetDistanceTraveled() const
+float AStorm::GetTraveledDistance() const
 {
-	return DistanceTraveled;
+	return TraveledDistance;
 }
 
 FVector AStorm::GetMovementVector() const
@@ -313,8 +302,27 @@ void AStorm::OnLoadComplete_Implementation()
 	
 	WeatherManager->SetCurrentStorm(this);
 
+	CalculateTargetLocation();
+	CalculateTravelDistance();
+	CalculateTraveledDistance();
+
 	if (TornadoSave.WasSpawned)
 	{
 		SpawnTornado(true);
 	}
+}
+
+void AStorm::CalculateTargetLocation()
+{
+	TargetLocation = -SpawnLocation;
+}
+
+void AStorm::CalculateTravelDistance()
+{
+	TravelDistance = FVector::Distance(SpawnLocation, TargetLocation);
+}
+
+void AStorm::CalculateTraveledDistance()
+{
+	TraveledDistance = FVector::Distance(GetActorLocation(), SpawnLocation);
 }
