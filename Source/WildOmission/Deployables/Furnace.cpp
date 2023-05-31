@@ -73,14 +73,12 @@ bool AFurnace::IsTurnedOn() const
 
 void AFurnace::OnTurnedOn()
 {
-	// TODO turn on effects
 	Light->SetVisibility(true);
 	AudioComponent->Play();
 }
 
 void AFurnace::OnTurnedOff()
 {
-	// TODO turn off effects
 	Light->SetVisibility(false);
 	AudioComponent->Stop();
 }
@@ -128,11 +126,11 @@ void AFurnace::SmeltItems()
 	FuelToRemove.Quantity = 2;
 	GetInventoryComponent()->RemoveItem(FuelToRemove);
 
-	int32 AmountOfMetalOre = GetInventoryComponent()->GetContents()->GetItemQuantity(FName("metal_ore"));
+	int32 AmountOfMetalOre = GetInventoryComponent()->GetContents()->GetItemQuantity(FName("ore.metal"));
 	if (AmountOfMetalOre > 0)
 	{
 		FInventoryItem MetalOreToRemove;
-		MetalOreToRemove.Name = FName("metal_ore");
+		MetalOreToRemove.Name = FName("ore.metal");
 		MetalOreToRemove.Quantity = 1;
 		GetInventoryComponent()->RemoveItem(MetalOreToRemove);
 
