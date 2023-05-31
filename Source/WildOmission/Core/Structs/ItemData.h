@@ -7,6 +7,22 @@
 #include "UObject/NoExportTypes.h"
 #include "ItemData.generated.h"
 
+UENUM()
+enum EItemCategory
+{
+	Item,
+	Resource,
+	Component,
+	Tool,
+	Building,
+	Weapon,
+	Ammo,
+	Medical,
+	Food,
+	Clothing,
+	Misc
+};
+
 USTRUCT(BlueprintType)
 struct FItemData : public FTableRowBase
 {
@@ -16,10 +32,13 @@ struct FItemData : public FTableRowBase
 	FString DisplayName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInstance* Thumbnail;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterialInstance* Thumbnail;
+	TEnumAsByte<EItemCategory> Category;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMesh* Mesh;
