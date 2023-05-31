@@ -16,11 +16,13 @@ class WILDOMISSION_API ATree : public AHarvestableResource, public IInteractsWit
 	GENERATED_BODY()
 public:
 	ATree();
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void OnContactWithTornado() override;
 
 private:
-	UPROPERTY(SaveGame)
+	UPROPERTY(Replicated, SaveGame)
 	bool bIsStump;
 
 	UFUNCTION()

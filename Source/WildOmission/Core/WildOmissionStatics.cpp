@@ -33,6 +33,23 @@ FItemData* UWildOmissionStatics::GetItemData(const FName& ItemName)
 	return ItemDataTable->FindRow<FItemData>(ItemName, ContextString, true);
 }
 
+FVector UWildOmissionStatics::GetHostLocationInWorld(UWorld* WorldContextObject)
+{
+	APlayerController* HostPlayerController = WorldContextObject->GetFirstPlayerController();
+	if (HostPlayerController == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
+	APawn* HostPawn = HostPlayerController->GetPawn();
+	if (HostPawn == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
+	return HostPawn->GetActorLocation();
+}
+
 void UWildOmissionStatics::SpawnWorldItem(UWorld* WorldContextObject, const FInventoryItem& ItemToSpawn, AActor* SpawningActor)
 {
 	if (WorldContextObject == nullptr || SpawningActor == nullptr)

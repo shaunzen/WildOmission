@@ -6,6 +6,7 @@
 #include "WindSuckerComponent.h"
 #include "WildOmission/Core/Interfaces/DamagedByWind.h"
 #include "WildOmission/Core/Interfaces/InteractsWithTornado.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 
 // Sets default values
 ATornado::ATornado()
@@ -67,12 +68,18 @@ void ATornado::BeginPlay()
 	}
 }
 
-void ATornado::HandleSpawn(AStorm* InOwnerStorm)
+void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnAtPlayerLocation)
 {
 	OwnerStorm = InOwnerStorm;
 
 	GetStormRadius();
 	SetActorLocation(GetRandomLocationInStorm());
+	if (SpawnAtPlayerLocation)
+	{
+		FVector NewSpawnLocation = UWildOmissionStatics::GetHostLocationInWorld(GetWorld());
+		NewSpawnLocation.Z = 0.0f;
+		SetActorLocation(NewSpawnLocation);
+	}
 	
 	TargetLocation = GetRandomLocationInStorm();
 

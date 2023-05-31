@@ -114,7 +114,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 		return;
 	}
 
-	AStorm* SpawnedStorm = WeatherManager->SpawnStorm();
+	AStorm* SpawnedStorm = WeatherManager->SpawnStorm(true);
 	
 	if (WeatherToSet == FString("Rain"))
 	{

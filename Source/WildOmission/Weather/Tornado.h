@@ -47,7 +47,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void HandleSpawn(AStorm* OwnerStorm);
+	void HandleSpawn(AStorm* OwnerStorm, bool SpawnAtPlayerLocation = false);
 
 	FTornadoSaveInformation GetSaveInformation();
 

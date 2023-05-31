@@ -24,7 +24,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void Serialize(FArchive& Ar) override;
 
-	void HandleSpawn();
+	void HandleSpawn(bool SpawnedFromCommand = false);
 	void HandleDestruction();
 
 	float GetSeverity() const;
@@ -85,6 +85,8 @@ private:
 
 	UPROPERTY()
 	AWeatherManager* WeatherManager;
+
+	bool WasSpawnedFromCommand;
 
 	bool LocalPlayerUnder;
 	float NextLightningStrikeTime;

@@ -46,6 +46,7 @@ AStorm::AStorm()
 	HasSpawnedTornado = false;
 
 	WeatherManager = nullptr;
+	WasSpawnedFromCommand = false;
 	LocalPlayerUnder = false;
 	NextLightningStrikeTime = 0.0f;
 
@@ -84,8 +85,10 @@ void AStorm::BeginPlay()
 	WeatherManager = Cast<AWeatherManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherManager::StaticClass()));
 }
 
-void AStorm::HandleSpawn()
+void AStorm::HandleSpawn(bool SpawnedFromCommand)
 {
+	WasSpawnedFromCommand = SpawnedFromCommand;
+
 	GetSpawnLocation();
 
 	SetActorLocation(SpawnLocation);
@@ -212,7 +215,7 @@ void AStorm::SpawnTornado(bool bFromSave)
 		return;
 	}
 
-	SpawnedTornado->HandleSpawn(this);
+	SpawnedTornado->HandleSpawn(this, WasSpawnedFromCommand);
 	HasSpawnedTornado = true;
 }
 

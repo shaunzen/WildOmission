@@ -38,7 +38,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	AStorm* SpawnStorm();
+	AStorm* SpawnStorm(bool FromCommand = false);
 	void ClearStorm();
 	
 	AStorm* GetCurrentStorm() const;

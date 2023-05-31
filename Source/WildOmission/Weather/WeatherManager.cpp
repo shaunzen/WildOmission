@@ -22,7 +22,7 @@ AWeatherManager::AWeatherManager()
 	CurrentStorm = nullptr;
 	MinStormSpawnTime = 300.0f;
 	MaxStormSpawnTime = 3600.0f;
-	NextStormSpawnTime = 0.0f;
+	NextStormSpawnTime = -1.0f;
 
 	static ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/WildOmission/Weather/BP_Storm"));
 	if (StormBlueprint.Succeeded())
@@ -41,6 +41,10 @@ void AWeatherManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (NextStormSpawnTime == -1.0f)
+	{
+		NextStormSpawnTime = FMath::RandRange(MinStormSpawnTime, MaxStormSpawnTime);
+	}
 }
 
 // Called every frame
@@ -64,7 +68,7 @@ void AWeatherManager::Tick(float DeltaTime)
 	}
 }
 
-AStorm* AWeatherManager::SpawnStorm()
+AStorm* AWeatherManager::SpawnStorm(bool FromCommand)
 {
 	if (CurrentStorm)
 	{
@@ -76,7 +80,7 @@ AStorm* AWeatherManager::SpawnStorm()
 	UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
 
 	CurrentStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
-	CurrentStorm->HandleSpawn();
+	CurrentStorm->HandleSpawn(FromCommand);
 
 	return CurrentStorm;
 }
