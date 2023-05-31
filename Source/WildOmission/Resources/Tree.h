@@ -22,7 +22,7 @@ public:
 	virtual void OnContactWithTornado() override;
 
 private:
-	UPROPERTY(Replicated, SaveGame)
+	UPROPERTY(Replicated, ReplicatedUsing = UpdateMeshState, SaveGame)
 	bool bIsStump;
 
 	UFUNCTION()
@@ -31,6 +31,7 @@ private:
 	UPROPERTY()
 	UStaticMesh* StumpMesh;
 
+	UFUNCTION()
 	void UpdateMeshState();
 
 };
