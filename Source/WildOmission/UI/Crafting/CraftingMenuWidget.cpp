@@ -82,10 +82,10 @@ void UCraftingMenuWidget::RefreshRecipesList()
 			return;
 		}
 		
-		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeData->Yield.Name);
+		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeName);
 		if (YieldItemData == nullptr)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to find item data for recipe yeild %s"), *RecipeData->Yield.Name.ToString());
+			UE_LOG(LogTemp, Error, TEXT("Failed to find item data for recipe yeild %s"), *RecipeName.ToString());
 			return;
 		}
 
@@ -110,7 +110,7 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 		return;
 	}
 
-	FItemData* RecipeYieldItemData = UWildOmissionStatics::GetItemData(RecipeData->Yield.Name);
+	FItemData* RecipeYieldItemData = UWildOmissionStatics::GetItemData(SelectedRecipe);
 	if (RecipeYieldItemData == nullptr)
 	{
 		return;
@@ -125,9 +125,9 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 	
 	FString RecipeYieldQuantityString;
 
-	if (RecipeData->Yield.Quantity > 1)
+	if (RecipeData->YieldQuantity > 1)
 	{
-		RecipeYieldQuantityString = FString::Printf(TEXT("x%i"), RecipeData->Yield.Quantity);
+		RecipeYieldQuantityString = FString::Printf(TEXT("x%i"), RecipeData->YieldQuantity);
 	}
 
 	SelectedRecipeYieldTextBlock->SetText(FText::FromString(RecipeYieldQuantityString));

@@ -15,12 +15,15 @@ struct FCraftingRecipe : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FInventoryItem Yield;
+	int32 YieldQuantity = 1;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FInventoryItem> Ingredients;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 CraftTime = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 SortPriority = 0;
 
 };
