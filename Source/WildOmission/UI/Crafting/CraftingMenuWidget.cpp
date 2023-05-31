@@ -8,6 +8,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Components/Button.h"
+#include "CraftingRecipeCategoryButton.h"
 #include "RecipeIconWidget.h"
 #include "IngredientRowWidget.h"
 #include "WildOmission/Components/CraftingComponent.h"
@@ -46,6 +47,11 @@ void UCraftingMenuWidget::NativeConstruct()
 
 	OwnerInventory->OnUpdate.AddDynamic(this, &UCraftingMenuWidget::Refresh);
 
+	CategoryFilter = EItemCategory::Item;
+
+	SortByButton_All->Setup(this, EItemCategory::All);
+	SortByButton_Items->Setup(this, EItemCategory::Item);
+
 	CraftButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::Craft);
 
 	SelectedRecipe = FName("");
@@ -55,6 +61,11 @@ void UCraftingMenuWidget::Refresh()
 {
 	RefreshRecipesList();
 	RefreshDetailsPanel();
+}
+
+void UCraftingMenuWidget::SetCategoryFilter(TEnumAsByte<EItemCategory> NewCategory)
+{
+
 }
 
 void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)

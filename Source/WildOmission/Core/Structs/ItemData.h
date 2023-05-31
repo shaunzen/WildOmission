@@ -20,7 +20,8 @@ enum EItemCategory
 	Medical,
 	Food,
 	Clothing,
-	Misc
+	Misc,
+	All
 };
 
 USTRUCT(BlueprintType)
