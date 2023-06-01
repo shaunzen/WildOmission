@@ -7,6 +7,12 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
+UCraftingRecipeCategoryButton::UCraftingRecipeCategoryButton(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	ParentCraftingMenu = nullptr;
+	Category = EItemCategory::Item;
+}
+
 void UCraftingRecipeCategoryButton::Setup(UCraftingMenuWidget* InParent, TEnumAsByte<EItemCategory> InCategory)
 {
 	Button->OnClicked.AddDynamic(this, &UCraftingRecipeCategoryButton::OnClicked);
@@ -48,7 +54,7 @@ void UCraftingRecipeCategoryButton::Setup(UCraftingMenuWidget* InParent, TEnumAs
 	
 	TextBlock->SetText(FText::FromString(ButtonTextString));
 
-	ParentCraftingMenu= InParent;
+	ParentCraftingMenu = InParent;
 	Category = InCategory;
 }
 

@@ -17,6 +17,8 @@ class WILDOMISSION_API UCraftingRecipeCategoryButton : public UUserWidget
 	GENERATED_BODY()
 
 public:	
+	UCraftingRecipeCategoryButton(const FObjectInitializer& ObjectInitializer);
+
 	void Setup(UCraftingMenuWidget* InParent, TEnumAsByte<EItemCategory> InCategory);
 private:
 	UPROPERTY(Meta = (BindWidget))

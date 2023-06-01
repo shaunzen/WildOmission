@@ -51,6 +51,13 @@ void UCraftingMenuWidget::NativeConstruct()
 
 	SortByButton_All->Setup(this, EItemCategory::All);
 	SortByButton_Items->Setup(this, EItemCategory::Item);
+	SortByButton_Resources->Setup(this, EItemCategory::Resource);
+	SortByButton_Tools->Setup(this, EItemCategory::Tool);
+	SortByButton_Building->Setup(this, EItemCategory::Building);
+	SortByButton_Weapons->Setup(this, EItemCategory::Weapon);
+	SortByButton_Ammo->Setup(this, EItemCategory::Ammo);
+	SortByButton_Medical->Setup(this, EItemCategory::Medical);
+	SortByButton_Clothing->Setup(this, EItemCategory::Clothing);
 
 	CraftButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::Craft);
 
@@ -65,7 +72,9 @@ void UCraftingMenuWidget::Refresh()
 
 void UCraftingMenuWidget::SetCategoryFilter(TEnumAsByte<EItemCategory> NewCategory)
 {
-
+	CategoryFilter = NewCategory;
+	RefreshRecipesList();
+	UE_LOG(LogTemp, Display, TEXT("Selected new item category: %i"), NewCategory);
 }
 
 void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)
