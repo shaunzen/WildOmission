@@ -90,30 +90,42 @@ FName UCraftingMenuWidget::GetSelectedRecipe() const
 
 void UCraftingMenuWidget::RefreshRecipesList()
 {
-	// Clear all children of the scroll box
-	RecipesWrapBox->ClearChildren();
-
+	TArray<FName> FilteredRecipeNames;
 	for (const FName& RecipeName : UCraftingComponent::GetAllRecipes())
 	{
-		FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(RecipeName);
-		if (RecipeData == nullptr)
-		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to find recipe data for %s"), *RecipeName.ToString());
-			return;
-		}
-		
 		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeName);
-		if (YieldItemData == nullptr)
+		if (YieldItemData == nullptr || CategoryFilter != EItemCategory::All && YieldItemData->Category != CategoryFilter)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to find item data for recipe yeild %s"), *RecipeName.ToString());
-			return;
+			continue;
 		}
 
-		URecipeIconWidget* NewRecipeEntry = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
+		FilteredRecipeNames.Add(RecipeName);
+	}
 
+	Algo::Sort(FilteredRecipeNames, &RecipeSortPredicate);
+
+	RecipesWrapBox->ClearChildren();
+	for (const FName& RecipeName : FilteredRecipeNames)
+	{
+		URecipeIconWidget* NewRecipeEntry = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
+		if (NewRecipeEntry == nullptr)
+		{
+			continue;
+		}
+
+		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeName);
 		NewRecipeEntry->Setup(this, RecipeName, YieldItemData->Thumbnail);
 		RecipesWrapBox->AddChild(NewRecipeEntry);
 	}
+}
+
+bool UCraftingMenuWidget::RecipeSortPredicate(FName RecipeA, FName RecipeB)
+{
+	bool CanCraftA = CanCraftRecipe(RecipeA);
+	bool CanCraftB = CanCraftRecipe(RecipeB);
+
+	//return true if a should be higher in list
+	return CanCraftA && !CanCraftB;
 }
 
 void UCraftingMenuWidget::RefreshDetailsPanel()
@@ -154,7 +166,7 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 
 	RefreshIngredientList();
 
-	CraftButton->SetIsEnabled(CanCraftSelectedRecipe());
+	CraftButton->SetIsEnabled(CanCraftRecipe(SelectedRecipe));
 }
 
 void UCraftingMenuWidget::ClearDetailsPanel()
@@ -224,9 +236,9 @@ void UCraftingMenuWidget::Craft()
 	OwnerCraftingComponent->Server_CraftItem(SelectedRecipe);
 }
 
-bool UCraftingMenuWidget::CanCraftSelectedRecipe()
+bool UCraftingMenuWidget::CanCraftRecipe(const FName& RecipeName)
 {
-	FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(SelectedRecipe);
+	FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(RecipeName);
 	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
 	if (RecipeData == nullptr || OwnerInventoryComponent == nullptr)
 	{

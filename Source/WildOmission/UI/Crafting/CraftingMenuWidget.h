@@ -19,6 +19,17 @@ class UInventoryComponent;
 enum EItemCategory;
 struct FCraftingRecipe;
 
+USTRUCT()
+struct FCraftingRecipeEntry
+{
+	GENERATED_BODY()
+	
+	FName Name;
+	int32 SortPriority;
+	bool CanCraft;
+
+};
+
 UCLASS()
 class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
 {
@@ -88,12 +99,13 @@ private:
 	FName SelectedRecipe;
 
 	void RefreshRecipesList();
+	bool RecipeSortPredicate(FName RecipeA, FName RecipeB);
 
 	void RefreshDetailsPanel();
 	void ClearDetailsPanel();
 	void RefreshIngredientList();
 
-	bool CanCraftSelectedRecipe();
+	bool CanCraftRecipe(const FName& RecipeName);
 
 	UFUNCTION()
 	void Craft();
