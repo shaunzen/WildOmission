@@ -93,6 +93,12 @@ void UCraftingMenuWidget::RefreshRecipesList()
 	TArray<FCraftingRecipeEntry> RecipeEntries;
 	for (const FName& RecipeID : UCraftingComponent::GetAllRecipes())
 	{
+		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeID);
+		if (CategoryFilter != EItemCategory::All && YieldItemData->Category != CategoryFilter)
+		{
+			continue;
+		}
+
 		FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(RecipeID);
 
 		FCraftingRecipeEntry Entry;
@@ -104,16 +110,11 @@ void UCraftingMenuWidget::RefreshRecipesList()
 		RecipeEntries.Add(Entry);
 	}
 	
-	Algo::Sort(RecipeEntries, RecipeSortPredicate);
-
+	Algo::Sort(RecipeEntries, RecipeSortCraftablePredicate);
+	
 	RecipesWrapBox->ClearChildren();
 	for (const FCraftingRecipeEntry& RecipeEntry : RecipeEntries)
 	{
-		if (CategoryFilter != EItemCategory::All && RecipeEntry.YieldItemData->Category != CategoryFilter)
-		{
-			continue;
-		}
-
 		URecipeIconWidget* NewRecipeIcon = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
 		if (NewRecipeIcon == nullptr)
 		{
@@ -126,9 +127,19 @@ void UCraftingMenuWidget::RefreshRecipesList()
 
 }
 
-bool UCraftingMenuWidget::RecipeSortPredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB)
+bool UCraftingMenuWidget::RecipeSortCraftablePredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB)
 {
-	return EntryA.CanCraft && !EntryB.CanCraft;
+	return (!EntryA.CanCraft && EntryB.CanCraft);
+}
+
+bool UCraftingMenuWidget::RecipeSortPriorityPredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB)
+{
+	return EntryA.SortPriority < EntryB.SortPriority && !RecipeSortCraftablePredicate(EntryA, EntryB);
+}
+
+bool UCraftingMenuWidget::RecipeSortNamePredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB)
+{
+	return EntryA.RecipeID.Compare(EntryB.RecipeID) > 0 && !RecipeSortPriorityPredicate(EntryA, EntryB);
 }
 
 void UCraftingMenuWidget::RefreshDetailsPanel()

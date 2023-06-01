@@ -100,7 +100,9 @@ private:
 	FName SelectedRecipe;
 
 	void RefreshRecipesList();
-	static bool RecipeSortPredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB);
+	static bool RecipeSortCraftablePredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB);
+	static bool RecipeSortPriorityPredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB);
+	static bool RecipeSortNamePredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB);
 
 	void RefreshDetailsPanel();
 	void ClearDetailsPanel();
