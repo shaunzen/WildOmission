@@ -29,6 +29,10 @@ struct FCraftingRecipeEntry
 	int32 SortPriority = 0;
 	bool CanCraft = false;
 	FItemData* YieldItemData = nullptr;
+	FORCEINLINE bool operator<(const FCraftingRecipeEntry& Other) const
+	{
+		return (this->CanCraft == true && Other.CanCraft == false) || this->SortPriority > Other.SortPriority;
+	}
 };
 
 UCLASS()
@@ -100,9 +104,10 @@ private:
 	FName SelectedRecipe;
 
 	void RefreshRecipesList();
-	static bool RecipeSortCraftablePredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB);
-	static bool RecipeSortPriorityPredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB);
-	static bool RecipeSortNamePredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB);
+	static bool RecipePredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B);
+	static bool CraftabilityPredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B);
+	static bool PriorityPredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B);
+	static bool NamePredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B);
 
 	void RefreshDetailsPanel();
 	void ClearDetailsPanel();

@@ -90,6 +90,7 @@ FName UCraftingMenuWidget::GetSelectedRecipe() const
 
 void UCraftingMenuWidget::RefreshRecipesList()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Refreshing list lmao"));
 	TArray<FCraftingRecipeEntry> RecipeEntries;
 	for (const FName& RecipeID : UCraftingComponent::GetAllRecipes())
 	{
@@ -110,11 +111,13 @@ void UCraftingMenuWidget::RefreshRecipesList()
 		RecipeEntries.Add(Entry);
 	}
 	
-	Algo::Sort(RecipeEntries, RecipeSortCraftablePredicate);
-	
+	RecipeEntries.StableSort();
+
 	RecipesWrapBox->ClearChildren();
-	for (const FCraftingRecipeEntry& RecipeEntry : RecipeEntries)
+	for (int32 i = 0; i < RecipeEntries.Num(); i++)
 	{
+		const FCraftingRecipeEntry& RecipeEntry = RecipeEntries[i];
+
 		URecipeIconWidget* NewRecipeIcon = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
 		if (NewRecipeIcon == nullptr)
 		{
@@ -127,19 +130,24 @@ void UCraftingMenuWidget::RefreshRecipesList()
 
 }
 
-bool UCraftingMenuWidget::RecipeSortCraftablePredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB)
+bool UCraftingMenuWidget::RecipePredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B)
 {
-	return (!EntryA.CanCraft && EntryB.CanCraft);
+	return CraftabilityPredicate(A, B) || PriorityPredicate(A, B) || NamePredicate(A, B);
 }
 
-bool UCraftingMenuWidget::RecipeSortPriorityPredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB)
+bool UCraftingMenuWidget::CraftabilityPredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B)
 {
-	return EntryA.SortPriority < EntryB.SortPriority && !RecipeSortCraftablePredicate(EntryA, EntryB);
+	return A.CanCraft == true && B.CanCraft == false;
 }
 
-bool UCraftingMenuWidget::RecipeSortNamePredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB)
+bool UCraftingMenuWidget::PriorityPredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B)
 {
-	return EntryA.RecipeID.Compare(EntryB.RecipeID) > 0 && !RecipeSortPriorityPredicate(EntryA, EntryB);
+	return A.SortPriority > B.SortPriority;
+}
+
+bool UCraftingMenuWidget::NamePredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B)
+{
+	return A.RecipeID.Compare(B.RecipeID) < 0;
 }
 
 void UCraftingMenuWidget::RefreshDetailsPanel()
