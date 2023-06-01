@@ -109,6 +109,11 @@ void UCraftingMenuWidget::RefreshRecipesList()
 	RecipesWrapBox->ClearChildren();
 	for (const FCraftingRecipeEntry& RecipeEntry : RecipeEntries)
 	{
+		if (CategoryFilter != EItemCategory::All && RecipeEntry.YieldItemData->Category != CategoryFilter)
+		{
+			continue;
+		}
+
 		URecipeIconWidget* NewRecipeIcon = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
 		if (NewRecipeIcon == nullptr)
 		{
