@@ -90,42 +90,40 @@ FName UCraftingMenuWidget::GetSelectedRecipe() const
 
 void UCraftingMenuWidget::RefreshRecipesList()
 {
-	TArray<FName> FilteredRecipeNames;
-	for (const FName& RecipeName : UCraftingComponent::GetAllRecipes())
+	TArray<FCraftingRecipeEntry> RecipeEntries;
+	for (const FName& RecipeID : UCraftingComponent::GetAllRecipes())
 	{
-		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeName);
-		if (YieldItemData == nullptr || CategoryFilter != EItemCategory::All && YieldItemData->Category != CategoryFilter)
-		{
-			continue;
-		}
+		FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(RecipeID);
 
-		FilteredRecipeNames.Add(RecipeName);
+		FCraftingRecipeEntry Entry;
+		Entry.RecipeID = RecipeID;
+		Entry.CanCraft = CanCraftRecipe(RecipeID);
+		Entry.SortPriority = RecipeData->SortPriority;
+		Entry.YieldItemData = UWildOmissionStatics::GetItemData(RecipeID);
+
+		RecipeEntries.Add(Entry);
 	}
-
-	Algo::Sort(FilteredRecipeNames, &RecipeSortPredicate);
+	
+	Algo::Sort(RecipeEntries, RecipeSortPredicate);
 
 	RecipesWrapBox->ClearChildren();
-	for (const FName& RecipeName : FilteredRecipeNames)
+	for (const FCraftingRecipeEntry& RecipeEntry : RecipeEntries)
 	{
-		URecipeIconWidget* NewRecipeEntry = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
-		if (NewRecipeEntry == nullptr)
+		URecipeIconWidget* NewRecipeIcon = CreateWidget<URecipeIconWidget>(this, RecipeIconWidgetClass);
+		if (NewRecipeIcon == nullptr)
 		{
 			continue;
 		}
 
-		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeName);
-		NewRecipeEntry->Setup(this, RecipeName, YieldItemData->Thumbnail);
-		RecipesWrapBox->AddChild(NewRecipeEntry);
+		NewRecipeIcon->Setup(this, RecipeEntry.RecipeID, RecipeEntry.YieldItemData->Thumbnail);
+		RecipesWrapBox->AddChild(NewRecipeIcon);
 	}
+
 }
 
-bool UCraftingMenuWidget::RecipeSortPredicate(FName RecipeA, FName RecipeB)
+bool UCraftingMenuWidget::RecipeSortPredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB)
 {
-	bool CanCraftA = CanCraftRecipe(RecipeA);
-	bool CanCraftB = CanCraftRecipe(RecipeB);
-
-	//return true if a should be higher in list
-	return CanCraftA && !CanCraftB;
+	return EntryA.CanCraft && !EntryB.CanCraft;
 }
 
 void UCraftingMenuWidget::RefreshDetailsPanel()

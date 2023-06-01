@@ -17,6 +17,7 @@ class UIngredientRowWidget;
 class UInventoryComponent;
 
 enum EItemCategory;
+struct FItemData;
 struct FCraftingRecipe;
 
 USTRUCT()
@@ -24,10 +25,10 @@ struct FCraftingRecipeEntry
 {
 	GENERATED_BODY()
 	
-	FName Name;
-	int32 SortPriority;
-	bool CanCraft;
-
+	FName RecipeID = FName();
+	int32 SortPriority = 0;
+	bool CanCraft = false;
+	FItemData* YieldItemData = nullptr;
 };
 
 UCLASS()
@@ -99,7 +100,7 @@ private:
 	FName SelectedRecipe;
 
 	void RefreshRecipesList();
-	bool RecipeSortPredicate(FName RecipeA, FName RecipeB);
+	static bool RecipeSortPredicate(const FCraftingRecipeEntry& EntryA, const FCraftingRecipeEntry& EntryB);
 
 	void RefreshDetailsPanel();
 	void ClearDetailsPanel();
