@@ -37,6 +37,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UBorder* RecipeIconBorder;
 
+	UPROPERTY(Meta = (BindWidget))
+	UBorder* BackgroundBorder;
+
 	UPROPERTY()
 	UCraftingMenuWidget* ParentMenu;
 

@@ -84,6 +84,38 @@ void UInventorySlotWidget::ClearItem()
 	this->SetItem(BlankItem);
 }
 
+void UInventorySlotWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (IsSelected())
+	{
+		FUIColor* Blue = UWildOmissionStatics::GetUIColor(FName("Blue"));
+
+		if (Hovering)
+		{
+			SlotBorder->SetBrushColor(UWildOmissionStatics::GetHighlightedColor(Blue));
+		}
+		else
+		{
+			SlotBorder->SetBrushColor(Blue->Default);
+		}
+	}
+	else
+	{
+		FUIColor* LightGray = UWildOmissionStatics::GetUIColor(FName("LightGray"));
+
+		if (Hovering)
+		{
+			SlotBorder->SetBrushColor(UWildOmissionStatics::GetHighlightedColor(LightGray));
+		}
+		else
+		{
+			SlotBorder->SetBrushColor(LightGray->Default);
+		}
+	}
+}
+
 FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
@@ -119,6 +151,7 @@ void UInventorySlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
 	ShowHoveredItemNameTag();
+	Hovering = true;
 }
 
 void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
@@ -126,6 +159,7 @@ void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	Super::NativeOnMouseLeave(InMouseEvent);
 
 	HideHoveredItemNameTag();
+	Hovering = false;
 }
 
 int32 UInventorySlotWidget::GetIndex() const

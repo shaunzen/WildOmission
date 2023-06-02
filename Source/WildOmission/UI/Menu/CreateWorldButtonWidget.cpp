@@ -13,6 +13,8 @@ UButton* UCreateWorldButtonWidget::GetButton() const
 
 void UCreateWorldButtonWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
 	FUIColor* DarkGray = UWildOmissionStatics::GetUIColor(FName("DarkGray"));
 
 	if (Hovering)
@@ -27,10 +29,14 @@ void UCreateWorldButtonWidget::NativeTick(const FGeometry& MyGeometry, float InD
 
 void UCreateWorldButtonWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+
 	Hovering = true;
 }
 
 void UCreateWorldButtonWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
+	Super::NativeOnMouseLeave(InMouseEvent);
+
 	Hovering = false;
 }
