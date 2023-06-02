@@ -6,6 +6,7 @@
 #include "WildOmission/Core/Structs/ItemData.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 
 UCraftingRecipeCategoryButton::UCraftingRecipeCategoryButton(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -56,6 +57,22 @@ void UCraftingRecipeCategoryButton::Setup(UCraftingMenuWidget* InParent, TEnumAs
 
 	ParentCraftingMenu = InParent;
 	Category = InCategory;
+}
+
+void UCraftingRecipeCategoryButton::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (ParentCraftingMenu && ParentCraftingMenu->GetCategoryFilter() == Category)
+	{
+		FUIColor* Blue = UWildOmissionStatics::GetUIColor(FName("Blue"));
+		Button->SetBackgroundColor(Blue->Default);
+	}
+	else
+	{
+		FUIColor* DarkGray = UWildOmissionStatics::GetUIColor(FName("DarkGray"));
+		Button->SetBackgroundColor(DarkGray->Default);
+	}
 }
 
 void UCraftingRecipeCategoryButton::OnClicked()

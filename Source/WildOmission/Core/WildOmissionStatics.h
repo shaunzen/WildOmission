@@ -21,6 +21,7 @@ public:
 	static FItemData* GetItemData(const FName& ItemName);
 	static FUIColor* GetUIColor(const FName& ColorName);
 	static FLinearColor GetHighlightedColor(FUIColor* Color);
+	static FLinearColor GetSelectedColor(FUIColor* Color);
 	static FVector GetHostLocationInWorld(UWorld* WorldContextObject);
 	static void SpawnWorldItem(UWorld* WorldContextObject, const struct FInventoryItem& ItemToSpawn, AActor* SpawningActor);
 	static void GetWorldSize(UWorld* WorldContextObject, FVector2D& OutWorldSize);

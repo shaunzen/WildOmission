@@ -23,7 +23,4 @@ struct FCraftingRecipe : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 CraftTime = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 SortPriority = 0;
-
 };

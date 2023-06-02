@@ -103,14 +103,9 @@ void UCraftingMenuWidget::RefreshRecipesList()
 			continue;
 		}
 
-		FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(RecipeID);
-
 		FCraftingRecipeEntry Entry;
 		Entry.RecipeID = RecipeID;
 		Entry.IngredientPercentage = GetRecipeIngredientPercentage(RecipeID);
-		UE_LOG(LogTemp, Warning, TEXT("Entry: %s, %i Percent"), *Entry.RecipeID.ToString(), Entry.IngredientPercentage);
-
-		Entry.SortPriority = RecipeData->SortPriority;
 		Entry.YieldItemData = UWildOmissionStatics::GetItemData(RecipeID);
 
 		RecipeEntries.Add(Entry);

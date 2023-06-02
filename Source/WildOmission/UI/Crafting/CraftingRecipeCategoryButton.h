@@ -20,6 +20,8 @@ public:
 	UCraftingRecipeCategoryButton(const FObjectInitializer& ObjectInitializer);
 
 	void Setup(UCraftingMenuWidget* InParent, TEnumAsByte<EItemCategory> InCategory);
+protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))

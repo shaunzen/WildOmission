@@ -22,6 +22,8 @@ FString UWorldRowWidget::GetWorldName()
 
 void UWorldRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
 	if (Selected)
 	{
 		FUIColor* Blue = UWildOmissionStatics::GetUIColor(FName("Blue"));
