@@ -27,6 +27,11 @@ bool URecipeIconWidget::IsSelected() const
 	return ParentMenu->GetSelectedRecipe() == ParentEntry.RecipeID;
 }
 
+bool URecipeIconWidget::IsCraftable() const
+{
+	return ParentEntry.IngredientPercentage == 100;
+}
+
 void URecipeIconWidget::OnClicked()
 {
 	ParentMenu->SetSelectedRecipe(ParentEntry.RecipeID);

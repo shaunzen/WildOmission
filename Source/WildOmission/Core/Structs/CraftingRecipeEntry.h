@@ -19,6 +19,6 @@ struct FCraftingRecipeEntry
 
 	FORCEINLINE bool operator<(const FCraftingRecipeEntry& Other) const
 	{
-		return this->IngredientPercentage > Other.IngredientPercentage || this->SortPriority > Other.SortPriority;
+		return this->IngredientPercentage > Other.IngredientPercentage;
 	}
 };

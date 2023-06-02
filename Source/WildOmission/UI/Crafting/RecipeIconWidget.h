@@ -23,6 +23,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsSelected() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsCraftable() const;
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* RecipeButton;

@@ -104,6 +104,8 @@ void UCraftingMenuWidget::RefreshRecipesList()
 		FCraftingRecipeEntry Entry;
 		Entry.RecipeID = RecipeID;
 		Entry.IngredientPercentage = GetRecipeIngredientPercentage(RecipeID);
+		UE_LOG(LogTemp, Warning, TEXT("Entry: %s, %i Percent"), *Entry.RecipeID.ToString(), Entry.IngredientPercentage);
+
 		Entry.SortPriority = RecipeData->SortPriority;
 		Entry.YieldItemData = UWildOmissionStatics::GetItemData(RecipeID);
 
@@ -278,6 +280,6 @@ int32  UCraftingMenuWidget::GetRecipeIngredientPercentage(const FName& RecipeNam
 		IngredientPossession += IngredientHasAmount;
 	}
 
-	float NormalizedRatio = FMath::Clamp(IngredientPossession / IngredientTotal, 0.0f, 1.0f);
+	float NormalizedRatio = FMath::Clamp(static_cast<float>(IngredientPossession) / static_cast<float>(IngredientTotal), 0.0f, 1.0f);
 	return FMath::FloorToInt32(NormalizedRatio * 100.0f);
 }
