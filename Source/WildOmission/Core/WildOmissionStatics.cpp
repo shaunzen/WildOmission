@@ -11,13 +11,20 @@
 #include "Engine/DataTable.h"
 
 static UDataTable* ItemDataTable = nullptr;
+static UDataTable* UIColorsTable = nullptr;
 
 UWildOmissionStatics::UWildOmissionStatics()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
-	if (ItemDataTableObject.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
+	if (ItemDataTableBlueprint.Succeeded())
 	{
-		ItemDataTable = ItemDataTableObject.Object;
+		ItemDataTable = ItemDataTableBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> UIColorsTableBlueprint(TEXT("/Game/WildOmission/UI/Custom/DT_UIColors"));
+	if (UIColorsTableBlueprint.Succeeded())
+	{
+		UIColorsTable = UIColorsTableBlueprint.Object;
 	}
 }
 
@@ -31,6 +38,18 @@ FItemData* UWildOmissionStatics::GetItemData(const FName& ItemName)
 	static const FString ContextString(TEXT("Item Data Context"));
 
 	return ItemDataTable->FindRow<FItemData>(ItemName, ContextString, true);
+}
+
+FUIColor* UWildOmissionStatics::GetUIColor(const FName& ColorName)
+{
+	if (UIColorsTable == nullptr)
+	{
+		return nullptr;
+	}
+
+	static const FString ContextString(TEXT("UI Color Context"));
+
+	return UIColorsTable->FindRow<FUIColor>(ColorName, ContextString, true);
 }
 
 FVector UWildOmissionStatics::GetHostLocationInWorld(UWorld* WorldContextObject)
