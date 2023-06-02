@@ -4,64 +4,30 @@
 #include "RecipeIconWidget.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
-#include "WildOmission/Components/CraftingComponent.h"
-#include "WildOmission/Components/InventoryComponent.h"
 #include "CraftingMenuWidget.h"
+#include "WildOmission/Core/Structs/ItemData.h"
 
-void URecipeIconWidget::Setup(UCraftingMenuWidget* InParent, const FName& InRecipeName, UMaterialInstance* Icon)
+void URecipeIconWidget::Setup(UCraftingMenuWidget* InParentMenu, const FCraftingRecipeEntry& InParentEntry)
 {
-	Parent = InParent;
-	RecipeName = InRecipeName;
-	RecipeIconBorder->SetBrushFromMaterial(Icon);
+	ParentMenu = InParentMenu;
+	ParentEntry = InParentEntry;
 
-	bCanCraft = EvaluateCraftibility();
-	
+	RecipeIconBorder->SetBrushFromMaterial(ParentEntry.YieldItemData->Thumbnail);
+
 	RecipeButton->OnClicked.AddDynamic(this, &URecipeIconWidget::OnClicked);
 }
 
 bool URecipeIconWidget::IsSelected() const
 {
-	if (Parent == nullptr)
+	if (ParentMenu == nullptr)
 	{
 		return false;
 	}
 
-	return Parent->GetSelectedRecipe() == RecipeName;
-}
-
-bool URecipeIconWidget::IsCraftable() const
-{
-	return bCanCraft;
+	return ParentMenu->GetSelectedRecipe() == ParentEntry.RecipeID;
 }
 
 void URecipeIconWidget::OnClicked()
 {
-	Parent->SetSelectedRecipe(RecipeName);
-}
-
-bool URecipeIconWidget::EvaluateCraftibility()
-{
-	UCraftingComponent* OwnerCraftingComponent = GetOwningPlayerPawn()->FindComponentByClass<UCraftingComponent>();
-	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
-	if (OwnerCraftingComponent == nullptr || OwnerInventoryComponent == nullptr)
-	{
-		return false;
-	}
-
-	FCraftingRecipe* RecipeData = OwnerCraftingComponent->GetRecipe(RecipeName);
-	if (RecipeData == nullptr)
-	{
-		return false;
-	}
-
-	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
-	{
-		int32 PlayerHas = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
-		if (PlayerHas < Ingredient.Quantity)
-		{
-			return false;
-		}
-	}
-
-	return true;
+	ParentMenu->SetSelectedRecipe(ParentEntry.RecipeID);
 }

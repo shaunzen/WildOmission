@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "WildOmission/Core/Structs/CraftingRecipeEntry.h"
 #include "CraftingMenuWidget.generated.h"
 
 class UWrapBox;
@@ -19,21 +20,6 @@ class UInventoryComponent;
 enum EItemCategory;
 struct FItemData;
 struct FCraftingRecipe;
-
-USTRUCT()
-struct FCraftingRecipeEntry
-{
-	GENERATED_BODY()
-	
-	FName RecipeID = FName();
-	int32 SortPriority = 0;
-	bool CanCraft = false;
-	FItemData* YieldItemData = nullptr;
-	FORCEINLINE bool operator<(const FCraftingRecipeEntry& Other) const
-	{
-		return (this->CanCraft == true && Other.CanCraft == false) || this->SortPriority > Other.SortPriority;
-	}
-};
 
 UCLASS()
 class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
@@ -104,16 +90,13 @@ private:
 	FName SelectedRecipe;
 
 	void RefreshRecipesList();
-	static bool RecipePredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B);
-	static bool CraftabilityPredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B);
-	static bool PriorityPredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B);
-	static bool NamePredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B);
 
 	void RefreshDetailsPanel();
 	void ClearDetailsPanel();
 	void RefreshIngredientList();
 
 	bool CanCraftRecipe(const FName& RecipeName);
+	int32 GetRecipeIngredientPercentage(const FName& RecipeName);
 
 	UFUNCTION()
 	void Craft();

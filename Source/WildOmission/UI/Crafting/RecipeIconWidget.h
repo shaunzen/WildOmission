@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/IUserObjectListEntry.h"
+#include "WildOmission/Core/Structs/CraftingRecipeEntry.h"
 #include "RecipeIconWidget.generated.h"
 
 class UButton;
@@ -17,13 +18,10 @@ class WILDOMISSION_API URecipeIconWidget : public UUserWidget, public IUserObjec
 	GENERATED_BODY()
 	
 public:
-	void Setup(UCraftingMenuWidget* InParent, const FName& InRecipeName, UMaterialInstance* Icon);
+	void Setup(UCraftingMenuWidget* InParentMenu, const FCraftingRecipeEntry& InParentEntry);
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsSelected() const;
-
-	UFUNCTION(BlueprintCallable)
-	bool IsCraftable() const;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -33,15 +31,11 @@ private:
 	UBorder* RecipeIconBorder;
 
 	UPROPERTY()
-	UCraftingMenuWidget* Parent;
+	UCraftingMenuWidget* ParentMenu;
 
-	FName RecipeName;
-
+	UPROPERTY()
+	FCraftingRecipeEntry ParentEntry;
+	
 	UFUNCTION()
 	void OnClicked();
-
-	bool EvaluateCraftibility();
-
-	bool bCanCraft;
-
 };

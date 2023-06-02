@@ -90,7 +90,6 @@ FName UCraftingMenuWidget::GetSelectedRecipe() const
 
 void UCraftingMenuWidget::RefreshRecipesList()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Refreshing list lmao"));
 	TArray<FCraftingRecipeEntry> RecipeEntries;
 	for (const FName& RecipeID : UCraftingComponent::GetAllRecipes())
 	{
@@ -104,14 +103,14 @@ void UCraftingMenuWidget::RefreshRecipesList()
 
 		FCraftingRecipeEntry Entry;
 		Entry.RecipeID = RecipeID;
-		Entry.CanCraft = CanCraftRecipe(RecipeID);
+		Entry.IngredientPercentage = GetRecipeIngredientPercentage(RecipeID);
 		Entry.SortPriority = RecipeData->SortPriority;
 		Entry.YieldItemData = UWildOmissionStatics::GetItemData(RecipeID);
 
 		RecipeEntries.Add(Entry);
 	}
 	
-	RecipeEntries.StableSort();
+	RecipeEntries.Sort();
 
 	RecipesWrapBox->ClearChildren();
 	for (int32 i = 0; i < RecipeEntries.Num(); i++)
@@ -124,30 +123,10 @@ void UCraftingMenuWidget::RefreshRecipesList()
 			continue;
 		}
 
-		NewRecipeIcon->Setup(this, RecipeEntry.RecipeID, RecipeEntry.YieldItemData->Thumbnail);
+		NewRecipeIcon->Setup(this, RecipeEntry);
 		RecipesWrapBox->AddChild(NewRecipeIcon);
 	}
 
-}
-
-bool UCraftingMenuWidget::RecipePredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B)
-{
-	return CraftabilityPredicate(A, B) || PriorityPredicate(A, B) || NamePredicate(A, B);
-}
-
-bool UCraftingMenuWidget::CraftabilityPredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B)
-{
-	return A.CanCraft == true && B.CanCraft == false;
-}
-
-bool UCraftingMenuWidget::PriorityPredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B)
-{
-	return A.SortPriority > B.SortPriority;
-}
-
-bool UCraftingMenuWidget::NamePredicate(const FCraftingRecipeEntry& A, const FCraftingRecipeEntry& B)
-{
-	return A.RecipeID.Compare(B.RecipeID) < 0;
 }
 
 void UCraftingMenuWidget::RefreshDetailsPanel()
@@ -270,11 +249,35 @@ bool UCraftingMenuWidget::CanCraftRecipe(const FName& RecipeName)
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
 		int32 IngredientHasAmount = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
+		
 		if (IngredientHasAmount < Ingredient.Quantity)
 		{
 			return false;
 		}
 	}
-
+	
 	return true;
+}
+
+int32  UCraftingMenuWidget::GetRecipeIngredientPercentage(const FName& RecipeName)
+{
+	FCraftingRecipe* RecipeData = UCraftingComponent::GetRecipe(RecipeName);
+	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
+	if (RecipeData == nullptr || OwnerInventoryComponent == nullptr)
+	{
+		return false;
+	}
+
+	int32 IngredientTotal = 0;
+	int32 IngredientPossession = 0;
+	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
+	{
+		int32 IngredientHasAmount = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
+
+		IngredientTotal += Ingredient.Quantity;
+		IngredientPossession += IngredientHasAmount;
+	}
+
+	float NormalizedRatio = FMath::Clamp(IngredientPossession / IngredientTotal, 0.0f, 1.0f);
+	return FMath::FloorToInt32(NormalizedRatio * 100.0f);
 }
