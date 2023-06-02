@@ -280,6 +280,6 @@ int32  UCraftingMenuWidget::GetRecipeIngredientPercentage(const FName& RecipeNam
 		IngredientPossession += IngredientHasAmount;
 	}
 
-	float NormalizedRatio = FMath::Clamp(static_cast<float>(IngredientPossession) / static_cast<float>(IngredientTotal), 0.0f, 1.0f);
+	float NormalizedRatio = static_cast<float>(IngredientPossession) / static_cast<float>(IngredientTotal);
 	return FMath::FloorToInt32(NormalizedRatio * 100.0f);
 }
