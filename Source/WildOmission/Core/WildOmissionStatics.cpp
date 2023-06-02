@@ -52,6 +52,11 @@ FUIColor* UWildOmissionStatics::GetUIColor(const FName& ColorName)
 	return UIColorsTable->FindRow<FUIColor>(ColorName, ContextString, true);
 }
 
+FLinearColor UWildOmissionStatics::GetHighlightedColor(FUIColor* Color)
+{
+	return FLinearColor(Color->Default.R + Color->HighlightedOffset, Color->Default.G + Color->HighlightedOffset, Color->Default.B + Color->HighlightedOffset, 1.0f);
+}
+
 FVector UWildOmissionStatics::GetHostLocationInWorld(UWorld* WorldContextObject)
 {
 	APlayerController* HostPlayerController = WorldContextObject->GetFirstPlayerController();

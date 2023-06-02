@@ -25,6 +25,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsCraftable() const;
+protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -39,6 +43,8 @@ private:
 	UPROPERTY()
 	FCraftingRecipeEntry ParentEntry;
 	
+	bool Hovering = false;
+
 	UFUNCTION()
 	void OnClicked();
 };
