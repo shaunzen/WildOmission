@@ -64,5 +64,6 @@ void UCraftingRecipeCategoryButton::OnClicked()
 	{
 		return;
 	}
+
 	ParentCraftingMenu->SetCategoryFilter(Category);
 }

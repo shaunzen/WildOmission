@@ -20,6 +20,7 @@ public:
 	UCraftingRecipeCategoryButton(const FObjectInitializer& ObjectInitializer);
 
 	void Setup(UCraftingMenuWidget* InParent, TEnumAsByte<EItemCategory> InCategory);
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* Button;

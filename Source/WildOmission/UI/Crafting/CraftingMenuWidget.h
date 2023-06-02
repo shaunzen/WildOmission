@@ -34,6 +34,7 @@ public:
 	void Refresh();
 
 	void SetCategoryFilter(TEnumAsByte<EItemCategory> NewCategory);
+	TEnumAsByte<EItemCategory> GetCategoryFilter() const;
 
 	void SetSelectedRecipe(const FName& SelectedRecipeName);
 	FName GetSelectedRecipe() const;

@@ -74,7 +74,11 @@ void UCraftingMenuWidget::SetCategoryFilter(TEnumAsByte<EItemCategory> NewCatego
 {
 	CategoryFilter = NewCategory;
 	RefreshRecipesList();
-	UE_LOG(LogTemp, Display, TEXT("Selected new item category: %i"), NewCategory);
+}
+
+TEnumAsByte<EItemCategory> UCraftingMenuWidget::GetCategoryFilter() const
+{
+	return CategoryFilter;
 }
 
 void UCraftingMenuWidget::SetSelectedRecipe(const FName& SelectedRecipeName)
