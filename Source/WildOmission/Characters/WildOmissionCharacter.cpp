@@ -21,6 +21,8 @@
 #include "WildOmission/Items/EquipableItem.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -186,7 +188,7 @@ void AWildOmissionCharacter::BeginPlay()
 void AWildOmissionCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	if (!HasAuthority())
 	{
 		return;
@@ -215,6 +217,23 @@ void AWildOmissionCharacter::UnPossessed()
 	Super::UnPossessed();
 
 	EquipComponent->DestroyEquipedItem();
+}
+
+void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
+{
+	Super::Landed(HitResult);
+	
+	float FallVelocity = GetCharacterMovement()->GetLastUpdateVelocity().GetAbs().Z;
+
+	if (FallVelocity > 1000.0f)
+	{
+		float DamageToApply = FMath::Lerp(0.0f, 100.0f, (FallVelocity - 1000.0f) / 1000.0f);
+		FPointDamageEvent FallDamageEvent(DamageToApply, HitResult, -FVector::UpVector, nullptr);
+		TakeDamage(DamageToApply, FallDamageEvent, GetController(), this);
+		// TODO crunch sound
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Hit The ground with a factor of %f"), GetCharacterMovement()->GetLastUpdateVelocity().GetAbs().Z);
 }
 
 void AWildOmissionCharacter::SetupEnhancedInputSubsystem()

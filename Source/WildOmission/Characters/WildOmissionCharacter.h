@@ -33,6 +33,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void UnPossessed() override;
 
+	virtual void Landed(const FHitResult& HitResult) override;
+
 	void HandleDeath();
 
 	UFUNCTION(Client, Reliable)
@@ -195,7 +197,7 @@ private:
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MovementSpeed)
 	float DesiredMovementSpeed;
-
+	
 	UFUNCTION()
 	void OnRep_MovementSpeed();
 
