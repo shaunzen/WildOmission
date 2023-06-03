@@ -57,17 +57,14 @@ protected:
 	void ApplyDamage();
 	
 	
-	void PlayHitSound(const FVector& HitLocation);
-	void SpawnImpactParticles(const FVector& HitLocation, const FVector& SurfaceNormal);
+	void PlayImpactSound(const FHitResult& HitResult);
+	void SpawnImpactParticles(const FHitResult& HitResult);
 
 	FInventoryItem* FindInInventory();
 
 private:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* PrimaryMontage;
-
-	UPROPERTY(EditDefaultsOnly)
-	USoundBase* HitSound;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayThirdPersonPrimaryMontage();

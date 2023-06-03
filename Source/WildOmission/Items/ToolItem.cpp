@@ -11,6 +11,7 @@
 #include "WildOmission/Deployables/Deployable.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraComponent.h"
@@ -27,12 +28,6 @@ AToolItem::AToolItem()
 	SwingSpeedRate = 1.0f;
 
 	Durability = 100;
-
-	static ConstructorHelpers::FObjectFinder<USoundBase> HitSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
-	if (HitSoundObject.Succeeded())
-	{
-		HitSound = HitSoundObject.Object;
-	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_SwingTool_01_Montage"));
 	if (PrimaryMontageObject.Succeeded())
@@ -114,13 +109,11 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	{
 		return;
 	}
-
 	
-
 	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
 	{
-		PlayHitSound(HitResult.ImpactPoint);
-		SpawnImpactParticles(HitResult.ImpactPoint, HitResult.ImpactNormal);
+		PlayImpactSound(HitResult);
+		SpawnImpactParticles(HitResult);
 	}
 
 	if (!HasAuthority())
@@ -228,22 +221,25 @@ void AToolItem::Client_PlayThirdPersonPrimaryMontage_Implementation()
 	OwnerEquipComponent->PlayPrimaryMontage(false);
 }
 
-void AToolItem::PlayHitSound(const FVector& HitLocation)
+void AToolItem::PlayImpactSound(const FHitResult& HitResult)
 {
-	if (HitSound == nullptr)
+	USoundBase* ImpactSound = UWildOmissionStatics::GetImpactSoundBySurfaceType(HitResult.PhysMaterial.Get()->SurfaceType);
+	if (ImpactSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, HitLocation);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
 }
 
-void AToolItem::SpawnImpactParticles(const FVector& HitLocation, const FVector& SurfaceNormal)
+void AToolItem::SpawnImpactParticles(const FHitResult& HitResult)
 {
+	UNiagaraSystem* ImpactEffects = UWildOmissionStatics::GetImpactEffectBySurfaceType(HitResult.PhysMaterial.Get()->SurfaceType);
 	if (ImpactEffects == nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn impact effects, Impact Effects nullptr."));
 		return;
 	}
 
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffects, HitLocation, SurfaceNormal.Rotation());
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffects, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
 }

@@ -40,7 +40,8 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
 	{
-		PlayHitSound(HitResult.ImpactPoint);
+		PlayImpactSound(HitResult);
+		SpawnImpactParticles(HitResult);
 	}
 
 	if (!HasAuthority())

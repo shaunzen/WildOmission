@@ -8,10 +8,16 @@
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
 #include "WildOmission/Core/SaveSystem/WorldGenerationHandlerComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "NiagaraSystem.h"
 #include "Engine/DataTable.h"
 
 static UDataTable* ItemDataTable = nullptr;
 static UDataTable* UIColorsTable = nullptr;
+static USoundBase* WoodImpactSound = nullptr;
+static USoundBase* RockImpactSound = nullptr;
+static UNiagaraSystem* WoodImpactEffect = nullptr;
+static UNiagaraSystem* RockImpactEffect = nullptr;
+static UNiagaraSystem* MetalImpactEffect = nullptr;
 
 UWildOmissionStatics::UWildOmissionStatics()
 {
@@ -25,6 +31,36 @@ UWildOmissionStatics::UWildOmissionStatics()
 	if (UIColorsTableBlueprint.Succeeded())
 	{
 		UIColorsTable = UIColorsTableBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> WoodImpactSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
+	if (WoodImpactSoundObject.Succeeded())
+	{
+		WoodImpactSound = WoodImpactSoundObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> RockImpactSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/RockImpact_Cue"));
+	if (RockImpactSoundObject.Succeeded())
+	{
+		RockImpactSound = RockImpactSoundObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> WoodImpactEffectBlueprint(TEXT("/Game/WildOmission/Art/Effects/NS_Impact_Wood"));
+	if (WoodImpactEffectBlueprint.Succeeded())
+	{
+		WoodImpactEffect = WoodImpactEffectBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> RockImpactEffectBlueprint(TEXT("/Game/WildOmission/Art/Effects/NS_Impact_Rock"));
+	if (RockImpactEffectBlueprint.Succeeded())
+	{
+		RockImpactEffect = RockImpactEffectBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> MetalImpactEffectBlueprint(TEXT("/Game/WildOmission/Art/Effects/NS_Impact_Metal"));
+	if (MetalImpactEffectBlueprint.Succeeded())
+	{
+		MetalImpactEffect = MetalImpactEffectBlueprint.Object;
 	}
 }
 
@@ -60,6 +96,42 @@ FLinearColor UWildOmissionStatics::GetHighlightedColor(FUIColor* Color)
 FLinearColor UWildOmissionStatics::GetSelectedColor(FUIColor* Color)
 {
 	return FLinearColor(Color->Default.R + Color->SelectedOffset, Color->Default.G + Color->SelectedOffset, Color->Default.B + Color->SelectedOffset, 1.0f);
+}
+
+UNiagaraSystem* UWildOmissionStatics::GetImpactEffectBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface)
+{
+	switch (Surface)
+	{
+	case SurfaceType4:	// WOOD
+		return WoodImpactEffect;
+		break;
+	case SurfaceType3:	// ROCK
+		return RockImpactEffect;
+		break;
+	case SurfaceType7:	// METAL
+		return MetalImpactEffect;
+		break;
+	}
+
+	return RockImpactEffect;
+}
+
+USoundBase* UWildOmissionStatics::GetImpactSoundBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface)
+{
+	switch (Surface)
+	{
+	case SurfaceType4:	// WOOD
+		return WoodImpactSound;
+		break;
+	case SurfaceType3:	// ROCK
+		return RockImpactSound;
+		break;
+	case SurfaceType7:	// METAL
+		//return MetalImpactSound;
+		break;
+	}
+
+	return WoodImpactSound;
 }
 
 FVector UWildOmissionStatics::GetHostLocationInWorld(UWorld* WorldContextObject)
