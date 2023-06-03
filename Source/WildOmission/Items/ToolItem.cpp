@@ -28,19 +28,13 @@ AToolItem::AToolItem()
 
 	Durability = 100;
 
-	ConstructorHelpers::FObjectFinder<USoundBase> HitSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> HitSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
 	if (HitSoundObject.Succeeded())
 	{
 		HitSound = HitSoundObject.Object;
 	}
-	
-	ConstructorHelpers::FObjectFinder<UNiagaraSystem> ImpactEffectsObject(TEXT("/Game/WildOmission/Art/Effects/NS_Impact"));
-	if (ImpactEffectsObject.Succeeded())
-	{
-		ImpactEffects = ImpactEffectsObject.Object;
-	}
 
-	ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_SwingTool_01_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_SwingTool_01_Montage"));
 	if (PrimaryMontageObject.Succeeded())
 	{
 		PrimaryMontage = PrimaryMontageObject.Object;
@@ -120,6 +114,8 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	{
 		return;
 	}
+
+	
 
 	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
 	{

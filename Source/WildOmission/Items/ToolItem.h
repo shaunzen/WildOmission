@@ -69,9 +69,6 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* HitSound;
 
-	UPROPERTY()
-	UNiagaraSystem* ImpactEffects;
-
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayThirdPersonPrimaryMontage();
 
