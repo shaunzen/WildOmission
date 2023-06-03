@@ -243,3 +243,14 @@ void AToolItem::SpawnImpactParticles(const FHitResult& HitResult)
 
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffects, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
 }
+
+void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
+{
+	UMaterialInterface* DecalMaterial = UWildOmissionStatics::GetImpactDecalBySurfaceType(HitResult.PhysMaterial.Get()->SurfaceType);
+	if (DecalMaterial == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::SpawnDecalAttached(DecalMaterial, FVector(2.0f, 10.0f, 10.0f), HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, (-HitResult.ImpactNormal).Rotation());
+}

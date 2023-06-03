@@ -59,6 +59,7 @@ protected:
 	
 	void PlayImpactSound(const FHitResult& HitResult);
 	void SpawnImpactParticles(const FHitResult& HitResult);
+	void SpawnImpactDecal(const FHitResult& HitResult);
 
 	FInventoryItem* FindInInventory();
 

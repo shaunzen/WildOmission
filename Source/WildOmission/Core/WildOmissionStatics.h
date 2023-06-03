@@ -24,6 +24,7 @@ public:
 	static FLinearColor GetSelectedColor(FUIColor* Color);
 	static UNiagaraSystem* GetImpactEffectBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface);
 	static USoundBase* GetImpactSoundBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface);
+	static UMaterialInterface* GetImpactDecalBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface);
 	static FVector GetHostLocationInWorld(UWorld* WorldContextObject);
 	static void SpawnWorldItem(UWorld* WorldContextObject, const struct FInventoryItem& ItemToSpawn, AActor* SpawningActor);
 	static void GetWorldSize(UWorld* WorldContextObject, FVector2D& OutWorldSize);
