@@ -8,6 +8,8 @@
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "ToolItem.generated.h"
 
+class UNiagaraSystem;
+
 UCLASS()
 class WILDOMISSION_API AToolItem : public AEquipableItem
 {
@@ -56,6 +58,7 @@ protected:
 	
 	
 	void PlayHitSound(const FVector& HitLocation);
+	void SpawnImpactParticles(const FVector& HitLocation, const FVector& SurfaceNormal);
 
 	FInventoryItem* FindInInventory();
 
@@ -65,6 +68,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* HitSound;
+
+	UPROPERTY()
+	UNiagaraSystem* ImpactEffects;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayThirdPersonPrimaryMontage();

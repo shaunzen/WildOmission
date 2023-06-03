@@ -13,6 +13,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
 
@@ -27,15 +29,22 @@ AToolItem::AToolItem()
 	Durability = 100;
 
 	ConstructorHelpers::FObjectFinder<USoundBase> HitSoundObject(TEXT("/Game/WildOmission/Items/EquipableItems/Audio/Tools/WoodImpact_Cue"));
-	ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_SwingTool_01_Montage"));
-
-	if (HitSoundObject.Object == nullptr || PrimaryMontageObject.Object == nullptr)
+	if (HitSoundObject.Succeeded())
 	{
-		return;
+		HitSound = HitSoundObject.Object;
+	}
+	
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> ImpactEffectsObject(TEXT("/Game/WildOmission/Art/Effects/NS_Impact"));
+	if (ImpactEffectsObject.Succeeded())
+	{
+		ImpactEffects = ImpactEffectsObject.Object;
 	}
 
-	HitSound = HitSoundObject.Object;
-	PrimaryMontage = PrimaryMontageObject.Object;
+	ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_SwingTool_01_Montage"));
+	if (PrimaryMontageObject.Succeeded())
+	{
+		PrimaryMontage = PrimaryMontageObject.Object;
+	}
 }
 
 void AToolItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -101,6 +110,8 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetOwner());
+	CollisionParams.bTraceComplex = true;
+	CollisionParams.bReturnPhysicalMaterial = true;
 
 	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
@@ -113,6 +124,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
 	{
 		PlayHitSound(HitResult.ImpactPoint);
+		SpawnImpactParticles(HitResult.ImpactPoint, HitResult.ImpactNormal);
 	}
 
 	if (!HasAuthority())
@@ -228,4 +240,14 @@ void AToolItem::PlayHitSound(const FVector& HitLocation)
 	}
 
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, HitLocation);
+}
+
+void AToolItem::SpawnImpactParticles(const FVector& HitLocation, const FVector& SurfaceNormal)
+{
+	if (ImpactEffects == nullptr)
+	{
+		return;
+	}
+
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffects, HitLocation, SurfaceNormal.Rotation());
 }
