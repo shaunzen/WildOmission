@@ -253,5 +253,5 @@ void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 		return;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Spawning Decal"));
-	UGameplayStatics::SpawnDecalAttached(DecalMaterial, FVector(2.0f, 10.0f, 10.0f), HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
+	UGameplayStatics::SpawnDecalAttached(DecalMaterial, FVector(2.0f, 10.0f, 10.0f), HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition);
 }

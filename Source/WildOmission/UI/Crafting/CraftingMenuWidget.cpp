@@ -98,7 +98,7 @@ void UCraftingMenuWidget::RefreshRecipesList()
 	for (const FName& RecipeID : UCraftingComponent::GetAllRecipes())
 	{
 		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeID);
-		if (CategoryFilter != EItemCategory::All && YieldItemData->Category != CategoryFilter)
+		if (YieldItemData == nullptr || (CategoryFilter != EItemCategory::All && YieldItemData->Category != CategoryFilter))
 		{
 			continue;
 		}
