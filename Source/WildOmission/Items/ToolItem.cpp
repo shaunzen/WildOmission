@@ -114,6 +114,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	{
 		PlayImpactSound(HitResult);
 		SpawnImpactParticles(HitResult);
+		SpawnImpactDecal(HitResult);
 	}
 
 	if (!HasAuthority())
@@ -251,6 +252,6 @@ void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 	{
 		return;
 	}
-
-	UGameplayStatics::SpawnDecalAttached(DecalMaterial, FVector(2.0f, 10.0f, 10.0f), HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, (-HitResult.ImpactNormal).Rotation());
+	UE_LOG(LogTemp, Warning, TEXT("Spawning Decal"));
+	UGameplayStatics::SpawnDecalAttached(DecalMaterial, FVector(2.0f, 10.0f, 10.0f), HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
 }

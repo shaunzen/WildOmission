@@ -18,7 +18,7 @@ static USoundBase* RockImpactSound = nullptr;
 static UNiagaraSystem* WoodImpactEffect = nullptr;
 static UNiagaraSystem* RockImpactEffect = nullptr;
 static UNiagaraSystem* MetalImpactEffect = nullptr;
-static UMaterialInterface* ImpactDecalMaterial = nullptr;
+static UMaterialInterface* WoodImpactDecalMaterial = nullptr;
 
 UWildOmissionStatics::UWildOmissionStatics()
 {
@@ -64,10 +64,10 @@ UWildOmissionStatics::UWildOmissionStatics()
 		MetalImpactEffect = MetalImpactEffectBlueprint.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> ImpactDecalMaterialObject(TEXT("/Game/WildOmission/Art/Effects/M_Impact_Inst"));
-	if (ImpactDecalMaterialObject.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> WoodImpactDecalMaterialObject(TEXT("/Game/WildOmission/Art/Effects/M_Impact_Wood_Inst"));
+	if (WoodImpactDecalMaterialObject.Succeeded())
 	{
-		ImpactDecalMaterial = ImpactDecalMaterialObject.Object;
+		WoodImpactDecalMaterial = WoodImpactDecalMaterialObject.Object;
 	}
 }
 
@@ -143,7 +143,14 @@ USoundBase* UWildOmissionStatics::GetImpactSoundBySurfaceType(const TEnumAsByte<
 
 UMaterialInterface* UWildOmissionStatics::GetImpactDecalBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface)
 {
-	return ImpactDecalMaterial;
+	switch (Surface)
+	{
+	case SurfaceType4:	// WOOD
+		return WoodImpactDecalMaterial;
+	break;
+	}
+
+	return WoodImpactDecalMaterial;
 }
 
 FVector UWildOmissionStatics::GetHostLocationInWorld(UWorld* WorldContextObject)
