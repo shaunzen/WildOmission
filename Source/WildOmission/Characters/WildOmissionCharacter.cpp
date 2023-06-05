@@ -232,8 +232,6 @@ void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 		TakeDamage(DamageToApply, FallDamageEvent, GetController(), this);
 		// TODO crunch sound
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Hit The ground with a factor of %f"), GetCharacterMovement()->GetLastUpdateVelocity().GetAbs().Z);
 }
 
 void AWildOmissionCharacter::SetupEnhancedInputSubsystem()
