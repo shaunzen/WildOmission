@@ -91,6 +91,10 @@ void UInventorySlotWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 	if (IsSelected())
 	{
 		FUIColor* Blue = UWildOmissionStatics::GetUIColor(FName("Blue"));
+		if (Blue == nullptr)
+		{
+			return;
+		}
 
 		if (Hovering)
 		{
@@ -104,6 +108,10 @@ void UInventorySlotWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 	else
 	{
 		FUIColor* LightGray = UWildOmissionStatics::GetUIColor(FName("LightGray"));
+		if (LightGray == nullptr)
+		{
+			return;
+		}
 
 		if (Hovering)
 		{

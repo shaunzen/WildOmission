@@ -44,10 +44,6 @@ void UWeatherEffectHandlerComponent::BeginPlay()
 	}
 
 	Fog = HeightFogActor->FindComponentByClass<UExponentialHeightFogComponent>();
-	if (Fog)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Found fog!"));
-	}
 }
 
 
