@@ -19,6 +19,8 @@ static UNiagaraSystem* WoodImpactEffect = nullptr;
 static UNiagaraSystem* RockImpactEffect = nullptr;
 static UNiagaraSystem* MetalImpactEffect = nullptr;
 static UMaterialInterface* WoodImpactDecalMaterial = nullptr;
+static UMaterialInterface* RockImpactDecalMaterial = nullptr;
+static UMaterialInterface* MetalImpactDecalMaterial = nullptr;
 
 UWildOmissionStatics::UWildOmissionStatics()
 {
@@ -68,6 +70,18 @@ UWildOmissionStatics::UWildOmissionStatics()
 	if (WoodImpactDecalMaterialObject.Succeeded())
 	{
 		WoodImpactDecalMaterial = WoodImpactDecalMaterialObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> RockImpactDecalMaterialObject(TEXT("/Game/WildOmission/Art/Effects/M_Impact_Rock_Inst"));
+	if (RockImpactDecalMaterialObject.Succeeded())
+	{
+		RockImpactDecalMaterial = RockImpactDecalMaterialObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MetalImpactDecalMaterialObject(TEXT("/Game/WildOmission/Art/Effects/M_Impact_Metal_Inst"));
+	if (MetalImpactDecalMaterialObject.Succeeded())
+	{
+		MetalImpactDecalMaterial = MetalImpactDecalMaterialObject.Object;
 	}
 }
 
@@ -147,10 +161,16 @@ UMaterialInterface* UWildOmissionStatics::GetImpactDecalBySurfaceType(const TEnu
 	{
 	case SurfaceType4:	// WOOD
 		return WoodImpactDecalMaterial;
-	break;
+		break;
+	case SurfaceType3:	// ROCK
+		return RockImpactDecalMaterial;
+		break;
+	case SurfaceType7:	// METAL
+		return MetalImpactDecalMaterial;
+		break;
 	}
 
-	return WoodImpactDecalMaterial;
+	return RockImpactDecalMaterial;
 }
 
 FVector UWildOmissionStatics::GetHostLocationInWorld(UWorld* WorldContextObject)
