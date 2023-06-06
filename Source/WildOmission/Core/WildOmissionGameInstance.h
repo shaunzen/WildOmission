@@ -49,12 +49,17 @@ public:
 	FString GetVersion() const;
 
 private:
-
+	UPROPERTY()
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetBlueprintClass;
+	UPROPERTY()
 	UMainMenuWidget* MainMenuWidget;
 
+	UPROPERTY()
 	TSubclassOf<UGameplayMenuWidget> GameplayMenuWidgetBlueprintClass;
+	UPROPERTY()
 	UGameplayMenuWidget* GameplayMenuWidget;
+
+	// TODO Loading menu
 
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
@@ -66,8 +71,6 @@ private:
 	void OnFindSessionsComplete(bool Success);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 	void OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
-
-	FString Version;
 
 	FString DesiredServerName;
 	FString WorldToLoad;

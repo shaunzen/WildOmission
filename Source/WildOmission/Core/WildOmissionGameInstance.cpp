@@ -16,29 +16,22 @@
 const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
+const static FString Version = FString("Pre Alpha 0.7.5 - Pre 3");
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
-	// Version Information Here
-	Version = FString("Pre Alpha 0.7.5 - Pre 2");
-
-	ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_MainMenu"));
-	
-	if (MainMenuBlueprint.Class == nullptr)
+	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_MainMenu"));
+	if (MainMenuBlueprint.Succeeded())
 	{
-		return;
+		MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
 	}
 	
-	MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
-
-	ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_GameplayMenu"));
-	
-	if (GameplayMenuBlueprint.Class == nullptr)
+	static ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_GameplayMenu"));
+	if (GameplayMenuBlueprint.Succeeded())
 	{
-		return;
+		GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
 	}
 	
-	GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
 }
 
 void UWildOmissionGameInstance::Init()
