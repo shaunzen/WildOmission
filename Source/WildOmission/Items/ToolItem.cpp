@@ -224,6 +224,12 @@ void AToolItem::Client_PlayThirdPersonPrimaryMontage_Implementation()
 
 void AToolItem::PlayImpactSound(const FHitResult& HitResult)
 {
+	if (HitResult.PhysMaterial == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get physical material."));
+		return;
+	}
+
 	USoundBase* ImpactSound = UWildOmissionStatics::GetImpactSoundBySurfaceType(HitResult.PhysMaterial.Get()->SurfaceType);
 	if (ImpactSound == nullptr)
 	{
@@ -235,7 +241,13 @@ void AToolItem::PlayImpactSound(const FHitResult& HitResult)
 
 void AToolItem::SpawnImpactParticles(const FHitResult& HitResult)
 {
-	UNiagaraSystem* ImpactEffects = UWildOmissionStatics::GetImpactEffectBySurfaceType(HitResult.PhysMaterial.Get()->SurfaceType);
+	if (HitResult.PhysMaterial == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get physical material."));
+		return;
+	}
+	
+	UNiagaraSystem* ImpactEffects = UWildOmissionStatics::GetImpactEffectBySurfaceType(HitResult.PhysMaterial->SurfaceType);
 	if (ImpactEffects == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn impact effects, Impact Effects nullptr."));
@@ -247,7 +259,13 @@ void AToolItem::SpawnImpactParticles(const FHitResult& HitResult)
 
 void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 {
-	UMaterialInterface* DecalMaterial = UWildOmissionStatics::GetImpactDecalBySurfaceType(HitResult.PhysMaterial.Get()->SurfaceType);
+	if (HitResult.PhysMaterial == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get physical material."));
+		return;
+	}
+
+	UMaterialInterface* DecalMaterial = UWildOmissionStatics::GetImpactDecalBySurfaceType(HitResult.PhysMaterial->SurfaceType);
 	if (DecalMaterial == nullptr)
 	{
 		return;
