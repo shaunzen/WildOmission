@@ -10,6 +10,7 @@
 
 class UMainMenuWidget;
 class UGameplayMenuWidget;
+class ULoadingMenuWidget;
 class FOnlineSessionSearch;
 
 UCLASS()
@@ -26,6 +27,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Exec)
 	void ShowGameplayMenuWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void ShowLoadingMenu();
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveLoadingMenu();
+
+	//UFUNCTION(BlueprintCallable)
+	//void SetLoadingMenuTitle(const FString& InTitle);
+	//
+	//UFUNCTION(BlueprintCallable)
+	//void SetLoadingStep(const FString& InStepName, const int32& InStepPercent = -1);
 
 	UFUNCTION()
 	void StartSingleplayer(const FString& WorldName);
@@ -58,9 +71,12 @@ private:
 	TSubclassOf<UGameplayMenuWidget> GameplayMenuWidgetBlueprintClass;
 	UPROPERTY()
 	UGameplayMenuWidget* GameplayMenuWidget;
-
-	// TODO Loading menu
-
+	
+	UPROPERTY()
+	TSubclassOf<ULoadingMenuWidget> LoadingMenuWidgetBlueprintClass;
+	UPROPERTY()
+	ULoadingMenuWidget* LoadingMenuWidget;
+	
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 

@@ -79,7 +79,7 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 			UE_LOG(LogTemp, Warning, TEXT("Failed to load actor from save file: %s"), *ActorData.Name.ToString());
 			return;
 		}
-		
+
 		FMemoryReader MemoryReader(ActorData.ByteData);
 		FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);
 		Archive.ArIsSaveGame = true;

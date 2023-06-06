@@ -8,6 +8,7 @@
 #include "Interfaces/OnlineFriendsInterface.h" 
 #include "WildOmission/UI/Menu/MainMenuWidget.h"
 #include "WildOmission/UI/Menu/GameplayMenuWidget.h"
+#include "WildOmission/UI/Menu/LoadingMenuWidget.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
@@ -32,6 +33,11 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 		GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
 	}
 	
+	static ConstructorHelpers::FClassFinder<ULoadingMenuWidget> LoadingMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_LoadingMenu"));
+	if (LoadingMenuBlueprint.Succeeded())
+	{
+		LoadingMenuWidgetBlueprintClass = LoadingMenuBlueprint.Class;
+	}
 }
 
 void UWildOmissionGameInstance::Init()
@@ -99,6 +105,30 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	GameplayMenuWidget->Show();
 }
 
+void UWildOmissionGameInstance::ShowLoadingMenu()
+{
+	if (LoadingMenuWidgetBlueprintClass == nullptr || LoadingMenuWidget != nullptr)
+	{
+		return;
+	}
+
+	LoadingMenuWidget = CreateWidget<ULoadingMenuWidget>(this, LoadingMenuWidgetBlueprintClass);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Created Loading Menu"));
+
+	LoadingMenuWidget->AddToViewport();
+}
+
+void UWildOmissionGameInstance::RemoveLoadingMenu()
+{
+	if (LoadingMenuWidget == nullptr)
+	{
+		return;
+	}
+
+	LoadingMenuWidget->RemoveFromParent();
+}
+
 void UWildOmissionGameInstance::StartSession()
 {
 	if (SessionInterface.IsValid() == false)
@@ -149,6 +179,9 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 
 	// Remove the menu from viewport
 	MainMenuWidget->Teardown();
+
+	// Show the loading menu
+	ShowLoadingMenu();
 
 	UWorld* World = GetWorld();
 	if (World == nullptr)
@@ -248,6 +281,9 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	// Remove the menu from viewport
 	MainMenuWidget->Teardown();
 	
+	// Show the loading menu
+	ShowLoadingMenu();
+
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -331,6 +367,7 @@ void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 		return;
 	}
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+	ShowLoadingMenu();
 }
 
 void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString)

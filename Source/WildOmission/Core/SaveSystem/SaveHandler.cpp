@@ -94,7 +94,16 @@ void ASaveHandler::LoadWorld()
 	{
 		GameMode->GetWeatherManager()->SetNextStormSpawnTime(SaveFile->WeatherManagerSave.NextStormSpawnTime);
 	}
+
 	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves);
+
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+
+	GameInstance->RemoveLoadingMenu();
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()

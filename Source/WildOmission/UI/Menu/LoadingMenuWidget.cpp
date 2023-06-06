@@ -10,6 +10,11 @@ void ULoadingMenuWidget::NativeConstruct()
 
 }
 
+void ULoadingMenuWidget::NativeDestruct()
+{
+	UE_LOG(LogTemp, Warning, TEXT("It wanted to die, I say no"));
+}
+
 void ULoadingMenuWidget::SetLoadingTitle(const FString& Title)
 {
 	TitleTextBlock->SetText(FText::FromString(Title));
