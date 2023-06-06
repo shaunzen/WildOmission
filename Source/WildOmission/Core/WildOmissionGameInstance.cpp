@@ -16,7 +16,7 @@
 const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
-const static FString Version = FString("Pre Alpha 0.7.5 - Pre 3");
+const static FString GameVersion = FString("Pre Alpha 0.7.5 - Pre 3");
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
@@ -401,5 +401,5 @@ void UWildOmissionGameInstance::CreateWorld(const FString& NewWorldName)
 
 FString UWildOmissionGameInstance::GetVersion() const
 {
-	return Version;
+	return GameVersion;
 }
