@@ -3,6 +3,7 @@
 
 #include "LoadingMenuWidget.h"
 #include "Components/TextBlock.h"
+#include "WildOmission/Core/WildOmissionGameInstance.h"
 
 void ULoadingMenuWidget::NativeConstruct()
 {
@@ -12,7 +13,8 @@ void ULoadingMenuWidget::NativeConstruct()
 
 void ULoadingMenuWidget::NativeDestruct()
 {
-	UE_LOG(LogTemp, Warning, TEXT("It wanted to die, I say no"));
+	Super::NativeDestruct();
+
 }
 
 void ULoadingMenuWidget::SetLoadingTitle(const FString& Title)

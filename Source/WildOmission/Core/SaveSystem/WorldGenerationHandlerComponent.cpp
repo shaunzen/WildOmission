@@ -2,6 +2,7 @@
 
 
 #include "WorldGenerationHandlerComponent.h"
+#include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
 #include "SaveHandler.h"
@@ -30,6 +31,8 @@ void UWorldGenerationHandlerComponent::Generate(const FWorldGenerationSettings& 
 	GenerateTrees(GenerationSettings);
 	GenerateNodes(GenerationSettings);
 	GenerateCollectables(GenerationSettings);
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->StopLoading();
 }
 
 void UWorldGenerationHandlerComponent::RegenerateResources(const FWorldGenerationSettings& GenerationSettings)

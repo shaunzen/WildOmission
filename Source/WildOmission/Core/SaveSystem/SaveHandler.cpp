@@ -30,6 +30,8 @@ void ASaveHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
 
@@ -84,6 +86,7 @@ void ASaveHandler::LoadWorld()
 
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
+		GameInstance->SetLoadingSubtitle(FString("Generating Level..."));
 		GenerateLevel(SaveFile);
 		
 		UpdateSaveFile(SaveFile);
@@ -95,15 +98,13 @@ void ASaveHandler::LoadWorld()
 		GameMode->GetWeatherManager()->SetNextStormSpawnTime(SaveFile->WeatherManagerSave.NextStormSpawnTime);
 	}
 
+	GameInstance->SetLoadingSubtitle(FString("Loading Actors..."));
 	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves);
 
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
-	if (GameInstance == nullptr)
-	{
-		return;
-	}
-
-	GameInstance->RemoveLoadingMenu();
+	FTimerHandle ActorLoadedTimerHandle;
+	FTimerDelegate ActorLoadedDelegate;
+	ActorLoadedDelegate.BindUObject(GameInstance, &UWildOmissionGameInstance::StopLoading);
+	GetWorld()->GetTimerManager().SetTimer(ActorLoadedTimerHandle, ActorLoadedDelegate, 1.0f, false);
 }
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
@@ -132,7 +133,6 @@ void ASaveHandler::ValidateSave()
 	}
 
 	CurrentSaveFileName = FString("PIE_Save");
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
 	GameInstance->CreateWorld(CurrentSaveFileName);
 }
 

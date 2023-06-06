@@ -44,6 +44,8 @@ void UWildOmissionGameInstance::Init()
 {
 	Super::Init();
 
+	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
+
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
 	
 	if (Subsystem == nullptr)
@@ -105,28 +107,57 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	GameplayMenuWidget->Show();
 }
 
-void UWildOmissionGameInstance::ShowLoadingMenu()
+void UWildOmissionGameInstance::StartLoading()
 {
-	if (LoadingMenuWidgetBlueprintClass == nullptr || LoadingMenuWidget != nullptr)
+	Loading = true;
+
+	if (LoadingMenuWidgetBlueprintClass == nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Something went wrong displaying the loading screen."));
 		return;
 	}
 
-	LoadingMenuWidget = CreateWidget<ULoadingMenuWidget>(this, LoadingMenuWidgetBlueprintClass);
-	
-	UE_LOG(LogTemp, Warning, TEXT("Created Loading Menu"));
+	if (LoadingMenuWidget != nullptr)
+	{
+		LoadingMenuWidget->RemoveFromParent();
+		LoadingMenuWidget = nullptr;
+	}
 
+	LoadingMenuWidget = CreateWidget<ULoadingMenuWidget>(this, LoadingMenuWidgetBlueprintClass);
 	LoadingMenuWidget->AddToViewport();
+	LoadingMenuWidget->SetLoadingTitle(LoadingTitle);
+	LoadingMenuWidget->SetLoadingStep(LoadingSubtitle);
 }
 
-void UWildOmissionGameInstance::RemoveLoadingMenu()
+void UWildOmissionGameInstance::StopLoading()
 {
+	Loading = false;
 	if (LoadingMenuWidget == nullptr)
 	{
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Removing Loading Menu."));
 	LoadingMenuWidget->RemoveFromParent();
+	LoadingMenuWidget = nullptr;
+}
+
+void UWildOmissionGameInstance::SetLoadingTitle(const FString& InLoadingTitle)
+{
+	LoadingTitle = InLoadingTitle;
+	if (LoadingMenuWidget)
+	{
+		LoadingMenuWidget->SetLoadingTitle(LoadingTitle);
+	}
+}
+
+void UWildOmissionGameInstance::SetLoadingSubtitle(const FString& InLoadingSubtitle)
+{
+	LoadingSubtitle = InLoadingSubtitle;
+	if (LoadingMenuWidget)
+	{
+		LoadingMenuWidget->SetLoadingStep(InLoadingSubtitle);
+	}
 }
 
 void UWildOmissionGameInstance::StartSession()
@@ -181,7 +212,10 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 	MainMenuWidget->Teardown();
 
 	// Show the loading menu
-	ShowLoadingMenu();
+	StartLoading();
+	SetLoadingTitle(FString("Loading Game"));
+	SetLoadingSubtitle(FString("Loading Level."));
+
 
 	UWorld* World = GetWorld();
 	if (World == nullptr)
@@ -251,6 +285,16 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
 
+void UWildOmissionGameInstance::LoadedNewMap(UWorld* InWorld)
+{
+	if (Loading == false)
+	{
+		return;
+	}
+
+	StartLoading();
+}
+
 void UWildOmissionGameInstance::EndExistingSession()
 {
 	if (!SessionInterface.IsValid())
@@ -282,7 +326,9 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	MainMenuWidget->Teardown();
 	
 	// Show the loading menu
-	ShowLoadingMenu();
+	StartLoading();
+	SetLoadingTitle(FString("Loading..."));
+	SetLoadingSubtitle(FString("Loading Level."));
 
 	UWorld* World = GetWorld();
 	if (World == nullptr)
@@ -366,8 +412,12 @@ void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 	{
 		return;
 	}
+
+	StartLoading();
+	SetLoadingTitle(FString("Loading Game"));
+	SetLoadingSubtitle(FString("Traveling to host."));
+
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
-	ShowLoadingMenu();
 }
 
 void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString)

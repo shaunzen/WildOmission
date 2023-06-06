@@ -28,11 +28,17 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void ShowGameplayMenuWidget();
 
-	UFUNCTION(BlueprintCallable)
-	void ShowLoadingMenu();
+	UFUNCTION(BlueprintCallable, Exec)
+	void StartLoading();
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveLoadingMenu();
+	void StopLoading();
+
+	UFUNCTION(BlueprintCallable)
+	void SetLoadingTitle(const FString& InLoadingTitle);
+
+	UFUNCTION(BlueprintCallable)
+	void SetLoadingSubtitle(const FString& InLoadingSubtitle);
 
 	//UFUNCTION(BlueprintCallable)
 	//void SetLoadingMenuTitle(const FString& InTitle);
@@ -95,8 +101,14 @@ private:
 	UFUNCTION()
 	void CreateSession(FName SessionName = FName(""), bool Success = true);
 
+	UFUNCTION()
+	void LoadedNewMap(UWorld* InWorld);
+
 	void EndExistingSession();
 
 	bool OnMainMenu;
+	bool Loading;
+	FString LoadingTitle;
+	FString LoadingSubtitle;
 
 };
