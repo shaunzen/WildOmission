@@ -17,7 +17,7 @@
 const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
-const static FString GameVersion = FString("Pre Alpha 0.7.5 - Pre 3");
+const static FString GameVersion = FString("Pre Alpha 0.7.5");
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
@@ -213,8 +213,7 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 	// Show the loading menu
 	StartLoading();
 	SetLoadingTitle(FString("Loading Game"));
-	SetLoadingSubtitle(FString("Loading Level."));
-
+	SetLoadingSubtitle(FString("Loading level."));
 
 	UWorld* World = GetWorld();
 	if (World == nullptr)
@@ -326,8 +325,8 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	
 	// Show the loading menu
 	StartLoading();
-	SetLoadingTitle(FString("Loading..."));
-	SetLoadingSubtitle(FString("Loading Level."));
+	SetLoadingTitle(FString("Loading Game"));
+	SetLoadingSubtitle(FString("Loading level."));
 
 	UWorld* World = GetWorld();
 	if (World == nullptr)

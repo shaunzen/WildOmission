@@ -86,7 +86,7 @@ void ASaveHandler::LoadWorld()
 
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
-		GameInstance->SetLoadingSubtitle(FString("Generating Level..."));
+		GameInstance->SetLoadingSubtitle(FString("Generating level."));
 		GenerateLevel(SaveFile);
 		
 		UpdateSaveFile(SaveFile);
@@ -98,7 +98,7 @@ void ASaveHandler::LoadWorld()
 		GameMode->GetWeatherManager()->SetNextStormSpawnTime(SaveFile->WeatherManagerSave.NextStormSpawnTime);
 	}
 
-	GameInstance->SetLoadingSubtitle(FString("Loading Actors..."));
+	GameInstance->SetLoadingSubtitle(FString("Loading objects."));
 	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves);
 
 	FTimerHandle ActorLoadedTimerHandle;
