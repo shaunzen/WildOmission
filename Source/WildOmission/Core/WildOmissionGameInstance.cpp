@@ -119,12 +119,12 @@ void UWildOmissionGameInstance::StartLoading()
 
 	if (LoadingMenuWidget != nullptr)
 	{
-		LoadingMenuWidget->RemoveFromParent();
+		LoadingMenuWidget->Teardown();
 		LoadingMenuWidget = nullptr;
 	}
 
 	LoadingMenuWidget = CreateWidget<ULoadingMenuWidget>(this, LoadingMenuWidgetBlueprintClass);
-	LoadingMenuWidget->AddToViewport();
+	LoadingMenuWidget->Setup();
 	LoadingMenuWidget->SetLoadingTitle(LoadingTitle);
 	LoadingMenuWidget->SetLoadingStep(LoadingSubtitle);
 }
@@ -137,8 +137,7 @@ void UWildOmissionGameInstance::StopLoading()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Removing Loading Menu."));
-	LoadingMenuWidget->RemoveFromParent();
+	LoadingMenuWidget->Teardown();
 	LoadingMenuWidget = nullptr;
 }
 

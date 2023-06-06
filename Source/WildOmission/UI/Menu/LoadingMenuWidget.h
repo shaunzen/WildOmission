@@ -14,8 +14,9 @@ class WILDOMISSION_API ULoadingMenuWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
+	void Setup();
+	void Teardown();
+
 	void SetLoadingTitle(const FString& Title);
 	void SetLoadingStep(const FString& StepName, const int32& StepPercent = -1);
 

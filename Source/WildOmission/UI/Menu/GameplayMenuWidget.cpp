@@ -32,11 +32,9 @@ bool UGameplayMenuWidget::Initialize()
 void UGameplayMenuWidget::Show()
 {
 	bOpen = true;
-	
 	AddToViewport();
 	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	
 	if (PlayerController == nullptr)
 	{
 		return;
@@ -66,11 +64,9 @@ bool UGameplayMenuWidget::IsOpen() const
 void UGameplayMenuWidget::Teardown()
 {
 	bOpen = false;
-	
 	RemoveFromParent();
 	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	
 	if (PlayerController == nullptr)
 	{
 		return;

@@ -40,6 +40,9 @@ public:
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;

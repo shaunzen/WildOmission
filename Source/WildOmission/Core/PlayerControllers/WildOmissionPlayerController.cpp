@@ -15,6 +15,7 @@
 #include "WildOmission/UI/Player/DeathMenuWidget.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 #include "WildOmission/Core/WildOmissionGameState.h"
+#include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "UObject/ConstructorHelpers.h"
 
 AWildOmissionPlayerController::AWildOmissionPlayerController()
@@ -185,6 +186,21 @@ void AWildOmissionPlayerController::LogLocalInventoryContents()
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Item: %s, Quantity: %i"), *ItemData.Name.ToString(), ItemData.Quantity));
 	}
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: %s"), *WildOmissionCharacter->GetActorNameOrLabel()));
+}
+
+void AWildOmissionPlayerController::BeginPlay()
+{
+	if (GetLocalRole() != ROLE_AutonomousProxy)
+	{
+		return;
+	}
+
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SetLoadingSubtitle(FString("Loading world state."));
+	FTimerHandle LoadTimerHandle;
+	FTimerDelegate LoadTimerDelegate;
+	LoadTimerDelegate.BindUObject(GameInstance, &UWildOmissionGameInstance::StopLoading);
+	GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 1.0f, false);
 }
 
 void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()
