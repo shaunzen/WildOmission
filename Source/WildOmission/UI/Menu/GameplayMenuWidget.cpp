@@ -92,7 +92,6 @@ void UGameplayMenuWidget::Save()
 void UGameplayMenuWidget::QuitToMenu()
 {
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	
 	if (!GameInstance)
 	{
 		return;
