@@ -17,7 +17,7 @@
 const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
-const static FString GameVersion = FString("Pre Alpha 0.7.5");
+const static FString GameVersion = FString("Pre Alpha 0.7.5 - Unreal 5.2 Migration - Version 1");
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {

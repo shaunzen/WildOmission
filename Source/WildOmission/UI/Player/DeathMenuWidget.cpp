@@ -8,7 +8,7 @@
 
 UDeathMenuWidget::UDeathMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	bIsFocusable = true;
+	SetIsFocusable(true);
 }
 
 void UDeathMenuWidget::NativeConstruct()
