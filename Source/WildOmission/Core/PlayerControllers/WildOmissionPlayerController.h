@@ -22,7 +22,7 @@ public:
 	void LoadPlayerSave(const struct FWildOmissionPlayerSave& PlayerSave);
 
 	void Save();
-	
+
 	UFUNCTION(Client, Reliable)
 	void Client_ShowDeathMenu();
 

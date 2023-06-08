@@ -17,7 +17,9 @@
 const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
-const static FString GameVersion = FString("Pre Alpha 0.7.5");
+const static FString GameVersion = FString("Pre Alpha 0.7.5_01");
+
+#define SEARCH_PRESENCE FName(TEXT("PRESENCESEARCH"))
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
@@ -163,22 +165,25 @@ void UWildOmissionGameInstance::StartSession()
 {
 	if (SessionInterface.IsValid() == false)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Couldn't start Session, SessionInterface not valid."));
 		return;
 	}
+
 	UE_LOG(LogTemp, Display, TEXT("Starting Session"));
 	SessionInterface->StartSession(SESSION_NAME);
 }
 
 void UWildOmissionGameInstance::QuitToMenu()
 {
+	UE_LOG(LogTemp, Display, TEXT("Returning to main menu."));
 	ReturnToMainMenu();
-	
+
 	EndExistingSession();
 }
 
 void UWildOmissionGameInstance::RefreshServerList()
 {
-	UE_LOG(LogTemp, Display, TEXT("Refreshing Server List"));
+	UE_LOG(LogTemp, Display, TEXT("Refreshing server list."));
 	
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid() == false)
@@ -201,7 +206,7 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 {
 	if (MainMenuWidget == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Menu Widget Missing."));
+		UE_LOG(LogTemp, Error, TEXT("Cannot start singleplayer, MainMenuWidget was nullptr."));
 		return;
 	}
 
@@ -232,21 +237,21 @@ void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& W
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Hosting Server Named: %s"), *ServerName);
+	
 	DesiredServerName = ServerName;
 	WorldToLoad = WorldName;
 	FriendsOnlySession = FriendsOnly;
-	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+	
+	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
 	{
 		FOnDestroySessionCompleteDelegate DestroySessionDelegate;
 		DestroySessionDelegate.BindUObject(this, &UWildOmissionGameInstance::CreateSession);
 		SessionInterface->DestroySession(SESSION_NAME, DestroySessionDelegate);
+		return;
 	}
-	else
-	{
-		CreateSession();
-	}
+
+	CreateSession();
 }
 
 void UWildOmissionGameInstance::Join(const uint32& Index)
@@ -258,7 +263,7 @@ void UWildOmissionGameInstance::Join(const uint32& Index)
 	MainMenuWidget->Teardown();
 
 	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
-	UE_LOG(LogTemp, Warning, TEXT("Joining Server Index: %i"), Index);
+	UE_LOG(LogTemp, Display, TEXT("Joining Server Index: %i"), Index);
 }
 
 void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
@@ -300,11 +305,13 @@ void UWildOmissionGameInstance::EndExistingSession()
 		return;
 	}
 
-	auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
-	if (ExistingSession != nullptr)
+	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+	if (ExistingSession == nullptr)
 	{
-		SessionInterface->DestroySession(SESSION_NAME);
+		return;
 	}
+	
+	SessionInterface->DestroySession(SESSION_NAME);
 }
 
 //****************************
@@ -344,6 +351,7 @@ void UWildOmissionGameInstance::OnDestroySessionComplete(FName SessionName, bool
 	{
 		return;
 	}
+
 	CreateSession();
 }
 

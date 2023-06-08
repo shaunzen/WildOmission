@@ -190,6 +190,8 @@ void AWildOmissionPlayerController::LogLocalInventoryContents()
 
 void AWildOmissionPlayerController::BeginPlay()
 {
+	Super::BeginPlay();
+
 	if (GetLocalRole() != ROLE_AutonomousProxy)
 	{
 		return;

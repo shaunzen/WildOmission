@@ -9,7 +9,7 @@
 
 UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	bIsFocusable = true;
+	SetIsFocusable(true);
 	bOpen = false;
 }
 
@@ -92,7 +92,6 @@ void UGameplayMenuWidget::Save()
 void UGameplayMenuWidget::QuitToMenu()
 {
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	
 	if (!GameInstance)
 	{
 		return;

@@ -67,7 +67,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 void AWildOmissionGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
-	
+	UE_LOG(LogTemp, Warning, TEXT("Player Has Logout."));
 	if (GetWorld()->IsPlayInEditor())
 	{
 		return;
