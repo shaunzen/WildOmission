@@ -165,14 +165,17 @@ void UWildOmissionGameInstance::StartSession()
 {
 	if (SessionInterface.IsValid() == false)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Couldn't start Session, SessionInterface not valid."));
 		return;
 	}
+
 	UE_LOG(LogTemp, Display, TEXT("Starting Session"));
 	SessionInterface->StartSession(SESSION_NAME);
 }
 
 void UWildOmissionGameInstance::QuitToMenu()
 {
+	UE_LOG(LogTemp, Display, TEXT("Returning to main menu."));
 	ReturnToMainMenu();
 
 	EndExistingSession();
@@ -180,7 +183,7 @@ void UWildOmissionGameInstance::QuitToMenu()
 
 void UWildOmissionGameInstance::RefreshServerList()
 {
-	UE_LOG(LogTemp, Display, TEXT("Refreshing Server List"));
+	UE_LOG(LogTemp, Display, TEXT("Refreshing server list."));
 	
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid() == false)
@@ -203,7 +206,7 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 {
 	if (MainMenuWidget == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Menu Widget Missing."));
+		UE_LOG(LogTemp, Error, TEXT("Cannot start singleplayer, MainMenuWidget was nullptr."));
 		return;
 	}
 
