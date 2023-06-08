@@ -18,6 +18,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
+#include "DrawDebugHelpers.h"
 
 AToolItem::AToolItem()
 {
@@ -113,7 +114,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
 	{
 		PlayImpactSound(HitResult);
-		SpawnImpactParticles(HitResult);
+		SpawnImpactParticles(HitResult, OwnerCharacterLookVector);
 		SpawnImpactDecal(HitResult);
 	}
 
@@ -239,7 +240,7 @@ void AToolItem::PlayImpactSound(const FHitResult& HitResult)
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
 }
 
-void AToolItem::SpawnImpactParticles(const FHitResult& HitResult)
+void AToolItem::SpawnImpactParticles(const FHitResult& HitResult, const FVector& ImpactorForwardVector)
 {
 	if (HitResult.PhysMaterial == nullptr)
 	{
@@ -253,15 +254,15 @@ void AToolItem::SpawnImpactParticles(const FHitResult& HitResult)
 		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn impact effects, Impact Effects nullptr."));
 		return;
 	}
-
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffects, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
+	
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffects, HitResult.ImpactPoint, (-ImpactorForwardVector).Rotation());
 }
 
 void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 {
 	if (HitResult.PhysMaterial == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to get physical material."));
+		UE_LOG(LogTemp, Warning, TEXT("Cannot spawn impact decal, Failed to get physical material."));
 		return;
 	}
 
@@ -272,5 +273,5 @@ void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 	}
 	
 	FVector DecalSize = FVector(8.0f, 15.0f, 15.0f);
-	UGameplayStatics::SpawnDecalAttached(DecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition);
+	UGameplayStatics::SpawnDecalAttached(DecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 120.0f);
 }
