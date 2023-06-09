@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "NotificationPanelWidget.generated.h"
 
+class UPanelWidget;
 class UNotificationWidget;
 
 UCLASS()
@@ -15,14 +16,15 @@ class WILDOMISSION_API UNotificationPanelWidget : public UUserWidget
 public:
 	UNotificationPanelWidget(const FObjectInitializer& ObjectInitializer);
 	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
 private:
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* NotificationContainer;
+
 	UPROPERTY()
 	TSubclassOf<UNotificationWidget> NotificationWidgetBlueprint;
 
 	UFUNCTION()
-		void CreateItemNotification(const FInventoryItemUpdate& ItemUpdate);
+	void CreateItemNotification(const FInventoryItemUpdate& ItemUpdate);
 
-
+	void AddNotification(const FNotification& Notification);
 };

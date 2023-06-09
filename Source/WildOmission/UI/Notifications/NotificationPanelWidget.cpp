@@ -3,7 +3,10 @@
 
 #include "NotificationPanelWidget.h"
 #include "NotificationWidget.h"
+#include "Components/PanelWidget.h"
+#include "WildOmission/Core/Structs/Notification.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -27,19 +30,39 @@ void UNotificationPanelWidget::NativeConstruct()
 	OwnerInventoryComponent->OnItemUpdate.AddDynamic(this, &UNotificationPanelWidget::CreateItemNotification);
 }
 
-void UNotificationPanelWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-
-}
-
 void UNotificationPanelWidget::CreateItemNotification(const FInventoryItemUpdate& ItemUpdate)
 {
+	FNotification Notification;
+	Notification.Time = GetWorld()->GetRealTimeSeconds();
+	Notification.Duration = 5.0f;
+
+	FItemData* ItemData = UWildOmissionStatics::GetItemData(ItemUpdate.Item.Name);
+	if (ItemData == nullptr)
+	{
+		return;
+	}
+
+	Notification.Icon = ItemData->Thumbnail;
 	if (ItemUpdate.Addition == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%i %s was added to inventory."), ItemUpdate.Item.Quantity, *ItemUpdate.Item.Name.ToString());
+		Notification.Message = FString::Printf(TEXT("+ %i %s"), ItemUpdate.Item.Quantity, *ItemData->DisplayName);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%i %s was removed from inventory."), ItemUpdate.Item.Quantity, *ItemUpdate.Item.Name.ToString());
+		Notification.Message = FString::Printf(TEXT("- %i %s"), ItemUpdate.Item.Quantity, *ItemData->DisplayName);
 	}
+
+	AddNotification(Notification);
+}
+
+void UNotificationPanelWidget::AddNotification(const FNotification& Notification)
+{
+	UNotificationWidget* NotificationWidget = CreateWidget<UNotificationWidget>(this, NotificationWidgetBlueprint);
+	if (NotificationWidget == nullptr)
+	{
+		return;
+	}
+
+	NotificationWidget->Setup(Notification);
+	NotificationContainer->AddChild(NotificationWidget);
 }
