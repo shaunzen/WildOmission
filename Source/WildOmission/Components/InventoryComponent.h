@@ -12,7 +12,6 @@
 
 class UInventoryManipulatorComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdateSignature);
 
 USTRUCT()
 struct FInventorySlotInteraction
@@ -34,6 +33,21 @@ struct FInventorySlotInteraction
 };
 
 USTRUCT()
+struct FInventoryItemUpdate
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	float Time = 0;
+
+	UPROPERTY()
+	bool Addition = true;
+
+	UPROPERTY()
+	FInventoryItem Item;
+};
+
+USTRUCT()
 struct FInventoryState
 {
 	GENERATED_BODY()
@@ -46,9 +60,13 @@ struct FInventoryState
 
 	UPROPERTY()
 	TArray<FInventorySlot> Slots;
-
+	
+	UPROPERTY()
+	TArray<FInventoryItemUpdate> Updates;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdateSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryItemUpdateSignature, const FInventoryItemUpdate&, ItemUpdate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UInventoryComponent : public UActorComponent, public ISavableObjectInterface
@@ -71,7 +89,8 @@ public:
 	void SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary = true);
 	
 	FInventoryUpdateSignature OnUpdate;
-	
+	FOnInventoryItemUpdateSignature OnItemUpdate;
+
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
 	FInventorySlot* FindSlotContainingItem(const FName& ItemToFind);	
 
@@ -104,6 +123,9 @@ protected:
 	UFUNCTION()
 	void BroadcastInventoryUpdate();
 
+	UFUNCTION()
+	void BroadcastItemUpdate(const FInventoryItemUpdate& ItemUpdate);
+
 	bool LoadedFromSave;
 
 private:
@@ -121,7 +143,12 @@ private:
 
 	TArray<FInventorySlotInteraction> UnacknowalgedInteractions;
 
+	FInventoryItemUpdate LastClientAcknowlagedItemUpdate;
+
 	void ClearAcknowlagedInteractions(const FInventorySlotInteraction& LastInteraction);
+	void GetUnacknowlagedUpdates(TArray<FInventoryItemUpdate>& OutUpdatesList);
+
+	void BroadcastAllUpdateNotifications(const TArray<FInventoryItemUpdate>& UpdatesList);
 
 	UFUNCTION()
 	virtual void OnLoadComplete_Implementation() override;

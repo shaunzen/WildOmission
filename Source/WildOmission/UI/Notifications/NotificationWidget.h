@@ -19,9 +19,9 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UBorder* NotificationIcon;
+	UBorder* Icon;
 
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* NotificationTextBlock;
+	UTextBlock* TextBlock;
 
 };

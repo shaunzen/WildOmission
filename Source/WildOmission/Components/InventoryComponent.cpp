@@ -46,6 +46,12 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems)
 {
+	FInventoryItemUpdate AdditionItemUpdate;
+	AdditionItemUpdate.Time = GetWorld()->GetRealTimeSeconds();
+	AdditionItemUpdate.Addition = true;
+	AdditionItemUpdate.Item = ItemToAdd;
+	ServerState.Updates.Add(AdditionItemUpdate);
+	
 	// The amount of items we were unable to add
 	int32 Remaining;
 	
@@ -62,6 +68,12 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* Actor
 	{
 		FInventoryItem DroppedItem = ItemToAdd;
 		DroppedItem.Quantity = Remaining;
+
+		FInventoryItemUpdate DroppedItemUpdate;
+		DroppedItemUpdate.Time = GetWorld()->GetRealTimeSeconds();
+		DroppedItemUpdate.Addition = false;
+		DroppedItemUpdate.Item = DroppedItem;
+		ServerState.Updates.Add(DroppedItemUpdate);
 
 		AActor* DropperActor = nullptr;
 		if (ActorToSpawnDropedItems == nullptr)
@@ -100,7 +112,7 @@ void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryMani
 	CurrentInteraction.SlotIndex = SlotIndex;
 	CurrentInteraction.Manipulator = Manipulator;
 	CurrentInteraction.Primary = Primary;
-	CurrentInteraction.Time = GetWorld()->TimeSeconds;
+	CurrentInteraction.Time = GetWorld()->GetRealTimeSeconds();
 
 	// Send it to the server
 	Server_SlotInteraction(CurrentInteraction);
@@ -268,6 +280,10 @@ void UInventoryComponent::OnRep_ServerState()
 {
 	ClearAcknowlagedInteractions(ServerState.LastInteraction);
 	
+	TArray<FInventoryItemUpdate> UnacknowlagedUpdates;
+	GetUnacknowlagedUpdates(UnacknowlagedUpdates);
+	BroadcastAllUpdateNotifications(UnacknowlagedUpdates);
+
 	if (GetOwner()->HasAuthority() || UnacknowalgedInteractions.Num() == 0 || ServerState.LastInteraction.Time == 0)
 	{
 		Slots = ServerState.Slots;
@@ -292,6 +308,33 @@ void UInventoryComponent::ClearAcknowlagedInteractions(const FInventorySlotInter
 	UnacknowalgedInteractions = NewInteractionsList;
 }
 
+void UInventoryComponent::GetUnacknowlagedUpdates(TArray<FInventoryItemUpdate>& OutUpdatesList)
+{
+	for (const FInventoryItemUpdate& Update : ServerState.Updates)
+	{
+		if (Update.Time <= LastClientAcknowlagedItemUpdate.Time)
+		{
+			continue;
+		}
+		OutUpdatesList.Add(Update);
+	}
+
+	if (ServerState.Updates.IsEmpty())
+	{
+		return;
+	}
+	
+	LastClientAcknowlagedItemUpdate = ServerState.Updates[ServerState.Updates.Num() - 1];
+}
+
+void UInventoryComponent::BroadcastAllUpdateNotifications(const TArray<FInventoryItemUpdate>& UpdatesList)
+{
+	for (const FInventoryItemUpdate& ItemUpdate : UpdatesList)
+	{
+		BroadcastItemUpdate(ItemUpdate);
+	}
+}
+
 void UInventoryComponent::BroadcastInventoryUpdate()
 {
 	if (!OnUpdate.IsBound())
@@ -300,6 +343,16 @@ void UInventoryComponent::BroadcastInventoryUpdate()
 	}
 
 	OnUpdate.Broadcast();
+}
+
+void UInventoryComponent::BroadcastItemUpdate(const FInventoryItemUpdate& ItemUpdate)
+{
+	if (!OnItemUpdate.IsBound())
+	{
+		return;
+	}
+
+	OnItemUpdate.Broadcast(ItemUpdate);
 }
 
 bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining)

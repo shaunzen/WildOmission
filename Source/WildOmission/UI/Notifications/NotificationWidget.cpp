@@ -3,3 +3,7 @@
 
 #include "NotificationWidget.h"
 
+void UNotificationWidget::Setup()
+{
+	// TODO setup icon and text
+}

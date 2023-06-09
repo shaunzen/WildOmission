@@ -18,6 +18,7 @@
 #include "WildOmission/Items/BuildingHammerItem.h"
 #include "WildOmission/UI/Crafting/CraftingMenuWidget.h"
 #include "WildOmission/UI/Chat/GameChatWidget.h"
+#include "WildOmission/UI/Notifications/NotificationPanelWidget.h"
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"

@@ -22,6 +22,7 @@ class UCraftingMenuWidget;
 class USelectedItemWidget;
 class UHoveredItemNameTag;
 class UGameChatWidget;
+class UNotificationPanelWidget;
 class AItemContainerBase;
 
 UCLASS(Abstract)
@@ -101,6 +102,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UGameChatWidget* Chat;
 
+	UPROPERTY(Meta = (BindWidget))
+	UNotificationPanelWidget* NotificationPanel;
+	
 	UPROPERTY(meta = (BindWidget))
 	UVitalsWidget* Vitals;
 
