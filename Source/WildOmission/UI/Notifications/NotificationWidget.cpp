@@ -15,5 +15,8 @@ void UNotificationWidget::Setup(const FNotification& InNotification)
 
 void UNotificationWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	// TODO lifetime stuff
+	if (GetWorld()->GetRealTimeSeconds() > Notification.Time + Notification.Duration)
+	{
+		RemoveFromParent();
+	}
 }
