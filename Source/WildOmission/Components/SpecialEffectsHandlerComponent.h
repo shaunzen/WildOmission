@@ -9,6 +9,7 @@
 class UNiagaraSystem;
 class UNiagaraComponent;
 class UExponentialHeightFogComponent;
+class UCameraComponent;
 class AStorm;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -45,9 +46,14 @@ private:
 	UExponentialHeightFogComponent* Fog;
 
 	UPROPERTY()
+	UCameraComponent* OwnerCamera;
+
+	UPROPERTY()
 	AStorm* PreviouslyHitStorm;
 
 	float RainSoundCutoff;
+
+	void HandleLowHealthEffects();
 
 	void EnableRainfallEffects(float RainDensity);
 	void DisableRainfallEffects();

@@ -3,8 +3,11 @@
 
 #include "SpecialEffectsHandlerComponent.h"
 #include "WildOmission/Weather/Storm.h"
+#include "WildOmission/Components/VitalsComponent.h"
 #include "Engine/ExponentialHeightFog.h"
+#include "Camera/CameraComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
+#include "Components/PostProcessComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -36,6 +39,8 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 void USpecialEffectsHandlerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	OwnerCamera = GetOwner()->FindComponentByClass<UCameraComponent>();
 
 	AActor* HeightFogActor = UGameplayStatics::GetActorOfClass(GetWorld(), AExponentialHeightFog::StaticClass());
 	if (HeightFogActor == nullptr)
@@ -77,6 +82,26 @@ void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 	}
 
 	EnableRainfallEffects(RainDensity);
+}
+
+void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
+{
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+
+	UVitalsComponent* OwnerVitalsComponent = GetOwner()->FindComponentByClass<UVitalsComponent>();
+	if (OwnerVitalsComponent == nullptr)
+	{
+		return;
+	}
+
+	if (OwnerVitalsComponent->GetHealth() < 70.0f)
+	{
+		OwnerCamera->PostProcessSettings.ChromaticAberrationStartOffset = 0.5f;
+		OwnerCamera->PostProcessSettings.SceneFringeIntensity = FMath::Lerp(1.0f, 0.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / 70.0f, 0.0f, 1.0f));
+	}
 }
 
 void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)
