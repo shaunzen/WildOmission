@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "NotificationPanelWidget.generated.h"
 
-class UPanelWidget;
+class UGridPanel;
 class UNotificationWidget;
 
 UCLASS()
@@ -18,7 +18,7 @@ public:
 	virtual void NativeConstruct() override;
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* NotificationContainer;
+	UGridPanel* NotificationContainer;
 
 	UPROPERTY()
 	TSubclassOf<UNotificationWidget> NotificationWidgetBlueprint;

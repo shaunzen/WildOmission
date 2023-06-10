@@ -3,7 +3,8 @@
 
 #include "NotificationPanelWidget.h"
 #include "NotificationWidget.h"
-#include "Components/PanelWidget.h"
+#include "Components/GridPanel.h"
+#include "Components/GridSlot.h"
 #include "WildOmission/Core/Structs/Notification.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
@@ -19,7 +20,7 @@ UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& Obj
 }
 
 void UNotificationPanelWidget::NativeConstruct()
-{
+{	
 	// We want to add notif if we add an item to our inventory, or remove
 	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)
@@ -64,5 +65,12 @@ void UNotificationPanelWidget::AddNotification(const FNotification& Notification
 	}
 
 	NotificationWidget->Setup(Notification);
+
+	for (UWidget* ChildNotification : NotificationContainer->GetAllChildren())
+	{
+		UGridSlot* ChildNotificationSlot = Cast<UGridSlot>(ChildNotification->Slot);
+		ChildNotificationSlot->SetRow(ChildNotificationSlot->GetRow() + 1);
+	}
+
 	NotificationContainer->AddChild(NotificationWidget);
 }
