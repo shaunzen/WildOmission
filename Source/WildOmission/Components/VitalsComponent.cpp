@@ -35,6 +35,12 @@ UVitalsComponent::UVitalsComponent()
 	ThirstThreshold = 30.0f;
 	HungerThreshold = 30.0f;
 
+	BeginThirstBroadcasted = false;
+	EndThirstBroadcasted = false;
+
+	BeginStarvingBroadcasted = false;
+	EndStarvingBroadcasted = false;
+
 	ConstructorHelpers::FObjectFinder<USoundBase> DefaultHurtSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Damage/Human_HurtGeneric_Cue"));
 	if (!DefaultHurtSoundObject.Succeeded())
 	{
@@ -71,6 +77,8 @@ void UVitalsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UVitalsComponent::CalculateDepletion()
 {
+	HandleDelegates();
+
 	if (!GetOwner()->HasAuthority())
 	{
 		return;
@@ -99,6 +107,76 @@ void UVitalsComponent::CalculateDepletion()
 		}
 		CharacterOwner->HandleDeath();
 	}
+}
+
+void UVitalsComponent::HandleDelegates()
+{
+	if (IsStarving())
+	{
+		BroadcastBeginStarving();
+	}
+	else
+	{
+		BroadcastEndStarving();
+	}
+
+	if (IsThirsty())
+	{
+		BroadcastBeginThirst();
+	}
+	else
+	{
+		BroadcastEndThirst();
+	}
+}
+
+void UVitalsComponent::BroadcastBeginThirst()
+{
+	if (BeginThirstBroadcasted || !OnBeginThirst.IsBound())
+	{
+		return;
+	}
+
+	OnBeginThirst.Broadcast();
+	BeginThirstBroadcasted = true;
+	EndThirstBroadcasted = false;
+}
+
+void UVitalsComponent::BroadcastEndThirst()
+{
+	if (EndThirstBroadcasted || !OnEndThirst.IsBound())
+	{
+		return;
+	}
+
+	OnEndThirst.Broadcast();
+	BeginThirstBroadcasted = false;
+	EndThirstBroadcasted = true;
+}
+
+void UVitalsComponent::BroadcastBeginStarving()
+{
+	if (BeginStarvingBroadcasted || !OnBeginStarving.IsBound())
+	{
+		return;
+	}
+
+	OnBeginStarving.Broadcast();
+	BeginStarvingBroadcasted = true;
+	EndStarvingBroadcasted = false;
+
+}
+
+void UVitalsComponent::BroadcastEndStarving()
+{
+	if (EndStarvingBroadcasted || !OnEndStarving.IsBound())
+	{
+		return;
+	}
+
+	OnEndStarving.Broadcast();
+	BeginStarvingBroadcasted = false;
+	EndStarvingBroadcasted = true;
 }
 
 void UVitalsComponent::SetHealth(float Value)

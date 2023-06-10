@@ -6,10 +6,11 @@
 #include "Components/ActorComponent.h"
 #include "VitalsComponent.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE(FOnBeginStarvingSignature);
-DECLARE_DYNAMIC_DELEGATE(FOnEndStarvingSignature);
-DECLARE_DYNAMIC_DELEGATE(FOnBeginThirstSignature);
-DECLARE_DYNAMIC_DELEGATE(FOnEndThirstSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBeginThirstSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndThirstSignature);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBeginStarvingSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndStarvingSignature);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -68,6 +69,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsStarving() const;
 
+	FOnBeginThirstSignature OnBeginThirst;
+	FOnEndThirstSignature OnEndThirst;
+
+	FOnBeginStarvingSignature OnBeginStarving;
+	FOnEndStarvingSignature OnEndStarving;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -120,6 +127,18 @@ private:
 
 	void CalculateDepletion();
 	
+	void HandleDelegates();
+
+	bool BeginThirstBroadcasted;
+	bool EndThirstBroadcasted;
+	bool BeginStarvingBroadcasted;
+	bool EndStarvingBroadcasted;
+
+	void BroadcastBeginThirst();
+	void BroadcastEndThirst();
+	void BroadcastBeginStarving();
+	void BroadcastEndStarving();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayHurtSound();
 
