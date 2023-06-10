@@ -12,6 +12,9 @@ struct FNotification
 	GENERATED_BODY()
 
 	UPROPERTY()
+	FName Identifier = FName();
+
+	UPROPERTY()
 	float Time = 0.0f;
 
 	UPROPERTY()

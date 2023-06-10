@@ -7,6 +7,7 @@
 #include "Components/GridSlot.h"
 #include "WildOmission/Core/Structs/Notification.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -17,6 +18,7 @@ UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& Obj
 	{
 		NotificationWidgetBlueprint = NotificationWidgetBlueprintClass.Class;
 	}
+	//	/Game/WildOmission/UI/Icons/Vitals/M_Health_Icon_Inst
 }
 
 void UNotificationPanelWidget::NativeConstruct()
@@ -29,6 +31,17 @@ void UNotificationPanelWidget::NativeConstruct()
 	}
 
 	OwnerInventoryComponent->OnItemUpdate.AddDynamic(this, &UNotificationPanelWidget::CreateItemNotification);
+
+	UVitalsComponent* OwnerVitalsComponent = GetOwningPlayerPawn()->FindComponentByClass<UVitalsComponent>();
+	if (OwnerVitalsComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerVitalsComponent->OnBeginThirst.AddDynamic(this, &UNotificationPanelWidget::AddThirstyNotification);
+	OwnerVitalsComponent->OnEndThirst.AddDynamic(this, &UNotificationPanelWidget::RemoveThirstyNotification);
+	OwnerVitalsComponent->OnBeginStarving.AddDynamic(this, &UNotificationPanelWidget::AddStarvingNotification);
+	OwnerVitalsComponent->OnEndStarving.AddDynamic(this, &UNotificationPanelWidget::RemoveStarvingNotification);
 }
 
 void UNotificationPanelWidget::CreateItemNotification(const FInventoryItemUpdate& ItemUpdate)
@@ -56,6 +69,40 @@ void UNotificationPanelWidget::CreateItemNotification(const FInventoryItemUpdate
 	AddNotification(Notification);
 }
 
+void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
+{
+	FNotification ThirstyNotification;
+	ThirstyNotification.Time = Time;
+	ThirstyNotification.Duration = 0.0f;
+	ThirstyNotification.Identifier = FName("Thirsty");
+	ThirstyNotification.Message = FString("Thirsty");
+	ThirstyNotification.Icon = nullptr;
+
+	AddNotification(ThirstyNotification);
+}
+
+void UNotificationPanelWidget::RemoveThirstyNotification(const float& Time)
+{
+	RemoveNotification(FName("Thirsty"));
+}
+
+void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
+{
+	FNotification StarvingNotification;
+	StarvingNotification.Time = Time;
+	StarvingNotification.Duration = 0.0f;
+	StarvingNotification.Identifier = FName("Starving");
+	StarvingNotification.Message = FString("Starving");
+	StarvingNotification.Icon = nullptr;
+
+	AddNotification(StarvingNotification);
+}
+
+void UNotificationPanelWidget::RemoveStarvingNotification(const float& Time)
+{
+	RemoveNotification(FName("Starving"));
+}
+
 void UNotificationPanelWidget::AddNotification(const FNotification& Notification)
 {
 	UNotificationWidget* NotificationWidget = CreateWidget<UNotificationWidget>(this, NotificationWidgetBlueprint);
@@ -73,4 +120,18 @@ void UNotificationPanelWidget::AddNotification(const FNotification& Notification
 	}
 
 	NotificationContainer->AddChild(NotificationWidget);
+}
+
+void UNotificationPanelWidget::RemoveNotification(const FName& NotificationIdentifier)
+{
+	for (UWidget* ChildWidget : NotificationContainer->GetAllChildren())
+	{
+		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
+		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier)
+		{
+			continue;
+		}
+
+		ChildNotificationWidget->HandleRemoval();
+	}
 }

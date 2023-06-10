@@ -31,7 +31,23 @@ void UNotificationWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 	}
 }
 
+void UNotificationWidget::HandleAddition()
+{
+	// TODO slide in animation
+}
+
+void UNotificationWidget::HandleRemoval()
+{
+	// TODO slid out
+	RemoveFromParent();
+}
+
 bool UNotificationWidget::IsInfinite() const
 {
 	return Notification.Duration == 0.0f;
+}
+
+FNotification UNotificationWidget::GetNotification() const
+{
+	return Notification;
 }

@@ -6,11 +6,11 @@
 #include "Components/ActorComponent.h"
 #include "VitalsComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBeginThirstSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndThirstSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginThirstSignature, const float&, Time);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEndThirstSignature, const float&, Time);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBeginStarvingSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndStarvingSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginStarvingSignature, const float&, Time);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEndStarvingSignature, const float&, Time);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

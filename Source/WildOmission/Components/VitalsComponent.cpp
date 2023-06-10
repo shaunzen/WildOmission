@@ -111,22 +111,22 @@ void UVitalsComponent::CalculateDepletion()
 
 void UVitalsComponent::HandleDelegates()
 {
-	if (IsStarving())
-	{
-		BroadcastBeginStarving();
-	}
-	else
+	if (!IsStarving())
 	{
 		BroadcastEndStarving();
 	}
-
-	if (IsThirsty())
+	else
 	{
-		BroadcastBeginThirst();
+		BroadcastBeginStarving();
+	}
+
+	if (!IsThirsty())
+	{
+		BroadcastEndThirst();
 	}
 	else
 	{
-		BroadcastEndThirst();
+		BroadcastBeginThirst();
 	}
 }
 
@@ -137,7 +137,7 @@ void UVitalsComponent::BroadcastBeginThirst()
 		return;
 	}
 
-	OnBeginThirst.Broadcast();
+	OnBeginThirst.Broadcast(GetWorld()->GetRealTimeSeconds());
 	BeginThirstBroadcasted = true;
 	EndThirstBroadcasted = false;
 }
@@ -149,7 +149,7 @@ void UVitalsComponent::BroadcastEndThirst()
 		return;
 	}
 
-	OnEndThirst.Broadcast();
+	OnEndThirst.Broadcast(GetWorld()->GetRealTimeSeconds());
 	BeginThirstBroadcasted = false;
 	EndThirstBroadcasted = true;
 }
@@ -161,7 +161,7 @@ void UVitalsComponent::BroadcastBeginStarving()
 		return;
 	}
 
-	OnBeginStarving.Broadcast();
+	OnBeginStarving.Broadcast(GetWorld()->GetRealTimeSeconds());
 	BeginStarvingBroadcasted = true;
 	EndStarvingBroadcasted = false;
 
@@ -174,7 +174,7 @@ void UVitalsComponent::BroadcastEndStarving()
 		return;
 	}
 
-	OnEndStarving.Broadcast();
+	OnEndStarving.Broadcast(GetWorld()->GetRealTimeSeconds());
 	BeginStarvingBroadcasted = false;
 	EndStarvingBroadcasted = true;
 }
