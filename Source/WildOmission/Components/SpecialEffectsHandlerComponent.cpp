@@ -57,6 +57,8 @@ void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
+	HandleLowHealthEffects();
+
 	FHitResult HitResult;
 	if (!LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_GameTraceChannel2, HitResult))
 	{
