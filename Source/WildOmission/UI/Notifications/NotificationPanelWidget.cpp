@@ -98,7 +98,7 @@ void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
 	ThirstyNotification.Identifier = FName("Thirsty");
 	ThirstyNotification.Message = FString("Thirsty");
 	ThirstyNotification.Icon = ThirstIcon;
-	UE_LOG(LogTemp, Warning, TEXT("thirs"));
+
 	AddNotification(ThirstyNotification);
 }
 
@@ -116,7 +116,6 @@ void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
 	StarvingNotification.Message = FString("Starving");
 	StarvingNotification.Icon = HungerIcon;
 
-	UE_LOG(LogTemp, Warning, TEXT("star"));
 	AddNotification(StarvingNotification);
 }
 

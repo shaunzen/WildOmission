@@ -6,6 +6,15 @@
 #include "Components/TextBlock.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 
+UNotificationWidget::UNotificationWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	SlideDuration = 0.1f;
+	SlideInStartTime = 0.0f;
+	SlideOutStartTime = 0.0f;
+	ShouldSlideIn = false;
+	ShouldSlideOut = false;
+}
+
 void UNotificationWidget::Setup(const FNotification& InNotification)
 {
 	Notification = InNotification;
@@ -13,38 +22,35 @@ void UNotificationWidget::Setup(const FNotification& InNotification)
 	Icon->SetBrushFromMaterial(Notification.Icon);
 	TextBlock->SetText(FText::FromString(Notification.Message));
 
-	if (Notification.Duration == 0.0f)
-	{
-		return;
-	}
-	
-	FWidgetTransform NewTransform;
-	NewTransform.Translation.X = 1000.0f;
-	SetRenderTransform(NewTransform);
+	HandleAddition();
 }
 
 void UNotificationWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	//FWidgetTransform NewTransform;
-	//float NewX = UWildOmissionStatics::GetSwoopLerp(500.0f, 0.0f, 10.0f, GetWorld()->GetRealTimeSeconds(), Notification.Time, Notification.Time + Notification.Duration);
-	//NewTransform.Translation.X = NewX;
-	//SetRenderTransform(NewTransform);
-
-	if (!IsInfinite() && GetWorld()->GetRealTimeSeconds() > Notification.Time + Notification.Duration)
+	if (ShouldSlideIn)
 	{
-		RemoveFromParent();
+		HandleSlideIn();
+	}
+	else if (ShouldSlideOut)
+	{
+		HandleSlideOut();
+	}
+	else if (!IsInfinite() && GetWorld()->GetRealTimeSeconds() > Notification.Time + Notification.Duration)
+	{
+		HandleRemoval();
 	}
 }
 
 void UNotificationWidget::HandleAddition()
 {
-	// TODO slide in animation
+	SlideInStartTime = GetWorld()->GetRealTimeSeconds();
+	ShouldSlideIn = true;
 }
 
 void UNotificationWidget::HandleRemoval()
 {
-	// TODO slid out
-	RemoveFromParent();
+	SlideOutStartTime = GetWorld()->GetRealTimeSeconds();
+	ShouldSlideOut = true;
 }
 
 bool UNotificationWidget::IsInfinite() const
@@ -55,4 +61,37 @@ bool UNotificationWidget::IsInfinite() const
 FNotification UNotificationWidget::GetNotification() const
 {
 	return Notification;
+}
+
+void UNotificationWidget::HandleSlideIn()
+{
+	FWidgetTransform NewTransform;
+	float ZeroedTime = GetWorld()->GetRealTimeSeconds() - SlideInStartTime;
+	float XValue = FMath::Lerp(500.0f, 0.0f, ZeroedTime / SlideDuration);
+
+	if (XValue <= 0.0f)
+	{
+		XValue = 0.0f;
+		ShouldSlideIn = false;
+	}
+
+	NewTransform.Translation.X = XValue;
+
+	SetRenderTransform(NewTransform);
+}
+
+void UNotificationWidget::HandleSlideOut()
+{
+	FWidgetTransform NewTransform;
+	float ZeroedTime = GetWorld()->GetRealTimeSeconds() - SlideOutStartTime;
+	float XValue = FMath::Lerp(0.0f, 500.0f, ZeroedTime / SlideDuration);
+
+	if (XValue >= 500.0f)
+	{
+		RemoveFromParent();
+	}
+
+	NewTransform.Translation.X = XValue;
+
+	SetRenderTransform(NewTransform);
 }

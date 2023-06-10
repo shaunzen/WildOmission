@@ -16,6 +16,7 @@ class WILDOMISSION_API UNotificationWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UNotificationWidget(const FObjectInitializer& ObjectInitializer);
 	void Setup(const FNotification& InNotification);
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
@@ -33,5 +34,15 @@ private:
 	UTextBlock* TextBlock;
 
 	FNotification Notification;
+
+
+	float SlideDuration;
+	float SlideInStartTime;
+	float SlideOutStartTime;
+	bool ShouldSlideIn;
+	bool ShouldSlideOut;
+
+	void HandleSlideIn();
+	void HandleSlideOut();
 
 };
