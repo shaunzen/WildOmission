@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "WeatherEffectHandlerComponent.generated.h"
+#include "SpecialEffectsHandlerComponent.generated.h"
 
 class UNiagaraSystem;
 class UNiagaraComponent;
@@ -12,13 +12,13 @@ class UExponentialHeightFogComponent;
 class AStorm;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UWeatherEffectHandlerComponent : public UActorComponent
+class WILDOMISSION_API USpecialEffectsHandlerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UWeatherEffectHandlerComponent();
+	USpecialEffectsHandlerComponent();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

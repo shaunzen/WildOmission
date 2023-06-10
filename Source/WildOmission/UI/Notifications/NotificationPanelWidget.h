@@ -20,6 +20,9 @@ public:
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UGridPanel* NotificationContainer;
+	
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* StatusNotificationContainer;
 
 	UPROPERTY()
 	TSubclassOf<UNotificationWidget> NotificationWidgetBlueprint;

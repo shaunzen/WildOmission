@@ -3,6 +3,7 @@
 
 #include "NotificationPanelWidget.h"
 #include "NotificationWidget.h"
+#include "Components/PanelWidget.h"
 #include "Components/GridPanel.h"
 #include "Components/GridSlot.h"
 #include "WildOmission/Core/Structs/Notification.h"
@@ -68,6 +69,7 @@ void UNotificationPanelWidget::NativeConstruct()
 void UNotificationPanelWidget::CreateItemNotification(const FInventoryItemUpdate& ItemUpdate)
 {
 	FNotification Notification;
+	Notification.Negative = !ItemUpdate.Addition;
 	Notification.Time = GetWorld()->GetRealTimeSeconds();
 	Notification.Duration = 5.0f;
 
@@ -93,6 +95,7 @@ void UNotificationPanelWidget::CreateItemNotification(const FInventoryItemUpdate
 void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
 {
 	FNotification ThirstyNotification;
+	ThirstyNotification.Negative = true;
 	ThirstyNotification.Time = Time;
 	ThirstyNotification.Duration = 0.0f;
 	ThirstyNotification.Identifier = FName("Thirsty");
@@ -110,6 +113,7 @@ void UNotificationPanelWidget::RemoveThirstyNotification(const float& Time)
 void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
 {
 	FNotification StarvingNotification;
+	StarvingNotification.Negative = true;
 	StarvingNotification.Time = Time;
 	StarvingNotification.Duration = 0.0f;
 	StarvingNotification.Identifier = FName("Starving");
@@ -134,6 +138,12 @@ void UNotificationPanelWidget::AddNotification(const FNotification& Notification
 
 	NotificationWidget->Setup(Notification);
 
+	if (Notification.Duration == 0.0f)
+	{
+		StatusNotificationContainer->AddChild(NotificationWidget);
+		return;
+	}
+
 	for (UWidget* ChildNotification : NotificationContainer->GetAllChildren())
 	{
 		UGridSlot* ChildNotificationSlot = Cast<UGridSlot>(ChildNotification->Slot);
@@ -145,6 +155,18 @@ void UNotificationPanelWidget::AddNotification(const FNotification& Notification
 
 void UNotificationPanelWidget::RemoveNotification(const FName& NotificationIdentifier)
 {
+	for (UWidget* ChildWidget : StatusNotificationContainer->GetAllChildren())
+	{
+		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
+		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier)
+		{
+			continue;
+		}
+
+		ChildNotificationWidget->HandleRemoval();
+		return;
+	}
+
 	for (UWidget* ChildWidget : NotificationContainer->GetAllChildren())
 	{
 		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
@@ -154,5 +176,6 @@ void UNotificationPanelWidget::RemoveNotification(const FName& NotificationIdent
 		}
 
 		ChildNotificationWidget->HandleRemoval();
+		return;
 	}
 }

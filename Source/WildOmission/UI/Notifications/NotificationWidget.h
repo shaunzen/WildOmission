@@ -28,13 +28,15 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
+	UBorder* Border;
+
+	UPROPERTY(Meta = (BindWidget))
 	UBorder* Icon;
 
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* TextBlock;
 
 	FNotification Notification;
-
 
 	float SlideDuration;
 	float SlideInStartTime;

@@ -15,6 +15,9 @@ struct FNotification
 	FName Identifier = FName();
 
 	UPROPERTY()
+	bool Negative = false;
+
+	UPROPERTY()
 	float Time = 0.0f;
 
 	UPROPERTY()

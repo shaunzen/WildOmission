@@ -17,7 +17,7 @@
 #include "WildOmission/Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/NameTagComponent.h"
-#include "WildOmission/Components/WeatherEffectHandlerComponent.h"
+#include "WildOmission/Components/SpecialEffectsHandlerComponent.h"
 #include "WildOmission/Items/EquipableItem.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
@@ -160,7 +160,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 
-	WeatherEffectHandler = nullptr;
+	SpecialEffectsHandlerComponent = nullptr;
 
 	GetCharacterMovement()->JumpZVelocity = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
@@ -271,18 +271,18 @@ void AWildOmissionCharacter::SetupPlayerHUD()
 
 void AWildOmissionCharacter::SetupWeatherEffectHandler()
 {
-	if (!IsLocallyControlled() || WeatherEffectHandler != nullptr)
+	if (!IsLocallyControlled() || SpecialEffectsHandlerComponent != nullptr)
 	{
 		return;
 	}
 
-	WeatherEffectHandler = NewObject<UWeatherEffectHandlerComponent>(this, UWeatherEffectHandlerComponent::StaticClass(), FName("WeatherEffectHandler"));
-	if (WeatherEffectHandler == nullptr)
+	SpecialEffectsHandlerComponent = NewObject<USpecialEffectsHandlerComponent>(this, USpecialEffectsHandlerComponent::StaticClass(), FName("SpecialEffectsHandlerComponent"));
+	if (SpecialEffectsHandlerComponent == nullptr)
 	{
 		return;
 	}
 
-	WeatherEffectHandler->RegisterComponent();
+	SpecialEffectsHandlerComponent->RegisterComponent();
 }
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)

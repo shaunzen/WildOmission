@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "WeatherEffectHandlerComponent.h"
+#include "SpecialEffectsHandlerComponent.h"
 #include "WildOmission/Weather/Storm.h"
 #include "Engine/ExponentialHeightFog.h"
 #include "Components/ExponentialHeightFogComponent.h"
@@ -12,7 +12,7 @@
 #include "MetasoundSource.h"
 
 // Sets default values for this component's properties
-UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
+USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -33,7 +33,7 @@ UWeatherEffectHandlerComponent::UWeatherEffectHandlerComponent()
 
 
 // Called when the game starts
-void UWeatherEffectHandlerComponent::BeginPlay()
+void USpecialEffectsHandlerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -48,7 +48,7 @@ void UWeatherEffectHandlerComponent::BeginPlay()
 
 
 // Called every frame
-void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
@@ -79,7 +79,7 @@ void UWeatherEffectHandlerComponent::TickComponent(float DeltaTime, ELevelTick T
 	EnableRainfallEffects(RainDensity);
 }
 
-void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
+void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)
 {
 	Fog->SetFogDensity(0.05f);
 	Fog->SetFogHeightFalloff(0.001f);
@@ -115,7 +115,7 @@ void UWeatherEffectHandlerComponent::EnableRainfallEffects(float RainDensity)
 
 }
 
-void UWeatherEffectHandlerComponent::DisableRainfallEffects()
+void USpecialEffectsHandlerComponent::DisableRainfallEffects()
 {
 	Fog->SetFogDensity(0.02f);
 	Fog->SetFogHeightFalloff(0.2f);
@@ -138,12 +138,12 @@ void UWeatherEffectHandlerComponent::DisableRainfallEffects()
 	}
 }
 
-AStorm* UWeatherEffectHandlerComponent::CastToStorm(AActor* InActor)
+AStorm* USpecialEffectsHandlerComponent::CastToStorm(AActor* InActor)
 {
 	return Cast<AStorm>(InActor);
 }
 
-bool UWeatherEffectHandlerComponent::LineTraceIntoSkyOnChannel(ECollisionChannel ChannelToTrace, FHitResult& OutHitResult) const
+bool USpecialEffectsHandlerComponent::LineTraceIntoSkyOnChannel(ECollisionChannel ChannelToTrace, FHitResult& OutHitResult) const
 {
 	FVector Start = GetOwner()->GetActorLocation();
 	FVector End = Start + FVector::UpVector * 100000.0f;
