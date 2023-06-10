@@ -21,6 +21,7 @@ void UNotificationWidget::Setup(const FNotification& InNotification)
 
 	Icon->SetBrushFromMaterial(Notification.Icon);
 	TextBlock->SetText(FText::FromString(Notification.Message));
+	SetRenderTranslation(FVector2D(500.0f, 0.0f));
 
 	HandleAddition();
 }
