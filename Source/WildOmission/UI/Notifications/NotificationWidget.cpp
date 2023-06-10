@@ -25,10 +25,13 @@ void UNotificationWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 	NewTransform.Translation.X = NewX;
 	SetRenderTransform(NewTransform);
 
-	UE_LOG(LogTemp, Warning, TEXT("NewX: %f"), NewX);
-
-	if (GetWorld()->GetRealTimeSeconds() > Notification.Time + Notification.Duration)
+	if (!IsInfinite() && GetWorld()->GetRealTimeSeconds() > Notification.Time + Notification.Duration)
 	{
 		RemoveFromParent();
 	}
+}
+
+bool UNotificationWidget::IsInfinite() const
+{
+	return Notification.Duration == 0.0f;
 }

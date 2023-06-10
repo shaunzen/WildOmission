@@ -81,7 +81,7 @@ void UVitalsComponent::CalculateDepletion()
 	CurrentHunger = FMath::Clamp(CurrentHunger - (HungerDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxHunger);
 	
 	// If Thirst or Hunger is below threshold start removing Health
-	if (CurrentThirst < ThirstThreshold || CurrentHunger < HungerThreshold)
+	if (IsThirsty() || IsStarving())
 	{
 		CurrentHealth = FMath::Clamp(CurrentHealth - (HealthDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxHealth);
 	}
@@ -163,6 +163,16 @@ float UVitalsComponent::GetThirst() const
 float UVitalsComponent::GetHunger() const
 {
 	return CurrentHunger;
+}
+
+bool UVitalsComponent::IsThirsty() const
+{
+	return CurrentThirst < ThirstThreshold;
+}
+
+bool UVitalsComponent::IsStarving() const
+{
+	return CurrentHunger < HungerThreshold;
 }
 
 void UVitalsComponent::Client_PlayHurtSound_Implementation()

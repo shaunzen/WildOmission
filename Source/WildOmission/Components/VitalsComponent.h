@@ -6,6 +6,11 @@
 #include "Components/ActorComponent.h"
 #include "VitalsComponent.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE(FOnBeginStarvingSignature);
+DECLARE_DYNAMIC_DELEGATE(FOnEndStarvingSignature);
+DECLARE_DYNAMIC_DELEGATE(FOnBeginThirstSignature);
+DECLARE_DYNAMIC_DELEGATE(FOnEndThirstSignature);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSION_API UVitalsComponent : public UActorComponent
@@ -57,6 +62,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetHunger() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsThirsty() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsStarving() const;
 
 protected:
 	// Called when the game starts

@@ -18,6 +18,8 @@ class WILDOMISSION_API UNotificationWidget : public UUserWidget
 public:
 	void Setup(const FNotification& InNotification);
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	
+	bool IsInfinite() const;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
