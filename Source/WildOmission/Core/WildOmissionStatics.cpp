@@ -190,6 +190,14 @@ FVector UWildOmissionStatics::GetHostLocationInWorld(UWorld* WorldContextObject)
 	return HostPawn->GetActorLocation();
 }
 
+float UWildOmissionStatics::GetSwoopLerp(const float& A, const float& B, const float& TransitionHardness, const float& Alpha, const float& StartAlpha, const float& EndAlpha)
+{
+	float ZeroAlpha = Alpha - StartAlpha;
+	float Duration = EndAlpha - StartAlpha;
+
+	return FMath::Lerp(A, B, FMath::Clamp(FMath::Sin((ZeroAlpha / Duration) * 6.0f) * TransitionHardness, 0.0f, 1.0f));
+}
+
 void UWildOmissionStatics::SpawnWorldItem(UWorld* WorldContextObject, const FInventoryItem& ItemToSpawn, AActor* SpawningActor)
 {
 	if (WorldContextObject == nullptr || SpawningActor == nullptr)
