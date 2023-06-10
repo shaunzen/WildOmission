@@ -13,6 +13,11 @@ void UNotificationWidget::Setup(const FNotification& InNotification)
 	Icon->SetBrushFromMaterial(Notification.Icon);
 	TextBlock->SetText(FText::FromString(Notification.Message));
 
+	if (Notification.Duration == 0.0f)
+	{
+		return;
+	}
+	
 	FWidgetTransform NewTransform;
 	NewTransform.Translation.X = 1000.0f;
 	SetRenderTransform(NewTransform);
@@ -20,10 +25,10 @@ void UNotificationWidget::Setup(const FNotification& InNotification)
 
 void UNotificationWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	FWidgetTransform NewTransform;
-	float NewX = UWildOmissionStatics::GetSwoopLerp(500.0f, 0.0f, 10.0f, GetWorld()->GetRealTimeSeconds(), Notification.Time, Notification.Time + Notification.Duration);
-	NewTransform.Translation.X = NewX;
-	SetRenderTransform(NewTransform);
+	//FWidgetTransform NewTransform;
+	//float NewX = UWildOmissionStatics::GetSwoopLerp(500.0f, 0.0f, 10.0f, GetWorld()->GetRealTimeSeconds(), Notification.Time, Notification.Time + Notification.Duration);
+	//NewTransform.Translation.X = NewX;
+	//SetRenderTransform(NewTransform);
 
 	if (!IsInfinite() && GetWorld()->GetRealTimeSeconds() > Notification.Time + Notification.Duration)
 	{

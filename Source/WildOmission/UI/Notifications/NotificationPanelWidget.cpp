@@ -11,14 +11,35 @@
 #include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
+static UMaterialInterface* HealthIcon = nullptr;
+static UMaterialInterface* ThirstIcon = nullptr;
+static UMaterialInterface* HungerIcon = nullptr;
+
 UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UNotificationWidget> NotificationWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Notifications/WBP_Notification"));
+	static ConstructorHelpers::FClassFinder<UNotificationWidget> NotificationWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Notifications/WBP_Notification"));
 	if (NotificationWidgetBlueprintClass.Succeeded())
 	{
 		NotificationWidgetBlueprint = NotificationWidgetBlueprintClass.Class;
 	}
-	//	/Game/WildOmission/UI/Icons/Vitals/M_Health_Icon_Inst
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HealthIconObject(TEXT("/Game/WildOmission/UI/Icons/Vitals/M_Health_Icon_Inst"));
+	if (HealthIconObject.Succeeded())
+	{
+		HealthIcon = HealthIconObject.Object;
+	}
+	
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> ThirstIconObject(TEXT("/Game/WildOmission/UI/Icons/Vitals/M_Thirst_Icon_Inst"));
+	if (ThirstIconObject.Succeeded())
+	{
+		ThirstIcon = ThirstIconObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HungerIconObject(TEXT("/Game/WildOmission/UI/Icons/Vitals/M_Hunger_Icon_Inst"));
+	if (HungerIconObject.Succeeded())
+	{
+		HungerIcon = HungerIconObject.Object;
+	}
 }
 
 void UNotificationPanelWidget::NativeConstruct()
@@ -76,8 +97,8 @@ void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
 	ThirstyNotification.Duration = 0.0f;
 	ThirstyNotification.Identifier = FName("Thirsty");
 	ThirstyNotification.Message = FString("Thirsty");
-	ThirstyNotification.Icon = nullptr;
-
+	ThirstyNotification.Icon = ThirstIcon;
+	UE_LOG(LogTemp, Warning, TEXT("thirs"));
 	AddNotification(ThirstyNotification);
 }
 
@@ -93,8 +114,9 @@ void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
 	StarvingNotification.Duration = 0.0f;
 	StarvingNotification.Identifier = FName("Starving");
 	StarvingNotification.Message = FString("Starving");
-	StarvingNotification.Icon = nullptr;
+	StarvingNotification.Icon = HungerIcon;
 
+	UE_LOG(LogTemp, Warning, TEXT("star"));
 	AddNotification(StarvingNotification);
 }
 
