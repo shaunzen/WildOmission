@@ -15,11 +15,19 @@ class WILDOMISSION_API UOptionsWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	void Setup(UWidget* ParentMenu);
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ApplyButton;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UButton* BackButton;
+
+	UPROPERTY()
+	UWidget* ParentMenu;
+
+	UFUNCTION()
+	void Apply();
 
 };

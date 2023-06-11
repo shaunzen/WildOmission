@@ -6,8 +6,8 @@
 #include "Components/Button.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "WorldSelectionWidget.h"
-#include "WorldMenuWidget.h"
 #include "WorldCreationWidget.h"
+#include "WorldMenuWidget.h"
 #include "ServerBrowserWidget.h"
 #include "OptionsWidget.h"
 
@@ -25,9 +25,9 @@ void UMainMenuWidget::NativeConstruct()
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
 	WorldSelectionMenu->Setup(this);
-	ServerBrowserMenu->Setup(this);
-	WorldMenu->Setup(this);
 	WorldCreationMenu->Setup(this);
+	WorldMenu->Setup(this);
+	ServerBrowserMenu->Setup(this);
 	
 }
 

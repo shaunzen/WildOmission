@@ -48,7 +48,6 @@ public:
 	void Teardown();
 
 private:
-
 	UPROPERTY(Meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
 
