@@ -13,6 +13,7 @@ class UWorldSelectionWidget;
 class UWorldCreationWidget;
 class UWorldMenuWidget;
 class UServerBrowserWidget;
+class UOptionsWidget;
 
 UCLASS()
 class WILDOMISSION_API UMainMenuWidget : public UUserWidget
@@ -36,6 +37,8 @@ public:
 	void OpenWorldMenuForWorld(const FString& WorldName);
 	UFUNCTION()
 	void OpenServerBrowserMenu();
+	UFUNCTION()
+	void OpenOptionsMenu();
 	UFUNCTION()
 	void ExitGame();
 
@@ -67,5 +70,7 @@ private:
 	UWorldMenuWidget* WorldMenu;
 	UPROPERTY(Meta = (BindWidget))
 	UServerBrowserWidget* ServerBrowserMenu;
+	UPROPERTY(Meta = (BindWidget))
+	UOptionsWidget* OptionsMenu;
 
 };

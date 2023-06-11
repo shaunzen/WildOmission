@@ -6,9 +6,10 @@
 #include "Components/Button.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "WorldSelectionWidget.h"
-#include "ServerBrowserWidget.h"
 #include "WorldMenuWidget.h"
 #include "WorldCreationWidget.h"
+#include "ServerBrowserWidget.h"
+#include "OptionsWidget.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -20,13 +21,14 @@ void UMainMenuWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	PlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
-	// TODO Settings Menu
+	OptionsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenOptionsMenu);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
 	WorldSelectionMenu->Setup(this);
 	ServerBrowserMenu->Setup(this);
 	WorldMenu->Setup(this);
 	WorldCreationMenu->Setup(this);
+	
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> InServerData)
@@ -117,6 +119,16 @@ void UMainMenuWidget::OpenServerBrowserMenu()
 
 	MenuSwitcher->SetActiveWidget(ServerBrowserMenu);
 	ServerBrowserMenu->Open();
+}
+
+void UMainMenuWidget::OpenOptionsMenu()
+{
+	if (MenuSwitcher == nullptr || OptionsMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(OptionsMenu);
 }
 
 void UMainMenuWidget::ExitGame()
