@@ -32,6 +32,8 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 		RainSound = RainSoundBlueprint.Object;
 	}
 	RainSoundCutoff = 20000.0f;
+
+	LowHealthEffectThreshold = 40.0f;
 }
 
 
@@ -74,11 +76,10 @@ void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
 		return;
 	}
 
-	if (OwnerVitalsComponent->GetHealth() < 70.0f)
-	{
-		OwnerCamera->PostProcessSettings.ChromaticAberrationStartOffset = 0.5f;
-		OwnerCamera->PostProcessSettings.SceneFringeIntensity = FMath::Lerp(1.0f, 0.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / 70.0f, 0.0f, 1.0f));
-	}
+	float ContrastAmount = FMath::Lerp(0.7f, 1.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / LowHealthEffectThreshold, 0.0f, 1.0f));
+	
+	OwnerCamera->PostProcessSettings.SceneFringeIntensity = FMath::Lerp(5.0f, 0.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / LowHealthEffectThreshold, 0.0f, 1.0f));
+	OwnerCamera->PostProcessSettings.ColorContrast = FVector4(ContrastAmount, ContrastAmount, ContrastAmount, ContrastAmount);
 }
 
 void USpecialEffectsHandlerComponent::HandleWeatherEffects()

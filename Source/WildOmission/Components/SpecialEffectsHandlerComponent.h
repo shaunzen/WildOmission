@@ -49,6 +49,9 @@ private:
 	UCameraComponent* OwnerCamera;
 
 	UPROPERTY()
+	float LowHealthEffectThreshold;
+
+	UPROPERTY()
 	AStorm* PreviouslyHitStorm;
 
 	float RainSoundCutoff;
