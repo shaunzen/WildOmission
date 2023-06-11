@@ -8,7 +8,7 @@
 
 void UOptionsWidget::NativeConstruct()
 {
-
+	Super::NativeConstruct();
 }
 
 void UOptionsWidget::Setup(UWidget* InParentMenu)
