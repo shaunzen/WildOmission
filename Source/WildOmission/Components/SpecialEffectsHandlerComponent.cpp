@@ -58,7 +58,31 @@ void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	HandleLowHealthEffects();
+	HandleWeatherEffects();
+}
 
+void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
+{
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+
+	UVitalsComponent* OwnerVitalsComponent = GetOwner()->FindComponentByClass<UVitalsComponent>();
+	if (OwnerVitalsComponent == nullptr)
+	{
+		return;
+	}
+
+	if (OwnerVitalsComponent->GetHealth() < 70.0f)
+	
+		OwnerCamera->PostProcessSettings.ChromaticAberrationStartOffset = 0.5f;
+		OwnerCamera->PostProcessSettings.SceneFringeIntensity = FMath::Lerp(1.0f, 0.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / 70.0f, 0.0f, 1.0f));
+	}
+}
+
+void USpecialEffectsHandlerComponent::HandleWeatherEffects()
+{
 	FHitResult HitResult;
 	if (!LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_GameTraceChannel2, HitResult))
 	{
@@ -84,26 +108,6 @@ void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 	}
 
 	EnableRainfallEffects(RainDensity);
-}
-
-void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
-{
-	if (GetOwner() == nullptr)
-	{
-		return;
-	}
-
-	UVitalsComponent* OwnerVitalsComponent = GetOwner()->FindComponentByClass<UVitalsComponent>();
-	if (OwnerVitalsComponent == nullptr)
-	{
-		return;
-	}
-
-	if (OwnerVitalsComponent->GetHealth() < 70.0f)
-	{
-		OwnerCamera->PostProcessSettings.ChromaticAberrationStartOffset = 0.5f;
-		OwnerCamera->PostProcessSettings.SceneFringeIntensity = FMath::Lerp(1.0f, 0.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / 70.0f, 0.0f, 1.0f));
-	}
 }
 
 void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)

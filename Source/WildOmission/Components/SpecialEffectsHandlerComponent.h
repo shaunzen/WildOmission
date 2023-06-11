@@ -54,6 +54,7 @@ private:
 	float RainSoundCutoff;
 
 	void HandleLowHealthEffects();
+	void HandleWeatherEffects();
 
 	void EnableRainfallEffects(float RainDensity);
 	void DisableRainfallEffects();
