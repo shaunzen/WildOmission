@@ -75,7 +75,7 @@ void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
 	}
 
 	if (OwnerVitalsComponent->GetHealth() < 70.0f)
-	
+	{
 		OwnerCamera->PostProcessSettings.ChromaticAberrationStartOffset = 0.5f;
 		OwnerCamera->PostProcessSettings.SceneFringeIntensity = FMath::Lerp(1.0f, 0.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / 70.0f, 0.0f, 1.0f));
 	}
