@@ -33,7 +33,7 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 	}
 	RainSoundCutoff = 20000.0f;
 
-	LowHealthEffectThreshold = 40.0f;
+	LowHealthEffectThreshold = 60.0f;
 }
 
 
@@ -80,6 +80,7 @@ void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
 	
 	OwnerCamera->PostProcessSettings.SceneFringeIntensity = FMath::Lerp(5.0f, 0.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / LowHealthEffectThreshold, 0.0f, 1.0f));
 	OwnerCamera->PostProcessSettings.ColorContrast = FVector4(ContrastAmount, ContrastAmount, ContrastAmount, ContrastAmount);
+	OwnerCamera->PostProcessSettings.BloomDirtMaskIntensity = FMath::Lerp(200.0f, 0.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / LowHealthEffectThreshold, 0.0f, 1.0f));
 }
 
 void USpecialEffectsHandlerComponent::HandleWeatherEffects()
