@@ -25,40 +25,38 @@ void UOptionsWidget::Setup(UWidget* InParentMenu)
 void UOptionsWidget::Open()
 {
 	// Setup Resolution Settings
-	ResolutionOptionBox->ClearOptions();
-	TArray<FIntPoint> Resolutions;
-	UKismetSystemLibrary::GetSupportedFullscreenResolutions(Resolutions);
-	for (const FIntPoint& Resolution : Resolutions)
-	{
-		FString OptionString = FString::Printf(TEXT("%i x %i"), Resolution.X, Resolution.Y);
+	ResolutionScaleOptionBox->ClearOptions();
 
-		ResolutionOptionBox->AddOption(OptionString);
-	}
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("20%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("30%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("40%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("50%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("60%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("70%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("80%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("90%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("100%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("110%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("120%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("130%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("140%")));
+	ResolutionScaleOptionBox->AddOption(FString(TEXT("150%")));
+
 	UGameUserSettings* UserSettings = GEngine->GameUserSettings;
-	FIntPoint CurrentResolution = UserSettings->GetScreenResolution();
-	FString CurrentResolutionString = FString::Printf(TEXT("%i x %i"), CurrentResolution.X, CurrentResolution.Y);
+	float CurrentScaleNormalized = 0.0f;
+	int32 CurrentScale = 0;
+	int32 MinScale = 0;
+	int32 MaxScale = 0;
+	UserSettings->GetResolutionScaleInformation(CurrentScaleNormalized, CurrentScale, MinScale, MaxScale);
+	FString SelectedScale = FString::Printf(TEXT("%i%"), CurrentScale);
+	ResolutionScaleOptionBox->SetSelectedOption(SelectedScale);
 
-	ResolutionOptionBox->SetSelectedOption(CurrentResolutionString);
 }
 
 void UOptionsWidget::Apply()
 {
 	UGameUserSettings* UserSettings = GEngine->GameUserSettings;
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController == nullptr)
-	{
-		return;
-	}
 
-	FString XString;
-	FString YString;
-	FString Resolution = ResolutionOptionBox->GetSelectedOption();
-	Resolution.Split(FString(TEXT(" x ")), &XString, &YString);
-
-	FIntPoint NewResolution;
-	NewResolution.X = FCString::Atoi(*XString);
-	NewResolution.Y = FCString::Atoi(*YString);
-	UserSettings->SetScreenResolution(NewResolution);
 
 	UserSettings->ApplySettings(false);
 	UE_LOG(LogTemp, Warning, TEXT("Applying Selected Options"));
