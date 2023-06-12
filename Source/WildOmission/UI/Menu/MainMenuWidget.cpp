@@ -28,6 +28,7 @@ void UMainMenuWidget::NativeConstruct()
 	WorldCreationMenu->Setup(this);
 	WorldMenu->Setup(this);
 	ServerBrowserMenu->Setup(this);
+	OptionsMenu->Setup(this);
 	
 }
 
@@ -66,9 +67,10 @@ void UMainMenuWidget::OpenMainMenu()
 {
 	if (MenuSwitcher == nullptr || MainMenu == nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to switch to main menu"));
 		return;
 	}
-
+	UE_LOG(LogTemp, Warning, TEXT("Switching to main menu"));
 	MenuSwitcher->SetActiveWidget(MainMenu);
 }
 

@@ -13,26 +13,18 @@ void UOptionsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
+	BackButton->OnClicked.AddDynamic(this, &UOptionsWidget::Back);
 }
 
 void UOptionsWidget::Setup(UWidget* InParentMenu)
 {
 	ParentMenu = InParentMenu;
-
-	if (UMainMenuWidget* MainMenu = Cast<UMainMenuWidget>(ParentMenu))
-	{
-		BackButton->OnClicked.AddDynamic(MainMenu, &UMainMenuWidget::OpenMainMenu);
-	}
-	else if (UGameplayMenuWidget* GameplayMenu = Cast<UGameplayMenuWidget>(ParentMenu))
-	{
-		// TODO back to gameplay menu
-	}
-	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
 }
 
 void UOptionsWidget::Open()
 {
-	// Resolution Settings
+	// Setup Resolution Settings
 	ResolutionOptionBox->ClearOptions();
 	TArray<FIntPoint> Resolutions;
 	UKismetSystemLibrary::GetSupportedFullscreenResolutions(Resolutions);
@@ -51,5 +43,38 @@ void UOptionsWidget::Open()
 
 void UOptionsWidget::Apply()
 {
+	UGameUserSettings* UserSettings = GEngine->GameUserSettings;
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	FString XString;
+	FString YString;
+	FString Resolution = ResolutionOptionBox->GetSelectedOption();
+	Resolution.Split(FString(TEXT(" x ")), &XString, &YString);
+
+	FIntPoint NewResolution;
+	NewResolution.X = FCString::Atoi(*XString);
+	NewResolution.Y = FCString::Atoi(*YString);
+	UserSettings->SetScreenResolution(NewResolution);
+
+	UserSettings->ApplySettings(false);
 	UE_LOG(LogTemp, Warning, TEXT("Applying Selected Options"));
+}
+
+void UOptionsWidget::Back()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Back Clicked."));
+	UMainMenuWidget* MainMenu = Cast<UMainMenuWidget>(ParentMenu);
+	UGameplayMenuWidget* GameplayMenu = Cast<UGameplayMenuWidget>(ParentMenu);
+	if (MainMenu)
+	{
+		MainMenu->OpenMainMenu();
+	}
+	else if (GameplayMenu)
+	{
+		// TODO back to gameplay menu
+	}
 }
