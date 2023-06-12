@@ -50,6 +50,11 @@ FString UMultiOptionBox::GetSelectedOption() const
 	return Options[SelectedOptionIndex];
 }
 
+int32 UMultiOptionBox::GetSelectedIndex() const
+{
+	return SelectedOptionIndex;
+}
+
 void UMultiOptionBox::NextOption()
 {
 	SelectedOptionIndex++;

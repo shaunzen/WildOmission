@@ -24,6 +24,7 @@ public:
 	void ClearOptions();
 
 	FString GetSelectedOption() const;
+	int32 GetSelectedIndex() const;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
