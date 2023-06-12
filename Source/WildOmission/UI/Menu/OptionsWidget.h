@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "OptionsWidget.generated.h"
 
+class UMultiOptionBox;
 class UButton;
 
 UCLASS()
@@ -17,7 +18,12 @@ public:
 
 	void Setup(UWidget* ParentMenu);
 
+	void Open();
+
 private:
+	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* ResolutionOptionBox;
+
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ApplyButton;
 	
