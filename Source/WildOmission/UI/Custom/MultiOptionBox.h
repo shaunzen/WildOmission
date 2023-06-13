@@ -21,6 +21,7 @@ public:
 	virtual void NativeConstruct() override;
 	
 	void AddOption(const FString& NewOption);
+	void GiveQualityOptions();
 	void SetSelectedOption(const FString& NewOption);
 	void SetSelectedIndex(const int32& NewIndex);
 	void ClearOptions();

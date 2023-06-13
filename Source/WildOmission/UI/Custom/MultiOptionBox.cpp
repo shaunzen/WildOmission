@@ -23,6 +23,16 @@ void UMultiOptionBox::AddOption(const FString& NewOption)
 	Options.Add(NewOption);
 }
 
+void UMultiOptionBox::GiveQualityOptions()
+{
+	ClearOptions();
+	AddOption(TEXT("Low"));
+	AddOption(TEXT("Medium"));
+	AddOption(TEXT("High"));
+	AddOption(TEXT("Epic"));
+	AddOption(TEXT("Cinematic"));
+}
+
 void UMultiOptionBox::SetSelectedOption(const FString& NewOption)
 {
 	SelectedOptionIndex = FMath::Clamp(Options.Find(NewOption), 0, Options.Num() - 1);

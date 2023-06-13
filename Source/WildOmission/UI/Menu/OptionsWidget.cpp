@@ -18,12 +18,7 @@ void UOptionsWidget::NativeConstruct()
 	BackButton->OnClicked.AddDynamic(this, &UOptionsWidget::Back);
 
 	// Setup Graphics Quality
-	OverallGraphicsQualityOptionBox->ClearOptions();
-	OverallGraphicsQualityOptionBox->AddOption(TEXT("Low"));
-	OverallGraphicsQualityOptionBox->AddOption(TEXT("Medium"));
-	OverallGraphicsQualityOptionBox->AddOption(TEXT("High"));
-	OverallGraphicsQualityOptionBox->AddOption(TEXT("Epic"));
-	OverallGraphicsQualityOptionBox->AddOption(TEXT("Cinematic"));
+	OverallGraphicsQualityOptionBox->GiveQualityOptions();
 	OverallGraphicsQualityOptionBox->AddOption(TEXT("Custom"));
 	OverallGraphicsQualityOptionBox->OnSelectionChange.AddDynamic(this, &UOptionsWidget::CheckOverallScalabilityCustom);
 
@@ -35,6 +30,17 @@ void UOptionsWidget::NativeConstruct()
 	ResolutionScaleOptionBox->AddOption(TEXT("80"));
 	ResolutionScaleOptionBox->AddOption(TEXT("90"));
 	ResolutionScaleOptionBox->AddOption(TEXT("100"));
+
+	// Setup Custom Settings
+	ViewDistanceQualityOptionBox->GiveQualityOptions();
+	ShadowQualityOptionBox->GiveQualityOptions();
+	GlobalIlluminationQualityOptionBox->GiveQualityOptions();
+	ReflectionQualityOptionBox->GiveQualityOptions();
+	AntiAliasingQualityOptionBox->GiveQualityOptions();
+	TextureQualityOptionBox->GiveQualityOptions();
+	VisualEffectQualityOptionBox->GiveQualityOptions();
+	PostProcessingQualityOptionBox->GiveQualityOptions();
+	ShaderQualityOptionBox->GiveQualityOptions();
 }
 
 void UOptionsWidget::Setup(UWidget* InParentMenu)
@@ -63,7 +69,6 @@ void UOptionsWidget::RefreshGraphicsSettings()
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	int32 OverallGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
 	bool UsingCustomSettings = OverallGraphicsQuality == -1;
-	FString ResolutionScale = FString::Printf(TEXT("%i"), UserSettings->GetResolutionScaleAsInt32());
 
 	OverallGraphicsQualityOptionBox->SetSelectedIndex(OverallGraphicsQuality);
 	if (UsingCustomSettings)
@@ -71,45 +76,63 @@ void UOptionsWidget::RefreshGraphicsSettings()
 		OverallGraphicsQualityOptionBox->SetSelectedOption(TEXT("Custom"));
 	}
 
-	ResolutionScaleOptionBox->SetSelectedOption(ResolutionScale);
-
-	RefreshGraphicsOptionBoxes(UsingCustomSettings);
+	RefreshCustomGraphicsOptionBoxes(UsingCustomSettings);
 }
 
-void UOptionsWidget::RefreshGraphicsOptionBoxes(bool IsUsingCustomSettings)
+void UOptionsWidget::RefreshCustomGraphicsOptionBoxes(bool IsUsingCustomSettings)
 {
 	ResolutionScaleOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	// TODO other options
-
-	if (IsUsingCustomSettings)
-	{
-		return;	
-	}
+	ViewDistanceQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	ShadowQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	GlobalIlluminationQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	ReflectionQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	AntiAliasingQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	TextureQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	VisualEffectQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	PostProcessingQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	ShaderQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	
 
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	switch (OverallGraphicsQualityOptionBox->GetSelectedIndex())
+	FString ResolutionScale = FString::Printf(TEXT("%i"), UserSettings->GetResolutionScaleAsInt32());
+	ResolutionScaleOptionBox->SetSelectedOption(ResolutionScale);
+	ViewDistanceQualityOptionBox->SetSelectedIndex(UserSettings->GetViewDistanceQuality());
+	ShadowQualityOptionBox->SetSelectedIndex(UserSettings->GetShadowQuality());
+	GlobalIlluminationQualityOptionBox->SetSelectedIndex(UserSettings->GetGlobalIlluminationQuality());
+	ReflectionQualityOptionBox->SetSelectedIndex(UserSettings->GetReflectionQuality());
+	AntiAliasingQualityOptionBox->SetSelectedIndex(UserSettings->GetAntiAliasingQuality());
+	TextureQualityOptionBox->SetSelectedIndex(UserSettings->GetTextureQuality());
+	VisualEffectQualityOptionBox->SetSelectedIndex(UserSettings->GetVisualEffectQuality());
+	PostProcessingQualityOptionBox->SetSelectedIndex(UserSettings->GetPostProcessingQuality());
+	ShaderQualityOptionBox->SetSelectedIndex(UserSettings->GetShadingQuality());
+
+	if (!IsUsingCustomSettings)
 	{
-	case 0: // Low
-		ResolutionScaleOptionBox->SetSelectedOption(TEXT("50"));
-		break;
-	case 1: // Med
-		ResolutionScaleOptionBox->SetSelectedOption(TEXT("50"));
-		break;
-	case 2:	// High
-		ResolutionScaleOptionBox->SetSelectedOption(TEXT("50"));
-		break;
-	case 3: // Epic
-		ResolutionScaleOptionBox->SetSelectedOption(TEXT("100"));
-		break;
-	case 4:	// Cinematic
-		ResolutionScaleOptionBox->SetSelectedOption(TEXT("100"));
-		break;
+		int32 SelectedGraphicsQuality = OverallGraphicsQualityOptionBox->GetSelectedIndex();
+		switch (SelectedGraphicsQuality)
+		{
+		case 0: // Low
+			ResolutionScaleOptionBox->SetSelectedOption(TEXT("50"));
+			break;
+		case 1: // Med
+			ResolutionScaleOptionBox->SetSelectedOption(TEXT("50"));
+			break;
+		case 2:	// High
+			ResolutionScaleOptionBox->SetSelectedOption(TEXT("50"));
+			break;
+		case 3: // Epic
+			ResolutionScaleOptionBox->SetSelectedOption(TEXT("100"));
+			break;
+		case 4:	// Cinematic
+			ResolutionScaleOptionBox->SetSelectedOption(TEXT("100"));
+			break;
+		}
 	}
 }
 
 void UOptionsWidget::CheckOverallScalabilityCustom(const FString& NewSelection)
 {
-	RefreshGraphicsOptionBoxes(NewSelection == TEXT("Custom"));
+	RefreshCustomGraphicsOptionBoxes(NewSelection == TEXT("Custom"));
 }
 
 void UOptionsWidget::Apply()
@@ -135,10 +158,18 @@ void UOptionsWidget::Apply()
 void UOptionsWidget::ApplyCustomGraphicsSettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-
-	// Resolution Scale
 	float SelectedResolutionScale = FCString::Atof(*ResolutionScaleOptionBox->GetSelectedOption());
+
 	UserSettings->SetResolutionScaleValueEx(SelectedResolutionScale);
+	UserSettings->SetViewDistanceQuality(ViewDistanceQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetShadowQuality(ShadowQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetGlobalIlluminationQuality(GlobalIlluminationQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetReflectionQuality(ReflectionQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetAntiAliasingQuality(AntiAliasingQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetTextureQuality(TextureQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetVisualEffectQuality(VisualEffectQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetPostProcessingQuality(PostProcessingQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetShadowQuality(ShaderQualityOptionBox->GetSelectedIndex());
 }
 
 void UOptionsWidget::Back()

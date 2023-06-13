@@ -33,7 +33,23 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* ResolutionScaleOptionBox;
 	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* ViewDistanceQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* ShadowQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* GlobalIlluminationQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* ReflectionQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* AntiAliasingQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* TextureQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* VisualEffectQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* PostProcessingQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* ShaderQualityOptionBox;
 
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ApplyButton;
@@ -47,7 +63,7 @@ private:
 	void RefreshGameplaySettings();
 
 	void RefreshGraphicsSettings();
-	void RefreshGraphicsOptionBoxes(bool IsUsingCustomSettings);
+	void RefreshCustomGraphicsOptionBoxes(bool IsUsingCustomSettings);
 
 	UFUNCTION()
 	void CheckOverallScalabilityCustom(const FString& NewSelection);
