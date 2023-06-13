@@ -179,7 +179,7 @@ void UOptionsWidget::ApplyCustomGraphicsSettings()
 	UserSettings->SetTextureQuality(TextureQualityOptionBox->GetSelectedIndex());
 	UserSettings->SetVisualEffectQuality(VisualEffectQualityOptionBox->GetSelectedIndex());
 	UserSettings->SetPostProcessingQuality(PostProcessingQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetShadowQuality(ShaderQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetShadingQuality(ShaderQualityOptionBox->GetSelectedIndex());
 }
 
 void UOptionsWidget::Back()
