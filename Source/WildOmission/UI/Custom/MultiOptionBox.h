@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "MultiOptionBox.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelectionChangeSignature, const FString&, NewSelection);
+
 class UButton;
 class UTextBlock;
 
@@ -22,6 +24,8 @@ public:
 	void SetSelectedOption(const FString& NewOption);
 	void SetSelectedIndex(const int32& NewIndex);
 	void ClearOptions();
+
+	FOnSelectionChangeSignature OnSelectionChange;
 
 	FString GetSelectedOption() const;
 	int32 GetSelectedIndex() const;

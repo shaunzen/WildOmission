@@ -16,6 +16,25 @@ void UOptionsWidget::NativeConstruct()
 
 	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
 	BackButton->OnClicked.AddDynamic(this, &UOptionsWidget::Back);
+
+	// Setup Graphics Quality
+	GraphicsQualityOptionBox->ClearOptions();
+	GraphicsQualityOptionBox->AddOption(TEXT("Low"));
+	GraphicsQualityOptionBox->AddOption(TEXT("Medium"));
+	GraphicsQualityOptionBox->AddOption(TEXT("High"));
+	GraphicsQualityOptionBox->AddOption(TEXT("Epic"));
+	GraphicsQualityOptionBox->AddOption(TEXT("Cinematic"));
+	GraphicsQualityOptionBox->AddOption(TEXT("Custom"));
+	GraphicsQualityOptionBox->OnSelectionChange.AddDynamic(this, &UOptionsWidget::CheckOverallScalabilityCustom);
+
+	// Setup Resolution Settings
+	ResolutionScaleOptionBox->ClearOptions();
+	ResolutionScaleOptionBox->AddOption(TEXT("50"));
+	ResolutionScaleOptionBox->AddOption(TEXT("60"));
+	ResolutionScaleOptionBox->AddOption(TEXT("70"));
+	ResolutionScaleOptionBox->AddOption(TEXT("80"));
+	ResolutionScaleOptionBox->AddOption(TEXT("90"));
+	ResolutionScaleOptionBox->AddOption(TEXT("100"));
 }
 
 void UOptionsWidget::Setup(UWidget* InParentMenu)
@@ -43,39 +62,18 @@ void UOptionsWidget::RefreshGraphicsSettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	int32 OverallGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
-	int32 ResolutionScale = UserSettings->GetResolutionScaleAsInt32();
+	bool UsingCustomSettings = OverallGraphicsQuality == -1;
+	FString ResolutionScale = FString::Printf(TEXT("%i"), UserSettings->GetResolutionScaleAsInt32());
 
-	// Setup Graphics Quality
-	GraphicsQualityOptionBox->ClearOptions();
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Low")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Medium")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("High")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Epic")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Cinematic")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Custom")));
-
-	if (OverallGraphicsQuality == -1)
+	GraphicsQualityOptionBox->SetSelectedIndex(OverallGraphicsQuality);
+	if (UsingCustomSettings)
 	{
 		GraphicsQualityOptionBox->SetSelectedOption(TEXT("Custom"));
 	}
-	else
-	{
-		GraphicsQualityOptionBox->SetSelectedIndex(OverallGraphicsQuality);
-	}
 
-	// Setup Resolution Settings
-	ResolutionScaleOptionBox->ClearOptions();
-	ResolutionScaleOptionBox->AddOption(FString(TEXT("50")));
-	ResolutionScaleOptionBox->AddOption(FString(TEXT("60")));
-	ResolutionScaleOptionBox->AddOption(FString(TEXT("70")));
-	ResolutionScaleOptionBox->AddOption(FString(TEXT("80")));
-	ResolutionScaleOptionBox->AddOption(FString(TEXT("90")));
-	ResolutionScaleOptionBox->AddOption(FString(TEXT("100")));
+	ResolutionScaleOptionBox->SetSelectedOption(ResolutionScale);
 
-	FString SelectedScale = FString::Printf(TEXT("%i"), ResolutionScale);
-	ResolutionScaleOptionBox->SetSelectedOption(SelectedScale);
-
-	RefreshGraphicsOptionBoxes(OverallGraphicsQuality == -1);
+	RefreshGraphicsOptionBoxes(UsingCustomSettings);
 }
 
 void UOptionsWidget::RefreshGraphicsOptionBoxes(bool IsUsingCustomSettings)
@@ -84,13 +82,9 @@ void UOptionsWidget::RefreshGraphicsOptionBoxes(bool IsUsingCustomSettings)
 	// TODO other options
 }
 
-void UOptionsWidget::ApplyCustomSettings()
+void UOptionsWidget::CheckOverallScalabilityCustom(const FString& NewSelection)
 {
-	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-
-	// Apply Resolution Scale
-	float SelectedResolutionScale = static_cast<float>(FCString::Atoi(*ResolutionScaleOptionBox->GetSelectedOption()));
-	UserSettings->SetResolutionScaleValueEx(SelectedResolutionScale);
+	RefreshGraphicsOptionBoxes(NewSelection == TEXT("Custom"));
 }
 
 void UOptionsWidget::Apply()
@@ -101,18 +95,25 @@ void UOptionsWidget::Apply()
 	UserSettings->SetMasterVolume(MasterVolumeSlider->GetValue());
 
 	// Apply Graphics Quality
+	ApplyCustomGraphicsSettings();
+	
 	if (GraphicsQualityOptionBox->GetSelectedOption() != TEXT("Custom"))
 	{
 		UserSettings->SetOverallScalabilityLevel(GraphicsQualityOptionBox->GetSelectedIndex());
-	}
-	else if (GraphicsQualityOptionBox->GetSelectedOption() == TEXT("Custom"))
-	{
-		ApplyCustomSettings();
 	}
 
 	UserSettings->ApplySettings(false);
 
 	Refresh();
+}
+
+void UOptionsWidget::ApplyCustomGraphicsSettings()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+
+	// Resolution Scale
+	float SelectedResolutionScale = FCString::Atof(*ResolutionScaleOptionBox->GetSelectedOption());
+	UserSettings->SetResolutionScaleValueEx(SelectedResolutionScale);
 }
 
 void UOptionsWidget::Back()

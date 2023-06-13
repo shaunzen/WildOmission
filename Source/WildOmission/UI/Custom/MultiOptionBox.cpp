@@ -83,5 +83,7 @@ void UMultiOptionBox::Refresh()
 	{
 		return;
 	}
+
 	SelectedTextBlock->SetText(FText::FromString(Options[SelectedOptionIndex]));
+	OnSelectionChange.Broadcast(Options[SelectedOptionIndex]);
 }

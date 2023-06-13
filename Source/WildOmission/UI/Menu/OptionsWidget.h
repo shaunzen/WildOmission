@@ -46,12 +46,13 @@ private:
 
 	void RefreshGraphicsSettings();
 	void RefreshGraphicsOptionBoxes(bool IsUsingCustomSettings);
-	
-	void ApplyCustomSettings();
-	void ApplyPresetSettings();
+
+	UFUNCTION()
+	void CheckOverallScalabilityCustom(const FString& NewSelection);
 
 	UFUNCTION()
 	void Apply();
+	void ApplyCustomGraphicsSettings();
 	
 	UFUNCTION()
 	void Back();

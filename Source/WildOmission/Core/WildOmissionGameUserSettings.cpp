@@ -3,10 +3,21 @@
 
 #include "WildOmissionGameUserSettings.h"
 
+static const float DEFAULT_FIELDOFVIEW = 90.0f;
+static const float DEFAULT_MASTERVOLUME = 100.0f;
+
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {
-    FieldOfView = 90.0f;
-    MasterVolume = 100.0f;
+    FieldOfView = DEFAULT_FIELDOFVIEW;
+    MasterVolume = DEFAULT_MASTERVOLUME;
+}
+
+void UWildOmissionGameUserSettings::SetToDefaults()
+{
+    Super::SetToDefaults();
+
+    FieldOfView = DEFAULT_FIELDOFVIEW;
+    MasterVolume = DEFAULT_MASTERVOLUME;
 }
 
 void UWildOmissionGameUserSettings::SetFieldOfView(float NewFieldOfView)

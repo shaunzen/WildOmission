@@ -15,6 +15,8 @@ class WILDOMISSION_API UWildOmissionGameUserSettings : public UGameUserSettings
 	GENERATED_UCLASS_BODY()
 
 public:
+	virtual void SetToDefaults() override;
+
 	UFUNCTION()
 	void SetFieldOfView(float NewFieldOfView);
 	
