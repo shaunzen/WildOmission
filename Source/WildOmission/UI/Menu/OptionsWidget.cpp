@@ -127,6 +127,16 @@ void UOptionsWidget::RefreshCustomGraphicsOptionBoxes(bool IsUsingCustomSettings
 			ResolutionScaleOptionBox->SetSelectedOption(TEXT("100"));
 			break;
 		}
+		ResolutionScaleOptionBox->SetSelectedOption(ResolutionScale);
+		ViewDistanceQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		ShadowQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		GlobalIlluminationQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		ReflectionQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		AntiAliasingQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		TextureQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		VisualEffectQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		PostProcessingQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		ShaderQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
 	}
 }
 
