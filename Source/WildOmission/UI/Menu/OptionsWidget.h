@@ -23,9 +23,9 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	USlider* FOVSlider;
+	USlider* FieldOfViewSlider;
 	UPROPERTY(Meta = (BindWidget))
-	USlider* VolumeSlider;
+	USlider* MasterVolumeSlider;
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* WindowModeOptionBox;
 	UPROPERTY(Meta = (BindWidget))
@@ -41,6 +41,14 @@ private:
 
 	UPROPERTY()
 	UWidget* ParentMenu;
+
+	void RefreshGameplaySettings();
+
+	void RefreshGraphicsSettings();
+	void RefreshGraphicsOptionBoxes(bool IsUsingCustomSettings);
+	
+	void ApplyCustomSettings();
+	void ApplyPresetSettings();
 
 	UFUNCTION()
 	void Apply();

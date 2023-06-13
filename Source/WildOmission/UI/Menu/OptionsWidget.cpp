@@ -5,9 +5,10 @@
 #include "MainMenuWidget.h"
 #include "GameplayMenuWidget.h"
 #include "Components/Button.h"
+#include "Components/Slider.h"
 #include "WildOmission/UI/Custom/MultiOptionBox.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "GameFramework/GameUserSettings.h"
+#include "WildOmission/Core/WildOmissionGameUserSettings.h"
 
 void UOptionsWidget::NativeConstruct()
 {
@@ -24,7 +25,43 @@ void UOptionsWidget::Setup(UWidget* InParentMenu)
 
 void UOptionsWidget::Refresh()
 {
-	UGameUserSettings* UserSettings = GEngine->GameUserSettings;
+	RefreshGameplaySettings();
+	RefreshGraphicsSettings();
+}
+
+void UOptionsWidget::RefreshGameplaySettings()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	float FieldOfView = UserSettings->GetFieldOfView();
+	float MasterVolume = UserSettings->GetMasterVolume();
+
+	FieldOfViewSlider->SetValue(FieldOfView);
+	MasterVolumeSlider->SetValue(MasterVolume);
+}
+
+void UOptionsWidget::RefreshGraphicsSettings()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	int32 OverallGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
+	int32 ResolutionScale = UserSettings->GetResolutionScaleAsInt32();
+
+	// Setup Graphics Quality
+	GraphicsQualityOptionBox->ClearOptions();
+	GraphicsQualityOptionBox->AddOption(FString(TEXT("Low")));
+	GraphicsQualityOptionBox->AddOption(FString(TEXT("Medium")));
+	GraphicsQualityOptionBox->AddOption(FString(TEXT("High")));
+	GraphicsQualityOptionBox->AddOption(FString(TEXT("Epic")));
+	GraphicsQualityOptionBox->AddOption(FString(TEXT("Cinematic")));
+	GraphicsQualityOptionBox->AddOption(FString(TEXT("Custom")));
+
+	if (OverallGraphicsQuality == -1)
+	{
+		GraphicsQualityOptionBox->SetSelectedOption(TEXT("Custom"));
+	}
+	else
+	{
+		GraphicsQualityOptionBox->SetSelectedIndex(OverallGraphicsQuality);
+	}
 
 	// Setup Resolution Settings
 	ResolutionScaleOptionBox->ClearOptions();
@@ -34,54 +71,52 @@ void UOptionsWidget::Refresh()
 	ResolutionScaleOptionBox->AddOption(FString(TEXT("80")));
 	ResolutionScaleOptionBox->AddOption(FString(TEXT("90")));
 	ResolutionScaleOptionBox->AddOption(FString(TEXT("100")));
-	
-	float CurrentScaleNormalized = 0.0f;
-	float CurrentScale = 0.0f;
-	float MinScale = 0.0f;
-	float MaxScale = 0.0f;
-	UserSettings->GetResolutionScaleInformationEx(CurrentScaleNormalized, CurrentScale, MinScale, MaxScale);
-	FString SelectedScale = FString::Printf(TEXT("%i"), CurrentScale);
+
+	FString SelectedScale = FString::Printf(TEXT("%i"), ResolutionScale);
 	ResolutionScaleOptionBox->SetSelectedOption(SelectedScale);
 
-	// Setup Graphics Quality
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Low")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Medium")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("High")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Epic")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Cinematic")));
-	GraphicsQualityOptionBox->AddOption(FString(TEXT("Custom")));
-	// Check if custom
-	if (UserSettings->GetOverallScalabilityLevel() == -1)
-	{
-		GraphicsQualityOptionBox->SetSelectedOption(FString("Custom"));
-	}
-	else
-	{
-		GraphicsQualityOptionBox->SetSelectedIndex(UserSettings->GetOverallScalabilityLevel());
-	}
+	RefreshGraphicsOptionBoxes(OverallGraphicsQuality == -1);
+}
 
+void UOptionsWidget::RefreshGraphicsOptionBoxes(bool IsUsingCustomSettings)
+{
+	ResolutionScaleOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	// TODO other options
+}
+
+void UOptionsWidget::ApplyCustomSettings()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+
+	// Apply Resolution Scale
+	float SelectedResolutionScale = static_cast<float>(FCString::Atoi(*ResolutionScaleOptionBox->GetSelectedOption()));
+	UserSettings->SetResolutionScaleValueEx(SelectedResolutionScale);
 }
 
 void UOptionsWidget::Apply()
 {
-	UGameUserSettings* UserSettings = GEngine->GameUserSettings;
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 
-	// Apply Resolution Scale
-	float SelectedResolutionScale = FCString::Atof(*ResolutionScaleOptionBox->GetSelectedOption());
-	UserSettings->SetResolutionScaleValueEx(SelectedResolutionScale);
+	UserSettings->SetFieldOfView(FieldOfViewSlider->GetValue());
+	UserSettings->SetMasterVolume(MasterVolumeSlider->GetValue());
 
 	// Apply Graphics Quality
-	UserSettings->SetOverallScalabilityLevel(GraphicsQualityOptionBox->GetSelectedIndex());
+	if (GraphicsQualityOptionBox->GetSelectedOption() != TEXT("Custom"))
+	{
+		UserSettings->SetOverallScalabilityLevel(GraphicsQualityOptionBox->GetSelectedIndex());
+	}
+	else if (GraphicsQualityOptionBox->GetSelectedOption() == TEXT("Custom"))
+	{
+		ApplyCustomSettings();
+	}
 
 	UserSettings->ApplySettings(false);
 
 	Refresh();
-	UE_LOG(LogTemp, Warning, TEXT("Applying Selected Options"));
 }
 
 void UOptionsWidget::Back()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Back Clicked."));
 	UMainMenuWidget* MainMenu = Cast<UMainMenuWidget>(ParentMenu);
 	UGameplayMenuWidget* GameplayMenu = Cast<UGameplayMenuWidget>(ParentMenu);
 	if (MainMenu)
