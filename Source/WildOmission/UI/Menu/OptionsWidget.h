@@ -29,9 +29,11 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* WindowModeOptionBox;
 	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* OverallGraphicsQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* ResolutionScaleOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* GraphicsQualityOptionBox;
+	UMultiOptionBox* TextureQualityOptionBox;
 
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ApplyButton;
