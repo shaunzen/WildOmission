@@ -19,7 +19,7 @@ public:
 
 	void Setup(UWidget* ParentMenu);
 
-	void Open();
+	void Refresh();
 
 private:
 	UPROPERTY(Meta = (BindWidget))

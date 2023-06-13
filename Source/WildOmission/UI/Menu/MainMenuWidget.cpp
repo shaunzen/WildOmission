@@ -131,7 +131,7 @@ void UMainMenuWidget::OpenOptionsMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(OptionsMenu);
-	OptionsMenu->Open();
+	OptionsMenu->Refresh();
 }
 
 void UMainMenuWidget::ExitGame()
