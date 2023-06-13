@@ -60,8 +60,8 @@ void UOptionsWidget::RefreshGameplaySettings()
 	float FieldOfView = UserSettings->GetFieldOfView();
 	float MasterVolume = UserSettings->GetMasterVolume();
 
-	FieldOfViewSlider->SetValue(FieldOfView);
-	MasterVolumeSlider->SetValue(MasterVolume);
+	//FieldOfViewSliderOptionBox->SetValue(FieldOfView);
+	//MasterVolumeSliderOptionBox->SetValue(MasterVolume);
 }
 
 void UOptionsWidget::RefreshGraphicsSettings()
@@ -149,8 +149,8 @@ void UOptionsWidget::Apply()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 
-	UserSettings->SetFieldOfView(FieldOfViewSlider->GetValue());
-	UserSettings->SetMasterVolume(MasterVolumeSlider->GetValue());
+	//UserSettings->SetFieldOfView(FieldOfViewSlider->GetValue());
+	//UserSettings->SetMasterVolume(MasterVolumeSlider->GetValue());
 
 	// Apply Graphics Quality
 	ApplyCustomGraphicsSettings();

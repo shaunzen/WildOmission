@@ -23,9 +23,9 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	USlider* FieldOfViewSlider;
+	UUserWidget* FieldOfViewSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USlider* MasterVolumeSlider;
+	UUserWidget* MasterVolumeSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* WindowModeOptionBox;
 	UPROPERTY(Meta = (BindWidget))
