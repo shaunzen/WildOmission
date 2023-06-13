@@ -235,6 +235,8 @@ private:
 	
 	void SetupMesh();
 	
+	void SetupFieldOfView();
+
 	void SetupPlayerHUD();
 
 	void SetupWeatherEffectHandler();

@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "UObject/ConstructorHelpers.h"
+#include "WildOmission/Core/WildOmissionGameUserSettings.h"
 #include "WildOmission/Components/EquipComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
@@ -180,6 +181,7 @@ void AWildOmissionCharacter::BeginPlay()
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
+	SetupFieldOfView();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
 	EndSprint();
@@ -208,6 +210,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
+	SetupFieldOfView();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
 }
@@ -255,6 +258,12 @@ void AWildOmissionCharacter::SetupMesh()
 {
 	GetMesh()->SetVisibility(!IsLocallyControlled());
 	FirstPersonArmsMeshComponent->SetVisibility(IsLocallyControlled());
+}
+
+void AWildOmissionCharacter::SetupFieldOfView()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	FirstPersonCameraComponent->SetFieldOfView(UserSettings->GetFieldOfView());
 }
 
 void AWildOmissionCharacter::SetupPlayerHUD()
