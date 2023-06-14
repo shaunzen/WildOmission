@@ -28,7 +28,7 @@ void UMainMenuWidget::NativeConstruct()
 	WorldCreationMenu->Setup(this);
 	WorldMenu->Setup(this);
 	ServerBrowserMenu->Setup(this);
-	OptionsMenu->Setup(this);
+	OptionsMenu->SetParent(this);
 	
 }
 

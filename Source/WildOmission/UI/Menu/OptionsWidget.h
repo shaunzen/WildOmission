@@ -17,7 +17,7 @@ class WILDOMISSION_API UOptionsWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	void Setup(UWidget* ParentMenu);
+	void SetParent(UWidget* ParentMenu);
 
 	void Refresh();
 
@@ -31,7 +31,7 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* OverallGraphicsQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ResolutionScaleOptionBox;
+	UMultiOptionBox* FullscreenResolutionOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* ViewDistanceQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
@@ -64,17 +64,20 @@ private:
 	UWidget* ParentMenu;
 
 	void RefreshGameplaySettings();
-
+	void RefreshWindowSettings();
 	void RefreshGraphicsSettings();
-	void RefreshCustomGraphicsOptionBoxes(bool IsUsingCustomSettings);
+	void RefreshCustomGraphicsSettings(bool IsUsingCustomSettings);
 
 	UFUNCTION()
-	void CheckOverallScalabilityCustom(const FString& NewSelection);
+	void OnOverallQualityOptionChange(const FString& NewSelection);
 
 	UFUNCTION()
 	void Apply();
+
+	void ApplyWindowSettings();
 	void ApplyCustomGraphicsSettings();
 	void ApplyFieldOfViewSettings();
+	void ApplyMasterVolumeSettings();
 	
 	UFUNCTION()
 	void Reset();

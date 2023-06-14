@@ -222,7 +222,7 @@ void UWildOmissionGameInstance::RefreshServerList()
 void UWildOmissionGameInstance::RefreshMasterVolume()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MasterSoundClass, UserSettings->GetMasterVolume());
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MasterSoundClass, UserSettings->GetMasterVolume(), 1.0f, 0.2f);
 	UGameplayStatics::PushSoundMixModifier(GetWorld(), MasterSoundMixModifier);
 }
 

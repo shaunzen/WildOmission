@@ -24,7 +24,7 @@ void UGameplayMenuWidget::NativeConstruct()
 	OptionsButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenOptionsMenu);
 	QuitButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
 
-	OptionsMenu->Setup(this);
+	OptionsMenu->SetParent(this);
 }
 
 void UGameplayMenuWidget::Show()
