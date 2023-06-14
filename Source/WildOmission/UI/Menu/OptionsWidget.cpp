@@ -90,7 +90,7 @@ void UOptionsWidget::RefreshWindowSettings()
 	FIntPoint CurrentResolution = UserSettings->GetScreenResolution();
 	FString CurrentResolutionString = FString::Printf(TEXT("%i X %i"), CurrentResolution.X, CurrentResolution.Y);
 	FullscreenResolutionOptionBox->SetSelectedOption(CurrentResolutionString);
-	FullscreenResolutionOptionBox->SetIsEnabled(UserSettings->GetFullscreenMode() == EWindowMode::Type::Fullscreen);
+	FullscreenResolutionOptionBox->SetIsEnabled(UserSettings->GetFullscreenMode() == EWindowMode::Type::Fullscreen || UserSettings->GetFullscreenMode() == EWindowMode::Type::Windowed);
 
 	switch (UserSettings->GetFullscreenMode())
 	{
@@ -110,7 +110,6 @@ void UOptionsWidget::RefreshGraphicsSettings()
 {
 	int32 OverallGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
 	bool UsingCustomSettings = OverallGraphicsQuality == -1;
-	
 
 	OverallGraphicsQualityOptionBox->SetSelectedIndex(OverallGraphicsQuality);
 	if (UsingCustomSettings)
