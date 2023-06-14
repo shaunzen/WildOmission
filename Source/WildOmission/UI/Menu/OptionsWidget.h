@@ -53,6 +53,9 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ApplyButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	UButton* ResetButton;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UButton* BackButton;
@@ -72,6 +75,9 @@ private:
 	void Apply();
 	void ApplyCustomGraphicsSettings();
 	
+	UFUNCTION()
+	void Reset();
+
 	UFUNCTION()
 	void Back();
 

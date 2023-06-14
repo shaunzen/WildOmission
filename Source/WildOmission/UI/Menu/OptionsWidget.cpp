@@ -21,7 +21,14 @@ void UOptionsWidget::NativeConstruct()
 	MasterVolumeSliderOptionBox->SetMaxValue(100.0f);
 
 	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
+	ResetButton->OnClicked.AddDynamic(this, &UOptionsWidget::Reset);
 	BackButton->OnClicked.AddDynamic(this, &UOptionsWidget::Back);
+
+	// Setup Window Mode
+	WindowModeOptionBox->ClearOptions();
+	WindowModeOptionBox->AddOption(TEXT("Windowed"));
+	WindowModeOptionBox->AddOption(TEXT("Windowed Fullscreen"));
+	WindowModeOptionBox->AddOption(TEXT("Fullscreen"));
 
 	// Setup Graphics Quality
 	OverallGraphicsQualityOptionBox->GiveQualityOptions();
@@ -75,6 +82,19 @@ void UOptionsWidget::RefreshGraphicsSettings()
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	int32 OverallGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
 	bool UsingCustomSettings = OverallGraphicsQuality == -1;
+	
+	switch (UserSettings->GetFullscreenMode())
+	{
+	case EWindowMode::Type::Windowed:
+		WindowModeOptionBox->SetSelectedIndex(0);
+		break;
+	case EWindowMode::Type::WindowedFullscreen:
+		WindowModeOptionBox->SetSelectedIndex(1);
+		break;
+	case EWindowMode::Type::Fullscreen:
+		WindowModeOptionBox->SetSelectedIndex(2);
+		break;
+	}
 
 	OverallGraphicsQualityOptionBox->SetSelectedIndex(OverallGraphicsQuality);
 	if (UsingCustomSettings)
@@ -158,6 +178,19 @@ void UOptionsWidget::Apply()
 	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
 	UserSettings->SetMasterVolume(MasterVolumeSliderOptionBox->GetValue());
 
+	switch (WindowModeOptionBox->GetSelectedIndex())
+	{
+	case 0:
+		UserSettings->SetFullscreenMode(EWindowMode::Type::Windowed);
+		break;
+	case 1:
+		UserSettings->SetFullscreenMode(EWindowMode::Type::WindowedFullscreen);
+		break;
+	case 2:
+		UserSettings->SetFullscreenMode(EWindowMode::Type::Fullscreen);
+		break;
+	}
+
 	// Apply Graphics Quality
 	ApplyCustomGraphicsSettings();
 	
@@ -186,6 +219,13 @@ void UOptionsWidget::ApplyCustomGraphicsSettings()
 	UserSettings->SetVisualEffectQuality(VisualEffectQualityOptionBox->GetSelectedIndex());
 	UserSettings->SetPostProcessingQuality(PostProcessingQualityOptionBox->GetSelectedIndex());
 	UserSettings->SetShadingQuality(ShaderQualityOptionBox->GetSelectedIndex());
+}
+
+void UOptionsWidget::Reset()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	UserSettings->SetToDefaults();
+	Refresh();
 }
 
 void UOptionsWidget::Back()
