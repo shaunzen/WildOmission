@@ -8,6 +8,8 @@
 
 class UTextBlock;
 class UButton;
+class UWidgetSwitcher;
+class UOptionsWidget;
 
 UCLASS()
 class WILDOMISSION_API UGameplayMenuWidget : public UUserWidget
@@ -17,10 +19,16 @@ class WILDOMISSION_API UGameplayMenuWidget : public UUserWidget
 public:
 	UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual bool Initialize() override;
-
+	virtual void NativeConstruct() override;
+	
 	UFUNCTION(BlueprintCallable)
 	void Show();
+	
+	UFUNCTION()
+	void OpenGameMenu();
+	
+	UFUNCTION()
+	void OpenOptionsMenu();
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsOpen() const;
@@ -30,11 +38,23 @@ private:
 	UButton* ResumeButton;
 
 	UPROPERTY(Meta = (BindWidget))
+	UButton* OptionsButton;
+
+	UPROPERTY(Meta = (BindWidget))
 	UButton* QuitButton;
 
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* QuitButtonText;
 	
+	UPROPERTY(Meta = (BindWidget))
+	UWidgetSwitcher* MenuSwitcher;
+
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* GameMenu;
+
+	UPROPERTY(Meta = (BindWidget))
+	UOptionsWidget* OptionsMenu;
+
 	bool bOpen;
 
 	UFUNCTION()
@@ -42,7 +62,7 @@ private:
 
 	UFUNCTION()
 	void Save();
-	
+
 	UFUNCTION()
 	void QuitToMenu();
 

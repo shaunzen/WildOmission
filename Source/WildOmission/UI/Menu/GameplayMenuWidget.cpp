@@ -4,6 +4,8 @@
 #include "GameplayMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/WidgetSwitcher.h"
+#include "WildOmission/UI/Menu/OptionsWidget.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 
@@ -13,20 +15,16 @@ UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitial
 	bOpen = false;
 }
 
-bool UGameplayMenuWidget::Initialize()
+void UGameplayMenuWidget::NativeConstruct()
 {
-	bool Success = Super::Initialize();
-	
-	if (!Success || ResumeButton == nullptr || QuitButton == nullptr)
-	{
-		return false;
-	}
+	Super::NativeConstruct();
 
 	// Bind button delegates
 	ResumeButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::Teardown);
+	OptionsButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenOptionsMenu);
 	QuitButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
 
-	return true;
+	OptionsMenu->Setup(this);
 }
 
 void UGameplayMenuWidget::Show()
@@ -54,6 +52,26 @@ void UGameplayMenuWidget::Show()
 	PlayerController->SetMouseLocation(ViewportSizeX / 2, ViewportSizeY / 2);
 
 	Save();
+}
+
+void UGameplayMenuWidget::OpenGameMenu()
+{
+	if (MenuSwitcher == nullptr || GameMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(GameMenu);
+}
+
+void UGameplayMenuWidget::OpenOptionsMenu()
+{
+	if (MenuSwitcher == nullptr || OptionsMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(OptionsMenu);
 }
 
 bool UGameplayMenuWidget::IsOpen() const

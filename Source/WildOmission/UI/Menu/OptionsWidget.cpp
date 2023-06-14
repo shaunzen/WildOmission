@@ -238,6 +238,6 @@ void UOptionsWidget::Back()
 	}
 	else if (GameplayMenu)
 	{
-		// TODO back to gameplay menu
+		GameplayMenu->OpenGameMenu();
 	}
 }
