@@ -10,7 +10,10 @@
 #include "WildOmission/UI/Menu/GameplayMenuWidget.h"
 #include "WildOmission/UI/Menu/LoadingMenuWidget.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
+#include "WildOmission/Core/WildOmissionGameUserSettings.h"
 #include "GameFramework/PlayerState.h"
+#include "Sound/SoundMix.h"
+#include "Sound/SoundClass.h"
 #include "Kismet/GameplayStatics.h"
 
 // Static session information
@@ -20,6 +23,9 @@ const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FString GameVersion = FString("Pre Alpha 0.8.0");
 
 #define SEARCH_PRESENCE FName(TEXT("PRESENCESEARCH"))
+
+static USoundMix* MasterSoundMixModifier = nullptr;
+static USoundClass* MasterSoundClass = nullptr;
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
@@ -40,11 +46,25 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	{
 		LoadingMenuWidgetBlueprintClass = LoadingMenuBlueprint.Class;
 	}
+
+	static ConstructorHelpers::FObjectFinder<USoundMix> MasterSoundMixModifierBlueprint(TEXT("/Game/WildOmission/Core/Audio/MasterSoundClassMix"));
+	if (MasterSoundMixModifierBlueprint.Succeeded())
+	{
+		MasterSoundMixModifier = MasterSoundMixModifierBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundClass> MasterSoundClassBlueprint(TEXT("/Engine/EngineSounds/Master"));
+	if (MasterSoundClassBlueprint.Succeeded())
+	{
+		MasterSoundClass = MasterSoundClassBlueprint.Object;
+	}
 }
 
 void UWildOmissionGameInstance::Init()
 {
 	Super::Init();
+
+	RefreshMasterVolume();
 
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
 
@@ -67,7 +87,7 @@ void UWildOmissionGameInstance::Init()
 	//SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnDestroySessionComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
-	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);	
+	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
 }
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()
@@ -197,6 +217,13 @@ void UWildOmissionGameInstance::RefreshServerList()
 	
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+}
+
+void UWildOmissionGameInstance::RefreshMasterVolume()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MasterSoundClass, UserSettings->GetMasterVolume());
+	UGameplayStatics::PushSoundMixModifier(GetWorld(), MasterSoundMixModifier);
 }
 
 //****************************

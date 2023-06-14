@@ -4,7 +4,7 @@
 #include "WildOmissionGameUserSettings.h"
 
 static const float DEFAULT_FIELDOFVIEW = 90.0f;
-static const float DEFAULT_MASTERVOLUME = 100.0f;
+static const float DEFAULT_MASTERVOLUME = 1.0f;
 
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {

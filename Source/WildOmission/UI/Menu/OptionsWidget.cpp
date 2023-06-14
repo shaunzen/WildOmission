@@ -9,6 +9,7 @@
 #include "WildOmission/UI/Custom/MultiOptionBox.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "WildOmission/Core/WildOmissionGameUserSettings.h"
+#include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 
 void UOptionsWidget::NativeConstruct()
@@ -64,6 +65,9 @@ void UOptionsWidget::Setup(UWidget* InParentMenu)
 
 void UOptionsWidget::Refresh()
 {
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->RefreshMasterVolume();
+
 	RefreshGameplaySettings();
 	RefreshGraphicsSettings();
 }
@@ -72,7 +76,7 @@ void UOptionsWidget::RefreshGameplaySettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	float FieldOfView = UserSettings->GetFieldOfView();
-	float MasterVolume = UserSettings->GetMasterVolume();
+	float MasterVolume = UserSettings->GetMasterVolume() * 100.0f;
 
 	FieldOfViewSliderOptionBox->SetValue(FieldOfView);
 	MasterVolumeSliderOptionBox->SetValue(MasterVolume);
@@ -177,7 +181,7 @@ void UOptionsWidget::Apply()
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 
 	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
-	UserSettings->SetMasterVolume(MasterVolumeSliderOptionBox->GetValue());
+	UserSettings->SetMasterVolume(MasterVolumeSliderOptionBox->GetValue() / 100.0f);
 
 	switch (WindowModeOptionBox->GetSelectedIndex())
 	{

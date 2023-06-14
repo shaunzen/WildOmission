@@ -61,6 +61,8 @@ public:
 
 	void RefreshServerList();
 
+	void RefreshMasterVolume();
+
 	static TArray<FString> GetAllWorldNames();
 	void CreateWorld(const FString& NewWorldName);
 
