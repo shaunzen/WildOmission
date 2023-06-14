@@ -33,14 +33,24 @@ void UOptionsWidget::NativeConstruct()
 	WindowModeOptionBox->AddOption(TEXT("Fullscreen"));
 
 	// Setup Resolution Settings
-	FullscreenResolutionOptionBox->ClearOptions();
+	ResolutionOptionBox->ClearOptions();
 	TArray<FIntPoint> SupportedResolutions;
 	UKismetSystemLibrary::GetSupportedFullscreenResolutions(SupportedResolutions);
 	for (const FIntPoint& Resolution : SupportedResolutions)
 	{
 		FString ResolutionString = FString::Printf(TEXT("%i X %i"), Resolution.X, Resolution.Y);
-		FullscreenResolutionOptionBox->AddOption(ResolutionString);
+		ResolutionOptionBox->AddOption(ResolutionString);
 	}
+
+	// Setup Frame Rate Limit Settings
+	FrameRateLimitOptionBox->ClearOptions();
+	FrameRateLimitOptionBox->AddOption(TEXT("Unlimited"));
+	FrameRateLimitOptionBox->AddOption(TEXT("30"));
+	FrameRateLimitOptionBox->AddOption(TEXT("60"));
+	FrameRateLimitOptionBox->AddOption(TEXT("100"));
+	FrameRateLimitOptionBox->AddOption(TEXT("120"));
+	FrameRateLimitOptionBox->AddOption(TEXT("144"));
+	FrameRateLimitOptionBox->AddOption(TEXT("240"));
 
 	// Setup Graphics Quality
 	OverallGraphicsQualityOptionBox->GiveQualityOptions();
@@ -89,8 +99,8 @@ void UOptionsWidget::RefreshWindowSettings()
 {
 	FIntPoint CurrentResolution = UserSettings->GetScreenResolution();
 	FString CurrentResolutionString = FString::Printf(TEXT("%i X %i"), CurrentResolution.X, CurrentResolution.Y);
-	FullscreenResolutionOptionBox->SetSelectedOption(CurrentResolutionString);
-	FullscreenResolutionOptionBox->SetIsEnabled(UserSettings->GetFullscreenMode() == EWindowMode::Type::Fullscreen || UserSettings->GetFullscreenMode() == EWindowMode::Type::Windowed);
+	ResolutionOptionBox->SetSelectedOption(CurrentResolutionString);
+	ResolutionOptionBox->SetIsEnabled(UserSettings->GetFullscreenMode() == EWindowMode::Type::Fullscreen || UserSettings->GetFullscreenMode() == EWindowMode::Type::Windowed);
 
 	switch (UserSettings->GetFullscreenMode())
 	{
@@ -102,6 +112,17 @@ void UOptionsWidget::RefreshWindowSettings()
 		break;
 	case EWindowMode::Type::Fullscreen:
 		WindowModeOptionBox->SetSelectedIndex(2);
+		break;
+	}
+
+	switch (FMath::RoundToInt32(UserSettings->GetFrameRateLimit()))
+	{
+	case 0:
+		FrameRateLimitOptionBox->SetSelectedOption(TEXT("Unlimited"));
+		break;
+	default:
+		FString FrameLimitString = FString::Printf(TEXT("%i"), FMath::RoundToInt32(UserSettings->GetFrameRateLimit()));
+		FrameRateLimitOptionBox->SetSelectedOption(FrameLimitString);
 		break;
 	}
 }
@@ -185,7 +206,7 @@ void UOptionsWidget::ApplyWindowSettings()
 {
 	FString XString;
 	FString YString;
-	FString SelectedResolutionString = FullscreenResolutionOptionBox->GetSelectedOption();
+	FString SelectedResolutionString = ResolutionOptionBox->GetSelectedOption();
 	SelectedResolutionString.Split(TEXT(" X "), &XString, &YString);
 	FIntPoint NewResolution = FIntPoint::ZeroValue;
 	NewResolution.X = FCString::Atoi(*XString);
@@ -202,6 +223,31 @@ void UOptionsWidget::ApplyWindowSettings()
 		break;
 	case 2:
 		UserSettings->SetFullscreenMode(EWindowMode::Type::Fullscreen);
+		break;
+	}
+
+	switch (FrameRateLimitOptionBox->GetSelectedIndex())
+	{
+	case 0:
+		UserSettings->SetFrameRateLimit(0.0f);
+		break;
+	case 1:
+		UserSettings->SetFrameRateLimit(30.0f);
+		break;
+	case 2:
+		UserSettings->SetFrameRateLimit(60.0f);
+		break;
+	case 3:
+		UserSettings->SetFrameRateLimit(100.0f);
+		break;
+	case 4:
+		UserSettings->SetFrameRateLimit(120.0f);
+		break;
+	case 5:
+		UserSettings->SetFrameRateLimit(144.0f);
+		break;
+	case 6:
+		UserSettings->SetFrameRateLimit(240.0f);
 		break;
 	}
 }

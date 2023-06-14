@@ -29,9 +29,11 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* WindowModeOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* OverallGraphicsQualityOptionBox;
+	UMultiOptionBox* ResolutionOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* FullscreenResolutionOptionBox;
+	UMultiOptionBox* FrameRateLimitOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* OverallGraphicsQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* ViewDistanceQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
