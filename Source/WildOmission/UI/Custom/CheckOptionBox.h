@@ -18,10 +18,11 @@ class WILDOMISSION_API UCheckOptionBox : public UUserWidget
 	GENERATED_BODY()
 public:
 	UCheckOptionBox(const FObjectInitializer& ObjectInitializer);
+	virtual void NativeConstruct() override;
 
-	void Setup(const FString& OptionName, bool CheckedByDefault = false);
+	void SetChecked(bool IsChecked);
 
-	FOnCheckStateChangedSignature OnCheckedStateChanged;
+	FOnCheckStateChangedSignature OnCheckStateChanged;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsChecked() const;

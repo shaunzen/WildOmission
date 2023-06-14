@@ -8,7 +8,7 @@
 
 class UMultiOptionBox;
 class UButton;
-class USlider;
+class USliderOptionBox;
 
 UCLASS()
 class WILDOMISSION_API UOptionsWidget : public UUserWidget
@@ -23,9 +23,9 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UUserWidget* FieldOfViewSliderOptionBox;
+	USliderOptionBox* FieldOfViewSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UUserWidget* MasterVolumeSliderOptionBox;
+	USliderOptionBox* MasterVolumeSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* WindowModeOptionBox;
 	UPROPERTY(Meta = (BindWidget))

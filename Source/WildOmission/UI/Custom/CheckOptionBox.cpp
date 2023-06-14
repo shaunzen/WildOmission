@@ -23,14 +23,20 @@ UCheckOptionBox::UCheckOptionBox(const FObjectInitializer& ObjectInitializer) : 
 	{
 		UncheckedMaterial = UncheckedMaterialBlueprint.Object;
 	}
+
+	Checked = false;
 }
 
-void UCheckOptionBox::Setup(const FString& OptionName, bool CheckedByDefault)
+void UCheckOptionBox::NativeConstruct()
 {
-	TextBlock->SetText(FText::FromString(OptionName));
-	Checked = CheckedByDefault;
-	RefreshState();
 	Button->OnClicked.AddDynamic(this, &UCheckOptionBox::OnClicked);
+	RefreshState();
+}
+
+void UCheckOptionBox::SetChecked(bool IsChecked)
+{
+	Checked = IsChecked;
+	RefreshState();
 }
 
 bool UCheckOptionBox::IsChecked() const
@@ -54,5 +60,5 @@ void UCheckOptionBox::OnClicked()
 {
 	Checked = !Checked;
 	RefreshState();
-	OnCheckedStateChanged.Broadcast(Checked);
+	OnCheckStateChanged.Broadcast(Checked);
 }

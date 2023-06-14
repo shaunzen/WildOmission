@@ -5,7 +5,7 @@
 #include "MainMenuWidget.h"
 #include "GameplayMenuWidget.h"
 #include "Components/Button.h"
-#include "Components/Slider.h"
+#include "WildOmission/UI/Custom/SliderOptionBox.h"
 #include "WildOmission/UI/Custom/MultiOptionBox.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "WildOmission/Core/WildOmissionGameUserSettings.h"
@@ -13,6 +13,12 @@
 void UOptionsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	FieldOfViewSliderOptionBox->SetMinValue(60.0f);
+	FieldOfViewSliderOptionBox->SetMaxValue(110.0f);
+
+	MasterVolumeSliderOptionBox->SetMinValue(0.0f);
+	MasterVolumeSliderOptionBox->SetMaxValue(100.0f);
 
 	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
 	BackButton->OnClicked.AddDynamic(this, &UOptionsWidget::Back);
@@ -60,8 +66,8 @@ void UOptionsWidget::RefreshGameplaySettings()
 	float FieldOfView = UserSettings->GetFieldOfView();
 	float MasterVolume = UserSettings->GetMasterVolume();
 
-	//FieldOfViewSliderOptionBox->SetValue(FieldOfView);
-	//MasterVolumeSliderOptionBox->SetValue(MasterVolume);
+	FieldOfViewSliderOptionBox->SetValue(FieldOfView);
+	MasterVolumeSliderOptionBox->SetValue(MasterVolume);
 }
 
 void UOptionsWidget::RefreshGraphicsSettings()
@@ -149,8 +155,8 @@ void UOptionsWidget::Apply()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 
-	//UserSettings->SetFieldOfView(FieldOfViewSlider->GetValue());
-	//UserSettings->SetMasterVolume(MasterVolumeSlider->GetValue());
+	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
+	UserSettings->SetMasterVolume(MasterVolumeSliderOptionBox->GetValue());
 
 	// Apply Graphics Quality
 	ApplyCustomGraphicsSettings();

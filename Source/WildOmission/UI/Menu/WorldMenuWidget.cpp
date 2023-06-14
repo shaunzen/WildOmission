@@ -5,7 +5,7 @@
 #include "MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
-#include "Components/CheckBox.h"
+#include "WildOmission/UI/Custom/CheckOptionBox.h"
 #include "Components/TextBlock.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "GameFramework/PlayerState.h"
@@ -16,7 +16,7 @@ void UWorldMenuWidget::Setup(UMainMenuWidget* InMainMenuParent)
 
 	PlayButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::PlayButtonClicked);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
-	MultiplayerCheckBox->OnCheckStateChanged.AddDynamic(this, &UWorldMenuWidget::MultiplayerCheckboxChanged);
+	MultiplayerCheckOptionBox->OnCheckStateChanged.AddDynamic(this, &UWorldMenuWidget::MultiplayerCheckboxChanged);
 	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UWorldMenuWidget::ServerNameOnTextChanged);
 }
 
@@ -63,7 +63,7 @@ void UWorldMenuWidget::PlayButtonClicked()
 		return;
 	}
 
-	if (MultiplayerCheckBox->IsChecked())
+	if (MultiplayerCheckOptionBox->IsChecked())
 	{
 		FString ServerName = ServerNameInputBox->GetText().ToString();
 		if (ServerName == FString(""))
@@ -71,7 +71,7 @@ void UWorldMenuWidget::PlayButtonClicked()
 			return;
 		}
 
-		GameInstance->Host(ServerName, WorldName, FriendsOnlyCheckBox->IsChecked());
+		GameInstance->Host(ServerName, WorldName, FriendsOnlyCheckOptionBox->IsChecked());
 	}
 	else
 	{

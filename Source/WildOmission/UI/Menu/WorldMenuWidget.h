@@ -8,7 +8,7 @@
 
 class UTextBlock;
 class UButton;
-class UCheckBox;
+class UCheckOptionBox;
 class UEditableTextBox;
 class UMainMenuWidget;
 
@@ -33,10 +33,10 @@ private:
 	UButton* BackButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UCheckBox* MultiplayerCheckBox;
+	UCheckOptionBox* MultiplayerCheckOptionBox;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UCheckBox* FriendsOnlyCheckBox;
+	UCheckOptionBox* FriendsOnlyCheckOptionBox;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* HostSettingsMenu;

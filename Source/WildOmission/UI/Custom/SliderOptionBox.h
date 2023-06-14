@@ -15,9 +15,11 @@ class WILDOMISSION_API USliderOptionBox : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void Setup(float Default, float Min, float Max);
+	virtual void NativeConstruct() override;
 
 	void SetValue(float Value);
+	void SetMinValue(float Value);
+	void SetMaxValue(float Value);
 	float GetValue() const;
 
 private:

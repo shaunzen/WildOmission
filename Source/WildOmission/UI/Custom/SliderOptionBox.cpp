@@ -5,17 +5,27 @@
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 
-void USliderOptionBox::Setup(float Default, float Min, float Max)
+void USliderOptionBox::NativeConstruct()
 {
-	Slider->SetMinValue(Min);
-	Slider->SetMaxValue(Max);
-	Slider->SetValue(Default);
 	Slider->OnValueChanged.AddDynamic(this, &USliderOptionBox::OnSliderValueChanged);
 }
 
 void USliderOptionBox::SetValue(float Value)
 {
 	Slider->SetValue(Value);
+	OnSliderValueChanged(Value);
+}
+
+void USliderOptionBox::SetMinValue(float Value)
+{
+	Slider->SetMinValue(Value);
+	OnSliderValueChanged(Value);
+}
+
+void USliderOptionBox::SetMaxValue(float Value)
+{
+	Slider->SetMaxValue(Value);
+	OnSliderValueChanged(Value);
 }
 
 float USliderOptionBox::GetValue() const
