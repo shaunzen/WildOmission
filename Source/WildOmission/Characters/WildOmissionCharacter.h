@@ -35,6 +35,8 @@ public:
 
 	virtual void Landed(const FHitResult& HitResult) override;
 
+	void SetupFieldOfView();
+
 	void HandleDeath();
 
 	UFUNCTION(Client, Reliable)
@@ -235,8 +237,6 @@ private:
 	
 	void SetupMesh();
 	
-	void SetupFieldOfView();
-
 	void SetupPlayerHUD();
 
 	void SetupWeatherEffectHandler();

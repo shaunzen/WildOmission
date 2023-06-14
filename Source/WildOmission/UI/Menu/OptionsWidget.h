@@ -74,6 +74,7 @@ private:
 	UFUNCTION()
 	void Apply();
 	void ApplyCustomGraphicsSettings();
+	void ApplyFieldOfViewSettings();
 	
 	UFUNCTION()
 	void Reset();

@@ -9,6 +9,7 @@
 #include "WildOmission/UI/Custom/MultiOptionBox.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "WildOmission/Core/WildOmissionGameUserSettings.h"
+#include "WildOmission/Characters/WildOmissionCharacter.h"
 
 void UOptionsWidget::NativeConstruct()
 {
@@ -200,7 +201,7 @@ void UOptionsWidget::Apply()
 	}
 
 	UserSettings->ApplySettings(false);
-
+	ApplyFieldOfViewSettings();
 	Refresh();
 }
 
@@ -219,6 +220,22 @@ void UOptionsWidget::ApplyCustomGraphicsSettings()
 	UserSettings->SetVisualEffectQuality(VisualEffectQualityOptionBox->GetSelectedIndex());
 	UserSettings->SetPostProcessingQuality(PostProcessingQualityOptionBox->GetSelectedIndex());
 	UserSettings->SetShadingQuality(ShaderQualityOptionBox->GetSelectedIndex());
+}
+
+void UOptionsWidget::ApplyFieldOfViewSettings()
+{
+	UGameplayMenuWidget* GameMenuOwner = Cast<UGameplayMenuWidget>(ParentMenu);
+	if (GameMenuOwner == nullptr)
+	{
+		return;
+	}
+
+	AWildOmissionCharacter* Character = GetOwningPlayerPawn<AWildOmissionCharacter>();
+	if (Character == nullptr)
+	{
+		return;
+	}
+	Character->SetupFieldOfView();
 }
 
 void UOptionsWidget::Reset()

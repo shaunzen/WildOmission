@@ -40,6 +40,8 @@ void UGameplayMenuWidget::Show()
 	
 	SetQuitButtonText(PlayerController->HasAuthority());
 	
+	OptionsMenu->Refresh();
+
 	FInputModeUIOnly InputModeData;
 	InputModeData.SetWidgetToFocus(TakeWidget());
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
