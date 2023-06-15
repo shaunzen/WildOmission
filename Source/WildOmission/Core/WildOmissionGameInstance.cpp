@@ -248,6 +248,8 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 	SetLoadingTitle(FString("Loading Game"));
 	SetLoadingSubtitle(FString("Loading level."));
 
+	WorldToLoad = WorldName;
+
 	UWorld* World = GetWorld();
 	UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldToLoad, 0));
 	if (World == nullptr || SaveGame == nullptr)

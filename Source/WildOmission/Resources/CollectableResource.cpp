@@ -14,6 +14,7 @@ ACollectableResource::ACollectableResource()
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	bAlwaysRelevant = true;
+	NetUpdateFrequency = 5.0f;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
 	RootComponent = MeshComponent;

@@ -14,6 +14,7 @@ AHarvestableResource::AHarvestableResource()
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	bAlwaysRelevant = true;
+	NetUpdateFrequency = 5.0f;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMeshComponent"));
 	RootComponent = MeshComponent;
