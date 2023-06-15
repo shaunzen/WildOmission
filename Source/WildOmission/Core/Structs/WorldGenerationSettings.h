@@ -12,13 +12,13 @@ struct FWorldGenerationSettings
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	int32 WorldSizeMetersX = 500;
+	int32 WorldSizeMetersX = 2000;
 	
 	UPROPERTY(EditDefaultsOnly)
-	int32 WorldSizeMetersY = 500;
+	int32 WorldSizeMetersY = 2000;
 	
 	UPROPERTY(EditDefaultsOnly)
-	int32 WorldHeightMeters = 100;
+	int32 WorldHeightMeters = 500;
 
 	UPROPERTY(EditDefaultsOnly)
 	float SpawnLimiter = 1;

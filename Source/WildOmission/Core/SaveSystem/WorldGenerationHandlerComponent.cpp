@@ -165,7 +165,7 @@ bool UWorldGenerationHandlerComponent::FindSpawnLocation(const FWorldGenerationS
 	Params.bTraceComplex = true;
 	Params.bReturnPhysicalMaterial = true;
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel2, Params))
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
 	{
 																					// SurfaceType1 = Grass
 		if (HitResult.PhysMaterial == nullptr || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
