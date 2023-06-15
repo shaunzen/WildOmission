@@ -20,6 +20,7 @@
 const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
+const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FString GameVersion = FString("Pre Alpha 0.8.0");
 
 #define SEARCH_PRESENCE FName(TEXT("PRESENCESEARCH"))
@@ -248,12 +249,14 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 	SetLoadingSubtitle(FString("Loading level."));
 
 	UWorld* World = GetWorld();
-	if (World == nullptr)
+	UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldToLoad, 0));
+	if (World == nullptr || SaveGame == nullptr)
 	{
 		return;
 	}
 
-	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Maps/LV_Sandbox?savegame=%s"), *WorldName);
+	FString LevelFileString = SaveGame->LevelFile;
+	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Levels/%s?savegame=%s"), *LevelFileString, *WorldName);
 	// Server travel to the game level
 	World->ServerTravel(LoadString);
 }
@@ -312,6 +315,7 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 
 	SessionSettings.Set(FRIENDS_ONLY_SETTINGS_KEY, FriendsOnlySession, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(LEVEL_FILE_SETTINGS_KEY, WorldToLoad, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
 
@@ -363,11 +367,14 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	SetLoadingSubtitle(FString("Loading level."));
 
 	UWorld* World = GetWorld();
-	if (World == nullptr)
+	UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldToLoad, 0));
+	if (World == nullptr || SaveGame == nullptr)
 	{
 		return;
 	}
-	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Maps/LV_Sandbox?listen?savegame=%s"), *WorldToLoad);
+
+	FString LevelFileString = SaveGame->LevelFile;
+	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Levels/%s?listen?savegame=%s"), *LevelFileString, *WorldToLoad);
 	// Server travel to the game level
 	World->ServerTravel(LoadString);
 }
@@ -509,6 +516,8 @@ void UWildOmissionGameInstance::CreateWorld(const FString& NewWorldName)
 	Time = FDateTime::Now();
 
 	NewSaveGame->LastPlayedTime = Time;
+
+	NewSaveGame->LevelFile = TEXT("LV_Island");
 
 	NewSaveGame->CreationInformation.Name = NewWorldName;
 	NewSaveGame->CreationInformation.Day = Time.GetDay();

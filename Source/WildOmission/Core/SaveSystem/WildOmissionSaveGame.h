@@ -148,6 +148,9 @@ public:
 	FDateTime LastPlayedTime;
 
 	UPROPERTY()
+	FString LevelFile = FString("LV_Sandbox");
+
+	UPROPERTY()
 	FWeatherManagerSave WeatherManagerSave;
 
 	UPROPERTY()
