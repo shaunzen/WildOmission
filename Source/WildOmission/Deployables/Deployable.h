@@ -7,11 +7,12 @@
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "WildOmission/Core/Interfaces/DurabilityInterface.h"
 #include "WildOmission/Core/Interfaces/DamagedByWind.h"
+#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "BuildAnchorComponent.h"
 #include "Deployable.generated.h"
 
 UCLASS()
-class WILDOMISSION_API ADeployable : public AActor, public IDurabilityInterface, public IDamagedByWind, public ISavableObjectInterface
+class WILDOMISSION_API ADeployable : public AActor, public IDurabilityInterface, public IDamagedByWind, public ISavableObjectInterface, public IRequiredForLoad
 {
 	GENERATED_BODY()
 	

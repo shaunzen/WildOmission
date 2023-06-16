@@ -7,10 +7,11 @@
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "WildOmission/Core/Enums/ToolType.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "HarvestableResource.generated.h"
 
 UCLASS()
-class WILDOMISSION_API AHarvestableResource : public AActor, public ISavableObjectInterface
+class WILDOMISSION_API AHarvestableResource : public AActor, public ISavableObjectInterface, public IRequiredForLoad
 {
 	GENERATED_BODY()
 	

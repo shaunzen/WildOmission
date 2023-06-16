@@ -7,6 +7,7 @@
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "WildOmission/Core/WildOmissionGameState.h"
+#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -42,6 +43,14 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
+	AWildOmissionPlayerController* NewWildOmissionPlayer = Cast<AWildOmissionPlayerController>(NewPlayer);
+	if (NewWildOmissionPlayer == nullptr)
+	{
+		return;
+	}
+
+	NewWildOmissionPlayer->Client_SetNumRequiredActors(IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()));
+
 	SaveHandler->GetPlayerHandler()->Load(NewPlayer);
 
 	if (GetWorld()->IsPlayInEditor())

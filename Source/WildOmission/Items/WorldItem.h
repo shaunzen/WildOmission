@@ -6,13 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/Interactable.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "WildOmission/Core/Structs/InventoryItem.h"
 #include "WorldItem.generated.h"
 
 class UActorDespawnComponent;
 
 UCLASS()
-class WILDOMISSION_API AWorldItem : public AActor, public IInteractable, public ISavableObjectInterface
+class WILDOMISSION_API AWorldItem : public AActor, public IInteractable, public ISavableObjectInterface, public IRequiredForLoad
 {
 	GENERATED_BODY()
 	
