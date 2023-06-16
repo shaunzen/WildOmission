@@ -5,6 +5,7 @@
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
 #include "WildOmission/Weather/WeatherManager.h"
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
+#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "WildOmission/Core/WildOmissionGameState.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
@@ -95,6 +96,57 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 	}
 
 	WOGameState->AddChatMessage(ExitingPlayerState, FString("Has Left The Game."), true);
+}
+
+void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controller)
+{
+	if (Controller == nullptr || !IsValid(Controller))
+	{
+		return;
+	}
+
+	AActor* StartSpot = FindPlayerStart(Controller);
+	if (StartSpot == nullptr && Controller->StartSpot != nullptr)
+	{
+		StartSpot = Controller->StartSpot.Get();
+	}
+
+	FRotator SpawnRotation = StartSpot->GetActorRotation();
+
+	UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart %s"), (Controller && Controller->PlayerState) ? *Controller->PlayerState->GetPlayerName() : TEXT("Unknown"));
+
+	if (MustSpectate(Cast<APlayerController>(Controller)))
+	{
+		UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart: Tried to restart a spectator-only player!"));
+		return;
+	}
+
+	if (Controller->GetPawn() != nullptr)
+	{
+		// If we have an existing pawn, just use it's rotation
+		SpawnRotation = Controller->GetPawn()->GetActorRotation();
+	}
+	else if (HumanCharacterClass != nullptr)
+	{
+		// Try to create a pawn to use of the default class for this player
+		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, StartSpot->GetActorLocation(), SpawnRotation);
+		if (IsValid(NewPawn))
+		{
+			Controller->SetPawn(NewPawn);
+		}
+	}
+
+	if (!IsValid(Controller->GetPawn()))
+	{
+		FailedToRestartPlayer(Controller);
+	}
+	else
+	{
+		// Tell the start spot it was used
+		InitStartSpot(StartSpot, Controller);
+
+		FinishRestartPlayer(Controller, SpawnRotation);
+	}
 }
 
 void AWildOmissionGameMode::SaveGame()

@@ -53,7 +53,7 @@ void UDeathMenuWidget::RespawnButtonClicked()
 	}
 
 	PlayerController->UnPossess();
-	PlayerController->ServerRestartPlayer();
+	PlayerController->Server_Spawn();
 
 	Teardown();
 }

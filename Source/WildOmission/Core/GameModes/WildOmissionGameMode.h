@@ -24,6 +24,8 @@ public:
 
 	virtual void Logout(AController* Exiting) override;
 
+	void SpawnHumanForController(APlayerController* Controller);
+
 	UFUNCTION(BlueprintCallable, Exec)
 	void SaveGame();
 
@@ -45,6 +47,9 @@ public:
 	void LogPlayerInventorySlots();
 
 private:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<APawn> HumanCharacterClass;
+
 	UPROPERTY()
 	ASaveHandler* SaveHandler;
 

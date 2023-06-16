@@ -36,6 +36,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SendChatMessage(APlayerState* Sender, const FString& Message);
 
+	UFUNCTION(Server, Reliable)
+	void Server_Spawn();
 
 	//*****************************
 	// Console functions
@@ -56,9 +58,11 @@ private:
 	FTimerHandle ValidateWorldStateTimerHandle;
 	void ValidateWorldState();
 
+	void StopLoading();
+
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();
-	
+
 	UFUNCTION(Server, Reliable)
 	void Server_KillThisPlayer();
 

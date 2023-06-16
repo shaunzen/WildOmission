@@ -4,6 +4,7 @@
 #include "WildOmissionPlayerController.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
+#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "WildOmission/Components/PlayerInventoryComponent.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
@@ -216,7 +217,7 @@ void AWildOmissionPlayerController::BeginPlay()
 	{
 		FTimerHandle LoadTimerHandle;
 		FTimerDelegate LoadTimerDelegate;
-		LoadTimerDelegate.BindUObject(GameInstance, &UWildOmissionGameInstance::StopLoading);
+		LoadTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::StopLoading);
 		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 1.0f, false);
 	}
 	else
@@ -229,17 +230,26 @@ void AWildOmissionPlayerController::BeginPlay()
 
 void AWildOmissionPlayerController::ValidateWorldState()
 {
-	// compare our local number of LoadRequiredActors to that of the one from the gamestate
-		// if we are the same then stop loading
-		// otherwise just keep waiting
-
-	// TODO condition for validation
-	if (true)
+	if (IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()) < NumRequiredActorsForLoad)
 	{
-		UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
-		GetWorld()->GetTimerManager().ClearTimer(ValidateWorldStateTimerHandle);
-		GameInstance->StopLoading();
+		return;
 	}
+
+	GetWorld()->GetTimerManager().ClearTimer(ValidateWorldStateTimerHandle);
+	StopLoading();
+}
+
+void AWildOmissionPlayerController::StopLoading()
+{
+	Server_Spawn();
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->StopLoading();
+}
+
+void AWildOmissionPlayerController::Server_Spawn_Implementation()
+{
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	GameMode->SpawnHumanForController(this);
 }
 
 void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()
