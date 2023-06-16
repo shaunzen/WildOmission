@@ -28,6 +28,12 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 	DeathMenuWidgetClass = DeathMenuWidgetBlueprint.Class;
 }
 
+void AWildOmissionPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+}
+
 FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 {
 	FWildOmissionPlayerSave PlayerSave;
@@ -192,17 +198,43 @@ void AWildOmissionPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GetLocalRole() != ROLE_AutonomousProxy)
+	if (!IsLocalController())
 	{
 		return;
 	}
 
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->StartLoading();
 	GameInstance->SetLoadingSubtitle(FString("Loading world state."));
-	FTimerHandle LoadTimerHandle;
-	FTimerDelegate LoadTimerDelegate;
-	LoadTimerDelegate.BindUObject(GameInstance, &UWildOmissionGameInstance::StopLoading);
-	GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 1.0f, false);
+
+	if (HasAuthority())
+	{
+		FTimerHandle LoadTimerHandle;
+		FTimerDelegate LoadTimerDelegate;
+		LoadTimerDelegate.BindUObject(GameInstance, &UWildOmissionGameInstance::StopLoading);
+		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 1.0f, false);
+	}
+	else
+	{
+		FTimerDelegate ValidateWorldStateTimerDelegate;
+		ValidateWorldStateTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::ValidateWorldState);
+		GetWorld()->GetTimerManager().SetTimer(ValidateWorldStateTimerHandle, ValidateWorldStateTimerDelegate, 2.0f, true);
+	}
+}
+
+void AWildOmissionPlayerController::ValidateWorldState()
+{
+	// compare our local number of LoadRequiredActors to that of the one from the gamestate
+		// if we are the same then stop loading
+		// otherwise just keep waiting
+
+	// TODO condition for validation
+	if (true)
+	{
+		UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+		GetWorld()->GetTimerManager().ClearTimer(ValidateWorldStateTimerHandle);
+		GameInstance->StopLoading();
+	}
 }
 
 void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()

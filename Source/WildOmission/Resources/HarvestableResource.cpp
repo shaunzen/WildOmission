@@ -15,6 +15,7 @@ AHarvestableResource::AHarvestableResource()
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	NetUpdateFrequency = 5.0f;
+	NetDormancy = ENetDormancy::DORM_DormantAll;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMeshComponent"));
 	RootComponent = MeshComponent;

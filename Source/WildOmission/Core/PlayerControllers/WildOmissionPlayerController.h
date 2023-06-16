@@ -17,6 +17,8 @@ class WILDOMISSION_API AWildOmissionPlayerController : public APlayerController
 public:
 	AWildOmissionPlayerController();
 
+	virtual void PlayerTick(float DeltaTime) override;
+
 	struct FWildOmissionPlayerSave SavePlayer();
 
 	void LoadPlayerSave(const struct FWildOmissionPlayerSave& PlayerSave);
@@ -46,6 +48,9 @@ protected:
 private:
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
+
+	FTimerHandle ValidateWorldStateTimerHandle;
+	void ValidateWorldState();
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();
