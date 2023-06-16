@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "RequiredForConnection.generated.h"
+#include "RequiredForLoad.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class URequiredForConnection : public UInterface
+class URequiredForLoad : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,10 +16,11 @@ class URequiredForConnection : public UInterface
 /**
  * 
  */
-class WILDOMISSION_API IRequiredForConnection
+class WILDOMISSION_API IRequiredForLoad
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	static int32 GetNumRequiredActorsInWorld(UWorld* WorldContextObject);
 };

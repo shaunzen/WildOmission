@@ -111,6 +111,11 @@ void AWildOmissionPlayerController::Save()
 	GameMode->SaveGame();
 }
 
+void AWildOmissionPlayerController::Client_SetNumRequiredActors_Implementation(const int32& InNum)
+{
+	NumRequiredActorsForLoad = InNum;
+}
+
 FString AWildOmissionPlayerController::GetUniqueID()
 {
 	FString ID = FString("");

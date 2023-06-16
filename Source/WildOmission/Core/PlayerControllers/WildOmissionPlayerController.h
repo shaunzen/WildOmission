@@ -28,6 +28,9 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_ShowDeathMenu();
 
+	UFUNCTION(Client, Reliable)
+	void Client_SetNumRequiredActors(const int32& InNum);
+
 	FString GetUniqueID();
 
 	UFUNCTION(Server, Reliable)
@@ -49,6 +52,7 @@ private:
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
 
+	int32 NumRequiredActorsForLoad;
 	FTimerHandle ValidateWorldStateTimerHandle;
 	void ValidateWorldState();
 
