@@ -21,7 +21,7 @@ const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
-const static FString GameVersion = FString("Pre Alpha 0.8.0_01");
+const static FString GameVersion = FString("Pre Alpha 0.8.1");
 
 #define SEARCH_PRESENCE FName(TEXT("PRESENCESEARCH"))
 
@@ -374,9 +374,9 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	{
 		return;
 	}
-
+	FString FriendsOnlyString = FString::Printf(TEXT("%i"), FriendsOnlySession);
 	FString LevelFileString = SaveGame->LevelFile;
-	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Levels/%s?listen?savegame=%s"), *LevelFileString, *WorldToLoad);
+	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Levels/%s?listen?savegame=%s?friendsonly="), *LevelFileString, *WorldToLoad, *FriendsOnlyString);
 	// Server travel to the game level
 	World->ServerTravel(LoadString);
 }
@@ -528,6 +528,11 @@ void UWildOmissionGameInstance::CreateWorld(const FString& NewWorldName)
 
 
 	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewWorldName, 0);
+}
+
+IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const
+{
+	return FriendsInterface;
 }
 
 FString UWildOmissionGameInstance::GetVersion() const

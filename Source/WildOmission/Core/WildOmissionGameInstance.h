@@ -66,6 +66,8 @@ public:
 	static TArray<FString> GetAllWorldNames();
 	void CreateWorld(const FString& NewWorldName);
 
+	IOnlineFriendsPtr GetFriendsInterface() const;
+
 	UFUNCTION(BlueprintCallable)
 	FString GetVersion() const;
 

@@ -7,6 +7,7 @@
 #include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
 #include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
+#include "Interfaces/OnlineFriendsInterface.h" 
 #include "WildOmission/Core/WildOmissionGameState.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
@@ -21,6 +22,7 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	Super::InitGame(MapName, Options, ErrorMessage);
 
 	FString SaveFile = UGameplayStatics::ParseOption(Options, "SaveGame");
+	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
 
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
 	WeatherManager = GetWorld()->SpawnActor<AWeatherManager>();
@@ -38,6 +40,17 @@ void AWildOmissionGameMode::StartPlay()
 	Super::StartPlay();
 
 	SaveHandler->LoadWorld();
+}
+
+void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
+{
+	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	if (FriendsOnly && !GameInstance->GetFriendsInterface()->IsFriend(0, *UniqueId.GetUniqueNetId().Get(), FString()))
+	{
+		ErrorMessage = TEXT("Player not friend, revoking connection attempt.");
+	}
+
+	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
 }
 
 void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
