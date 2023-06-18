@@ -51,9 +51,8 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
 	NewWildOmissionPlayer->Client_SetNumRequiredActors(IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()));
-
-	SaveHandler->GetPlayerHandler()->Load(NewPlayer);
-
+	NewWildOmissionPlayer->OnFinishedLoading.AddDynamic(this, &AWildOmissionGameMode::OnControllerFinishedLoading);
+	
 	if (GetWorld()->IsPlayInEditor())
 	{
 		return;
@@ -147,6 +146,11 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 
 		FinishRestartPlayer(Controller, SpawnRotation);
 	}
+}
+
+void AWildOmissionGameMode::OnControllerFinishedLoading(AWildOmissionPlayerController* LoadedController)
+{
+	SaveHandler->GetPlayerHandler()->Load(LoadedController);
 }
 
 void AWildOmissionGameMode::SaveGame()

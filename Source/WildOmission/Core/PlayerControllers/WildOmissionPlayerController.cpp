@@ -22,11 +22,12 @@
 AWildOmissionPlayerController::AWildOmissionPlayerController()
 {
 	ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmission/UI/Player/WBP_DeathMenu"));
-	if (!DeathMenuWidgetBlueprint.Succeeded())
+	if (DeathMenuWidgetBlueprint.Succeeded())
 	{
-		return;
+		DeathMenuWidgetClass = DeathMenuWidgetBlueprint.Class;
 	}
-	DeathMenuWidgetClass = DeathMenuWidgetBlueprint.Class;
+
+	bIsStillLoading = true;
 }
 
 void AWildOmissionPlayerController::PlayerTick(float DeltaTime)
@@ -250,6 +251,12 @@ void AWildOmissionPlayerController::Server_Spawn_Implementation()
 {
 	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
 	GameMode->SpawnHumanForController(this);
+
+	if (bIsStillLoading == true)
+	{
+		OnFinishedLoading.Broadcast(this);
+		bIsStillLoading = false;
+	}
 }
 
 void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()

@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "WildOmissionPlayerController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFinishedLoadingSignature, AWildOmissionPlayerController*, LoadedController);
+
 class UInventoryComponent;
 class UDeathMenuWidget;
 
@@ -39,6 +41,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_Spawn();
 
+	FOnFinishedLoadingSignature OnFinishedLoading;
+
 	//*****************************
 	// Console functions
 	UFUNCTION(Exec)
@@ -59,6 +63,11 @@ private:
 	void ValidateWorldState();
 
 	void StopLoading();
+
+	// Used by the server to figure out if a player is still loading
+	// into the server, it will wait until the player if fully loaded before attempting
+	// to load their data from the save file.
+	bool bIsStillLoading;
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();

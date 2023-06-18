@@ -9,6 +9,7 @@
 class ASaveHandler;
 class AWeatherManager;
 class AWildOmissionCharacter;
+class AWildOmissionPlayerController;
 
 UCLASS()
 class WILDOMISSION_API AWildOmissionGameMode : public AGameModeBase
@@ -25,6 +26,9 @@ public:
 	virtual void Logout(AController* Exiting) override;
 
 	void SpawnHumanForController(APlayerController* Controller);
+
+	UFUNCTION()
+	void OnControllerFinishedLoading(AWildOmissionPlayerController* LoadedController);
 
 	UFUNCTION(BlueprintCallable, Exec)
 	void SaveGame();
