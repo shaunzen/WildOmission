@@ -8,6 +8,7 @@
 
 class UGridPanel;
 class UNotificationWidget;
+struct FNotification;
 
 UCLASS()
 class WILDOMISSION_API UNotificationPanelWidget : public UUserWidget
