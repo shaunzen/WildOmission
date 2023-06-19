@@ -38,4 +38,7 @@ private:
 
 	FInventoryItem GetDrop();
 
+	UFUNCTION()
+	void OnInventoryUpdate();
+
 };

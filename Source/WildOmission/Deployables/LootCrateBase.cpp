@@ -16,6 +16,7 @@ void ALootCrateBase::BeginPlay()
 	Super::BeginPlay();
 
 	SpawnItems();
+	GetInventoryComponent()->OnUpdate.AddDynamic(this, &ALootCrateBase::OnInventoryUpdate);
 }
 
 void ALootCrateBase::SpawnItems()
@@ -46,4 +47,12 @@ FInventoryItem ALootCrateBase::GetDrop()
 	}
 
 	return ItemToDrop;
+}
+
+void ALootCrateBase::OnInventoryUpdate()
+{
+	if (HasAuthority() && GetInventoryComponent()->GetContents()->Contents.IsEmpty())
+	{
+		Destroy();
+	}
 }
