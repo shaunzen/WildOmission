@@ -31,6 +31,7 @@ void UWorldGenerationHandlerComponent::Generate(const FWorldGenerationSettings& 
 	GenerateTrees(GenerationSettings);
 	GenerateNodes(GenerationSettings);
 	GenerateCollectables(GenerationSettings);
+	GenerateLootables(GenerationSettings);
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
 	GameInstance->StopLoading();
 }
@@ -42,6 +43,7 @@ void UWorldGenerationHandlerComponent::RegenerateResources(const FWorldGeneratio
 	
 	GenerateNodes(RegenerationSettings);
 	GenerateCollectables(RegenerationSettings);
+	GenerateLootables(RegenerationSettings);
 }
 
 FVector2D UWorldGenerationHandlerComponent::GetWorldSizeMeters()
@@ -136,7 +138,7 @@ void UWorldGenerationHandlerComponent::GenerateCollectables(const FWorldGenerati
 
 	for (const FCollectableResourceData& Collectable : BiomeData->Collectables)
 	{
-		int32 AmountOfCollectableToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Collectable.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Nodes.Num());
+		int32 AmountOfCollectableToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Collectable.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Collectables.Num());
 		for (int32 i = 0; i < AmountOfCollectableToSpawn; i++)
 		{
 			FVector LocationToSpawn = FVector::ZeroVector;
@@ -148,6 +150,35 @@ void UWorldGenerationHandlerComponent::GenerateCollectables(const FWorldGenerati
 			}
 
 			ACollectableResource* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableResource>(Collectable.BlueprintClass, LocationToSpawn, RotationToSpawn);
+		}
+	}
+}
+
+void UWorldGenerationHandlerComponent::GenerateLootables(const FWorldGenerationSettings& GenerationSettings)
+{
+	const FName DefaultBiome(TEXT("Plains"));
+	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
+	if (BiomeData == nullptr)
+	{
+		return;
+	}
+
+	int32 WorldAreaMeters = GenerationSettings.WorldSizeMetersX * GenerationSettings.WorldSizeMetersY;
+
+	for (const FLootableData& Lootable: BiomeData->Lootables)
+	{
+		int32 AmountOfLootableToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Lootable.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Lootables.Num());
+		for (int32 i = 0; i < AmountOfLootableToSpawn; i++)
+		{
+			FVector LocationToSpawn = FVector::ZeroVector;
+			FRotator RotationToSpawn = FRotator::ZeroRotator;
+			RotationToSpawn.Yaw = FMath::RandRange(0, 360);
+			if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
+			{
+				continue;
+			}
+
+			ALootCrateBase* SpawnedLootCrate = GetWorld()->SpawnActor<ALootCrateBase>(Lootable.BlueprintClass, LocationToSpawn, RotationToSpawn);
 		}
 	}
 }
