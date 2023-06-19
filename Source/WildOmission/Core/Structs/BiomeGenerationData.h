@@ -7,6 +7,7 @@
 #include "Engine/DataTable.h"
 #include "WildOmission/Resources/HarvestableResource.h"
 #include "WildOmission/Resources/CollectableResource.h"
+#include "WildOmission/Deployables/LootCrateBase.h"
 #include "BiomeGenerationData.generated.h"
 
 USTRUCT(BlueprintType)
@@ -35,6 +36,19 @@ struct FCollectableResourceData
 };
 
 USTRUCT(BlueprintType)
+struct FLootableData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<ALootCrateBase> BlueprintClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float DensityPerMeter = 0.00001f;
+
+};
+
+USTRUCT(BlueprintType)
 struct FBiomeGenerationData : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -47,5 +61,8 @@ struct FBiomeGenerationData : public FTableRowBase
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TArray<FCollectableResourceData> Collectables;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<FLootableData> Lootables;
 
 };
