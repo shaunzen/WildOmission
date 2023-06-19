@@ -32,16 +32,17 @@ public:
 	UInventoryComponent* GetInventoryComponent() const;
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> WidgetClass;
-
-	UPROPERTY(VisibleAnywhere)
-	UInventoryComponent* InventoryComponent;
-
 	UPROPERTY(Replicated)
 	bool bOccupied;
 
 	UPROPERTY()
 	FString ContainerName;
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> WidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	UInventoryComponent* InventoryComponent;
 
 };

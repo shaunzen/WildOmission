@@ -97,9 +97,13 @@ public:
 	FInventoryContents* GetContents();
 	FInventorySlot* GetSlot(const int32& SlotIndex);
 	uint8 GetSlotCount() const;
-
 	TArray<FInventorySlot>& GetSlots();
 	
+	void SetSlotCount(const uint8& InSlotCount);
+
+	UFUNCTION(BlueprintCallable)
+	bool WasLoadedFromSave() const;
+
 	FWildOmissionInventorySave Save();	
 	void Load(const FWildOmissionInventorySave& InInventorySave);
 
@@ -126,8 +130,6 @@ protected:
 	UFUNCTION()
 	void BroadcastItemUpdate(const FInventoryItemUpdate& ItemUpdate);
 
-	bool LoadedFromSave;
-
 private:
 	bool AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining);
 	bool FindAndAddToPopulatedSlot(const FName& ItemName, const int32& ItemStackSize, int32& QuantityToAdd);
@@ -149,6 +151,8 @@ private:
 	void GetUnacknowlagedUpdates(TArray<FInventoryItemUpdate>& OutUpdatesList);
 
 	void BroadcastAllUpdateNotifications(const TArray<FInventoryItemUpdate>& UpdatesList);
+
+	bool LoadedFromSave;
 
 	UFUNCTION()
 	virtual void OnLoadComplete_Implementation() override;

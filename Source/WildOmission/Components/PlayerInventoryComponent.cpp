@@ -35,7 +35,7 @@ void UPlayerInventoryComponent::BeginPlay()
 
 	OnUpdate.AddDynamic(this, &UPlayerInventoryComponent::RefreshToolbarSelectionState);
 
-	if (LoadedFromSave == false)
+	if (!WasLoadedFromSave())
 	{
 		FInventoryItem RockItem;
 		RockItem.Name = FName("rock");

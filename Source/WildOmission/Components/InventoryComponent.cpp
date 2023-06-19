@@ -254,6 +254,16 @@ TArray<FInventorySlot>& UInventoryComponent::GetSlots()
 	return Slots;
 }
 
+void UInventoryComponent::SetSlotCount(const uint8& InSlotCount)
+{
+	SlotCount = InSlotCount;
+}
+
+bool UInventoryComponent::WasLoadedFromSave() const
+{
+	return LoadedFromSave;
+}
+
 FWildOmissionInventorySave UInventoryComponent::Save()
 {
 	FWildOmissionInventorySave Save;

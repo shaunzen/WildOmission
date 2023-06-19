@@ -12,7 +12,7 @@ AItemContainerBase::AItemContainerBase()
 	WidgetClass = nullptr;
 	bOccupied = false;
 
-	ContainerName = FString("Container");
+	ContainerName = TEXT("Container");
 }
 
 void AItemContainerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
