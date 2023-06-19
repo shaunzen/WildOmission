@@ -11,6 +11,7 @@
 #include "Components/CanvasPanel.h"
 #include "UObject/ConstructorHelpers.h"
 #include "WildOmission/Components/InventoryComponent.h"
+#include "WildOmission/Deployables/ItemContainerBase.h"
 
 UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -33,6 +34,10 @@ void UInventoryWidget::Setup(UPlayerHUDWidget* InParentHUD, UInventoryComponent*
 	ParentPlayerHUD = InParentHUD;
 
 	InventoryComponent = InInventoryComponent;
+	if (AItemContainerBase* OwnerItemContainer = Cast<AItemContainerBase>(InventoryComponent->GetOwner()))
+	{
+		InventoryName->SetText(FText::FromString(OwnerItemContainer->GetContainerName()));
+	}
 	
 	// Set default visibility
 	InventoryName->SetVisibility(ESlateVisibility::Hidden);

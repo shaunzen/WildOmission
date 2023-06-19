@@ -4,12 +4,19 @@
 #include "ItemContainerBase.h"
 #include "WildOmission/Components/InventoryComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
 AItemContainerBase::AItemContainerBase()
 {
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
-	WidgetClass = nullptr;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> DefaultWidgetBlueprint(TEXT("/Game/WildOmission/UI/Inventory/WBP_ContainerBase"));
+	if (DefaultWidgetBlueprint.Succeeded())
+	{
+		WidgetClass = DefaultWidgetBlueprint.Class;
+	}
+
 	bOccupied = false;
 
 	ContainerName = TEXT("Container");
@@ -54,6 +61,11 @@ FString AItemContainerBase::PromptText()
 void AItemContainerBase::Server_UnOccupy_Implementation()
 {
 	bOccupied = false;
+}
+
+FString AItemContainerBase::GetContainerName() const
+{
+	return ContainerName;
 }
 
 UClass* AItemContainerBase::GetWidgetClass() const

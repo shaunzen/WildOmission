@@ -28,7 +28,11 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_UnOccupy();
 
+	UFUNCTION(BlueprintCallable)
+	FString GetContainerName() const;
+	UFUNCTION(BlueprintCallable)
 	UClass* GetWidgetClass() const;
+	UFUNCTION(BlueprintCallable)
 	UInventoryComponent* GetInventoryComponent() const;
 
 protected:
