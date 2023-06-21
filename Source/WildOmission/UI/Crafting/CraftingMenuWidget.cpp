@@ -105,6 +105,7 @@ void UCraftingMenuWidget::RefreshRecipesList()
 
 		FCraftingRecipeEntry Entry;
 		Entry.RecipeID = RecipeID;
+		Entry.CanCraft = CanCraftRecipe(RecipeID);
 		Entry.IngredientPercentage = GetRecipeIngredientPercentage(RecipeID);
 		Entry.YieldItemData = UWildOmissionStatics::GetItemData(RecipeID);
 

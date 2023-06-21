@@ -262,6 +262,11 @@ void AWildOmissionCharacter::SetupMesh()
 
 void AWildOmissionCharacter::SetupFieldOfView()
 {
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	FirstPersonCameraComponent->SetFieldOfView(UserSettings->GetFieldOfView());
 }

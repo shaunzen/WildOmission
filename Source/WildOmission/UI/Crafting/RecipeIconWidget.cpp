@@ -30,7 +30,7 @@ bool URecipeIconWidget::IsSelected() const
 
 bool URecipeIconWidget::IsCraftable() const
 {
-	return ParentEntry.IngredientPercentage >= 100;
+	return ParentEntry.CanCraft;
 }
 
 void URecipeIconWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

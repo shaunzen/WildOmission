@@ -114,6 +114,7 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 {
 	if (Controller == nullptr || !IsValid(Controller))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn Human, PlayerController wasn't valid."));
 		return;
 	}
 
