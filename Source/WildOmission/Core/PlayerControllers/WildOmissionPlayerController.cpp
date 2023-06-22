@@ -205,6 +205,13 @@ void AWildOmissionPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (HasAuthority())
+	{
+		FTimerDelegate UpdateClientRequiredActorCountTimerDelegate;
+		UpdateClientRequiredActorCountTimerDelegate.BindUFunction(this, "Client_SetNumRequiredActors", IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()));
+		GetWorld()->GetTimerManager().SetTimer(UpdateClientRequiredActorCountTimerHandle, UpdateClientRequiredActorCountTimerDelegate, 10.0f, true);
+	}
+
 	if (!IsLocalController())
 	{
 		return;
@@ -231,6 +238,7 @@ void AWildOmissionPlayerController::BeginPlay()
 
 void AWildOmissionPlayerController::ValidateWorldState()
 {
+	
 	if (IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()) < NumRequiredActorsForLoad)
 	{
 		return;
@@ -256,6 +264,7 @@ void AWildOmissionPlayerController::Server_Spawn_Implementation()
 	{
 		OnFinishedLoading.Broadcast(this);
 		bIsStillLoading = false;
+		GetWorld()->GetTimerManager().ClearTimer(UpdateClientRequiredActorCountTimerHandle);
 	}
 }
 

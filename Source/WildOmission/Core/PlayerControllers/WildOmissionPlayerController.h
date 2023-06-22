@@ -60,6 +60,7 @@ private:
 
 	int32 NumRequiredActorsForLoad;
 	FTimerHandle ValidateWorldStateTimerHandle;
+	FTimerHandle UpdateClientRequiredActorCountTimerHandle;
 	void ValidateWorldState();
 
 	void StopLoading();
