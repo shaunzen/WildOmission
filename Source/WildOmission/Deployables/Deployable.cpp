@@ -16,6 +16,7 @@ ADeployable::ADeployable()
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	NetUpdateFrequency = 5.0f;
+	NetDormancy = DORM_DormantAll;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;

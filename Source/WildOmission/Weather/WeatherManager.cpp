@@ -18,6 +18,7 @@ AWeatherManager::AWeatherManager()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	bAlwaysRelevant = true;
+	NetUpdateFrequency = 2.0f;
 	
 	CurrentStorm = nullptr;
 	MinStormSpawnTime = 300.0f;
@@ -107,7 +108,7 @@ void AWeatherManager::CalculateWindParameters()
 
 	if (CurrentStorm == nullptr)
 	{
-		Client_UpdateWindParameters(NewParams);
+		Multicast_UpdateWindParameters(NewParams);
 		return;
 	}
 
@@ -137,10 +138,10 @@ void AWeatherManager::CalculateWindParameters()
 		NewParams.TornadoOnGround = 1.0f;
 	}
 
-	Client_UpdateWindParameters(NewParams);
+	Multicast_UpdateWindParameters(NewParams);
 }
 
-void AWeatherManager::Client_UpdateWindParameters_Implementation(const FWindParameters& NewParameters)
+void AWeatherManager::Multicast_UpdateWindParameters_Implementation(const FWindParameters& NewParameters)
 {
 	WindParameters = NewParameters;
 

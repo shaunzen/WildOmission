@@ -14,6 +14,10 @@ ALootCrateBase::ALootCrateBase()
 void ALootCrateBase::BeginPlay()
 {
 	Super::BeginPlay();
+	if (!HasAuthority() || GetInventoryComponent()->WasLoadedFromSave())
+	{
+		return;
+	}
 
 	SpawnItems();
 	GetInventoryComponent()->OnUpdate.AddDynamic(this, &ALootCrateBase::OnInventoryUpdate);

@@ -15,6 +15,7 @@ ACollectableResource::ACollectableResource()
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	NetUpdateFrequency = 5.0f;
+	NetDormancy = DORM_DormantAll;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
 	RootComponent = MeshComponent;
