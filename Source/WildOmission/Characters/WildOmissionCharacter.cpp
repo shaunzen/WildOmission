@@ -37,89 +37,9 @@ AWildOmissionCharacter::AWildOmissionCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Player/WBP_PlayerHUD"));
-	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerArmsAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_FirstPerson"));
-	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerThirdPersonAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_ThirdPerson"));
-	ConstructorHelpers::FClassFinder<AItemContainerBase> PlayerRagdollBlueprint(TEXT("/Game/WildOmission/Characters/Human/BP_Human_Ragdoll"));
-	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Core/Input/MC_DefaultMappingContext"));
-	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Move"));
-	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Look"));
-	ConstructorHelpers::FObjectFinder<UInputAction> SprintActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Sprint"));
-	ConstructorHelpers::FObjectFinder<UInputAction> JumpActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Jump"));
-	ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Interact"));
-	ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Primary"));
-	ConstructorHelpers::FObjectFinder<UInputAction> SecondaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Secondary"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToggleInventoryMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleInventoryMenu"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToggleCraftingMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleCraftingMenu"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToggleChatActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleChat"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionIncrement"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionDecrement"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection1Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect1"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection2Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect2"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection3Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect3"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection4Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect4"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection5Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect5"));
-	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection6Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect6"));
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerArmsMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_HumanFirstPersonArms"));
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerThirdPersonMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_Human"));
-
-	if (PlayerHUDWidgetBlueprintClass.Class == nullptr
-		|| PlayerArmsAnimBlueprintClass.Class == nullptr
-		|| PlayerThirdPersonAnimBlueprintClass.Class == nullptr
-		|| PlayerRagdollBlueprint.Class == nullptr
-		|| DefaultMappingContextBlueprint.Object == nullptr
-		|| MoveActionBlueprint.Object == nullptr
-		|| LookActionBlueprint.Object == nullptr
-		|| SprintActionBlueprint.Object == nullptr
-		|| JumpActionBlueprint.Object == nullptr
-		|| InteractActionBlueprint.Object == nullptr
-		|| PrimaryActionBlueprint.Object == nullptr
-		|| SecondaryActionBlueprint.Object == nullptr
-		|| ToggleInventoryMenuActionBlueprint.Object == nullptr
-		|| ToggleCraftingMenuActionBlueprint.Object == nullptr
-		|| ToggleChatActionBlueprint.Object == nullptr
-		|| ToolbarSelectionIncrementBlueprint.Object == nullptr
-		|| ToolbarSelectionDecrementBlueprint.Object == nullptr
-		|| ToolbarSelection1Blueprint.Object == nullptr
-		|| ToolbarSelection2Blueprint.Object == nullptr
-		|| ToolbarSelection3Blueprint.Object == nullptr
-		|| ToolbarSelection4Blueprint.Object == nullptr
-		|| ToolbarSelection5Blueprint.Object == nullptr
-		|| ToolbarSelection6Blueprint.Object == nullptr
-		|| PlayerArmsMeshObject.Object == nullptr
-		|| PlayerThirdPersonMeshObject.Object == nullptr)
-	{
-		return;
-	}
-
-	PlayerHUDWidgetClass = PlayerHUDWidgetBlueprintClass.Class;
-
-	DefaultMappingContext = DefaultMappingContextBlueprint.Object;
-	MoveAction = MoveActionBlueprint.Object;
-	LookAction = LookActionBlueprint.Object;
-	SprintAction = SprintActionBlueprint.Object;
-	JumpAction = JumpActionBlueprint.Object;
-	InteractAction = InteractActionBlueprint.Object;
-	PrimaryAction = PrimaryActionBlueprint.Object;
-	SecondaryAction = SecondaryActionBlueprint.Object;
-	ToggleInventoryMenuAction = ToggleInventoryMenuActionBlueprint.Object;
-	ToggleCraftingMenuAction = ToggleCraftingMenuActionBlueprint.Object;
-	ToggleChatAction = ToggleChatActionBlueprint.Object;
-	ToolbarSelectionIncrementAction = ToolbarSelectionIncrementBlueprint.Object;
-	ToolbarSelectionDecrementAction = ToolbarSelectionDecrementBlueprint.Object;
-	ToolbarSelection1Action = ToolbarSelection1Blueprint.Object;
-	ToolbarSelection2Action = ToolbarSelection2Blueprint.Object;
-	ToolbarSelection3Action = ToolbarSelection3Blueprint.Object;
-	ToolbarSelection4Action = ToolbarSelection4Blueprint.Object;
-	ToolbarSelection5Action = ToolbarSelection5Blueprint.Object;
-	ToolbarSelection6Action = ToolbarSelection6Blueprint.Object;
-
-	GetMesh()->SetSkeletalMesh(PlayerThirdPersonMeshObject.Object);
-	GetMesh()->SetAnimClass(PlayerThirdPersonAnimBlueprintClass.Class);
-
 	PlayerHUDWidget = nullptr;
 
-	RagdollClass = PlayerRagdollBlueprint.Class;
+	RagdollClass = nullptr;
 
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(FName("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(RootComponent);
@@ -135,8 +55,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonArmsMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonArmsComponent"));
 	FirstPersonArmsMeshComponent->SetupAttachment(FirstPersonSpringArmComponent);
 	FirstPersonArmsMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	FirstPersonArmsMeshComponent->SetSkeletalMesh(PlayerArmsMeshObject.Object);
-	FirstPersonArmsMeshComponent->SetAnimClass(PlayerArmsAnimBlueprintClass.Class);
+	
+	
 	FirstPersonArmsMeshComponent->SetRelativeLocation(FVector(-5.0f, 0.0f, -150.0f));
 	FirstPersonArmsMeshComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	FirstPersonArmsMeshComponent->SetRelativeScale3D(FVector(0.9f, 0.9f, 0.9f));
@@ -147,11 +67,11 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
 
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
-	
+
 	InventoryManipulatorComponent = CreateDefaultSubobject<UInventoryManipulatorComponent>(FName("InventoryManipulatorComponent"));
-	
+
 	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(FName("InventoryComponent"));
-	
+
 	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(FName("CraftingComponent"));
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));
@@ -166,6 +86,156 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	GetCharacterMovement()->JumpZVelocity = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	DesiredMovementSpeed = 300.0f;
+
+	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Player/WBP_PlayerHUD"));
+	if (PlayerHUDWidgetBlueprintClass.Succeeded())
+	{
+		PlayerHUDWidgetClass = PlayerHUDWidgetBlueprintClass.Class;
+	}
+
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerArmsMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_HumanFirstPersonArms"));
+	if (PlayerArmsMeshObject.Succeeded())
+	{
+		FirstPersonArmsMeshComponent->SetSkeletalMesh(PlayerArmsMeshObject.Object);
+	}
+
+	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerArmsAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_FirstPerson"));
+	if (PlayerArmsAnimBlueprintClass.Succeeded())
+	{
+		FirstPersonArmsMeshComponent->SetAnimClass(PlayerArmsAnimBlueprintClass.Class);
+	}
+	
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerThirdPersonMeshObject(TEXT("/Game/WildOmission/Art/Characters/SK_Human"));
+	if (PlayerThirdPersonMeshObject.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(PlayerThirdPersonMeshObject.Object);
+	}
+
+	ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerThirdPersonAnimBlueprintClass(TEXT("/Game/WildOmission/Characters/Human/Animation/ABP_Human_ThirdPerson"));
+	if (PlayerThirdPersonAnimBlueprintClass.Succeeded())
+	{
+		GetMesh()->SetAnimClass(PlayerThirdPersonAnimBlueprintClass.Class);
+	}
+	
+	ConstructorHelpers::FClassFinder<AItemContainerBase> PlayerRagdollBlueprint(TEXT("/Game/WildOmission/Characters/Human/BP_Human_Ragdoll"));
+	if (PlayerRagdollBlueprint.Succeeded())
+	{
+		RagdollClass = PlayerRagdollBlueprint.Class;
+	}
+	
+	ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmission/Core/Input/MC_DefaultMappingContext"));
+	if (DefaultMappingContextBlueprint.Succeeded())
+	{
+		DefaultMappingContext = DefaultMappingContextBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Move"));
+	if (MoveActionBlueprint.Succeeded())
+	{
+		MoveAction = MoveActionBlueprint.Object;
+	}
+	
+	ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Look"));
+	if (LookActionBlueprint.Succeeded())
+	{
+		LookAction = LookActionBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> SprintActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Sprint"));
+	if (SprintActionBlueprint.Succeeded())
+	{
+		SprintAction = SprintActionBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> JumpActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Jump"));
+	if (JumpActionBlueprint.Succeeded())
+	{
+		JumpAction = JumpActionBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Interact"));
+	if (InteractActionBlueprint.Succeeded())
+	{
+		InteractAction = InteractActionBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Primary"));
+	if (PrimaryActionBlueprint.Succeeded())
+	{
+		PrimaryAction = PrimaryActionBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> SecondaryActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_Secondary"));
+	if (SecondaryActionBlueprint.Succeeded())
+	{
+		SecondaryAction = SecondaryActionBlueprint.Object;
+	}
+	
+	ConstructorHelpers::FObjectFinder<UInputAction> ToggleInventoryMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleInventoryMenu"));
+	if (ToggleInventoryMenuActionBlueprint.Succeeded())
+	{
+		ToggleInventoryMenuAction = ToggleInventoryMenuActionBlueprint.Object;
+
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> ToggleCraftingMenuActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleCraftingMenu"));
+	if (ToggleCraftingMenuActionBlueprint.Succeeded())
+	{
+		ToggleCraftingMenuAction = ToggleCraftingMenuActionBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> ToggleChatActionBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToggleChat"));
+	if (ToggleChatActionBlueprint.Succeeded())
+	{
+		ToggleChatAction = ToggleChatActionBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionIncrement"));
+	if (ToolbarSelectionIncrementBlueprint.Succeeded())
+	{
+		ToolbarSelectionIncrementAction = ToolbarSelectionIncrementBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionDecrementBlueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelectionDecrement"));
+	if (ToolbarSelectionDecrementBlueprint.Succeeded())
+	{
+		ToolbarSelectionDecrementAction = ToolbarSelectionDecrementBlueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection1Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect1"));
+	if (ToolbarSelection1Blueprint.Succeeded())
+	{
+		ToolbarSelection1Action = ToolbarSelection1Blueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection2Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect2"));
+	if (ToolbarSelection2Blueprint.Succeeded())
+	{
+		ToolbarSelection2Action = ToolbarSelection2Blueprint.Object;
+	}
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection3Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect3"));
+	if (ToolbarSelection3Blueprint.Succeeded())
+	{
+		ToolbarSelection3Action = ToolbarSelection3Blueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection4Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect4"));
+	if (ToolbarSelection4Blueprint.Succeeded())
+	{
+		ToolbarSelection4Action = ToolbarSelection4Blueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection5Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect5"));
+	if (ToolbarSelection5Blueprint.Succeeded())
+	{
+		ToolbarSelection5Action = ToolbarSelection5Blueprint.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelection6Blueprint(TEXT("/Game/WildOmission/Core/Input/InputActions/IA_ToolbarSelect6"));
+	if (ToolbarSelection6Blueprint.Succeeded())
+	{
+		ToolbarSelection6Action = ToolbarSelection6Blueprint.Object;
+	}
 }
 
 void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
