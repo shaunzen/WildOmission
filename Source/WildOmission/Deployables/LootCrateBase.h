@@ -28,6 +28,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnContainerClosed() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -37,8 +38,5 @@ private:
 	void SpawnItems();
 
 	FInventoryItem GetDrop();
-
-	UFUNCTION()
-	void OnInventoryUpdate();
 
 };

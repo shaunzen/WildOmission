@@ -42,6 +42,8 @@ protected:
 	UPROPERTY()
 	FString ContainerName;
 
+	virtual void OnContainerClosed();
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> WidgetClass;

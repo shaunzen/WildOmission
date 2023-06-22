@@ -14,13 +14,13 @@ ALootCrateBase::ALootCrateBase()
 void ALootCrateBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	if (!HasAuthority() || GetInventoryComponent()->WasLoadedFromSave())
 	{
 		return;
 	}
 
 	SpawnItems();
-	GetInventoryComponent()->OnUpdate.AddDynamic(this, &ALootCrateBase::OnInventoryUpdate);
 }
 
 void ALootCrateBase::SpawnItems()
@@ -53,10 +53,14 @@ FInventoryItem ALootCrateBase::GetDrop()
 	return ItemToDrop;
 }
 
-void ALootCrateBase::OnInventoryUpdate()
+void ALootCrateBase::OnContainerClosed()
 {
-	if (HasAuthority() && GetInventoryComponent()->GetContents()->Contents.IsEmpty())
+	Super::OnContainerClosed();
+
+	if (!GetInventoryComponent()->GetContents()->Contents.IsEmpty())
 	{
-		Destroy();
+		return;
 	}
+
+	Destroy();
 }

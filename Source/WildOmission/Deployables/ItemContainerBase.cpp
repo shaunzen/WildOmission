@@ -62,7 +62,7 @@ FString AItemContainerBase::PromptText()
 
 void AItemContainerBase::Server_UnOccupy_Implementation()
 {
-	bOccupied = false;
+	OnContainerClosed();
 }
 
 FString AItemContainerBase::GetContainerName() const
@@ -78,4 +78,9 @@ UClass* AItemContainerBase::GetWidgetClass() const
 UInventoryComponent* AItemContainerBase::GetInventoryComponent() const
 {
 	return InventoryComponent;
+}
+
+void AItemContainerBase::OnContainerClosed()
+{
+	bOccupied = false;
 }
