@@ -71,6 +71,6 @@ private:
 	void CalculateWindParameters();
 
 	UFUNCTION(NetMulticast, Unreliable)
-	void Client_UpdateWindParameters(const FWindParameters& NewParameters);
+	void Multicast_UpdateWindParameters(const FWindParameters& NewParameters);
 
 };
