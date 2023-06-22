@@ -140,7 +140,7 @@ void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 	FInventoryItem OurItem = this->GetItem();
 	FInventoryItem OtherItem = OtherWorldItem->GetItem();
 	FItemData* ItemData = UWildOmissionStatics::GetItemData(OurItem.Name);
-	if (OtherItem.Name != OurItem.Name || ItemData == nullptr || ItemData->StackSize == 1)
+	if (OtherItem.Name != OurItem.Name || ItemData == nullptr || OurItem.Quantity >= ItemData->StackSize || ItemData->StackSize == 1)
 	{
 		return;
 	}
