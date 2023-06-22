@@ -182,7 +182,7 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 			return;
 		}
 
-		PlayerController->GetPawn()->SetActorLocation(FVector(0.0f, 0.0f, 2000.0f));
+		PlayerController->GetPawn()->SetActorLocation(FVector(0.0f, 0.0f, 2600.0f));
 	}
 }
 
