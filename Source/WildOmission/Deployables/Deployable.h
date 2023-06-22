@@ -24,9 +24,6 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	virtual void ApplyWindDamage(AActor* WindCauser, float DamageMultiplier = 1.0f) override;
 
 	virtual float TakeDamage(float DamageAmount, const struct FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;

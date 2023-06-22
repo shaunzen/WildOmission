@@ -9,6 +9,8 @@
 
 AItemContainerBase::AItemContainerBase()
 {
+	NetDormancy = DORM_Awake;
+	
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 
 	ConstructorHelpers::FClassFinder<UUserWidget> DefaultWidgetBlueprint(TEXT("/Game/WildOmission/UI/Inventory/WBP_ContainerBase"));

@@ -12,7 +12,7 @@
 ADeployable::ADeployable()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	NetUpdateFrequency = 5.0f;
@@ -59,13 +59,6 @@ void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(ADeployable, CurrentDurability);
 }
 
-// Called every frame
-void ADeployable::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
 {
 	float DamageToApply = BaseWindDamage * DamageMultiplier * GetWorld()->GetDeltaSeconds();
@@ -84,6 +77,7 @@ float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEven
 		this->Destroy();
 	}
 
+	FlushNetDormancy();
 	return DamageAmount;
 }
 

@@ -9,6 +9,7 @@
 
 AFurnace::AFurnace()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	bCanSpawnOnGround = true;
 	bCanSpawnOnFloor = true;
 	bCanSpawnOnWall = false;
@@ -139,4 +140,6 @@ void AFurnace::SmeltItems()
 		SmeltedMetalToAdd.Quantity = 1;
 		GetInventoryComponent()->AddItem(SmeltedMetalToAdd, this);
 	}
+
+	FlushNetDormancy();
 }
