@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "InventoryItem.h"
+#include "Structs/InventoryItem.h"
 
 bool FInventoryItem::CompareNames(const FInventoryItem& Item, const FName& ItemName)
 {

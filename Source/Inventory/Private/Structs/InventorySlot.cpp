@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "UI/InventorySlot.h"
+#include "Structs/InventorySlot.h"
 
 void FInventorySlot::SetItem(const FInventoryItem& InItem)
 {

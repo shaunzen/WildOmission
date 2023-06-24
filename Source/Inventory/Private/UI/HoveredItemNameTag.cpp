@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "HoveredItemNameTag.h"
+#include "UI/HoveredItemNameTag.h"
 #include "Components/TextBlock.h"
 
 UHoveredItemNameTag::UHoveredItemNameTag(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)

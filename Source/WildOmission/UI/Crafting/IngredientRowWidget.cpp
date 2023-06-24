@@ -3,7 +3,7 @@
 
 #include "IngredientRowWidget.h"
 #include "Components/TextBlock.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
+#include "UIHelpers.h"
 
 void UIngredientRowWidget::Setup(const FString& IngredientName, const int32& IngredientAmountNeeded, const int32& IngredientHasAmount)
 {
@@ -34,12 +34,12 @@ void UIngredientRowWidget::SetColor()
 {
 	if (bHasEnough)
 	{
-		FUIColor* White = UWildOmissionStatics::GetUIColor(FName("White"));
+		FUIColor* White = UUIHelpers::GetUIColor(FName("White"));
 		SetColorAndOpacity(White->Default);
 	}
 	else
 	{
-		FUIColor* Red = UWildOmissionStatics::GetUIColor(FName("Red"));
+		FUIColor* Red = UUIHelpers::GetUIColor(FName("Red"));
 		SetColorAndOpacity(Red->Default);
 	}
 }

@@ -1,8 +1,8 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "ItemData.h"
-#include "ItemStat.h"
+#include "Structs/ItemData.h"
+#include "Structs/ItemStat.h"
 
 FItemData::FItemData()
 {

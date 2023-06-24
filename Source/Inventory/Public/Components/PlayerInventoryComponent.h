@@ -6,9 +6,8 @@
 #include "InventoryComponent.h"
 #include "PlayerInventoryComponent.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnToolbarSlotSelectionChange, const int8&, NewSlotIndex, const FInventorySlot&, NewSlot)
+
 UCLASS()
 class INVENTORY_API UPlayerInventoryComponent : public UInventoryComponent
 {
@@ -24,6 +23,7 @@ public:
 	//**************************************************************
 	
 	void RefreshPlayerEquip(FInventorySlot& SelectedSlot);
+	FOnToolbarSlotSelectionChange OnToolbarSlotSelectionChange;
 
 	//**************************************************************
 	// User Interaction
@@ -50,9 +50,6 @@ private:
 
 	UPROPERTY()
 	int8 ToolbarSelectionIndex;
-
-	UPROPERTY()
-	class AWildOmissionCharacter* OwnerCharacter;
 
 	//**************************************************************
 	// Slot Functions

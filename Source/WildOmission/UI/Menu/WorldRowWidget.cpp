@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Components/Border.h"
 #include "WorldSelectionWidget.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
+#include "UIHelpers.h"
 
 void UWorldRowWidget::Setup(UWorldSelectionWidget* InParent, const FString& InWorldName)
 {
@@ -26,11 +26,11 @@ void UWorldRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 	if (Selected)
 	{
-		FUIColor* Blue = UWildOmissionStatics::GetUIColor(FName("Blue"));
+		FUIColor* Blue = UUIHelpers::GetUIColor(FName("Blue"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UWildOmissionStatics::GetHighlightedColor(Blue));
+			RowBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(Blue));
 		}
 		else
 		{
@@ -39,11 +39,11 @@ void UWorldRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	}
 	else
 	{
-		FUIColor* DarkGray = UWildOmissionStatics::GetUIColor(FName("DarkGray"));
+		FUIColor* DarkGray = UUIHelpers::GetUIColor(FName("DarkGray"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UWildOmissionStatics::GetHighlightedColor(DarkGray));
+			RowBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(DarkGray));
 		}
 		else
 		{

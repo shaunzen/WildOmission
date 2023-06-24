@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Components/Border.h"
 #include "ServerBrowserWidget.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
+#include "UIHelpers.h"
 
 void UServerRowWidget::Setup(UServerBrowserWidget* InParent, uint32 InIndex)
 {
@@ -20,11 +20,11 @@ void UServerRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	if (Selected)
 	{
-		FUIColor* Blue = UWildOmissionStatics::GetUIColor(FName("Blue"));
+		FUIColor* Blue = UUIHelpers::GetUIColor(FName("Blue"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UWildOmissionStatics::GetHighlightedColor(Blue));
+			RowBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(Blue));
 		}
 		else
 		{
@@ -33,11 +33,11 @@ void UServerRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	}
 	else
 	{
-		FUIColor* DarkGray = UWildOmissionStatics::GetUIColor(FName("DarkGray"));
+		FUIColor* DarkGray = UUIHelpers::GetUIColor(FName("DarkGray"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UWildOmissionStatics::GetHighlightedColor(DarkGray));
+			RowBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(DarkGray));
 		}
 		else
 		{

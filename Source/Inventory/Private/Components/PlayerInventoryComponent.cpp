@@ -1,13 +1,11 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "PlayerInventoryComponent.h"
+#include "Components/PlayerInventoryComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 #include "WildOmission/Items/WorldItem.h"
-#include "WildOmission/Items/EquipableItem.h"
-#include "WildOmission/Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
@@ -22,9 +20,7 @@ void UPlayerInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
-
-	UInventoryManipulatorComponent* OwnerManipulator = OwnerCharacter->FindComponentByClass<UInventoryManipulatorComponent>();
+	UInventoryManipulatorComponent* OwnerManipulator = GetOwner()->FindComponentByClass<UInventoryManipulatorComponent>();
 	
 	ToolbarSelectionIndex = -1;
 
@@ -58,10 +54,6 @@ void UPlayerInventoryComponent::OnRep_ServerState()
 
 void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 {
-	if (OwnerCharacter == nullptr)
-	{
-		return;
-	}
 	UEquipComponent* PlayerEquipComponent = OwnerCharacter->FindComponentByClass<UEquipComponent>();
 	if (PlayerEquipComponent == nullptr)
 	{
@@ -71,13 +63,13 @@ void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
 
 	// return if there is no item
 	if (SelectedSlot.IsEmpty())
-	{
-		PlayerEquipComponent->Disarm();
+	{	
+
 		return;
 	}
 
 	// get the equipable subclass for this item
-	FItemData* SlotItemData = UWildOmissionStatics::GetItemData(SelectedSlot.Item.Name);
+	FItemData* SlotItemData = UInventoryComponent::GetItemData(SelectedSlot.Item.Name);
 	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
 	{
 		PlayerEquipComponent->Disarm();
@@ -176,7 +168,7 @@ void UPlayerInventoryComponent::RefreshToolbarSelectionState()
 
 	FInventorySlot& SelectedSlot = ServerState.Slots[ToolbarSelectionIndex];
 
-	RefreshPlayerEquip(SelectedSlot);
+	OnToolbarSlotSelectionChange.Broadcast(ToolbarSelectionIndex, SelectedSlot);
 }
 
 bool UPlayerInventoryComponent::IsToolbarSlotSelectionValid() const

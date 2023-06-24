@@ -359,6 +359,50 @@ void UEquipComponent::RefreshEquipedSlotUI()
 	PlayerInventoryWidget->RefreshSlot(EquipedItem->GetFromSlotIndex());
 }
 
+void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlot& NewSlot)
+{
+	APawn* PawnOwner = Cast<APawn>(GetOwner());
+	if (PawnOwner == nullptr)
+	{
+		Disarm();
+		return;
+	}
+
+	// return if there is no item
+	if (NewSlot.IsEmpty())
+	{
+		Disarm()
+		return;
+	}
+
+	// get the equipable subclass for this item
+	FItemData* SlotItemData = UInventoryComponent::GetItemData(NewSlot.Item.Name);
+	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
+	{
+		Disarm();
+		return;
+	}
+
+	AEquipableItem* CurrentEquipedItem = GetEquipedItem();
+	AEquipableItem* CurrentEquipedDefaultClass = GetLocalEquipedItemDefaultClass();
+
+	// is this item the same as we are already holding
+	if (GetOwner()->HasAuthority() && CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
+	{
+		return;
+	}
+
+	// Locallized version of same item check
+	if (PawnOwner->IsLocallyControlled() && CurrentEquipedDefaultClass && SlotItemData->EquipItemClass.Get() == CurrentEquipedDefaultClass->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedDefaultClass->GetUniqueItemID())
+	{
+		return;
+	}
+
+	Disarm();
+	EquipItem(NewSlot.Item.Name, SlotItemData->EquipItemClass, NewSlotIndex, NewSlot.Item.UniqueID);
+
+}
+
 bool UEquipComponent::IsEquipedItemValid() const
 {
 	if (OwnerCharacter->IsLocallyControlled())

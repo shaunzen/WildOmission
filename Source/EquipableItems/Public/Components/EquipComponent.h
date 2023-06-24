@@ -9,7 +9,7 @@
 class AEquipableItem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UEquipComponent : public USceneComponent
+class EQUIPABLEITEMS_API UEquipComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
@@ -21,7 +21,7 @@ public:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID);
+	void EquipItem(const FName& ItemName, const int8& FromSlotIndex, const uint32& UniqueID);
 
 	void Disarm();
 
@@ -64,7 +64,7 @@ private:
 	AEquipableItem* LocalEquipedItemDefaultClass;
 
 	UPROPERTY()
-	class AWildOmissionCharacter* OwnerCharacter;
+	APawn* OwnerPawn;
 
 	UFUNCTION()
 	void OnRep_EquipedItem();
@@ -73,6 +73,9 @@ private:
 
 	UFUNCTION()
 	void RefreshEquipedSlotUI();
+
+	UFUNCTION()
+		void RefreshEquip(const int8& NewSlotIndex, const FInventorySlot& NewSlot);
 
 	bool PrimaryHeld;
 	bool SecondaryHeld;

@@ -6,7 +6,7 @@
 #include "Components/Border.h"
 #include "CraftingMenuWidget.h"
 #include "Structs/ItemData.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
+#include "UIHelpers.h"
 
 void URecipeIconWidget::Setup(UCraftingMenuWidget* InParentMenu, const FCraftingRecipeEntry& InParentEntry)
 {
@@ -37,10 +37,10 @@ void URecipeIconWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 {
 	if (IsSelected())
 	{
-		FUIColor* Blue = UWildOmissionStatics::GetUIColor(FName("Blue"));
+		FUIColor* Blue = UUIHelpers::GetUIColor(FName("Blue"));
 		if (Hovering)
 		{
-			BackgroundBorder->SetBrushColor(UWildOmissionStatics::GetHighlightedColor(Blue) - FLinearColor(0.0f, 0.0f, 0.0f, 0.7f));
+			BackgroundBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(Blue) - FLinearColor(0.0f, 0.0f, 0.0f, 0.7f));
 		}
 		else
 		{
@@ -49,11 +49,11 @@ void URecipeIconWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	}
 	else
 	{
-		FUIColor* White = UWildOmissionStatics::GetUIColor(FName("White"));
+		FUIColor* White = UUIHelpers::GetUIColor(FName("White"));
 
 		if (Hovering)
 		{
-			BackgroundBorder->SetBrushColor(UWildOmissionStatics::GetHighlightedColor(White) - FLinearColor(0.0f, 0.0f, 0.0f, 0.7f));
+			BackgroundBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(White) - FLinearColor(0.0f, 0.0f, 0.0f, 0.7f));
 		}
 		else
 		{

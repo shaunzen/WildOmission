@@ -1,13 +1,12 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "SelectedItemWidget.h"
+#include "UI/SelectedItemWidget.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
-#include "WildOmission/Components/InventoryComponent.h"
-#include "WildOmission/Components/InventoryManipulatorComponent.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
+#include "Components/InventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 
 void USelectedItemWidget::NativeConstruct()
 {
@@ -65,10 +64,10 @@ void USelectedItemWidget::Refresh(const FInventoryItem& SelectedItem)
 	if (SelectedItem.Quantity > 0)
 	{
 		Show();
-		FItemData* SelectedItemData = UWildOmissionStatics::GetItemData(SelectedItem.Name);
+		FItemData* SelectedItemData = UInventoryComponent::GetItemData(SelectedItem.Name);
 		SetItem(SelectedItemData->Thumbnail, SelectedItem.Quantity);
 		
-		FItemData* SlotItemData = UWildOmissionStatics::GetItemData(SelectedItem.Name);
+		FItemData* SlotItemData = UInventoryComponent::GetItemData(SelectedItem.Name);
 		if (SlotItemData == nullptr)
 		{
 			return;

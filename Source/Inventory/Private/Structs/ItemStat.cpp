@@ -1,5 +1,5 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "ItemStat.h"
+#include "Structs/ItemStat.h"
 
