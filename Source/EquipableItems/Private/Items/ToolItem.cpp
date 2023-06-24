@@ -3,22 +3,17 @@
 
 #include "Items/ToolItem.h"
 #include "UObject/ConstructorHelpers.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "Components/EquipComponent.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
-#include "WildOmission/Components/InventoryManipulatorComponent.h"
-#include "WildOmission/Resources/HarvestableResource.h"
-#include "WildOmission/Deployables/Deployable.h"
+#include "Components/PlayerInventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
-#include "DrawDebugHelpers.h"
 
 AToolItem::AToolItem()
 {
@@ -44,11 +39,11 @@ void AToolItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(AToolItem, Durability);
 }
 
-void AToolItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
+void AToolItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
 {
-	Super::Equip(InOwnerCharacter, InItemName, InFromSlotIndex, InUniqueID);
+	Super::Equip(InOwnerPawn, InThirdPersonMeshComponent, InItemName, InFromSlotIndex, InUniqueID);
 
-	UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
+	UPlayerInventoryComponent* OwnerInventory = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventory == nullptr)
 	{
 		return;
@@ -84,7 +79,7 @@ void AToolItem::OnPrimaryHeld()
 		return;
 	}
 
-	if (GetOwnerCharacter()->IsLocallyControlled())
+	if (GetOwnerPawn()->IsLocallyControlled())
 	{
 		OwnerEquipComponent->PlayPrimaryMontage(true);
 	}
@@ -94,7 +89,8 @@ void AToolItem::OnPrimaryHeld()
 
 void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetReplicatedControlRotation());
+	// TODO replicated version
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation());
 
 	FHitResult HitResult;
 
@@ -103,7 +99,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	CollisionParams.bTraceComplex = true;
 	CollisionParams.bReturnPhysicalMaterial = true;
 
-	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
@@ -111,7 +107,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 	
-	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
+	if (FromFirstPersonInstance || !GetOwnerPawn()->IsLocallyControlled())
 	{
 		PlayImpactSound(HitResult);
 		SpawnImpactParticles(HitResult, OwnerCharacterLookVector);
@@ -123,28 +119,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 
-	AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
-
-	if (HitHarvestable && (HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
-	{
-		HitHarvestable->OnHarvest(GetOwner());
-	}
-
-	AWildOmissionCharacter* HitCharacter = Cast<AWildOmissionCharacter>(HitResult.GetActor());
-	if (HitCharacter)
-	{
-		FPointDamageEvent HitByToolEvent(20.0f, HitResult, OwnerCharacterLookVector, nullptr);
-		HitCharacter->TakeDamage(20.0f, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
-	}
-
-	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
-	if (HitDeployable)
-	{
-		float DamageAmount = 5.0f;
-
-		FPointDamageEvent HitByToolEvent(DamageAmount * GatherMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
-		HitDeployable->TakeDamage(DamageAmount * GatherMultiplier, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
-	}
+	// Interface for thing that was hit
 
 	ApplyDamage();
 }

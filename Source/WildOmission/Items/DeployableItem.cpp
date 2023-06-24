@@ -38,9 +38,9 @@ void ADeployableItem::Tick(float DeltaTime)
 	}
 }
 
-void ADeployableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
+void ADeployableItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
 {
-	Super::Equip(InOwnerCharacter, InItemName, InFromSlotIndex, InUniqueID);
+	Super::Equip(InOwnerPawn, InThirdPersonMeshComponent, InItemName, InFromSlotIndex, InUniqueID);
 
 	Client_SpawnPreview();
 }
@@ -92,13 +92,13 @@ void ADeployableItem::OnPrimaryPressed()
 
 bool ADeployableItem::LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelToTrace, FHitResult& OutHitResult) const
 {
-	if (GetOwnerCharacter() == nullptr)
+	if (GetOwnerPawn() == nullptr)
 	{
 		return false;
 	}
 
-	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
+	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation()) * DeployableRange);
 	FCollisionQueryParams Params;
 
 	Params.AddIgnoredActor(GetOwner());
@@ -258,7 +258,7 @@ FTransform ADeployableItem::GetFreehandPlacementTransform()
 	}
 	else
 	{
-		PlacementLocation = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation()) * DeployableRange);
+		PlacementLocation = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation()) * DeployableRange);
 	}
 
 	PlacementRotation = GetFacePlayerRotation(PlacementUp);
@@ -274,8 +274,8 @@ FRotator ADeployableItem::GetFacePlayerRotation(const FVector& Up) const
 {
 	FVector PlacementUp = Up;
 	FRotator PlacementUpRotationOffset = FRotator(PlacementUp.Rotation().Pitch - 90.0f, 0.0f, PlacementUp.Rotation().Roll - 90.0f);
-	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f) - PlacementUpRotationOffset);
-	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetOwnerCharacter()->GetControlRotation().Yaw, 0.0f));
+	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerPawn()->GetControlRotation().Yaw, 0.0f) - PlacementUpRotationOffset);
+	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetOwnerPawn()->GetControlRotation().Yaw, 0.0f));
 	
 	return UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
 }

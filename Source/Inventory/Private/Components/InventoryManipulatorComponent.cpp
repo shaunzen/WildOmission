@@ -1,12 +1,9 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "InventoryManipulatorComponent.h"
-#include "WildOmission/Items/WorldItem.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/UI/Player/PlayerHUDWidget.h"
+#include "Components/InventoryManipulatorComponent.h"
+#include "Components/PlayerInventoryComponent.h"
+#include "WorldItem.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -105,12 +102,12 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 	if (Single == true)
 	{
 		ItemToSpawn.Quantity = 1;
-		UWildOmissionStatics::SpawnWorldItem(GetWorld(), ItemToSpawn, GetOwner());
+		UInventoryComponent::SpawnWorldItem(GetWorld(), ItemToSpawn, GetOwner());
 		SelectedItem.Quantity -= 1;
 	}
 	else
 	{
-		UWildOmissionStatics::SpawnWorldItem(GetWorld(), ItemToSpawn, GetOwner());
+		UInventoryComponent::SpawnWorldItem(GetWorld(), ItemToSpawn, GetOwner());
 		SelectedItem.Clear();
 	}
 

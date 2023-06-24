@@ -46,9 +46,11 @@ void UEquipComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, F
 	}
 }
 
-void UEquipComponent::Setup(USkeletalMeshComponent* ArmsMesh)
+void UEquipComponent::Setup(USkeletalMeshComponent* FirstPersonMeshComponent, USkeletalMeshComponent* ThirdPersonMeshComponent)
 {
-	FirstPersonItemMeshComponent->AttachToComponent(ArmsMesh, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
+	OwnerFirstPersonMesh = FirstPersonMeshComponent;
+	OwnerThirdPersonMesh = ThirdPersonMeshComponent;
+	FirstPersonItemMeshComponent->AttachToComponent(FirstPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 }
 
 void UEquipComponent::BeginPlay()
@@ -85,7 +87,7 @@ void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableIte
 	{	
 		EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(ItemClass, OwnerPawn->GetActorLocation(), OwnerPawn->GetActorRotation());
 
-		EquipedItem->Equip(OwnerPawn, ItemName, FromSlotIndex, UniqueID);
+		EquipedItem->Equip(OwnerPawn, OwnerThirdPersonMesh, ItemName, FromSlotIndex, UniqueID);
 
 		OnRep_EquipedItem();
 	}
@@ -122,11 +124,23 @@ void UEquipComponent::PlayEquipMontage(bool FirstPerson)
 {
 	if (FirstPerson && LocalEquipedItemDefaultClass)
 	{
-		PlayFirstPersonAnimationMontage.Broadcast(LocalEquipedItemDefaultClass->GetEquipMontage(), 1.0f);
+		UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
+		if (OwnerPawn == nullptr || FirstPersonArmsAnimInstance == nullptr)
+		{
+			return;
+		}
+
+		FirstPersonArmsAnimInstance->Montage_Play(LocalEquipedItemDefaultClass->GetEquipMontage());
 	}
 	else if (!FirstPerson && EquipedItem)
 	{
-		PlayThirdPersonAnimationMontage.Broadcast(EquipedItem->GetEquipMontage(), 1.0f);
+		UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
+		if (ThirdPersonAnimInstance == nullptr)
+		{
+			return;
+		}
+
+		ThirdPersonAnimInstance->Montage_Play(EquipedItem->GetEquipMontage());
 	}
 }
 
@@ -140,12 +154,47 @@ void UEquipComponent::PlayPrimaryMontage(bool FirstPerson)
 
 	if (FirstPerson)
 	{
-		PlayFirstPersonAnimationMontage.Broadcast(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
+		UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
+		if (OwnerPawn == nullptr || FirstPersonArmsAnimInstance == nullptr)
+		{
+			return;
+		}
+
+		FirstPersonArmsAnimInstance->Montage_Play(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
 	}
 	else
 	{
-		PlayThirdPersonAnimationMontage.Broadcast(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
+		UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
+		if (ThirdPersonAnimInstance == nullptr)
+		{
+			return;
+		}
+
+		ThirdPersonAnimInstance->Montage_Play(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
 	}
+}
+
+bool UEquipComponent::PrimaryMontagePlaying() const
+{
+	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
+	if (EquipedTool == nullptr)
+	{
+		return false;
+	}
+
+	UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
+	if (OwnerPawn == nullptr || FirstPersonArmsAnimInstance == nullptr)
+	{
+		return false;
+	}
+
+	UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
+	if (ThirdPersonAnimInstance == nullptr)
+	{
+		return false;
+	}
+
+	return FirstPersonArmsAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage()) || ThirdPersonAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage());
 }
 
 AEquipableItem* UEquipComponent::GetEquipedItem()
@@ -253,16 +302,16 @@ void UEquipComponent::SecondaryReleased()
 
 void UEquipComponent::OnRep_EquipedItem()
 {
-	if (OwnerCharacter == nullptr)
+	if (OwnerPawn == nullptr)
 	{
 		return;
 	}
 
 	if (EquipedItem)
 	{
-		RefreshEquipedSlotUI();
+		RefreshEquipedSlotUI.Broadcast(EquipedItem->GetFromSlotIndex());
 		
-		EquipedItem->SetLocalVisibility(!OwnerCharacter->IsLocallyControlled());
+		EquipedItem->SetLocalVisibility(!OwnerPawn->IsLocallyControlled());
 
 		PlayEquipMontage(false);
 	}
@@ -270,7 +319,7 @@ void UEquipComponent::OnRep_EquipedItem()
 
 void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass, const uint32& UniqueID)
 {
-	if (OwnerCharacter == nullptr)
+	if (OwnerPawn == nullptr)
 	{
 		return;
 	}
@@ -287,7 +336,7 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 
 		FirstPersonItemMeshComponent->SetStaticMesh(LocalEquipedItemDefaultClass->GetMesh());
 
-		FirstPersonItemMeshComponent->SetVisibility(OwnerCharacter->IsLocallyControlled());
+		FirstPersonItemMeshComponent->SetVisibility(OwnerPawn->IsLocallyControlled());
 		FirstPersonItemMeshComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
 		FirstPersonItemMeshComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
 
@@ -300,27 +349,7 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 	}
 }
 
-void UEquipComponent::RefreshEquipedSlotUI()
-{
-	if (OwnerCharacter == nullptr)
-	{
-		return;
-	}
 
-	UPlayerHUDWidget* PlayerHUD = OwnerCharacter->GetHUDWidget();
-	if (PlayerHUD == nullptr)
-	{
-		return;
-	}
-	
-	UPlayerInventoryWidget* PlayerInventoryWidget = PlayerHUD->GetPlayerInventoryWidget();
-	if (PlayerInventoryWidget == nullptr)
-	{
-		return;
-	}
-
-	PlayerInventoryWidget->RefreshSlot(EquipedItem->GetFromSlotIndex());
-}
 
 void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlot& NewSlot)
 {
@@ -334,7 +363,7 @@ void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlo
 	// return if there is no item
 	if (NewSlot.IsEmpty())
 	{
-		Disarm()
+		Disarm();
 		return;
 	}
 
@@ -368,7 +397,7 @@ void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlo
 
 bool UEquipComponent::IsEquipedItemValid() const
 {
-	if (OwnerCharacter->IsLocallyControlled())
+	if (OwnerPawn->IsLocallyControlled())
 	{
 		return EquipedItem != nullptr && LocalEquipedItemDefaultClass != nullptr && EquipedItem->GetClass() == LocalEquipedItemDefaultClass->GetClass();
 	}

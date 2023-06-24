@@ -21,7 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called when the item is equiped into the players hands
-	virtual void Equip(ACharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID);
+	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID);
 
 	// Called before the item is unequiped
 	virtual void OnUnequip();
@@ -85,6 +85,8 @@ protected:
 
 	bool bPrimaryEnabled;
 	bool bSecondaryEnabled;
+
+	APawn* GetOwnerPawn() const;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayThirdPersonEquipMontage();

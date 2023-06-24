@@ -6,8 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "EquipComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayFirstPersonAnimationMontageSignature, UAnimMontage*, Montage, float, Speed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayThirdPersonAnimationMontageSignature, UAnimMontage*, Montage, float, Speed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshEquipedSlotUISignature, const uint8&, SlotIndex);
 
 class AEquipableItem;
 
@@ -24,7 +23,7 @@ public:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Setup(USkeletalMeshComponent* ArmsMesh);
+	void Setup(USkeletalMeshComponent* FirstPersonMeshComponent, USkeletalMeshComponent* ThirdPersonMeshComponent);
 
 	void EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID);
 
@@ -35,8 +34,9 @@ public:
 	void PlayEquipMontage(bool FirstPerson);
 	void PlayPrimaryMontage(bool FirstPerson);
 
-	FPlayerFirstPersonAnimationMontageSignature PlayFirstPersonAnimationMontage;
-	FPlayerThirdPersonAnimationMontageSignature PlayThirdPersonAnimationMontage;
+	bool PrimaryMontagePlaying() const;
+	
+	FRefreshEquipedSlotUISignature RefreshEquipedSlotUI;
 
 	UFUNCTION(BlueprintCallable)
 	AEquipableItem* GetEquipedItem();
@@ -84,10 +84,7 @@ private:
 	void EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass, const uint32& UniqueID);
 
 	UFUNCTION()
-	void RefreshEquipedSlotUI();
-
-	UFUNCTION()
-		void RefreshEquip(const int8& NewSlotIndex, const FInventorySlot& NewSlot);
+	void RefreshEquip(const int8& NewSlotIndex, const FInventorySlot& NewSlot);
 
 	bool PrimaryHeld;
 	bool SecondaryHeld;
