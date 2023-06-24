@@ -76,28 +76,6 @@ UWildOmissionStatics::UWildOmissionStatics()
 	}
 }
 
-FUIColor* UWildOmissionStatics::GetUIColor(const FName& ColorName)
-{
-	if (UIColorsTable == nullptr)
-	{
-		return nullptr;
-	}
-
-	static const FString ContextString(TEXT("UI Color Context"));
-
-	return UIColorsTable->FindRow<FUIColor>(ColorName, ContextString, true);
-}
-
-FLinearColor UWildOmissionStatics::GetHighlightedColor(FUIColor* Color)
-{
-	return FLinearColor(Color->Default.R + Color->HighlightedOffset, Color->Default.G + Color->HighlightedOffset, Color->Default.B + Color->HighlightedOffset, 1.0f);
-}
-
-FLinearColor UWildOmissionStatics::GetSelectedColor(FUIColor* Color)
-{
-	return FLinearColor(Color->Default.R + Color->SelectedOffset, Color->Default.G + Color->SelectedOffset, Color->Default.B + Color->SelectedOffset, 1.0f);
-}
-
 UNiagaraSystem* UWildOmissionStatics::GetImpactEffectBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface)
 {
 	switch (Surface)
