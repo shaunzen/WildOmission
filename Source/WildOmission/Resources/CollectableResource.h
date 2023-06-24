@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WildOmission/Core/Interfaces/Interactable.h"
+#include "Interfaces/Interactable.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "Structs/InventoryItem.h"

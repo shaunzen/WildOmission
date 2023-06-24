@@ -15,7 +15,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "WildOmission/Deployables/ItemContainerBase.h"
 #include "WildOmission/Components/CraftingComponent.h"
-#include "WildOmission/Components/InteractionComponent.h"
+#include "Components/InteractionComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Components/NameTagComponent.h"
 #include "WildOmission/Components/SpecialEffectsHandlerComponent.h"
@@ -398,7 +398,7 @@ void AWildOmissionCharacter::HandleDeath()
 	}
 
 	// Set Items to be this players items
-	SpawnedRagdoll->GetInventoryComponent()->Load(InventoryComponent->Save());
+	//SpawnedRagdoll->GetInventoryComponent()->Load(InventoryComponent->Save());
 
 	Destroy();
 }

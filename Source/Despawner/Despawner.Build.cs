@@ -1,0 +1,17 @@
+// Copyright Telephone Studios. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class Despawner : ModuleRules
+
+{
+
+    public Despawner(ReadOnlyTargetRules Target) : base(Target)
+
+    {
+
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "Engine" });
+
+    }
+
+}

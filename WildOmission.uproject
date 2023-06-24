@@ -25,7 +25,12 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "Interactable",
+			"Name": "Interaction",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "Despawner",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Deployable.h"
 #include "Blueprint/UserWidget.h"
-#include "WildOmission/Core/Interfaces/Interactable.h"
+#include "Interfaces/Interactable.h"
 #include "ItemContainerBase.generated.h"
 
 class UInventoryComponent;

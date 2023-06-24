@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "ActorDespawnComponent.h"
+#include "Components/ActorDespawnComponent.h"
 
 // Sets default values for this component's properties
 UActorDespawnComponent::UActorDespawnComponent()

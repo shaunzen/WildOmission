@@ -2,11 +2,11 @@
 
 using UnrealBuildTool;
 
-public class Interactable: ModuleRules
+public class Interaction : ModuleRules
 
 {
 
-    public Interactable(ReadOnlyTargetRules Target) : base(Target)
+    public Interaction(ReadOnlyTargetRules Target) : base(Target)
 
     {
 

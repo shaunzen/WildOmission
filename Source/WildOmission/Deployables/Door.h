@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Deployable.h"
-#include "WildOmission/Core/Interfaces/Interactable.h"
+#include "Interfaces/Interactable.h"
 #include "Door.generated.h"
 
 /**

@@ -1,6 +1,6 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-#include "Interactable.h"
+#include "Interaction.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_MODULE(FDefaultModuleImpl, Interactable);
+IMPLEMENT_MODULE(FDefaultModuleImpl, Interaction);

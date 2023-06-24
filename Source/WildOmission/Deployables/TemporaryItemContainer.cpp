@@ -2,7 +2,7 @@
 
 
 #include "TemporaryItemContainer.h"
-#include "WildOmission/Components/ActorDespawnComponent.h"
+#include "Components/ActorDespawnComponent.h"
 
 ATemporaryItemContainer::ATemporaryItemContainer()
 {

@@ -203,12 +203,12 @@ void UInventoryComponent::SpawnWorldItem(UWorld* WorldContextObject, const FInve
 	WorldItem->AddImpulse(PhysicsImpulse);
 }
 
-void UInventoryComponent::OnLoadComplete_Implementation()
-{
-	ServerState.Contents = Contents;
-	ServerState.Slots = Slots;
-	LoadedFromSave = true;
-}
+//void UInventoryComponent::OnLoadComplete_Implementation()
+//{
+//	ServerState.Contents = Contents;
+//	ServerState.Slots = Slots;
+//	LoadedFromSave = true;
+//}
 
 void UInventoryComponent::Server_SlotInteraction_Implementation(FInventorySlotInteraction Interaction)
 {

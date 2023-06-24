@@ -10,7 +10,7 @@ public class Inventory : ModuleRules
 
     {
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "Engine", "UMG", "Interactable", "Helpers" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "Engine", "UMG", "Interaction", "Despawner" ,"Helpers" });
 
     }
 

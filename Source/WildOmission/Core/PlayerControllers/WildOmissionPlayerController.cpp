@@ -66,7 +66,7 @@ FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 	PlayerSave.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
 	PlayerSave.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
 
-	PlayerSave.Inventory = WildOmissionCharacter->GetInventoryComponent()->Save();
+	//PlayerSave.Inventory = WildOmissionCharacter->GetInventoryComponent()->Save();
 	PlayerSave.SelectedItem = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItem();
 
 	return PlayerSave;
@@ -87,7 +87,7 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave
 	WildOmissionCharacter->GetVitalsComponent()->SetHunger(PlayerSave.Vitals.Hunger);
 	WildOmissionCharacter->GetVitalsComponent()->SetThirst(PlayerSave.Vitals.Thirst);
 
-	WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory);
+	//WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory);
 
 	if (PlayerSave.SelectedItem.Quantity > 0)
 	{

@@ -3,14 +3,11 @@
 
 #include "WorldItem.h"
 #include "Components/StaticMeshComponent.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
-#include "WildOmission/Components/InventoryManipulatorComponent.h"
-#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
-#include "WildOmission/Components/ActorDespawnComponent.h"
-#include "WildOmission/Core/Structs/ItemStat.h"
+#include "Components/PlayerInventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
+#include "Components/ActorDespawnComponent.h"
+#include "Structs/ItemStat.h"
 #include "Kismet/GameplayStatics.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -96,7 +93,7 @@ FString AWorldItem::PromptText()
 {
 	FString ItemDisplayName;
 
-	FItemData* ItemData = UWildOmissionStatics::GetItemData(Item.Name);
+	FItemData* ItemData = UInventoryComponent::GetItemData(Item.Name);
 	if (ItemData == nullptr)
 	{
 		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Item.Name.ToString());
@@ -110,7 +107,7 @@ FString AWorldItem::PromptText()
 // TODO on replicate update mesh why tf are we replicating the mesh and what item we are using wtf?
 void AWorldItem::SetItem(const FInventoryItem& InItem)
 {
-	FItemData* NewItemData = UWildOmissionStatics::GetItemData(InItem.Name);
+	FItemData* NewItemData = UInventoryComponent::GetItemData(InItem.Name);
 	if (NewItemData == nullptr)
 	{
 		return;
@@ -140,7 +137,7 @@ void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 
 	FInventoryItem OurItem = this->GetItem();
 	FInventoryItem OtherItem = OtherWorldItem->GetItem();
-	FItemData* ItemData = UWildOmissionStatics::GetItemData(OurItem.Name);
+	FItemData* ItemData = UInventoryComponent::GetItemData(OurItem.Name);
 	if (OtherItem.Name != OurItem.Name || ItemData == nullptr || OurItem.Quantity >= ItemData->StackSize || ItemData->StackSize == 1)
 	{
 		return;

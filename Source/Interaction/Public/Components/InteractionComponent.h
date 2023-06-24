@@ -7,7 +7,7 @@
 #include "InteractionComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UInteractionComponent : public USceneComponent
+class INTERACTION_API UInteractionComponent : public USceneComponent
 {
 	GENERATED_BODY()
 

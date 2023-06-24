@@ -1,9 +1,8 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "InteractionComponent.h"
-#include "WildOmission/Core/Interfaces/Interactable.h"
-#include "WildOmission/Core/Interfaces/DurabilityInterface.h"
+#include "Components/InteractionComponent.h"
+#include "Interfaces/Interactable.h"
 
 UInteractionComponent::UInteractionComponent()
 {
