@@ -7,8 +7,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
-#include "WildOmission/Components/EquipComponent.h"
-#include "WildOmission/Items/ToolItem.h"
+#include "Components/EquipComponent.h"
+#include "Items/ToolItem.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 
 UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializer)

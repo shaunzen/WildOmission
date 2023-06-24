@@ -10,7 +10,7 @@ public class EquipableItems : ModuleRules
 
     {
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "Engine", "Inventory" });
 
     }
 

@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WildOmission/Core/Structs/InventoryItem.h"
-#include "WildOmission/Core/Enums/ToolType.h"
+#include "Structs/InventoryItem.h"
+#include "Enums/ToolType.h"
 #include "Components/ActorComponent.h"
 #include "HarvestableComponent.generated.h"
 

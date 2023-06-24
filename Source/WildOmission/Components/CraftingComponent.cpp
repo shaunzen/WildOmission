@@ -2,8 +2,8 @@
 
 
 #include "CraftingComponent.h"
-#include "InventoryComponent.h"
-#include "InventoryManipulatorComponent.h"
+#include "Components/InventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 static UDataTable* RecipeDataTable = nullptr;

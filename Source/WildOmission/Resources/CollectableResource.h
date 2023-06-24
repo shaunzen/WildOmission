@@ -7,7 +7,7 @@
 #include "WildOmission/Core/Interfaces/Interactable.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "WildOmission/Core/Interfaces/RequiredForLoad.h"
-#include "WildOmission/Core/Structs/InventoryItem.h"
+#include "Structs/InventoryItem.h"
 #include "CollectableResource.generated.h"
 
 UCLASS()

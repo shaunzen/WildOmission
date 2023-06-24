@@ -5,8 +5,8 @@
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
 #include "WildOmission/Core/Interfaces/RequiredForLoad.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
-#include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "Components/PlayerInventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
@@ -91,7 +91,7 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave
 
 	if (PlayerSave.SelectedItem.Quantity > 0)
 	{
-		UWildOmissionStatics::SpawnWorldItem(GetWorld(), PlayerSave.SelectedItem, WildOmissionCharacter);
+		UInventoryComponent::SpawnWorldItem(GetWorld(), PlayerSave.SelectedItem, WildOmissionCharacter);
 	}
 }
 

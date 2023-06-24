@@ -2,8 +2,6 @@
 
 
 #include "WildOmissionStatics.h"
-#include "WildOmission/Core/Structs/InventoryItem.h"
-#include "WildOmission/Items/WorldItem.h"
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
 #include "WildOmission/Core/SaveSystem/WorldGenerationHandlerComponent.h"
@@ -11,7 +9,6 @@
 #include "NiagaraSystem.h"
 #include "Engine/DataTable.h"
 
-static UDataTable* ItemDataTable = nullptr;
 static UDataTable* UIColorsTable = nullptr;
 static USoundBase* WoodImpactSound = nullptr;
 static USoundBase* RockImpactSound = nullptr;
@@ -24,12 +21,6 @@ static UMaterialInterface* MetalImpactDecalMaterial = nullptr;
 
 UWildOmissionStatics::UWildOmissionStatics()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
-	if (ItemDataTableBlueprint.Succeeded())
-	{
-		ItemDataTable = ItemDataTableBlueprint.Object;
-	}
-
 	static ConstructorHelpers::FObjectFinder<UDataTable> UIColorsTableBlueprint(TEXT("/Game/WildOmission/UI/Custom/DT_UIColors"));
 	if (UIColorsTableBlueprint.Succeeded())
 	{
@@ -83,18 +74,6 @@ UWildOmissionStatics::UWildOmissionStatics()
 	{
 		MetalImpactDecalMaterial = MetalImpactDecalMaterialObject.Object;
 	}
-}
-
-FItemData* UWildOmissionStatics::GetItemData(const FName& ItemName)
-{
-	if (ItemDataTable == nullptr)
-	{
-		return nullptr;
-	}
-
-	static const FString ContextString(TEXT("Item Data Context"));
-
-	return ItemDataTable->FindRow<FItemData>(ItemName, ContextString, true);
 }
 
 FUIColor* UWildOmissionStatics::GetUIColor(const FName& ColorName)
@@ -196,37 +175,6 @@ float UWildOmissionStatics::GetSwoopLerp(const float& A, const float& B, const f
 	float Duration = EndAlpha - StartAlpha;
 
 	return FMath::Lerp(A, B, FMath::Clamp(FMath::Sin((ZeroAlpha / Duration) * 6.0f) * TransitionHardness, 0.0f, 1.0f));
-}
-
-void UWildOmissionStatics::SpawnWorldItem(UWorld* WorldContextObject, const FInventoryItem& ItemToSpawn, AActor* SpawningActor)
-{
-	if (WorldContextObject == nullptr || SpawningActor == nullptr)
-	{
-		return;
-	}
-
-	// Get the data for this item
-	FItemData* ItemData = UWildOmissionStatics::GetItemData(ItemToSpawn.Name);
-
-	// Spawn a world item actor
-	AWorldItem* WorldItem = WorldContextObject->SpawnActor<AWorldItem>();
-	if (ItemData == nullptr || WorldItem == nullptr)
-	{
-		return;
-	}
-
-	WorldItem->SetOwner(SpawningActor);
-
-	FVector SpawnLocation;
-	FVector PhysicsImpulse;
-
-	SpawnLocation = SpawningActor->GetActorLocation();
-	PhysicsImpulse = SpawningActor->GetActorForwardVector() * 5000.0f;
-
-	// Update world items properties
-	WorldItem->SetActorLocation(SpawnLocation);
-	WorldItem->SetItem(ItemToSpawn);
-	WorldItem->AddImpulse(PhysicsImpulse);
 }
 
 void UWildOmissionStatics::GetWorldSize(UWorld* WorldContextObject, FVector2D& OutWorldSize)

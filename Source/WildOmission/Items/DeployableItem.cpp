@@ -4,7 +4,7 @@
 #include "DeployableItem.h"
 #include "Engine/StaticMeshActor.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "Components/PlayerInventoryComponent.h"
 #include "WildOmission/Deployables/DeployablePreview.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"

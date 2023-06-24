@@ -4,7 +4,7 @@
 #include "FurnaceWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "WildOmission/Deployables/Furnace.h"
 
 void UFurnaceWidget::NativeConstruct()

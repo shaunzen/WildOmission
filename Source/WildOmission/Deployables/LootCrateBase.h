@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ItemContainerBase.h"
-#include "WildOmission/Core/Structs/InventoryItem.h"
+#include "Structs/InventoryItem.h"
 #include "LootCrateBase.generated.h"
 
 USTRUCT(BlueprintType)

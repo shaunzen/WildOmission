@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WildOmission/Core/Structs/InventoryItem.h"
-#include "WildOmission/Core/Enums/ToolType.h"
+#include "Structs/InventoryItem.h"
+#include "Enums/ToolType.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "HarvestableResource.generated.h"

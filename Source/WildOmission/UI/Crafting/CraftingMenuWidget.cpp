@@ -12,7 +12,7 @@
 #include "RecipeIconWidget.h"
 #include "IngredientRowWidget.h"
 #include "WildOmission/Components/CraftingComponent.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -97,7 +97,7 @@ void UCraftingMenuWidget::RefreshRecipesList()
 	TArray<FCraftingRecipeEntry> RecipeEntries;
 	for (const FName& RecipeID : UCraftingComponent::GetAllRecipes())
 	{
-		FItemData* YieldItemData = UWildOmissionStatics::GetItemData(RecipeID);
+		FItemData* YieldItemData = UInventoryComponent::GetItemData(RecipeID);
 		if (YieldItemData == nullptr || (CategoryFilter != EItemCategory::All && YieldItemData->Category != CategoryFilter))
 		{
 			continue;
@@ -107,7 +107,7 @@ void UCraftingMenuWidget::RefreshRecipesList()
 		Entry.RecipeID = RecipeID;
 		Entry.CanCraft = CanCraftRecipe(RecipeID);
 		Entry.IngredientPercentage = GetRecipeIngredientPercentage(RecipeID);
-		Entry.YieldItemData = UWildOmissionStatics::GetItemData(RecipeID);
+		Entry.YieldItemData = UInventoryComponent::GetItemData(RecipeID);
 
 		RecipeEntries.Add(Entry);
 	}
@@ -145,7 +145,7 @@ void UCraftingMenuWidget::RefreshDetailsPanel()
 		return;
 	}
 
-	FItemData* RecipeYieldItemData = UWildOmissionStatics::GetItemData(SelectedRecipe);
+	FItemData* RecipeYieldItemData = UInventoryComponent::GetItemData(SelectedRecipe);
 	if (RecipeYieldItemData == nullptr)
 	{
 		return;
@@ -199,7 +199,7 @@ void UCraftingMenuWidget::RefreshIngredientList()
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
 		int32 HasAmount = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
-		FItemData* IngredientItemData = UWildOmissionStatics::GetItemData(Ingredient.Name);
+		FItemData* IngredientItemData = UInventoryComponent::GetItemData(Ingredient.Name);
 		if (IngredientItemData == nullptr)
 		{
 			return;

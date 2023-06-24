@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "ItemData.h"
+#include "Structs/ItemData.h"
 #include "CraftingRecipeEntry.generated.h"
 
 USTRUCT()

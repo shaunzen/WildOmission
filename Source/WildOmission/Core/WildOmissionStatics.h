@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Structs/ItemData.h"
-#include "WildOmission/UI/Custom/UIColor.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "WildOmissionStatics.generated.h"
 
@@ -18,16 +16,11 @@ class WILDOMISSION_API UWildOmissionStatics : public UObject
 public:
 
 	UWildOmissionStatics();
-	static FItemData* GetItemData(const FName& ItemName);
-	static FUIColor* GetUIColor(const FName& ColorName);
-	static FLinearColor GetHighlightedColor(FUIColor* Color);
-	static FLinearColor GetSelectedColor(FUIColor* Color);
 	static UNiagaraSystem* GetImpactEffectBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface);
 	static USoundBase* GetImpactSoundBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface);
 	static UMaterialInterface* GetImpactDecalBySurfaceType(const TEnumAsByte<EPhysicalSurface>& Surface);
 	static FVector GetHostLocationInWorld(UWorld* WorldContextObject);
 
 	static float GetSwoopLerp(const float& A, const float& B, const float& TransitionHardness, const float& Alpha, const float& StartAlpha, const float& EndAlpha);
-	static void SpawnWorldItem(UWorld* WorldContextObject, const struct FInventoryItem& ItemToSpawn, AActor* SpawningActor);
 	static void GetWorldSize(UWorld* WorldContextObject, FVector2D& OutWorldSize);
 };

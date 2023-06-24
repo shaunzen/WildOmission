@@ -2,8 +2,8 @@
 
 
 #include "CollectableResource.h"
-#include "WildOmission/Components/InventoryComponent.h"
-#include "WildOmission/Components/InventoryManipulatorComponent.h"
+#include "Components/InventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 
@@ -52,7 +52,7 @@ FString ACollectableResource::PromptText()
 {
 	FString YieldedItemDisplayName;
 
-	FItemData* ItemData = UWildOmissionStatics::GetItemData(Yield.Name);
+	FItemData* ItemData = UInventoryComponent::GetItemData(Yield.Name);
 	if (ItemData == nullptr)
 	{
 		return FString::Printf(TEXT("Press 'E' to harvest %s"), *Yield.Name.ToString());

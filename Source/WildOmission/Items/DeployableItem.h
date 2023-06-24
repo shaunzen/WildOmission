@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EquipableItem.h"
+#include "Items/EquipableItem.h"
 #include "WildOmission/Deployables/Deployable.h"
 #include "DeployableItem.generated.h"
 

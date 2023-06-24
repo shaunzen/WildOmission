@@ -11,7 +11,7 @@
 #include "WildOmission/Core/WildOmissionGameState.h"
 #include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
+#include "Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/Weather/Storm.h"

@@ -3,7 +3,7 @@
 
 #include "CraftingRecipeCategoryButton.h"
 #include "CraftingMenuWidget.h"
-#include "WildOmission/Core/Structs/ItemData.h"
+#include "Structs/ItemData.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "WildOmission/Core/WildOmissionStatics.h"

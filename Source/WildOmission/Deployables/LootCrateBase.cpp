@@ -3,7 +3,7 @@
 
 #include "LootCrateBase.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 
 ALootCrateBase::ALootCrateBase()
 {

@@ -7,7 +7,7 @@
 #include "Components/GridPanel.h"
 #include "Components/GridSlot.h"
 #include "WildOmission/Core/Structs/Notification.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "WildOmission/Components/VitalsComponent.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -73,7 +73,7 @@ void UNotificationPanelWidget::CreateItemNotification(const FInventoryItemUpdate
 	Notification.Time = GetWorld()->GetRealTimeSeconds();
 	Notification.Duration = 5.0f;
 
-	FItemData* ItemData = UWildOmissionStatics::GetItemData(ItemUpdate.Item.Name);
+	FItemData* ItemData = UInventoryComponent::GetItemData(ItemUpdate.Item.Name);
 	if (ItemData == nullptr)
 	{
 		return;

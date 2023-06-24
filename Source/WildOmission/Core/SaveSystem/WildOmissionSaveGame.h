@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "WildOmission/Core/Structs/InventoryItem.h"
-#include "WildOmission/Core/Structs/InventorySlot.h"
+#include "Structs/InventoryItem.h"
+#include "Structs/InventorySlot.h"
 #include "WildOmissionSaveGame.generated.h"
 
 USTRUCT()

@@ -2,7 +2,7 @@
 
 
 #include "Furnace.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Components/AudioComponent.h"
 #include "Net/UnrealNetwork.h"

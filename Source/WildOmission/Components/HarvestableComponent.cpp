@@ -2,10 +2,10 @@
 
 
 #include "HarvestableComponent.h"
-#include "EquipComponent.h"
-#include "WildOmission/Items/ToolItem.h"
-#include "InventoryComponent.h"
-#include "InventoryManipulatorComponent.h"
+#include "Components/EquipComponent.h"
+#include "Items/ToolItem.h"
+#include "Components/InventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 
 UHarvestableComponent::UHarvestableComponent()
 {

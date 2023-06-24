@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "InventoryItem.h"
+#include "Structs/InventoryItem.h"
 #include "UObject/NoExportTypes.h"
 #include "CraftingRecipe.generated.h"
 

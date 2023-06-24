@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InventoryWidget.h"
+#include "UI/InventoryWidget.h"
 #include "FurnaceWidget.generated.h"
 
 class UButton;

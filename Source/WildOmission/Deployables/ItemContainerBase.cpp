@@ -2,7 +2,7 @@
 
 
 #include "ItemContainerBase.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"

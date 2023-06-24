@@ -4,7 +4,7 @@
 #include "ActorSaveHandlerComponent.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "EngineUtils.h"
 
 // Sets default values for this component's properties

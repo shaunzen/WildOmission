@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Components/Border.h"
 #include "CraftingMenuWidget.h"
-#include "WildOmission/Core/Structs/ItemData.h"
+#include "Structs/ItemData.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 
 void URecipeIconWidget::Setup(UCraftingMenuWidget* InParentMenu, const FCraftingRecipeEntry& InParentEntry)
