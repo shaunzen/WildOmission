@@ -13,7 +13,12 @@
 				"UMG",
 				"CoreUObject"
 			]
-		}
+		},
+		{
+			"Name": "EquipableItems",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
 	],
 	"Plugins": [
 		{
