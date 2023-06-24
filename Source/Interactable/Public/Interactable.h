@@ -16,7 +16,7 @@ class UInteractable : public UInterface
 /**
  * 
  */
-class WILDOMISSION_API IInteractable
+class INTERACTABLE_API IInteractable
 {
 	GENERATED_BODY()
 

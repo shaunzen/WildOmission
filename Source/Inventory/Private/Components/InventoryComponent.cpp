@@ -14,6 +14,8 @@ UInventoryComponent::UInventoryComponent()
 	
 	SetIsReplicatedByDefault(true);
 
+	DisplayName = TEXT("Inventory");
+
 	SlotCount = 24;
 	LoadedFromSave = false;
 	
@@ -281,6 +283,11 @@ FInventorySlot* UInventoryComponent::FindSlotContainingItem(const FName& ItemToF
 	}
 
 	return FoundSlot;
+}
+
+FString UInventoryComponent::GetDisplayName() const
+{
+	return DisplayName;
 }
 
 FInventoryContents* UInventoryComponent::GetContents()

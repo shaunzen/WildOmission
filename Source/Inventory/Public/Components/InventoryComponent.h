@@ -97,6 +97,7 @@ public:
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
 	FInventorySlot* FindSlotContainingItem(const FName& ItemToFind);	
 
+	FString GetDisplayName() const;
 	FInventoryContents* GetContents();
 	FInventorySlot* GetSlot(const int32& SlotIndex);
 	uint8 GetSlotCount() const;
@@ -149,6 +150,9 @@ private:
 	TArray<FInventorySlotInteraction> UnacknowalgedInteractions;
 
 	FInventoryItemUpdate LastClientAcknowlagedItemUpdate;
+
+	UPROPERTY(EditDefaultsOnly)
+	FString DisplayName;
 
 	void ClearAcknowlagedInteractions(const FInventorySlotInteraction& LastInteraction);
 	void GetUnacknowlagedUpdates(TArray<FInventoryItemUpdate>& OutUpdatesList);
