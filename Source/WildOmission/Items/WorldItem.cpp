@@ -107,6 +107,7 @@ FString AWorldItem::PromptText()
 	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName);
 }
 
+// TODO on replicate update mesh why tf are we replicating the mesh and what item we are using wtf?
 void AWorldItem::SetItem(const FInventoryItem& InItem)
 {
 	FItemData* NewItemData = UWildOmissionStatics::GetItemData(InItem.Name);
