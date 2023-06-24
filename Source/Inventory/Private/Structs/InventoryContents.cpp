@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "InventoryContents.h"
+#include "Structs/InventoryContents.h"
 
 int32 FInventoryContents::GetItemQuantity(const FName& ItemName)
 {

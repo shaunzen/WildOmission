@@ -1,16 +1,16 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "InventoryWidget.h"
-#include "InventorySlotWidget.h"
-#include "SelectedItemWidget.h"
+#include "UI/InventoryWidget.h"
+#include "UI/InventorySlotWidget.h"
+#include "UI/SelectedItemWidget.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
 #include "Components/CanvasPanel.h"
 #include "UObject/ConstructorHelpers.h"
-#include "WildOmission/Components/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "WildOmission/Deployables/ItemContainerBase.h"
 
 UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)

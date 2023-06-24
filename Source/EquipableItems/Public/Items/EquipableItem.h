@@ -6,8 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "EquipableItem.generated.h"
 
-class AWildOmissionCharacter;
-
 UCLASS()
 class EQUIPABLEITEMS_API AEquipableItem : public AActor
 {
@@ -23,7 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called when the item is equiped into the players hands
-	virtual void Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID);
+	virtual void Equip(ACharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID);
 
 	// Called before the item is unequiped
 	virtual void OnUnequip();
@@ -87,8 +85,6 @@ protected:
 
 	bool bPrimaryEnabled;
 	bool bSecondaryEnabled;
-
-	AWildOmissionCharacter* GetOwnerCharacter() const;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayThirdPersonEquipMontage();

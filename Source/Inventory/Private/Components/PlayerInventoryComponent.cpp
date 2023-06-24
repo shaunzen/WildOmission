@@ -52,49 +52,7 @@ void UPlayerInventoryComponent::OnRep_ServerState()
 // General Management
 //**************************************************************
 
-void UPlayerInventoryComponent::RefreshPlayerEquip(FInventorySlot& SelectedSlot)
-{
-	UEquipComponent* PlayerEquipComponent = OwnerCharacter->FindComponentByClass<UEquipComponent>();
-	if (PlayerEquipComponent == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("RefreshPlayerEquip: Failed to get player's equip component"));
-		return;
-	}
 
-	// return if there is no item
-	if (SelectedSlot.IsEmpty())
-	{	
-
-		return;
-	}
-
-	// get the equipable subclass for this item
-	FItemData* SlotItemData = UInventoryComponent::GetItemData(SelectedSlot.Item.Name);
-	if (SlotItemData == nullptr || SlotItemData->EquipItemClass == nullptr)
-	{
-		PlayerEquipComponent->Disarm();
-		return;
-	}
-
-	AEquipableItem* CurrentEquipedItem = PlayerEquipComponent->GetEquipedItem();
-	AEquipableItem* CurrentEquipedDefaultClass = PlayerEquipComponent->GetLocalEquipedItemDefaultClass();
-
-	// is this item the same as we are already holding
-	if (OwnerCharacter->HasAuthority() && CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
-	{
-		return;
-	}
-
-	// Locallized version of same item check
-	if (OwnerCharacter->IsLocallyControlled() && CurrentEquipedDefaultClass && SlotItemData->EquipItemClass.Get() == CurrentEquipedDefaultClass->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedDefaultClass->GetUniqueItemID())
-	{
-		return;
-	}
-
-	PlayerEquipComponent->Disarm();
-	PlayerEquipComponent->EquipItem(SelectedSlot.Item.Name, SlotItemData->EquipItemClass, SelectedSlot.Index, SelectedSlot.Item.UniqueID);
-
-}
 
 //**************************************************************
 // User Interaction

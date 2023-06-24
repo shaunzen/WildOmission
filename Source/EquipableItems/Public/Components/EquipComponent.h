@@ -6,6 +6,9 @@
 #include "Components/SceneComponent.h"
 #include "EquipComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayFirstPersonAnimationMontageSignature, UAnimMontage*, Montage, float, Speed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayThirdPersonAnimationMontageSignature, UAnimMontage*, Montage, float, Speed);
+
 class AEquipableItem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -21,16 +24,19 @@ public:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void EquipItem(const FName& ItemName, const int8& FromSlotIndex, const uint32& UniqueID);
+	void Setup(USkeletalMeshComponent* ArmsMesh);
+
+	void EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID);
 
 	void Disarm();
 
 	void DestroyEquipedItem();
 
 	void PlayEquipMontage(bool FirstPerson);
-
 	void PlayPrimaryMontage(bool FirstPerson);
-	bool PrimaryMontagePlaying() const;
+
+	FPlayerFirstPersonAnimationMontageSignature PlayFirstPersonAnimationMontage;
+	FPlayerThirdPersonAnimationMontageSignature PlayThirdPersonAnimationMontage;
 
 	UFUNCTION(BlueprintCallable)
 	AEquipableItem* GetEquipedItem();
@@ -65,6 +71,12 @@ private:
 
 	UPROPERTY()
 	APawn* OwnerPawn;
+	
+	UPROPERTY()
+	USkeletalMeshComponent* OwnerFirstPersonMesh;
+	
+	UPROPERTY()
+	USkeletalMeshComponent* OwnerThirdPersonMesh;
 
 	UFUNCTION()
 	void OnRep_EquipedItem();

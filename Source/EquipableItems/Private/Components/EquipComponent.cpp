@@ -2,10 +2,9 @@
 
 
 #include "Components/EquipComponent.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "Components/PlayerInventoryComponent.h"
 #include "Items/EquipableItem.h"
 #include "Items/ToolItem.h"
-#include "WildOmission/Characters/HumanAnimInstance.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -47,35 +46,46 @@ void UEquipComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, F
 	}
 }
 
+void UEquipComponent::Setup(USkeletalMeshComponent* ArmsMesh)
+{
+	FirstPersonItemMeshComponent->AttachToComponent(ArmsMesh, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
+}
+
 void UEquipComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OwnerCharacter = Cast<AWildOmissionCharacter>(GetOwner());
-
-	FirstPersonItemMeshComponent->AttachToComponent(OwnerCharacter->GetArmsMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
-
+	OwnerPawn = Cast<APawn>(GetOwner());
+	
 	PrimaryHeld = false;
 	SecondaryHeld = false;
-}
 
-void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID)
-{
-	if (OwnerCharacter == nullptr)
+	UPlayerInventoryComponent* OwnerInventory = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
+	if (OwnerInventory == nullptr)
 	{
 		return;
 	}
 
-	if (OwnerCharacter->IsLocallyControlled())
+	OwnerInventory->OnToolbarSlotSelectionChange.AddDynamic(this, &UEquipComponent::RefreshEquip);
+}
+
+void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID)
+{
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	if (OwnerPawn->IsLocallyControlled())
 	{
 		EquipFirstPersonViewModel(ItemClass, UniqueID);
 	}
 
 	if (GetOwner()->HasAuthority())
 	{	
-		EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(ItemClass, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
+		EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(ItemClass, OwnerPawn->GetActorLocation(), OwnerPawn->GetActorRotation());
 
-		EquipedItem->Equip(OwnerCharacter, ItemName, FromSlotIndex, UniqueID);
+		EquipedItem->Equip(OwnerPawn, ItemName, FromSlotIndex, UniqueID);
 
 		OnRep_EquipedItem();
 	}
@@ -83,7 +93,7 @@ void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableIte
 
 void UEquipComponent::Disarm()
 {
-	if (OwnerCharacter && OwnerCharacter->IsLocallyControlled())
+	if (OwnerPawn && OwnerPawn->IsLocallyControlled())
 	{
 		EquipFirstPersonViewModel(nullptr, 0);
 	}
@@ -112,23 +122,11 @@ void UEquipComponent::PlayEquipMontage(bool FirstPerson)
 {
 	if (FirstPerson && LocalEquipedItemDefaultClass)
 	{
-		UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
-		if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
-		{
-			return;
-		}
-
-		FirstPersonArmsAnimInstance->PlayMontage(LocalEquipedItemDefaultClass->GetEquipMontage());
+		PlayFirstPersonAnimationMontage.Broadcast(LocalEquipedItemDefaultClass->GetEquipMontage(), 1.0f);
 	}
 	else if (!FirstPerson && EquipedItem)
 	{
-		UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
-		if (ThirdPersonAnimInstance == nullptr)
-		{
-			return;
-		}
-
-		ThirdPersonAnimInstance->PlayMontage(EquipedItem->GetEquipMontage());
+		PlayThirdPersonAnimationMontage.Broadcast(EquipedItem->GetEquipMontage(), 1.0f);
 	}
 }
 
@@ -142,47 +140,12 @@ void UEquipComponent::PlayPrimaryMontage(bool FirstPerson)
 
 	if (FirstPerson)
 	{
-		UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
-		if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
-		{
-			return;
-		}
-
-		FirstPersonArmsAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
+		PlayFirstPersonAnimationMontage.Broadcast(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
 	}
 	else
 	{
-		UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
-		if (ThirdPersonAnimInstance == nullptr)
-		{
-			return;
-		}
-
-		ThirdPersonAnimInstance->PlayMontage(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
+		PlayThirdPersonAnimationMontage.Broadcast(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
 	}
-}
-
-bool UEquipComponent::PrimaryMontagePlaying() const
-{
-	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
-	if (EquipedTool == nullptr)
-	{
-		return false;
-	}
-
-	UHumanAnimInstance* FirstPersonArmsAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetArmsMesh()->GetAnimInstance());
-	if (OwnerCharacter == nullptr || FirstPersonArmsAnimInstance == nullptr)
-	{
-		return false;
-	}
-
-	UHumanAnimInstance* ThirdPersonAnimInstance = Cast<UHumanAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance());
-	if (ThirdPersonAnimInstance == nullptr)
-	{
-		return false;
-	}
-
-	return FirstPersonArmsAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage()) || ThirdPersonAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage());
 }
 
 AEquipableItem* UEquipComponent::GetEquipedItem()

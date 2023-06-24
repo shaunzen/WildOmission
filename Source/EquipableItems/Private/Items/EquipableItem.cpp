@@ -4,8 +4,7 @@
 #include "Items/EquipableItem.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Components/EquipComponent.h"
+#include "Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -61,6 +60,11 @@ void AEquipableItem::BeginPlay()
 	Mesh->SetRelativeRotation(SocketOffset.GetRotation());
 }
 
+APawn* AEquipableItem::GetOwnerPawn() const
+{
+	return Cast<APawn>(GetOwner());
+}
+
 // Called every frame
 void AEquipableItem::Tick(float DeltaTime)
 {
@@ -68,15 +72,15 @@ void AEquipableItem::Tick(float DeltaTime)
 	
 }
 
-void AEquipableItem::Equip(AWildOmissionCharacter* InOwnerCharacter, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
+void AEquipableItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
 {
-	SetOwner(InOwnerCharacter);
+	SetOwner(InOwnerPawn);
 	
 	ItemName = InItemName;
 	FromSlotIndex = InFromSlotIndex;
 	UniqueID = InUniqueID;
 
-	AttachToComponent(InOwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
+	AttachToComponent(InThirdPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 
 	Client_PlayThirdPersonEquipMontage();
 }
@@ -121,14 +125,9 @@ UStaticMesh* AEquipableItem::GetMesh()
 	return Mesh->GetStaticMesh();
 }
 
-AWildOmissionCharacter* AEquipableItem::GetOwnerCharacter() const
-{
-	return Cast<AWildOmissionCharacter>(GetOwner());
-}
-
 void AEquipableItem::Client_PlayThirdPersonEquipMontage_Implementation()
 {
-	if (GetOwnerCharacter() == nullptr || GetOwnerCharacter()->IsLocallyControlled())
+	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
 	{
 		return;
 	}
