@@ -1,6 +1,6 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-#include "EquipableItems.h"
+#include "DespawnerModule.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_MODULE(FDefaultModuleImpl, EquipableItems);
+IMPLEMENT_MODULE(FDefaultModuleImpl, Despawner);

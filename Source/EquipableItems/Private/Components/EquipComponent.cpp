@@ -379,13 +379,13 @@ void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlo
 	AEquipableItem* CurrentEquipedDefaultClass = GetLocalEquipedItemDefaultClass();
 
 	// is this item the same as we are already holding
-	if (GetOwner()->HasAuthority() && CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
+	if (GetOwner()->HasAuthority() && CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && NewSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
 	{
 		return;
 	}
 
 	// Locallized version of same item check
-	if (PawnOwner->IsLocallyControlled() && CurrentEquipedDefaultClass && SlotItemData->EquipItemClass.Get() == CurrentEquipedDefaultClass->GetClass() && SelectedSlot.Item.UniqueID == CurrentEquipedDefaultClass->GetUniqueItemID())
+	if (PawnOwner->IsLocallyControlled() && CurrentEquipedDefaultClass && SlotItemData->EquipItemClass.Get() == CurrentEquipedDefaultClass->GetClass() && NewSlot.Item.UniqueID == CurrentEquipedDefaultClass->GetUniqueItemID())
 	{
 		return;
 	}

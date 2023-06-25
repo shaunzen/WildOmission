@@ -3,15 +3,9 @@
 using UnrealBuildTool;
 
 public class EquipableItems : ModuleRules
-
 {
-
     public EquipableItems(ReadOnlyTargetRules Target) : base(Target)
-
     {
-
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "Engine", "Inventory" });
-
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "Inventory" });
     }
-
 }

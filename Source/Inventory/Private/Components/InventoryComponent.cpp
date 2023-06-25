@@ -320,27 +320,27 @@ bool UInventoryComponent::WasLoadedFromSave() const
 	return LoadedFromSave;
 }
 
-FWildOmissionInventorySave UInventoryComponent::Save()
-{
-	FWildOmissionInventorySave Save;
-
-	// Save Contents List
-	Save.Items = ServerState.Contents.Contents;
-	
-	// Save Slots
-	Save.Slots = ServerState.Slots;
-
-	return Save;
-}
-
-void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave)
-{
-	ServerState.Contents.Contents = InInventorySave.Items;
-	ServerState.Slots = InInventorySave.Slots;
-	LoadedFromSave = true;
-
-	OnRep_ServerState();
-}
+//FWildOmissionInventorySave UInventoryComponent::Save()
+//{
+//	FWildOmissionInventorySave Save;
+//
+//	// Save Contents List
+//	Save.Items = ServerState.Contents.Contents;
+//	
+//	// Save Slots
+//	Save.Slots = ServerState.Slots;
+//
+//	return Save;
+//}
+//
+//void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave)
+//{
+//	ServerState.Contents.Contents = InInventorySave.Items;
+//	ServerState.Slots = InInventorySave.Slots;
+//	LoadedFromSave = true;
+//
+//	OnRep_ServerState();
+//}
 
 void UInventoryComponent::OnRep_ServerState()
 {

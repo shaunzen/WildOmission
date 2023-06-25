@@ -3,15 +3,9 @@
 using UnrealBuildTool;
 
 public class Helpers: ModuleRules
-
 {
-
     public Helpers(ReadOnlyTargetRules Target) : base(Target)
-
     {
-
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "Engine" });
-
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine" });
     }
-
 }

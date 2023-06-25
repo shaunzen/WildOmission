@@ -128,7 +128,7 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	
 	APawn* PlayerPawn = GetOwningPlayerPawn();
-	if (PlayerPawn == nullptr || !Owner->GetParentHUD()->IsInventoryMenuOpen())
+	if (PlayerPawn == nullptr) //|| !Owner->GetParentHUD()->IsInventoryMenuOpen()
 	{
 		return FReply::Handled();
 	}
@@ -186,7 +186,7 @@ bool UInventorySlotWidget::IsSelected() const
 
 void UInventorySlotWidget::ShowHoveredItemNameTag()
 {
-	if (CurrentItemQuantity == 0)
+	/*if (CurrentItemQuantity == 0)
 	{
 		return;
 	}
@@ -202,18 +202,18 @@ void UInventorySlotWidget::ShowHoveredItemNameTag()
 	{
 		return;
 	}
-	FItemData* ItemData = UWildOmissionStatics::GetItemData(CurrentItemName);
+	FItemData* ItemData = UInventoryComponent::GetItemData(CurrentItemName);
 	if (ItemData == nullptr)
 	{
 		return;
 	}
 
-	HoveredItemNameTag->Show(ItemData->DisplayName);
+	HoveredItemNameTag->Show(ItemData->DisplayName);*/
 }
 
 void UInventorySlotWidget::HideHoveredItemNameTag()
 {
-	UPlayerHUDWidget* OwnerHUD = Owner->GetParentHUD();
+	/*UPlayerHUDWidget* OwnerHUD = Owner->GetParentHUD();
 	if (OwnerHUD == nullptr)
 	{
 		return;
@@ -225,5 +225,5 @@ void UInventorySlotWidget::HideHoveredItemNameTag()
 		return;
 	}
 
-	HoveredItemNameTag->Hide();
+	HoveredItemNameTag->Hide();*/
 }

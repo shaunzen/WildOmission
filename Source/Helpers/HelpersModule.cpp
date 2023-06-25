@@ -1,6 +1,6 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-#include "Interaction.h"
+#include "HelpersModule.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_MODULE(FDefaultModuleImpl, Interaction);
+IMPLEMENT_MODULE(FDefaultModuleImpl, Helpers);

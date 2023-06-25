@@ -3,15 +3,10 @@
 using UnrealBuildTool;
 
 public class Inventory : ModuleRules
-
 {
-
     public Inventory(ReadOnlyTargetRules Target) : base(Target)
-
     {
-
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "Engine", "UMG", "Interaction", "Despawner" ,"Helpers" });
-
+        //PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "Interaction" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "UMG", "Interaction", "Despawner" , "Helpers" });
     }
-
 }

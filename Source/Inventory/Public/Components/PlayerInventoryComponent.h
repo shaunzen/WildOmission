@@ -22,7 +22,6 @@ public:
 	// General Management
 	//**************************************************************
 	
-	void RefreshPlayerEquip(FInventorySlot& SelectedSlot);
 	FOnToolbarSlotSelectionChange OnToolbarSlotSelectionChange;
 
 	//**************************************************************

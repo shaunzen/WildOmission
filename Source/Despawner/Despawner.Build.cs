@@ -3,15 +3,9 @@
 using UnrealBuildTool;
 
 public class Despawner : ModuleRules
-
 {
-
     public Despawner(ReadOnlyTargetRules Target) : base(Target)
-
     {
-
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "Engine" });
-
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine" });
     }
-
 }
