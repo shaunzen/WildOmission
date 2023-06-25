@@ -184,7 +184,7 @@ FInventoryItem* AToolItem::FindInInventory()
 
 void AToolItem::Client_PlayThirdPersonPrimaryMontage_Implementation()
 {
-	if (GetOwnerCharacter()->IsLocallyControlled())
+	if (GetOwnerPawn()->IsLocallyControlled())
 	{
 		return;
 	}
@@ -206,13 +206,13 @@ void AToolItem::PlayImpactSound(const FHitResult& HitResult)
 		return;
 	}
 
-	USoundBase* ImpactSound = UWildOmissionStatics::GetImpactSoundBySurfaceType(HitResult.PhysMaterial.Get()->SurfaceType);
-	if (ImpactSound == nullptr)
-	{
-		return;
-	}
+	//USoundBase* ImpactSound = UWildOmissionStatics::GetImpactSoundBySurfaceType(HitResult.PhysMaterial.Get()->SurfaceType);
+	//if (ImpactSound == nullptr)
+	//{
+	//	return;
+	//}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
+	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
 }
 
 void AToolItem::SpawnImpactParticles(const FHitResult& HitResult, const FVector& ImpactorForwardVector)
@@ -223,14 +223,14 @@ void AToolItem::SpawnImpactParticles(const FHitResult& HitResult, const FVector&
 		return;
 	}
 	
-	UNiagaraSystem* ImpactEffects = UWildOmissionStatics::GetImpactEffectBySurfaceType(HitResult.PhysMaterial->SurfaceType);
-	if (ImpactEffects == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn impact effects, Impact Effects nullptr."));
-		return;
-	}
-	
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffects, HitResult.ImpactPoint, (-ImpactorForwardVector).Rotation());
+	//UNiagaraSystem* ImpactEffects = UWildOmissionStatics::GetImpactEffectBySurfaceType(HitResult.PhysMaterial->SurfaceType);
+	//if (ImpactEffects == nullptr)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Failed to spawn impact effects, Impact Effects nullptr."));
+	//	return;
+	//}
+	//
+	//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffects, HitResult.ImpactPoint, (-ImpactorForwardVector).Rotation());
 }
 
 void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
@@ -241,12 +241,12 @@ void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 		return;
 	}
 
-	UMaterialInterface* DecalMaterial = UWildOmissionStatics::GetImpactDecalBySurfaceType(HitResult.PhysMaterial->SurfaceType);
-	if (DecalMaterial == nullptr)
-	{
-		return;
-	}
-	
-	FVector DecalSize = FVector(8.0f, 15.0f, 15.0f);
-	UGameplayStatics::SpawnDecalAttached(DecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 120.0f);
+	//UMaterialInterface* DecalMaterial = UWildOmissionStatics::GetImpactDecalBySurfaceType(HitResult.PhysMaterial->SurfaceType);
+	//if (DecalMaterial == nullptr)
+	//{
+	//	return;
+	//}
+	//
+	//FVector DecalSize = FVector(8.0f, 15.0f, 15.0f);
+	//UGameplayStatics::SpawnDecalAttached(DecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 120.0f);
 }

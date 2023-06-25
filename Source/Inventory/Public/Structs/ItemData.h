@@ -24,6 +24,8 @@ enum EItemCategory
 	All
 };
 
+class AEquipableItem;
+
 USTRUCT(BlueprintType)
 struct FItemData : public FTableRowBase
 {
@@ -51,7 +53,7 @@ struct FItemData : public FTableRowBase
 	TArray<struct FItemStat> Stats;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class AEquipableItem> EquipItemClass;
+	TSubclassOf<AEquipableItem> EquipItemClass;
 
 	FItemData();
 
