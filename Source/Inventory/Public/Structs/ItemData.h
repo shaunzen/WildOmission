@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "ItemStat.h"
+#include "Actors/InventoryEquipableActor.h"
 #include "UObject/NoExportTypes.h"
 #include "ItemData.generated.h"
 
@@ -24,8 +25,6 @@ enum EItemCategory
 	Misc,
 	All
 };
-
-class AEquipableItem;
 
 USTRUCT(BlueprintType)
 struct INVENTORY_API FItemData : public FTableRowBase
@@ -54,7 +53,7 @@ struct INVENTORY_API FItemData : public FTableRowBase
 	TArray<FItemStat> Stats;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AActor> EquipItemClass;
+	TSubclassOf<AInventoryEquipableActor> EquipItemClass;
 
 	FItemData();
 

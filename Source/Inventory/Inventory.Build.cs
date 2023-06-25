@@ -6,7 +6,7 @@ public class Inventory : ModuleRules
 {
     public Inventory(ReadOnlyTargetRules Target) : base(Target)
     {
-        //PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "Interaction" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Slate", "SlateCore", "UMG", "Interaction", "Despawner" , "Helpers" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG"});
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "InputCore", "Slate", "SlateCore", "Interaction", "Despawner" , "Helpers" });
     }
 }

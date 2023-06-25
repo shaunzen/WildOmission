@@ -15,26 +15,6 @@
 			]
 		},
 		{
-			"Name": "Vitals",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "Inventory",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "EquipableItems",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "Interaction",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
 			"Name": "Despawner",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -45,7 +25,30 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "EquipableItems",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "Helpers",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "Interaction",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "Inventory",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		},
+		{
+			"Name": "Vitals",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

@@ -6,6 +6,7 @@ public class Vitals : ModuleRules
 {
     public Vitals(ReadOnlyTargetRules Target) : base(Target)
     {
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "UMG" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject" });
     }
 }

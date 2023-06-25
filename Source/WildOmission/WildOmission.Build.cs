@@ -8,8 +8,8 @@ public class WildOmission : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Niagara", "MetasoundEngine" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Niagara", "MetasoundEngine", "Vitals", "Inventory", "EquipableItems", "Interaction", "Despawner", "Durability", "Helpers" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "OnlineSubsystem", "OnlineSubsystemSteam", "Vitals", "Inventory", "EquipableItems", "Interaction", "Despawner", "Durability", "Helpers" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "OnlineSubsystem", "OnlineSubsystemSteam" });
 	}
 }

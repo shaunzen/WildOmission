@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Actors/InventoryEquipableActor.h"
 #include "EquipableItem.generated.h"
 
 UCLASS()
-class EQUIPABLEITEMS_API AEquipableItem : public AActor
+class EQUIPABLEITEMS_API AEquipableItem : public AInventoryEquipableActor
 {
 	GENERATED_BODY()
 	
