@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "ItemStat.h"
 #include "UObject/NoExportTypes.h"
 #include "ItemData.generated.h"
 
@@ -50,10 +51,10 @@ struct FItemData : public FTableRowBase
 	int32 StackSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<struct FItemStat> Stats;
+	TArray<FItemStat> Stats;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AEquipableItem> EquipItemClass;
+	TSubclassOf<AActor> EquipItemClass;
 
 	FItemData();
 

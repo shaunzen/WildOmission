@@ -1,12 +1,10 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "VitalsComponent.h"
+#include "ComponentsVitalsComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
-#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
 
 // Sets default values for this component's properties
 UVitalsComponent::UVitalsComponent()
@@ -98,14 +96,7 @@ void UVitalsComponent::CalculateDepletion()
 	if (CurrentHealth < KINDA_SMALL_NUMBER)
 	{
 		CurrentHealth = 0.0f;
-
-		AWildOmissionCharacter* CharacterOwner = Cast<AWildOmissionCharacter>(GetOwner());
-		if(CharacterOwner == nullptr)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to kill player cannot cast vitals component owner to wo character"));
-			return;
-		}
-		CharacterOwner->HandleDeath();
+		OnHealthDepleted.Broadcast();
 	}
 }
 

@@ -2,11 +2,9 @@
 
 
 #include "Items/ConsumableItem.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
-#include "WildOmission/Components/VitalsComponent.h"
+#include "Components/PlayerInventoryComponent.h"
+#include "Components/VitalsComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
 
 void AConsumableItem::OnPrimaryPressed()
 {
@@ -17,14 +15,14 @@ void AConsumableItem::OnPrimaryPressed()
 		return;
 	}
 
-	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwnerCharacter()->FindComponentByClass<UPlayerInventoryComponent>();
-	UVitalsComponent* OwnerVitalsComponent = GetOwnerCharacter()->FindComponentByClass<UVitalsComponent>();
+	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwnerPawn()->FindComponentByClass<UPlayerInventoryComponent>();
+	UVitalsComponent* OwnerVitalsComponent = GetOwnerPawn()->FindComponentByClass<UVitalsComponent>();
 	if (OwnerInventoryComponent == nullptr || OwnerVitalsComponent == nullptr)
 	{
 		return;
 	}
 
-	FItemData* ItemData = UWildOmissionStatics::GetItemData(ItemName);
+	FItemData* ItemData = UInventoryComponent::GetItemData(ItemName);
 	if (ItemData == nullptr)
 	{
 		return;

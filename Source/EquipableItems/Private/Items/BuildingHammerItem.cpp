@@ -3,11 +3,10 @@
 
 #include "Items/BuildingHammerItem.h"
 #include "UObject/ConstructorHelpers.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Components/EquipComponent.h"
-#include "WildOmission/Components/PlayerInventoryComponent.h"
-#include "WildOmission/Components/InventoryManipulatorComponent.h"
-#include "WildOmission/Deployables/Deployable.h"
+#include "Components/EquipComponent.h"
+#include "Components/PlayerInventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
+#include "Interfaces/DurabilityInterface.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -23,14 +22,14 @@ ABuildingHammerItem::ABuildingHammerItem()
 
 void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetReplicatedControlRotation());
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation());
 
 	FHitResult HitResult;
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetOwner());
 
-	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
@@ -38,7 +37,7 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 
-	if (FromFirstPersonInstance || !GetOwnerCharacter()->IsLocallyControlled())
+	if (FromFirstPersonInstance || !GetOwnerPawn()->IsLocallyControlled())
 	{
 		PlayImpactSound(HitResult);
 		SpawnImpactParticles(HitResult, OwnerCharacterLookVector);
@@ -49,28 +48,14 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 
-	AWildOmissionCharacter* HitCharacter = Cast<AWildOmissionCharacter>(HitResult.GetActor());
-	if (HitCharacter)
-	{
-		FPointDamageEvent HitByToolEvent(20.0f, HitResult, OwnerCharacterLookVector, nullptr);
-		HitCharacter->TakeDamage(20.0f, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
-	}
-
-	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
-	if (HitDeployable)
-	{
-		float DamageAmount = 50.0f;
-
-		FPointDamageEvent HitByToolEvent(DamageAmount, HitResult, OwnerCharacterLookVector, nullptr);
-		HitDeployable->TakeDamage(DamageAmount, HitByToolEvent, GetOwnerCharacter()->GetController(), this);
-	}
+	// TODO add this back later
 
 	ApplyDamage();
 }
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutPercent) const
 {
-	if (GetOwnerCharacter() == nullptr)
+	if (GetOwnerPawn() == nullptr)
 	{
 		return false;
 	}
@@ -80,8 +65,8 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutPercent) const
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetOwner());
 
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerCharacter()->GetControlRotation());
-	FVector Start = GetOwnerCharacter()->GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation());
+	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))

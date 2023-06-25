@@ -9,7 +9,7 @@
 class UProgressBar;
 
 UCLASS()
-class WILDOMISSION_API UVitalsWidget : public UUserWidget
+class VITALS_API UVitalsWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
