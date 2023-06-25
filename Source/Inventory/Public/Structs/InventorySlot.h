@@ -8,7 +8,7 @@
 #include "InventorySlot.generated.h"
 
 USTRUCT()
-struct FInventorySlot
+struct INVENTORY_API FInventorySlot
 {
 	GENERATED_BODY()
 

@@ -1,9 +1,9 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "VitalsWidget.h"
+#include "UI/VitalsWidget.h"
 #include "Components/ProgressBar.h"
-#include "WildOmission/Components/VitalsComponent.h"
+#include "Components/VitalsComponent.h"
 
 void UVitalsWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {

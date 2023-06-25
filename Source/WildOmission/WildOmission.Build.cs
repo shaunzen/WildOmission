@@ -10,6 +10,6 @@ public class WildOmission : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Niagara", "MetasoundEngine" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "OnlineSubsystem", "OnlineSubsystemSteam", "Vitals", "Inventory", "EquipableItems", "Interaction", "Despawner", "Helpers" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "OnlineSubsystem", "OnlineSubsystemSteam", "Vitals", "Inventory", "EquipableItems", "Interaction", "Despawner", "Durability", "Helpers" });
 	}
 }

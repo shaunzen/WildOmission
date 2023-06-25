@@ -28,7 +28,7 @@ enum EItemCategory
 class AEquipableItem;
 
 USTRUCT(BlueprintType)
-struct FItemData : public FTableRowBase
+struct INVENTORY_API FItemData : public FTableRowBase
 {
 	GENERATED_BODY()
 

@@ -16,7 +16,7 @@ class UDurabilityInterface : public UInterface
 /**
  * 
  */
-class WILDOMISSION_API IDurabilityInterface
+class DURABILITY_API IDurabilityInterface
 {
 	GENERATED_BODY()
 

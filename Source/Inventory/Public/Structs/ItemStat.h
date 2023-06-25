@@ -7,7 +7,7 @@
 #include "ItemStat.generated.h"
 
 USTRUCT(BlueprintType)
-struct FItemStat
+struct INVENTORY_API FItemStat
 {
 	GENERATED_BODY()
 

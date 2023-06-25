@@ -16,7 +16,7 @@
 #include "WildOmission/Deployables/ItemContainerBase.h"
 #include "WildOmission/Components/CraftingComponent.h"
 #include "Components/InteractionComponent.h"
-#include "WildOmission/Components/VitalsComponent.h"
+#include "Components/VitalsComponent.h"
 #include "WildOmission/Components/NameTagComponent.h"
 #include "WildOmission/Components/SpecialEffectsHandlerComponent.h"
 #include "Items/EquipableItem.h"

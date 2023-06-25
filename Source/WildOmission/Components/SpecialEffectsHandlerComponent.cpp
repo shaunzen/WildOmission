@@ -3,7 +3,7 @@
 
 #include "SpecialEffectsHandlerComponent.h"
 #include "WildOmission/Weather/Storm.h"
-#include "WildOmission/Components/VitalsComponent.h"
+#include "Components/VitalsComponent.h"
 #include "Engine/ExponentialHeightFog.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"

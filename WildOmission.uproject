@@ -15,6 +15,11 @@
 			]
 		},
 		{
+			"Name": "Vitals",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "Inventory",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -31,6 +36,11 @@
 		},
 		{
 			"Name": "Despawner",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "Durability",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

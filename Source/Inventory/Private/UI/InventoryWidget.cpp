@@ -4,13 +4,13 @@
 #include "UI/InventoryWidget.h"
 #include "UI/InventorySlotWidget.h"
 #include "UI/SelectedItemWidget.h"
+#include "Components/InventoryComponent.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
 #include "Components/CanvasPanel.h"
 #include "UObject/ConstructorHelpers.h"
-#include "Components/InventoryComponent.h"
 
 UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -23,14 +23,14 @@ UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) 
 	SlotWidgetClass = InventorySlotBPWidgetClass.Class;
 }
 
-void UInventoryWidget::Setup(UPlayerHUDWidget* InParentHUD, UInventoryComponent* InInventoryComponent)
+void UInventoryWidget::Setup(UUserWidget* InParentWidget, UInventoryComponent* InInventoryComponent)
 {
 	// Check if inventory and slot are valid pointers
 	if (InInventoryComponent == nullptr || SlotWidgetClass == nullptr)
 	{
 		return;
 	}
-	ParentPlayerHUD = InParentHUD;
+	//ParentPlayerHUD = InParentHUD;
 
 	InventoryComponent = InInventoryComponent;
 	InventoryName->SetText(FText::FromString(InventoryComponent->GetDisplayName()));
@@ -105,10 +105,10 @@ void UInventoryWidget::RefreshSlot(const int32& SlotIndex)
 	Slots[SlotIndex]->SetItem(InventoryComponent->GetSlot(SlotIndex)->Item);
 }
 
-UPlayerHUDWidget* UInventoryWidget::GetParentHUD()
-{
-	return ParentPlayerHUD;
-}
+//UPlayerHUDWidget* UInventoryWidget::GetParentHUD()
+//{
+//	return ParentPlayerHUD;
+//}
 
 UInventoryComponent* UInventoryWidget::GetInventoryComponent()
 {

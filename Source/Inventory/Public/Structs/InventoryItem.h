@@ -8,7 +8,7 @@
 #include "InventoryItem.generated.h"
 
 USTRUCT(BlueprintType)
-struct FInventoryItem
+struct INVENTORY_API FInventoryItem
 {
 	GENERATED_BODY()
 

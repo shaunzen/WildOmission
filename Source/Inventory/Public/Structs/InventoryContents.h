@@ -8,7 +8,7 @@
 #include "InventoryContents.generated.h"
 
 USTRUCT()
-struct FInventoryContents
+struct INVENTORY_API FInventoryContents
 {
 	GENERATED_BODY()
 

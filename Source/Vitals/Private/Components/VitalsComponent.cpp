@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "ComponentsVitalsComponent.h"
+#include "Components/VitalsComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"

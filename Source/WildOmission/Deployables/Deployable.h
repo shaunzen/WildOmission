@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
-#include "WildOmission/Core/Interfaces/DurabilityInterface.h"
+#include "Interfaces/DurabilityInterface.h"
 #include "WildOmission/Core/Interfaces/DamagedByWind.h"
 #include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "BuildAnchorComponent.h"

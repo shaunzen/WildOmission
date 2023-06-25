@@ -8,7 +8,7 @@
 #include "Components/GridSlot.h"
 #include "WildOmission/Core/Structs/Notification.h"
 #include "Components/InventoryComponent.h"
-#include "WildOmission/Components/VitalsComponent.h"
+#include "Components/VitalsComponent.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 

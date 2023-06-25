@@ -22,7 +22,7 @@
 #include "Components/InteractionComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
-#include "VitalsWidget.h"
+#include "UI/VitalsWidget.h"
 #include "WildOmission/Deployables/ItemContainerBase.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)

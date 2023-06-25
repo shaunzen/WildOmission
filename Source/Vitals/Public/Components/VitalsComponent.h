@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEndThirstSignature, const float&,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginStarvingSignature, const float&, Time);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEndStarvingSignature, const float&, Time);
 
-DECLEAR_DYNAMIC_MULTICAST_DELEGATE(FOnHealthDepletedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHealthDepletedSignature);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class VITALS_API UVitalsComponent : public UActorComponent

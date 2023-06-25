@@ -7,7 +7,7 @@
 #include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
-#include "WildOmission/Components/VitalsComponent.h"
+#include "Components/VitalsComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
 #include "WildOmission/Core/SaveSystem/SaveHandler.h"
