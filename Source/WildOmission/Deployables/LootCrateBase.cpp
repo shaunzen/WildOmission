@@ -15,7 +15,7 @@ void ALootCrateBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (!HasAuthority() || GetInventoryComponent()->WasLoadedFromSave())
+	if (!HasAuthority() || !GetInventoryComponent() || GetInventoryComponent()->WasLoadedFromSave())
 	{
 		return;
 	}
