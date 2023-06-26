@@ -42,15 +42,6 @@ AEquipableItem::AEquipableItem()
 	bSecondaryEnabled = true;
 }
 
-void AEquipableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AEquipableItem, ItemName);
-	DOREPLIFETIME(AEquipableItem, FromSlotIndex);
-	DOREPLIFETIME(AEquipableItem, UniqueID);
-}
-
 // Called when the game starts or when spawned
 void AEquipableItem::BeginPlay()
 {

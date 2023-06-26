@@ -53,6 +53,11 @@
 			]
 		},
 		{
+			"Name": "SurfaceProperties",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "Vitals",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

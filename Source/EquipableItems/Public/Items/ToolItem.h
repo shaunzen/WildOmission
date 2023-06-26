@@ -48,7 +48,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float SwingSpeedRate;
 
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	int32 Durability;
 
 	UFUNCTION()
