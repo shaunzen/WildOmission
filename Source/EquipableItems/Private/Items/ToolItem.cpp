@@ -14,7 +14,10 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/EngineTypes.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Engine/DamageEvents.h"
+#include "SurfaceHelpers.h"
+#include "Log.h"
 
 AToolItem::AToolItem()
 {
@@ -200,51 +203,51 @@ void AToolItem::PlayImpactSound(const FHitResult& HitResult)
 {
 	if (HitResult.PhysMaterial == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to get physical material."));
+		UE_LOG(LogEquipableItems, Warning, TEXT("Failed to get physical material."));
 		return;
 	}
 
-	//USoundBase* ImpactSound = UWildOmissionStatics::GetImpactSoundBySurfaceType(HitResult.PhysMaterial.Get()->SurfaceType);
-	//if (ImpactSound == nullptr)
-	//{
-	//	return;
-	//}
+	USoundBase* ImpactSound = USurfaceHelpers::GetImpactSound(HitResult.PhysMaterial.Get()->SurfaceType);
+	if (ImpactSound == nullptr)
+	{
+		return;
+	}
 
-	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
 }
 
 void AToolItem::SpawnImpactParticles(const FHitResult& HitResult, const FVector& ImpactorForwardVector)
 {
 	if (HitResult.PhysMaterial == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to get physical material."));
+		UE_LOG(LogEquipableItems, Warning, TEXT("Failed to get physical material."));
 		return;
 	}
 	
-	//UNiagaraSystem* ImpactEffects = UWildOmissionStatics::GetImpactEffectBySurfaceType(HitResult.PhysMaterial->SurfaceType);
-	//if (ImpactEffects == nullptr)
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Failed to spawn impact effects, Impact Effects nullptr."));
-	//	return;
-	//}
-	//
-	//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffects, HitResult.ImpactPoint, (-ImpactorForwardVector).Rotation());
+	UNiagaraSystem* ImpactParticles = USurfaceHelpers::GetImpactParticles(HitResult.PhysMaterial->SurfaceType);
+	if (ImpactParticles == nullptr)
+	{
+		UE_LOG(LogEquipableItems, Warning, TEXT("Failed to spawn impact effects, Impact Effects nullptr."));
+		return;
+	}
+	
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactParticles, HitResult.ImpactPoint, (-ImpactorForwardVector).Rotation());
 }
 
 void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 {
 	if (HitResult.PhysMaterial == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot spawn impact decal, Failed to get physical material."));
+		UE_LOG(LogEquipableItems, Warning, TEXT("Cannot spawn impact decal, Failed to get physical material."));
 		return;
 	}
 
-	//UMaterialInterface* DecalMaterial = UWildOmissionStatics::GetImpactDecalBySurfaceType(HitResult.PhysMaterial->SurfaceType);
-	//if (DecalMaterial == nullptr)
-	//{
-	//	return;
-	//}
-	//
-	//FVector DecalSize = FVector(8.0f, 15.0f, 15.0f);
-	//UGameplayStatics::SpawnDecalAttached(DecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 120.0f);
+	UMaterialInterface* DecalMaterial = USurfaceHelpers::GetImpactDecal(HitResult.PhysMaterial->SurfaceType);
+	if (DecalMaterial == nullptr)
+	{
+		return;
+	}
+	
+	FVector DecalSize = FVector(8.0f, 15.0f, 15.0f);
+	UGameplayStatics::SpawnDecalAttached(DecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 120.0f);
 }

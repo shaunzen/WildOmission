@@ -55,7 +55,10 @@
 		{
 			"Name": "SurfaceProperties",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"CoreUObject"
+			]
 		},
 		{
 			"Name": "Vitals",
