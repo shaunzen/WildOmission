@@ -30,13 +30,8 @@ void ASaveHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
-
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
-
-	FTimerHandle RegenerationTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, this, &ASaveHandler::RegenerateResources, 120.0f, true);
 }
 
 void ASaveHandler::SaveGame()
@@ -47,18 +42,7 @@ void ASaveHandler::SaveGame()
 		UE_LOG(LogTemp, Error, TEXT("Aborting save, SaveFile was nullptr."));
 		return;
 	}
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Aborting save, couldn't get gamemode."));
-		return;
-	}
-
-	SaveFile->LastPlayedTime = FDateTime::Now();
-	if (GameMode->GetWeatherManager())
-	{
-		SaveFile->WeatherManagerSave.NextStormSpawnTime = GameMode->GetWeatherManager()->GetNextStormSpawnTime();
-	}
+	
 	ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 
