@@ -117,9 +117,22 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	}
 
 	AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
+	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
 	if (HitHarvestable && HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI)
 	{
 		HitHarvestable->OnHarvest(GetOwner(), GatherMultiplier);
+	}
+	else if (HitPawn)
+	{
+		FPointDamageEvent HitByToolEvent(20.0f, HitResult, OwnerCharacterLookVector, nullptr);
+		HitPawn->TakeDamage(20.0f, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+	}
+	else
+	{
+		float DamageAmount = 5.0f;
+
+		FPointDamageEvent HitByToolEvent(DamageAmount * GatherMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
+		HitResult.GetActor()->TakeDamage(DamageAmount * GatherMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
 	}
 
 	ApplyDamage();
