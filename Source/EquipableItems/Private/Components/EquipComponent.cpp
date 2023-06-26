@@ -359,8 +359,8 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 
 void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlot& NewSlot)
 {
-	APawn* PawnOwner = Cast<APawn>(GetOwner());
-	if (PawnOwner == nullptr)
+	UE_LOG(LogTemp, Warning, TEXT("Refreshing equip."));
+	if (OwnerPawn == nullptr)
 	{
 		Disarm();
 		return;
@@ -384,21 +384,20 @@ void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlo
 	AEquipableItem* CurrentEquipedItem = GetEquipedItem();
 	AEquipableItem* CurrentEquipedDefaultClass = GetLocalEquipedItemDefaultClass();
 
-	AEquipableItem* NewEquipClass = Cast<AEquipableItem>(SlotItemData->EquipItemClass.Get());
 	// is this item the same as we are already holding
-	if (GetOwner()->HasAuthority() && CurrentEquipedItem && NewEquipClass->GetClass() == CurrentEquipedItem->GetClass() && NewSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
+	if (GetOwner()->HasAuthority() && CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && NewSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())
 	{
 		return;
 	}
 
 	// Locallized version of same item check
-	if (PawnOwner->IsLocallyControlled() && CurrentEquipedDefaultClass && NewEquipClass->GetClass() == CurrentEquipedDefaultClass->GetClass() && NewSlot.Item.UniqueID == CurrentEquipedDefaultClass->GetUniqueItemID())
+	if (OwnerPawn->IsLocallyControlled() && CurrentEquipedDefaultClass && SlotItemData->EquipItemClass.Get() == CurrentEquipedDefaultClass->GetClass() && NewSlot.Item.UniqueID == CurrentEquipedDefaultClass->GetUniqueItemID())
 	{
 		return;
 	}
 
 	Disarm();
-	EquipItem(NewSlot.Item.Name, NewEquipClass->GetClass(), NewSlotIndex, NewSlot.Item.UniqueID);
+	EquipItem(NewSlot.Item.Name, SlotItemData->EquipItemClass.Get(), NewSlotIndex, NewSlot.Item.UniqueID);
 
 }
 
