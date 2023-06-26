@@ -117,13 +117,12 @@ int8 UPlayerInventoryComponent::GetToolbarSelectionIndex()
 
 void UPlayerInventoryComponent::RefreshToolbarSelectionState()
 {
-	if (!IsToolbarSlotSelectionValid())
+	if (!OnToolbarSlotSelectionChange.IsBound() || !IsToolbarSlotSelectionValid())
 	{
 		return;
 	}
 
 	FInventorySlot& SelectedSlot = ServerState.Slots[ToolbarSelectionIndex];
-
 	OnToolbarSlotSelectionChange.Broadcast(ToolbarSelectionIndex, SelectedSlot);
 }
 

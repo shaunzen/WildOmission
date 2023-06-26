@@ -65,6 +65,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	EquipComponent = CreateDefaultSubobject<UEquipComponent>(FName("EquipComponent"));
 	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
+	EquipComponent->Setup(FirstPersonArmsMeshComponent, this->GetMesh());
 
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 

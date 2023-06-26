@@ -22,6 +22,12 @@ UEquipComponent::UEquipComponent()
 
 	PrimaryHeld = false;
 	SecondaryHeld = false;
+	EquipedItem = nullptr;
+	LocalEquipedItemDefaultClass = nullptr;
+
+	OwnerPawn = nullptr;
+	OwnerFirstPersonMesh = nullptr;
+	OwnerThirdPersonMesh = nullptr;
 }
 
 void UEquipComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
