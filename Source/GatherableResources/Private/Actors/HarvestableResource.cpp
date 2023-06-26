@@ -4,6 +4,7 @@
 #include "Actors/HarvestableResource.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "Log.h"
 
 // Sets default values
 AHarvestableResource::AHarvestableResource()
@@ -26,6 +27,7 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 	UInventoryComponent* HarvestingInventoryComponent = HarvestingActor->FindComponentByClass<UInventoryComponent>();
 	if (HarvestingInventoryComponent == nullptr)
 	{
+		UE_LOG(LogGatherableResources, Warning, TEXT("Could not harvest resource, HarvestingActor has no InventoryComponent."));
 		return;
 	}
 

@@ -6,6 +6,7 @@
 #include "Components/EquipComponent.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "Actors/HarvestableResource.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -119,7 +120,11 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 
-	// Interface for thing that was hit
+	AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
+	if (HitHarvestable && HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI)
+	{
+		HitHarvestable->OnHarvest(GetOwner(), GatherMultiplier);
+	}
 
 	ApplyDamage();
 }
@@ -146,7 +151,7 @@ void AToolItem::ApplyDamage()
 	FInventoryItem* InventoryItem = FindInInventory();
 	InventoryItem->SetStat(FName("Durability"), Durability);
 
-	if (Durability <= 0.0f)
+	if (Durability <= 0)
 	{
 		UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
 		if (OwnerInventory == nullptr)
