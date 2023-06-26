@@ -18,8 +18,6 @@ class EQUIPABLEITEMS_API AToolItem : public AEquipableItem
 public:
 	AToolItem();
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
 	// Called when the item is equiped into the players hands
 	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
 
@@ -55,7 +53,6 @@ protected:
 
 	UFUNCTION()
 	void ApplyDamage();
-	
 	
 	void PlayImpactSound(const FHitResult& HitResult);
 	void SpawnImpactParticles(const FHitResult& HitResult, const FVector& ImpactorForwardVector);
