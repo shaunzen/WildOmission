@@ -2,7 +2,7 @@
 
 
 #include "Sapling.h"
-#include "WildOmission/Resources/HarvestableResource.h"
+#include "Actors/HarvestableResource.h"
 
 ASapling::ASapling()
 {

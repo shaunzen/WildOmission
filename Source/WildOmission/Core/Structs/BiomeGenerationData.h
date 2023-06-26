@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Engine/DataTable.h"
-#include "WildOmission/Resources/HarvestableResource.h"
-#include "WildOmission/Resources/CollectableResource.h"
+#include "Actors/HarvestableResource.h"
+#include "Actors/CollectableResource.h"
 #include "WildOmission/Deployables/LootCrateBase.h"
 #include "BiomeGenerationData.generated.h"
 

@@ -30,6 +30,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "GatherableResources",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "Helpers",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

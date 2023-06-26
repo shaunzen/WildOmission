@@ -6,7 +6,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/DataTable.h"
 #include "SaveHandler.h"
-#include "WildOmission/Resources/HarvestableResource.h"
+#include "Actors/HarvestableResource.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
 
