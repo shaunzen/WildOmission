@@ -8,7 +8,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UPlayerSaveHandlerComponent : public UActorComponent
+class SAVESYSTEM_API UPlayerSaveHandlerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -17,7 +17,7 @@ public:
 	UPlayerSaveHandlerComponent();
 
 	// Will update the list passed in to include saves from the pending list.
-	void Save(TArray<struct FWildOmissionPlayerSave>& OutUpdatedSavesList);
+	void Save(TArray<struct FPlayerSave>& OutUpdatedSavesList);
 
 	// Adds the passed in PlayerControllers Save File to the pending list
 	void AddToPending(APlayerController* PlayerController);
@@ -32,15 +32,15 @@ protected:
 private:
 
 	UPROPERTY()
-	TArray<struct FWildOmissionPlayerSave> PendingSaves;
+	TArray<struct FPlayerSave> PendingSaves;
 
 	UFUNCTION()
 	void AddAllToPending();
 
-	void AddSavesToList(const TArray<struct FWildOmissionPlayerSave>& InSaveList, TArray<struct FWildOmissionPlayerSave>& OutSavesList);
+	void AddSavesToList(const TArray<struct FPlayerSave>& InSaveList, TArray<struct FPlayerSave>& OutSavesList);
 	
-	void AddSaveToList(const struct FWildOmissionPlayerSave& InSave, TArray<struct FWildOmissionPlayerSave>& OutSavesList);
+	void AddSaveToList(const struct FPlayerSave& InSave, TArray<struct FPlayerSave>& OutSavesList);
 	
-	bool GetSaveIndexInList(const TArray<struct FWildOmissionPlayerSave>& List, const FString& UniqueID, int32& OutIndex);
+	bool GetSaveIndexInList(const TArray<struct FPlayerSave>& List, const FString& UniqueID, int32& OutIndex);
 		
 };

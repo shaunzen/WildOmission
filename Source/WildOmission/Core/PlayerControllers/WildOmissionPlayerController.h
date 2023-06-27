@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Interfaces/SavablePlayer.h"
 #include "WildOmissionPlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFinishedLoadingSignature, AWildOmissionPlayerController*, LoadedController);
@@ -12,7 +13,7 @@ class UInventoryComponent;
 class UDeathMenuWidget;
 
 UCLASS()
-class WILDOMISSION_API AWildOmissionPlayerController : public APlayerController
+class WILDOMISSION_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer
 {
 	GENERATED_BODY()
 
@@ -21,9 +22,11 @@ public:
 
 	virtual void PlayerTick(float DeltaTime) override;
 
-	struct FWildOmissionPlayerSave SavePlayer();
-
-	void LoadPlayerSave(const struct FWildOmissionPlayerSave& PlayerSave);
+	// Begin Savable Player Implementation
+	virtual FPlayerSave SavePlayer() override;
+	virtual void LoadPlayerSave(const FPlayerSave& Save) override;
+	virtual FString GetUniqueID() override;
+	// End Savable Player Implementation
 
 	void Save();
 
@@ -33,7 +36,6 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_SetNumRequiredActors(const int32& InNum);
 
-	FString GetUniqueID();
 
 	UFUNCTION(Server, Reliable)
 	void Server_SendChatMessage(APlayerState* Sender, const FString& Message);

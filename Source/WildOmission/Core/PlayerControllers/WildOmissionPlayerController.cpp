@@ -3,15 +3,14 @@
 
 #include "WildOmissionPlayerController.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
-#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
-#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
+#include "Interfaces/RequiredForLoad.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "Components/VitalsComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
-#include "WildOmission/Core/SaveSystem/SaveHandler.h"
-#include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
+#include "Actors/SaveHandler.h"
+#include "Components/PlayerSaveHandlerComponent.h"
 #include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "WildOmission/UI/Player/DeathMenuWidget.h"
 #include "WildOmission/Core/WildOmissionStatics.h"
@@ -36,9 +35,9 @@ void AWildOmissionPlayerController::PlayerTick(float DeltaTime)
 
 }
 
-FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
+FPlayerSave AWildOmissionPlayerController::SavePlayer()
 {
-	FWildOmissionPlayerSave PlayerSave;
+	FPlayerSave PlayerSave;
 	if (HasAuthority() == false)
 	{
 		return PlayerSave;
@@ -66,13 +65,13 @@ FWildOmissionPlayerSave AWildOmissionPlayerController::SavePlayer()
 	PlayerSave.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
 	PlayerSave.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
 
-	//PlayerSave.Inventory = WildOmissionCharacter->GetInventoryComponent()->Save();
+	PlayerSave.Inventory = WildOmissionCharacter->GetInventoryComponent()->Save();
 	PlayerSave.SelectedItem = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItem();
 
 	return PlayerSave;
 }
 
-void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave& PlayerSave)
+void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& Save)
 {
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
 
@@ -87,12 +86,24 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FWildOmissionPlayerSave
 	WildOmissionCharacter->GetVitalsComponent()->SetHunger(PlayerSave.Vitals.Hunger);
 	WildOmissionCharacter->GetVitalsComponent()->SetThirst(PlayerSave.Vitals.Thirst);
 
-	//WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory);
+	WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory);
 
 	if (PlayerSave.SelectedItem.Quantity > 0)
 	{
 		UInventoryComponent::SpawnWorldItem(GetWorld(), PlayerSave.SelectedItem, WildOmissionCharacter);
 	}
+}
+
+FString AWildOmissionPlayerController::GetUniqueID()
+{
+	FString ID = FString("");
+
+	if (PlayerState)
+	{
+		ID = PlayerState->GetUniqueId().ToString();
+	}
+
+	return ID;
 }
 
 void AWildOmissionPlayerController::Save()
@@ -116,18 +127,6 @@ void AWildOmissionPlayerController::Save()
 void AWildOmissionPlayerController::Client_SetNumRequiredActors_Implementation(const int32& InNum)
 {
 	NumRequiredActorsForLoad = InNum;
-}
-
-FString AWildOmissionPlayerController::GetUniqueID()
-{
-	FString ID = FString("");
-	
-	if (PlayerState)
-	{
-		ID = PlayerState->GetUniqueId().ToString();
-	}
-
-	return ID;
 }
 
 void AWildOmissionPlayerController::Server_SendChatMessage_Implementation(APlayerState* Sender, const FString& Message)

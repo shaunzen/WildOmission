@@ -1,10 +1,9 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "ActorSaveHandlerComponent.h"
-#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "Components/ActorSaveHandlerComponent.h"
+#include "Interfaces/SavableObject.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
-#include "Components/InventoryComponent.h"
 #include "EngineUtils.h"
 
 // Sets default values for this component's properties
@@ -30,7 +29,7 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 	for (FActorIterator Iterator(GetWorld()); Iterator; ++Iterator)
 	{
 		AActor* Actor = *Iterator;
-		if (!IsValid(Actor) || !Actor->Implements<USavableObjectInterface>())
+		if (!IsValid(Actor) || !Actor->Implements<USavableObject>())
 		{
 			continue;
 		}
@@ -45,7 +44,7 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 		Archive.ArIsSaveGame = true;
 		Actor->Serialize(Archive);
 
-		TArray<UActorComponent*> SavableComponents = Actor->GetComponentsByInterface(USavableObjectInterface::StaticClass());
+		TArray<UActorComponent*> SavableComponents = Actor->GetComponentsByInterface(USavableObject::StaticClass());
 		for (UActorComponent* ActorComponent : SavableComponents)
 		{
 			FActorComponentSaveData ComponentSaveData;
@@ -86,7 +85,7 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 
 		SpawnedActor->Serialize(Archive);
 
-		TArray<UActorComponent*> SavableComponents = SpawnedActor->GetComponentsByInterface(USavableObjectInterface::StaticClass());
+		TArray<UActorComponent*> SavableComponents = SpawnedActor->GetComponentsByInterface(USavableObject::StaticClass());
 		for (UActorComponent* ActorComponent : SavableComponents)
 		{
 			FActorComponentSaveData ComponentSave = FindComponentDataByName(ActorData.ComponentData, ActorComponent->GetFName(), ActorComponent->GetClass());
@@ -95,10 +94,10 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 			ComponentArchive.ArIsSaveGame = true;
 
 			ActorComponent->Serialize(ComponentArchive);
-			ISavableObjectInterface::Execute_OnLoadComplete(ActorComponent);
+			ISavableObject::Execute_OnLoadComplete(ActorComponent);
 		}
 
-		ISavableObjectInterface::Execute_OnLoadComplete(SpawnedActor);
+		ISavableObject::Execute_OnLoadComplete(SpawnedActor);
 	}
 }
 

@@ -7,13 +7,12 @@
 #include "SaveHandler.generated.h"
 
 class UWildOmissionSaveGame;
-class UWorldGenerationHandlerComponent;
 class UActorSaveHandlerComponent;
 class UPlayerSaveHandlerComponent;
-class UWildOmissionGameInstance;
+//class UWorldGenerationHandlerComponent;
 
 UCLASS()
-class WILDOMISSION_API ASaveHandler : public AActor
+class SAVESYSTEM_API ASaveHandler : public AActor
 {
 	GENERATED_BODY()
 	
@@ -37,8 +36,8 @@ public:
 private:
 	FString CurrentSaveFileName;
 
-	UPROPERTY(VisibleAnywhere)
-	UWorldGenerationHandlerComponent* WorldGenerationHandlerComponent;
+	/*UPROPERTY(VisibleAnywhere)
+	UWorldGenerationHandlerComponent* WorldGenerationHandlerComponent;*/
 
 	UPROPERTY(VisibleAnywhere)
 	UActorSaveHandlerComponent* ActorSaveHandlerComponent;

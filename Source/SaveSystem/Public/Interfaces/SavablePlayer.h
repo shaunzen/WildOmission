@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "RequiredForLoad.generated.h"
+#include "Structs/PlayerSave.h"
+#include "SavablePlayer.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class URequiredForLoad : public UInterface
+class USavablePlayer : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,11 +17,15 @@ class URequiredForLoad : public UInterface
 /**
  * 
  */
-class SAVESYSTEM_API IRequiredForLoad
+class SAVESYSTEM_API ISavablePlayer
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	static int32 GetNumRequiredActorsInWorld(UWorld* WorldContextObject);
+	virtual FPlayerSave SavePlayer() = 0;
+	virtual void LoadPlayerSave(const FPlayerSave& Save) = 0;
+
+	virtual FString GetUniqueID() = 0;
+
 };

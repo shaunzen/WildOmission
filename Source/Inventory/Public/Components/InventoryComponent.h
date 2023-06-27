@@ -8,8 +8,7 @@
 #include "Structs/InventoryContents.h"
 #include "Structs/InventorySlot.h"
 #include "Structs/ItemData.h"
-//#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
-//#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "Interfaces/SavableObjectInterface.h"
 #include "InventoryComponent.generated.h"
 
 class UInventoryManipulatorComponent;
@@ -70,7 +69,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdateSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryItemUpdateSignature, const FInventoryItemUpdate&, ItemUpdate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class INVENTORY_API UInventoryComponent : public UActorComponent//, public ISavableObjectInterface
+class INVENTORY_API UInventoryComponent : public UActorComponent, public ISavableObjectInterface
 {
 	GENERATED_BODY()
 
@@ -109,8 +108,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool WasLoadedFromSave() const;
 
-	//FWildOmissionInventorySave Save();	
-	//void Load(const FWildOmissionInventorySave& InInventorySave);
+	TArray<uint8> Save();	
+	void Load(const TArray<uint8>& InSave);
 
 protected:
 
@@ -162,8 +161,8 @@ private:
 
 	bool LoadedFromSave;
 
-	//UFUNCTION()
-	//virtual void OnLoadComplete_Implementation() override;
+	UFUNCTION()
+	virtual void OnLoadComplete_Implementation() override;
 
 	UFUNCTION(Server, Reliable)
 	void Server_SlotInteraction(FInventorySlotInteraction Interaction);

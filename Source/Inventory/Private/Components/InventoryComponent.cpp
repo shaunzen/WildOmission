@@ -5,6 +5,8 @@
 #include "Components/InventoryManipulatorComponent.h"
 #include "WorldItem.h"
 #include "Net/UnrealNetwork.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+#include "EngineUtils.h"
 
 static UDataTable* ItemDataTable = nullptr;
 
@@ -203,12 +205,12 @@ void UInventoryComponent::SpawnWorldItem(UWorld* WorldContextObject, const FInve
 	WorldItem->AddImpulse(PhysicsImpulse);
 }
 
-//void UInventoryComponent::OnLoadComplete_Implementation()
-//{
-//	ServerState.Contents = Contents;
-//	ServerState.Slots = Slots;
-//	LoadedFromSave = true;
-//}
+void UInventoryComponent::OnLoadComplete_Implementation()
+{
+	ServerState.Contents = Contents;
+	ServerState.Slots = Slots;
+	LoadedFromSave = true;
+}
 
 void UInventoryComponent::Server_SlotInteraction_Implementation(FInventorySlotInteraction Interaction)
 {
@@ -320,27 +322,28 @@ bool UInventoryComponent::WasLoadedFromSave() const
 	return LoadedFromSave;
 }
 
-//FWildOmissionInventorySave UInventoryComponent::Save()
-//{
-//	FWildOmissionInventorySave Save;
-//
-//	// Save Contents List
-//	Save.Items = ServerState.Contents.Contents;
-//	
-//	// Save Slots
-//	Save.Slots = ServerState.Slots;
-//
-//	return Save;
-//}
-//
-//void UInventoryComponent::Load(const FWildOmissionInventorySave& InInventorySave)
-//{
-//	ServerState.Contents.Contents = InInventorySave.Items;
-//	ServerState.Slots = InInventorySave.Slots;
-//	LoadedFromSave = true;
-//
-//	OnRep_ServerState();
-//}
+TArray<uint8> UInventoryComponent::Save()
+{
+	TArray<uint8> Bytes;
+
+	FMemoryWriter MemoryWriter(Bytes);
+	FObjectAndNameAsStringProxyArchive InventoryArchive(MemoryWriter, true);
+	InventoryArchive.ArIsSaveGame = true;
+	this->Serialize(InventoryArchive);
+
+	return Bytes;
+}
+
+void UInventoryComponent::Load(const TArray<uint8>& InSave)
+{
+	FMemoryReader MemoryReader(InSave);
+	FObjectAndNameAsStringProxyArchive InventoryArchive(MemoryReader, true);
+	InventoryArchive.ArIsSaveGame = true;
+	this->Serialize(InventoryArchive);
+
+	OnLoadComplete_Implementation();
+	OnRep_ServerState();
+}
 
 void UInventoryComponent::OnRep_ServerState()
 {

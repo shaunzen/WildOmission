@@ -1,11 +1,9 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "PlayerSaveHandlerComponent.h"
-#include "SaveHandler.h"
-#include "WildOmissionSaveGame.h"
-#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
-#include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
+#include "Components/PlayerSaveHandlerComponent.h"
+#include "Actors/SaveHandler.h"
+#include "Structs/PlayerSave.h"
 #include "TimerManager.h"
 
 // Sets default values for this component's properties
@@ -27,16 +25,16 @@ void UPlayerSaveHandlerComponent::BeginPlay()
 
 void UPlayerSaveHandlerComponent::AddToPending(APlayerController* PlayerController)
 {
-	AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
-	if (WildOmissionPlayerController == nullptr)
+	ISavablePlayer* SavablePlayer = Cast<ISavablePlayer>(PlayerController);
+	if (SavablePlayer == nullptr)
 	{
 		return;
 	}
 
-	AddSaveToList(WildOmissionPlayerController->SavePlayer(), PendingSaves);
+	AddSaveToList(SavablePlayer->SavePlayer(), PendingSaves);
 }
 
-void UPlayerSaveHandlerComponent::Save(TArray<FWildOmissionPlayerSave>& OutUpdatedSavesList)
+void UPlayerSaveHandlerComponent::Save(TArray<FPlayerSave>& OutUpdatedSavesList)
 {
 	AddSavesToList(PendingSaves, OutUpdatedSavesList);
 	PendingSaves.Empty();
@@ -45,25 +43,25 @@ void UPlayerSaveHandlerComponent::Save(TArray<FWildOmissionPlayerSave>& OutUpdat
 void UPlayerSaveHandlerComponent::Load(APlayerController* PlayerController)
 {
 	ASaveHandler* SaveHandlerOwner = Cast<ASaveHandler>(GetOwner());
-	AWildOmissionPlayerController* WildOmissionPlayerController = Cast<AWildOmissionPlayerController>(PlayerController);
-	if (SaveHandlerOwner == nullptr || WildOmissionPlayerController == nullptr)
+	ISavablePlayer* SavablePlayer= Cast<ISavablePlayer>(PlayerController);
+	if (SaveHandlerOwner == nullptr || SavalbePlayer == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Couldn't load the player, SaveHandler or PlayerController was nullptr."));
 		return;
 	}
 
 	int32 SaveIndex = 0;
-	FString PlayerUniqueID = WildOmissionPlayerController->GetUniqueID();
+	FString PlayerUniqueID = SavablePlayer->GetUniqueID();
 
 	// Does the player have a pending save that is more up to date than the save file
 	if (GetSaveIndexInList(PendingSaves, PlayerUniqueID, SaveIndex))
 	{
-		WildOmissionPlayerController->LoadPlayerSave(PendingSaves[SaveIndex]);
+		SavablePlayer->LoadPlayerSave(PendingSaves[SaveIndex]);
 	}
 	// If there is no pending saves does the player exist in the save file
 	else if (GetSaveIndexInList(SaveHandlerOwner->GetSaveFile()->PlayerSaves, PlayerUniqueID, SaveIndex))
 	{
-		WildOmissionPlayerController->LoadPlayerSave(SaveHandlerOwner->GetSaveFile()->PlayerSaves[SaveIndex]);
+		SavablePlayer->LoadPlayerSave(SaveHandlerOwner->GetSaveFile()->PlayerSaves[SaveIndex]);
 	}
 	// Must be a new player just go ahead and call his spawn function
 	else
@@ -87,15 +85,15 @@ void UPlayerSaveHandlerComponent::AddAllToPending()
 	}
 }
 
-void UPlayerSaveHandlerComponent::AddSavesToList(const TArray<FWildOmissionPlayerSave>& InSavesList, TArray<FWildOmissionPlayerSave>& OutSavesList)
+void UPlayerSaveHandlerComponent::AddSavesToList(const TArray<FPlayerSave>& InSavesList, TArray<FPlayerSave>& OutSavesList)
 {
-	for (const FWildOmissionPlayerSave& InSave : InSavesList)
+	for (const FPlayerSave& InSave : InSavesList)
 	{
 		AddSaveToList(InSave, OutSavesList);
 	}
 }
 
-void UPlayerSaveHandlerComponent::AddSaveToList(const FWildOmissionPlayerSave& InSave, TArray<FWildOmissionPlayerSave>& OutSavesList)
+void UPlayerSaveHandlerComponent::AddSaveToList(const FPlayerSave& InSave, TArray<FPlayerSave>& OutSavesList)
 {
 	int32 SaveIndex = 0;
 	if (GetSaveIndexInList(OutSavesList, InSave.UniqueID, SaveIndex))
@@ -108,11 +106,11 @@ void UPlayerSaveHandlerComponent::AddSaveToList(const FWildOmissionPlayerSave& I
 	}
 }
 
-bool UPlayerSaveHandlerComponent::GetSaveIndexInList(const TArray<FWildOmissionPlayerSave>& List, const FString& UniqueID, int32& OutIndex)
+bool UPlayerSaveHandlerComponent::GetSaveIndexInList(const TArray<FPlayerSave>& List, const FString& UniqueID, int32& OutIndex)
 {
 	int32 Index = 0;
 	bool SaveFound = false;
-	for (const FWildOmissionPlayerSave& Save : List)
+	for (const FPlayerSave& Save : List)
 	{
 		if (Save.UniqueID != UniqueID)
 		{

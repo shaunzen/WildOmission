@@ -1,15 +1,12 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "SaveHandler.h"
-#include "WorldGenerationHandlerComponent.h"
-#include "ActorSaveHandlerComponent.h"
-#include "PlayerSaveHandlerComponent.h"
-#include "WildOmission/Core/Structs/WorldGenerationSettings.h"
+#include "Actors/SaveHandler.h"
+#include "Components/ActorSaveHandlerComponent.h"
+#include "Components/PlayerSaveHandlerComponent.h"
+//#include "WorldGenerationHandlerComponent.h"
+//#include "WildOmission/Core/Structs/WorldGenerationSettings.h"
 #include "WildOmissionSaveGame.h"
-#include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
-#include "WildOmission/Weather/WeatherManager.h"
-#include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values

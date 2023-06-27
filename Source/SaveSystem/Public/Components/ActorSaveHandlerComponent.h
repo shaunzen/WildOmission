@@ -9,7 +9,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UActorSaveHandlerComponent : public UActorComponent
+class SAVESYSTEM_API UActorSaveHandlerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

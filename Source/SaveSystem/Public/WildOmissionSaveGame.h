@@ -4,65 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "Structs/InventoryItem.h"
-#include "Structs/InventorySlot.h"
+#include "Structs/PlayerSave.h"
 #include "WildOmissionSaveGame.generated.h"
-
-USTRUCT()
-struct FWildOmissionInventorySave
-{
-	GENERATED_BODY()
-	
-	UPROPERTY()
-	TArray<FInventoryItem> Items;
-	
-	UPROPERTY()
-	TArray<FInventorySlot> Slots;
-
-};
-
-USTRUCT()
-struct FVitalsSave
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	float Health = 50.0f;
-	
-	UPROPERTY()
-	float Hunger = 100.0f;
-	
-	UPROPERTY()
-	float Thirst = 100.0f;
-};
-
-USTRUCT()
-struct FWildOmissionPlayerSave
-{
-	GENERATED_BODY()
-	
-	UPROPERTY()
-	bool IsHost = false;
-
-	UPROPERTY()
-	bool IsAlive = false;
-
-	UPROPERTY()
-	FString UniqueID = FString("");
-	
-	UPROPERTY()
-	FVector WorldLocation = FVector::ZeroVector;
-
-	UPROPERTY()
-	FVitalsSave Vitals;
-
-	UPROPERTY()
-	FWildOmissionInventorySave Inventory;
-
-	UPROPERTY()
-	FInventoryItem SelectedItem;
-
-};
 
 USTRUCT()
 struct FActorComponentSaveData
@@ -134,7 +77,7 @@ struct FWildOmissionSaveCreationInformation
 };
 
 UCLASS()
-class WILDOMISSION_API UWildOmissionSaveGame : public USaveGame
+class SAVESYSTEM_API UWildOmissionSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 
@@ -160,5 +103,5 @@ public:
 	TArray<FActorSaveData> ActorSaves;
 	
 	UPROPERTY()
-	TArray<FWildOmissionPlayerSave> PlayerSaves;
+	TArray<FPlayerSave> PlayerSaves;
 };
