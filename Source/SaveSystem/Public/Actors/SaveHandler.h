@@ -57,6 +57,6 @@ private:
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 
 	UFUNCTION()
-		void StopLoading();
+	void StopLoading();
 
 };

@@ -9,6 +9,7 @@
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "Log.h"
 
 // Sets default values
 ASaveHandler::ASaveHandler()
@@ -17,16 +18,20 @@ ASaveHandler::ASaveHandler()
 	PrimaryActorTick.bCanEverTick = false;
 
 	//WorldGenerationHandlerComponent = CreateDefaultSubobject<UWorldGenerationHandlerComponent>(FName("WorldGenerationHandlerComponent"));
-	
+	GameSaveLoadController = nullptr;
 	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(FName("ActorSaveHandlerComponent"));
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
 }
-
+//todo setup function instead
 void ASaveHandler::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	GameSaveLoadController = Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance());
+	if (GameSaveLoadController == nullptr)
+	{
+		UE_LOG(LogSaveSystem, Error, TEXT("Cannot find GameSaveLoadController"));
+	}
 
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);

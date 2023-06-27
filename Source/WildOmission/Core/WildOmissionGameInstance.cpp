@@ -182,7 +182,7 @@ void UWildOmissionGameInstance::SetLoadingSubtitle(const FString& InLoadingSubti
 	}
 }
 
-void UWildOmissionGameInstance::CreateWorld(const FString& NewWorldName)
+void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
 {
 	UWildOmissionSaveGame* NewSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
 
@@ -193,13 +193,13 @@ void UWildOmissionGameInstance::CreateWorld(const FString& NewWorldName)
 
 	NewSaveGame->LevelFile = TEXT("LV_Island");
 
-	NewSaveGame->CreationInformation.Name = NewWorldName;
+	NewSaveGame->CreationInformation.Name = WorldName;
 	NewSaveGame->CreationInformation.Day = Time.GetDay();
 	NewSaveGame->CreationInformation.Month = Time.GetMonth();
 	NewSaveGame->CreationInformation.Year = Time.GetYear();
 
 
-	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewWorldName, 0);
+	UGameplayStatics::SaveGameToSlot(NewSaveGame, WorldName, 0);
 }
 
 void UWildOmissionGameInstance::StartSession()
