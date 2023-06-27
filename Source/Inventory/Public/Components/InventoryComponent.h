@@ -8,7 +8,7 @@
 #include "Structs/InventoryContents.h"
 #include "Structs/InventorySlot.h"
 #include "Structs/ItemData.h"
-#include "Interfaces/SavableObjectInterface.h"
+#include "Interfaces/SavableObject.h"
 #include "InventoryComponent.generated.h"
 
 class UInventoryManipulatorComponent;
@@ -69,7 +69,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdateSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryItemUpdateSignature, const FInventoryItemUpdate&, ItemUpdate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class INVENTORY_API UInventoryComponent : public UActorComponent, public ISavableObjectInterface
+class INVENTORY_API UInventoryComponent : public UActorComponent, public ISavableObject
 {
 	GENERATED_BODY()
 

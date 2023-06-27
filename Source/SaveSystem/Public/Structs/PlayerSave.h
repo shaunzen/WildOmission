@@ -9,12 +9,6 @@
 #include "PlayerSave.generated.h"
 
 USTRUCT()
-struct SAVESYSTEM_API FSelectedItemDataSave
-{
-	GENERATED_BODY();
-};
-
-USTRUCT()
 struct SAVESYSTEM_API FPlayerSave
 {
 	GENERATED_BODY()
@@ -38,6 +32,6 @@ struct SAVESYSTEM_API FPlayerSave
 	FInventorySave Inventory;
 
 	UPROPERTY()
-	FInventoryItem SelectedItem;
+	TArray<uint8> SelectedItemByteData;
 
 };

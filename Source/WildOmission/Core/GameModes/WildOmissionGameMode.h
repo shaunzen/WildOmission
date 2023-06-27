@@ -43,8 +43,6 @@ public:
 	ASaveHandler* GetSaveHandler() const;
 	AWeatherManager* GetWeatherManager() const;
 
-	TArray<APlayerController*> GetAllPlayerControllers();
-
 	UFUNCTION(Exec)
 	void LogPlayerInventoryComponents();
 

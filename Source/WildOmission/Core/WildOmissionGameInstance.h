@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionGameInstance.generated.h"
 
 class UMainMenuWidget;
@@ -14,7 +15,7 @@ class ULoadingMenuWidget;
 class FOnlineSessionSearch;
 
 UCLASS()
-class WILDOMISSION_API UWildOmissionGameInstance : public UGameInstance
+class WILDOMISSION_API UWildOmissionGameInstance : public UGameInstance, public IGameSaveLoadController
 {
 	GENERATED_BODY()
 public:
@@ -28,23 +29,13 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void ShowGameplayMenuWidget();
 
-	UFUNCTION(BlueprintCallable, Exec)
-	void StartLoading();
-
-	UFUNCTION(BlueprintCallable)
-	void StopLoading();
-
-	UFUNCTION(BlueprintCallable)
-	void SetLoadingTitle(const FString& InLoadingTitle);
-
-	UFUNCTION(BlueprintCallable)
-	void SetLoadingSubtitle(const FString& InLoadingSubtitle);
-
-	//UFUNCTION(BlueprintCallable)
-	//void SetLoadingMenuTitle(const FString& InTitle);
-	//
-	//UFUNCTION(BlueprintCallable)
-	//void SetLoadingStep(const FString& InStepName, const int32& InStepPercent = -1);
+	// Begin IGameSaveLoadController Implementation
+	virtual void StartLoading() override;
+	virtual void StopLoading() override;
+	virtual void SetLoadingTitle(const FString& InLoadingTitle) override;
+	virtual void SetLoadingSubtitle(const FString& InLoadingSubtitle) override;
+	virtual void CreateWorld(const FString& NewWorldName) override;
+	// End IGameSaveLoadController Implementation
 
 	UFUNCTION()
 	void StartSingleplayer(const FString& WorldName);
@@ -64,8 +55,7 @@ public:
 	void RefreshMasterVolume();
 
 	static TArray<FString> GetAllWorldNames();
-	void CreateWorld(const FString& NewWorldName);
-
+	
 	IOnlineFriendsPtr GetFriendsInterface() const;
 
 	UFUNCTION(BlueprintCallable)

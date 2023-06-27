@@ -8,7 +8,7 @@
 #include "Components/PanelWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
+#include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
 UWorldSelectionWidget::UWorldSelectionWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)

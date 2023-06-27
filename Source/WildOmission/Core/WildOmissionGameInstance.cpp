@@ -9,7 +9,7 @@
 #include "WildOmission/UI/Menu/MainMenuWidget.h"
 #include "WildOmission/UI/Menu/GameplayMenuWidget.h"
 #include "WildOmission/UI/Menu/LoadingMenuWidget.h"
-#include "WildOmission/Core/SaveSystem/WildOmissionSaveGame.h"
+#include "WildOmissionSaveGame.h"
 #include "WildOmission/Core/WildOmissionGameUserSettings.h"
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundMix.h"
@@ -180,6 +180,26 @@ void UWildOmissionGameInstance::SetLoadingSubtitle(const FString& InLoadingSubti
 	{
 		LoadingMenuWidget->SetLoadingStep(InLoadingSubtitle);
 	}
+}
+
+void UWildOmissionGameInstance::CreateWorld(const FString& NewWorldName)
+{
+	UWildOmissionSaveGame* NewSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+
+	FDateTime Time;
+	Time = FDateTime::Now();
+
+	NewSaveGame->LastPlayedTime = Time;
+
+	NewSaveGame->LevelFile = TEXT("LV_Island");
+
+	NewSaveGame->CreationInformation.Name = NewWorldName;
+	NewSaveGame->CreationInformation.Day = Time.GetDay();
+	NewSaveGame->CreationInformation.Month = Time.GetMonth();
+	NewSaveGame->CreationInformation.Year = Time.GetYear();
+
+
+	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewWorldName, 0);
 }
 
 void UWildOmissionGameInstance::StartSession()
@@ -508,26 +528,6 @@ TArray<FString> UWildOmissionGameInstance::GetAllWorldNames()
 	}
 
 	return Saves;
-}
-
-void UWildOmissionGameInstance::CreateWorld(const FString& NewWorldName)
-{
-	UWildOmissionSaveGame* NewSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
-
-	FDateTime Time;
-	Time = FDateTime::Now();
-
-	NewSaveGame->LastPlayedTime = Time;
-
-	NewSaveGame->LevelFile = TEXT("LV_Island");
-
-	NewSaveGame->CreationInformation.Name = NewWorldName;
-	NewSaveGame->CreationInformation.Day = Time.GetDay();
-	NewSaveGame->CreationInformation.Month = Time.GetMonth();
-	NewSaveGame->CreationInformation.Year = Time.GetYear();
-
-
-	UGameplayStatics::SaveGameToSlot(NewSaveGame, NewWorldName, 0);
 }
 
 IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const

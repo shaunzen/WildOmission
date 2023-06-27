@@ -6,6 +6,6 @@ public class GatherableResources: ModuleRules
 {
     public GatherableResources(ReadOnlyTargetRules Target) : base(Target)
     {
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "Interaction", "Inventory" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "SaveSystem", "Interaction", "Inventory" });
     }
 }

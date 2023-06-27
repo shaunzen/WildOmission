@@ -24,7 +24,7 @@ public:
 
 	// Begin Savable Player Implementation
 	virtual FPlayerSave SavePlayer() override;
-	virtual void LoadPlayerSave(const FPlayerSave& Save) override;
+	virtual void LoadPlayerSave(const FPlayerSave& PlayerSave) override;
 	virtual FString GetUniqueID() override;
 	// End Savable Player Implementation
 

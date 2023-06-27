@@ -2,6 +2,8 @@
 
 
 #include "Components/PlayerSaveHandlerComponent.h"
+#include "WildOmissionSaveGame.h"
+#include "Interfaces/SavablePlayer.h"
 #include "Actors/SaveHandler.h"
 #include "Structs/PlayerSave.h"
 #include "TimerManager.h"
@@ -43,8 +45,8 @@ void UPlayerSaveHandlerComponent::Save(TArray<FPlayerSave>& OutUpdatedSavesList)
 void UPlayerSaveHandlerComponent::Load(APlayerController* PlayerController)
 {
 	ASaveHandler* SaveHandlerOwner = Cast<ASaveHandler>(GetOwner());
-	ISavablePlayer* SavablePlayer= Cast<ISavablePlayer>(PlayerController);
-	if (SaveHandlerOwner == nullptr || SavalbePlayer == nullptr)
+	ISavablePlayer* SavablePlayer = Cast<ISavablePlayer>(PlayerController);
+	if (SaveHandlerOwner == nullptr || SavablePlayer == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Couldn't load the player, SaveHandler or PlayerController was nullptr."));
 		return;
@@ -73,13 +75,7 @@ void UPlayerSaveHandlerComponent::Load(APlayerController* PlayerController)
 
 void UPlayerSaveHandlerComponent::AddAllToPending()
 {
-	AWildOmissionGameMode* WildOmissionGameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (WildOmissionGameMode == nullptr)
-	{
-		return;
-	}
-
-	for (APlayerController* PlayerController : WildOmissionGameMode->GetAllPlayerControllers())
+	for (APlayerController* PlayerController : GetAllPlayerControllers())
 	{
 		AddToPending(PlayerController);
 	}
@@ -123,4 +119,16 @@ bool UPlayerSaveHandlerComponent::GetSaveIndexInList(const TArray<FPlayerSave>& 
 
 	OutIndex = Index;
 	return SaveFound;
+}
+
+TArray<APlayerController*> UPlayerSaveHandlerComponent::GetAllPlayerControllers()
+{
+	TArray<APlayerController*> PlayerControllers;
+
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		PlayerControllers.Add(Iterator->Get());
+	}
+
+	return PlayerControllers;
 }

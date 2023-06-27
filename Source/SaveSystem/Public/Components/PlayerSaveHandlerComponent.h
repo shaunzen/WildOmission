@@ -30,7 +30,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-
 	UPROPERTY()
 	TArray<struct FPlayerSave> PendingSaves;
 
@@ -42,5 +41,7 @@ private:
 	void AddSaveToList(const struct FPlayerSave& InSave, TArray<struct FPlayerSave>& OutSavesList);
 	
 	bool GetSaveIndexInList(const TArray<struct FPlayerSave>& List, const FString& UniqueID, int32& OutIndex);
-		
+
+	TArray<APlayerController*> GetAllPlayerControllers();
+
 };

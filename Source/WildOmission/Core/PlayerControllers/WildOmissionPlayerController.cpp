@@ -65,13 +65,14 @@ FPlayerSave AWildOmissionPlayerController::SavePlayer()
 	PlayerSave.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
 	PlayerSave.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
 
-	PlayerSave.Inventory = WildOmissionCharacter->GetInventoryComponent()->Save();
-	PlayerSave.SelectedItem = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItem();
+	PlayerSave.Inventory.ByteData = WildOmissionCharacter->GetInventoryComponent()->Save();
+	
+	PlayerSave.SelectedItemByteData = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItemAsByteData();
 
 	return PlayerSave;
 }
 
-void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& Save)
+void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& PlayerSave)
 {
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
 
@@ -86,12 +87,8 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& Save)
 	WildOmissionCharacter->GetVitalsComponent()->SetHunger(PlayerSave.Vitals.Hunger);
 	WildOmissionCharacter->GetVitalsComponent()->SetThirst(PlayerSave.Vitals.Thirst);
 
-	WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory);
-
-	if (PlayerSave.SelectedItem.Quantity > 0)
-	{
-		UInventoryComponent::SpawnWorldItem(GetWorld(), PlayerSave.SelectedItem, WildOmissionCharacter);
-	}
+	WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory.ByteData);
+	WildOmissionCharacter->GetInventoryManipulatorComponent()->LoadSelectedItemFromByteDataAndDropInWorld(PlayerSave.SelectedItemByteData);
 }
 
 FString AWildOmissionPlayerController::GetUniqueID()

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "Interfaces/SavableObject.h"
 #include "Tornado.h"
 #include "Storm.generated.h"
 
@@ -13,7 +13,7 @@ class ALightning;
 class UNiagaraComponent;
 
 UCLASS()
-class WILDOMISSION_API AStorm : public AActor, public ISavableObjectInterface
+class WILDOMISSION_API AStorm : public AActor, public ISavableObject
 {
 	GENERATED_BODY()
 	

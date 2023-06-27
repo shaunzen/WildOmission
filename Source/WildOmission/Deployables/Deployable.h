@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "Interfaces/SavableObject.h"
+#include "Interfaces/RequiredForLoad.h"
 #include "Interfaces/DurabilityInterface.h"
 #include "WildOmission/Core/Interfaces/DamagedByWind.h"
-#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "BuildAnchorComponent.h"
 #include "Deployable.generated.h"
 
 UCLASS()
-class WILDOMISSION_API ADeployable : public AActor, public IDurabilityInterface, public IDamagedByWind, public ISavableObjectInterface, public IRequiredForLoad
+class WILDOMISSION_API ADeployable : public AActor, public IDurabilityInterface, public IDamagedByWind, public ISavableObject, public IRequiredForLoad
 {
 	GENERATED_BODY()
 	

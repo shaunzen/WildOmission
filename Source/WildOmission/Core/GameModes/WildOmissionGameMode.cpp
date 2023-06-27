@@ -2,10 +2,10 @@
 
 
 #include "WildOmissionGameMode.h"
-#include "WildOmission/Core/SaveSystem/SaveHandler.h"
+#include "Actors/SaveHandler.h"
+#include "Components/PlayerSaveHandlerComponent.h"
+#include "Interfaces/RequiredForLoad.h"
 #include "WildOmission/Weather/WeatherManager.h"
-#include "WildOmission/Core/SaveSystem/PlayerSaveHandlerComponent.h"
-#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
 #include "WildOmission/Core/WildOmissionGameState.h"
@@ -273,16 +273,4 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 		}
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: "), *Character->GetActorNameOrLabel()));
 	}
-}
-
-TArray<APlayerController*> AWildOmissionGameMode::GetAllPlayerControllers()
-{
-	TArray<APlayerController*> PlayerControllers;
-
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-	{
-		PlayerControllers.Add(Iterator->Get());
-	}
-
-	return PlayerControllers;
 }

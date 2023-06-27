@@ -3,7 +3,6 @@
 
 #include "WildOmissionStatics.h"
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
-#include "WildOmission/Core/SaveSystem/SaveHandler.h"
 #include "WildOmission/Core/SaveSystem/WorldGenerationHandlerComponent.h"
 
 FVector UWildOmissionStatics::GetHostLocationInWorld(UWorld* WorldContextObject)
@@ -48,5 +47,5 @@ void UWildOmissionStatics::GetWorldSize(UWorld* WorldContextObject, FVector2D& O
 		return;
 	}
 
-	OutWorldSize = SaveHandler->GetWorldGenerationHandler()->GetWorldSizeMeters();
+	OutWorldSize = FVector2D::ZeroVector;
 }

@@ -40,6 +40,9 @@ public:
 	bool SelectedItemHasUniqueID(const uint32& UniqueID) const;
 
 	FInventoryManipulatorOnSelectionChangedSignature OnSelectionChanged;
+	
+	TArray<uint8> GetSelectedItemAsByteData();
+	void LoadSelectedItemFromByteDataAndDropInWorld(const TArray<uint8>& ByteData);
 
 	FInventoryItem GetSelectedItem();
 	FInventoryItem* GetSelectedItemAddress();
@@ -50,7 +53,7 @@ protected:
 
 private:	
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, SaveGame)
 	FInventoryItem SelectedItem;
 
 	UPROPERTY(EditAnywhere)

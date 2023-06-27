@@ -6,6 +6,7 @@
 #include "Components/PlayerSaveHandlerComponent.h"
 //#include "WorldGenerationHandlerComponent.h"
 //#include "WildOmission/Core/Structs/WorldGenerationSettings.h"
+#include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -15,17 +16,17 @@ ASaveHandler::ASaveHandler()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	WorldGenerationHandlerComponent = CreateDefaultSubobject<UWorldGenerationHandlerComponent>(FName("WorldGenerationHandlerComponent"));
+	//WorldGenerationHandlerComponent = CreateDefaultSubobject<UWorldGenerationHandlerComponent>(FName("WorldGenerationHandlerComponent"));
 	
 	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(FName("ActorSaveHandlerComponent"));
-
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
-
 }
 
 void ASaveHandler::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	GameSaveLoadController = Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance());
 
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
@@ -59,32 +60,27 @@ void ASaveHandler::LoadWorld()
 	{
 		return;
 	}
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode == nullptr)
-	{
-		return;
-	}
 
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
-		GameInstance->SetLoadingSubtitle(FString("Generating level."));
-		GenerateLevel(SaveFile);
+		GameSaveLoadController->SetLoadingSubtitle(FString("Generating level."));
+		//GenerateLevel(SaveFile);
 		
 		UpdateSaveFile(SaveFile);
 		return;
 	}
 
-	if (GameMode->GetWeatherManager())
-	{
-		GameMode->GetWeatherManager()->SetNextStormSpawnTime(SaveFile->WeatherManagerSave.NextStormSpawnTime);
-	}
+	//if (GameMode->GetWeatherManager())
+	//{
+	//	GameMode->GetWeatherManager()->SetNextStormSpawnTime(SaveFile->WeatherManagerSave.NextStormSpawnTime);
+	//}
 
-	GameInstance->SetLoadingSubtitle(FString("Loading objects."));
+	GameSaveLoadController->SetLoadingSubtitle(FString("Loading objects."));
 	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves);
 
 	FTimerHandle ActorLoadedTimerHandle;
 	FTimerDelegate ActorLoadedDelegate;
-	ActorLoadedDelegate.BindUObject(GameInstance, &UWildOmissionGameInstance::StopLoading);
+	ActorLoadedDelegate.BindUObject(this, &ASaveHandler::StopLoading);
 	GetWorld()->GetTimerManager().SetTimer(ActorLoadedTimerHandle, ActorLoadedDelegate, 1.0f, false);
 }
 
@@ -101,10 +97,10 @@ UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
 	return PlayerSaveHandlerComponent;
 }
 
-UWorldGenerationHandlerComponent* ASaveHandler::GetWorldGenerationHandler() const
-{
-	return WorldGenerationHandlerComponent;
-}
+//UWorldGenerationHandlerComponent* ASaveHandler::GetWorldGenerationHandler() const
+//{
+//	return WorldGenerationHandlerComponent;
+//}
 
 void ASaveHandler::ValidateSave()
 {
@@ -114,39 +110,39 @@ void ASaveHandler::ValidateSave()
 	}
 
 	CurrentSaveFileName = FString("PIE_Save");
-	GameInstance->CreateWorld(CurrentSaveFileName);
+	GameSaveLoadController->CreateWorld(CurrentSaveFileName);
 }
-
-void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
-{
-	FWorldGenerationSettings GenerationSettings;
-	FTimerHandle WorldGenerationTimerHandle;
-	FTimerDelegate WorldGenerationTimerDelegate;
-
-	WorldGenerationTimerDelegate.BindUFunction(WorldGenerationHandlerComponent, FName("Generate"), GenerationSettings, SaveToModify);
-
-	GetWorld()->GetTimerManager().SetTimer(WorldGenerationTimerHandle, WorldGenerationTimerDelegate, 1.0f, false);
-	
-	SaveToModify->CreationInformation.LevelHasGenerated = true;
-}
-
-void ASaveHandler::RegenerateResources()
-{
-	FWorldGenerationSettings GenerationSettings;
-
-	TArray<AActor*> AllNodesInWorld;
-	TArray<AActor*> AllCollectablesInWorld;
-	
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Node"), AllNodesInWorld);
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Collectable"), AllCollectablesInWorld);
-
-	if (AllNodesInWorld.Num() > GenerationSettings.MinNodeCount || AllCollectablesInWorld.Num() > GenerationSettings.MinCollectableCount)
-	{
-		return;
-	}
-
-	WorldGenerationHandlerComponent->RegenerateResources(GenerationSettings);
-}
+//
+//void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
+//{
+//	FWorldGenerationSettings GenerationSettings;
+//	FTimerHandle WorldGenerationTimerHandle;
+//	FTimerDelegate WorldGenerationTimerDelegate;
+//
+//	WorldGenerationTimerDelegate.BindUFunction(WorldGenerationHandlerComponent, FName("Generate"), GenerationSettings, SaveToModify);
+//
+//	GetWorld()->GetTimerManager().SetTimer(WorldGenerationTimerHandle, WorldGenerationTimerDelegate, 1.0f, false);
+//	
+//	SaveToModify->CreationInformation.LevelHasGenerated = true;
+//}
+//
+//void ASaveHandler::RegenerateResources()
+//{
+//	FWorldGenerationSettings GenerationSettings;
+//
+//	TArray<AActor*> AllNodesInWorld;
+//	TArray<AActor*> AllCollectablesInWorld;
+//	
+//	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Node"), AllNodesInWorld);
+//	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Collectable"), AllCollectablesInWorld);
+//
+//	if (AllNodesInWorld.Num() > GenerationSettings.MinNodeCount || AllCollectablesInWorld.Num() > GenerationSettings.MinCollectableCount)
+//	{
+//		return;
+//	}
+//
+//	WorldGenerationHandlerComponent->RegenerateResources(GenerationSettings);
+//}
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
 {
@@ -157,4 +153,9 @@ void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
 	}
 
 	UGameplayStatics::SaveGameToSlot(UpdatedSaveFile, CurrentSaveFileName, 0);
+}
+
+void ASaveHandler::StopLoading()
+{
+	GameSaveLoadController->StopLoading();
 }

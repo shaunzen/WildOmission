@@ -5,6 +5,8 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "WorldItem.h"
 #include "Net/UnrealNetwork.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+#include "EngineUtils.h"
 
 // Sets default values for this component's properties
 UInventoryManipulatorComponent::UInventoryManipulatorComponent()
@@ -135,6 +137,32 @@ bool UInventoryManipulatorComponent::SelectedItemHasUniqueID(const uint32& Uniqu
 	}
 
 	return true;
+}
+
+TArray<uint8> UInventoryManipulatorComponent::GetSelectedItemAsByteData()
+{
+	TArray<uint8> Bytes;
+
+	FMemoryWriter MemoryWriter(Bytes);
+	FObjectAndNameAsStringProxyArchive SelectedItemArchive(MemoryWriter, true);
+	SelectedItemArchive.ArIsSaveGame = true;
+	this->Serialize(SelectedItemArchive);
+
+	return Bytes;
+}
+
+void UInventoryManipulatorComponent::LoadSelectedItemFromByteDataAndDropInWorld(const TArray<uint8>& ByteData)
+{
+	FMemoryReader MemoryReader(ByteData);
+	FObjectAndNameAsStringProxyArchive SelectedItemArchive(MemoryReader, true);
+	SelectedItemArchive.ArIsSaveGame = true;
+	this->Serialize(SelectedItemArchive);
+
+	if (SelectedItem.Quantity > 0)
+	{
+		UInventoryComponent::SpawnWorldItem(GetWorld(), SelectedItem, GetOwner());
+		SelectedItem.Clear();
+	}
 }
 
 FInventoryItem UInventoryManipulatorComponent::GetSelectedItem()

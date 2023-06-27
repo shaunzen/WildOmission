@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/StaticMeshComponent.h"
-#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "Interfaces/SavableObject.h"
 #include "BuildAnchorComponent.generated.h"
 
 UENUM()
@@ -21,7 +21,7 @@ enum EBuildAnchorType
 class ADeployable;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UBuildAnchorComponent : public UStaticMeshComponent, public ISavableObjectInterface
+class WILDOMISSION_API UBuildAnchorComponent : public UStaticMeshComponent, public ISavableObject
 {
 	GENERATED_BODY()
 
