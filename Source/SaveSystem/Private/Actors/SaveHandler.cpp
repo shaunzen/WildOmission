@@ -4,8 +4,7 @@
 #include "Actors/SaveHandler.h"
 #include "Components/ActorSaveHandlerComponent.h"
 #include "Components/PlayerSaveHandlerComponent.h"
-//#include "WorldGenerationHandlerComponent.h"
-//#include "WildOmission/Core/Structs/WorldGenerationSettings.h"
+#include "Interfaces/WorldGenerator.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,9 +21,10 @@ ASaveHandler::ASaveHandler()
 	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(FName("ActorSaveHandlerComponent"));
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
 }
-void ASaveHandler::Setup(IGameSaveLoadController* SaveLoadController)
+void ASaveHandler::Setup(IGameSaveLoadController* SaveLoadController, IWorldGenerator* InWorldGenerator)
 {
 	GameSaveLoadController = SaveLoadController;
+	WorldGenerator = InWorldGenerator;
 
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
@@ -62,7 +62,7 @@ void ASaveHandler::LoadWorld()
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		GameSaveLoadController->SetLoadingSubtitle(FString("Generating level."));
-		//GenerateLevel(SaveFile);
+		WorldGenerator->GenerateLevel(SaveFile);
 		
 		UpdateSaveFile(SaveFile);
 		return;
@@ -95,10 +95,10 @@ UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
 	return PlayerSaveHandlerComponent;
 }
 
-//UWorldGenerationHandlerComponent* ASaveHandler::GetWorldGenerationHandler() const
-//{
-//	return WorldGenerationHandlerComponent;
-//}
+IWorldGenerator* ASaveHandler::GetWorldGenerator() const
+{
+	return WorldGenerator;
+}
 
 void ASaveHandler::ValidateSave()
 {
@@ -110,7 +110,8 @@ void ASaveHandler::ValidateSave()
 	CurrentSaveFileName = FString("PIE_Save");
 	GameSaveLoadController->CreateWorld(CurrentSaveFileName);
 }
-//
+
+// TODO this will be in the new world generator actor
 //void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
 //{
 //	FWorldGenerationSettings GenerationSettings;

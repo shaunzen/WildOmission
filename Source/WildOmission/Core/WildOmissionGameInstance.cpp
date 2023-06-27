@@ -61,6 +61,11 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	}
 }
 
+UWildOmissionGameInstance* UWildOmissionGameInstance::GetWildOmissionGameInstance(UWorld* WorldContextObject)
+{
+	return Cast<UWildOmissionGameInstance>(WorldContextObject->GetGameInstance());
+}
+
 void UWildOmissionGameInstance::Init()
 {
 	Super::Init();

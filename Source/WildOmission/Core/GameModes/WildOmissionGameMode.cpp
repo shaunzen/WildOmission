@@ -15,7 +15,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmission/Weather/Storm.h"
-#include "WildOmission/Core/SaveSystem/WorldGenerationHandlerComponent.h"
 
 void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
@@ -25,7 +24,7 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
 
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
-	SaveHandler->Setup(Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));
+	SaveHandler->Setup(Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()), nullptr);
 
 	WeatherManager = GetWorld()->SpawnActor<AWeatherManager>();
 
@@ -46,7 +45,7 @@ void AWildOmissionGameMode::StartPlay()
 
 void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	UWildOmissionGameInstance* GameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(GetWorld());
 	if (FriendsOnly && !GameInstance->GetFriendsInterface()->IsFriend(0, *UniqueId.GetUniqueNetId().Get(), FString()))
 	{
 		ErrorMessage = TEXT("Player not friend, revoking connection attempt.");

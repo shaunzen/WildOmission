@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "DurabilityInterface.generated.h"
+#include "WildOmissionSaveGame.h"
+#include "WorldGenerator.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UDurabilityInterface : public UInterface
+class UWorldGenerator : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,12 +17,13 @@ class UDurabilityInterface : public UInterface
 /**
  * 
  */
-class DURABILITY_API IDurabilityInterface
+class SAVESYSTEM_API IWorldGenerator
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual float GetDurabilityPercentage() = 0;
+	virtual void GenerateLevel(UWildOmissionSaveGame* InSaveFile) = 0;
+	virtual void RegenerateResources() = 0;
 
 };

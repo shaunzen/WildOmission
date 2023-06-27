@@ -53,6 +53,11 @@
 			]
 		},
 		{
+			"Name": "SaveSystem",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "SurfaceProperties",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
@@ -62,6 +67,11 @@
 		},
 		{
 			"Name": "Vitals",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "WorldGeneration",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

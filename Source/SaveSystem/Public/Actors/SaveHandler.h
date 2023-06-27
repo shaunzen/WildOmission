@@ -9,8 +9,8 @@
 class UWildOmissionSaveGame;
 class UActorSaveHandlerComponent;
 class UPlayerSaveHandlerComponent;
-//class UWorldGenerationHandlerComponent;
 class IGameSaveLoadController;
+class IWorldGenerator;
 
 UCLASS()
 class SAVESYSTEM_API ASaveHandler : public AActor
@@ -21,7 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	ASaveHandler();
 
-	void Setup(IGameSaveLoadController* SaveLoadController);
+	void Setup(IGameSaveLoadController* SaveLoadController, IWorldGenerator* InWorldGenerator);
 
 	void SaveGame();
 
@@ -29,16 +29,13 @@ public:
 
 	void LoadWorld();
 	
-	UPlayerSaveHandlerComponent* GetPlayerHandler() const;
-	//UWorldGenerationHandlerComponent* GetWorldGenerationHandler() const;
+	IWorldGenerator* GetWorldGenerator() const;
 
+	UPlayerSaveHandlerComponent* GetPlayerHandler() const;
 	UWildOmissionSaveGame* GetSaveFile();
 
 private:
 	FString CurrentSaveFileName;
-
-	/*UPROPERTY(VisibleAnywhere)
-	UWorldGenerationHandlerComponent* WorldGenerationHandlerComponent;*/
 
 	UPROPERTY(VisibleAnywhere)
 	UActorSaveHandlerComponent* ActorSaveHandlerComponent;
@@ -46,11 +43,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
 
+	IWorldGenerator* WorldGenerator;
 	IGameSaveLoadController* GameSaveLoadController;
-
-	//void GenerateLevel(UWildOmissionSaveGame* SaveToModify);
-
-	//void RegenerateResources();
 
 	void ValidateSave();
 

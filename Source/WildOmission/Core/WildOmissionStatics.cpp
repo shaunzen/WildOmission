@@ -3,7 +3,6 @@
 
 #include "WildOmissionStatics.h"
 #include "WildOmission/Core/GameModes/WildOmissionGameMode.h"
-#include "WildOmission/Core/SaveSystem/WorldGenerationHandlerComponent.h"
 
 FVector UWildOmissionStatics::GetHostLocationInWorld(UWorld* WorldContextObject)
 {

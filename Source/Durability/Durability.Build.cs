@@ -6,6 +6,7 @@ public class Durability : ModuleRules
 {
     public Durability(ReadOnlyTargetRules Target) : base(Target)
     {
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject" });
     }
 }

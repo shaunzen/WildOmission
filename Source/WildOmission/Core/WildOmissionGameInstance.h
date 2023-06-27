@@ -20,6 +20,7 @@ class WILDOMISSION_API UWildOmissionGameInstance : public UGameInstance, public 
 	GENERATED_BODY()
 public:
 	UWildOmissionGameInstance(const FObjectInitializer& ObjectInitializer);
+	static UWildOmissionGameInstance* GetWildOmissionGameInstance(UWorld* WorldContextObject);
 
 	virtual void Init() override;
 
