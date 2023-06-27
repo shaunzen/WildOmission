@@ -22,16 +22,9 @@ ASaveHandler::ASaveHandler()
 	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(FName("ActorSaveHandlerComponent"));
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
 }
-//todo setup function instead
-void ASaveHandler::BeginPlay()
+void ASaveHandler::Setup(IGameSaveLoadController* SaveLoadController)
 {
-	Super::BeginPlay();
-	
-	GameSaveLoadController = Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance());
-	if (GameSaveLoadController == nullptr)
-	{
-		UE_LOG(LogSaveSystem, Error, TEXT("Cannot find GameSaveLoadController"));
-	}
+	GameSaveLoadController = SaveLoadController;
 
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);

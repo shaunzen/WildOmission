@@ -21,7 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	ASaveHandler();
 
-	virtual void BeginPlay() override;
+	void Setup(IGameSaveLoadController* SaveLoadController);
 
 	void SaveGame();
 

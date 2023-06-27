@@ -25,6 +25,8 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
 
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
+	SaveHandler->Setup(Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));
+
 	WeatherManager = GetWorld()->SpawnActor<AWeatherManager>();
 
 	if (SaveHandler == nullptr)
