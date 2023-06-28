@@ -16,11 +16,13 @@ ASaveHandler::ASaveHandler()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	//WorldGenerationHandlerComponent = CreateDefaultSubobject<UWorldGenerationHandlerComponent>(FName("WorldGenerationHandlerComponent"));
-	GameSaveLoadController = nullptr;
 	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(FName("ActorSaveHandlerComponent"));
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
+
+	GameSaveLoadController = nullptr;
+	WorldGenerator = nullptr;
 }
+
 void ASaveHandler::Setup(IGameSaveLoadController* SaveLoadController, IWorldGenerator* InWorldGenerator)
 {
 	GameSaveLoadController = SaveLoadController;
@@ -35,7 +37,7 @@ void ASaveHandler::SaveGame()
 	UWildOmissionSaveGame* SaveFile = GetSaveFile();
 	if (SaveFile == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Aborting save, SaveFile was nullptr."));
+		UE_LOG(LogSaveSystem, Error, TEXT("Aborting save, SaveFile was nullptr."));
 		return;
 	}
 	
@@ -147,7 +149,7 @@ void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
 {
 	if (UpdatedSaveFile == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Aborting update to save file, updated save file passed in was a nullptr."));
+		UE_LOG(LogSaveSystem, Error, TEXT("Aborting update to save file, updated save file passed in was a nullptr."));
 		return;
 	}
 
