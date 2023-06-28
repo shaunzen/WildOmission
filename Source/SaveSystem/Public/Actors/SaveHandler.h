@@ -30,6 +30,7 @@ public:
 	void LoadWorld();
 	
 	IWorldGenerator* GetWorldGenerator() const;
+	IGameSaveLoadController* GetSaveLoadController() const;
 
 	UPlayerSaveHandlerComponent* GetPlayerHandler() const;
 	UWildOmissionSaveGame* GetSaveFile();

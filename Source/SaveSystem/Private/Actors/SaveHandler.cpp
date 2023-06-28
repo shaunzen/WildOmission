@@ -64,7 +64,7 @@ void ASaveHandler::LoadWorld()
 	if (WorldGenerator && SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		GameSaveLoadController->SetLoadingSubtitle(FString("Generating level."));
-		WorldGenerator->GenerateLevel(SaveFile);
+		WorldGenerator->GenerateLevel(this, SaveFile);
 
 		UpdateSaveFile(SaveFile);
 		return;
@@ -102,6 +102,11 @@ IWorldGenerator* ASaveHandler::GetWorldGenerator() const
 	return WorldGenerator;
 }
 
+IGameSaveLoadController* ASaveHandler::GetSaveLoadController() const
+{
+	return GameSaveLoadController;
+}
+
 void ASaveHandler::ValidateSave()
 {
 	if (CurrentSaveFileName.Len() > 0)
@@ -112,38 +117,6 @@ void ASaveHandler::ValidateSave()
 	CurrentSaveFileName = FString("PIE_Save");
 	GameSaveLoadController->CreateWorld(CurrentSaveFileName);
 }
-
-// TODO this will be in the new world generator actor
-//void ASaveHandler::GenerateLevel(UWildOmissionSaveGame* SaveToModify)
-//{
-//	FWorldGenerationSettings GenerationSettings;
-//	FTimerHandle WorldGenerationTimerHandle;
-//	FTimerDelegate WorldGenerationTimerDelegate;
-//
-//	WorldGenerationTimerDelegate.BindUFunction(WorldGenerationHandlerComponent, FName("Generate"), GenerationSettings, SaveToModify);
-//
-//	GetWorld()->GetTimerManager().SetTimer(WorldGenerationTimerHandle, WorldGenerationTimerDelegate, 1.0f, false);
-//	
-//	SaveToModify->CreationInformation.LevelHasGenerated = true;
-//}
-//
-//void ASaveHandler::RegenerateResources()
-//{
-//	FWorldGenerationSettings GenerationSettings;
-//
-//	TArray<AActor*> AllNodesInWorld;
-//	TArray<AActor*> AllCollectablesInWorld;
-//	
-//	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Node"), AllNodesInWorld);
-//	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Collectable"), AllCollectablesInWorld);
-//
-//	if (AllNodesInWorld.Num() > GenerationSettings.MinNodeCount || AllCollectablesInWorld.Num() > GenerationSettings.MinCollectableCount)
-//	{
-//		return;
-//	}
-//
-//	WorldGenerationHandlerComponent->RegenerateResources(GenerationSettings);
-//}
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
 {
