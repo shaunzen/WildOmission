@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class EQUIPABLEITEMS_API ABuildingHammerItem : public AToolItem
+class DEPLOYABLES_API ABuildingHammerItem : public AToolItem
 {
 	GENERATED_BODY()
 
