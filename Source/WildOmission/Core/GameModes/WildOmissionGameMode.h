@@ -7,6 +7,7 @@
 #include "WildOmissionGameMode.generated.h"
 
 class ASaveHandler;
+class AWorldGenerationHandler;
 class AWeatherManager;
 class AWildOmissionCharacter;
 class AWildOmissionPlayerController;
@@ -41,6 +42,7 @@ public:
 	void Weather(const FString& WeatherToSet);
 
 	ASaveHandler* GetSaveHandler() const;
+	AWorldGenerationHandler* GetWorldGenerationHandler() const;
 	AWeatherManager* GetWeatherManager() const;
 
 	UFUNCTION(Exec)
@@ -58,6 +60,8 @@ private:
 	UPROPERTY()
 	ASaveHandler* SaveHandler;
 
+	UPROPERTY()
+	AWorldGenerationHandler* WorldGenerationHandler;
 	// TimeManager
 
 	UPROPERTY()

@@ -4,6 +4,7 @@
 #include "WildOmissionGameMode.h"
 #include "Actors/SaveHandler.h"
 #include "Components/PlayerSaveHandlerComponent.h"
+#include "Actors/WorldGenerationHandler.h"
 #include "Interfaces/RequiredForLoad.h"
 #include "WildOmission/Weather/WeatherManager.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
@@ -24,7 +25,8 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
 
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
-	SaveHandler->Setup(Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()), nullptr);
+	WorldGenerationHandler = GetWorld()->SpawnActor<AWorldGenerationHandler>();
+	SaveHandler->Setup(Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()), WorldGenerationHandler);
 
 	WeatherManager = GetWorld()->SpawnActor<AWeatherManager>();
 
