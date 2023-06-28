@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Items/EquipableItem.h"
-#include "Deployables/Deployable.h"
 #include "DeployableItem.generated.h"
 
 class ADeployablePreview;
+class ADeployable;
 
 UCLASS()
 class DEPLOYABLES_API ADeployableItem : public AEquipableItem

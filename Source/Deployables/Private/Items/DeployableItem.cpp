@@ -2,6 +2,7 @@
 
 
 #include "Items/DeployableItem.h"
+#include "Deployables/Deployable.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Actors/DeployablePreview.h"
 #include "Kismet/GameplayStatics.h"
@@ -16,7 +17,7 @@ ADeployableItem::ADeployableItem()
 	DeployableActorClass = nullptr;
 	DeployableRange = 500.0f;
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> HammerStaticMesh(TEXT("/Game/WildOmission/Art/Items/SM_Hammer"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> HammerStaticMesh(TEXT("/Game/WildOmission/Art/Items/SM_Hammer"));
 	if (HammerStaticMesh.Succeeded())
 	{
 		Mesh->SetStaticMesh(HammerStaticMesh.Object);

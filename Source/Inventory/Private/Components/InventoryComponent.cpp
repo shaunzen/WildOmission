@@ -20,11 +20,13 @@ UInventoryComponent::UInventoryComponent()
 
 	SlotCount = 24;
 	LoadedFromSave = false;
-	
-	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
-	if (ItemDataTableBlueprint.Succeeded())
+	if (GetWorld())
 	{
-		ItemDataTable = ItemDataTableBlueprint.Object;
+		static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
+		if (ItemDataTableBlueprint.Succeeded())
+		{
+			ItemDataTable = ItemDataTableBlueprint.Object;
+		}
 	}
 }
 
