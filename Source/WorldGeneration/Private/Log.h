@@ -1,0 +1,1 @@
+DECLARE_LOG_CATEGORY_EXTERN(LogExample, Log, All);
