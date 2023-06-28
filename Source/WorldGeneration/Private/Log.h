@@ -1,1 +1,1 @@
-DECLARE_LOG_CATEGORY_EXTERN(LogExample, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogWorldGeneration, Log, All);

@@ -1,3 +1,3 @@
 #include "Log.h"
 
-DEFINE_LOG_CATEGORY(LogExample);
+DEFINE_LOG_CATEGORY(LogWorldGeneration);
