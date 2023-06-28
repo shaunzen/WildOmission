@@ -59,11 +59,11 @@ void ASaveHandler::LoadWorld()
 		return;
 	}
 
-	if (SaveFile->CreationInformation.LevelHasGenerated == false)
+	if (WorldGenerator && SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		GameSaveLoadController->SetLoadingSubtitle(FString("Generating level."));
 		WorldGenerator->GenerateLevel(SaveFile);
-		
+
 		UpdateSaveFile(SaveFile);
 		return;
 	}
