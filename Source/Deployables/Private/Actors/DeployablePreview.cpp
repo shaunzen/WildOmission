@@ -2,7 +2,7 @@
 
 
 #include "DeployablePreview.h"
-#include "Deployable.h"
+#include "Deployables/Deployable.h"
 
 static UMaterialInstance* PreviewMaterial = nullptr;
 

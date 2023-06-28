@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Items/EquipableItem.h"
-#include "WildOmission/Deployables/Deployable.h"
+#include "Deployables/Deployable.h"
 #include "DeployableItem.generated.h"
 
 class ADeployablePreview;
 
 UCLASS()
-class WILDOMISSION_API ADeployableItem : public AEquipableItem
+class DEPLOYABLES_API ADeployableItem : public AEquipableItem
 {
 	GENERATED_BODY()
 	

@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class WILDOMISSION_API ADoor : public ADeployable, public IInteractable
+class DEPLOYABLES_API ADoor : public ADeployable, public IInteractable
 {
 	GENERATED_BODY()
 	

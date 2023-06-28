@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "TemporaryItemContainer.h"
+#include "Deployables/TemporaryItemContainer.h"
 #include "Components/ActorDespawnComponent.h"
 
 ATemporaryItemContainer::ATemporaryItemContainer()

@@ -1,11 +1,10 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "DeployableItem.h"
-#include "Engine/StaticMeshActor.h"
+#include "Items/DeployableItem.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "Components/PlayerInventoryComponent.h"
-#include "WildOmission/Deployables/DeployablePreview.h"
+#include "Actors/DeployablePreview.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"

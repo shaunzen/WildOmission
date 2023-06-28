@@ -1,8 +1,8 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "BuildAnchorComponent.h"
-#include "Deployable.h"
+#include "Components/BuildAnchorComponent.h"
+#include "Deployables/Deployable.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties

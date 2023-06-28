@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "LootCrateBase.h"
+#include "Deployables/LootCrateBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/InventoryComponent.h"
 

@@ -9,7 +9,7 @@
 class UActorDespawnComponent;
 
 UCLASS()
-class WILDOMISSION_API ATemporaryItemContainer : public AItemContainerBase
+class DEPLOYABLES_API ATemporaryItemContainer : public AItemContainerBase
 {
 	GENERATED_BODY()
 public:

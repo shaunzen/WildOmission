@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "DeployableThatSpins.h"
+#include "Deployables/DeployableThatSpins.h"
 
 void ADeployableThatSpins::Tick(float DeltaTime)
 {

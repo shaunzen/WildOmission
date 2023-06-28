@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/BuildAnchorComponent.h"
 #include "Interfaces/SavableObject.h"
 #include "Interfaces/RequiredForLoad.h"
 #include "Interfaces/DurabilityInterface.h"
-#include "WildOmission/Core/Interfaces/DamagedByWind.h"
-#include "BuildAnchorComponent.h"
+//#include "WildOmission/Core/Interfaces/DamagedByWind.h"
 #include "Deployable.generated.h"
 
 UCLASS()
-class WILDOMISSION_API ADeployable : public AActor, public IDurabilityInterface, public IDamagedByWind, public ISavableObject, public IRequiredForLoad
+class DEPLOYABLES_API ADeployable : public AActor, public IDurabilityInterface, public ISavableObject, public IRequiredForLoad //public IDamagedByWind
 {
 	GENERATED_BODY()
 	
@@ -24,7 +24,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void ApplyWindDamage(AActor* WindCauser, float DamageMultiplier = 1.0f) override;
+	//virtual void ApplyWindDamage(AActor* WindCauser, float DamageMultiplier = 1.0f) override;
 
 	virtual float TakeDamage(float DamageAmount, const struct FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 

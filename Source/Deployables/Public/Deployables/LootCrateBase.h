@@ -8,7 +8,7 @@
 #include "LootCrateBase.generated.h"
 
 USTRUCT(BlueprintType)
-struct FLootCrateItem
+struct DEPLOYABLES_API FLootCrateItem
 {
 	GENERATED_BODY()
 
@@ -20,7 +20,7 @@ struct FLootCrateItem
 };
 
 UCLASS()
-class WILDOMISSION_API ALootCrateBase : public AItemContainerBase
+class DEPLOYABLES_API ALootCrateBase : public AItemContainerBase
 {
 	GENERATED_BODY()
 public:

@@ -13,7 +13,7 @@
 #include "Components/EquipComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "Components/PlayerInventoryComponent.h"
-#include "WildOmission/Deployables/ItemContainerBase.h"
+#include "Deployables/ItemContainerBase.h"
 #include "WildOmission/Components/CraftingComponent.h"
 #include "Components/InteractionComponent.h"
 #include "Components/VitalsComponent.h"

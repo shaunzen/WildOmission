@@ -1,11 +1,11 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "FurnaceWidget.h"
+#include "UI/FurnaceWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/InventoryComponent.h"
-#include "WildOmission/Deployables/Furnace.h"
+#include "Deployables/Furnace.h"
 
 void UFurnaceWidget::NativeConstruct()
 {

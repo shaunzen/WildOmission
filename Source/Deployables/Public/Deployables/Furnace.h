@@ -10,7 +10,7 @@ class UPointLightComponent;
 class UAudioComponent;
 
 UCLASS()
-class WILDOMISSION_API AFurnace : public AItemContainerBase
+class DEPLOYABLES_API AFurnace : public AItemContainerBase
 {
 	GENERATED_BODY()
 public:

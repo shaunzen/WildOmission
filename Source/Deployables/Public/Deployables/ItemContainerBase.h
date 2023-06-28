@@ -11,7 +11,7 @@
 class UInventoryComponent;
 
 UCLASS()
-class WILDOMISSION_API AItemContainerBase : public ADeployable, public IInteractable
+class DEPLOYABLES_API AItemContainerBase : public ADeployable, public IInteractable
 {
 	GENERATED_BODY()
 

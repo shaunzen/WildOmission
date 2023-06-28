@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Furnace.h"
+#include "Deployables/Furnace.h"
 #include "Components/InventoryComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Components/AudioComponent.h"

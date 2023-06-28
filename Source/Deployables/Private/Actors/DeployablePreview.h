@@ -9,7 +9,7 @@
 class ADeployable;
 
 UCLASS()
-class WILDOMISSION_API ADeployablePreview : public AStaticMeshActor
+class DEPLOYABLES_API ADeployablePreview : public AStaticMeshActor
 {
 	GENERATED_BODY()
 public:

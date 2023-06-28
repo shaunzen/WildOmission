@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class WILDOMISSION_API ADeployableThatSpins : public ADeployable
+class DEPLOYABLES_API ADeployableThatSpins : public ADeployable
 {
 	GENERATED_BODY()
 

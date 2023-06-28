@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "ItemContainerBase.h"
+#include "Deployables/ItemContainerBase.h"
 #include "Components/InventoryComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "UObject/ConstructorHelpers.h"

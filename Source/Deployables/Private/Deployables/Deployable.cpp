@@ -1,8 +1,8 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Deployable.h"
-#include "BuildAnchorComponent.h"
+#include "Deployables/Deployable.h"
+#include "Components/BuildAnchorComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
@@ -59,12 +59,12 @@ void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(ADeployable, CurrentDurability);
 }
 
-void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
-{
-	float DamageToApply = BaseWindDamage * DamageMultiplier * GetWorld()->GetDeltaSeconds();
-	FRadialDamageEvent DamageEvent;
-	this->TakeDamage(DamageToApply, DamageEvent, nullptr, WindCauser);
-}
+//void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
+//{
+//	float DamageToApply = BaseWindDamage * DamageMultiplier * GetWorld()->GetDeltaSeconds();
+//	FRadialDamageEvent DamageEvent;
+//	this->TakeDamage(DamageToApply, DamageEvent, nullptr, WindCauser);
+//}
 
 float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {

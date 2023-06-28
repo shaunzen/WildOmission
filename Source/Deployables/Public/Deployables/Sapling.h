@@ -9,7 +9,7 @@
 class AHarvestableResource;
 
 UCLASS()
-class WILDOMISSION_API ASapling : public ADeployable
+class DEPLOYABLES_API ASapling : public ADeployable
 {
 	GENERATED_BODY()
 public:

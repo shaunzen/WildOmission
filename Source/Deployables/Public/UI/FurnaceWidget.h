@@ -10,7 +10,7 @@ class UButton;
 class UTextBlock;
 
 UCLASS()
-class WILDOMISSION_API UFurnaceWidget : public UInventoryWidget
+class DEPLOYABLES_API UFurnaceWidget : public UInventoryWidget
 {
 	GENERATED_BODY()
 public:

@@ -21,7 +21,7 @@ enum EBuildAnchorType
 class ADeployable;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UBuildAnchorComponent : public UStaticMeshComponent, public ISavableObject
+class DEPLOYABLES_API UBuildAnchorComponent : public UStaticMeshComponent, public ISavableObject
 {
 	GENERATED_BODY()
 
