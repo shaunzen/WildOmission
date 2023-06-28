@@ -404,6 +404,16 @@ void AWildOmissionCharacter::HandleDeath()
 	Destroy();
 }
 
+void AWildOmissionCharacter::InvokeOpenContainer(AItemContainerBase* Container)
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	Client_OpenContainer(Container);
+}
+
 void AWildOmissionCharacter::HandleUnderwater()
 {
 	FHitResult HitResult;

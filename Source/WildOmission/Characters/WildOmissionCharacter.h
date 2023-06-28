@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Interfaces/ContainerOpener.h"
 #include "WildOmissionCharacter.generated.h"
 
 class UInputMappingContext;
@@ -17,7 +18,7 @@ class AItemContainerBase;
 class USpecialEffectsHandlerComponent;
 
 UCLASS()
-class WILDOMISSION_API AWildOmissionCharacter : public ACharacter
+class WILDOMISSION_API AWildOmissionCharacter : public ACharacter, public IContainerOpener
 {
 	GENERATED_BODY()
 
@@ -38,10 +39,9 @@ public:
 	void SetupFieldOfView();
 
 	void HandleDeath();
-
-	UFUNCTION(Client, Reliable)
-	void Client_OpenContainer(AItemContainerBase* Container);
 	
+	virtual void InvokeOpenContainer(AItemContainerBase* Container) override;
+
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
 
@@ -240,6 +240,9 @@ private:
 	void SetupPlayerHUD();
 
 	void SetupWeatherEffectHandler();
+
+	UFUNCTION(Client, Reliable)
+	void Client_OpenContainer(AItemContainerBase* Container);
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void Client_UpdateReplicatedControlRotation(const FRotator& NewControlRotation);

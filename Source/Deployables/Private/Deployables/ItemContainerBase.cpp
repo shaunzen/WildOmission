@@ -3,7 +3,7 @@
 
 #include "Deployables/ItemContainerBase.h"
 #include "Components/InventoryComponent.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
+#include "Interfaces/ContainerOpener.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -38,15 +38,15 @@ void AItemContainerBase::Interact(AActor* Interactor)
 		return;
 	}
 
-	AWildOmissionCharacter* InteractingCharacter = Cast<AWildOmissionCharacter>(Interactor);
-	if (InteractingCharacter == nullptr)
+	IContainerOpener* InteractingContainerOpener = Cast<IContainerOpener>(Interactor);
+	if (InteractingContainerOpener == nullptr)
 	{
 		return;
 	}
 
 	SetOwner(Interactor);
 
-	InteractingCharacter->Client_OpenContainer(this);
+	InteractingContainerOpener->InvokeOpenContainer(this);
 	bOccupied = true;
 }
 

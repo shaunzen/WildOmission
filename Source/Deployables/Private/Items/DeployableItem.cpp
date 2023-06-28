@@ -2,7 +2,6 @@
 
 
 #include "Items/DeployableItem.h"
-#include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Actors/DeployablePreview.h"
 #include "Kismet/GameplayStatics.h"
