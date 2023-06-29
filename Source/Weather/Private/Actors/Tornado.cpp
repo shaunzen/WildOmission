@@ -1,12 +1,12 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Tornado.h"
-#include "Storm.h"
-#include "WindSuckerComponent.h"
-#include "WildOmission/Core/Interfaces/DamagedByWind.h"
-#include "WildOmission/Core/Interfaces/InteractsWithTornado.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
+#include "Actors/Tornado.h"
+#include "Actors/Storm.h"
+#include "Components/WindSuckerComponent.h"
+#include "Interfaces/DamagedByWind.h"
+#include "Interfaces/InteractsWithTornado.h"
+#include "Log.h"
 
 // Sets default values
 ATornado::ATornado()
@@ -68,15 +68,15 @@ void ATornado::BeginPlay()
 	}
 }
 
-void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnAtPlayerLocation)
+void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnAtWorldOrigin)
 {
 	OwnerStorm = InOwnerStorm;
 
 	GetStormRadius();
 	SetActorLocation(GetRandomLocationInStorm());
-	if (SpawnAtPlayerLocation)
+	if (SpawnAtWorldOrigin)
 	{
-		FVector NewSpawnLocation = UWildOmissionStatics::GetHostLocationInWorld(GetWorld());
+		FVector NewSpawnLocation = FVector::ZeroVector;
 		NewSpawnLocation.Z = 0.0f;
 		SetActorLocation(NewSpawnLocation);
 	}
@@ -157,7 +157,7 @@ void ATornado::HandleMovement()
 	
 	if (DistanceFromTarget < 100.0f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Getting new tornado target location."));
+		UE_LOG(LogWeather, Warning, TEXT("Getting new tornado target location."));
 		TargetLocation = GetRandomLocationInStorm();
 	}
 

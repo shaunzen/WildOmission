@@ -37,7 +37,7 @@ struct FTornadoSaveInformation
 };
 
 UCLASS()
-class WILDOMISSION_API ATornado : public AActor
+class WEATHER_API ATornado : public AActor
 {
 	GENERATED_BODY()
 	
@@ -47,7 +47,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void HandleSpawn(AStorm* OwnerStorm, bool SpawnAtPlayerLocation = false);
+	void HandleSpawn(AStorm* OwnerStorm, bool SpawnAtWorldOrigin = false);
 
 	FTornadoSaveInformation GetSaveInformation();
 

@@ -1,13 +1,12 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Storm.h"
-#include "WeatherManager.h"
-#include "Lightning.h"
+#include "Actors/Storm.h"
+#include "Actors/WeatherHandler.h"
+#include "Actors/Lightning.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -45,7 +44,7 @@ AStorm::AStorm()
 	SpawnedTornado = nullptr;
 	HasSpawnedTornado = false;
 
-	WeatherManager = nullptr;
+	WeatherHandler = nullptr;
 	WasSpawnedFromCommand = false;
 	LocalPlayerUnder = false;
 	NextLightningStrikeTime = 0.0f;
@@ -82,7 +81,7 @@ void AStorm::BeginPlay()
 		return;
 	}
 
-	WeatherManager = Cast<AWeatherManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherManager::StaticClass()));
+	WeatherHandler = Cast<AWeatherHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherHandler::StaticClass()));
 }
 
 void AStorm::HandleSpawn(bool SpawnedFromCommand)
@@ -157,7 +156,7 @@ void AStorm::HandleMovement()
 
 	if (TraveledDistance >= TravelDistance)
 	{
-		WeatherManager->ClearStorm();
+		WeatherHandler->ClearStorm();
 	}
 }
 
@@ -221,8 +220,8 @@ void AStorm::SpawnTornado(bool bFromSave)
 
 void AStorm::GetSpawnLocation()
 {
-	FVector2D WorldSize = FVector2D::ZeroVector;
-	UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
+	FVector2D WorldSize = FVector2D(2000.0f, 2000.0f);
+	// TODO get world size from world generation handler
 	WorldSize = WorldSize * 100.0f;
 
 	int32 WorldSide = FMath::RandRange(0, 3);
@@ -270,12 +269,12 @@ void AStorm::Serialize(FArchive& Ar)
 
 void AStorm::OnLoadComplete_Implementation()
 {
-	if (WeatherManager == nullptr)
+	if (WeatherHandler == nullptr)
 	{
 		return;
 	}
 	
-	WeatherManager->SetCurrentStorm(this);
+	WeatherHandler->SetCurrentStorm(this);
 
 	CalculateTargetLocation();
 	CalculateTravelDistance();

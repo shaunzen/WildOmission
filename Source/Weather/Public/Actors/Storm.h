@@ -8,12 +8,12 @@
 #include "Tornado.h"
 #include "Storm.generated.h"
 
-class AWeatherManager;
+class AWeatherHandler;
 class ALightning;
 class UNiagaraComponent;
 
 UCLASS()
-class WILDOMISSION_API AStorm : public AActor, public ISavableObject
+class WEATHER_API AStorm : public AActor, public ISavableObject
 {
 	GENERATED_BODY()
 	
@@ -84,7 +84,7 @@ private:
 	ATornado* SpawnedTornado;
 
 	UPROPERTY()
-	AWeatherManager* WeatherManager;
+	AWeatherHandler* WeatherHandler;
 
 	bool WasSpawnedFromCommand;
 

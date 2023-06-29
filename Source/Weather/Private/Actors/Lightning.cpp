@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Lightning.h"
+#include "Actors/Lightning.h"
 #include "Components/PointLightComponent.h"
 #include "Kismet/GameplayStatics.h"
 

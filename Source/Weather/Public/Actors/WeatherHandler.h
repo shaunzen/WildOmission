@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WeatherManager.generated.h"
+#include "WeatherHandler.generated.h"
 
 class AStorm;
 
@@ -28,13 +28,13 @@ struct FWindParameters
 };
 
 UCLASS()
-class WILDOMISSION_API AWeatherManager : public AActor
+class WEATHER_API AWeatherHandler : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AWeatherManager();
+	AWeatherHandler();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

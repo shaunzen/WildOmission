@@ -8,7 +8,7 @@
 
 class ASaveHandler;
 class AWorldGenerationHandler;
-class AWeatherManager;
+class AWeatherHandler;
 class AWildOmissionCharacter;
 class AWildOmissionPlayerController;
 
@@ -43,7 +43,7 @@ public:
 
 	ASaveHandler* GetSaveHandler() const;
 	AWorldGenerationHandler* GetWorldGenerationHandler() const;
-	AWeatherManager* GetWeatherManager() const;
+	AWeatherHandler* GetWeatherHandler() const;
 
 	UFUNCTION(Exec)
 	void LogPlayerInventoryComponents();
@@ -65,6 +65,6 @@ private:
 	// TimeManager
 
 	UPROPERTY()
-	AWeatherManager* WeatherManager;
+	AWeatherHandler* WeatherHandler;
 	
 };

@@ -8,7 +8,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UWindSuckerComponent : public USceneComponent
+class UWindSuckerComponent : public USceneComponent
 {
 	GENERATED_BODY()
 

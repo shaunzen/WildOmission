@@ -9,7 +9,7 @@
 class UPointLightComponent;
 
 UCLASS()
-class WILDOMISSION_API ALightning : public AActor
+class WEATHER_API ALightning : public AActor
 {
 	GENERATED_BODY()
 	

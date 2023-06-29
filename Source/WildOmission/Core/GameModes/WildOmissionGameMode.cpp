@@ -6,7 +6,7 @@
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "Actors/WorldGenerationHandler.h"
 #include "Interfaces/RequiredForLoad.h"
-#include "WildOmission/Weather/WeatherManager.h"
+#include "Actors/WeatherHandler.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
 #include "WildOmission/Core/WildOmissionGameState.h"
@@ -15,7 +15,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
-#include "WildOmission/Weather/Storm.h"
+#include "Actors/Storm.h"
 
 void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
@@ -28,7 +28,7 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	WorldGenerationHandler = GetWorld()->SpawnActor<AWorldGenerationHandler>();
 	SaveHandler->Setup(Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()), WorldGenerationHandler);
 
-	WeatherManager = GetWorld()->SpawnActor<AWeatherManager>();
+	WeatherHandler= GetWorld()->SpawnActor<AWeatherHandler>();
 
 	if (SaveHandler == nullptr)
 	{
@@ -191,12 +191,12 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 
 void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 {
-	if (WeatherManager == nullptr)
+	if (WeatherHandler == nullptr)
 	{
 		return;
 	}
 
-	AStorm* SpawnedStorm = WeatherManager->SpawnStorm(true);
+	AStorm* SpawnedStorm = WeatherHandler->SpawnStorm(true);
 	
 	if (WeatherToSet == FString("Rain"))
 	{
@@ -216,7 +216,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 	}
 	else if (WeatherToSet == FString("Clear"))
 	{
-		WeatherManager->ClearStorm();
+		WeatherHandler->ClearStorm();
 	}
 }
 
@@ -225,9 +225,14 @@ ASaveHandler* AWildOmissionGameMode::GetSaveHandler() const
 	return SaveHandler;
 }
 
-AWeatherManager* AWildOmissionGameMode::GetWeatherManager() const
+AWorldGenerationHandler* AWildOmissionGameMode::GetWorldGenerationHandler() const
 {
-	return WeatherManager;
+	return WorldGenerationHandler;
+}
+
+AWeatherHandler* AWildOmissionGameMode::GetWeatherHandler() const
+{
+	return WeatherHandler;
 }
 
 void AWildOmissionGameMode::LogPlayerInventoryComponents()

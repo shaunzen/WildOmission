@@ -1,18 +1,17 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "WeatherManager.h"
-#include "Storm.h"
+#include "Actors/WeatherHandler.h"
+#include "Actors/Storm.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
 
 static UMaterialParameterCollection* MPC_WindCollection = nullptr;
 
 // Sets default values
-AWeatherManager::AWeatherManager()
+AWeatherHandler::AWeatherHandler()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -38,7 +37,7 @@ AWeatherManager::AWeatherManager()
 }
 
 // Called when the game starts or when spawned
-void AWeatherManager::BeginPlay()
+void AWeatherHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -49,7 +48,7 @@ void AWeatherManager::BeginPlay()
 }
 
 // Called every frame
-void AWeatherManager::Tick(float DeltaTime)
+void AWeatherHandler::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
@@ -69,16 +68,16 @@ void AWeatherManager::Tick(float DeltaTime)
 	}
 }
 
-AStorm* AWeatherManager::SpawnStorm(bool FromCommand)
+AStorm* AWeatherHandler::SpawnStorm(bool FromCommand)
 {
 	if (CurrentStorm)
 	{
 		return CurrentStorm;
 	}
 
-	FVector2D WorldSize;
+	FVector2D WorldSize = FVector2D(2000.0f, 2000.0f);
 
-	UWildOmissionStatics::GetWorldSize(GetWorld(), WorldSize);
+	// TODO get world size from world generation handler
 
 	CurrentStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
 	CurrentStorm->HandleSpawn(FromCommand);
@@ -86,7 +85,7 @@ AStorm* AWeatherManager::SpawnStorm(bool FromCommand)
 	return CurrentStorm;
 }
 
-void AWeatherManager::ClearStorm()
+void AWeatherHandler::ClearStorm()
 {
 	if (CurrentStorm == nullptr)
 	{
@@ -97,12 +96,12 @@ void AWeatherManager::ClearStorm()
 	CurrentStorm = nullptr;
 }
 
-bool AWeatherManager::CanSpawnStorm() const
+bool AWeatherHandler::CanSpawnStorm() const
 {
 	return NextStormSpawnTime < KINDA_SMALL_NUMBER && CurrentStorm == nullptr;
 }
 
-void AWeatherManager::CalculateWindParameters()
+void AWeatherHandler::CalculateWindParameters()
 {
 	FWindParameters NewParams;
 
@@ -141,7 +140,7 @@ void AWeatherManager::CalculateWindParameters()
 	Multicast_UpdateWindParameters(NewParams);
 }
 
-void AWeatherManager::Multicast_UpdateWindParameters_Implementation(const FWindParameters& NewParameters)
+void AWeatherHandler::Multicast_UpdateWindParameters_Implementation(const FWindParameters& NewParameters)
 {
 	WindParameters = NewParameters;
 
@@ -151,12 +150,12 @@ void AWeatherManager::Multicast_UpdateWindParameters_Implementation(const FWindP
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(WindParameters.TornadoLocation.X, WindParameters.TornadoLocation.Y, 0.0f, 1.0f));
 }
 
-AStorm* AWeatherManager::GetCurrentStorm() const
+AStorm* AWeatherHandler::GetCurrentStorm() const
 {
 	return CurrentStorm;
 }
 
-void AWeatherManager::SetCurrentStorm(AStorm* NewCurrentStorm)
+void AWeatherHandler::SetCurrentStorm(AStorm* NewCurrentStorm)
 {
 	if (CurrentStorm)
 	{
@@ -167,12 +166,12 @@ void AWeatherManager::SetCurrentStorm(AStorm* NewCurrentStorm)
 	CurrentStorm = NewCurrentStorm;
 }
 
-float AWeatherManager::GetNextStormSpawnTime() const
+float AWeatherHandler::GetNextStormSpawnTime() const
 {
 	return NextStormSpawnTime;
 }
 
-void AWeatherManager::SetNextStormSpawnTime(float NewSpawnTime)
+void AWeatherHandler::SetNextStormSpawnTime(float NewSpawnTime)
 {
 	NextStormSpawnTime = FMath::Clamp(NewSpawnTime, 0.0f, MaxStormSpawnTime);
 }
