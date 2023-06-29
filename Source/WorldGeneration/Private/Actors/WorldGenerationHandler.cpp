@@ -120,7 +120,7 @@ void AWorldGenerationHandler::GenerateTrees(const FWorldGenerationSettings& Gene
 
 	int32 WorldAreaMeters = GenerationSettings.WorldSizeMetersX * GenerationSettings.WorldSizeMetersY;
 
-	for (const FHarvestableResourceData& Tree : BiomeData->Trees)
+	for (const FSpawnData& Tree : BiomeData->Trees)
 	{
 		int32 AmountOfTreeToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Tree.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Trees.Num());
 		for (int32 i = 0; i < AmountOfTreeToSpawn; i++)
@@ -134,7 +134,7 @@ void AWorldGenerationHandler::GenerateTrees(const FWorldGenerationSettings& Gene
 				continue;
 			}
 
-			AHarvestableResource* SpawnedTree = GetWorld()->SpawnActor<AHarvestableResource>(Tree.BlueprintClass, LocationToSpawn, RotationToSpawn);
+			AActor* SpawnedTree = GetWorld()->SpawnActor<AActor>(Tree.BlueprintClass, LocationToSpawn, RotationToSpawn);
 		}
 	}
 }
@@ -150,7 +150,7 @@ void AWorldGenerationHandler::GenerateNodes(const FWorldGenerationSettings& Gene
 
 	int32 WorldAreaMeters = GenerationSettings.WorldSizeMetersX * GenerationSettings.WorldSizeMetersY;
 
-	for (const FHarvestableResourceData& Node : BiomeData->Nodes)
+	for (const FSpawnData& Node : BiomeData->Nodes)
 	{
 		int32 AmountOfNodeToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Node.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Nodes.Num());
 		for (int32 i = 0; i < AmountOfNodeToSpawn; i++)
@@ -164,7 +164,7 @@ void AWorldGenerationHandler::GenerateNodes(const FWorldGenerationSettings& Gene
 				continue;
 			}
 
-			AHarvestableResource* SpawnedNode = GetWorld()->SpawnActor<AHarvestableResource>(Node.BlueprintClass, LocationToSpawn, RotationToSpawn);
+			AActor* SpawnedNode = GetWorld()->SpawnActor<AActor>(Node.BlueprintClass, LocationToSpawn, RotationToSpawn);
 		}
 	}
 }
@@ -180,7 +180,7 @@ void AWorldGenerationHandler::GenerateCollectables(const FWorldGenerationSetting
 
 	int32 WorldAreaMeters = GenerationSettings.WorldSizeMetersX * GenerationSettings.WorldSizeMetersY;
 
-	for (const FCollectableResourceData& Collectable : BiomeData->Collectables)
+	for (const FSpawnData& Collectable : BiomeData->Collectables)
 	{
 		int32 AmountOfCollectableToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Collectable.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Collectables.Num());
 		for (int32 i = 0; i < AmountOfCollectableToSpawn; i++)
@@ -193,7 +193,7 @@ void AWorldGenerationHandler::GenerateCollectables(const FWorldGenerationSetting
 				continue;
 			}
 
-			ACollectableResource* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableResource>(Collectable.BlueprintClass, LocationToSpawn, RotationToSpawn);
+			AActor* SpawnedCollectable = GetWorld()->SpawnActor<AActor>(Collectable.BlueprintClass, LocationToSpawn, RotationToSpawn);
 		}
 	}
 }
@@ -209,7 +209,7 @@ void AWorldGenerationHandler::GenerateLootables(const FWorldGenerationSettings& 
 
 	int32 WorldAreaMeters = GenerationSettings.WorldSizeMetersX * GenerationSettings.WorldSizeMetersY;
 
-	for (const FLootableData& Lootable : BiomeData->Lootables)
+	for (const FSpawnData& Lootable : BiomeData->Lootables)
 	{
 		int32 AmountOfLootableToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Lootable.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Lootables.Num());
 		for (int32 i = 0; i < AmountOfLootableToSpawn; i++)

@@ -6,7 +6,6 @@
 #include "UObject/NoExportTypes.h"
 #include "WorldGenerationSettings.generated.h"
 
-
 USTRUCT()
 struct WORLDGENERATION_API FWorldGenerationSettings
 {

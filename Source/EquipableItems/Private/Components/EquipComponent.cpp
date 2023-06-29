@@ -355,8 +355,6 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 	}
 }
 
-
-
 void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlot& NewSlot)
 {
 	if (OwnerPawn == nullptr)
