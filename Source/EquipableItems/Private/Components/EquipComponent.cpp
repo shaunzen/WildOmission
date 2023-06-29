@@ -359,7 +359,6 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 
 void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlot& NewSlot)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Refreshing equip."));
 	if (OwnerPawn == nullptr)
 	{
 		Disarm();

@@ -2,6 +2,7 @@
 
 
 #include "Structs/InventoryContents.h"
+#include "Log.h"
 
 int32 FInventoryContents::GetItemQuantity(const FName& ItemName)
 {
@@ -40,7 +41,7 @@ void FInventoryContents::RemoveItem(const FName& ItemName, const int32& Quantity
 {
 	if (!HasItem(ItemName))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot remove %s, item does not exist in inventory."), *ItemName.ToString());
+		UE_LOG(LogInventory, Warning, TEXT("Cannot remove %s, item does not exist in inventory."), *ItemName.ToString());
 		return;
 	}
 

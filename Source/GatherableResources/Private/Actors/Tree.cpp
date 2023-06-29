@@ -23,17 +23,17 @@ void ATree::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ATree, bIsStump);
 }
 
-//void ATree::OnContactWithTornado()
-//{
-//	bIsStump = true;
-//	FlushNetDormancy();
-//	UpdateMeshState();
-//}
+void ATree::OnContactWithTornado()
+{
+	bIsStump = true;
+	FlushNetDormancy();
+	UpdateMeshState();
+}
 
-//void ATree::OnLoadComplete_Implementation()
-//{
-//	UpdateMeshState();
-//}
+void ATree::OnLoadComplete_Implementation()
+{
+	UpdateMeshState();
+}
 
 void ATree::UpdateMeshState()
 {

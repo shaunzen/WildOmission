@@ -6,12 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "Structs/InventoryItem.h"
 #include "Enums/ToolType.h"
-//#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
-//#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
+#include "Interfaces/SavableObject.h"
+#include "Interfaces/RequiredForLoad.h"
 #include "HarvestableResource.generated.h"
 
 UCLASS()
-class GATHERABLERESOURCES_API AHarvestableResource : public AActor//, public ISavableObjectInterface, public IRequiredForLoad
+class GATHERABLERESOURCES_API AHarvestableResource : public AActor, public ISavableObject, public IRequiredForLoad
 {
 	GENERATED_BODY()
 	

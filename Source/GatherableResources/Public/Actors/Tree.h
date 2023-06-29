@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "HarvestableResource.h"
-//#include "WildOmission/Core/Interfaces/InteractsWithTornado.h"
+#include "Interfaces/InteractsWithTornado.h"
 #include "Tree.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GATHERABLERESOURCES_API ATree : public AHarvestableResource//, public IInteractsWithTornado
+class GATHERABLERESOURCES_API ATree : public AHarvestableResource, public IInteractsWithTornado
 {
 	GENERATED_BODY()
 public:
@@ -19,14 +19,14 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	//virtual void OnContactWithTornado() override;
+	virtual void OnContactWithTornado() override;
 
 private:
 	UPROPERTY(Replicated, ReplicatedUsing = UpdateMeshState, SaveGame)
 	bool bIsStump;
 
-	/*UFUNCTION()
-	virtual void OnLoadComplete_Implementation() override;*/
+	UFUNCTION()
+	virtual void OnLoadComplete_Implementation() override;
 
 	UPROPERTY()
 	UStaticMesh* StumpMesh;

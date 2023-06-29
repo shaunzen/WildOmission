@@ -5,12 +5,13 @@
 #include "CoreMinimal.h"
 #include "Structs/InventoryItem.h"
 #include "Enums/ToolType.h"
+#include "Interfaces/SavableObject.h"
 #include "Components/ActorComponent.h"
 #include "HarvestableComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class GATHERABLERESOURCES_API UHarvestableComponent : public UActorComponent
+class GATHERABLERESOURCES_API UHarvestableComponent : public UActorComponent, public ISavableObject
 {
 	GENERATED_BODY()
 
@@ -38,7 +39,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> RequiredToolType;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, SaveGame)
 	int32 Durability;
 
 	UPROPERTY(EditDefaultsOnly)

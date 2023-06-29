@@ -3,6 +3,7 @@
 
 #include "DeployablePreview.h"
 #include "Deployables/Deployable.h"
+#include "Log.h"
 
 static UMaterialInstance* PreviewMaterial = nullptr;
 
@@ -33,7 +34,7 @@ void ADeployablePreview::Setup(ADeployable* DeployableToPreview)
 {
 	if (DeployableToPreview == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot create preview from a null deployable."));
+		UE_LOG(LogDeployables, Warning, TEXT("Cannot create preview from a null deployable."));
 		return;
 	}
 

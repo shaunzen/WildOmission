@@ -33,7 +33,7 @@ protected:
 	virtual void OnTurnedOff();
 
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Furnace")
 	float SmeltTimeInSeconds;
 
 	UPROPERTY(VisibleAnywhere)

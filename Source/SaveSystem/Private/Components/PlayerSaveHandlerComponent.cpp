@@ -6,7 +6,7 @@
 #include "Interfaces/SavablePlayer.h"
 #include "Actors/SaveHandler.h"
 #include "Structs/PlayerSave.h"
-#include "TimerManager.h"
+#include "Log.h"
 
 // Sets default values for this component's properties
 UPlayerSaveHandlerComponent::UPlayerSaveHandlerComponent()
@@ -48,7 +48,7 @@ void UPlayerSaveHandlerComponent::Load(APlayerController* PlayerController)
 	ISavablePlayer* SavablePlayer = Cast<ISavablePlayer>(PlayerController);
 	if (SaveHandlerOwner == nullptr || SavablePlayer == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Couldn't load the player, SaveHandler or PlayerController was nullptr."));
+		UE_LOG(LogSaveSystem, Error, TEXT("Couldn't load the player, SaveHandler or PlayerController was nullptr."));
 		return;
 	}
 

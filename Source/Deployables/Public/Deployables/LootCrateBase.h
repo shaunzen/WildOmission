@@ -31,7 +31,7 @@ protected:
 	virtual void OnContainerClosed() override;
 
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Loot Crate")
 	TArray<FLootCrateItem> ItemsToDrop;
 	
 	UFUNCTION()

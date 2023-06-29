@@ -9,7 +9,7 @@
 #include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
-
+#include "Log.h"
 
 // Sets default values
 AStorm::AStorm()
@@ -101,7 +101,7 @@ void AStorm::HandleSpawn(bool SpawnedFromCommand)
 	MovementSpeed = FMath::RandRange(300.0f, 1000.0f);
 	SeverityMultiplier = (FMath::RandRange(0.0f, 100.0f) / 1000.0f);
 
-	UE_LOG(LogTemp, Display, TEXT("Spawned Storm with MovementSpeed: %f, and SeverityMultiplier: %f"), MovementSpeed, SeverityMultiplier);
+	UE_LOG(LogWeather, Display, TEXT("Spawned Storm with MovementSpeed: %f, and SeverityMultiplier: %f"), MovementSpeed, SeverityMultiplier);
 }
 
 // Called every frame

@@ -5,6 +5,7 @@
 #include "Interfaces/SavableObject.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "EngineUtils.h"
+#include "Log.h"
 
 // Sets default values for this component's properties
 UActorSaveHandlerComponent::UActorSaveHandlerComponent()
@@ -75,7 +76,7 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorData.Class, ActorData.Transform);
 		if (SpawnedActor == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to load actor from save file: %s"), *ActorData.Name.ToString());
+			UE_LOG(LogSaveSystem, Warning, TEXT("Failed to load actor from save file: %s"), *ActorData.Name.ToString());
 			return;
 		}
 

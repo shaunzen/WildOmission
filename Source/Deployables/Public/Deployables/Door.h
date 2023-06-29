@@ -33,10 +33,10 @@ private:
 	UPROPERTY(Replicated, SaveGame)
 	FRotator SpawnRotation;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	UPROPERTY(EditDefaultsOnly, Category = "Deployable Sound")
 	USoundBase* OpenSound;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	UPROPERTY(EditDefaultsOnly, Category = "Deployable Sound")
 	USoundBase* CloseSound;
 
 	float RotateValue;
