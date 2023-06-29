@@ -16,7 +16,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Items/BuildingHammerItem.h"
-#include "WildOmission/UI/Crafting/CraftingMenuWidget.h"
+#include "UI/CraftingMenuWidget.h"
 #include "WildOmission/UI/Chat/GameChatWidget.h"
 #include "WildOmission/UI/Notifications/NotificationPanelWidget.h"
 #include "Components/InteractionComponent.h"

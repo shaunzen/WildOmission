@@ -14,7 +14,7 @@
 #include "Components/InventoryManipulatorComponent.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Deployables/ItemContainerBase.h"
-#include "WildOmission/Components/CraftingComponent.h"
+#include "Components/CraftingComponent.h"
 #include "Components/InteractionComponent.h"
 #include "Components/VitalsComponent.h"
 #include "WildOmission/Components/NameTagComponent.h"

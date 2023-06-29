@@ -9,7 +9,7 @@
 class UTextBlock;
 
 UCLASS()
-class WILDOMISSION_API UIngredientRowWidget : public UUserWidget
+class UIngredientRowWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

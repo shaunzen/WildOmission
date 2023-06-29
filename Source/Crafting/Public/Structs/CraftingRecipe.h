@@ -10,7 +10,7 @@
 
 
 USTRUCT(BlueprintType)
-struct FCraftingRecipe : public FTableRowBase
+struct CRAFTING_API FCraftingRecipe : public FTableRowBase
 {
 	GENERATED_BODY()
 

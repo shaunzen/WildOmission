@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "CraftingComponent.h"
+#include "Components/CraftingComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -15,11 +15,14 @@ UCraftingComponent::UCraftingComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
-	
-	static ConstructorHelpers::FObjectFinder<UDataTable> RecipeDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_CraftingRecipes"));
-	if (RecipeDataTableBlueprint.Succeeded())
+
+	if (GetWorld())
 	{
-		RecipeDataTable = RecipeDataTableBlueprint.Object;
+		static ConstructorHelpers::FObjectFinder<UDataTable> RecipeDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_CraftingRecipes"));
+		if (RecipeDataTableBlueprint.Succeeded())
+		{
+			RecipeDataTable = RecipeDataTableBlueprint.Object;
+		}
 	}
 }
 

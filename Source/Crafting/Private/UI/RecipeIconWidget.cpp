@@ -4,7 +4,7 @@
 #include "RecipeIconWidget.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
-#include "CraftingMenuWidget.h"
+#include "UI/CraftingMenuWidget.h"
 #include "Structs/ItemData.h"
 #include "UIHelpers.h"
 

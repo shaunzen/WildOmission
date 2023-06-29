@@ -12,7 +12,7 @@ class UTextBlock;
 enum EItemCategory;
 
 UCLASS()
-class WILDOMISSION_API UCraftingRecipeCategoryButton : public UUserWidget
+class UCraftingRecipeCategoryButton : public UUserWidget
 {
 	GENERATED_BODY()
 

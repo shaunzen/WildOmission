@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "WildOmission/Core/Structs/CraftingRecipeEntry.h"
 #include "CraftingMenuWidget.generated.h"
 
 class UWrapBox;
@@ -22,7 +21,7 @@ struct FItemData;
 struct FCraftingRecipe;
 
 UCLASS()
-class WILDOMISSION_API UCraftingMenuWidget : public UUserWidget
+class CRAFTING_API UCraftingMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:

@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "WildOmission/Core/Structs/CraftingRecipe.h"
+#include "Structs/CraftingRecipe.h"
 #include "CraftingComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSION_API UCraftingComponent : public UActorComponent
+class CRAFTING_API UCraftingComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

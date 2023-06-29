@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/IUserObjectListEntry.h"
-#include "WildOmission/Core/Structs/CraftingRecipeEntry.h"
+#include "Structs/CraftingRecipeEntry.h"
 #include "RecipeIconWidget.generated.h"
 
 class UButton;
@@ -13,7 +13,7 @@ class UBorder;
 class UCraftingMenuWidget;
 
 UCLASS()
-class WILDOMISSION_API URecipeIconWidget : public UUserWidget, public IUserObjectListEntry
+class URecipeIconWidget : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 	

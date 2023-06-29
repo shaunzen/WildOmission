@@ -2,7 +2,7 @@
 
 
 #include "CraftingRecipeCategoryButton.h"
-#include "CraftingMenuWidget.h"
+#include "UI/CraftingMenuWidget.h"
 #include "Structs/ItemData.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"

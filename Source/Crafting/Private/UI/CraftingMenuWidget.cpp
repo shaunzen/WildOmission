@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "CraftingMenuWidget.h"
+#include "UI/CraftingMenuWidget.h"
 #include "Components/WrapBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
@@ -11,9 +11,8 @@
 #include "CraftingRecipeCategoryButton.h"
 #include "RecipeIconWidget.h"
 #include "IngredientRowWidget.h"
-#include "WildOmission/Components/CraftingComponent.h"
+#include "Components/CraftingComponent.h"
 #include "Components/InventoryComponent.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 UCraftingMenuWidget::UCraftingMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
