@@ -256,6 +256,11 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
 	EndSprint();
+
+	if (HasAuthority())
+	{
+		VitalsComponent->OnHealthDepleted.AddDynamic(this, &AWildOmissionCharacter::HandleDeath);
+	}
 }
 
 void AWildOmissionCharacter::Tick(float DeltaTime)

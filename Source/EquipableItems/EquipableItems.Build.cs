@@ -7,6 +7,6 @@ public class EquipableItems : ModuleRules
     public EquipableItems(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Inventory" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Niagara", "Vitals", "GatherableResources", "Durability", "SurfaceProperties" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Niagara", "Durability", "GatherableResources", "SurfaceProperties", "Vitals" });
     }
 }

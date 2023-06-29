@@ -6,7 +6,7 @@ public class Deployables : ModuleRules
 {
     public Deployables(ReadOnlyTargetRules Target) : base(Target)
     {
-        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "Inventory", "EquipableItems" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "GatherableResources", "Durability", "Despawner", "Interaction", "SaveSystem" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "EquipableItems", "Inventory", "SaveSystem" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Despawner", "Durability", "GatherableResources", "Interaction", "Weather" });
     }
 }

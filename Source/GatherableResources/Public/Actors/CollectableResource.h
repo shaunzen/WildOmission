@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
-//#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
-//#include "WildOmission/Core/Interfaces/RequiredForLoad.h"
+#include "Interfaces/SavableObject.h"
+#include "Interfaces/RequiredForLoad.h"
 #include "Structs/InventoryItem.h"
 #include "CollectableResource.generated.h"
 
 UCLASS()
-class GATHERABLERESOURCES_API ACollectableResource : public AActor, public IInteractable//, public ISavableObjectInterface, public IRequiredForLoad
+class GATHERABLERESOURCES_API ACollectableResource : public AActor, public IInteractable, public ISavableObject, public IRequiredForLoad
 {
 	GENERATED_BODY()
 	
