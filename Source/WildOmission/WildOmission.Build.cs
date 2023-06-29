@@ -8,7 +8,14 @@ public class WildOmission : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Niagara", "MetasoundEngine", "SaveSystem", "WorldGeneration", "SurfaceProperties", "Vitals", "Inventory", "GatherableResources", "EquipableItems", "Deployables", "Interaction", "Despawner", "Durability", "Helpers" });
+		PublicDependencyModuleNames.AddRange(new string[] {
+			"Core", "CoreUObject", "Engine", 
+			"InputCore", "EnhancedInput", "UMG", 
+			"Niagara", "MetasoundEngine", "SaveSystem",
+			"WorldGeneration", "SurfaceProperties", "Vitals",
+			"Inventory", "Crafting", "GatherableResources",
+			"EquipableItems", "Deployables", "Interaction",
+			"Despawner", "Durability", "Helpers" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "OnlineSubsystem", "OnlineSubsystemSteam" });
 	}
