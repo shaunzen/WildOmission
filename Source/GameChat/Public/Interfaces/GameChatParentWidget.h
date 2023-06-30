@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "ChatMessageSender.generated.h"
+#include "GameChatParentWidget.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UChatMessageSender : public UInterface
+class UGameChatParentWidget : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,10 +16,11 @@ class UChatMessageSender : public UInterface
 /**
  * 
  */
-class WILDOMISSION_API IChatMessageSender
+class GAMECHAT_API IGameChatParentWidget
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual void ToggleChatMenu() = 0;
 };

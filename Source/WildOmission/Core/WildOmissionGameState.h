@@ -4,24 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
-#include "WildOmission/Core/Structs/ChatMessage.h"
+#include "Interfaces/ChatMessageContainer.h"
 #include "WildOmissionGameState.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChatReplicatedSignature);
-
 UCLASS()
-class WILDOMISSION_API AWildOmissionGameState : public AGameStateBase
+class WILDOMISSION_API AWildOmissionGameState : public AGameStateBase, public IChatMessageContainer
 {
 	GENERATED_BODY()
 	
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void AddChatMessage(APlayerState* Sender, const FString& Message, bool bConnectionUpdate = false);
-	
-	FChatReplicatedSignature OnNewMessage;
-
-	void GetChatMessages(TArray<FChatMessage>& OutChatMessages);
+	// Begin IChatMessageContainer Implementation
+	virtual void AddChatMessage(APlayerState* Sender, const FString& Message, bool bConnectionUpdate = false) override;
+	virtual void GetChatMessages(TArray<FChatMessage>& OutChatMessages) override;
+	// End IChatMessageContainer Implementation
 
 private:
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChatMessages)

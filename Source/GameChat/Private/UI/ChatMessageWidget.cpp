@@ -2,7 +2,7 @@
 
 
 #include "ChatMessageWidget.h"
-#include "GameChatWidget.h"
+#include "UI/GameChatWidget.h"
 #include "Components/TextBlock.h"
 
 void UChatMessageWidget::Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeSent)

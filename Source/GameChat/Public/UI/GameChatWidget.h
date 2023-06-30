@@ -9,6 +9,9 @@
 class UEditableTextBox;
 class UButton;
 class UChatMessageWidget;
+class IGameChatParentWidget;
+class IChatMessageContainer;
+class IChatMessageSender;
 
 UCLASS()
 class GAMECHAT_API UGameChatWidget : public UUserWidget
@@ -20,8 +23,11 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	void Setup(IGameChatParentWidget* InParentWidget, IChatMessageContainer* MessageContainer);
+
 	// Switches to typing message state
-	void Open(UUserWidget* InParentHUD);
+	void Open(IChatMessageSender* InOwnerMessageSender);
+
 	// Switches back to overview state
 	void Close();
 
@@ -29,7 +35,7 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* MessageContainer;
+	UPanelWidget* MessageContainerPanel;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* MessagePanel;
@@ -44,7 +50,9 @@ private:
 
 	bool Opened;
 
-	UPlayerHUDWidget* ParentHUD;
+	IGameChatParentWidget* ParentWidget;
+	IChatMessageContainer* MessageContainer;
+	IChatMessageSender* OwnerMessageSender;
 
 	UFUNCTION()
 	void RefreshMessages();

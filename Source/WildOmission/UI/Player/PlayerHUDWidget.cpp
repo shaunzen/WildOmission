@@ -17,13 +17,16 @@
 #include "Components/EquipComponent.h"
 #include "Items/BuildingHammerItem.h"
 #include "UI/CraftingMenuWidget.h"
-#include "WildOmission/UI/Chat/GameChatWidget.h"
+#include "UI/GameChatWidget.h"
+#include "Interfaces/ChatMessageContainer.h"
+#include "Interfaces/ChatMessageSender.h"
 #include "WildOmission/UI/Notifications/NotificationPanelWidget.h"
 #include "Components/InteractionComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
 #include "UI/VitalsWidget.h"
 #include "Deployables/ItemContainerBase.h"
+#include "GameFramework/GameState.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -49,6 +52,8 @@ void UPlayerHUDWidget::NativeConstruct()
 	PlayerInventory->Refresh();
 
 	SelectedItem->Hide();
+
+	Chat->Setup(this, Cast<IChatMessageContainer>(GetWorld()->GetGameState()));
 }
 
 void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -183,7 +188,7 @@ void UPlayerHUDWidget::ToggleChatMenu()
 	if (!IsMenuOpen())
 	{
 		OpenMenuPanel(false);
-		Chat->Open(this);
+		Chat->Open(Cast<IChatMessageSender>(GetOwningPlayer()));
 	}
 	else if (Chat->IsOpen())
 	{

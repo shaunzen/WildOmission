@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/GameChatParentWidget.h"
 #include "PlayerHUDWidget.generated.h"
 
 class UTextBlock;
@@ -26,7 +27,7 @@ class UNotificationPanelWidget;
 class AItemContainerBase;
 
 UCLASS(Abstract)
-class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget
+class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget, public IGameChatParentWidget
 {
 	GENERATED_BODY()
 
@@ -44,12 +45,14 @@ public:
 	// Setters
 	UFUNCTION(BlueprintCallable)
 	void ToggleInventoryMenu();
-	
+
 	UFUNCTION(BlueprintCallable)
 	void ToggleCraftingMenu();
 
+	// Begin IGameChatParentWidget Implementation
 	UFUNCTION(BlueprintCallable)
-	void ToggleChatMenu();
+	virtual void ToggleChatMenu() override;
+	// End IGameChatParentWidget Implementation
 
 	// Getters
 	UPlayerInventoryWidget* GetPlayerInventoryWidget();

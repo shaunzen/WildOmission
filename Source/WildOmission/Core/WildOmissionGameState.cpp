@@ -14,12 +14,12 @@ void AWildOmissionGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 void AWildOmissionGameState::OnRep_ChatMessages()
 {
-	if (!OnNewMessage.IsBound())
+	if (!OnChatReplicated.IsBound())
 	{
 		return;
 	}
 
-	OnNewMessage.Broadcast();
+	OnChatReplicated.Broadcast();
 }
 
 void AWildOmissionGameState::AddChatMessage(APlayerState* Sender, const FString& Message, bool bConnectionUpdate)

@@ -1,13 +1,13 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "GameChatWidget.h"
+#include "UI/GameChatWidget.h"
 #include "ChatMessageWidget.h"
-#include "WildOmission/UI/Player/PlayerHUDWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
-#include "WildOmission/Core/WildOmissionGameState.h"
-#include "WildOmission/Core/PlayerControllers/WildOmissionPlayerController.h"
+#include "Interfaces/GameChatParentWidget.h"
+#include "Interfaces/ChatMessageContainer.h"
+#include "Interfaces/ChatMessageSender.h"
 #include "GameFramework/PlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -26,25 +26,29 @@ void UGameChatWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	MessageContainer->ClearChildren();
+	MessageContainerPanel->ClearChildren();
 	Close();
 	MessageBox->OnTextCommitted.AddDynamic(this, &UGameChatWidget::OnMessageBoxTextCommitted);
 	SendMessageButton->OnClicked.AddDynamic(this, &UGameChatWidget::AttemptSendMessage);
-	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
-	if (GameState == nullptr)
+}
+
+void UGameChatWidget::Setup(IGameChatParentWidget* InParentWidget, IChatMessageContainer* InMessageContainer)
+{
+	ParentWidget = InParentWidget;
+	MessageContainer = InMessageContainer;
+	if (MessageContainer == nullptr)
 	{
 		return;
 	}
-	GameState->OnNewMessage.AddDynamic(this, &UGameChatWidget::RefreshMessages);
+	MessageContainer->OnChatReplicated.AddDynamic(this, &UGameChatWidget::RefreshMessages);
 }
 
 void UGameChatWidget::RefreshMessages()
 {
-	MessageContainer->ClearChildren();
+	MessageContainerPanel->ClearChildren();
 
-	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
 	APlayerState* OwnerPlayerState = GetOwningPlayerState();
-	if (GameState == nullptr || OwnerPlayerState == nullptr)
+	if (MessageContainer == nullptr || OwnerPlayerState == nullptr)
 	{
 		return;
 	}
@@ -52,7 +56,7 @@ void UGameChatWidget::RefreshMessages()
 	FString OurPlayerNetName = OwnerPlayerState->GetPlayerName();
 
 	TArray<FChatMessage> Messages;
-	GameState->GetChatMessages(Messages);
+	MessageContainer->GetChatMessages(Messages);
 	
 	if (Messages.IsEmpty())
 	{
@@ -76,19 +80,19 @@ void UGameChatWidget::RefreshMessages()
 
 		MessageWidget->Setup(this, Message.SenderName, Message.Message, Message.TimeSent);
 
-		MessageContainer->AddChild(MessageWidget);
+		MessageContainerPanel->AddChild(MessageWidget);
 	}
 }
 
-void UGameChatWidget::Open(UPlayerHUDWidget* InParentHUD)
+void UGameChatWidget::Open(IChatMessageSender* InOwnerMessageSender)
 {
-	ParentHUD = InParentHUD;
+	OwnerMessageSender = InOwnerMessageSender;
 	Opened = true;
 	MessagePanel->SetVisibility(ESlateVisibility::Visible);
 	MessageBox->SetFocus();
 	
 	// Show all old messages
-	for (UWidget* Widget : MessageContainer->GetAllChildren())
+	for (UWidget* Widget : MessageContainerPanel->GetAllChildren())
 	{
 		Widget->SetVisibility(ESlateVisibility::Visible);
 	}
@@ -113,20 +117,18 @@ void UGameChatWidget::OnMessageBoxTextCommitted(const FText& MessageBoxText, ETe
 void UGameChatWidget::AttemptSendMessage()
 {
 	// Return if no message was typed
-	if (MessageBox->GetText().ToString().Len() == 0 || ParentHUD == nullptr || GetOwningPlayer() == nullptr || GetOwningPlayerState() == nullptr)
+	if (MessageBox->GetText().ToString().Len() == 0 
+		|| ParentWidget == nullptr
+		|| OwnerMessageSender == nullptr 
+		|| GetOwningPlayer() == nullptr 
+		|| GetOwningPlayerState() == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot send nothing in game chat."));
 		return;
 	}
 
-	AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(GetOwningPlayer());
-	if (PlayerController == nullptr)
-	{
-		return;
-	}
-
-	PlayerController->Server_SendChatMessage(GetOwningPlayerState(), MessageBox->GetText().ToString());
+	OwnerMessageSender->SendMessage(GetOwningPlayerState(), MessageBox->GetText().ToString());
 
 	MessageBox->SetText(FText());
-	ParentHUD->ToggleChatMenu();
+	ParentWidget->ToggleChatMenu();
 }

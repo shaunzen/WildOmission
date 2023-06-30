@@ -10,7 +10,7 @@
  * 
  */
 USTRUCT()
-struct FChatMessage
+struct GAMECHAT_API FChatMessage
 {
 	GENERATED_BODY()
 

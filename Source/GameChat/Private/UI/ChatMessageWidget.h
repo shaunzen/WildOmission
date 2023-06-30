@@ -10,7 +10,7 @@ class UTextBlock;
 class UGameChatWidget;
 
 UCLASS()
-class WILDOMISSION_API UChatMessageWidget : public UUserWidget
+class UChatMessageWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:

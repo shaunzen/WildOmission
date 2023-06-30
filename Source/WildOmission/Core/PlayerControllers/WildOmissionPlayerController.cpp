@@ -103,6 +103,11 @@ FString AWildOmissionPlayerController::GetUniqueID()
 	return ID;
 }
 
+void AWildOmissionPlayerController::SendMessage(APlayerState* Sender, const FString& Message)
+{
+	Server_SendChatMessage(Sender, Message);
+}
+
 void AWildOmissionPlayerController::Save()
 {
 	Server_AddToPendingSaves();
@@ -124,6 +129,17 @@ void AWildOmissionPlayerController::Save()
 void AWildOmissionPlayerController::Client_SetNumRequiredActors_Implementation(const int32& InNum)
 {
 	NumRequiredActorsForLoad = InNum;
+}
+
+void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
+{
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr)
+	{
+		return;
+	}
+
+	GameMode->GetSaveHandler()->GetPlayerHandler()->AddToPending(this);
 }
 
 void AWildOmissionPlayerController::Server_SendChatMessage_Implementation(APlayerState* Sender, const FString& Message)
@@ -156,17 +172,6 @@ void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
 
 	// Set health to zero
 	PawnVitals->SetHealth(0.0f);
-}
-
-void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
-{
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode == nullptr)
-	{
-		return;
-	}
-
-	GameMode->GetSaveHandler()->GetPlayerHandler()->AddToPending(this);
 }
 
 //*****************************
