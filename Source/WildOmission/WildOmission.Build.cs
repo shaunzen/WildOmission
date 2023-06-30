@@ -13,8 +13,8 @@ public class WildOmission : ModuleRules
 			"InputCore", "EnhancedInput", "UMG", 
 			"Niagara", "MetasoundEngine", "Crafting",
 			"Deployables", "Despawner", "Durability",
-			"EquipableItems", "GatherableResources", "Helpers",
-			"Interaction", "Inventory", "SaveSystem",
+			"EquipableItems", "GameChat", "GatherableResources",
+			"Helpers", "Interaction", "Inventory", "SaveSystem",
 			"SurfaceProperties", "Vitals", "Weather",
 			"WorldGeneration"
 		});

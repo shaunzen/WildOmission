@@ -9,10 +9,9 @@
 class UEditableTextBox;
 class UButton;
 class UChatMessageWidget;
-class UPlayerHUDWidget;
 
 UCLASS()
-class WILDOMISSION_API UGameChatWidget : public UUserWidget
+class GAMECHAT_API UGameChatWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -22,7 +21,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	// Switches to typing message state
-	void Open(UPlayerHUDWidget* InParentHUD);
+	void Open(UUserWidget* InParentHUD);
 	// Switches back to overview state
 	void Close();
 
