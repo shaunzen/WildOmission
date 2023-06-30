@@ -1,5 +1,5 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
+#include "Log.h"
 
-#include "Notification.h"
-
+DEFINE_LOG_CATEGORY(LogNotifications);

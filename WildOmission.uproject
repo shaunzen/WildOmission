@@ -68,6 +68,11 @@
 			]
 		},
 		{
+			"Name": "Notifications",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "SaveSystem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

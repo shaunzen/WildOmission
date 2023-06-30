@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "WildOmission/Core/Structs/Notification.h"
+#include "Structs/Notification.h"
 #include "NotificationWidget.generated.h"
 
 class UBorder;
 class UTextBlock;
 
 UCLASS()
-class WILDOMISSION_API UNotificationWidget : public UUserWidget
+class UNotificationWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

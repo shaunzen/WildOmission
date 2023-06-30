@@ -11,9 +11,10 @@ class UNotificationWidget;
 struct FNotification;
 
 UCLASS()
-class WILDOMISSION_API UNotificationPanelWidget : public UUserWidget
+class NOTIFICATIONS_API UNotificationPanelWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
 	UNotificationPanelWidget(const FObjectInitializer& ObjectInitializer);
 	virtual void NativeConstruct() override;

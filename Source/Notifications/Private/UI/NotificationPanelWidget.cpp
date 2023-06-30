@@ -1,15 +1,14 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "NotificationPanelWidget.h"
+#include "UI/NotificationPanelWidget.h"
 #include "NotificationWidget.h"
 #include "Components/PanelWidget.h"
 #include "Components/GridPanel.h"
 #include "Components/GridSlot.h"
-#include "WildOmission/Core/Structs/Notification.h"
+#include "Structs/Notification.h"
 #include "Components/InventoryComponent.h"
 #include "Components/VitalsComponent.h"
-#include "WildOmission/Core/WildOmissionStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 static UMaterialInterface* HealthIcon = nullptr;

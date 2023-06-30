@@ -20,7 +20,7 @@
 #include "UI/GameChatWidget.h"
 #include "Interfaces/ChatMessageContainer.h"
 #include "Interfaces/ChatMessageSender.h"
-#include "WildOmission/UI/Notifications/NotificationPanelWidget.h"
+#include "UI/NotificationPanelWidget.h"
 #include "Components/InteractionComponent.h"
 #include "WildOmission/Characters/WildOmissionCharacter.h"
 #include "WildOmission/Core/WildOmissionGameInstance.h"
