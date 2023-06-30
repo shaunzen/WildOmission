@@ -23,14 +23,15 @@ UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) 
 	SlotWidgetClass = InventorySlotBPWidgetClass.Class;
 }
 
-void UInventoryWidget::Setup(UUserWidget* InParentWidget, UInventoryComponent* InInventoryComponent)
+void UInventoryWidget::Setup(IInventoryParentWidget* InParentWidget, UInventoryComponent* InInventoryComponent)
 {
 	// Check if inventory and slot are valid pointers
 	if (InInventoryComponent == nullptr || SlotWidgetClass == nullptr)
 	{
 		return;
 	}
-	//ParentPlayerHUD = InParentHUD;
+	
+	ParentWidget = InParentWidget;
 
 	InventoryComponent = InInventoryComponent;
 	InventoryName->SetText(FText::FromString(InventoryComponent->GetDisplayName()));
@@ -86,6 +87,16 @@ void UInventoryWidget::Close()
 	Refresh();
 }
 
+IInventoryParentWidget* UInventoryWidget::GetParentWidget() const
+{
+	return ParentWidget;
+}
+
+UInventoryComponent* UInventoryWidget::GetInventoryComponent() const
+{
+	return InventoryComponent;
+}
+
 void UInventoryWidget::Refresh()
 {
 	if (InventoryComponent->GetSlots().Num() == 0)
@@ -103,14 +114,4 @@ void UInventoryWidget::Refresh()
 void UInventoryWidget::RefreshSlot(const int32& SlotIndex)
 {
 	Slots[SlotIndex]->SetItem(InventoryComponent->GetSlot(SlotIndex)->Item);
-}
-
-//UPlayerHUDWidget* UInventoryWidget::GetParentHUD()
-//{
-//	return ParentPlayerHUD;
-//}
-
-UInventoryComponent* UInventoryWidget::GetInventoryComponent()
-{
-	return InventoryComponent;
 }

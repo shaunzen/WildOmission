@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/InventoryParentWidget.h"
 #include "Interfaces/GameChatParentWidget.h"
 #include "PlayerHUDWidget.generated.h"
 
@@ -27,7 +28,7 @@ class UNotificationPanelWidget;
 class AItemContainerBase;
 
 UCLASS(Abstract)
-class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget, public IGameChatParentWidget
+class WILDOMISSION_API UPlayerHUDWidget : public UUserWidget, public IInventoryParentWidget, public IGameChatParentWidget
 {
 	GENERATED_BODY()
 
@@ -56,14 +57,19 @@ public:
 
 	// Getters
 	UPlayerInventoryWidget* GetPlayerInventoryWidget();
-	UHoveredItemNameTag* GetHoveredItemNameTag() const;
-	bool SelectedItemVisible() const;
+
+	// Begin IInventoryParentWidget Implementation
+	virtual UHoveredItemNameTag* GetHoveredItemNameTag() const override;
+	virtual bool SelectedItemVisible() const override;
+	// End IInventoryParentWidget Implementation
 
 	UFUNCTION(BlueprintCallable)
 	bool IsMenuOpen() const;
 
+	// Begin IInventoryParentWidget Implementation
 	UFUNCTION(BlueprintCallable)
-	bool IsInventoryMenuOpen() const;
+	virtual bool IsInventoryMenuOpen() const override;
+	// End IInventoryParentWidget Implementation
 
 	UFUNCTION(BlueprintCallable)
 	bool IsCraftingMenuOpen() const;

@@ -10,6 +10,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "Interfaces/InventoryParentWidget.h"
 #include "UIHelpers.h"
 
 void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const int32& InIndex)
@@ -128,7 +129,7 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	
 	APawn* PlayerPawn = GetOwningPlayerPawn();
-	if (PlayerPawn == nullptr) //|| !Owner->GetParentHUD()->IsInventoryMenuOpen()
+	if (PlayerPawn == nullptr || !Owner->GetParentWidget()->IsInventoryMenuOpen())
 	{
 		return FReply::Handled();
 	}
@@ -186,18 +187,18 @@ bool UInventorySlotWidget::IsSelected() const
 
 void UInventorySlotWidget::ShowHoveredItemNameTag()
 {
-	/*if (CurrentItemQuantity == 0)
+	if (CurrentItemQuantity == 0)
 	{
 		return;
 	}
 
-	UPlayerHUDWidget* OwnerHUD = Owner->GetParentHUD();
-	if (OwnerHUD == nullptr || OwnerHUD->SelectedItemVisible())
+	IInventoryParentWidget* InventoryParentWidget = Owner->GetParentWidget();
+	if (InventoryParentWidget == nullptr || InventoryParentWidget->SelectedItemVisible())
 	{
 		return;
 	}
 
-	UHoveredItemNameTag* HoveredItemNameTag = OwnerHUD->GetHoveredItemNameTag();
+	UHoveredItemNameTag* HoveredItemNameTag = InventoryParentWidget->GetHoveredItemNameTag();
 	if (HoveredItemNameTag == nullptr)
 	{
 		return;
@@ -208,22 +209,22 @@ void UInventorySlotWidget::ShowHoveredItemNameTag()
 		return;
 	}
 
-	HoveredItemNameTag->Show(ItemData->DisplayName);*/
+	HoveredItemNameTag->Show(ItemData->DisplayName);
 }
 
 void UInventorySlotWidget::HideHoveredItemNameTag()
 {
-	/*UPlayerHUDWidget* OwnerHUD = Owner->GetParentHUD();
-	if (OwnerHUD == nullptr)
+	IInventoryParentWidget* InventoryParentWidget = Owner->GetParentWidget();
+	if (InventoryParentWidget == nullptr)
 	{
 		return;
 	}
 
-	UHoveredItemNameTag* HoveredItemNameTag = OwnerHUD->GetHoveredItemNameTag();
+	UHoveredItemNameTag* HoveredItemNameTag = InventoryParentWidget->GetHoveredItemNameTag();
 	if (HoveredItemNameTag == nullptr)
 	{
 		return;
 	}
 
-	HoveredItemNameTag->Hide();*/
+	HoveredItemNameTag->Hide();
 }
