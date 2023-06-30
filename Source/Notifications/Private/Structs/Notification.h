@@ -7,7 +7,7 @@
 #include "Notification.generated.h"
 
 USTRUCT()
-struct NOTIFICATIONS_API FNotification
+struct FNotification
 {
 	GENERATED_BODY()
 
