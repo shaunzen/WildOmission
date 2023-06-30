@@ -109,8 +109,9 @@ IGameSaveLoadController* ASaveHandler::GetSaveLoadController() const
 
 void ASaveHandler::ValidateSave()
 {
-	if (CurrentSaveFileName.Len() > 0)
+	if (CurrentSaveFileName.Len() > 0 || GameSaveLoadController == nullptr)
 	{
+		UE_LOG(LogSaveSystem, Warning, TEXT("Failed to validate save file, can't find GameSaveLoadController."));
 		return;
 	}
 
