@@ -26,11 +26,8 @@ class WILDOMISSIONCORE_API UPlayerHUDWidget : public UUserWidget, public IGameCh
 public:
 	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual void NativeConstruct() override;
-	
+	virtual void NativeConstruct() override;	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
-	virtual bool Initialize() override;
 
 	// Setters
 	UFUNCTION(BlueprintCallable)

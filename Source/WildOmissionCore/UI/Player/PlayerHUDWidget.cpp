@@ -40,8 +40,8 @@ void UPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	UpdateBrandingText();
 	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("MenuBackgroundMouseButtonDown"));
-	
 	Chat->Setup(this, Cast<IChatMessageContainer>(GetWorld()->GetGameState()));
 }
 
@@ -51,20 +51,6 @@ void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	UpdateInteractionPrompt();
 	UpdateDurabilityPrompt();
-}
-
-bool UPlayerHUDWidget::Initialize()
-{
-	bool Success = Super::Initialize();
-	if (Success == false)
-	{
-		return false;
-	}
-
-	// TODO why not in nativeconstruct?
-	UpdateBrandingText();
-
-	return true;
 }
 
 void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
