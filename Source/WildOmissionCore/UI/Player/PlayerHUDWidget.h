@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Interfaces/InventoryParentWidget.h"
 #include "Interfaces/GameChatParentWidget.h"
 #include "PlayerHUDWidget.generated.h"
 
@@ -18,8 +17,7 @@ class UProgressBar;
 class UVitalsComponent;
 class UVitalsWidget;
 
-class UInventoryWidget;
-class UPlayerInventoryWidget;
+class UInventoryMenuWidget;
 class UCraftingMenuWidget;
 class USelectedItemWidget;
 class UHoveredItemNameTag;
@@ -28,7 +26,7 @@ class UNotificationPanelWidget;
 class AItemContainerBase;
 
 UCLASS(Abstract)
-class WILDOMISSIONCORE_API UPlayerHUDWidget : public UUserWidget, public IInventoryParentWidget, public IGameChatParentWidget
+class WILDOMISSIONCORE_API UPlayerHUDWidget : public UUserWidget, public IGameChatParentWidget
 {
 	GENERATED_BODY()
 
@@ -40,8 +38,6 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	virtual bool Initialize() override;
-
-	void OpenContainer(AItemContainerBase* Container);
 
 	// Setters
 	UFUNCTION(BlueprintCallable)
@@ -58,16 +54,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsMenuOpen() const;
 
-	// Begin IInventoryParentWidget Implementation
 	UFUNCTION(BlueprintCallable)
-	virtual bool IsInventoryMenuOpen() const override;
-	// End IInventoryParentWidget Implementation
-
+	bool IsInventoryMenuOpen() const;
+	
 	UFUNCTION(BlueprintCallable)
 	bool IsCraftingMenuOpen() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsChatMenuOpen() const;
+
+	UInventoryMenuWidget* GetInventoryMenu() const;
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -81,6 +77,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
+
+	UPROPERTY(Meta = (BindWidget))
+	UInventoryMenuWidget* InventoryMenu;
 
 	UPROPERTY(Meta = (BindWidget))
 	UCraftingMenuWidget* CraftingMenu;

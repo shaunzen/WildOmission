@@ -1,5 +1,6 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
+
 #include "PlayerHUDWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
@@ -25,6 +26,7 @@
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "UI/VitalsWidget.h"
+#include "UI/InventoryMenuWidget.h"
 #include "Deployables/ItemContainerBase.h"
 #include "GameFramework/GameState.h"
 
@@ -59,6 +61,7 @@ bool UPlayerHUDWidget::Initialize()
 		return false;
 	}
 
+	// TODO why not in nativeconstruct?
 	UpdateBrandingText();
 
 	return true;
@@ -89,7 +92,8 @@ void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
 	}
 	else if (IsInventoryMenuOpen())
 	{
-		HoveredItemNameTag->Hide();
+		// TODO why not just call close?
+		InventoryMenu->GetHoveredItemNameTagWidget()->Hide();
 		OwnerInventoryManipulator->DropSelectedItemInWorld(false);
 		CloseMenuPanel();
 	}
@@ -121,7 +125,8 @@ void UPlayerHUDWidget::ToggleCraftingMenu(bool ForceOpen)
 	}
 	else if (IsInventoryMenuOpen())
 	{
-		HoveredItemNameTag->Hide();
+		// TODO why not just call close?
+		InventoryMenu->GetHoveredItemNameTagWidget()->Hide();
 		OwnerInventoryManipulator->DropSelectedItemInWorld(false);
 		SwitchToCraftingMenu();
 	}
@@ -153,7 +158,7 @@ void UPlayerHUDWidget::ToggleChatMenu()
 
 bool UPlayerHUDWidget::IsMenuOpen() const
 {
-	return bInventoryMenuOpen || bCraftingMenuOpen || IsChatMenuOpen();
+	return IsInventoryMenuOpen() || IsCraftingMenuOpen() || IsChatMenuOpen();
 }
 
 bool UPlayerHUDWidget::IsInventoryMenuOpen() const
@@ -169,6 +174,11 @@ bool UPlayerHUDWidget::IsCraftingMenuOpen() const
 bool UPlayerHUDWidget::IsChatMenuOpen() const
 {
 	return Chat->IsOpen();
+}
+
+UInventoryMenuWidget* UPlayerHUDWidget::GetInventoryMenu() const
+{
+	return InventoryMenu;
 }
 
 void UPlayerHUDWidget::UpdateBrandingText()
@@ -209,10 +219,11 @@ void UPlayerHUDWidget::SwitchToInventoryMenu()
 	bInventoryMenuOpen = true;
 	bCraftingMenuOpen = false;
 
-	MenuSwitcher->SetActiveWidget(InventoryHorizontalBox);
+	MenuSwitcher->SetActiveWidget(InventoryMenu);
 
-	PlayerInventory->Open();
+	InventoryMenu->Open();
 
+	// TODO why is just changing active widget not enough?
 	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
 }
 
@@ -224,7 +235,7 @@ void UPlayerHUDWidget::SwitchToCraftingMenu()
 	MenuSwitcher->SetActiveWidget(CraftingMenu);
 	CraftingMenu->Refresh();
 
-	PlayerInventory->Close();
+	InventoryMenu->Close();
 
 	CraftingMenu->SetVisibility(ESlateVisibility::Visible);
 }
@@ -243,8 +254,7 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	bInventoryMenuOpen = false;
 	bCraftingMenuOpen = false;
 	
-	PlayerInventory->Close();
-	
+	InventoryMenu->Close(true);
 
 	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
 

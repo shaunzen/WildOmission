@@ -6,12 +6,13 @@
 #include "Deployable.h"
 #include "Blueprint/UserWidget.h"
 #include "Interfaces/Interactable.h"
+#include "Interfaces/ItemContainer.h"
 #include "ItemContainerBase.generated.h"
 
 class UInventoryComponent;
 
 UCLASS()
-class DEPLOYABLES_API AItemContainerBase : public ADeployable, public IInteractable
+class DEPLOYABLES_API AItemContainerBase : public ADeployable, public IItemContainer, public IInteractable
 {
 	GENERATED_BODY()
 
@@ -20,13 +21,14 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	/*Begin Interactable Interface Implementation*/
+	// Begin IItemContainer Implementation
+	virtual void UnOccupy() override;
+	// End IItemContainer Implementation
+
+	// Begin IInteractable Implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
-	/*End Interactable Interface Implementation*/
-
-	UFUNCTION(Server, Reliable)
-	void Server_UnOccupy();
+	// End IInteractable Implementation
 
 	UFUNCTION(BlueprintCallable)
 	FString GetContainerName() const;
@@ -50,5 +52,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UInventoryComponent* InventoryComponent;
+
+	UFUNCTION(Server, Reliable)
+	void Server_UnOccupy();
 
 };

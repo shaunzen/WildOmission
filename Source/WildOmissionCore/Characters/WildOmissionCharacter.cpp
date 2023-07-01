@@ -24,6 +24,7 @@
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
+#include "UI/InventoryMenuWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -750,7 +751,7 @@ void AWildOmissionCharacter::Client_OpenContainer_Implementation(AItemContainerB
 	}
 	
 	PlayerHUDWidget->ToggleInventoryMenu(true);
-	PlayerHUDWidget->GetInventoryMenuWidget()->OpenContainer(Container->GetInventoryComponent(), Container->GetWidgetClass());
+	PlayerHUDWidget->GetInventoryMenu()->OpenContainer(Container->GetInventoryComponent(), Container->GetWidgetClass());
 }
 
 void AWildOmissionCharacter::Client_UpdateReplicatedControlRotation_Implementation(const FRotator& NewControlRotation)

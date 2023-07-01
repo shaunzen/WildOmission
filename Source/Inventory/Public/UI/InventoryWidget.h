@@ -33,6 +33,8 @@ public:
 	void Open();
 	void Close();
 
+	bool IsOpen() const;
+
 	UInventoryMenuWidget* GetParentMenu() const;
 	UInventoryComponent* GetInventoryComponent() const;
 
@@ -43,7 +45,6 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UUniformGridPanel* InventoryGridPanel;
 	
-	// Slots
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UInventorySlotWidget> SlotWidgetClass;
 
@@ -51,6 +52,7 @@ protected:
 	TArray<UInventorySlotWidget*> Slots;
 
 private:
+	UPROPERTY()
 	UInventoryMenuWidget* ParentMenu;
 
 	UPROPERTY()

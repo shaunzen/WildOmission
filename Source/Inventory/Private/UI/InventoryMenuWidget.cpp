@@ -34,12 +34,12 @@ void UInventoryMenuWidget::NativeTick(const FGeometry& MyGeomentry, float InDelt
 	UpdateFollowMousePointerWidgets();
 }
 
-void UInventoryMenuWidget::OnOpen()
+void UInventoryMenuWidget::Open()
 {
 	PlayerInventoryWidget->Open();
 }
 
-void UInventoryMenuWidget::OnClose(bool ShouldCloseContainer)
+void UInventoryMenuWidget::Close(bool ShouldCloseContainer)
 {
 	PlayerInventoryWidget->Close();
 
@@ -61,7 +61,7 @@ void UInventoryMenuWidget::OpenContainer(UInventoryComponent* ContainerInventory
 {
 	if (OpenContainerWidget || ContainerWidgetClass == nullptr)
 	{
-		UE_LOG(LogInventory, Display, TEXT("This container cannot be opened, an existing container is already open.")).
+		UE_LOG(LogInventory, Display, TEXT("This container cannot be opened, an existing container is already open."));
 		return;
 	}
 
@@ -84,6 +84,11 @@ void UInventoryMenuWidget::OpenContainer(UInventoryComponent* ContainerInventory
 	OpenContainerSlot->SetPadding(ContainerWidgetPadding);
 	OpenContainerSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Top);
 	OpenContainerSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Right);
+}
+
+bool UInventoryMenuWidget::IsOpen() const
+{
+	return PlayerInventoryWidget->IsOpen() || (OpenContainerWidget != nullptr && OpenContainerWidget->IsOpen());
 }
 
 UPlayerInventoryWidget* UInventoryMenuWidget::GetPlayerInventoryWidget() const

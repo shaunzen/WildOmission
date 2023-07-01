@@ -31,6 +31,11 @@ void AItemContainerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AItemContainerBase, bOccupied);
 }
 
+void AItemContainerBase::UnOccupy()
+{
+	Server_UnOccupy();
+}
+
 void AItemContainerBase::Interact(AActor* Interactor)
 {
 	if (bOccupied == true)

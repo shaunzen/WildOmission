@@ -23,10 +23,11 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeomentry, float InDeltaTime) override;
 
-	void OnOpen();
-	void OnClose(bool ShouldCloseContainer = false);
+	void Open();
+	void Close(bool ShouldCloseContainer = false);
 	void OpenContainer(UInventoryComponent* ContainerInventoryComponent, UClass* ContainerWidgetClass);
 
+	bool IsOpen() const;
 	UPlayerInventoryWidget* GetPlayerInventoryWidget() const;
 	USelectedItemWidget* GetSelectedItemWidget() const;
 	UHoveredItemNameTag* GetHoveredItemNameTagWidget() const;

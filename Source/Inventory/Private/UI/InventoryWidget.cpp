@@ -14,13 +14,17 @@
 
 UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UInventorySlotWidget> InventorySlotBPWidgetClass(TEXT("/Game/WildOmission/UI/Inventory/WBP_InventorySlot"));
-	if (InventorySlotBPWidgetClass.Class == nullptr)
+	InventoryName = nullptr;
+	InventoryGridPanel = nullptr;
+	SlotWidgetClass = nullptr;
+	ParentMenu = nullptr;
+	InventoryComponent = nullptr;
+	
+	static ConstructorHelpers::FClassFinder<UInventorySlotWidget> InventorySlotBPWidgetClass(TEXT("/Game/WildOmission/UI/Inventory/WBP_InventorySlot"));
+	if (InventorySlotBPWidgetClass.Succeeded())
 	{
-		return;
+		SlotWidgetClass = InventorySlotBPWidgetClass.Class;
 	}
-
-	SlotWidgetClass = InventorySlotBPWidgetClass.Class;
 }
 
 void UInventoryWidget::Setup(UInventoryMenuWidget* InParentMenu, UInventoryComponent* InInventoryComponent)
@@ -85,6 +89,11 @@ void UInventoryWidget::Close()
 	InventoryGridPanel->SetVisibility(ESlateVisibility::Hidden);
 	
 	Refresh();
+}
+
+bool UInventoryWidget::IsOpen() const
+{
+	return InventoryName->Visibility == ESlateVisibility::Visible && InventoryGridPanel->Visibility == ESlateVisibility::Visible;
 }
 
 UInventoryMenuWidget* UInventoryWidget::GetParentMenu() const
