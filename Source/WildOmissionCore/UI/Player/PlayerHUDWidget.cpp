@@ -32,8 +32,16 @@
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	bInventoryMenuOpen = false;
-	bCraftingMenuOpen = false;
+	InteractionPrompt = nullptr;
+	DurabilityBar = nullptr;
+	MenuBackgroundBorder = nullptr;
+	MenuSwitcher = nullptr;
+	InventoryMenu = nullptr;
+	CraftingMenu = nullptr;
+	Chat = nullptr;
+	NotificationPanel = nullptr;
+	Vitals = nullptr;
+	BrandingTextBlock = nullptr;
 }
 
 void UPlayerHUDWidget::NativeConstruct()
@@ -163,12 +171,12 @@ bool UPlayerHUDWidget::IsMenuOpen() const
 
 bool UPlayerHUDWidget::IsInventoryMenuOpen() const
 {
-	return bInventoryMenuOpen;
+	return InventoryMenu->IsOpen();
 }
 
 bool UPlayerHUDWidget::IsCraftingMenuOpen() const
 {
-	return bCraftingMenuOpen;
+	return MenuSwitcher->GetActiveWidget() == CraftingMenu;
 }
 
 bool UPlayerHUDWidget::IsChatMenuOpen() const
@@ -216,9 +224,6 @@ void UPlayerHUDWidget::OpenMenuPanel(bool ShowBackground)
 
 void UPlayerHUDWidget::SwitchToInventoryMenu()
 {
-	bInventoryMenuOpen = true;
-	bCraftingMenuOpen = false;
-
 	MenuSwitcher->SetActiveWidget(InventoryMenu);
 
 	InventoryMenu->Open();
@@ -229,14 +234,11 @@ void UPlayerHUDWidget::SwitchToInventoryMenu()
 
 void UPlayerHUDWidget::SwitchToCraftingMenu()
 {
-	bInventoryMenuOpen = false;
-	bCraftingMenuOpen = true;
-
 	MenuSwitcher->SetActiveWidget(CraftingMenu);
 	CraftingMenu->Refresh();
 
 	InventoryMenu->Close();
-
+	// TODO why is active widget not enough?
 	CraftingMenu->SetVisibility(ESlateVisibility::Visible);
 }
 
@@ -251,11 +253,10 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = false;
-	bInventoryMenuOpen = false;
-	bCraftingMenuOpen = false;
 	
 	InventoryMenu->Close(true);
 
+	// TODO why is changing the widget not enough
 	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
 
 	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Hidden);

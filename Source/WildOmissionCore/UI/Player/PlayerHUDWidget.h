@@ -96,10 +96,6 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* BrandingTextBlock;
 
-	bool bInventoryMenuOpen;
-
-	bool bCraftingMenuOpen;
-
 	void UpdateBrandingText();
 
 	void OpenMenuPanel(bool ShowBackground = true);
