@@ -93,7 +93,7 @@ void UInventoryWidget::Close()
 
 bool UInventoryWidget::IsOpen() const
 {
-	return InventoryName->Visibility == ESlateVisibility::Visible && InventoryGridPanel->Visibility == ESlateVisibility::Visible;
+	return InventoryName->GetVisibility() == ESlateVisibility::Visible && InventoryGridPanel->GetVisibility() == ESlateVisibility::Visible;
 }
 
 UInventoryMenuWidget* UInventoryWidget::GetParentMenu() const
