@@ -748,8 +748,9 @@ void AWildOmissionCharacter::Client_OpenContainer_Implementation(AItemContainerB
 	{
 		return;
 	}
-
-	PlayerHUDWidget->OpenContainer(Container);
+	
+	PlayerHUDWidget->ToggleInventoryMenu(true);
+	PlayerHUDWidget->GetInventoryMenuWidget()->OpenContainer(Container->GetInventoryComponent(), Container->GetWidgetClass());
 }
 
 void AWildOmissionCharacter::Client_UpdateReplicatedControlRotation_Implementation(const FRotator& NewControlRotation)

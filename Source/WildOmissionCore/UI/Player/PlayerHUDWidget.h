@@ -45,23 +45,15 @@ public:
 
 	// Setters
 	UFUNCTION(BlueprintCallable)
-	void ToggleInventoryMenu();
+	void ToggleInventoryMenu(bool ForceOpen = false);
 
 	UFUNCTION(BlueprintCallable)
-	void ToggleCraftingMenu();
+	void ToggleCraftingMenu(bool ForceOpen = false);
 
 	// Begin IGameChatParentWidget Implementation
 	UFUNCTION(BlueprintCallable)
 	virtual void ToggleChatMenu() override;
 	// End IGameChatParentWidget Implementation
-
-	// Getters
-	UPlayerInventoryWidget* GetPlayerInventoryWidget();
-
-	// Begin IInventoryParentWidget Implementation
-	virtual UHoveredItemNameTag* GetHoveredItemNameTag() const override;
-	virtual bool SelectedItemVisible() const override;
-	// End IInventoryParentWidget Implementation
 
 	UFUNCTION(BlueprintCallable)
 	bool IsMenuOpen() const;
@@ -91,22 +83,7 @@ private:
 	UWidgetSwitcher* MenuSwitcher;
 
 	UPROPERTY(Meta = (BindWidget))
-	UHorizontalBox* InventoryHorizontalBox;
-
-	UPROPERTY(meta = (BindWidget))
-	UPlayerInventoryWidget* PlayerInventory;
-	
-	UPROPERTY()
-	UInventoryWidget* OpenContainerWidget;
-
-	UPROPERTY(Meta = (BindWidget))
 	UCraftingMenuWidget* CraftingMenu;
-
-	UPROPERTY(meta = (BindWidget))
-	USelectedItemWidget* SelectedItem;
-	
-	UPROPERTY(Meta = (BindWidget))
-	UHoveredItemNameTag* HoveredItemNameTag;
 
 	UPROPERTY(Meta = (BindWidget))
 	UGameChatWidget* Chat;
@@ -133,8 +110,7 @@ private:
 
 	void UpdateInteractionPrompt();
 	void UpdateDurabilityPrompt();
-	void UpdateFollowMousePointerWidgets();
-
+	
 	void SetMouseCursorToCenter();
 
 	UFUNCTION()

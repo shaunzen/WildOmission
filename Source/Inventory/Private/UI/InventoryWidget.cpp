@@ -23,7 +23,7 @@ UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) 
 	SlotWidgetClass = InventorySlotBPWidgetClass.Class;
 }
 
-void UInventoryWidget::Setup(IInventoryParentWidget* InParentWidget, UInventoryComponent* InInventoryComponent)
+void UInventoryWidget::Setup(UInventoryMenuWidget* InParentMenu, UInventoryComponent* InInventoryComponent)
 {
 	// Check if inventory and slot are valid pointers
 	if (InInventoryComponent == nullptr || SlotWidgetClass == nullptr)
@@ -31,7 +31,7 @@ void UInventoryWidget::Setup(IInventoryParentWidget* InParentWidget, UInventoryC
 		return;
 	}
 	
-	ParentWidget = InParentWidget;
+	ParentMenu = InParentMenu;
 
 	InventoryComponent = InInventoryComponent;
 	InventoryName->SetText(FText::FromString(InventoryComponent->GetDisplayName()));
@@ -87,9 +87,9 @@ void UInventoryWidget::Close()
 	Refresh();
 }
 
-IInventoryParentWidget* UInventoryWidget::GetParentWidget() const
+UInventoryMenuWidget* UInventoryWidget::GetParentMenu() const
 {
-	return ParentWidget;
+	return ParentMenu;
 }
 
 UInventoryComponent* UInventoryWidget::GetInventoryComponent() const

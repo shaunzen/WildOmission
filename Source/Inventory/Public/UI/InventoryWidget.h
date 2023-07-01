@@ -11,7 +11,7 @@ class UTextBlock;
 class UUniformGridPanel;
 class UBorder;
 class UInventoryComponent;
-class IInventoryParentWidget;
+class UInventoryMenuWidget;
 
 UCLASS()
 class INVENTORY_API UInventoryWidget : public UUserWidget
@@ -21,7 +21,7 @@ class INVENTORY_API UInventoryWidget : public UUserWidget
 public:
 	UInventoryWidget(const FObjectInitializer& ObjectInitializer);
 
-	virtual void Setup(IInventoryParentWidget* InParentWidget, UInventoryComponent* InInventoryComponent);
+	virtual void Setup(UInventoryMenuWidget* InParentMenu, UInventoryComponent* InInventoryComponent);
 
 	UFUNCTION()
 	virtual void Refresh();
@@ -33,7 +33,7 @@ public:
 	void Open();
 	void Close();
 
-	IInventoryParentWidget* GetParentWidget() const;
+	UInventoryMenuWidget* GetParentMenu() const;
 	UInventoryComponent* GetInventoryComponent() const;
 
 protected:
@@ -51,7 +51,7 @@ protected:
 	TArray<UInventorySlotWidget*> Slots;
 
 private:
-	IInventoryParentWidget* ParentWidget;
+	UInventoryMenuWidget* ParentMenu;
 
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;

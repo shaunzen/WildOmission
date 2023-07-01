@@ -16,7 +16,7 @@ class INVENTORY_API UPlayerInventoryWidget : public UInventoryWidget
 public:
 	UPlayerInventoryWidget(const FObjectInitializer& ObjectInitializer);
 	
-	virtual void Setup(IInventoryParentWidget* InParentWidget, UInventoryComponent* InInventoryComponent) override;
+	virtual void Setup(UInventoryMenuWidget* InParentMenu, UInventoryComponent* InInventoryComponent) override;
 
 	virtual void Refresh() override;
 
