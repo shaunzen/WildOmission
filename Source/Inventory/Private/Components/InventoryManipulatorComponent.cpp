@@ -66,7 +66,7 @@ void UInventoryManipulatorComponent::DropSelectedItemInWorld(bool Single)
 {
 	Server_DropSelectedItemInWorld(Single);
 
-	if (!Dragging)
+	if (!Dragging || GetOwner()->HasAuthority())
 	{
 		return;
 	}
@@ -89,6 +89,7 @@ void UInventoryManipulatorComponent::DropSelectedItemInWorld(bool Single)
 		StopDragging();
 	}
 
+	BroadcastSelectionChanged();
 }
 
 void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementation(bool Single)
@@ -118,6 +119,7 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 		StopDragging();
 	}
 
+	BroadcastSelectionChanged();
 }
 
 //**************************************************************
