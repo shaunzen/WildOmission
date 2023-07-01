@@ -9,21 +9,14 @@
 
 class UTextBlock;
 class UBorder;
-class UCanvasPanel;
 class UWidgetSwitcher;
-class UHorizontalBox;
 class UProgressBar;
 
-class UVitalsComponent;
 class UVitalsWidget;
-
 class UInventoryMenuWidget;
 class UCraftingMenuWidget;
-class USelectedItemWidget;
-class UHoveredItemNameTag;
 class UGameChatWidget;
 class UNotificationPanelWidget;
-class AItemContainerBase;
 
 UCLASS(Abstract)
 class WILDOMISSIONCORE_API UPlayerHUDWidget : public UUserWidget, public IGameChatParentWidget

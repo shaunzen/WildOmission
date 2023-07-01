@@ -4,31 +4,23 @@
 #include "PlayerHUDWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/WidgetSwitcher.h"
-#include "Components/HorizontalBox.h"
-#include "Components/HorizontalBoxSlot.h"
-#include "Components/ProgressBar.h"
-#include "UI/InventoryWidget.h"
-#include "UI/PlayerInventoryWidget.h"
-#include "UI/SelectedItemWidget.h"
-#include "UI/HoveredItemNameTag.h"
-#include "Components/InventoryManipulatorComponent.h"
-#include "Components/PlayerInventoryComponent.h"
-#include "Components/EquipComponent.h"
-#include "Items/BuildingHammerItem.h"
-#include "UI/CraftingMenuWidget.h"
-#include "UI/GameChatWidget.h"
-#include "Interfaces/ChatMessageContainer.h"
-#include "Interfaces/ChatMessageSender.h"
-#include "UI/NotificationPanelWidget.h"
-#include "Components/InteractionComponent.h"
-#include "WildOmissionCore/Characters/WildOmissionCharacter.h"
-#include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "UI/VitalsWidget.h"
 #include "UI/InventoryMenuWidget.h"
-#include "Deployables/ItemContainerBase.h"
+#include "UI/CraftingMenuWidget.h"
+#include "UI/GameChatWidget.h"
+#include "UI/NotificationPanelWidget.h"
+#include "Components/InteractionComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
+#include "Interfaces/ChatMessageContainer.h"
+#include "Interfaces/ChatMessageSender.h"
+#include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "GameFramework/GameState.h"
+
+// TODO these are to be removed in future versions
+#include "Items/BuildingHammerItem.h"
+#include "Components/EquipComponent.h"
+#include "Components/ProgressBar.h"
 
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -77,18 +69,6 @@ bool UPlayerHUDWidget::Initialize()
 
 void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
 {
-	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
-	if (OwnerPawn == nullptr)
-	{
-		return;
-	}
-
-	UInventoryManipulatorComponent* OwnerInventoryManipulator = OwnerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
-	if (OwnerInventoryManipulator == nullptr)
-	{
-		return;
-	}
-
 	if (!IsMenuOpen() || ForceOpen == true)
 	{
 		OpenMenuPanel();
@@ -100,8 +80,18 @@ void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
 	}
 	else if (IsInventoryMenuOpen())
 	{
-		// TODO why not just call close?
-		InventoryMenu->GetHoveredItemNameTagWidget()->Hide();
+		APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
+		if (OwnerPawn == nullptr)
+		{
+			return;
+		}
+
+		UInventoryManipulatorComponent* OwnerInventoryManipulator = OwnerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
+		if (OwnerInventoryManipulator == nullptr)
+		{
+			return;
+		}
+
 		OwnerInventoryManipulator->DropSelectedItemInWorld(false);
 		CloseMenuPanel();
 	}
@@ -114,18 +104,6 @@ void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
 
 void UPlayerHUDWidget::ToggleCraftingMenu(bool ForceOpen)
 {
-	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
-	if (OwnerPawn == nullptr)
-	{
-		return;
-	}
-
-	UInventoryManipulatorComponent* OwnerInventoryManipulator = OwnerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
-	if (OwnerInventoryManipulator == nullptr)
-	{
-		return;
-	}
-
 	if (!IsMenuOpen() || ForceOpen == true)
 	{
 		OpenMenuPanel();
@@ -133,8 +111,18 @@ void UPlayerHUDWidget::ToggleCraftingMenu(bool ForceOpen)
 	}
 	else if (IsInventoryMenuOpen())
 	{
-		// TODO why not just call close?
-		InventoryMenu->GetHoveredItemNameTagWidget()->Hide();
+		APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
+		if (OwnerPawn == nullptr)
+		{
+			return;
+		}
+
+		UInventoryManipulatorComponent* OwnerInventoryManipulator = OwnerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
+		if (OwnerInventoryManipulator == nullptr)
+		{
+			return;
+		}
+
 		OwnerInventoryManipulator->DropSelectedItemInWorld(false);
 		SwitchToCraftingMenu();
 	}
@@ -225,21 +213,15 @@ void UPlayerHUDWidget::OpenMenuPanel(bool ShowBackground)
 void UPlayerHUDWidget::SwitchToInventoryMenu()
 {
 	MenuSwitcher->SetActiveWidget(InventoryMenu);
-
 	InventoryMenu->Open();
-
-	// TODO why is just changing active widget not enough?
-	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UPlayerHUDWidget::SwitchToCraftingMenu()
 {
+	InventoryMenu->Close();
+	
 	MenuSwitcher->SetActiveWidget(CraftingMenu);
 	CraftingMenu->Refresh();
-
-	InventoryMenu->Close();
-	// TODO why is active widget not enough?
-	CraftingMenu->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UPlayerHUDWidget::CloseMenuPanel()
@@ -255,10 +237,6 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	PlayerController->bShowMouseCursor = false;
 	
 	InventoryMenu->Close(true);
-
-	// TODO why is changing the widget not enough
-	CraftingMenu->SetVisibility(ESlateVisibility::Hidden);
-
 	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
 }
 
