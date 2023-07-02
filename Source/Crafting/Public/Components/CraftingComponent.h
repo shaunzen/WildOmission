@@ -16,18 +16,11 @@ public:
 	// Sets default values for this component's properties
 	UCraftingComponent();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
 	UFUNCTION(Server, Reliable)
 	void Server_CraftItem(const FName& ItemToCraft);
 
 	static TArray<FName> GetAllRecipes();
 
 	static FCraftingRecipe* GetRecipe(const FName& RecipeName);
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
 
 };

@@ -4,7 +4,9 @@
 #include "Components/CraftingComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "Engine/DataTable.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Log.h"
 
 static UDataTable* RecipeDataTable = nullptr;
 
@@ -13,33 +15,13 @@ UCraftingComponent::UCraftingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-	SetIsReplicatedByDefault(true);
+	PrimaryComponentTick.bCanEverTick = false;
 
-	if (GetWorld())
+	static ConstructorHelpers::FObjectFinder<UDataTable> RecipeDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_CraftingRecipes"));
+	if (RecipeDataTableBlueprint.Succeeded())
 	{
-		static ConstructorHelpers::FObjectFinder<UDataTable> RecipeDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_CraftingRecipes"));
-		if (RecipeDataTableBlueprint.Succeeded())
-		{
-			RecipeDataTable = RecipeDataTableBlueprint.Object;
-		}
+		RecipeDataTable = RecipeDataTableBlueprint.Object;
 	}
-}
-
-
-// Called when the game starts
-void UCraftingComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-
-// Called every frame
-void UCraftingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 }
 
 void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraft)
@@ -51,8 +33,7 @@ void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraf
 	}
 
 	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
-	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = GetOwner()->FindComponentByClass<UInventoryManipulatorComponent>();
-	if (OwnerInventoryComponent == nullptr || OwnerInventoryManipulatorComponent == nullptr)
+	if (OwnerInventoryComponent == nullptr)
 	{
 		return;
 	}
@@ -81,6 +62,13 @@ void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraf
 
 TArray<FName> UCraftingComponent::GetAllRecipes()
 {
+	if (RecipeDataTable == nullptr)
+	{
+		UE_LOG(LogCrafting, Display, TEXT("Cannot get all crafting recipes, the recipe data table is missing."));
+		TArray<FName> OutEmptyList;
+		return OutEmptyList;
+	}
+
 	return RecipeDataTable->GetRowNames();
 }
 

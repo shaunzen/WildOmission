@@ -4,6 +4,7 @@
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "WorldItem.h"
+#include "Engine/DataTable.h"
 #include "Net/UnrealNetwork.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "EngineUtils.h"
@@ -20,6 +21,8 @@ UInventoryComponent::UInventoryComponent()
 
 	SlotCount = 24;
 	LoadedFromSave = false;
+
+	// We have to add this stupid ugly check here, because unreal engine is a buggy broken mess somethimes.
 	if (GetWorld())
 	{
 		static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
