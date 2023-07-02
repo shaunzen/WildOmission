@@ -4,7 +4,6 @@
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "WorldItem.h"
-#include "Engine/DataTable.h"
 #include "Net/UnrealNetwork.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "EngineUtils.h"

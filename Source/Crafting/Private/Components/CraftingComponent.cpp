@@ -4,7 +4,6 @@
 #include "Components/CraftingComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
-#include "Engine/DataTable.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
