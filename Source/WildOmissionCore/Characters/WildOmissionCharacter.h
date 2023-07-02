@@ -38,6 +38,7 @@ public:
 
 	void SetupFieldOfView();
 
+	UFUNCTION()
 	void HandleDeath();
 	
 	virtual void InvokeOpenContainer(AItemContainerBase* Container) override;
