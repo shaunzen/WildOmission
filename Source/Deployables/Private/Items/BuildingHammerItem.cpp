@@ -79,7 +79,7 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability
 	{
 		return false;
 	}
-
+	
 	OutCurrentDurability = DurabilityInterfaceActor->GetCurrentDurability();
 	OutMaxDurability = DurabilityInterfaceActor->GetMaxDurability();
 	OutActorName = HitResult.GetActor()->GetActorNameOrLabel();

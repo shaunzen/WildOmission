@@ -2,6 +2,7 @@
 
 
 #include "UI/DurabilityBarWidget.h"
+#include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Components/EquipComponent.h"
@@ -30,16 +31,16 @@ void UDurabilityBarWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 	ABuildingHammerItem* HeldBuildingHammer = Cast<ABuildingHammerItem>(OwnerEquipComponent->GetEquipedItem());
 	if (HeldBuildingHammer && HeldBuildingHammer->GetLookingAtItemDurability(CurrentDurability, MaxDurability, DurabilityActorName))
 	{
-		this->SetVisibility(ESlateVisibility::Visible);
+		MainContainer->SetVisibility(ESlateVisibility::Visible);
 
 		DurabilityNameTextBlock->SetText(FText::FromString(DurabilityActorName));
 
-		FString FractionString = FString::Printf(TEXT("%i/%i"), CurrentDurability, MaxDurability);
+		FString FractionString = FString::Printf(TEXT("%i/%i"), FMath::RoundToInt32(CurrentDurability), FMath::RoundToInt32(MaxDurability));
 		DurabilityFractionTextBlock->SetText(FText::FromString(FractionString));
 
 		DurabilityBar->SetPercent(CurrentDurability / MaxDurability);
 		return;
 	}
 
-	this->SetVisibility(ESlateVisibility::Hidden);
+	MainContainer->SetVisibility(ESlateVisibility::Hidden);
 }
