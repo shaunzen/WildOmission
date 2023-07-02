@@ -22,6 +22,7 @@ class DURABILITY_API IDurabilityInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual float GetDurabilityPercentage() = 0;
+	virtual float GetCurrentDurability() = 0;
+	virtual float GetMaxDurability() = 0;
 
 };

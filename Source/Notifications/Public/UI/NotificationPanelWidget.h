@@ -44,4 +44,5 @@ private:
 
 	void AddNotification(const FNotification& Notification);
 	void RemoveNotification(const FName& NotificationName);
+
 };

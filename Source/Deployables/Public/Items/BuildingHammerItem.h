@@ -19,5 +19,5 @@ public:
 
 	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
 
-	bool GetLookingAtItemDurability(float& OutPercent) const;
+	bool GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const;
 };

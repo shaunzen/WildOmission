@@ -17,6 +17,9 @@ static UMaterialInterface* HungerIcon = nullptr;
 
 UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	StatusNotificationContainer = nullptr;
+	NotificationContainer = nullptr;
+
 	static ConstructorHelpers::FClassFinder<UNotificationWidget> NotificationWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Notifications/WBP_Notification"));
 	if (NotificationWidgetBlueprintClass.Succeeded())
 	{

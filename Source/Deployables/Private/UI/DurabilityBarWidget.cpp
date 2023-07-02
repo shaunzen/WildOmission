@@ -2,6 +2,7 @@
 
 
 #include "UI/DurabilityBarWidget.h"
+#include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Components/EquipComponent.h"
 #include "Items/BuildingHammerItem.h"
@@ -22,14 +23,23 @@ void UDurabilityBarWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 		return;
 	}
 
-	float DurabilityPercent = 0.0f;
+	float CurrentDurability = 0.0f;
+	float MaxDurability = 0.0f;
+	FString DurabilityActorName = FString();
+
 	ABuildingHammerItem* HeldBuildingHammer = Cast<ABuildingHammerItem>(OwnerEquipComponent->GetEquipedItem());
-	if (HeldBuildingHammer && HeldBuildingHammer->GetLookingAtItemDurability(DurabilityPercent))
+	if (HeldBuildingHammer && HeldBuildingHammer->GetLookingAtItemDurability(CurrentDurability, MaxDurability, DurabilityActorName))
 	{
-		DurabilityBar->SetVisibility(ESlateVisibility::Visible);
-		DurabilityBar->SetPercent(DurabilityPercent);
+		this->SetVisibility(ESlateVisibility::Visible);
+
+		DurabilityNameTextBlock->SetText(FText::FromString(DurabilityActorName));
+
+		FString FractionString = FString::Printf(TEXT("%i/%i"), CurrentDurability, MaxDurability);
+		DurabilityFractionTextBlock->SetText(FText::FromString(FractionString));
+
+		DurabilityBar->SetPercent(CurrentDurability / MaxDurability);
 		return;
 	}
 
-	DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
+	this->SetVisibility(ESlateVisibility::Hidden);
 }

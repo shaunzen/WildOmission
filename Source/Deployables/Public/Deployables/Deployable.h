@@ -33,8 +33,11 @@ public:
 	UStaticMesh* GetMesh() const;
 	FTransform GetMeshTransform() const;
 
-	virtual float GetDurabilityPercentage() override;
-
+	// Begin IDurabilityInterface Implementation
+	virtual float GetCurrentDurability() override;
+	virtual float GetMaxDurability() override;
+	// End IDurabilityInterface Implementation
+	
 	bool CanSpawnOnGround() const;
 	bool CanSpawnOnFloor() const;
 	bool CanSpawnOnWall() const;

@@ -79,6 +79,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
+				"Engine",
 				"UMG"
 			]
 		},

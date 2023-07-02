@@ -53,7 +53,7 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	ApplyDamage();
 }
 
-bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutPercent) const
+bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const
 {
 	if (GetOwnerPawn() == nullptr)
 	{
@@ -80,6 +80,8 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutPercent) const
 		return false;
 	}
 
-	OutPercent = DurabilityInterfaceActor->GetDurabilityPercentage();
+	OutCurrentDurability = DurabilityInterfaceActor->GetCurrentDurability();
+	OutMaxDurability = DurabilityInterfaceActor->GetMaxDurability();
+	OutActorName = HitResult.GetActor()->GetActorNameOrLabel();
 	return true;
 }

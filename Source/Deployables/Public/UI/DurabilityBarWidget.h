@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DurabilityBarWidget.generated.h"
 
+class UTextBlock;
 class UProgressBar;
 
 UCLASS()
@@ -16,6 +17,12 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* DurabilityNameTextBlock;
+	
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* DurabilityFractionTextBlock;
+	
 	UPROPERTY(Meta = (BindWidget))
 	UProgressBar* DurabilityBar;
 	

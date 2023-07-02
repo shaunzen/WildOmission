@@ -91,9 +91,14 @@ FTransform ADeployable::GetMeshTransform() const
 	return MeshComponent->GetRelativeTransform();
 }
 
-float ADeployable::GetDurabilityPercentage()
+float ADeployable::GetCurrentDurability()
 {
-	return CurrentDurability / MaxDurability;
+	return CurrentDurability;
+}
+
+float ADeployable::GetMaxDurability()
+{
+	return MaxDurability;
 }
 
 bool ADeployable::CanSpawnOnGround() const
