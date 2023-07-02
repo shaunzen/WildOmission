@@ -19,7 +19,7 @@ UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& Obj
 {
 	StatusNotificationContainer = nullptr;
 	NotificationContainer = nullptr;
-
+	
 	static ConstructorHelpers::FClassFinder<UNotificationWidget> NotificationWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Notifications/WBP_Notification"));
 	if (NotificationWidgetBlueprintClass.Succeeded())
 	{

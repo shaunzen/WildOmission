@@ -26,7 +26,7 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* StatusNotificationContainer;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UNotificationWidget> NotificationWidgetBlueprint;
 
 	UFUNCTION()

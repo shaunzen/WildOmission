@@ -14,6 +14,7 @@ class UWidgetSwitcher;
 class UInventoryMenuWidget;
 class UCraftingMenuWidget;
 class UGameChatWidget;
+class UNotificationPanelWidget;
 
 UCLASS(Abstract)
 class WILDOMISSIONCORE_API UPlayerHUDWidget : public UUserWidget, public IGameChatParentWidget
@@ -66,6 +67,9 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	UGameChatWidget* Chat;
+
+	UPROPERTY(Meta = (BindWidget))
+	UNotificationPanelWidget* NotificationPanel;
 
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* BrandingTextBlock;
