@@ -77,7 +77,10 @@
 		{
 			"Name": "Notifications",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"UMG"
+			]
 		},
 		{
 			"Name": "SaveSystem",

@@ -5,7 +5,6 @@
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Components/WidgetSwitcher.h"
-#include "UI/VitalsWidget.h"
 #include "UI/InventoryMenuWidget.h"
 #include "UI/CraftingMenuWidget.h"
 #include "UI/GameChatWidget.h"
@@ -17,22 +16,13 @@
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "GameFramework/GameState.h"
 
-// TODO these are to be removed in future versions
-#include "Items/BuildingHammerItem.h"
-#include "Components/EquipComponent.h"
-#include "Components/ProgressBar.h"
-
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	InteractionPrompt = nullptr;
-	DurabilityBar = nullptr;
 	MenuBackgroundBorder = nullptr;
 	MenuSwitcher = nullptr;
 	InventoryMenu = nullptr;
 	CraftingMenu = nullptr;
 	Chat = nullptr;
-	NotificationPanel = nullptr;
-	Vitals = nullptr;
 	BrandingTextBlock = nullptr;
 }
 
@@ -43,14 +33,6 @@ void UPlayerHUDWidget::NativeConstruct()
 	UpdateBrandingText();
 	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("MenuBackgroundMouseButtonDown"));
 	Chat->Setup(this, Cast<IChatMessageContainer>(GetWorld()->GetGameState()));
-}
-
-void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	UpdateInteractionPrompt();
-	UpdateDurabilityPrompt();
 }
 
 void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
@@ -224,56 +206,6 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	
 	InventoryMenu->Close(true);
 	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
-}
-
-void UPlayerHUDWidget::UpdateInteractionPrompt()
-{
-	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
-	if (OwnerPawn == nullptr)
-	{
-		return;
-	}
-	
-	UInteractionComponent* OwnerInteractionComopnent = OwnerPawn->FindComponentByClass<UInteractionComponent>();
-	if (OwnerInteractionComopnent == nullptr)
-	{
-		return;
-	}
-
-	if (!IsMenuOpen())
-	{
-		InteractionPrompt->SetText(FText::FromString(OwnerInteractionComopnent->GetInteractionString()));
-	}
-	else
-	{
-		InteractionPrompt->SetText(FText::FromString(FString("")));
-	}
-}
-
-void UPlayerHUDWidget::UpdateDurabilityPrompt()
-{
-	APawn* OwnerPawn = GetOwningPlayerPawn<APawn>();
-	if (OwnerPawn == nullptr)
-	{
-		return;
-	}
-
-	UEquipComponent* OwnerEquipComponent = OwnerPawn->FindComponentByClass<UEquipComponent>();
-	if (OwnerEquipComponent == nullptr)
-	{
-		return;
-	}
-
-	float DurabilityPercent = 0.0f;
-	ABuildingHammerItem* HeldBuildingHammer = Cast<ABuildingHammerItem>(OwnerEquipComponent->GetEquipedItem());
-	if (HeldBuildingHammer && HeldBuildingHammer->GetLookingAtItemDurability(DurabilityPercent) && !IsMenuOpen())
-	{
-		DurabilityBar->SetVisibility(ESlateVisibility::Visible);
-		DurabilityBar->SetPercent(DurabilityPercent);
-		return;
-	}
-
-	DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UPlayerHUDWidget::SetMouseCursorToCenter()

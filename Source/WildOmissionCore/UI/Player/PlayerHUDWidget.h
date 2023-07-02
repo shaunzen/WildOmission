@@ -10,13 +10,10 @@
 class UTextBlock;
 class UBorder;
 class UWidgetSwitcher;
-class UProgressBar;
 
-class UVitalsWidget;
 class UInventoryMenuWidget;
 class UCraftingMenuWidget;
 class UGameChatWidget;
-class UNotificationPanelWidget;
 
 UCLASS(Abstract)
 class WILDOMISSIONCORE_API UPlayerHUDWidget : public UUserWidget, public IGameChatParentWidget
@@ -27,8 +24,7 @@ public:
 	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeConstruct() override;	
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
+	
 	// Setters
 	UFUNCTION(BlueprintCallable)
 	void ToggleInventoryMenu(bool ForceOpen = false);
@@ -56,16 +52,10 @@ public:
 	UInventoryMenuWidget* GetInventoryMenu() const;
 
 private:
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* InteractionPrompt;
-
 	UPROPERTY(Meta = (BindWidget))
-	UProgressBar* DurabilityBar;
-	
-	UPROPERTY(meta = (BindWidget))
 	UBorder* MenuBackgroundBorder;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(Meta = (BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
 
 	UPROPERTY(Meta = (BindWidget))
@@ -78,12 +68,6 @@ private:
 	UGameChatWidget* Chat;
 
 	UPROPERTY(Meta = (BindWidget))
-	UNotificationPanelWidget* NotificationPanel;
-	
-	UPROPERTY(meta = (BindWidget))
-	UVitalsWidget* Vitals;
-
-	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* BrandingTextBlock;
 
 	void UpdateBrandingText();
@@ -93,9 +77,6 @@ private:
 	void SwitchToCraftingMenu();
 	void CloseMenuPanel();
 
-	void UpdateInteractionPrompt();
-	void UpdateDurabilityPrompt();
-	
 	void SetMouseCursorToCenter();
 
 	UFUNCTION()

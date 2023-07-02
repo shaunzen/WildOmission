@@ -4,20 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InteractionWidget.generated.h"
+#include "DurabilityBarWidget.generated.h"
 
-class UTextBlock;
+class UProgressBar;
 
 UCLASS()
-class INTERACTION_API UInteractionWidget : public UUserWidget
+class DEPLOYABLES_API UDurabilityBarWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
 public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* InteractionPromptTextBlock;
-
+	UProgressBar* DurabilityBar;
+	
 };
