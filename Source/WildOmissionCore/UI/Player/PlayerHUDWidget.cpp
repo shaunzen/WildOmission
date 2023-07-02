@@ -15,6 +15,9 @@
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "GameFramework/GameState.h"
 
+// for some reason it the blueprint fucks up if this isnt here?
+#include "UI/NotificationPanelWidget.h"
+
 UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	MenuBackgroundBorder = nullptr;
