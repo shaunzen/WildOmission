@@ -37,7 +37,10 @@
 		{
 			"Name": "EquipableItems",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"UMG"
+			]
 		},
 		{
 			"Name": "GameChat",
@@ -57,7 +60,10 @@
 		{
 			"Name": "Interaction",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"UMG"
+			]
 		},
 		{
 			"Name": "Inventory",
