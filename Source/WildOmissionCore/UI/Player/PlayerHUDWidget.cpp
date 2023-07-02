@@ -8,7 +8,6 @@
 #include "UI/InventoryMenuWidget.h"
 #include "UI/CraftingMenuWidget.h"
 #include "UI/GameChatWidget.h"
-#include "UI/NotificationPanelWidget.h"
 #include "Components/InteractionComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "Interfaces/ChatMessageContainer.h"
