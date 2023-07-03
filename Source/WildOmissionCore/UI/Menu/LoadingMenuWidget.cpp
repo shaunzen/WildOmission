@@ -5,6 +5,11 @@
 #include "Components/TextBlock.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 
+ULoadingMenuWidget::ULoadingMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	SetIsFocusable(true);
+}
+
 void ULoadingMenuWidget::Setup()
 {
 	this->AddToViewport();

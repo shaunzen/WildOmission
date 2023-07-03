@@ -2,14 +2,14 @@
 
 
 #include "WildOmissionCharacter.h"
-#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "HumanAnimInstance.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
-
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -19,20 +19,14 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Components/CraftingComponent.h"
-
-#include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
-
-#include "WildOmissionCore/WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
-
-#include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
+#include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
+#include "WildOmissionCore/WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
-#include "Items/EquipableItem.h"
 #include "UI/InventoryMenuWidget.h"
-#include "Engine/EngineTypes.h"
-#include "Engine/DamageEvents.h"
-#include "Kismet/GameplayStatics.h"
 #include "Deployables/ItemContainerBase.h"
+#include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
+#include "Engine/DamageEvents.h"
 
 //********************************
 // Setup/General Actor Functionality
@@ -715,6 +709,11 @@ float AWildOmissionCharacter::GetHeadPitch() const
 
 FRotator AWildOmissionCharacter::GetReplicatedControlRotation() const
 {
+	if (IsLocallyControlled())
+	{
+		return GetControlRotation();
+	}
+
 	return ReplicatedControlRotation;
 }
 

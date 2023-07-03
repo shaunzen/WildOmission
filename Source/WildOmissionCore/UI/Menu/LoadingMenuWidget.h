@@ -14,6 +14,8 @@ class WILDOMISSIONCORE_API ULoadingMenuWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	ULoadingMenuWidget(const FObjectInitializer& ObjectInitializer);
+
 	void Setup();
 	void Teardown();
 

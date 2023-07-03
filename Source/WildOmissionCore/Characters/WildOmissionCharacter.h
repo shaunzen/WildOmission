@@ -4,18 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "InputActionValue.h"
 #include "Interfaces/ContainerOpener.h"
 #include "WildOmissionCharacter.generated.h"
 
-class UInputMappingContext;
 class UInputAction;
+struct FInputActionValue;
+class UInputComponent;
+class UInputMappingContext;
 class UCameraComponent;
 class USpringArmComponent;
+class UVitalsComponent;
+class UInteractionComponent;
+class UPlayerInventoryComponent;
+class UInventoryManipulatorComponent;
+class UEquipComponent;
 class UCraftingComponent;
 class UNameTagComponent;
-class AItemContainerBase;
 class USpecialEffectsHandlerComponent;
+
+class AItemContainerBase;
+class UPlayerHUDWidget;
 
 UCLASS()
 class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public IContainerOpener
@@ -27,7 +35,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 	virtual void Tick(float DeltaTime) override;
 
@@ -59,16 +67,16 @@ public:
 	UCameraComponent* GetFirstPersonCameraComponent();
 
 	UFUNCTION(BlueprintCallable)
-	class UPlayerHUDWidget* GetHUDWidget() const;
+	UPlayerHUDWidget* GetHUDWidget() const;
 
 	UFUNCTION(BlueprintCallable)
-	class UVitalsComponent* GetVitalsComponent() const;
+	UVitalsComponent* GetVitalsComponent() const;
 
 	UFUNCTION(BlueprintCallable)
-	class UInventoryManipulatorComponent* GetInventoryManipulatorComponent() const;
+	UInventoryManipulatorComponent* GetInventoryManipulatorComponent() const;
 
 	UFUNCTION(BlueprintCallable)
-	class UPlayerInventoryComponent* GetInventoryComponent() const;
+	UPlayerInventoryComponent* GetInventoryComponent() const;
 
 	UFUNCTION(BlueprintCallable)
 	UCraftingComponent* GetCraftingComponent() const;
@@ -80,31 +88,32 @@ protected:
 	
 private:
 	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* FirstPersonArmsMeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* FirstPersonCameraComponent;
 	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* FirstPersonSpringArmComponent;
 
-	UPROPERTY(VisibleAnywhere)
-	USkeletalMeshComponent* FirstPersonArmsMeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	class UEquipComponent* EquipComponent;
+	UVitalsComponent* VitalsComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	class UVitalsComponent* VitalsComponent;
+	UInteractionComponent* InteractionComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UPlayerInventoryComponent* InventoryComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	class UInventoryManipulatorComponent* InventoryManipulatorComponent;
+	UInventoryManipulatorComponent* InventoryManipulatorComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	class UPlayerInventoryComponent* InventoryComponent;
+	UEquipComponent* EquipComponent;
 	
 	UPROPERTY(VisibleAnywhere)
 	UCraftingComponent* CraftingComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	class UInteractionComponent* InteractionComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UNameTagComponent* NameTag;
@@ -113,8 +122,8 @@ private:
 	USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
 
 	UPROPERTY()
-	class UPlayerHUDWidget* PlayerHUDWidget;
-	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
+	UPlayerHUDWidget* PlayerHUDWidget;
+	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	UPROPERTY()
 	TSubclassOf<AItemContainerBase> RagdollClass;
