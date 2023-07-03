@@ -2,16 +2,11 @@
 
 
 #include "Items/BuildingHammerItem.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Components/EquipComponent.h"
-#include "Components/PlayerInventoryComponent.h"
-#include "Components/InventoryManipulatorComponent.h"
 #include "Interfaces/DurabilityInterface.h"
+#include "Deployables/Deployable.h"
 #include "Camera/CameraComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Net/UnrealNetwork.h"
-#include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
 
 ABuildingHammerItem::ABuildingHammerItem()
@@ -22,7 +17,7 @@ ABuildingHammerItem::ABuildingHammerItem()
 
 void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation());
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerEquipComponent()->GetOwnerControlRotation());
 
 	FHitResult HitResult;
 
@@ -48,7 +43,21 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 
-	// TODO add this back later
+	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
+	if (HitPawn)
+	{
+		FPointDamageEvent HitByToolEvent(20.0f, HitResult, OwnerCharacterLookVector, nullptr);
+		HitPawn->TakeDamage(20.0f, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+	}
+
+	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
+	if (HitDeployable)
+	{
+		float DamageAmount = 50.0f;
+
+		FPointDamageEvent HitByToolEvent(DamageAmount, HitResult, OwnerCharacterLookVector, nullptr);
+		HitDeployable->TakeDamage(DamageAmount, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+	}
 
 	ApplyDamage();
 }

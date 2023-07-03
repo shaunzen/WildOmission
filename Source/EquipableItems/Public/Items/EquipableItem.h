@@ -7,6 +7,8 @@
 #include "Actors/InventoryEquipableActor.h"
 #include "EquipableItem.generated.h"
 
+class UEquipComponent;
+
 UCLASS()
 class EQUIPABLEITEMS_API AEquipableItem : public AInventoryEquipableActor
 {
