@@ -86,6 +86,7 @@ protected:
 	bool bSecondaryEnabled;
 
 	APawn* GetOwnerPawn() const;
+	UEquipComponent* GetOwnerEquipComponent() const;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayThirdPersonEquipMontage();

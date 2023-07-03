@@ -56,6 +56,11 @@ APawn* AEquipableItem::GetOwnerPawn() const
 	return Cast<APawn>(GetOwner());
 }
 
+UEquipComponent* AEquipableItem::GetOwnerEquipComponent() const
+{
+	return GetOwner()->FindComponentByClass<UEquipComponent>();
+}
+
 // Called every frame
 void AEquipableItem::Tick(float DeltaTime)
 {

@@ -66,7 +66,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	EquipComponent = CreateDefaultSubobject<UEquipComponent>(FName("EquipComponent"));
 	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
-	EquipComponent->Setup(FirstPersonArmsMeshComponent, this->GetMesh());
+	EquipComponent->Setup(FirstPersonArmsMeshComponent, this->GetMesh(), &ReplicatedControlRotation);
 
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 
@@ -504,6 +504,11 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::StartSprint()
 {
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+
 	Server_Sprint(true);
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	bSprinting = true;
@@ -511,6 +516,11 @@ void AWildOmissionCharacter::StartSprint()
 
 void AWildOmissionCharacter::EndSprint()
 {
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+
 	Server_Sprint(false);
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	bSprinting = false;

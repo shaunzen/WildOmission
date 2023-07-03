@@ -40,7 +40,7 @@ void UEquipComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 void UEquipComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
+
 	if (IsEquipedItemValid() && PrimaryHeld)
 	{
 		EquipedItem->OnPrimaryHeld();
@@ -52,10 +52,11 @@ void UEquipComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, F
 	}
 }
 
-void UEquipComponent::Setup(USkeletalMeshComponent* FirstPersonMeshComponent, USkeletalMeshComponent* ThirdPersonMeshComponent)
+void UEquipComponent::Setup(USkeletalMeshComponent* FirstPersonMeshComponent, USkeletalMeshComponent* ThirdPersonMeshComponent, FRotator* OwnerControlRotationPointer)
 {
 	OwnerFirstPersonMesh = FirstPersonMeshComponent;
 	OwnerThirdPersonMesh = ThirdPersonMeshComponent;
+	OwnerReplicatedControlRotation = OwnerControlRotationPointer;
 	FirstPersonItemMeshComponent->AttachToComponent(FirstPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 }
 
@@ -124,6 +125,15 @@ void UEquipComponent::DestroyEquipedItem()
 
 	EquipedItem->Destroy();
 	EquipedItem = nullptr;
+}
+
+FRotator UEquipComponent::GetOwnerControlRotation() const
+{
+	if (OwnerReplicatedControlRotation == nullptr)
+	{
+		return FRotator::ZeroRotator;
+	}
+	return *OwnerReplicatedControlRotation;
 }
 
 void UEquipComponent::PlayEquipMontage(bool FirstPerson)

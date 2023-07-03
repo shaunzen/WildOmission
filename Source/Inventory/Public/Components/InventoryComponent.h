@@ -2,7 +2,6 @@
 
 #pragma once
 
-// TODO clean these up
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Structs/InventoryContents.h"

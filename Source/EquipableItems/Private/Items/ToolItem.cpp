@@ -70,15 +70,14 @@ void AToolItem::OnPrimaryHeld()
 		return;
 	}
 
-	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
-	if (OwnerEquipComponent == nullptr || OwnerEquipComponent->PrimaryMontagePlaying())
+	if (GetOwnerEquipComponent() == nullptr || GetOwnerEquipComponent()->PrimaryMontagePlaying())
 	{
 		return;
 	}
 
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
-		OwnerEquipComponent->PlayPrimaryMontage(true);
+		GetOwnerEquipComponent()->PlayPrimaryMontage(true);
 	}
 
 	Client_PlayThirdPersonPrimaryMontage();
@@ -86,8 +85,7 @@ void AToolItem::OnPrimaryHeld()
 
 void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	// TODO replicated version
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation());
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerEquipComponent()->GetOwnerControlRotation());
 
 	FHitResult HitResult;
 
@@ -172,7 +170,6 @@ void AToolItem::ApplyDamage()
 	}
 }
 
-// TODO make static
 FInventoryItem* AToolItem::FindInInventory()
 {
 	UInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UInventoryComponent>();

@@ -23,13 +23,15 @@ public:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Setup(USkeletalMeshComponent* FirstPersonMeshComponent, USkeletalMeshComponent* ThirdPersonMeshComponent);
+	void Setup(USkeletalMeshComponent* FirstPersonMeshComponent, USkeletalMeshComponent* ThirdPersonMeshComponent, FRotator* OwnerControlRotationPointer);
 
 	void EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID);
 
 	void Disarm();
 
 	void DestroyEquipedItem();
+
+	FRotator GetOwnerControlRotation() const;
 
 	void PlayEquipMontage(bool FirstPerson);
 	void PlayPrimaryMontage(bool FirstPerson);
@@ -77,6 +79,8 @@ private:
 	
 	UPROPERTY()
 	USkeletalMeshComponent* OwnerThirdPersonMesh;
+
+	FRotator* OwnerReplicatedControlRotation;
 
 	UFUNCTION()
 	void OnRep_EquipedItem();
