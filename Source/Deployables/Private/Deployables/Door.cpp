@@ -7,6 +7,11 @@
 
 ADoor::ADoor()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
+	OpenSound = nullptr;
+	CloseSound = nullptr;
+
 	bCanSpawnOnGround = false;
 	bCanSpawnOnFloor = false;
 	bCanSpawnOnWall = false;
@@ -45,8 +50,8 @@ void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME_CONDITION(ADoor, SpawnRotation, COND_InitialOnly);
 	DOREPLIFETIME(ADoor, bIsOpen);
-	DOREPLIFETIME(ADoor, SpawnRotation);
 }
 
 void ADoor::Interact(AActor* Interactor)
@@ -61,6 +66,8 @@ void ADoor::Interact(AActor* Interactor)
 	{
 		Client_PlayCloseSound();
 	}
+
+	FlushNetDormancy();
 }
 
 FString ADoor::PromptText()
