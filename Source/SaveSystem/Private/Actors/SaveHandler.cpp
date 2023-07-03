@@ -5,6 +5,7 @@
 #include "Components/ActorSaveHandlerComponent.h"
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "Interfaces/WorldGenerator.h"
+#include "Interfaces/SavableWeatherHandler.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,10 +24,11 @@ ASaveHandler::ASaveHandler()
 	WorldGenerator = nullptr;
 }
 
-void ASaveHandler::Setup(IGameSaveLoadController* SaveLoadController, IWorldGenerator* InWorldGenerator)
+void ASaveHandler::Setup(IWorldGenerator* InWorldGenerator, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController)
 {
-	GameSaveLoadController = SaveLoadController;
 	WorldGenerator = InWorldGenerator;
+	WeatherHandler = InWeatherHandler;
+	GameSaveLoadController = SaveLoadController;
 
 	FTimerHandle AutoSaveTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
@@ -40,7 +42,13 @@ void ASaveHandler::SaveGame()
 		UE_LOG(LogSaveSystem, Error, TEXT("Aborting save, SaveFile was nullptr."));
 		return;
 	}
-	
+	SaveFile->LastPlayedTime = FDateTime::Now();
+
+	if (WeatherHandler)
+	{
+		SaveFile->WeatherHandlerSave.NextStormSpawnTime = WeatherHandler->GetNextStormSpawnTime();
+	}
+
 	ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 
@@ -70,10 +78,10 @@ void ASaveHandler::LoadWorld()
 		return;
 	}
 
-	//if (GameMode->GetWeatherManager())
-	//{
-	//	GameMode->GetWeatherManager()->SetNextStormSpawnTime(SaveFile->WeatherManagerSave.NextStormSpawnTime);
-	//}
+	if (WeatherHandler)
+	{
+		WeatherHandler->SetNextStormSpawnTime(SaveFile->WeatherHandlerSave.NextStormSpawnTime);
+	}
 
 	GameSaveLoadController->SetLoadingSubtitle(FString("Loading objects."));
 	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves);
@@ -100,6 +108,11 @@ UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
 IWorldGenerator* ASaveHandler::GetWorldGenerator() const
 {
 	return WorldGenerator;
+}
+
+ISavableWeatherHandler* ASaveHandler::GetWeatherHandler() const
+{
+	return WeatherHandler;
 }
 
 IGameSaveLoadController* ASaveHandler::GetSaveLoadController() const

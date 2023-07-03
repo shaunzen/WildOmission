@@ -45,7 +45,7 @@ struct FActorSaveData
 };
 
 USTRUCT()
-struct FWeatherManagerSave
+struct FWeatherHandlerSave
 {
 	GENERATED_BODY()
 	
@@ -94,7 +94,7 @@ public:
 	FString LevelFile = FString("LV_Sandbox");
 
 	UPROPERTY()
-	FWeatherManagerSave WeatherManagerSave;
+	FWeatherHandlerSave WeatherHandlerSave;
 
 	UPROPERTY()
 	FWildOmissionSaveCreationInformation CreationInformation;

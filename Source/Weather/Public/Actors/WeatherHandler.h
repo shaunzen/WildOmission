@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/SavableWeatherHandler.h"
 #include "WeatherHandler.generated.h"
 
 class AStorm;
@@ -28,7 +29,7 @@ struct FWindParameters
 };
 
 UCLASS()
-class WEATHER_API AWeatherHandler : public AActor
+class WEATHER_API AWeatherHandler : public AActor, public ISavableWeatherHandler
 {
 	GENERATED_BODY()
 	
@@ -44,8 +45,10 @@ public:
 	AStorm* GetCurrentStorm() const;
 	void SetCurrentStorm(AStorm* NewCurrentStorm);
 	
-	float GetNextStormSpawnTime() const;
-	void SetNextStormSpawnTime(float NewSpawnTime);
+	// Begin ISavableWeatherHandler Implementation
+	virtual float GetNextStormSpawnTime() const override;
+	virtual void SetNextStormSpawnTime(float NewSpawnTime) override;
+	// End ISavableWeatherHandler Implementation
 
 protected:
 	// Called when the game starts or when spawned
