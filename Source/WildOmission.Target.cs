@@ -12,6 +12,6 @@ public class WildOmissionTarget : TargetRules
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		bUsesSteam = true;
 
-		ExtraModuleNames.AddRange( new string[] { "WildOmission" } );
+		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
 	}
 }

@@ -1,0 +1,70 @@
+// Copyright Telephone Studios. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "EquipableItem.h"
+#include "Enums/ToolType.h"
+#include "Structs/InventoryItem.h"
+#include "ToolItem.generated.h"
+
+class UNiagaraSystem;
+
+UCLASS()
+class EQUIPABLEITEMS_API AToolItem : public AEquipableItem
+{
+	GENERATED_BODY()
+
+public:
+	AToolItem();
+
+	// Called when the item is equiped into the players hands
+	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
+
+	// Called before the item is unequiped
+	virtual void OnUnequip() override;
+
+	virtual void OnPrimaryHeld() override;
+
+	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance);
+
+	UFUNCTION(BlueprintCallable)
+	UAnimMontage* GetPrimaryMontage() const;
+
+	float GetGatherMultiplier() const;
+	
+	float GetSwingSpeedRate() const;
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TEnumAsByte<EToolType> ToolType;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float GatherMultiplier;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float EffectiveRangeCentimeters;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float SwingSpeedRate;
+
+	UPROPERTY()
+	int32 Durability;
+
+	UFUNCTION()
+	void ApplyDamage();
+	
+	void PlayImpactSound(const FHitResult& HitResult);
+	void SpawnImpactParticles(const FHitResult& HitResult, const FVector& ImpactorForwardVector);
+	void SpawnImpactDecal(const FHitResult& HitResult);
+
+	FInventoryItem* FindInInventory();
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* PrimaryMontage;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Client_PlayThirdPersonPrimaryMontage();
+
+};
