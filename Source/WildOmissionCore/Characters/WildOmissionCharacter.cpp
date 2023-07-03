@@ -405,7 +405,7 @@ void AWildOmissionCharacter::HandleDeath()
 	}
 
 	// Set Items to be this players items
-	//SpawnedRagdoll->GetInventoryComponent()->Load(InventoryComponent->Save());
+	SpawnedRagdoll->GetInventoryComponent()->Load(InventoryComponent->Save());
 
 	Destroy();
 }
