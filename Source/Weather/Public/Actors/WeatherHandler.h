@@ -28,6 +28,8 @@ struct FWindParameters
 
 };
 
+class AWorldGenerationHandler;
+
 UCLASS()
 class WEATHER_API AWeatherHandler : public AActor, public ISavableWeatherHandler
 {
@@ -36,6 +38,9 @@ class WEATHER_API AWeatherHandler : public AActor, public ISavableWeatherHandler
 public:	
 	// Sets default values for this actor's properties
 	AWeatherHandler();
+	
+	void Setup(AWorldGenerationHandler* InWorldGenerationHandler);
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -49,6 +54,8 @@ public:
 	virtual float GetNextStormSpawnTime() const override;
 	virtual void SetNextStormSpawnTime(float NewSpawnTime) override;
 	// End ISavableWeatherHandler Implementation
+
+	AWorldGenerationHandler* GetWorldGenerationHandler() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -65,6 +72,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AStorm> StormClass;
 	
+	UPROPERTY()
+	AWorldGenerationHandler* WorldGenerationHandler;
+
 	UPROPERTY()
 	AStorm* CurrentStorm;
 	bool CanSpawnStorm() const;

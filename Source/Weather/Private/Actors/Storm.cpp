@@ -3,6 +3,7 @@
 
 #include "Actors/Storm.h"
 #include "Actors/WeatherHandler.h"
+#include "Actors/WorldGenerationHandler.h"
 #include "Actors/Lightning.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
@@ -220,7 +221,7 @@ void AStorm::SpawnTornado(bool bFromSave)
 
 void AStorm::GetSpawnLocation()
 {
-	FVector2D WorldSize = FVector2D(2000.0f, 2000.0f);
+	FVector2D WorldSize = WeatherHandler->GetWorldGenerationHandler()->GetWorldSizeMeters();
 	// TODO get world size from world generation handler
 	WorldSize = WorldSize * 100.0f;
 

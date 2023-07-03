@@ -27,6 +27,7 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
 	WorldGenerationHandler = GetWorld()->SpawnActor<AWorldGenerationHandler>();
 	WeatherHandler = GetWorld()->SpawnActor<AWeatherHandler>();
+	WeatherHandler->Setup(WorldGenerationHandler);
 	SaveHandler->Setup(WorldGenerationHandler, WeatherHandler, Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));
 
 

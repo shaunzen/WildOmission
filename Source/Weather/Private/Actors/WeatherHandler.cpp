@@ -3,6 +3,7 @@
 
 #include "Actors/WeatherHandler.h"
 #include "Actors/Storm.h"
+#include "Actors/WorldGenerationHandler.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
@@ -47,6 +48,11 @@ void AWeatherHandler::BeginPlay()
 	}
 }
 
+void AWeatherHandler::Setup(AWorldGenerationHandler* InWorldGenerationHandler)
+{
+	WorldGenerationHandler = InWorldGenerationHandler;
+}
+
 // Called every frame
 void AWeatherHandler::Tick(float DeltaTime)
 {
@@ -74,10 +80,6 @@ AStorm* AWeatherHandler::SpawnStorm(bool FromCommand)
 	{
 		return CurrentStorm;
 	}
-
-	FVector2D WorldSize = FVector2D(2000.0f, 2000.0f);
-
-	// TODO get world size from world generation handler
 
 	CurrentStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
 	CurrentStorm->HandleSpawn(FromCommand);
@@ -174,4 +176,9 @@ float AWeatherHandler::GetNextStormSpawnTime() const
 void AWeatherHandler::SetNextStormSpawnTime(float NewSpawnTime)
 {
 	NextStormSpawnTime = FMath::Clamp(NewSpawnTime, 0.0f, MaxStormSpawnTime);
+}
+
+AWorldGenerationHandler* AWeatherHandler::GetWorldGenerationHandler() const
+{
+	return WorldGenerationHandler;
 }
