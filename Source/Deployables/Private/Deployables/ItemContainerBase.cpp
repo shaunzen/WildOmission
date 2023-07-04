@@ -9,8 +9,6 @@
 
 AItemContainerBase::AItemContainerBase()
 {
-	NetDormancy = DORM_Awake;
-	
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 
 	ConstructorHelpers::FClassFinder<UUserWidget> DefaultWidgetBlueprint(TEXT("/Game/WildOmission/UI/Inventory/WBP_ContainerBase"));
@@ -43,6 +41,8 @@ void AItemContainerBase::Interact(AActor* Interactor)
 		return;
 	}
 
+	SetNetDormancy(ENetDormancy::DORM_Awake);
+
 	IContainerOpener* InteractingContainerOpener = Cast<IContainerOpener>(Interactor);
 	if (InteractingContainerOpener == nullptr)
 	{
@@ -68,6 +68,7 @@ FString AItemContainerBase::PromptText()
 void AItemContainerBase::Server_UnOccupy_Implementation()
 {
 	OnContainerClosed();
+	SetNetDormancy(ENetDormancy::DORM_DormantAll);
 }
 
 FString AItemContainerBase::GetContainerName() const
