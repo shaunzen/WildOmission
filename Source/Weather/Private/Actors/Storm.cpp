@@ -268,6 +268,14 @@ void AStorm::Serialize(FArchive& Ar)
 	Super::Serialize(Ar);
 }
 
+void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStorm, SpawnedTornado);
+	DOREPLIFETIME_CONDITION(AStorm, MovementVector, COND_InitialOnly);
+}
+
 void AStorm::OnLoadComplete_Implementation()
 {
 	if (WeatherHandler == nullptr)

@@ -41,6 +41,8 @@ public:
 	
 	void Setup(AWorldGenerationHandler* InWorldGenerationHandler);
 	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -75,15 +77,11 @@ private:
 	UPROPERTY()
 	AWorldGenerationHandler* WorldGenerationHandler;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	AStorm* CurrentStorm;
 	bool CanSpawnStorm() const;
 
-	UPROPERTY()
-	FWindParameters WindParameters;
 	void CalculateWindParameters();
-
-	UFUNCTION(NetMulticast, Unreliable)
-	void Multicast_UpdateWindParameters(const FWindParameters& NewParameters);
+	void ApplyWindParameters(const FWindParameters& NewParameters);
 
 };

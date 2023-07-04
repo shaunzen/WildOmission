@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
+#include "Net/UnrealNetwork.h"
+#include "Log.h"
 
 static UMaterialParameterCollection* MPC_WindCollection = nullptr;
 
@@ -24,6 +26,8 @@ AWeatherHandler::AWeatherHandler()
 	MinStormSpawnTime = 300.0f;
 	MaxStormSpawnTime = 3600.0f;
 	NextStormSpawnTime = -1.0f;
+
+	WorldGenerationHandler = nullptr;
 
 	static ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/WildOmission/Weather/BP_Storm"));
 	if (StormBlueprint.Succeeded())
@@ -53,17 +57,24 @@ void AWeatherHandler::Setup(AWorldGenerationHandler* InWorldGenerationHandler)
 	WorldGenerationHandler = InWorldGenerationHandler;
 }
 
+void AWeatherHandler::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeatherHandler, CurrentStorm);
+}
+
 // Called every frame
 void AWeatherHandler::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	CalculateWindParameters();
+
 	if (!HasAuthority())
 	{
 		return;
 	}
-
-	CalculateWindParameters();
 
 	NextStormSpawnTime -= DeltaTime;
 
@@ -109,7 +120,7 @@ void AWeatherHandler::CalculateWindParameters()
 
 	if (CurrentStorm == nullptr)
 	{
-		Multicast_UpdateWindParameters(NewParams);
+		ApplyWindParameters(NewParams);
 		return;
 	}
 
@@ -130,6 +141,13 @@ void AWeatherHandler::CalculateWindParameters()
 
 	NewParams.GlobalWindStrength = FMath::Clamp(NormalizedSeverity * FadeInOutMultiplier, 0.3f, 1.0f);
 	NewParams.GlobalWindDirection = FVector2D(CurrentStorm->GetMovementVector().X, CurrentStorm->GetMovementVector().Y);
+
+	// If the wind direction is zero then trees will vanish from sight
+	if (NewParams.GlobalWindDirection.IsNearlyZero(KINDA_SMALL_NUMBER))
+	{
+		NewParams.GlobalWindDirection = FVector2D(0.5f, 0.5f);
+	}
+
 	NewParams.TornadoOnGround = 0.0f;
 	NewParams.TornadoLocation = FVector2D::ZeroVector;
 
@@ -139,17 +157,15 @@ void AWeatherHandler::CalculateWindParameters()
 		NewParams.TornadoOnGround = 1.0f;
 	}
 
-	Multicast_UpdateWindParameters(NewParams);
+	ApplyWindParameters(NewParams);
 }
 
-void AWeatherHandler::Multicast_UpdateWindParameters_Implementation(const FWindParameters& NewParameters)
+void AWeatherHandler::ApplyWindParameters(const FWindParameters& NewParameters)
 {
-	WindParameters = NewParameters;
-
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindStrength"), WindParameters.GlobalWindStrength);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindDirection"), FLinearColor(WindParameters.GlobalWindDirection.X, WindParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), WindParameters.TornadoOnGround);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(WindParameters.TornadoLocation.X, WindParameters.TornadoLocation.Y, 0.0f, 1.0f));
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindStrength"), NewParameters.GlobalWindStrength);
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindDirection"), FLinearColor(NewParameters.GlobalWindDirection.X, NewParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), NewParameters.TornadoOnGround);
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(NewParameters.TornadoLocation.X, NewParameters.TornadoLocation.Y, 0.0f, 1.0f));
 }
 
 AStorm* AWeatherHandler::GetCurrentStorm() const

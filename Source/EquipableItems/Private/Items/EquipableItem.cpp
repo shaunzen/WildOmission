@@ -58,6 +58,7 @@ APawn* AEquipableItem::GetOwnerPawn() const
 
 UEquipComponent* AEquipableItem::GetOwnerEquipComponent() const
 {
+	// BUG BUG
 	return GetOwner()->FindComponentByClass<UEquipComponent>();
 }
 

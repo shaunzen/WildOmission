@@ -23,6 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void Serialize(FArchive& Ar) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void HandleSpawn(bool SpawnedFromCommand = false);
 	void HandleDestruction();
@@ -64,7 +65,7 @@ private:
 	
 	UPROPERTY(SaveGame)
 	FVector SpawnLocation;
-	UPROPERTY(SaveGame)
+	UPROPERTY(Replicated, SaveGame)
 	FVector MovementVector;
 	UPROPERTY(SaveGame)
 	float MovementSpeed;
@@ -80,7 +81,7 @@ private:
 	FVector TargetLocation;
 	float TravelDistance;
 	float TraveledDistance;
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	ATornado* SpawnedTornado;
 
 	UPROPERTY()
