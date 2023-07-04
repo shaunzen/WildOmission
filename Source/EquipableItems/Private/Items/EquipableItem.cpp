@@ -58,6 +58,11 @@ APawn* AEquipableItem::GetOwnerPawn() const
 
 UEquipComponent* AEquipableItem::GetOwnerEquipComponent() const
 {
+	if (GetOwner() == nullptr)
+	{
+		return nullptr;
+	}
+
 	return GetOwner()->FindComponentByClass<UEquipComponent>();
 }
 
