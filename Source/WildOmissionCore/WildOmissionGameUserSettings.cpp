@@ -5,11 +5,13 @@
 
 static const float DEFAULT_FIELDOFVIEW = 90.0f;
 static const float DEFAULT_MASTERVOLUME = 1.0f;
+static const float DEFAULT_RENDERDISTANCE = 300.0f;
 
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {
     FieldOfView = DEFAULT_FIELDOFVIEW;
     MasterVolume = DEFAULT_MASTERVOLUME;
+    RenderDistanceMeters = DEFAULT_RENDERDISTANCE;
 }
 
 void UWildOmissionGameUserSettings::SetToDefaults()
@@ -18,6 +20,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
 
     FieldOfView = DEFAULT_FIELDOFVIEW;
     MasterVolume = DEFAULT_MASTERVOLUME;
+    RenderDistanceMeters = DEFAULT_RENDERDISTANCE;
 }
 
 void UWildOmissionGameUserSettings::SetFieldOfView(float NewFieldOfView)
@@ -38,6 +41,20 @@ void UWildOmissionGameUserSettings::SetMasterVolume(float NewMasterVolume)
 float UWildOmissionGameUserSettings::GetMasterVolume() const
 {
     return MasterVolume;
+}
+
+void UWildOmissionGameUserSettings::SetRenderDistance(float NewRenderDistance)
+{
+    if (NewRenderDistance != RenderDistanceMeters && OnRenderDistanceChanged.IsBound())
+    {
+        OnRenderDistanceChanged.Broadcast(NewRenderDistance);
+    }
+    RenderDistanceMeters = NewRenderDistance;
+}
+
+float UWildOmissionGameUserSettings::GetRenderDistance() const
+{
+    return RenderDistanceMeters;
 }
 
 int32 UWildOmissionGameUserSettings::GetResolutionScaleAsInt32() const

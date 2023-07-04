@@ -52,11 +52,14 @@ void UOptionsWidget::NativeConstruct()
 	FrameRateLimitOptionBox->AddOption(TEXT("144"));
 	FrameRateLimitOptionBox->AddOption(TEXT("240"));
 
+	// Setup Render Distance
+	RenderDistanceSliderOptionBox->SetMinValue(20.0f);
+	RenderDistanceSliderOptionBox->SetMaxValue(500.0f);
+
 	// Setup Graphics Quality
 	OverallGraphicsQualityOptionBox->GiveQualityOptions();
 	OverallGraphicsQualityOptionBox->AddOption(TEXT("Custom"));
 	OverallGraphicsQualityOptionBox->OnSelectionChange.AddDynamic(this, &UOptionsWidget::OnOverallQualityOptionChange);
-
 
 	// Setup Custom Settings
 	ViewDistanceQualityOptionBox->GiveQualityOptions();
@@ -129,6 +132,8 @@ void UOptionsWidget::RefreshWindowSettings()
 
 void UOptionsWidget::RefreshGraphicsSettings()
 {
+	RenderDistanceSliderOptionBox->SetValue(UserSettings->GetRenderDistance());
+
 	int32 OverallGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
 	bool UsingCustomSettings = OverallGraphicsQuality == -1;
 
@@ -185,6 +190,8 @@ void UOptionsWidget::Apply()
 	UserSettings->SetMasterVolume(MasterVolumeSliderOptionBox->GetValue() / 100.0f);
 
 	ApplyWindowSettings();
+
+	UserSettings->SetRenderDistance(RenderDistanceSliderOptionBox->GetValue());
 
 	// Apply Graphics Quality
 	ApplyCustomGraphicsSettings();
