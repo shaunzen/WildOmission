@@ -33,8 +33,6 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* FrameRateLimitOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* RenderDistanceSliderOptionBox;
-	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* OverallGraphicsQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* ViewDistanceQualityOptionBox;
