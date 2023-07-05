@@ -51,6 +51,8 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* PostProcessingQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
+	UMultiOptionBox* FoliageQualityOptionBox;
+	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* ShaderQualityOptionBox;
 
 	UPROPERTY(Meta = (BindWidget))

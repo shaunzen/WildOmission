@@ -66,6 +66,7 @@ void UOptionsWidget::NativeConstruct()
 	TextureQualityOptionBox->GiveQualityOptions();
 	VisualEffectQualityOptionBox->GiveQualityOptions();
 	PostProcessingQualityOptionBox->GiveQualityOptions();
+	FoliageQualityOptionBox->GiveQualityOptions();
 	ShaderQualityOptionBox->GiveQualityOptions();
 
 	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
@@ -150,6 +151,7 @@ void UOptionsWidget::RefreshCustomGraphicsSettings(bool IsUsingCustomSettings)
 	TextureQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
 	VisualEffectQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
 	PostProcessingQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	FoliageQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
 	ShaderQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
 	
 	ViewDistanceQualityOptionBox->SetSelectedIndex(UserSettings->GetViewDistanceQuality());
@@ -160,6 +162,7 @@ void UOptionsWidget::RefreshCustomGraphicsSettings(bool IsUsingCustomSettings)
 	TextureQualityOptionBox->SetSelectedIndex(UserSettings->GetTextureQuality());
 	VisualEffectQualityOptionBox->SetSelectedIndex(UserSettings->GetVisualEffectQuality());
 	PostProcessingQualityOptionBox->SetSelectedIndex(UserSettings->GetPostProcessingQuality());
+	FoliageQualityOptionBox->SetSelectedIndex(UserSettings->GetFoliageQuality());
 	ShaderQualityOptionBox->SetSelectedIndex(UserSettings->GetShadingQuality());
 
 	if (!IsUsingCustomSettings)
@@ -261,6 +264,7 @@ void UOptionsWidget::ApplyCustomGraphicsSettings()
 	UserSettings->SetTextureQuality(TextureQualityOptionBox->GetSelectedIndex());
 	UserSettings->SetVisualEffectQuality(VisualEffectQualityOptionBox->GetSelectedIndex());
 	UserSettings->SetPostProcessingQuality(PostProcessingQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetFoliageQuality(FoliageQualityOptionBox->GetSelectedIndex());
 	UserSettings->SetShadingQuality(ShaderQualityOptionBox->GetSelectedIndex());
 }
 
