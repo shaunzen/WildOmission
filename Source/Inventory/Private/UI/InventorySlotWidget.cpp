@@ -22,7 +22,7 @@ void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const int32& InIndex
 
 	Owner = InOwner;
 	Index = InIndex;
-
+	
 	ClearItem();
 }
 
