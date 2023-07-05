@@ -31,11 +31,11 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 		return;
 	}
 
-	HarvestingInventoryComponent->AddItem(HandleYield(GatherMultiplier));
+	HarvestingInventoryComponent->AddItem(HandleYield(GatherMultiplier), nullptr, true);
 
 	if (ShouldGiveSpecialItemDrop())
 	{
-		HarvestingInventoryComponent->AddItem(SpecialItemDrop);
+		HarvestingInventoryComponent->AddItem(SpecialItemDrop, nullptr, true);
 	}
 
 	Durability--;

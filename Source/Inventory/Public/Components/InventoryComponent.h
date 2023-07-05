@@ -80,7 +80,7 @@ public:
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable)
-	void AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems = nullptr);
+	void AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems = nullptr, bool ForceClientUpdate = false);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem(const FInventoryItem& ItemToRemove);	
@@ -123,6 +123,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_ServerState)
 	FInventoryState ServerState;
+
+	UFUNCTION(Client, Reliable)
+	void Client_ForceServerStateUpdate(const FInventoryState& NewServerState);
 
 	UFUNCTION()
 	virtual void OnRep_ServerState();
