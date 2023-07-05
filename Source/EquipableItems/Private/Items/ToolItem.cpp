@@ -150,11 +150,15 @@ void AToolItem::ApplyDamage()
 {
 	Durability -= 1;
 
-	FInventoryItem* InventoryItem = FindInInventory();
-	InventoryItem->SetStat(FName("Durability"), Durability);
-	
 	UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
-	if (OwnerInventory && Durability <= 0)
+	if (OwnerInventory == nullptr)
+	{
+		return;
+	}
+
+	OwnerInventory->SetHeldItemDurability(Durability);
+	
+	if (Durability <= 0)
 	{
 		OwnerInventory->RemoveHeldItem();
 	}

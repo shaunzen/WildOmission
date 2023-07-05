@@ -33,17 +33,16 @@ public:
 
 	void SetToolbarSelectionIndex(int8 SelectionIndex);
 
+	void SetHeldItemDurability(const int32& NewDurability);
 	void RemoveHeldItem();
+
+	virtual void OnRep_ServerState() override;
 
 	//**************************************************************
 	// Getters
 	//**************************************************************
 
-	int8 GetToolbarSelectionIndex();
-	
-protected:
-
-	virtual void OnRep_ServerState() override;
+	int8 GetToolbarSelectionIndex();	
 
 private:
 

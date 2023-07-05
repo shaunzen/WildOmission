@@ -79,6 +79,13 @@ void UPlayerInventoryComponent::SetToolbarSelectionIndex(int8 SelectionIndex)
 	BroadcastInventoryUpdate();
 }
 
+void UPlayerInventoryComponent::SetHeldItemDurability(const int32& NewDurability)
+{
+	FInventorySlot& SelectedSlot = ServerState.Slots[ToolbarSelectionIndex];
+	SelectedSlot.Item.SetStat(TEXT("Durability"), NewDurability);
+	OnRep_ServerState();
+}
+
 void UPlayerInventoryComponent::RemoveHeldItem()
 {
 	FInventorySlot& SelectedSlot = ServerState.Slots[ToolbarSelectionIndex];

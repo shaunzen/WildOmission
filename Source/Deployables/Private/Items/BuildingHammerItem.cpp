@@ -23,6 +23,8 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetOwner());
+	CollisionParams.bTraceComplex = true;
+	CollisionParams.bReturnPhysicalMaterial = true;
 
 	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
@@ -36,6 +38,7 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	{
 		PlayImpactSound(HitResult);
 		SpawnImpactParticles(HitResult, OwnerCharacterLookVector);
+		SpawnImpactDecal(HitResult);
 	}
 
 	if (!HasAuthority())
