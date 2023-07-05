@@ -61,6 +61,7 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 			float Percent;
 			Percent = (float)Item.GetStat(FName("Durability")) / (float)SlotItemData->GetStat(FName("Durability"));
 			DurabilityBar->SetPercent(Percent);
+			DurabilityBar->SetFillColorAndOpacity(FMath::Lerp(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f), FLinearColor(0.0f, 1.0f, 0.0f, 1.0f), Percent));
 		}
 		else
 		{
