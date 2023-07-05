@@ -65,12 +65,7 @@ void AToolItem::OnPrimaryHeld()
 {
 	Super::OnPrimaryHeld();
 
-	if (GetOwner() == nullptr)
-	{
-		return;
-	}
-
-	if (GetOwnerEquipComponent() == nullptr || GetOwnerEquipComponent()->PrimaryMontagePlaying())
+	if (GetOwner() == nullptr || GetOwnerEquipComponent() == nullptr || GetOwnerEquipComponent()->PrimaryMontagePlaying())
 	{
 		return;
 	}
