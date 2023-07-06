@@ -21,7 +21,7 @@ const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
-const static FString GameVersion = FString("Pre Alpha 0.8.4 - Grass Test");
+const static FString GameVersion = FString("Pre Alpha 0.8.4 - Pre 1");
 
 #define SEARCH_PRESENCE FName(TEXT("PRESENCESEARCH"))
 
