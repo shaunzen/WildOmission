@@ -28,8 +28,9 @@ void UChatMessageWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 
 	if (ParentChatWidget->IsOpen() || SecondsSinceMessageSent <= 5.0f)
 	{
+		SetVisibility(ESlateVisibility::Visible);
 		return;
 	}
 	
-	SetVisibility(ESlateVisibility::Hidden);
+	SetVisibility(ESlateVisibility::Collapsed);
 }

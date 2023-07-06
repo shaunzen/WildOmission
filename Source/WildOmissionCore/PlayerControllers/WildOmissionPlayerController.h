@@ -66,6 +66,9 @@ private:
 	FTimerHandle UpdateClientRequiredActorCountTimerHandle;
 	void ValidateWorldState();
 
+	UFUNCTION()
+	void CountRequiredActorsAndSendToClient();
+
 	void StopLoading();
 
 	// Used by the server to figure out if a player is still loading

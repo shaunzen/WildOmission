@@ -128,6 +128,7 @@ void AWildOmissionPlayerController::Save()
 
 void AWildOmissionPlayerController::Client_SetNumRequiredActors_Implementation(const int32& InNum)
 {
+	UE_LOG(LogTemp, Warning, TEXT("NumRequiredActorsSet: %i"), InNum);
 	NumRequiredActorsForLoad = InNum;
 }
 
@@ -209,7 +210,7 @@ void AWildOmissionPlayerController::BeginPlay()
 	if (HasAuthority())
 	{
 		FTimerDelegate UpdateClientRequiredActorCountTimerDelegate;
-		UpdateClientRequiredActorCountTimerDelegate.BindUFunction(this, "Client_SetNumRequiredActors", IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()));
+		UpdateClientRequiredActorCountTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::CountRequiredActorsAndSendToClient);
 		GetWorld()->GetTimerManager().SetTimer(UpdateClientRequiredActorCountTimerHandle, UpdateClientRequiredActorCountTimerDelegate, 10.0f, true);
 	}
 
@@ -247,6 +248,12 @@ void AWildOmissionPlayerController::ValidateWorldState()
 
 	GetWorld()->GetTimerManager().ClearTimer(ValidateWorldStateTimerHandle);
 	StopLoading();
+}
+
+void AWildOmissionPlayerController::CountRequiredActorsAndSendToClient()
+{
+	int32 NewRequiredAmount = IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld());
+	Client_SetNumRequiredActors(NewRequiredAmount);
 }
 
 void AWildOmissionPlayerController::StopLoading()
