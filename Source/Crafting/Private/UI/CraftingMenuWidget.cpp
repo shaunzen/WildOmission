@@ -17,8 +17,8 @@
 
 UCraftingMenuWidget::UCraftingMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<URecipeIconWidget> RecipeIconWidgetBlueprint(TEXT("/Game/WildOmission/UI/Crafting/WBP_RecipeIcon"));
-	ConstructorHelpers::FClassFinder<UIngredientRowWidget> IngredientRowWidgetBlueprint(TEXT("/Game/WildOmission/UI/Crafting/WBP_IngredientRow"));
+	ConstructorHelpers::FClassFinder<URecipeIconWidget> RecipeIconWidgetBlueprint(TEXT("/Game/Crafting/UI/WBP_RecipeIcon"));
+	ConstructorHelpers::FClassFinder<UIngredientRowWidget> IngredientRowWidgetBlueprint(TEXT("/Game/Crafting/UI/WBP_IngredientRow"));
 
 	if (RecipeIconWidgetBlueprint.Class == nullptr || IngredientRowWidgetBlueprint.Class == nullptr)
 	{

@@ -38,8 +38,8 @@ AWorldItem::AWorldItem()
 	DespawnComponent = CreateDefaultSubobject<UActorDespawnComponent>(FName("DespawnComponent"));
 	DespawnComponent->SetDespawnTime(300.0f);
 
-	ConstructorHelpers::FObjectFinder<USoundBase> ClumpSoundObject(TEXT("/Game/WildOmission/Items/WorldItems/Audio/ItemClump_Cue"));
-	ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Pickup/Pickup_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> ClumpSoundObject(TEXT("/Game/Inventory/Audio/ItemClump_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Pickup/Pickup_Cue"));
 	
 	if (!ClumpSoundObject.Succeeded() || !PickupSoundObject.Succeeded())
 	{

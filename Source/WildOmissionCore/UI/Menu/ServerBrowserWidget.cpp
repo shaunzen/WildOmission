@@ -11,7 +11,7 @@
 
 UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_ServerRow"));
+	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_ServerRow"));
 	if (ServerRowWidgetBPClass.Succeeded())
 	{
 		ServerRowWidgetClass = ServerRowWidgetBPClass.Class;

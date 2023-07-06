@@ -17,7 +17,7 @@ ADeployableItem::ADeployableItem()
 	DeployableActorClass = nullptr;
 	DeployableRange = 500.0f;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> HammerStaticMesh(TEXT("/Game/WildOmission/Art/Items/SM_Hammer"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> HammerStaticMesh(TEXT("/Game/Deployables/Art/SM_Hammer"));
 	if (HammerStaticMesh.Succeeded())
 	{
 		Mesh->SetStaticMesh(HammerStaticMesh.Object);

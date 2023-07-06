@@ -11,7 +11,7 @@ AItemContainerBase::AItemContainerBase()
 {
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 
-	ConstructorHelpers::FClassFinder<UUserWidget> DefaultWidgetBlueprint(TEXT("/Game/WildOmission/UI/Inventory/WBP_ContainerBase"));
+	ConstructorHelpers::FClassFinder<UUserWidget> DefaultWidgetBlueprint(TEXT("/Game/Deployables/UI/WBP_ContainerBase"));
 	if (DefaultWidgetBlueprint.Succeeded())
 	{
 		WidgetClass = DefaultWidgetBlueprint.Class;

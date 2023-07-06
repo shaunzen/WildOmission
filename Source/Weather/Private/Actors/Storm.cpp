@@ -55,17 +55,17 @@ AStorm::AStorm()
 
 	Tags.Add(FName("StormCloud"));
 
-	static ConstructorHelpers::FClassFinder<ATornado> TornadoBlueprint(TEXT("/Game/WildOmission/Weather/BP_Tornado"));
+	static ConstructorHelpers::FClassFinder<ATornado> TornadoBlueprint(TEXT("/Game/Weather/Actors/BP_Tornado"));
 	if (TornadoBlueprint.Succeeded())
 	{
 		TornadoClass = TornadoBlueprint.Class;
 	}
-	static ConstructorHelpers::FClassFinder<ALightning> LightningBlueprint(TEXT("/Game/WildOmission/Weather/BP_Lightning"));
+	static ConstructorHelpers::FClassFinder<ALightning> LightningBlueprint(TEXT("/Game/Weather/Actors/BP_Lightning"));
 	if (LightningBlueprint.Succeeded())
 	{
 		LightningClass = LightningBlueprint.Class;
 	}
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainHazeBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_RainHaze"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainHazeBlueprint(TEXT("/Game/Weather/Art/NS_RainHaze"));
 	if (RainHazeBlueprint.Succeeded())
 	{
 		RainHazeComponent->SetAsset(RainHazeBlueprint.Object);

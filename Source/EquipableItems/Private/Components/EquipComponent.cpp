@@ -5,7 +5,6 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Items/EquipableItem.h"
 #include "Items/ToolItem.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties

@@ -39,7 +39,7 @@ UVitalsComponent::UVitalsComponent()
 	BeginStarvingBroadcasted = false;
 	EndStarvingBroadcasted = false;
 
-	ConstructorHelpers::FObjectFinder<USoundBase> DefaultHurtSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Damage/Human_HurtGeneric_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> DefaultHurtSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Damage/Human_HurtGeneric_Cue"));
 	if (!DefaultHurtSoundObject.Succeeded())
 	{
 		return;

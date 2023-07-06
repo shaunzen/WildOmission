@@ -20,7 +20,7 @@ ACollectableResource::ACollectableResource()
 	RootComponent = MeshComponent;
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 
-	ConstructorHelpers::FObjectFinder<USoundBase> CollectSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Pickup/Pickup_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> CollectSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Pickup/Pickup_Cue"));
 	if (CollectSoundObject.Succeeded())
 	{
 		CollectSound = CollectSoundObject.Object;

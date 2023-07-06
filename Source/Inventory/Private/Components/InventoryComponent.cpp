@@ -24,7 +24,7 @@ UInventoryComponent::UInventoryComponent()
 	// We have to add this stupid ugly check here, because unreal engine is a buggy broken mess somethimes.
 	if (GetWorld())
 	{
-		static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_Items"));
+		static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableBlueprint(TEXT("/Game/Inventory/DataTables/DT_Items"));
 		if (ItemDataTableBlueprint.Succeeded())
 		{
 			ItemDataTable = ItemDataTableBlueprint.Object;

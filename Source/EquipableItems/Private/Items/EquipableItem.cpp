@@ -22,8 +22,8 @@ AEquipableItem::AEquipableItem()
 
 	RootComponent = Mesh;
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_EquipTool_01_Montage"));
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseAsset(TEXT("/Game/WildOmission/Characters/Human/Animation/Items/A_Human_HoldTool_01"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_EquipTool_01_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_HoldTool_01"));
 
 	if (EquipMontageAsset.Succeeded())
 	{

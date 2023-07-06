@@ -34,7 +34,7 @@ AWeatherHandler::AWeatherHandler()
 	{
 		StormClass = StormBlueprint.Class;
 	}
-	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> WindParameterCollectionBlueprint(TEXT("/Game/WildOmission/Weather/MPC_Wind"));
+	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> WindParameterCollectionBlueprint(TEXT("/Game/Weather/MPC_Wind"));
 	if (WindParameterCollectionBlueprint.Succeeded())
 	{
 		MPC_WindCollection = WindParameterCollectionBlueprint.Object;

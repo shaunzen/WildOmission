@@ -20,7 +20,7 @@
 
 AWildOmissionPlayerController::AWildOmissionPlayerController()
 {
-	ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmission/UI/Player/WBP_DeathMenu"));
+	ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmissionCore/UI/Player/WBP_DeathMenu"));
 	if (DeathMenuWidgetBlueprint.Succeeded())
 	{
 		DeathMenuWidgetClass = DeathMenuWidgetBlueprint.Class;

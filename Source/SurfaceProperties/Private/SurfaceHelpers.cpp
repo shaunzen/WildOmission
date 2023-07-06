@@ -9,7 +9,7 @@ static UDataTable* SurfacePropertiesDataTable = nullptr;
 
 USurfaceHelpers::USurfaceHelpers()
 {
-	ConstructorHelpers::FObjectFinder<UDataTable> SurfacePropertiesDataTableObject(TEXT("/Game/WildOmission/Core/PhysicalMaterials/DT_SurfaceProperties"));
+	ConstructorHelpers::FObjectFinder<UDataTable> SurfacePropertiesDataTableObject(TEXT("/Game/WildOmissionCore/PhysicalMaterials/DT_SurfaceProperties"));
 	if (SurfacePropertiesDataTableObject.Succeeded())
 	{
 		SurfacePropertiesDataTable = SurfacePropertiesDataTableObject.Object;

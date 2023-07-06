@@ -19,11 +19,11 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 	Swimming = false;
 	EquipedItemPose = nullptr;
 
-	ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
-	ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Gravel/HumanFootstep_Gravel_Cue"));
-	ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Rock/HumanFootstep_Rock_Cue"));
-	ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Wood/HumanFootstep_Wood_Cue"));
-	ConstructorHelpers::FObjectFinder<USoundBase> WaterSplashSoundObject(TEXT("/Game/WildOmission/Characters/Human/Audio/Footsteps/Water/WaterSplash_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Footsteps/Gravel/HumanFootstep_Gravel_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Footsteps/Rock/HumanFootstep_Rock_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Footsteps/Wood/HumanFootstep_Wood_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> WaterSplashSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Footsteps/Water/WaterSplash_Cue"));
 
 	if (GrassFootstepSoundObject.Object == nullptr
 		|| GravelFootstepSoundObject.Object == nullptr

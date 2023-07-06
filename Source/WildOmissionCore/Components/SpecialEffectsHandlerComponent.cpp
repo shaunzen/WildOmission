@@ -21,12 +21,12 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainSystemBlueprint(TEXT("/Game/WildOmission/Art/Weather/NS_Rain"));
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainSystemBlueprint(TEXT("/Game/Weather/Art/NS_Rain"));
 	if (RainSystemBlueprint.Succeeded())
 	{
 		RainParticleSystem = RainSystemBlueprint.Object;
 	}
-	ConstructorHelpers::FObjectFinder<UMetaSoundSource> RainSoundBlueprint(TEXT("/Game/WildOmission/Weather/Sound/MS_RainFall"));
+	ConstructorHelpers::FObjectFinder<UMetaSoundSource> RainSoundBlueprint(TEXT("/Game/Weather/Audio/MS_RainFall"));
 	if (RainSoundBlueprint.Succeeded())
 	{
 		RainSound = RainSoundBlueprint.Object;

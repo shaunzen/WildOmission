@@ -30,25 +30,25 @@ static USoundClass* MasterSoundClass = nullptr;
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
-	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_MainMenu"));
+	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_MainMenu"));
 	if (MainMenuBlueprint.Succeeded())
 	{
 		MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
 	}
 	
-	static ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_GameplayMenu"));
+	static ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_GameplayMenu"));
 	if (GameplayMenuBlueprint.Succeeded())
 	{
 		GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
 	}
 	
-	static ConstructorHelpers::FClassFinder<ULoadingMenuWidget> LoadingMenuBlueprint(TEXT("/Game/WildOmission/UI/Menu/WBP_LoadingMenu"));
+	static ConstructorHelpers::FClassFinder<ULoadingMenuWidget> LoadingMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_LoadingMenu"));
 	if (LoadingMenuBlueprint.Succeeded())
 	{
 		LoadingMenuWidgetBlueprintClass = LoadingMenuBlueprint.Class;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundMix> MasterSoundMixModifierBlueprint(TEXT("/Game/WildOmission/Core/Audio/MasterSoundClassMix"));
+	static ConstructorHelpers::FObjectFinder<USoundMix> MasterSoundMixModifierBlueprint(TEXT("/Game/WildOmissionCore/Core/Audio/MasterSoundClassMix"));
 	if (MasterSoundMixModifierBlueprint.Succeeded())
 	{
 		MasterSoundMixModifier = MasterSoundMixModifierBlueprint.Object;
@@ -283,7 +283,7 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 	}
 
 	FString LevelFileString = SaveGame->LevelFile;
-	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Levels/%s?savegame=%s"), *LevelFileString, *WorldName);
+	FString LoadString = FString::Printf(TEXT("/Game/WildOmissionCore/Levels/%s?savegame=%s"), *LevelFileString, *WorldName);
 	// Server travel to the game level
 	World->ServerTravel(LoadString);
 }
@@ -401,7 +401,7 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	}
 	FString FriendsOnlyString = FString::Printf(TEXT("%i"), FriendsOnlySession);
 	FString LevelFileString = SaveGame->LevelFile;
-	FString LoadString = FString::Printf(TEXT("/Game/WildOmission/Levels/%s?listen?savegame=%s?friendsonly="), *LevelFileString, *WorldToLoad, *FriendsOnlyString);
+	FString LoadString = FString::Printf(TEXT("/Game/WildOmissionCore/Levels/%s?listen?savegame=%s?friendsonly="), *LevelFileString, *WorldToLoad, *FriendsOnlyString);
 	// Server travel to the game level
 	World->ServerTravel(LoadString);
 }

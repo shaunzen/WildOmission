@@ -20,25 +20,25 @@ UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& Obj
 	StatusNotificationContainer = nullptr;
 	NotificationContainer = nullptr;
 	
-	static ConstructorHelpers::FClassFinder<UNotificationWidget> NotificationWidgetBlueprintClass(TEXT("/Game/WildOmission/UI/Notifications/WBP_Notification"));
+	static ConstructorHelpers::FClassFinder<UNotificationWidget> NotificationWidgetBlueprintClass(TEXT("/Game/Notifications/UI/WBP_Notification"));
 	if (NotificationWidgetBlueprintClass.Succeeded())
 	{
 		NotificationWidgetBlueprint = NotificationWidgetBlueprintClass.Class;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HealthIconObject(TEXT("/Game/WildOmission/UI/Icons/Vitals/M_Health_Icon_Inst"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HealthIconObject(TEXT("/Game/WildOmissionCore/UI/Icons/Vitals/M_Health_Icon_Inst"));
 	if (HealthIconObject.Succeeded())
 	{
 		HealthIcon = HealthIconObject.Object;
 	}
 	
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> ThirstIconObject(TEXT("/Game/WildOmission/UI/Icons/Vitals/M_Thirst_Icon_Inst"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> ThirstIconObject(TEXT("/Game/WildOmissionCore/UI/Icons/Vitals/M_Thirst_Icon_Inst"));
 	if (ThirstIconObject.Succeeded())
 	{
 		ThirstIcon = ThirstIconObject.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HungerIconObject(TEXT("/Game/WildOmission/UI/Icons/Vitals/M_Hunger_Icon_Inst"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> HungerIconObject(TEXT("/Game/WildOmissionCore/UI/Icons/Vitals/M_Hunger_Icon_Inst"));
 	if (HungerIconObject.Succeeded())
 	{
 		HungerIcon = HungerIconObject.Object;

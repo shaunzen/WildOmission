@@ -9,7 +9,7 @@ static UMaterialInstance* PreviewMaterial = nullptr;
 
 ADeployablePreview::ADeployablePreview()
 {
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/WildOmission/Art/Deployables/M_DeployablePreview_Inst"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/Deployables/Art/M_DeployablePreview_Inst"));
 	if (PreviewMaterialInstanceBlueprint.Succeeded())
 	{
 		PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;

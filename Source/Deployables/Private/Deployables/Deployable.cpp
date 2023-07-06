@@ -31,7 +31,7 @@ ADeployable::ADeployable()
 	bFollowsSurfaceNormal = false;
 	bCanRotate = false;
 
-	ConstructorHelpers::FObjectFinder<USoundBase> DefaultPlacementSound(TEXT("/Game/WildOmission/Deployables/Audio/Deployable_Placement_Cue"));
+	ConstructorHelpers::FObjectFinder<USoundBase> DefaultPlacementSound(TEXT("/Game/Deployables/Audio/Deployable_Placement_Cue"));
 	if (DefaultPlacementSound.Succeeded())
 	{
 		PlacementSound = DefaultPlacementSound.Object;

@@ -17,7 +17,7 @@ AWaterVolume::AWaterVolume()
 	bWaterVolume = true;
 	GetBrushComponent()->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> WaterPlaneMesh(TEXT("/Game/WildOmission/Art/Environment/SM_WaterPlane"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> WaterPlaneMesh(TEXT("/Game/WildOmissionCore/Art/Environment/SM_WaterPlane"));
 	if (!WaterPlaneMesh.Succeeded())
 	{
 		return;

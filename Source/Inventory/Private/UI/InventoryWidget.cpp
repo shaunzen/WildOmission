@@ -20,7 +20,7 @@ UInventoryWidget::UInventoryWidget(const FObjectInitializer& ObjectInitializer) 
 	ParentMenu = nullptr;
 	InventoryComponent = nullptr;
 	
-	static ConstructorHelpers::FClassFinder<UInventorySlotWidget> InventorySlotBPWidgetClass(TEXT("/Game/WildOmission/UI/Inventory/WBP_InventorySlot"));
+	static ConstructorHelpers::FClassFinder<UInventorySlotWidget> InventorySlotBPWidgetClass(TEXT("/Game/Inventory/UI/WBP_InventorySlot"));
 	if (InventorySlotBPWidgetClass.Succeeded())
 	{
 		SlotWidgetClass = InventorySlotBPWidgetClass.Class;

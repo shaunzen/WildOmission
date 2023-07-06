@@ -13,13 +13,13 @@
 
 UWorldSelectionWidget::UWorldSelectionWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UWorldRowWidget> WorldRowWidgetBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_WorldRow"));
+	ConstructorHelpers::FClassFinder<UWorldRowWidget> WorldRowWidgetBPClass(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_WorldRow"));
 	if (WorldRowWidgetBPClass.Succeeded())
 	{
 		WorldRowWidgetClass = WorldRowWidgetBPClass.Class;
 	}
 
-	ConstructorHelpers::FClassFinder<UCreateWorldButtonWidget> CreateNewWorldBPClass(TEXT("/Game/WildOmission/UI/Menu/WBP_CreateWorldButton"));
+	ConstructorHelpers::FClassFinder<UCreateWorldButtonWidget> CreateNewWorldBPClass(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_CreateWorldButton"));
 	if (CreateNewWorldBPClass.Succeeded())
 	{
 		CreateNewWorldButtonClass = CreateNewWorldBPClass.Class;

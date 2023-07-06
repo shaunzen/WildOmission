@@ -16,7 +16,7 @@ AWorldGenerationHandler::AWorldGenerationHandler()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_BiomeGenerationData"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
 	if (BiomeDataTableBlueprint.Succeeded())
 	{
 		BiomeGenerationDataTable = BiomeDataTableBlueprint.Object;

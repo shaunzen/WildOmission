@@ -13,7 +13,7 @@
 
 UGameChatWidget::UGameChatWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UChatMessageWidget> ChatMessageBlueprint(TEXT("/Game/WildOmission/UI/Chat/WBP_ChatMessage"));
+	ConstructorHelpers::FClassFinder<UChatMessageWidget> ChatMessageBlueprint(TEXT("/Game/GameChat/UI/WBP_ChatMessage"));
 	if (ChatMessageBlueprint.Succeeded())
 	{
 		ChatMessageClass = ChatMessageBlueprint.Class;

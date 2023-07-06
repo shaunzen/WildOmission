@@ -16,7 +16,7 @@ UCraftingComponent::UCraftingComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> RecipeDataTableBlueprint(TEXT("/Game/WildOmission/Core/DataTables/DT_CraftingRecipes"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> RecipeDataTableBlueprint(TEXT("/Game/Crafting/DataTables/DT_CraftingRecipes"));
 	if (RecipeDataTableBlueprint.Succeeded())
 	{
 		RecipeDataTable = RecipeDataTableBlueprint.Object;

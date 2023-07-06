@@ -9,7 +9,7 @@ static UDataTable* UIColorsTable = nullptr;
 
 UUIHelpers::UUIHelpers()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> UIColorsTableBlueprint(TEXT("/Game/WildOmission/UI/Custom/DT_UIColors"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> UIColorsTableBlueprint(TEXT("/Game/Helpers/DataTables/DT_UIColors"));
 	if (UIColorsTableBlueprint.Succeeded())
 	{
 		UIColorsTable = UIColorsTableBlueprint.Object;

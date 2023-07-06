@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-//#include "WildOmission/Core/Interfaces/SavableObjectInterface.h"
+#include "Interfaces/SavableObject.h"
 #include "ActorDespawnComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class DESPAWNER_API UActorDespawnComponent : public UActorComponent//, public ISavableObjectInterface
+class DESPAWNER_API UActorDespawnComponent : public UActorComponent, public ISavableObject
 {
 	GENERATED_BODY()
 
