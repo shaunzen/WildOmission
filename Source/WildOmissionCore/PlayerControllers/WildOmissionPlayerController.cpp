@@ -240,7 +240,6 @@ void AWildOmissionPlayerController::BeginPlay()
 
 void AWildOmissionPlayerController::ValidateWorldState()
 {
-	
 	if (IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()) < NumRequiredActorsForLoad)
 	{
 		return;
