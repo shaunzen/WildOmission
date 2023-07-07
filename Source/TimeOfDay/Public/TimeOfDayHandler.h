@@ -34,12 +34,10 @@ private:
 	UPROPERTY()
 	ADirectionalLight* DirectionalLight;
 	
-	UPROPERTY(VisibleAnywhere)
-	int32 Hour;
-	UPROPERTY(VisibleAnywhere)
-	int32 Minute;
-
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere) // TODO save this
 	int32 DaysPlayed;
+	
+	UPROPERTY(VisibleAnywhere) // TODO save this
+	float ProgressThroughCurrentDayNormalized;
 
 };
