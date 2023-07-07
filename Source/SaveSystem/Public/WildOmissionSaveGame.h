@@ -88,6 +88,9 @@ public:
 	uint32 DaysPlayed = 0;
 	
 	UPROPERTY()
+	float NormalizedProgressThroughDay = 0.0f;
+
+	UPROPERTY()
 	FDateTime LastPlayedTime;
 
 	UPROPERTY()

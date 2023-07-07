@@ -6,7 +6,7 @@ public class TimeOfDay: ModuleRules
 {
     public TimeOfDay(ReadOnlyTargetRules Target) : base(Target)
     {
-        PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "SaveSystem" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject" });
     }
 }

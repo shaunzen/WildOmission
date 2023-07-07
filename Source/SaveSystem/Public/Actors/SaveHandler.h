@@ -11,6 +11,7 @@ class UActorSaveHandlerComponent;
 class UPlayerSaveHandlerComponent;
 class IGameSaveLoadController;
 class IWorldGenerator;
+class ISavableTimeOfDayHandler;
 class ISavableWeatherHandler;
 
 UCLASS()
@@ -22,7 +23,7 @@ public:
 	// Sets default values for this actor's properties
 	ASaveHandler();
 
-	void Setup(IWorldGenerator* InWorldGenerator, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController);
+	void Setup(IWorldGenerator* InWorldGenerator, ISavableTimeOfDayHandler* InTimeOfDayHandler, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController);
 
 	void SaveGame();
 
@@ -31,6 +32,7 @@ public:
 	void LoadWorld();
 	
 	IWorldGenerator* GetWorldGenerator() const;
+	ISavableTimeOfDayHandler* GetTimeOfDayHandler() const;
 	ISavableWeatherHandler* GetWeatherHandler() const;
 	IGameSaveLoadController* GetSaveLoadController() const;
 
@@ -47,6 +49,7 @@ private:
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
 
 	IWorldGenerator* WorldGenerator;
+	ISavableTimeOfDayHandler* TimeOfDayHandler;
 	ISavableWeatherHandler* WeatherHandler;
 	IGameSaveLoadController* GameSaveLoadController;
 

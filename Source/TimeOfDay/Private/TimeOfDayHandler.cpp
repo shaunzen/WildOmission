@@ -15,7 +15,7 @@ ATimeOfDayHandler::ATimeOfDayHandler()
 	PrimaryActorTick.bCanEverTick = true;
 
 	DirectionalLight = nullptr;
-	ProgressThroughCurrentDayNormalized = 0.0f;
+	NormalizedProgressThroughDay = 0.0f;
 	DaysPlayed = 0;
 }
 
@@ -43,15 +43,37 @@ void ATimeOfDayHandler::Tick(float DeltaTime)
 	}
 
 	DirectionalLight->AddActorLocalRotation(FRotator(10.0f * DeltaTime, 0.0f, 0.0f));
-	ProgressThroughCurrentDayNormalized += (10.0f * DeltaTime / 360.0f);
+	NormalizedProgressThroughDay += (10.0f * DeltaTime / 360.0f);
 	
-	if (ProgressThroughCurrentDayNormalized >= 1.0f)
+	if (NormalizedProgressThroughDay >= 1.0f)
 	{
 		DaysPlayed++;
-		ProgressThroughCurrentDayNormalized = 0.0f;
+		NormalizedProgressThroughDay = 0.0f;
 	}
-	UE_LOG(LogTimeOfDay, Display, TEXT("Progress through day: %f, Days Played: %i"), ProgressThroughCurrentDayNormalized, DaysPlayed);
+
+	UE_LOG(LogTimeOfDay, Display, TEXT("Progress through day: %f, Days Played: %i"), NormalizedProgressThroughDay, DaysPlayed);
 	//UE_LOG(LogTimeOfDay, Display, TEXT("Light Rotation: %s, IsDay: %i, IsNight: %i"), *DirectionalLight->GetActorRotation().ToCompactString(), IsDay(), IsNight());
+}
+
+void ATimeOfDayHandler::SetDaysPlayed(int32 InDaysPlayed)
+{
+	DaysPlayed = InDaysPlayed;
+}
+
+int32 ATimeOfDayHandler::GetDaysPlayed() const
+{
+	return DaysPlayed;
+}
+
+void ATimeOfDayHandler::SetNormalizedProgressThroughDay(float InProgress)
+{
+	NormalizedProgressThroughDay = InProgress;
+	DirectionalLight->AddActorLocalRotation(FRotator(NormalizedProgressThroughDay * 360.0f, 0.0f, 0.0f));
+}
+
+float ATimeOfDayHandler::GetNormalizedProgressThroughDay() const
+{
+	return NormalizedProgressThroughDay;
 }
 
 bool ATimeOfDayHandler::IsDay() const

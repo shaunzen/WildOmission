@@ -5,6 +5,7 @@
 #include "Components/ActorSaveHandlerComponent.h"
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "Interfaces/WorldGenerator.h"
+#include "Interfaces/SavableTimeOfDayHandler.h"
 #include "Interfaces/SavableWeatherHandler.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
@@ -24,9 +25,10 @@ ASaveHandler::ASaveHandler()
 	WorldGenerator = nullptr;
 }
 
-void ASaveHandler::Setup(IWorldGenerator* InWorldGenerator, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController)
+void ASaveHandler::Setup(IWorldGenerator* InWorldGenerator, ISavableTimeOfDayHandler* InTimeOfDayHandler, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController)
 {
 	WorldGenerator = InWorldGenerator;
+	TimeOfDayHandler = InTimeOfDayHandler;
 	WeatherHandler = InWeatherHandler;
 	GameSaveLoadController = SaveLoadController;
 
@@ -43,6 +45,12 @@ void ASaveHandler::SaveGame()
 		return;
 	}
 	SaveFile->LastPlayedTime = FDateTime::Now();
+
+	if (TimeOfDayHandler)
+	{
+		SaveFile->DaysPlayed = TimeOfDayHandler->GetDaysPlayed();
+		SaveFile->NormalizedProgressThroughDay = TimeOfDayHandler->GetNormalizedProgressThroughDay();
+	}
 
 	if (WeatherHandler)
 	{
@@ -76,6 +84,12 @@ void ASaveHandler::LoadWorld()
 
 		UpdateSaveFile(SaveFile);
 		return;
+	}
+
+	if (TimeOfDayHandler)
+	{
+		TimeOfDayHandler->SetDaysPlayed(SaveFile->DaysPlayed);
+		TimeOfDayHandler->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
 	}
 
 	if (WeatherHandler)
