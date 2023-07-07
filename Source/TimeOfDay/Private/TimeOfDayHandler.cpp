@@ -43,7 +43,7 @@ void ATimeOfDayHandler::Tick(float DeltaTime)
 		return;
 	}
 
-	DirectionalLight->AddActorLocalRotation(FRotator(DAY_NIGHT_SPEED * DeltaTime, 0.0f, 0.0f));
+	DirectionalLight->AddActorLocalRotation(FRotator(10.0f * DeltaTime, 0.0f, 0.0f));
 
 	//UE_LOG(LogTimeOfDay, Display, TEXT("Light Rotation: %s, IsDay: %i, IsNight: %i"), *DirectionalLight->GetActorRotation().ToCompactString(), IsDay(), IsNight());
 }
