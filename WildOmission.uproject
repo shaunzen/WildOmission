@@ -97,6 +97,14 @@
 			]
 		},
 		{
+			"Name": "TimeOfDay",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		},
+		{
 			"Name": "Vitals",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

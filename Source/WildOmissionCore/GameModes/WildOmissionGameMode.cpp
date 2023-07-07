@@ -5,6 +5,7 @@
 #include "Actors/SaveHandler.h"
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "Actors/WorldGenerationHandler.h"
+#include "TimeOfDayHandler.h"
 #include "Interfaces/RequiredForLoad.h"
 #include "Actors/WeatherHandler.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
@@ -26,6 +27,7 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
 	WorldGenerationHandler = GetWorld()->SpawnActor<AWorldGenerationHandler>();
+	TimeOfDayHandler = GetWorld()->SpawnActor<ATimeOfDayHandler>();
 	WeatherHandler = GetWorld()->SpawnActor<AWeatherHandler>();
 	WeatherHandler->Setup(WorldGenerationHandler);
 	SaveHandler->Setup(WorldGenerationHandler, WeatherHandler, Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));

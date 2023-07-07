@@ -8,6 +8,7 @@
 
 class ASaveHandler;
 class AWorldGenerationHandler;
+class ATimeOfDayHandler;
 class AWeatherHandler;
 class AWildOmissionCharacter;
 class AWildOmissionPlayerController;
@@ -62,8 +63,10 @@ private:
 
 	UPROPERTY()
 	AWorldGenerationHandler* WorldGenerationHandler;
-	// TimeManager
-
+	
+	UPROPERTY()
+	ATimeOfDayHandler* TimeOfDayHandler;
+	
 	UPROPERTY()
 	AWeatherHandler* WeatherHandler;
 	
