@@ -8,6 +8,7 @@
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
+#include "Net/UnrealNetwork.h"
 #include "Log.h"
 
 static const float DAY_NIGHT_SPEED = 0.3f;
@@ -18,6 +19,9 @@ ATimeOfDayHandler::ATimeOfDayHandler()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+	bAlwaysRelevant = true;
+	NetUpdateFrequency = 1.0f;
 
 	DirectionalLight = nullptr;
 	NormalizedProgressThroughDay = 0.0f;
@@ -38,15 +42,31 @@ void ATimeOfDayHandler::BeginPlay()
 	DirectionalLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
 	if (DirectionalLight == nullptr)
 	{
-		UE_LOG(LogTimeOfDay, Error, TEXT("NO DIRECTIONAL LIGHT FOUND IN SCENE!"));
+		UE_LOG(LogTimeOfDay, Error, TEXT("Couldn't find directional light in level."));
 		return;
 	}
 }
 
 void ATimeOfDayHandler::CalculateMoonPhase()
 {
+	if (MPC_Sky == nullptr)
+	{
+		UE_LOG(LogTimeOfDay, Error, TEXT("Couldn't calculate moon phase, MPC missing."));
+		return;
+	}
+
 	float MoonPhase = (static_cast<float>(DaysPlayed) / 30.0f) - FMath::Floor((static_cast<float>(DaysPlayed) / 30.0f));
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Sky, TEXT("MoonPhase"), MoonPhase);
+}
+
+void ATimeOfDayHandler::OnRep_DaysPlayed()
+{
+	SetDaysPlayed(DaysPlayed);
+}
+
+void ATimeOfDayHandler::OnRep_NormalizedProgressThroughDay()
+{
+	SetNormalizedProgressThroughDay(NormalizedProgressThroughDay);
 }
 
 // Called every frame
@@ -71,6 +91,14 @@ void ATimeOfDayHandler::Tick(float DeltaTime)
 	}
 }
 
+void ATimeOfDayHandler::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATimeOfDayHandler, DaysPlayed);
+	DOREPLIFETIME(ATimeOfDayHandler, NormalizedProgressThroughDay);
+}
+
 void ATimeOfDayHandler::SetDaysPlayed(int32 InDaysPlayed)
 {
 	DaysPlayed = InDaysPlayed;
@@ -84,6 +112,11 @@ int32 ATimeOfDayHandler::GetDaysPlayed() const
 
 void ATimeOfDayHandler::SetNormalizedProgressThroughDay(float InProgress)
 {
+	if (DirectionalLight == nullptr)
+	{
+		return;
+	}
+
 	DirectionalLight->SetActorRotation(FRotator(0.0f, 180.0f, 180.0f));
 	NormalizedProgressThroughDay = InProgress;
 	DirectionalLight->AddActorLocalRotation(FRotator(NormalizedProgressThroughDay * 360.0f, 0.0f, 0.0f));
@@ -96,6 +129,11 @@ float ATimeOfDayHandler::GetNormalizedProgressThroughDay() const
 
 bool ATimeOfDayHandler::IsDay() const
 {
+	if (DirectionalLight == nullptr)
+	{
+		return false;
+	}
+
 	return DirectionalLight->GetActorRotation().Pitch < 0.0f;
 }
 

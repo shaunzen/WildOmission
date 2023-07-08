@@ -20,6 +20,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Begin ISavableTimeOfDayHandler Implementation
 	virtual void SetDaysPlayed(int32 InDaysPlayed) override;
 	virtual int32 GetDaysPlayed() const override;
@@ -42,12 +44,16 @@ private:
 	UPROPERTY()
 	ADirectionalLight* DirectionalLight;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_DaysPlayed)
 	int32 DaysPlayed;
-	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_NormalizedProgressThroughDay)
 	float NormalizedProgressThroughDay;
 
 	void CalculateMoonPhase();
+
+	UFUNCTION()
+	void OnRep_DaysPlayed();
+	UFUNCTION()
+	void OnRep_NormalizedProgressThroughDay();
 
 };
