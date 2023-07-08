@@ -4,9 +4,14 @@
 #include "TimeOfDayHandler.h"
 #include "Engine/DirectionalLight.h"
 #include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
 #include "Log.h"
 
 static const float DAY_NIGHT_SPEED = 0.3f;
+static UMaterialParameterCollection* MPC_Sky = nullptr;
 
 // Sets default values
 ATimeOfDayHandler::ATimeOfDayHandler()
@@ -17,6 +22,12 @@ ATimeOfDayHandler::ATimeOfDayHandler()
 	DirectionalLight = nullptr;
 	NormalizedProgressThroughDay = 0.0f;
 	DaysPlayed = 0;
+
+	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> SkyCollectionBlueprint(TEXT("/Game/WildOmissionCore/Art/Environment/MPC_Sky"));
+	if (SkyCollectionBlueprint.Succeeded())
+	{
+		MPC_Sky = SkyCollectionBlueprint.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -32,6 +43,12 @@ void ATimeOfDayHandler::BeginPlay()
 	}
 }
 
+void ATimeOfDayHandler::CalculateMoonPhase()
+{
+	float MoonPhase = (static_cast<float>(DaysPlayed) / 30.0f) - FMath::Floor((static_cast<float>(DaysPlayed) / 30.0f));
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Sky, TEXT("MoonPhase"), MoonPhase);
+}
+
 // Called every frame
 void ATimeOfDayHandler::Tick(float DeltaTime)
 {
@@ -42,6 +59,7 @@ void ATimeOfDayHandler::Tick(float DeltaTime)
 		return;
 	}
 
+	// TODO setup as normal cycle time
 	DirectionalLight->AddActorLocalRotation(FRotator(10.0f * DeltaTime, 0.0f, 0.0f));
 	NormalizedProgressThroughDay += (10.0f * DeltaTime / 360.0f);
 	
@@ -49,15 +67,14 @@ void ATimeOfDayHandler::Tick(float DeltaTime)
 	{
 		DaysPlayed++;
 		NormalizedProgressThroughDay = 0.0f;
+		CalculateMoonPhase();
 	}
-
-	UE_LOG(LogTimeOfDay, Display, TEXT("Progress through day: %f, Days Played: %i"), NormalizedProgressThroughDay, DaysPlayed);
-	//UE_LOG(LogTimeOfDay, Display, TEXT("Light Rotation: %s, IsDay: %i, IsNight: %i"), *DirectionalLight->GetActorRotation().ToCompactString(), IsDay(), IsNight());
 }
 
 void ATimeOfDayHandler::SetDaysPlayed(int32 InDaysPlayed)
 {
 	DaysPlayed = InDaysPlayed;
+	CalculateMoonPhase();
 }
 
 int32 ATimeOfDayHandler::GetDaysPlayed() const
@@ -67,6 +84,7 @@ int32 ATimeOfDayHandler::GetDaysPlayed() const
 
 void ATimeOfDayHandler::SetNormalizedProgressThroughDay(float InProgress)
 {
+	DirectionalLight->SetActorRotation(FRotator(0.0f, 180.0f, 180.0f));
 	NormalizedProgressThroughDay = InProgress;
 	DirectionalLight->AddActorLocalRotation(FRotator(NormalizedProgressThroughDay * 360.0f, 0.0f, 0.0f));
 }
@@ -85,4 +103,3 @@ bool ATimeOfDayHandler::IsNight() const
 {
 	return !IsDay();
 }
-

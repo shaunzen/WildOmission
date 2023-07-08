@@ -48,4 +48,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	float NormalizedProgressThroughDay;
 
+	void CalculateMoonPhase();
+
 };
