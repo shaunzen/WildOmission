@@ -29,6 +29,13 @@ static USoundClass* MasterSoundClass = nullptr;
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
+	LoadingMenuWidget = nullptr;
+	MainMenuWidget = nullptr;
+	GameplayMenuWidget = nullptr;
+	Loading = false;
+	FriendsOnlySession = false;
+	OnMainMenu = false;
+	
 	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_MainMenu"));
 	if (MainMenuBlueprint.Succeeded())
 	{
@@ -47,7 +54,7 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 		LoadingMenuWidgetBlueprintClass = LoadingMenuBlueprint.Class;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundMix> MasterSoundMixModifierBlueprint(TEXT("/Game/WildOmissionCore/Core/Audio/MasterSoundClassMix"));
+	static ConstructorHelpers::FObjectFinder<USoundMix> MasterSoundMixModifierBlueprint(TEXT("/Game/WildOmissionCore/Audio/MasterSoundClassMix"));
 	if (MasterSoundMixModifierBlueprint.Succeeded())
 	{
 		MasterSoundMixModifier = MasterSoundMixModifierBlueprint.Object;
@@ -144,7 +151,7 @@ void UWildOmissionGameInstance::StartLoading()
 		return;
 	}
 
-	if (LoadingMenuWidget != nullptr)
+	if (LoadingMenuWidget)
 	{
 		LoadingMenuWidget->Teardown();
 		LoadingMenuWidget = nullptr;

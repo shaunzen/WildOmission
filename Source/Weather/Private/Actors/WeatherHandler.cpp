@@ -29,7 +29,7 @@ AWeatherHandler::AWeatherHandler()
 
 	WorldGenerationHandler = nullptr;
 
-	static ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/WildOmission/Weather/BP_Storm"));
+	static ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/Weather/Actors/BP_Storm"));
 	if (StormBlueprint.Succeeded())
 	{
 		StormClass = StormBlueprint.Class;

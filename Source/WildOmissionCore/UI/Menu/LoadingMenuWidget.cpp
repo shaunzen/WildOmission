@@ -8,12 +8,14 @@
 ULoadingMenuWidget::ULoadingMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	SetIsFocusable(true);
+	TitleTextBlock = nullptr;
+	SubtitleTextBlock = nullptr;
 }
 
 void ULoadingMenuWidget::Setup()
 {
 	this->AddToViewport();
-	
+
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr)
 	{
@@ -34,8 +36,6 @@ void ULoadingMenuWidget::Setup()
 
 void ULoadingMenuWidget::Teardown()
 {
-	this->RemoveFromParent();
-
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr)
 	{
@@ -45,6 +45,8 @@ void ULoadingMenuWidget::Teardown()
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = false;
+
+	this->RemoveFromParent();
 }
 
 void ULoadingMenuWidget::SetLoadingTitle(const FString& Title)

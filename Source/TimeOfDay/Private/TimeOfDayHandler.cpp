@@ -80,8 +80,8 @@ void ATimeOfDayHandler::Tick(float DeltaTime)
 	}
 
 	// TODO setup as normal cycle time
-	DirectionalLight->AddActorLocalRotation(FRotator(10.0f * DeltaTime, 0.0f, 0.0f));
-	NormalizedProgressThroughDay += (10.0f * DeltaTime / 360.0f);
+	DirectionalLight->AddActorLocalRotation(FRotator(DAY_NIGHT_SPEED * DeltaTime, 0.0f, 0.0f));
+	NormalizedProgressThroughDay += (DAY_NIGHT_SPEED * DeltaTime / 360.0f);
 	
 	if (NormalizedProgressThroughDay >= 1.0f)
 	{
