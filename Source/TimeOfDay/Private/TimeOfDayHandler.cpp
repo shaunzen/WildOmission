@@ -74,20 +74,12 @@ void ATimeOfDayHandler::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (DirectionalLight == nullptr)
-	{
-		return;
-	}
-
-	// TODO setup as normal cycle time
-	DirectionalLight->AddActorLocalRotation(FRotator(DAY_NIGHT_SPEED * DeltaTime, 0.0f, 0.0f));
-	NormalizedProgressThroughDay += (DAY_NIGHT_SPEED * DeltaTime / 360.0f);
+	SetNormalizedProgressThroughDay(NormalizedProgressThroughDay + (DAY_NIGHT_SPEED * DeltaTime / 360.0f));
 	
 	if (NormalizedProgressThroughDay >= 1.0f)
 	{
-		DaysPlayed++;
-		NormalizedProgressThroughDay = 0.0f;
-		CalculateMoonPhase();
+		SetDaysPlayed(DaysPlayed + 1);
+		SetNormalizedProgressThroughDay(0.0f);
 	}
 }
 
