@@ -192,6 +192,16 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 	}
 }
 
+void AWildOmissionGameMode::SetTime(float NormalizedTime)
+{
+	if (TimeOfDayHandler == nullptr)
+	{
+		return;
+	}
+
+	TimeOfDayHandler->SetNormalizedProgressThroughDay(NormalizedTime);
+}
+
 void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 {
 	if (WeatherHandler == nullptr)

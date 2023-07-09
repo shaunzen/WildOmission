@@ -40,6 +40,9 @@ public:
 	void ResetLocationOfAllConnectedPlayers();
 
 	UFUNCTION(BlueprintCallable, Exec)
+	void SetTime(float NormalizedTime);
+
+	UFUNCTION(BlueprintCallable, Exec)
 	void Weather(const FString& WeatherToSet);
 
 	ASaveHandler* GetSaveHandler() const;
