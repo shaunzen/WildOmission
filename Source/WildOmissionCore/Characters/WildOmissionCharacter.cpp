@@ -64,7 +64,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	EquipComponent = CreateDefaultSubobject<UEquipComponent>(FName("EquipComponent"));
 	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
-	EquipComponent->Setup(FirstPersonArmsMeshComponent, this->GetMesh(), &ReplicatedControlRotation);
+	EquipComponent->Setup(FirstPersonArmsMeshComponent, this->GetMesh());
 
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
 
@@ -266,6 +266,8 @@ void AWildOmissionCharacter::BeginPlay()
 void AWildOmissionCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	EquipComponent->UpdateControlRotation(GetReplicatedControlRotation());
 
 	if (!HasAuthority())
 	{
@@ -710,12 +712,12 @@ float AWildOmissionCharacter::GetHeadPitch() const
 
 FRotator AWildOmissionCharacter::GetReplicatedControlRotation() const
 {
-	if (IsLocallyControlled() || HasAuthority())
+	if (GetLocalRole() == ROLE_SimulatedProxy)
 	{
-		return GetControlRotation();
+		return ReplicatedControlRotation;
 	}
-
-	return ReplicatedControlRotation;
+	
+	return GetControlRotation();
 }
 
 bool AWildOmissionCharacter::IsUnderwater() const

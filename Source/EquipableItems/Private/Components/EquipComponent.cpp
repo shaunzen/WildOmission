@@ -51,11 +51,10 @@ void UEquipComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, F
 	}
 }
 
-void UEquipComponent::Setup(USkeletalMeshComponent* FirstPersonMeshComponent, USkeletalMeshComponent* ThirdPersonMeshComponent, FRotator* OwnerControlRotationPointer)
+void UEquipComponent::Setup(USkeletalMeshComponent* FirstPersonMeshComponent, USkeletalMeshComponent* ThirdPersonMeshComponent)
 {
 	OwnerFirstPersonMesh = FirstPersonMeshComponent;
 	OwnerThirdPersonMesh = ThirdPersonMeshComponent;
-	OwnerReplicatedControlRotation = OwnerControlRotationPointer;
 	FirstPersonItemMeshComponent->AttachToComponent(FirstPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 }
 
@@ -126,13 +125,14 @@ void UEquipComponent::DestroyEquipedItem()
 	EquipedItem = nullptr;
 }
 
+void UEquipComponent::UpdateControlRotation(const FRotator& NewControlRotation)
+{
+	OwnerReplicatedControlRotation = NewControlRotation;
+}
+
 FRotator UEquipComponent::GetOwnerControlRotation() const
 {
-	if (OwnerReplicatedControlRotation == nullptr)
-	{
-		return FRotator::ZeroRotator;
-	}
-	return *OwnerReplicatedControlRotation;
+	return OwnerReplicatedControlRotation;
 }
 
 void UEquipComponent::PlayEquipMontage(bool FirstPerson)

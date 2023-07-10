@@ -68,9 +68,9 @@ void UVitalsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UVitalsComponent, CurrentHealth);
-	DOREPLIFETIME(UVitalsComponent, CurrentThirst);
-	DOREPLIFETIME(UVitalsComponent, CurrentHunger);
+	DOREPLIFETIME_CONDITION(UVitalsComponent, CurrentHealth, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UVitalsComponent, CurrentThirst, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UVitalsComponent, CurrentHunger, COND_OwnerOnly);
 }
 
 void UVitalsComponent::CalculateDepletion()
