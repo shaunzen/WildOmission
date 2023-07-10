@@ -36,7 +36,7 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UInventoryComponent, ServerState);
+	DOREPLIFETIME_CONDITION(UInventoryComponent, ServerState, COND_OwnerOnly);
 }
 
 void UInventoryComponent::BeginPlay()
@@ -103,7 +103,7 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* Actor
 	
 	if (ForceClientUpdate)
 	{
-		Client_ForceServerStateUpdate(ServerState);
+		GetOwner()->ForceNetUpdate();
 	}
 
 	OnRep_ServerState();
@@ -351,12 +351,6 @@ void UInventoryComponent::Load(const TArray<uint8>& InSave)
 	this->Serialize(InventoryArchive);
 
 	OnLoadComplete_Implementation();
-	OnRep_ServerState();
-}
-
-void UInventoryComponent::Client_ForceServerStateUpdate_Implementation(const FInventoryState& NewServerState)
-{
-	ServerState = NewServerState;
 	OnRep_ServerState();
 }
 

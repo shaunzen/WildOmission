@@ -4,65 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Structs/InventoryContents.h"
-#include "Structs/InventorySlot.h"
+#include "Structs/InventorySlotInteraction.h"
+#include "Structs/InventoryItemUpdate.h"
+#include "Structs/InventoryState.h"
 #include "Structs/ItemData.h"
 #include "Interfaces/SavableObject.h"
 #include "InventoryComponent.generated.h"
-
-class UInventoryManipulatorComponent;
-
-USTRUCT()
-struct FInventorySlotInteraction
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	float Time = 0;
-
-	UPROPERTY()
-	int32 SlotIndex = 0;
-	
-	UPROPERTY()
-	UInventoryManipulatorComponent* Manipulator;
-
-	UPROPERTY()
-	bool Primary = true;
-
-};
-
-USTRUCT()
-struct FInventoryItemUpdate
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	float Time = 0;
-
-	UPROPERTY()
-	bool Addition = true;
-
-	UPROPERTY()
-	FInventoryItem Item;
-};
-
-USTRUCT()
-struct FInventoryState
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FInventorySlotInteraction LastInteraction;
-
-	UPROPERTY()
-	FInventoryContents Contents;
-
-	UPROPERTY()
-	TArray<FInventorySlot> Slots;
-	
-	UPROPERTY()
-	TArray<FInventoryItemUpdate> Updates;
-};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdateSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryItemUpdateSignature, const FInventoryItemUpdate&, ItemUpdate);
@@ -123,9 +70,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_ServerState)
 	FInventoryState ServerState;
-
-	UFUNCTION(Client, Reliable)
-	void Client_ForceServerStateUpdate(const FInventoryState& NewServerState);
 
 	UFUNCTION()
 	virtual void OnRep_ServerState();
