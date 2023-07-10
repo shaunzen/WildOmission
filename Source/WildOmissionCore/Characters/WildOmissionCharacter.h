@@ -128,7 +128,7 @@ private:
 	UPROPERTY()
 	TSubclassOf<AItemContainerBase> RagdollClass;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FRotator ReplicatedControlRotation;
 
 	UPROPERTY()
@@ -253,8 +253,4 @@ private:
 
 	UFUNCTION(Client, Reliable)
 	void Client_OpenContainer(AItemContainerBase* Container);
-
-	UFUNCTION(NetMulticast, Unreliable)
-	void Client_UpdateReplicatedControlRotation(const FRotator& NewControlRotation);
-
 };

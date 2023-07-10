@@ -243,6 +243,7 @@ void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWildOmissionCharacter, DesiredMovementSpeed);
+	DOREPLIFETIME_CONDITION(AWildOmissionCharacter, ReplicatedControlRotation, COND_SimulatedOnly);
 }
 
 void AWildOmissionCharacter::BeginPlay()
@@ -271,7 +272,7 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 		return;
 	}
 
-	Client_UpdateReplicatedControlRotation(GetControlRotation());
+	ReplicatedControlRotation = GetControlRotation();
 
 	if (GetCharacterMovement()->IsSwimming())
 	{
@@ -704,12 +705,12 @@ USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 
 float AWildOmissionCharacter::GetHeadPitch() const
 {
-	return ReplicatedControlRotation.GetNormalized().Pitch;
+	return GetReplicatedControlRotation().GetNormalized().Pitch;
 }
 
 FRotator AWildOmissionCharacter::GetReplicatedControlRotation() const
 {
-	if (IsLocallyControlled())
+	if (IsLocallyControlled() || HasAuthority())
 	{
 		return GetControlRotation();
 	}
@@ -765,9 +766,4 @@ void AWildOmissionCharacter::Client_OpenContainer_Implementation(AItemContainerB
 	
 	PlayerHUDWidget->ToggleInventoryMenu(true);
 	PlayerHUDWidget->GetInventoryMenu()->OpenContainer(Container->GetInventoryComponent(), Container->GetWidgetClass());
-}
-
-void AWildOmissionCharacter::Client_UpdateReplicatedControlRotation_Implementation(const FRotator& NewControlRotation)
-{
-	ReplicatedControlRotation = NewControlRotation;
 }

@@ -10,7 +10,7 @@
 USTRUCT(BlueprintType)
 struct INVENTORY_API FInventoryItem
 {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
 	FName Name = FName("");

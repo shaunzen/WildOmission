@@ -13,7 +13,7 @@
 USTRUCT()
 struct FInventoryState
 {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY()
 	FInventorySlotInteraction LastInteraction;
