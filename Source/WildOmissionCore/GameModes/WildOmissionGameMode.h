@@ -30,9 +30,6 @@ public:
 
 	void SpawnHumanForController(APlayerController* Controller);
 
-	UFUNCTION()
-	void OnControllerFinishedLoading(AWildOmissionPlayerController* LoadedController);
-
 	UFUNCTION(BlueprintCallable, Exec)
 	void SaveGame();
 

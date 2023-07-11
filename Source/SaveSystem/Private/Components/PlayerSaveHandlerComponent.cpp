@@ -65,12 +65,6 @@ void UPlayerSaveHandlerComponent::Load(APlayerController* PlayerController)
 	{
 		SavablePlayer->LoadPlayerSave(SaveHandlerOwner->GetSaveFile()->PlayerSaves[SaveIndex]);
 	}
-	// Must be a new player just go ahead and call his spawn function
-	else
-	{
-		// TODO uhh
-		//WildOmissionPlayerController->Spawn();
-	}
 }
 
 void UPlayerSaveHandlerComponent::AddAllToPending()
