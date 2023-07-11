@@ -53,6 +53,11 @@ void UVitalsComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+	
 	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UVitalsComponent::OnOwnerTakeAnyDamage);
 }
 
@@ -256,7 +261,7 @@ void UVitalsComponent::Client_PlayHurtSound_Implementation()
 
 void UVitalsComponent::OnOwnerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	if (!GetOwner()->HasAuthority() || DamagedActor == nullptr)
+	if (GetOwner() == nullptr || !GetOwner()->HasAuthority() || DamagedActor == nullptr)
 	{
 		return;
 	}

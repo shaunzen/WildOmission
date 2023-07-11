@@ -24,6 +24,12 @@ AHarvestableResource::AHarvestableResource()
 
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultiplier)
 {
+	if (HarvestingActor == nullptr)
+	{
+		UE_LOG(LogGatherableResources, Warning, TEXT("Could not harvest resource, HarvestingActor was nullptr."));
+		return;
+	}
+
 	UInventoryComponent* HarvestingInventoryComponent = HarvestingActor->FindComponentByClass<UInventoryComponent>();
 	if (HarvestingInventoryComponent == nullptr)
 	{
