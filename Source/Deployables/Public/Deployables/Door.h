@@ -7,9 +7,6 @@
 #include "Interfaces/Interactable.h"
 #include "Door.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class DEPLOYABLES_API ADoor : public ADeployable, public IInteractable
 {
@@ -28,10 +25,11 @@ public:
 	virtual FString PromptText() override;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* InteractionMesh;
+
 	UPROPERTY(Replicated, SaveGame)
 	bool bIsOpen;
-	UPROPERTY(Replicated, SaveGame)
-	FRotator SpawnRotation;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Sound")
 	USoundBase* OpenSound;

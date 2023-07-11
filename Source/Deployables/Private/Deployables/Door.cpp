@@ -9,6 +9,12 @@ ADoor::ADoor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	InteractionMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InteractionMesh"));
+	InteractionMesh->SetupAttachment(DeployableRootComponent);
+	InteractionMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	InteractionMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	InteractionMesh->SetVisibility(false);
+
 	OpenSound = nullptr;
 	CloseSound = nullptr;
 
@@ -19,30 +25,29 @@ ADoor::ADoor()
 	bFollowsSurfaceNormal = false;
 
 	bIsOpen = false;
-	SpawnRotation = FRotator::ZeroRotator;
-	RotateValue = 160.0f;
+	RotateValue = 120.0f;
 }
 
 void ADoor::OnSpawn()
 {
 	Super::OnSpawn();
 
-	SpawnRotation = GetActorRotation();
 }
 
 void ADoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	DoorRotation = GetActorRotation();
-
+	DoorRotation = MeshComponent->GetRelativeRotation();
+	
 	if (bIsOpen)
 	{
-		SetActorRotation(FMath::Lerp(FQuat(DoorRotation), FQuat(SpawnRotation + FRotator(0.0f, RotateValue, 0.0f)), 0.1f));
+		MeshComponent->SetRelativeRotation(FMath::Lerp(FQuat(DoorRotation), FQuat(FRotator(0.0f, RotateValue, 0.0f)), 0.1f));
 	}
 	else
 	{
-		SetActorRotation(FMath::Lerp(FQuat(DoorRotation), FQuat(SpawnRotation), 0.1f));
+		
+		MeshComponent->SetRelativeRotation(FMath::Lerp(FQuat(DoorRotation), FQuat::Identity, 0.1f));
 	}
 }
 
@@ -50,7 +55,6 @@ void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(ADoor, SpawnRotation, COND_InitialOnly);
 	DOREPLIFETIME(ADoor, bIsOpen);
 }
 

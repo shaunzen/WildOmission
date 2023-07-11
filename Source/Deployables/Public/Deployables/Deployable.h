@@ -50,6 +50,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere)
+	USceneComponent* DeployableRootComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Sound")

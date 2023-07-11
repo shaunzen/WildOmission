@@ -18,8 +18,11 @@ ADeployable::ADeployable()
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = DORM_DormantAll;
 
+	DeployableRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DeployableRootComponent"));
+	RootComponent = DeployableRootComponent;
+
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	RootComponent = MeshComponent;
+	MeshComponent->SetupAttachment(DeployableRootComponent);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Overlap);
 
 	MaxDurability = 100.0f;
