@@ -74,21 +74,7 @@ FPlayerSave AWildOmissionPlayerController::SavePlayer()
 
 void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& PlayerSave)
 {
-	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
-
-	if (WildOmissionCharacter == nullptr)
-	{
-		return;
-	}
-
-	WildOmissionCharacter->SetActorLocation(PlayerSave.WorldLocation);
-	
-	WildOmissionCharacter->GetVitalsComponent()->SetHealth(PlayerSave.Vitals.Health);
-	WildOmissionCharacter->GetVitalsComponent()->SetHunger(PlayerSave.Vitals.Hunger);
-	WildOmissionCharacter->GetVitalsComponent()->SetThirst(PlayerSave.Vitals.Thirst);
-
-	WildOmissionCharacter->GetInventoryComponent()->Load(PlayerSave.Inventory.ByteData);
-	WildOmissionCharacter->GetInventoryManipulatorComponent()->LoadSelectedItemFromByteDataAndDropInWorld(PlayerSave.SelectedItemByteData);
+	StoredPlayerSave = PlayerSave;
 }
 
 FString AWildOmissionPlayerController::GetUniqueID()
@@ -236,6 +222,32 @@ void AWildOmissionPlayerController::BeginPlay()
 		ValidateWorldStateTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::ValidateWorldState);
 		GetWorld()->GetTimerManager().SetTimer(ValidateWorldStateTimerHandle, ValidateWorldStateTimerDelegate, 2.0f, true);
 	}
+}
+
+void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
+{
+	Super::OnPossess(aPawn);
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(aPawn);
+
+	if (WildOmissionCharacter == nullptr)
+	{
+		return;
+	}
+
+	WildOmissionCharacter->SetActorLocation(StoredPlayerSave.WorldLocation);
+
+	WildOmissionCharacter->GetVitalsComponent()->SetHealth(StoredPlayerSave.Vitals.Health);
+	WildOmissionCharacter->GetVitalsComponent()->SetHunger(StoredPlayerSave.Vitals.Hunger);
+	WildOmissionCharacter->GetVitalsComponent()->SetThirst(StoredPlayerSave.Vitals.Thirst);
+
+	WildOmissionCharacter->GetInventoryComponent()->Load(StoredPlayerSave.Inventory.ByteData);
+	WildOmissionCharacter->GetInventoryManipulatorComponent()->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSave.SelectedItemByteData);
 }
 
 void AWildOmissionPlayerController::ValidateWorldState()

@@ -56,7 +56,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void OnPossess(APawn* aPawn) override;
 private:
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
@@ -75,6 +75,7 @@ private:
 	// into the server, it will wait until the player if fully loaded before attempting
 	// to load their data from the save file.
 	bool bIsStillLoading;
+	FPlayerSave StoredPlayerSave;
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();
