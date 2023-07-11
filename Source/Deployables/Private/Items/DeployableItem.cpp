@@ -165,8 +165,9 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 		
 		if (DeployableActorClass.GetDefaultObject()->CanRotate())
 		{
-			float FacePlayerYaw = GetFacePlayerRotation().Yaw;
+			float FacePlayerYaw = GetFacePlayerRotation(PreviewActor->GetActorLocation()).Yaw;
 			FacePlayerYaw = FMath::RoundToFloat(FacePlayerYaw / 90.0f) * 90.0f;
+			
 			float AnchorOffsetFromNearestSnap = GetOffsetFromNearestSnapDegree(AnchorHitResult.GetActor()->GetActorRotation().Yaw);
 			
 			FTransform BuildAnchorThatFacesPlayer = HitBuildAnchor->GetCorrectedTransform();
@@ -265,7 +266,7 @@ FTransform ADeployableItem::GetFreehandPlacementTransform()
 		PlacementLocation = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation()) * DeployableRange);
 	}
 
-	PlacementRotation = GetFacePlayerRotation(PlacementUp);
+	PlacementRotation = GetFacePlayerRotation(PlacementLocation, PlacementUp);
 
 	FTransform PlacementTransform;
 	PlacementTransform.SetLocation(PlacementLocation);
@@ -274,12 +275,16 @@ FTransform ADeployableItem::GetFreehandPlacementTransform()
 	return PlacementTransform;
 }
 
-FRotator ADeployableItem::GetFacePlayerRotation(const FVector& Up) const
+FRotator ADeployableItem::GetFacePlayerRotation(const FVector& PlacementLocation, const FVector& Up) const
 {
 	FVector PlacementUp = Up;
+	
+	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetOwnerPawn()->GetActorLocation(), PlacementLocation);
+	
 	FRotator PlacementUpRotationOffset = FRotator(PlacementUp.Rotation().Pitch - 90.0f, 0.0f, PlacementUp.Rotation().Roll - 90.0f);
-	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerPawn()->GetControlRotation().Yaw, 0.0f) - PlacementUpRotationOffset);
-	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetOwnerPawn()->GetControlRotation().Yaw, 0.0f));
+	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, LookAtRotation.Yaw, 0.0f) - PlacementUpRotationOffset);
+	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(FRotator(0.0f, LookAtRotation.Yaw, 0.0f));
+
 	
 	return UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
 }
