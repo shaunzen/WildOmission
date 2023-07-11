@@ -17,7 +17,13 @@ ABuildingHammerItem::ABuildingHammerItem()
 
 void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerEquipComponent()->GetOwnerControlRotation());
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(OwnerEquipComponent->GetOwnerControlRotation());
 
 	FHitResult HitResult;
 

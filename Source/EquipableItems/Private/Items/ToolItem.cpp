@@ -80,7 +80,13 @@ void AToolItem::OnPrimaryHeld()
 
 void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerEquipComponent()->GetOwnerControlRotation());
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(OwnerEquipComponent->GetOwnerControlRotation());
 
 	FHitResult HitResult;
 
@@ -111,7 +117,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 	AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
 	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
-	if (HitHarvestable && HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI)
+	if (HitHarvestable != nullptr && (HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
 	{
 		HitHarvestable->OnHarvest(GetOwner(), GatherMultiplier);
 	}

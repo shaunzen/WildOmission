@@ -70,6 +70,11 @@ void ADeployableItem::OnPrimaryPressed()
 		return;
 	}
 	
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+
 	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)
 	{
@@ -97,9 +102,9 @@ bool ADeployableItem::LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelT
 	}
 
 	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
-	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation()) * DeployableRange);
-	FCollisionQueryParams Params;
-
+	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation()) * DeployableRange);	// In this case the replicated rotation isnt needed,
+	FCollisionQueryParams Params;																							// this is because the autonomys proxy and the authority are the only ones
+																															// who will be reading this data, both are well aware of the control rotatation
 	Params.AddIgnoredActor(GetOwner());
 	Params.AddIgnoredActor(this);
 	if (PreviewActor)
