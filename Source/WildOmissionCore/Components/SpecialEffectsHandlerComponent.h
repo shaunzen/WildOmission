@@ -60,6 +60,9 @@ private:
 
 	float RainSoundCutoff;
 
+	float NightGammaStrength;
+
+	void HandleNightTimeGamma();
 	void HandleLowHealthEffects();
 	void HandleWeatherEffects();
 

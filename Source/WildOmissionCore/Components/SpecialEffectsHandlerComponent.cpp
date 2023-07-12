@@ -44,7 +44,7 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 		RainSound = RainSoundBlueprint.Object;
 	}
 	RainSoundCutoff = 20000.0f;
-
+	NightGammaStrength = 0.0f;
 	LowHealthEffectThreshold = 60.0f;
 }
 
@@ -73,8 +73,23 @@ void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
+	HandleNightTimeGamma();
 	HandleLowHealthEffects();
 	HandleWeatherEffects();
+}
+
+void USpecialEffectsHandlerComponent::HandleNightTimeGamma()
+{
+	if (TimeOfDayHandler->IsNight())
+	{
+		NightGammaStrength = FMath::Clamp(NightGammaStrength + (0.1f * GetWorld()->GetDeltaSeconds()), 0.0f, 1.0f);
+	}
+	else
+	{
+		NightGammaStrength = FMath::Clamp(NightGammaStrength - (0.1f * GetWorld()->GetDeltaSeconds()), 0.0f, 1.0f);
+	}
+
+	OwnerCamera->PostProcessSettings.AutoExposureMaxBrightness = FMath::Lerp(20.0f, -6.0f, NightGammaStrength);
 }
 
 void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
