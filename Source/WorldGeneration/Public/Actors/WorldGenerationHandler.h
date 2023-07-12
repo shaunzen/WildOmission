@@ -48,6 +48,7 @@ private:
 	void GenerateCollectables(const FWorldGenerationSettings& GenerationSettings);
 	void GenerateLootables(const FWorldGenerationSettings& GenerationSettings);
 
-	bool FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation);
+	bool FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation, FVector& OutSurfaceNormal);
+	bool FindSpawnTransform(const FWorldGenerationSettings& GenerationSettings, FTransform& OutTransform, bool FollowSurfaceNormal = false);
 
 };

@@ -125,16 +125,13 @@ void AWorldGenerationHandler::GenerateTrees(const FWorldGenerationSettings& Gene
 		int32 AmountOfTreeToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Tree.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Trees.Num());
 		for (int32 i = 0; i < AmountOfTreeToSpawn; i++)
 		{
-			FVector LocationToSpawn = FVector::ZeroVector;
-			FRotator RotationToSpawn = FRotator::ZeroRotator;
-			RotationToSpawn.Yaw = FMath::RandRange(0, 360);
-
-			if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
+			FTransform SpawnTransform;
+			if (!FindSpawnTransform(GenerationSettings, SpawnTransform, Tree.FollowSurfaceNormal))
 			{
 				continue;
 			}
 
-			AActor* SpawnedTree = GetWorld()->SpawnActor<AActor>(Tree.BlueprintClass, LocationToSpawn, RotationToSpawn);
+			AActor* SpawnedTree = GetWorld()->SpawnActor<AActor>(Tree.BlueprintClass, SpawnTransform);
 		}
 	}
 }
@@ -155,16 +152,13 @@ void AWorldGenerationHandler::GenerateNodes(const FWorldGenerationSettings& Gene
 		int32 AmountOfNodeToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Node.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Nodes.Num());
 		for (int32 i = 0; i < AmountOfNodeToSpawn; i++)
 		{
-			FVector LocationToSpawn = FVector::ZeroVector;
-			FRotator RotationToSpawn = FRotator::ZeroRotator;
-			RotationToSpawn.Yaw = FMath::RandRange(0, 360);
-
-			if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
+			FTransform SpawnTransform;
+			if (!FindSpawnTransform(GenerationSettings, SpawnTransform, Node.FollowSurfaceNormal))
 			{
 				continue;
 			}
 
-			AActor* SpawnedNode = GetWorld()->SpawnActor<AActor>(Node.BlueprintClass, LocationToSpawn, RotationToSpawn);
+			AActor* SpawnedNode = GetWorld()->SpawnActor<AActor>(Node.BlueprintClass, SpawnTransform);
 		}
 	}
 }
@@ -185,15 +179,13 @@ void AWorldGenerationHandler::GenerateCollectables(const FWorldGenerationSetting
 		int32 AmountOfCollectableToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Collectable.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Collectables.Num());
 		for (int32 i = 0; i < AmountOfCollectableToSpawn; i++)
 		{
-			FVector LocationToSpawn = FVector::ZeroVector;
-			FRotator RotationToSpawn = FRotator::ZeroRotator;
-			RotationToSpawn.Yaw = FMath::RandRange(0, 360);
-			if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
+			FTransform SpawnTransform;
+			if (!FindSpawnTransform(GenerationSettings, SpawnTransform, Collectable.FollowSurfaceNormal))
 			{
 				continue;
 			}
 
-			AActor* SpawnedCollectable = GetWorld()->SpawnActor<AActor>(Collectable.BlueprintClass, LocationToSpawn, RotationToSpawn);
+			AActor* SpawnedCollectable = GetWorld()->SpawnActor<AActor>(Collectable.BlueprintClass, SpawnTransform);
 		}
 	}
 }
@@ -214,20 +206,18 @@ void AWorldGenerationHandler::GenerateLootables(const FWorldGenerationSettings& 
 		int32 AmountOfLootableToSpawn = FMath::RoundToInt32((WorldAreaMeters * (Lootable.DensityPerMeter * GenerationSettings.SpawnLimiter)) / BiomeData->Lootables.Num());
 		for (int32 i = 0; i < AmountOfLootableToSpawn; i++)
 		{
-			FVector LocationToSpawn = FVector::ZeroVector;
-			FRotator RotationToSpawn = FRotator::ZeroRotator;
-			RotationToSpawn.Yaw = FMath::RandRange(0, 360);
-			if (!FindSpawnLocation(GenerationSettings, LocationToSpawn))
+			FTransform SpawnTransform;
+			if (!FindSpawnTransform(GenerationSettings, SpawnTransform, Lootable.FollowSurfaceNormal))
 			{
 				continue;
 			}
 
-			AActor* SpawnedLootCrate = GetWorld()->SpawnActor<AActor>(Lootable.BlueprintClass, LocationToSpawn, RotationToSpawn);
+			AActor* SpawnedLootCrate = GetWorld()->SpawnActor<AActor>(Lootable.BlueprintClass, SpawnTransform);
 		}
 	}
 }
 
-bool AWorldGenerationHandler::FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation)
+bool AWorldGenerationHandler::FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation, FVector& OutSurfaceNormal)
 {
 	int32 HalfWorldCentimetersX = (GenerationSettings.WorldSizeMetersX * 0.5f) * 100;
 	int32 HalfWorldCentimetersY = (GenerationSettings.WorldSizeMetersY * 0.5f) * 100;
@@ -249,6 +239,46 @@ bool AWorldGenerationHandler::FindSpawnLocation(const FWorldGenerationSettings& 
 		}
 
 		OutLocation = HitResult.ImpactPoint;
+		OutSurfaceNormal = HitResult.ImpactNormal;
+		return true;
+	}
+	return false;
+}
+
+bool AWorldGenerationHandler::FindSpawnTransform(const FWorldGenerationSettings& GenerationSettings, FTransform& OutTransform, bool FollowSurfaceNormal)
+{
+	int32 HalfWorldCentimetersX = (GenerationSettings.WorldSizeMetersX * 0.5f) * 100;
+	int32 HalfWorldCentimetersY = (GenerationSettings.WorldSizeMetersY * 0.5f) * 100;
+
+	FHitResult HitResult;
+	FVector Start = FVector(FMath::RandRange(-HalfWorldCentimetersX, HalfWorldCentimetersX), FMath::RandRange(-HalfWorldCentimetersY, HalfWorldCentimetersY), GenerationSettings.WorldHeightMeters * 100);
+	FVector End = Start - FVector(0, 0, GenerationSettings.WorldHeightMeters * 200);
+
+	FCollisionQueryParams Params;
+	Params.bTraceComplex = true;
+	Params.bReturnPhysicalMaterial = true;
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	{
+																					// SurfaceType1 = Grass
+		if (HitResult.PhysMaterial == nullptr || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
+		{
+			return false;
+		}
+
+		OutTransform.SetLocation(HitResult.ImpactPoint);
+
+		// Find the Rotation
+		FRotator SpawnRotation = FRotator::ZeroRotator;
+		float YawOffset = FMath::RandRange(0.0f, 360.0f);
+		if (FollowSurfaceNormal)
+		{
+			SpawnRotation = HitResult.ImpactNormal.RotateAngleAxis(90.0f, FVector(0.0f, 1.0f, 0.0f)).Rotation();
+		}
+
+		SpawnRotation.Yaw += YawOffset;
+		OutTransform.SetRotation(FQuat(SpawnRotation));
+		
 		return true;
 	}
 	return false;
