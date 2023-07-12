@@ -2,17 +2,22 @@
 
 
 #include "SpecialEffectsHandlerComponent.h"
-#include "Actors//Storm.h"
+#include "Actors/Storm.h"
 #include "Components/VitalsComponent.h"
 #include "Engine/ExponentialHeightFog.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
+#include "TimeOfDayHandler.h"
 #include "Components/PostProcessComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
 #include "Components/AudioComponent.h"
 #include "MetasoundSource.h"
+
+static UMaterialParameterCollection* MPC_Effects = nullptr;
 
 // Sets default values for this component's properties
 USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
@@ -21,12 +26,19 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainSystemBlueprint(TEXT("/Game/Weather/Art/NS_Rain"));
+	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> EffectsParameterCollection(TEXT("/Game/WildOmissionCore/Art/Environment/MPC_Effects"));
+	if (EffectsParameterCollection.Succeeded())
+	{
+		MPC_Effects = EffectsParameterCollection.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainSystemBlueprint(TEXT("/Game/Weather/Art/NS_Rain"));
 	if (RainSystemBlueprint.Succeeded())
 	{
 		RainParticleSystem = RainSystemBlueprint.Object;
 	}
-	ConstructorHelpers::FObjectFinder<UMetaSoundSource> RainSoundBlueprint(TEXT("/Game/Weather/Audio/MS_RainFall"));
+
+	static ConstructorHelpers::FObjectFinder<UMetaSoundSource> RainSoundBlueprint(TEXT("/Game/Weather/Audio/MS_RainFall"));
 	if (RainSoundBlueprint.Succeeded())
 	{
 		RainSound = RainSoundBlueprint.Object;
@@ -50,7 +62,9 @@ void USpecialEffectsHandlerComponent::BeginPlay()
 		return;
 	}
 
-	Fog = HeightFogActor->FindComponentByClass<UExponentialHeightFogComponent>();
+	FogComponent = HeightFogActor->FindComponentByClass<UExponentialHeightFogComponent>();
+
+	TimeOfDayHandler = Cast<ATimeOfDayHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeOfDayHandler::StaticClass()));
 }
 
 
@@ -114,9 +128,11 @@ void USpecialEffectsHandlerComponent::HandleWeatherEffects()
 
 void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)
 {
-	Fog->SetFogDensity(0.05f);
-	Fog->SetFogHeightFalloff(0.001f);
+	FogComponent->SetFogDensity(0.05f);
+	FogComponent->SetFogHeightFalloff(0.001f);
 
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Effects, TEXT("FogIntensity"), RainDensity / 2000.0f);
+	
 	if (SpawnedRainComponent == nullptr)
 	{
 		SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, GetOwner()->GetRootComponent(), FName(), FVector(0.0f, 0.0f, 1000.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
@@ -150,8 +166,10 @@ void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)
 
 void USpecialEffectsHandlerComponent::DisableRainfallEffects()
 {
-	Fog->SetFogDensity(0.02f);
-	Fog->SetFogHeightFalloff(0.2f);
+	FogComponent->SetFogDensity(0.02f);
+	FogComponent->SetFogHeightFalloff(0.2f);
+
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Effects, TEXT("FogIntensity"), 0.0f);
 
 	if (SpawnedRainComponent)
 	{

@@ -9,6 +9,7 @@
 class UNiagaraSystem;
 class UNiagaraComponent;
 class UExponentialHeightFogComponent;
+class ATimeOfDayHandler;
 class UCameraComponent;
 class AStorm;
 
@@ -43,7 +44,10 @@ private:
 	USoundBase* RainSound;
 
 	UPROPERTY()
-	UExponentialHeightFogComponent* Fog;
+	UExponentialHeightFogComponent* FogComponent;
+
+	UPROPERTY()
+	ATimeOfDayHandler* TimeOfDayHandler;
 
 	UPROPERTY()
 	UCameraComponent* OwnerCamera;
