@@ -74,12 +74,14 @@ bool AFurnace::IsTurnedOn() const
 
 void AFurnace::OnTurnedOn()
 {
+	MeshComponent->SetCustomPrimitiveDataFloat(0, 1.0f);
 	Light->SetVisibility(true);
 	AudioComponent->Play();
 }
 
 void AFurnace::OnTurnedOff()
 {
+	MeshComponent->SetCustomPrimitiveDataFloat(0, 0.0f);
 	Light->SetVisibility(false);
 	AudioComponent->Stop();
 }
