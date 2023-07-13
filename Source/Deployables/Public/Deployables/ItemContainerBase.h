@@ -41,13 +41,13 @@ protected:
 	UPROPERTY(Replicated)
 	bool bOccupied;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category = "Item Container")
 	FString ContainerName;
 
 	virtual void OnContainerClosed();
 
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item Container")
 	TSubclassOf<UUserWidget> WidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
