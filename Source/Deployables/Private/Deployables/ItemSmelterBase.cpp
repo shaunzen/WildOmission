@@ -4,6 +4,7 @@
 #include "Deployables/ItemSmelterBase.h"
 #include "Components/InventoryComponent.h"
 #include "Components/PointLightComponent.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -23,6 +24,9 @@ AItemSmelterBase::AItemSmelterBase()
 
 	LightComponent = CreateDefaultSubobject<UPointLightComponent>(TEXT("LightComponent"));
 	LightComponent->SetupAttachment(MeshComponent);
+
+	ParticlesComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ParticleComponent"));
+	ParticlesComponent->SetupAttachment(MeshComponent);
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	AudioComponent->SetupAttachment(MeshComponent);
@@ -97,6 +101,7 @@ void AItemSmelterBase::OnTurnedOn()
 {
 	MeshComponent->SetCustomPrimitiveDataFloat(0, 1.0f);
 	LightComponent->SetVisibility(true);
+	ParticlesComponent->Activate();
 	AudioComponent->Play();
 }
 
@@ -104,6 +109,7 @@ void AItemSmelterBase::OnTurnedOff()
 {
 	MeshComponent->SetCustomPrimitiveDataFloat(0, 0.0f);
 	LightComponent->SetVisibility(false);
+	ParticlesComponent->Deactivate();
 	AudioComponent->Stop();
 }
 

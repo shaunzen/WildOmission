@@ -21,6 +21,7 @@ struct FSmeltResult
 };
 
 class UPointLightComponent;
+class UNiagaraComponent;
 
 UCLASS()
 class DEPLOYABLES_API AItemSmelterBase : public AItemContainerBase
@@ -61,6 +62,9 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	UPointLightComponent* LightComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* ParticlesComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;
