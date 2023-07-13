@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "UI/InventoryWidget.h"
-#include "FurnaceWidget.generated.h"
+#include "SmelterWidget.generated.h"
 
 class UButton;
 class UTextBlock;
 
 UCLASS()
-class DEPLOYABLES_API UFurnaceWidget : public UInventoryWidget
+class DEPLOYABLES_API USmelterWidget : public UInventoryWidget
 {
 	GENERATED_BODY()
 public:
