@@ -49,6 +49,7 @@ public:
 	uint8 GetSlotCount() const;
 	TArray<FInventorySlot>& GetSlots();
 	
+	void SetDisplayName(const FString& NewDisplayName);
 	void SetSlotCount(const uint8& InSlotCount);
 
 	UFUNCTION(BlueprintCallable)

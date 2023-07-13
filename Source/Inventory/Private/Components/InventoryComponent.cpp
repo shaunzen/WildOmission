@@ -321,6 +321,11 @@ TArray<FInventorySlot>& UInventoryComponent::GetSlots()
 	return Slots;
 }
 
+void UInventoryComponent::SetDisplayName(const FString& NewDisplayName)
+{
+	DisplayName = NewDisplayName;
+}
+
 void UInventoryComponent::SetSlotCount(const uint8& InSlotCount)
 {
 	SlotCount = InSlotCount;

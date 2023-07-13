@@ -18,6 +18,7 @@ AItemSmelterBase::AItemSmelterBase()
 	SmeltTimeSeconds = 5.0f;
 	ContainerName = TEXT("Item Smelter");
 
+	GetInventoryComponent()->SetDisplayName(TEXT("Item Smelter"));
 	GetInventoryComponent()->SetSlotCount(6);
 
 	LightComponent = CreateDefaultSubobject<UPointLightComponent>(TEXT("LightComponent"));
