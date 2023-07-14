@@ -62,25 +62,31 @@ bool ADeployablePreview::IsOverlappingInvalidObject() const
 
 void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->ActorHasTag(TEXT("Water")) || (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround()) || (OtherActor->ActorHasTag(TEXT("Wall")) && PreviewingDeployable->CanSpawnOnWall()) || (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnFloor()) || (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(TEXT("BuildingPart"))))
+	if (OtherActor->ActorHasTag(TEXT("Water")) 
+		|| (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround()) 
+		|| (OtherActor->ActorHasTag(TEXT("Wall")) && PreviewingDeployable->CanSpawnOnWall()) 
+		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnFloor()) 
+		|| (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(TEXT("BuildingPart"))))
 	{
 		return;
 	}
 
 	OverlapCount++;
-	UE_LOG(LogTemp, Warning, TEXT("Began overlap with actor %s"), *OtherActor->GetActorNameOrLabel());
+	
 	InvalidOverlap = true;
 }
 
 void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	if (OtherActor->ActorHasTag(TEXT("Water")) || (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround()) || (OtherActor->ActorHasTag(FName("Wall")) && PreviewingDeployable->CanSpawnOnWall()) || (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(FName("BuildingPart"))))
+	if (OtherActor->ActorHasTag(TEXT("Water")) 
+		|| (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround()) 
+		|| (OtherActor->ActorHasTag(TEXT("Wall")) && PreviewingDeployable->CanSpawnOnWall()) 
+		|| (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && OtherActor->ActorHasTag(TEXT("BuildingPart"))))
 	{
 		return;
 	}
 
 	OverlapCount--;
-	UE_LOG(LogTemp, Warning, TEXT("End overlap with actor %s"), *OtherActor->GetActorNameOrLabel());
 	
 	if (OverlapCount > 0)
 	{
