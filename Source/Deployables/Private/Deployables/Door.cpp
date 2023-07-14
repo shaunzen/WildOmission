@@ -40,12 +40,12 @@ void ADoor::Tick(float DeltaTime)
 
 	if (bIsOpen)
 	{
-		MeshComponent->SetRelativeRotation(FMath::Lerp(MeshComponent->GetRelativeRotation(), FRotator(0.0f, OpenAngle, 0.0f), 0.5f * DeltaTime));
+		MeshComponent->SetRelativeRotation(FMath::Lerp(MeshComponent->GetRelativeRotation(), FRotator(0.0f, OpenAngle, 0.0f), 10.0f * DeltaTime));
 	}
 	else
 	{
 		
-		MeshComponent->SetRelativeRotation(FMath::Lerp(MeshComponent->GetRelativeRotation(), FRotator::ZeroRotator, 0.5f * DeltaTime));
+		MeshComponent->SetRelativeRotation(FMath::Lerp(MeshComponent->GetRelativeRotation(), FRotator::ZeroRotator, 10.0f * DeltaTime));
 	}
 }
 
