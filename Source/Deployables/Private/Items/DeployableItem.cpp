@@ -165,7 +165,7 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 		
 		if (DeployableActorClass.GetDefaultObject()->CanRotate())
 		{
-			float FacePlayerYaw = GetFacePlayerRotation(PreviewActor->GetActorLocation()).Yaw;
+			float FacePlayerYaw = GetFacePlayerRotation(HitBuildAnchor->GetComponentLocation()).Yaw;
 			FacePlayerYaw = FMath::RoundToFloat(FacePlayerYaw / 90.0f) * 90.0f;
 			
 			float AnchorOffsetFromNearestSnap = GetOffsetFromNearestSnapDegree(AnchorHitResult.GetActor()->GetActorRotation().Yaw);
