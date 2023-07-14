@@ -89,7 +89,7 @@ void USpecialEffectsHandlerComponent::HandleNightTimeGamma()
 		NightGammaStrength = FMath::Clamp(NightGammaStrength - (0.1f * GetWorld()->GetDeltaSeconds()), 0.0f, 1.0f);
 	}
 
-	OwnerCamera->PostProcessSettings.AutoExposureMaxBrightness = FMath::Lerp(20.0f, -6.0f, NightGammaStrength);
+	OwnerCamera->PostProcessSettings.AutoExposureBias = FMath::Lerp(0.5f, -3.0f, NightGammaStrength);
 }
 
 void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
