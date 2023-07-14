@@ -37,9 +37,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Sound")
 	USoundBase* CloseSound;
 
-	float RotateValue;
-	FRotator DoorRotation;
-
+	float OpenAngle;
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayOpenSound();
 	

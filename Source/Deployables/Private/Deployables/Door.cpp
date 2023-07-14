@@ -25,7 +25,7 @@ ADoor::ADoor()
 	bFollowsSurfaceNormal = false;
 
 	bIsOpen = false;
-	RotateValue = 120.0f;
+	OpenAngle = 120.0f;
 }
 
 void ADoor::OnSpawn()
@@ -38,16 +38,14 @@ void ADoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	DoorRotation = MeshComponent->GetRelativeRotation();
-	
 	if (bIsOpen)
 	{
-		MeshComponent->SetRelativeRotation(FMath::Lerp(FQuat(DoorRotation), FQuat(FRotator(0.0f, RotateValue, 0.0f)), 0.1f));
+		MeshComponent->SetRelativeRotation(FMath::Lerp(MeshComponent->GetRelativeRotation(), FRotator(0.0f, OpenAngle, 0.0f), 0.5f * DeltaTime));
 	}
 	else
 	{
 		
-		MeshComponent->SetRelativeRotation(FMath::Lerp(FQuat(DoorRotation), FQuat::Identity, 0.1f));
+		MeshComponent->SetRelativeRotation(FMath::Lerp(MeshComponent->GetRelativeRotation(), FRotator::ZeroRotator, 0.5f * DeltaTime));
 	}
 }
 
