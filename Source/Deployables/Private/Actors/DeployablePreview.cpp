@@ -42,7 +42,12 @@ void ADeployablePreview::Setup(ADeployable* DeployableToPreview)
 
 	GetStaticMeshComponent()->SetStaticMesh(PreviewingDeployable->GetMesh());
 	GetStaticMeshComponent()->SetRelativeTransform(PreviewingDeployable->GetMeshTransform());
-	GetStaticMeshComponent()->SetMaterial(0, PreviewMaterial);
+	
+	// Set all materials on the mesh to use the preview material
+	for (int32 i = 0; i < GetStaticMeshComponent()->GetNumMaterials(); i++)
+	{
+		GetStaticMeshComponent()->SetMaterial(i, PreviewMaterial);
+	}
 
 	CollisionCheckMeshComponent->SetStaticMesh(PreviewingDeployable->GetMesh());
 
