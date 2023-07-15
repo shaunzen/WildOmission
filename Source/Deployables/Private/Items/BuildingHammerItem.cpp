@@ -79,7 +79,7 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability
 	{
 		return false;
 	}
-
+	
 	IDurabilityInterface* DurabilityInterfaceActor = Cast<IDurabilityInterface>(HitResult.GetActor());
 	if (DurabilityInterfaceActor == nullptr)
 	{
@@ -118,8 +118,6 @@ bool ABuildingHammerItem::LineTraceOnVisibility(FHitResult& OutHitResult) const
 		return false;
 	}
 
-	FHitResult HitResult;
-
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetOwner());
 
@@ -127,5 +125,5 @@ bool ABuildingHammerItem::LineTraceOnVisibility(FHitResult& OutHitResult) const
 	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
 	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
-	return GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
+	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
 }
