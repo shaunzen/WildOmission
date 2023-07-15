@@ -5,6 +5,7 @@
 #include "Components/EquipComponent.h"
 #include "Interfaces/DurabilityInterface.h"
 #include "Deployables/Deployable.h"
+#include "Deployables/BuildingPart.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/DamageEvents.h"
@@ -73,21 +74,8 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const
 {
-	if (GetOwnerPawn() == nullptr)
-	{
-		return false;
-	}
-	
 	FHitResult HitResult;
-	
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(GetOwner());
-
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation());
-	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
-	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
-
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
+	if (!LineTraceOnVisibility(HitResult))
 	{
 		return false;
 	}
@@ -102,4 +90,42 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability
 	OutMaxDurability = DurabilityInterfaceActor->GetMaxDurability();
 	OutActorName = HitResult.GetActor()->GetActorNameOrLabel();
 	return true;
+}
+
+bool ABuildingHammerItem::GetLookingAtItemStability(float& OutStability) const
+{
+	FHitResult HitResult;
+	if (!LineTraceOnVisibility(HitResult))
+	{
+		return false;
+	}
+
+	ABuildingPart* HitBuildingPart = Cast<ABuildingPart>(HitResult.GetActor());
+	if (HitBuildingPart == nullptr)
+	{
+		return false;
+	}
+
+	OutStability = HitBuildingPart->GetStability();
+
+	return true;
+}
+
+bool ABuildingHammerItem::LineTraceOnVisibility(FHitResult& OutHitResult) const
+{
+	if (GetOwnerPawn() == nullptr)
+	{
+		return false;
+	}
+
+	FHitResult HitResult;
+
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(GetOwner());
+
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation());
+	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
+	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
+
+	return GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
 }

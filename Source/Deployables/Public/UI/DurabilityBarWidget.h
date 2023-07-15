@@ -20,10 +20,10 @@ public:
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* MainContainer;
-
-	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* DurabilityNameTextBlock;
 	
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* StabilityTextBlock;
+
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* DurabilityFractionTextBlock;
 	
