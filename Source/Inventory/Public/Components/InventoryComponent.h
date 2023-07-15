@@ -114,6 +114,6 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_SlotInteraction(const FInventorySlotInteraction& Interaction);
 
-	void HandleSlotInteraction(const FInventorySlotInteraction& Interaction);
+	void HandleSlotInteraction(const FInventorySlotInteraction& Interaction, bool UseServerState);
 
 };

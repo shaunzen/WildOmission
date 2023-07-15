@@ -130,6 +130,7 @@ void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryMani
 	FInventorySlotInteraction CurrentInteraction;
 	CurrentInteraction.SlotIndex = SlotIndex;
 	CurrentInteraction.Manipulator = Manipulator;
+	CurrentInteraction.QuickMove = QuickMove;
 	CurrentInteraction.Primary = Primary;
 	CurrentInteraction.Time = GetWorld()->GetRealTimeSeconds();
 
@@ -144,31 +145,7 @@ void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryMani
 		return;
 	}
 
-	HandleSlotInteraction(CurrentInteraction);
-
-	// This is gross
-	if (!Manipulator->IsDragging())
-	{
-		if (Primary)
-		{
-			DragAll(SlotIndex, Manipulator, Slots, Contents);
-		}
-		else
-		{
-			DragSplit(SlotIndex, Manipulator, Slots, Contents);
-		}
-	}
-	else
-	{
-		if (Primary)
-		{
-			DropAll(SlotIndex, Manipulator, Slots, Contents);
-		}
-		else
-		{
-			DropSingle(SlotIndex, Manipulator, Slots, Contents);
-		}
-	}
+	HandleSlotInteraction(CurrentInteraction, false);
 
 	BroadcastInventoryUpdate();
 }
@@ -223,29 +200,34 @@ void UInventoryComponent::OnLoadComplete_Implementation()
 	LoadedFromSave = true;
 }
 
-void UInventoryComponent::HandleSlotInteraction(const FInventorySlotInteraction& Interaction)
+void UInventoryComponent::HandleSlotInteraction(const FInventorySlotInteraction& Interaction, bool UseServerState)
 {
 	if (!Interaction.Manipulator->IsDragging())
 	{
 		if (Interaction.Primary)
 		{
-			DragAll(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
+			DragAll(Interaction.SlotIndex, Interaction.Manipulator, UseServerState ? ServerState.Slots : Slots, UseServerState ? ServerState.Contents : Contents);
 		}
 		else
 		{
-			DragSplit(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
+			DragSplit(Interaction.SlotIndex, Interaction.Manipulator, UseServerState ? ServerState.Slots : Slots, UseServerState ? ServerState.Contents : Contents);
 		}
 	}
 	else
 	{
 		if (Interaction.Primary)
 		{
-			DropAll(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
+			DropAll(Interaction.SlotIndex, Interaction.Manipulator, UseServerState ? ServerState.Slots : Slots, UseServerState ? ServerState.Contents : Contents);
 		}
 		else
 		{
-			DropSingle(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
+			DropSingle(Interaction.SlotIndex, Interaction.Manipulator, UseServerState ? ServerState.Slots : Slots, UseServerState ? ServerState.Contents : Contents);
 		}
+	}
+
+	if (Interaction.QuickMove == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Processing QuickMove action."));
 	}
 }
 
@@ -254,7 +236,7 @@ void UInventoryComponent::Server_SlotInteraction_Implementation(const FInventory
 	// Update our server state
 	ServerState.LastInteraction = Interaction;
 
-	HandleSlotInteraction(Interaction);
+	HandleSlotInteraction(Interaction, true);
 
 	OnRep_ServerState();
 }
