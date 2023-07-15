@@ -9,6 +9,7 @@
 #include "UI/SelectedItemWidget.h"
 #include "UI/HoveredItemNameTag.h"
 #include "Components/PlayerInventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "Interfaces/ItemContainer.h"
 #include "Log.h"
 
@@ -58,7 +59,10 @@ void UInventoryMenuWidget::Close(bool ShouldCloseContainer)
 		{
 			OpenedContainer->UnOccupy();
 		}
-
+		if (UInventoryManipulatorComponent* OwnerManipulatorComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryManipulatorComponent>())
+		{
+			OwnerManipulatorComponent->Server_SetOpenContainer(nullptr);
+		}
 		OpenContainerWidget->Close();
 		OpenContainerWidget->RemoveFromParent();
 		OpenContainerWidget = nullptr;

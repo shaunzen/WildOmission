@@ -18,6 +18,12 @@ UInventoryManipulatorComponent::UInventoryManipulatorComponent()
 	Dragging = false;
 }
 
+void UInventoryManipulatorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(UInventoryManipulatorComponent, OpenContainer, COND_OwnerOnly);
+}
 
 // Called when the game starts
 void UInventoryManipulatorComponent::BeginPlay()
@@ -129,6 +135,16 @@ void UInventoryManipulatorComponent::Server_DropSelectedItemInWorld_Implementati
 bool UInventoryManipulatorComponent::IsDragging() const
 {
 	return Dragging;
+}
+
+UInventoryComponent* UInventoryManipulatorComponent::GetOpenContainer() const
+{
+	return OpenContainer;
+}
+
+void UInventoryManipulatorComponent::Server_SetOpenContainer_Implementation(UInventoryComponent* InOpenContainer)
+{
+	OpenContainer = InOpenContainer;
 }
 
 bool UInventoryManipulatorComponent::SelectedItemHasUniqueID(const uint32& UniqueID) const

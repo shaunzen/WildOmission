@@ -18,6 +18,8 @@ public:
 	// Sets default values for this component's properties
 	UInventoryManipulatorComponent();
 	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	//**************************************************************
 	// General Management
 	//**************************************************************
@@ -36,7 +38,9 @@ public:
 	//**************************************************************
 	
 	bool IsDragging() const;
-
+	UInventoryComponent* GetOpenContainer() const;
+	UFUNCTION(Server, Reliable)
+	void Server_SetOpenContainer(UInventoryComponent* InOpenContainer);
 	bool SelectedItemHasUniqueID(const uint32& UniqueID) const;
 
 	FInventoryManipulatorOnSelectionChangedSignature OnSelectionChanged;
@@ -57,6 +61,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	bool Dragging;
+
+	UPROPERTY(Replicated)
+	UInventoryComponent* OpenContainer;
 
 	UFUNCTION(Server, Reliable)
 	void Server_DropSelectedItemInWorld(bool Single);

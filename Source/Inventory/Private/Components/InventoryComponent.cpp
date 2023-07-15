@@ -202,6 +202,12 @@ void UInventoryComponent::OnLoadComplete_Implementation()
 
 void UInventoryComponent::HandleSlotInteraction(const FInventorySlotInteraction& Interaction, bool UseServerState)
 {
+	if (Interaction.QuickMove == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Processing QuickMove action."));
+		return;
+	}
+
 	if (!Interaction.Manipulator->IsDragging())
 	{
 		if (Interaction.Primary)
@@ -223,11 +229,6 @@ void UInventoryComponent::HandleSlotInteraction(const FInventorySlotInteraction&
 		{
 			DropSingle(Interaction.SlotIndex, Interaction.Manipulator, UseServerState ? ServerState.Slots : Slots, UseServerState ? ServerState.Contents : Contents);
 		}
-	}
-
-	if (Interaction.QuickMove == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Processing QuickMove action."));
 	}
 }
 

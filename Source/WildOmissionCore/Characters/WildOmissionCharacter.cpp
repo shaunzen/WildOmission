@@ -418,6 +418,7 @@ void AWildOmissionCharacter::InvokeOpenContainer(AItemContainerBase* Container)
 		return;
 	}
 
+	InventoryManipulatorComponent->Server_SetOpenContainer(Container->GetInventoryComponent());
 	Client_OpenContainer(Container);
 }
 
