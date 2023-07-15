@@ -32,7 +32,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem(const FInventoryItem& ItemToRemove);	
 
-	void SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary = true);
+	void SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool QuickMove, bool Primary = true);
 	
 	static FItemData* GetItemData(const FName& ItemID);
 	static void SpawnWorldItem(UWorld* WorldContextObject, const struct FInventoryItem& ItemToSpawn, AActor* SpawningActor);
@@ -112,6 +112,8 @@ private:
 	virtual void OnLoadComplete_Implementation() override;
 
 	UFUNCTION(Server, Reliable)
-	void Server_SlotInteraction(FInventorySlotInteraction Interaction);
+	void Server_SlotInteraction(const FInventorySlotInteraction& Interaction);
+
+	void HandleSlotInteraction(const FInventorySlotInteraction& Interaction);
 
 };

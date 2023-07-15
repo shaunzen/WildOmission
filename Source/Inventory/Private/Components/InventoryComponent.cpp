@@ -124,7 +124,7 @@ void UInventoryComponent::RemoveItem(const FInventoryItem& ItemToRemove)
 	OnRep_ServerState();
 }
 
-void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool Primary)
+void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryManipulatorComponent* Manipulator, bool QuickMove, bool Primary)
 {
 	// Create an interaction
 	FInventorySlotInteraction CurrentInteraction;
@@ -143,6 +143,8 @@ void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryMani
 	{
 		return;
 	}
+
+	HandleSlotInteraction(CurrentInteraction);
 
 	// This is gross
 	if (!Manipulator->IsDragging())
@@ -221,11 +223,8 @@ void UInventoryComponent::OnLoadComplete_Implementation()
 	LoadedFromSave = true;
 }
 
-void UInventoryComponent::Server_SlotInteraction_Implementation(FInventorySlotInteraction Interaction)
+void UInventoryComponent::HandleSlotInteraction(const FInventorySlotInteraction& Interaction)
 {
-	// Update our server state
-	ServerState.LastInteraction = Interaction;
-
 	if (!Interaction.Manipulator->IsDragging())
 	{
 		if (Interaction.Primary)
@@ -248,6 +247,14 @@ void UInventoryComponent::Server_SlotInteraction_Implementation(FInventorySlotIn
 			DropSingle(Interaction.SlotIndex, Interaction.Manipulator, ServerState.Slots, ServerState.Contents);
 		}
 	}
+}
+
+void UInventoryComponent::Server_SlotInteraction_Implementation(const FInventorySlotInteraction& Interaction)
+{
+	// Update our server state
+	ServerState.LastInteraction = Interaction;
+
+	HandleSlotInteraction(Interaction);
 
 	OnRep_ServerState();
 }

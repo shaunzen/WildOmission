@@ -154,6 +154,8 @@ FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 	{
 		return FReply::Handled();
 	}
+	
+	bool QuickMove = InMouseEvent.GetModifierKeys().IsLeftShiftDown() || InMouseEvent.GetModifierKeys().IsRightShiftDown();
 
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
