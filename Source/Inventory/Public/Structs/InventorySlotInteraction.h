@@ -23,6 +23,9 @@ struct FInventorySlotInteraction
 	UInventoryManipulatorComponent* Manipulator = nullptr;
 
 	UPROPERTY()
+	bool QuickMove = false;
+
+	UPROPERTY()
 	bool Primary = true;
 
 };

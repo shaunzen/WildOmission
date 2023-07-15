@@ -12,6 +12,16 @@
 #include "Interfaces/ItemContainer.h"
 #include "Log.h"
 
+UInventoryMenuWidget::UInventoryMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	InventoryHorizontalBox = nullptr;
+	PlayerInventoryWidget = nullptr;
+	OpenContainerWidget = nullptr;
+	SelectedItemWidget = nullptr;
+	HoveredItemNameTagWidget = nullptr;
+	ShiftHeld = false;
+}
+
 void UInventoryMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -91,6 +101,11 @@ bool UInventoryMenuWidget::IsOpen() const
 	return PlayerInventoryWidget->IsOpen() || (OpenContainerWidget != nullptr && OpenContainerWidget->IsOpen());
 }
 
+bool UInventoryMenuWidget::IsShiftHeld() const
+{
+	return ShiftHeld;
+}
+
 UPlayerInventoryWidget* UInventoryMenuWidget::GetPlayerInventoryWidget() const
 {
 	return PlayerInventoryWidget;
@@ -109,6 +124,32 @@ UHoveredItemNameTag* UInventoryMenuWidget::GetHoveredItemNameTagWidget() const
 bool UInventoryMenuWidget::SelectedItemVisible() const
 {
 	return SelectedItemWidget->GetVisibility() == ESlateVisibility::HitTestInvisible;
+}
+
+FReply UInventoryMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+
+	if (InKeyEvent.GetKey() == EKeys::LeftShift || InKeyEvent.GetKey() == EKeys::RightShift)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Shift Pressed."));
+		ShiftHeld = true;
+	}
+
+	return FReply::Handled();
+}
+
+FReply UInventoryMenuWidget::NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	Super::NativeOnKeyUp(InGeometry, InKeyEvent);
+
+	if (InKeyEvent.GetKey() == EKeys::LeftShift || InKeyEvent.GetKey() == EKeys::RightShift)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Shift Released."));
+		ShiftHeld = false;
+	}
+
+	return FReply::Handled();
 }
 
 void UInventoryMenuWidget::UpdateFollowMousePointerWidgets()

@@ -38,8 +38,7 @@ protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
-	virtual FReply NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+
 private:
 	UPROPERTY(meta = (BindWidget))
 	UBorder* SlotBorder;
@@ -67,9 +66,6 @@ private:
 
 	UPROPERTY()
 	bool Hovering;
-
-	UPROPERTY()
-	bool ShiftHeld;
 
 	void ShowHoveredItemNameTag();
 	void HideHoveredItemNameTag();

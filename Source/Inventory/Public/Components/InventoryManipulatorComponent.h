@@ -52,7 +52,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:	
-
 	UPROPERTY(VisibleAnywhere, SaveGame)
 	FInventoryItem SelectedItem;
 
@@ -64,4 +63,5 @@ private:
 
 	UFUNCTION()
 	void BroadcastSelectionChanged();
+
 };

@@ -25,7 +25,6 @@ UInventorySlotWidget::UInventorySlotWidget(const FObjectInitializer& ObjectIniti
 	CurrentItemQuantity = 0;
 	Selected = false;
 	Hovering = false;
-	ShiftHeld = false;
 }
 
 void UInventorySlotWidget::Setup(UInventoryWidget* InOwner, const int32& InIndex)
@@ -186,20 +185,6 @@ void UInventorySlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	Hovering = false;
 }
 
-FReply UInventorySlotWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
-{
-	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
-
-	return FReply::Handled();
-}
-
-FReply UInventorySlotWidget::NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
-{
-	Super::NativeOnKeyUp(InGeometry, InKeyEvent);
-
-	return FReply::Handled();
-}
-
 int32 UInventorySlotWidget::GetIndex() const
 {
 	return Index;
@@ -214,7 +199,6 @@ bool UInventorySlotWidget::IsSelected() const
 {
 	return Selected;
 }
-
 
 void UInventorySlotWidget::ShowHoveredItemNameTag()
 {

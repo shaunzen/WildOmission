@@ -20,6 +20,8 @@ class INVENTORY_API UInventoryMenuWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UInventoryMenuWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeomentry, float InDeltaTime) override;
 
@@ -28,10 +30,15 @@ public:
 	void OpenContainer(UInventoryComponent* ContainerInventoryComponent, UClass* ContainerWidgetClass);
 
 	bool IsOpen() const;
+	bool IsShiftHeld() const;
 	UPlayerInventoryWidget* GetPlayerInventoryWidget() const;
 	USelectedItemWidget* GetSelectedItemWidget() const;
 	UHoveredItemNameTag* GetHoveredItemNameTagWidget() const;
 	bool SelectedItemVisible() const;
+
+protected:
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual FReply NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -48,6 +55,9 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	UHoveredItemNameTag* HoveredItemNameTagWidget;
+
+	UPROPERTY()
+	bool ShiftHeld;
 
 	void UpdateFollowMousePointerWidgets();
 
