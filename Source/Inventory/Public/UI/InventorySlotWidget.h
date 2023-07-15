@@ -17,6 +17,8 @@ class INVENTORY_API UInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	UInventorySlotWidget(const FObjectInitializer& ObjectInitializer);
+
 	void Setup(UInventoryWidget* InOwner, const int32& InIndex);
 
 	void SetItem(const FInventoryItem& Item);
@@ -30,12 +32,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsSelected() const;
 
+	
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual FReply NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 private:
 	UPROPERTY(meta = (BindWidget))
 	UBorder* SlotBorder;
@@ -62,7 +66,10 @@ private:
 	bool Selected;
 
 	UPROPERTY()
-	bool Hovering = false;
+	bool Hovering;
+
+	UPROPERTY()
+	bool ShiftHeld;
 
 	void ShowHoveredItemNameTag();
 	void HideHoveredItemNameTag();
