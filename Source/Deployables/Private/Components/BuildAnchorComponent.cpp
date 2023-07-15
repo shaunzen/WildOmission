@@ -3,7 +3,6 @@
 
 #include "Components/BuildAnchorComponent.h"
 #include "Deployables/Deployable.h"
-#include "Deployables/BuildingPart.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -29,7 +28,7 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	bHiddenInGame = true;
 
 	IsOccupied = false;
-	
+
 	ComponentTags.Add("BuildAnchor");
 }
 
@@ -205,7 +204,7 @@ void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	{
 		return;
 	}
-
+	
 	IsOccupied = true;
 	OnRep_IsOccupied();
 }

@@ -33,17 +33,7 @@ void UDurabilityBarWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 	{
 		MainContainer->SetVisibility(ESlateVisibility::Visible);
 
-		float Stability = 0.0f;
-		if (HeldBuildingHammer->GetLookingAtItemStability(Stability))
-		{
-			FString Percent = TEXT("%");	// because of how formatting works :s
-			FString StabilityString = FString::Printf(TEXT("%i%s Stable"), FMath::RoundToInt32(Stability), *Percent);
-			StabilityTextBlock->SetText(FText::FromString(StabilityString));
-		}
-		else
-		{
-			StabilityTextBlock->SetText(FText::FromString(TEXT("")));
-		}
+		DurabilityNameTextBlock->SetText(FText::FromString(DurabilityActorName));
 
 		FString FractionString = FString::Printf(TEXT("%i/%i"), FMath::RoundToInt32(CurrentDurability), FMath::RoundToInt32(MaxDurability));
 		DurabilityFractionTextBlock->SetText(FText::FromString(FractionString));

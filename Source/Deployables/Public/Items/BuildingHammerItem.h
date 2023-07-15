@@ -20,9 +20,4 @@ public:
 	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
 
 	bool GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const;
-	bool GetLookingAtItemStability(float& OutStability) const;
-
-private:
-	bool LineTraceOnVisibility(FHitResult& OutHitResult) const;
-
 };
