@@ -16,10 +16,14 @@ class DEPLOYABLES_API ABuildingPart : public ADeployable
 
 public:
 	ABuildingPart();
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	float GetStability() const;
+	
+	void CalculateStability(float OwnerStability);
+
 private:
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	float Stability;
 
+	void CalculateTouchingBuildingPartsStability();
 };
