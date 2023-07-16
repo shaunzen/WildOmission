@@ -11,8 +11,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/DamageEvents.h"
 
-#include "DrawDebugHelpers.h"
-
 static UNiagaraSystem* PlacementDustSystem = nullptr;
 
 // Sets default values
