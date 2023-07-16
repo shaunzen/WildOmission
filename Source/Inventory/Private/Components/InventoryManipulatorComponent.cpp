@@ -14,6 +14,7 @@ UInventoryManipulatorComponent::UInventoryManipulatorComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicatedByDefault(true);
 
 	Dragging = false;
 }
@@ -154,7 +155,7 @@ UInventoryComponent* UInventoryManipulatorComponent::GetOwnersInventory() const
 	return OwnersInventory;
 }
 
-void UInventoryManipulatorComponent::Server_SetOpenContainer_Implementation(UInventoryComponent* InOpenContainer)
+void UInventoryManipulatorComponent::SetOpenContainer(UInventoryComponent* InOpenContainer)
 {
 	OpenContainer = InOpenContainer;
 	OnRep_OpenContainer();

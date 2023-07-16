@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Interfaces/ContainerOpener.h"
 #include "WildOmissionCharacter.generated.h"
 
 class UInputAction;
@@ -26,7 +25,7 @@ class AItemContainerBase;
 class UPlayerHUDWidget;
 
 UCLASS()
-class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public IContainerOpener
+class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -49,8 +48,6 @@ public:
 	UFUNCTION()
 	void HandleDeath();
 	
-	virtual void InvokeOpenContainer(AItemContainerBase* Container) override;
-
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
 
@@ -251,6 +248,4 @@ private:
 
 	void SetupWeatherEffectHandler();
 
-	UFUNCTION(Client, Reliable)
-	void Client_OpenContainer(AItemContainerBase* Container);
 };

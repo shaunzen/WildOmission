@@ -41,8 +41,7 @@ public:
 	bool IsDragging() const;
 	UInventoryComponent* GetOpenContainer() const;
 	UInventoryComponent* GetOwnersInventory() const;
-	UFUNCTION(Server, Reliable)
-	void Server_SetOpenContainer(UInventoryComponent* InOpenContainer);
+	void SetOpenContainer(UInventoryComponent* InOpenContainer);
 	bool SelectedItemHasUniqueID(const uint32& UniqueID) const;
 
 	FInventoryManipulatorOnSelectionChangedSignature OnSelectionChanged;

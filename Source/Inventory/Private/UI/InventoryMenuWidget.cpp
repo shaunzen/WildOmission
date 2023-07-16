@@ -27,7 +27,8 @@ void UInventoryMenuWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	UPlayerInventoryComponent* PlayerInventoryComponent = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UPlayerInventoryComponent>();
-	if (PlayerInventoryComponent == nullptr)
+	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = GetOwningPlayerPawn<APawn>()->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (PlayerInventoryComponent == nullptr || PlayerInventoryManipulatorComponent == nullptr)
 	{
 		return;
 	}
@@ -35,6 +36,7 @@ void UInventoryMenuWidget::NativeConstruct()
 	PlayerInventoryWidget->Setup(this, PlayerInventoryComponent);
 	PlayerInventoryWidget->Refresh();
 	SelectedItemWidget->Hide();
+	PlayerInventoryManipulatorComponent->OnOpenContainerChanged.AddDynamic(this, &UInventoryMenuWidget::OnOpenContainerChanged);
 }
 
 void UInventoryMenuWidget::NativeTick(const FGeometry& MyGeomentry, float InDeltaTime)
@@ -59,44 +61,7 @@ void UInventoryMenuWidget::Close(bool ShouldCloseContainer)
 		{
 			OpenedContainer->UnOccupy();
 		}
-		if (UInventoryManipulatorComponent* OwnerManipulatorComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryManipulatorComponent>())
-		{
-			OwnerManipulatorComponent->Server_SetOpenContainer(nullptr);
-		}
-		OpenContainerWidget->Close();
-		OpenContainerWidget->RemoveFromParent();
-		OpenContainerWidget = nullptr;
 	}
-
-}
-
-void UInventoryMenuWidget::OpenContainer(UInventoryComponent* ContainerInventoryComponent)
-{
-	if (OpenContainerWidget || ContainerInventoryComponent->GetWidgetClass() == nullptr)
-	{
-		UE_LOG(LogInventory, Display, TEXT("This container cannot be opened, an existing container is already open."));
-		return;
-	}
-
-	OpenContainerWidget = CreateWidget<UInventoryWidget>(this, ContainerInventoryComponent->GetWidgetClass());
-
-	OpenContainerWidget->Setup(nullptr, ContainerInventoryComponent);
-	OpenContainerWidget->CreateSlots();
-	OpenContainerWidget->Open();
-
-	UHorizontalBoxSlot* OpenContainerSlot = InventoryHorizontalBox->AddChildToHorizontalBox(OpenContainerWidget);
-	if (OpenContainerSlot == nullptr)
-	{
-		UE_LOG(LogInventory, Warning, TEXT("Couldn't open container, owning slot returned a nullptr."));
-		return;
-	}
-
-	FMargin ContainerWidgetPadding;
-	ContainerWidgetPadding.Left = 10.0f;
-
-	OpenContainerSlot->SetPadding(ContainerWidgetPadding);
-	OpenContainerSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Top);
-	OpenContainerSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Right);
 }
 
 bool UInventoryMenuWidget::IsOpen() const
@@ -122,6 +87,54 @@ UHoveredItemNameTag* UInventoryMenuWidget::GetHoveredItemNameTagWidget() const
 bool UInventoryMenuWidget::SelectedItemVisible() const
 {
 	return SelectedItemWidget->GetVisibility() == ESlateVisibility::HitTestInvisible;
+}
+
+void UInventoryMenuWidget::OnOpenContainerChanged(UInventoryComponent* OpenContainer)
+{
+	OpenContainer ? CreateOpenContainerWidget(OpenContainer) : DestroyOpenContainerWidget();
+}
+
+void UInventoryMenuWidget::CreateOpenContainerWidget(UInventoryComponent* OpenContainer)
+{
+	if (OpenContainerWidget || OpenContainer->GetWidgetClass() == nullptr)
+	{
+		UE_LOG(LogInventory, Display, TEXT("This container cannot be opened, an existing container is already open."));
+		return;
+	}
+
+	OpenContainerWidget = CreateWidget<UInventoryWidget>(this, OpenContainer->GetWidgetClass());
+
+	OpenContainerWidget->Setup(nullptr, OpenContainer);
+	OpenContainerWidget->CreateSlots();
+	OpenContainerWidget->Open();
+
+	UHorizontalBoxSlot* OpenContainerSlot = InventoryHorizontalBox->AddChildToHorizontalBox(OpenContainerWidget);
+	if (OpenContainerSlot == nullptr)
+	{
+		UE_LOG(LogInventory, Warning, TEXT("Couldn't open container, owning slot returned a nullptr."));
+		return;
+	}
+
+	FMargin ContainerWidgetPadding;
+	ContainerWidgetPadding.Left = 10.0f;
+
+	OpenContainerSlot->SetPadding(ContainerWidgetPadding);
+	OpenContainerSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Top);
+	OpenContainerSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Right);
+}
+
+void UInventoryMenuWidget::DestroyOpenContainerWidget()
+{
+	if (OpenContainerWidget == nullptr)
+	{
+		return;
+	}
+
+
+
+	OpenContainerWidget->Close();
+	OpenContainerWidget->RemoveFromParent();
+	OpenContainerWidget = nullptr;
 }
 
 void UInventoryMenuWidget::UpdateFollowMousePointerWidgets()

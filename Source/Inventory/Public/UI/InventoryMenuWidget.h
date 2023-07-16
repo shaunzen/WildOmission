@@ -27,8 +27,7 @@ public:
 
 	void Open();
 	void Close(bool ShouldCloseContainer = false);
-	void OpenContainer(UInventoryComponent* ContainerInventoryComponent);
-
+	
 	bool IsOpen() const;
 	UPlayerInventoryWidget* GetPlayerInventoryWidget() const;
 	USelectedItemWidget* GetSelectedItemWidget() const;
@@ -50,6 +49,12 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	UHoveredItemNameTag* HoveredItemNameTagWidget;
+
+	UFUNCTION()
+	void OnOpenContainerChanged(UInventoryComponent* OpenContainer);
+
+	void CreateOpenContainerWidget(UInventoryComponent* OpenContainer);
+	void DestroyOpenContainerWidget();
 
 	void UpdateFollowMousePointerWidgets();
 

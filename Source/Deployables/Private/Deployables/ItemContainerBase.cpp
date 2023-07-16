@@ -3,6 +3,7 @@
 
 #include "Deployables/ItemContainerBase.h"
 #include "Components/InventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "Interfaces/ContainerOpener.h"
 #include "Net/UnrealNetwork.h"
 
@@ -36,15 +37,15 @@ void AItemContainerBase::Interact(AActor* Interactor)
 
 	SetNetDormancy(ENetDormancy::DORM_Awake);
 
-	IContainerOpener* InteractingContainerOpener = Cast<IContainerOpener>(Interactor);
-	if (InteractingContainerOpener == nullptr)
+	UInventoryManipulatorComponent* InteractorInventoryManipulator = Interactor->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (InteractorInventoryManipulator == nullptr)
 	{
 		return;
 	}
 
 	SetOwner(Interactor);
+	InteractorInventoryManipulator->SetOpenContainer(InventoryComponent);
 
-	InteractingContainerOpener->InvokeOpenContainer(this);
 	bOccupied = true;
 }
 
@@ -76,5 +77,12 @@ UInventoryComponent* AItemContainerBase::GetInventoryComponent() const
 
 void AItemContainerBase::OnContainerClosed()
 {
+	UInventoryManipulatorComponent* OwnerInventoryManipulator = GetOwner()->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventoryManipulator == nullptr)
+	{
+		return;
+	}
+
+	OwnerInventoryManipulator->SetOpenContainer(nullptr);
 	bOccupied = false;
 }

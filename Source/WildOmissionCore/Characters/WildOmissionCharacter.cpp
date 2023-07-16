@@ -411,17 +411,6 @@ void AWildOmissionCharacter::HandleDeath()
 	Destroy();
 }
 
-void AWildOmissionCharacter::InvokeOpenContainer(AItemContainerBase* Container)
-{
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	InventoryManipulatorComponent->Server_SetOpenContainer(Container->GetInventoryComponent());
-	Client_OpenContainer(Container);
-}
-
 void AWildOmissionCharacter::HandleUnderwater()
 {
 	FHitResult HitResult;
@@ -754,19 +743,4 @@ UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent() const
 UCraftingComponent* AWildOmissionCharacter::GetCraftingComponent() const
 {
 	return CraftingComponent;
-}
-
-//********************************
-// RPC
-//********************************
-
-void AWildOmissionCharacter::Client_OpenContainer_Implementation(AItemContainerBase* Container)
-{
-	if (Container == nullptr || PlayerHUDWidget == nullptr)
-	{
-		return;
-	}
-	
-	PlayerHUDWidget->ToggleInventoryMenu(true);
-	PlayerHUDWidget->GetInventoryMenu()->OpenContainer(Container->GetInventoryComponent());
 }
