@@ -204,6 +204,47 @@ void UInventoryComponent::HandleSlotInteraction(const FInventorySlotInteraction&
 {
 	if (Interaction.QuickMove == true)
 	{
+		// are we the manipulators inventory?
+		if (Interaction.Manipulator->GetOwnersInventory() == this) // Interaction from within the players inventory
+		{
+			if (Interaction.Manipulator->GetOpenContainer() == nullptr) // We are quick moving within the players inventory
+			{
+				// Store the item information in this slot
+				FInventoryItem MovingItem = UseServerState ? ServerState.Slots[Interaction.SlotIndex].Item : Slots[Interaction.SlotIndex].Item;
+				
+				// Remove the item from said slot
+				UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
+
+				// Use one of the find slot functions to find a better slot and move the item to the new slot
+				int32 Remaining = 0; // THIS ISNT USED HERE
+				AddItemToSlots(MovingItem, Remaining);
+			}
+			else // We are quick moving from players inventory to an item container
+			{
+				// Store ItemData
+				FInventoryItem MovingItem = UseServerState ? ServerState.Slots[Interaction.SlotIndex].Item : Slots[Interaction.SlotIndex].Item;
+
+				// Remove the item from our inventory
+				UseServerState ? ServerState.Contents.RemoveItem(MovingItem.Name, MovingItem.Quantity) : Contents.RemoveItem(MovingItem.Name, MovingItem.Quantity);
+				UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
+
+				// Add item to container inventory
+				Interaction.Manipulator->GetOpenContainer()->AddItem(MovingItem);
+			}
+		}
+		else if (Interaction.Manipulator->GetOpenContainer() && Interaction.Manipulator->GetOpenContainer() == this) // Interaction from within an open container to players inventory
+		{
+			// Store the item information
+			FInventoryItem MovingItem = UseServerState ? ServerState.Slots[Interaction.SlotIndex].Item : Slots[Interaction.SlotIndex].Item;
+
+			// Remove the item from the open container
+			UseServerState ? ServerState.Contents.RemoveItem(MovingItem.Name, MovingItem.Quantity) : Contents.RemoveItem(MovingItem.Name, MovingItem.Quantity);
+			UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
+
+			// Add the item to player inventory
+			Interaction.Manipulator->GetOwnersInventory()->AddItem(MovingItem);
+		}
+		// or are we the open container?
 		UE_LOG(LogTemp, Warning, TEXT("Processing QuickMove action."));
 		return;
 	}

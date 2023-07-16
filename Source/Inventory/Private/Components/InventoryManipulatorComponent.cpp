@@ -30,6 +30,13 @@ void UInventoryManipulatorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+
+	OwnersInventory = GetOwner()->FindComponentByClass<UInventoryComponent>();
+
 	if (!GetOwner()->HasAuthority())
 	{
 		return;
@@ -140,6 +147,11 @@ bool UInventoryManipulatorComponent::IsDragging() const
 UInventoryComponent* UInventoryManipulatorComponent::GetOpenContainer() const
 {
 	return OpenContainer;
+}
+
+UInventoryComponent* UInventoryManipulatorComponent::GetOwnersInventory() const
+{
+	return OwnersInventory;
 }
 
 void UInventoryManipulatorComponent::Server_SetOpenContainer_Implementation(UInventoryComponent* InOpenContainer)

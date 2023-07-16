@@ -17,7 +17,7 @@ class INVENTORY_API UInventoryManipulatorComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UInventoryManipulatorComponent();
-	
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	//**************************************************************
@@ -39,6 +39,7 @@ public:
 	
 	bool IsDragging() const;
 	UInventoryComponent* GetOpenContainer() const;
+	UInventoryComponent* GetOwnersInventory() const;
 	UFUNCTION(Server, Reliable)
 	void Server_SetOpenContainer(UInventoryComponent* InOpenContainer);
 	bool SelectedItemHasUniqueID(const uint32& UniqueID) const;
@@ -64,6 +65,9 @@ private:
 
 	UPROPERTY(Replicated)
 	UInventoryComponent* OpenContainer;
+
+	UPROPERTY()
+	UInventoryComponent* OwnersInventory;
 
 	UFUNCTION(Server, Reliable)
 	void Server_DropSelectedItemInWorld(bool Single);
