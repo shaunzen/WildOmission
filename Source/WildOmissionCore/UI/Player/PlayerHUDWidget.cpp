@@ -34,6 +34,13 @@ void UPlayerHUDWidget::NativeConstruct()
 	UpdateBrandingText();
 	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("MenuBackgroundMouseButtonDown"));
 	Chat->Setup(this, Cast<IChatMessageContainer>(GetWorld()->GetGameState()));
+
+	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (PlayerInventoryManipulatorComponent == nullptr)
+	{
+		return;
+	}
+	PlayerInventoryManipulatorComponent->OnOpenContainerChanged.AddDynamic(this, &UPlayerHUDWidget::OnOpenContainerChanged);
 }
 
 void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
@@ -245,4 +252,14 @@ void UPlayerHUDWidget::MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const
 	{
 		OwnerInventoryManipulatorComponent->DropSelectedItemInWorld(true);
 	}
+}
+
+void UPlayerHUDWidget::OnOpenContainerChanged(UInventoryComponent* OpenContainer)
+{
+	if (OpenContainer == nullptr)
+	{
+		return;
+	}
+
+	ToggleInventoryMenu(true);
 }

@@ -130,8 +130,6 @@ void UInventoryMenuWidget::DestroyOpenContainerWidget()
 		return;
 	}
 
-
-
 	OpenContainerWidget->Close();
 	OpenContainerWidget->RemoveFromParent();
 	OpenContainerWidget = nullptr;

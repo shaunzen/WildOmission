@@ -86,4 +86,7 @@ private:
 	UFUNCTION()
 	void MenuBackgroundMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
 
+	UFUNCTION()
+	void OnOpenContainerChanged(UInventoryComponent* OpenContainer);
+
 };
