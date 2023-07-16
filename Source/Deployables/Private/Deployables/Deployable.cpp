@@ -11,6 +11,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/DamageEvents.h"
 
+#include "DrawDebugHelpers.h"
+
 static UNiagaraSystem* PlacementDustSystem = nullptr;
 
 // Sets default values
@@ -153,8 +155,8 @@ void ADeployable::Multicast_PlayPlacementEffects_Implementation()
 	}
 	if (PlacementDustSystem)
 	{
-		FVector Origin = MeshComponent->Bounds.Origin;
-		FVector BoxExtent = MeshComponent->Bounds.BoxExtent * 1.5f;
+		FVector Origin = MeshComponent->GetStaticMesh()->GetBounds().Origin + GetActorLocation();
+		FVector BoxExtent = MeshComponent->GetStaticMesh()->GetBounds().BoxExtent;
 		int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
 
 		UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PlacementDustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
