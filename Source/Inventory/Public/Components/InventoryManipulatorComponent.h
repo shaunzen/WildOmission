@@ -8,6 +8,7 @@
 #include "InventoryManipulatorComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryManipulatorOnSelectionChangedSignature, const FInventoryItem&, SelectedItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpenContainerChangedSignature, UInventoryComponent*, OpenContainer);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class INVENTORY_API UInventoryManipulatorComponent : public UActorComponent
@@ -45,7 +46,8 @@ public:
 	bool SelectedItemHasUniqueID(const uint32& UniqueID) const;
 
 	FInventoryManipulatorOnSelectionChangedSignature OnSelectionChanged;
-	
+	FOnOpenContainerChangedSignature OnOpenContainerChanged;
+
 	TArray<uint8> GetSelectedItemAsByteData();
 	void LoadSelectedItemFromByteDataAndDropInWorld(const TArray<uint8>& ByteData);
 
@@ -63,8 +65,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	bool Dragging;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_OpenContainer)
 	UInventoryComponent* OpenContainer;
+
+	UFUNCTION()
+	void OnRep_OpenContainer();
 
 	UPROPERTY()
 	UInventoryComponent* OwnersInventory;

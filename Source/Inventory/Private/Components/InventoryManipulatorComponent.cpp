@@ -157,6 +157,7 @@ UInventoryComponent* UInventoryManipulatorComponent::GetOwnersInventory() const
 void UInventoryManipulatorComponent::Server_SetOpenContainer_Implementation(UInventoryComponent* InOpenContainer)
 {
 	OpenContainer = InOpenContainer;
+	OnRep_OpenContainer();
 }
 
 bool UInventoryManipulatorComponent::SelectedItemHasUniqueID(const uint32& UniqueID) const
@@ -203,6 +204,16 @@ FInventoryItem UInventoryManipulatorComponent::GetSelectedItem()
 FInventoryItem* UInventoryManipulatorComponent::GetSelectedItemAddress()
 {
 	return &SelectedItem;
+}
+
+void UInventoryManipulatorComponent::OnRep_OpenContainer()
+{
+	if (!OnOpenContainerChanged.IsBound())
+	{
+		return;
+	}
+
+	OnOpenContainerChanged.Broadcast(OpenContainer);
 }
 
 void UInventoryManipulatorComponent::BroadcastSelectionChanged()
