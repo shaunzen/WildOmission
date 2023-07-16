@@ -5,8 +5,13 @@
 #include "Components/BuildAnchorComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/DamageEvents.h"
+
+static UNiagaraSystem* PlacementDustSystem = nullptr;
 
 // Sets default values
 ADeployable::ADeployable()
@@ -34,11 +39,17 @@ ADeployable::ADeployable()
 	bFollowsSurfaceNormal = false;
 	bCanRotate = false;
 
-	ConstructorHelpers::FObjectFinder<USoundBase> DefaultPlacementSound(TEXT("/Game/Deployables/Audio/Deployable_Placement_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> DefaultPlacementSound(TEXT("/Game/Deployables/Audio/Deployable_Placement_Cue"));
 	if (DefaultPlacementSound.Succeeded())
 	{
 		PlacementSound = DefaultPlacementSound.Object;
 		DestructionSound = DefaultPlacementSound.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> PlacementDustBlueprint(TEXT("/Game/Deployables/Art/NS_DeployablePlacement"));
+	if (PlacementDustBlueprint.Succeeded())
+	{
+		PlacementDustSystem = PlacementDustBlueprint.Object;
 	}
 }
 
@@ -52,7 +63,7 @@ void ADeployable::BeginPlay()
 void ADeployable::OnSpawn()
 {
 	CurrentDurability = MaxDurability;
-	Client_PlayPlacementSound();
+	Multicast_PlayPlacementEffects();
 }
 
 void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -134,17 +145,31 @@ bool ADeployable::CanRotate() const
 	return bCanRotate;
 }
 
-void ADeployable::Client_PlayPlacementSound_Implementation()
+void ADeployable::Multicast_PlayPlacementEffects_Implementation()
 {
-	if (PlacementSound == nullptr)
+	if (PlacementSound)
 	{
-		return;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlacementSound, GetActorLocation());
 	}
+	if (PlacementDustSystem)
+	{
+		FVector Origin = MeshComponent->Bounds.Origin;
+		FVector BoxExtent = MeshComponent->Bounds.BoxExtent * 1.5f;
+		int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlacementSound, GetActorLocation());
+		UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PlacementDustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
+		if (SpawnedDust == nullptr)
+		{
+			return;
+		}
+
+		SpawnedDust->SetVectorParameter(TEXT("BoundingBox"), BoxExtent);
+		SpawnedDust->SetIntParameter(TEXT("BoundingBoxArea"), BoxSurfaceArea);
+		SpawnedDust->Activate(true);
+	}
 }
 
-void ADeployable::Client_PlayDestructionSound_Implementation()
+void ADeployable::Multicast_PlayDestructionSound_Implementation()
 {
 	if (DestructionSound == nullptr)
 	{

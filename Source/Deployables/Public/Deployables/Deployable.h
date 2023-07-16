@@ -81,8 +81,9 @@ protected:
 	bool bCanRotate;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayPlacementSound();
+	void Multicast_PlayPlacementEffects();
+
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayDestructionSound();
+	void Multicast_PlayDestructionSound();
 };
