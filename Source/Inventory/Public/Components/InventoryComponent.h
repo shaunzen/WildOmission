@@ -14,6 +14,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdateSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryItemUpdateSignature, const FInventoryItemUpdate&, ItemUpdate);
 
+class UUserWidget;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class INVENTORY_API UInventoryComponent : public UActorComponent, public ISavableObject
 {
@@ -44,6 +46,7 @@ public:
 	FInventorySlot* FindSlotContainingItem(const FName& ItemToFind);	
 
 	FString GetDisplayName() const;
+	UClass* GetWidgetClass() const;
 	FInventoryContents* GetContents();
 	FInventorySlot* GetSlot(const int32& SlotIndex);
 	uint8 GetSlotCount() const;
@@ -71,6 +74,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_ServerState)
 	FInventoryState ServerState;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> WidgetClass;
 
 	UFUNCTION()
 	virtual void OnRep_ServerState();

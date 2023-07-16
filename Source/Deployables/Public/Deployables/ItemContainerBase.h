@@ -33,8 +33,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FString GetContainerName() const;
 	UFUNCTION(BlueprintCallable)
-	UClass* GetWidgetClass() const;
-	UFUNCTION(BlueprintCallable)
 	UInventoryComponent* GetInventoryComponent() const;
 
 protected:
@@ -47,9 +45,6 @@ protected:
 	virtual void OnContainerClosed();
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Item Container")
-	TSubclassOf<UUserWidget> WidgetClass;
-
 	UPROPERTY(VisibleAnywhere)
 	UInventoryComponent* InventoryComponent;
 

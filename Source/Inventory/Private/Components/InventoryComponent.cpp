@@ -3,10 +3,12 @@
 
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "WorldItem.h"
 #include "Net/UnrealNetwork.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "EngineUtils.h"
+#include "UObject/ConstructorHelpers.h"
 
 static UDataTable* ItemDataTable = nullptr;
 
@@ -29,6 +31,12 @@ UInventoryComponent::UInventoryComponent()
 		{
 			ItemDataTable = ItemDataTableBlueprint.Object;
 		}
+	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> DefaultWidgetBlueprint(TEXT("/Game/Deployables/UI/WBP_ContainerBase"));
+	if (DefaultWidgetBlueprint.Succeeded())
+	{
+		WidgetClass = DefaultWidgetBlueprint.Class;
 	}
 }
 
@@ -330,6 +338,11 @@ FInventorySlot* UInventoryComponent::FindSlotContainingItem(const FName& ItemToF
 FString UInventoryComponent::GetDisplayName() const
 {
 	return DisplayName;
+}
+
+UClass* UInventoryComponent::GetWidgetClass() const
+{
+	return WidgetClass.Get();
 }
 
 FInventoryContents* UInventoryComponent::GetContents()

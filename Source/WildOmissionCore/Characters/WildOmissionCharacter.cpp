@@ -768,5 +768,5 @@ void AWildOmissionCharacter::Client_OpenContainer_Implementation(AItemContainerB
 	}
 	
 	PlayerHUDWidget->ToggleInventoryMenu(true);
-	PlayerHUDWidget->GetInventoryMenu()->OpenContainer(Container->GetInventoryComponent(), Container->GetWidgetClass());
+	PlayerHUDWidget->GetInventoryMenu()->OpenContainer(Container->GetInventoryComponent());
 }

@@ -70,15 +70,15 @@ void UInventoryMenuWidget::Close(bool ShouldCloseContainer)
 
 }
 
-void UInventoryMenuWidget::OpenContainer(UInventoryComponent* ContainerInventoryComponent, UClass* ContainerWidgetClass)
+void UInventoryMenuWidget::OpenContainer(UInventoryComponent* ContainerInventoryComponent)
 {
-	if (OpenContainerWidget || ContainerWidgetClass == nullptr)
+	if (OpenContainerWidget || ContainerInventoryComponent->GetWidgetClass() == nullptr)
 	{
 		UE_LOG(LogInventory, Display, TEXT("This container cannot be opened, an existing container is already open."));
 		return;
 	}
 
-	OpenContainerWidget = CreateWidget<UInventoryWidget>(this, ContainerWidgetClass);
+	OpenContainerWidget = CreateWidget<UInventoryWidget>(this, ContainerInventoryComponent->GetWidgetClass());
 
 	OpenContainerWidget->Setup(nullptr, ContainerInventoryComponent);
 	OpenContainerWidget->CreateSlots();

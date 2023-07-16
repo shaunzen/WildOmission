@@ -4,18 +4,11 @@
 #include "Deployables/ItemContainerBase.h"
 #include "Components/InventoryComponent.h"
 #include "Interfaces/ContainerOpener.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
 AItemContainerBase::AItemContainerBase()
 {
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
-
-	ConstructorHelpers::FClassFinder<UUserWidget> DefaultWidgetBlueprint(TEXT("/Game/Deployables/UI/WBP_ContainerBase"));
-	if (DefaultWidgetBlueprint.Succeeded())
-	{
-		WidgetClass = DefaultWidgetBlueprint.Class;
-	}
 
 	bOccupied = false;
 
@@ -74,11 +67,6 @@ void AItemContainerBase::Server_UnOccupy_Implementation()
 FString AItemContainerBase::GetContainerName() const
 {
 	return ContainerName;
-}
-
-UClass* AItemContainerBase::GetWidgetClass() const
-{
-	return WidgetClass.Get();
 }
 
 UInventoryComponent* AItemContainerBase::GetInventoryComponent() const

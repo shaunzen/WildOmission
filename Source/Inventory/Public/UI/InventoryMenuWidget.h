@@ -27,7 +27,7 @@ public:
 
 	void Open();
 	void Close(bool ShouldCloseContainer = false);
-	void OpenContainer(UInventoryComponent* ContainerInventoryComponent, UClass* ContainerWidgetClass);
+	void OpenContainer(UInventoryComponent* ContainerInventoryComponent);
 
 	bool IsOpen() const;
 	UPlayerInventoryWidget* GetPlayerInventoryWidget() const;
