@@ -120,6 +120,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_SlotInteraction(const FInventorySlotInteraction& Interaction);
 
-	void HandleSlotInteraction(const FInventorySlotInteraction& Interaction, bool UseServerState);
+	void HandleItemSelection(const FInventorySlotInteraction& Interaction, bool UseServerState);
+	void HandleItemQuickMove(const FInventorySlotInteraction& Interaction, bool UseServerState);
 
 };
