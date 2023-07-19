@@ -60,6 +60,11 @@ void ADeployable::BeginPlay()
 	
 }
 
+void ADeployable::OnLoadComplete_Implementation()
+{
+	CurrentDurability = MaxDurability * NormalizedDurability;
+}
+
 void ADeployable::OnSpawn()
 {
 	CurrentDurability = MaxDurability;
@@ -71,6 +76,15 @@ void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ADeployable, CurrentDurability);
+}
+
+void ADeployable::Serialize(FArchive& Ar)
+{
+	if (Ar.IsSaving())
+	{
+		NormalizedDurability = CurrentDurability / MaxDurability;
+	}
+	Super::Serialize(Ar);
 }
 
 void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)

@@ -23,6 +23,7 @@ public:
 	virtual void OnSpawn();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void Serialize(FArchive& Ar) override;
 
 	// Begin IDamagedByWind Implementation
 	virtual void ApplyWindDamage(AActor* WindCauser, float DamageMultiplier = 1.0f) override;
@@ -64,8 +65,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable")
 	float MaxDurability;
 
-	UPROPERTY(Replicated, SaveGame)
+	UPROPERTY(Replicated)
 	float CurrentDurability;
+
+	UPROPERTY(SaveGame)
+	float NormalizedDurability;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Placement Settings")
 	bool bCanSpawnOnGround;
@@ -83,7 +87,10 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PlayPlacementEffects();
 
-
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PlayDestructionSound();
+
+	UFUNCTION()
+	virtual void OnLoadComplete_Implementation() override;
+
 };

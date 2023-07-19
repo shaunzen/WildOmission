@@ -55,7 +55,6 @@ private:
 	UFUNCTION()
 	void OnRep_TurnedOn();
 
-	UFUNCTION()
 	virtual void OnLoadComplete_Implementation() override;
 
 };
