@@ -85,6 +85,14 @@
 			]
 		},
 		{
+			"Name": "NPC",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		},
+		{
 			"Name": "SaveSystem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
