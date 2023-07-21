@@ -95,15 +95,6 @@
 			]
 		},
 		{
-			"Name": "NPC",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine",
-				"AIModule"
-			]
-		},
-		{
 			"Name": "SaveSystem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

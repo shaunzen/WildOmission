@@ -14,7 +14,7 @@ public class WildOmissionCore : ModuleRules
 			"Niagara", "MetasoundEngine", "Animals", "Crafting",
 			"Deployables", "Despawner", "Durability",
 			"EquipableItems", "GameChat", "GatherableResources",
-			"Helpers", "Interaction", "Inventory", "Notifications", "NPC", "SaveSystem",
+			"Helpers", "Interaction", "Inventory", "Notifications", "SaveSystem",
 			"SurfaceProperties", "TimeOfDay", "Vitals", "Weather",
 			"WorldGeneration"
 		});
