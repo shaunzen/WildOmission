@@ -2,25 +2,21 @@
 
 
 #include "Controllers/AnimalAIController.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Log.h"
-
-AAnimalAIController::AAnimalAIController()
-{
-	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
-	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
-}
 
 void AAnimalAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (BehaviorTreeComponent == nullptr)
+	UE_LOG(LogNPC, Display, TEXT("AnimalAIController BeginPlay"));
+
+	if (BehaviorTree == nullptr)
 	{
-		UE_LOG(LogNPC, Warning, TEXT("BehaviorTreeComp nullptr"));
+		UE_LOG(LogNPC, Warning, TEXT("BehaviorTree nullptr"));
 		return;
 	}
 
-	RunBehaviorTree(BehaviorTreeComponent->GetCurrentTree());
+	RunBehaviorTree(BehaviorTree);
+	UE_LOG(LogNPC, Display, TEXT("Running Behavior Tree."));
 }

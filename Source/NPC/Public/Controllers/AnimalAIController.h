@@ -6,23 +6,18 @@
 #include "AIController.h"
 #include "AnimalAIController.generated.h"
 
-class UBehaviorTreeComponent;
-class UBlackboardComponent;
+class UBehaviorTree;
 
 UCLASS()
 class NPC_API AAnimalAIController : public AAIController
 {
 	GENERATED_BODY()
-public:
-	AAnimalAIController();
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	UBehaviorTreeComponent* BehaviorTreeComponent;
+	UPROPERTY(EditDefaultsOnly)
+	UBehaviorTree* BehaviorTree;
 	
-	UPROPERTY(VisibleAnywhere)
-	UBlackboardComponent* BlackboardComponent;
-
 };
