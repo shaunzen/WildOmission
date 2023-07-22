@@ -13,5 +13,10 @@ UCLASS()
 class ANIMALS_API UBTTask_GetRandomLocation : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
-	
+public:
+	UBTTask_GetRandomLocation();
+
+protected:
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
 };
