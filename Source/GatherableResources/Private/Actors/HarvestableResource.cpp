@@ -4,6 +4,7 @@
 #include "Actors/HarvestableResource.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "NavModifierComponent.h"
 #include "Log.h"
 
 // Sets default values
@@ -16,8 +17,10 @@ AHarvestableResource::AHarvestableResource()
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = ENetDormancy::DORM_DormantAll;
 
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMeshComponent"));
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	RootComponent = MeshComponent;
+
+	NavigationModifier = CreateDefaultSubobject<UNavModifierComponent>(TEXT("NavigationModifier"));
 
 	Durability = 10;
 }

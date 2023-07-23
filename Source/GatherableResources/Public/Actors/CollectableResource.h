@@ -10,6 +10,8 @@
 #include "Structs/InventoryItem.h"
 #include "CollectableResource.generated.h"
 
+class UNavModifierComponent;
+
 UCLASS()
 class GATHERABLERESOURCES_API ACollectableResource : public AActor, public IInteractable, public ISavableObject, public IRequiredForLoad
 {
@@ -30,7 +32,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
-
+	
+	UPROPERTY(VisibleAnywhere)
+	UNavModifierComponent* NavigationModifier;
+	
 	UPROPERTY()
 	USoundBase* CollectSound;
 

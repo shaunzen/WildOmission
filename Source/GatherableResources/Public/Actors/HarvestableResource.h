@@ -10,6 +10,8 @@
 #include "Interfaces/RequiredForLoad.h"
 #include "HarvestableResource.generated.h"
 
+class UNavModifierComponent;
+
 UCLASS()
 class GATHERABLERESOURCES_API AHarvestableResource : public AActor, public ISavableObject, public IRequiredForLoad
 {
@@ -42,6 +44,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UNavModifierComponent* NavigationModifier;
 
 	FInventoryItem HandleYield(float GatherMultiplier);
 	bool ShouldGiveSpecialItemDrop();

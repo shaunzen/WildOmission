@@ -4,6 +4,7 @@
 #include "Actors/CollectableResource.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "NavModifierComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -16,9 +17,11 @@ ACollectableResource::ACollectableResource()
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = DORM_DormantAll;
 
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
+	
+	NavigationModifier = CreateDefaultSubobject<UNavModifierComponent>(TEXT("NavigationModifier"));
 
 	ConstructorHelpers::FObjectFinder<USoundBase> CollectSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Pickup/Pickup_Cue"));
 	if (CollectSoundObject.Succeeded())
