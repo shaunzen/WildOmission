@@ -7,7 +7,7 @@ void AAnimalController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (BehaviorTree == nullptr)
+	if (!HasAuthority() || BehaviorTree == nullptr)
 	{
 		return;
 	}
