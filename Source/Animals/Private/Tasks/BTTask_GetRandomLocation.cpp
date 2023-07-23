@@ -24,7 +24,7 @@ EBTNodeResult::Type UBTTask_GetRandomLocation::ExecuteTask(UBehaviorTreeComponen
 		return EBTNodeResult::Type::Aborted;
 	}
 	FNavLocation NavLocation;
-	if (!NavigationSystem->GetRandomReachablePointInRadius(CurrentLocation, 500.0f, NavLocation))
+	if (!NavigationSystem->GetRandomReachablePointInRadius(CurrentLocation, 5000.0f, NavLocation))
 	{
 		UE_LOG(LogAnimals, Warning, TEXT("GetRandomLocation, Failed to find random location."));
 		return EBTNodeResult::Type::Aborted;
