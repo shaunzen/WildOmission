@@ -3,6 +3,7 @@
 
 #include "Animals/Animal.h"
 #include "NavigationInvokerComponent.h"
+#include "Components/VitalsComponent.h"
 
 // Sets default values
 AAnimal::AAnimal()
@@ -12,7 +13,8 @@ AAnimal::AAnimal()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	
 	NavigationInvoker = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavigationInvoker"));
-
+	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
+	
 }
 
 // Called when the game starts or when spawned

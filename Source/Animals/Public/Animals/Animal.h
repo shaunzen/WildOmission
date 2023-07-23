@@ -7,6 +7,7 @@
 #include "Animal.generated.h"
 
 class UNavigationInvokerComponent;
+class UVitalsComponent;
 
 UCLASS()
 class ANIMALS_API AAnimal : public ACharacter
@@ -26,9 +27,12 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	UNavigationInvokerComponent* NavigationInvoker;
+	
+	UPROPERTY(VisibleAnywhere)
+	UVitalsComponent* VitalsComponent;
 
 };
