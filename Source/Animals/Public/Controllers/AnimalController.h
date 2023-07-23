@@ -13,7 +13,7 @@ class ANIMALS_API AAnimalController : public AAIController
 {
 	GENERATED_BODY()
 
-protected:
+public:
 	virtual void BeginPlay() override;
 
 private:
