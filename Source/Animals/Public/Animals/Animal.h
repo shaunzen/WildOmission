@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "Animal.generated.h"
 
+class UNavigationInvokerComponent;
+
 UCLASS()
 class ANIMALS_API AAnimal : public ACharacter
 {
@@ -26,5 +28,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	UNavigationInvokerComponent* NavigationInvoker;
 
 };
