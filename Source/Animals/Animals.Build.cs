@@ -6,7 +6,7 @@ public class Animals: ModuleRules
 {
     public Animals(ReadOnlyTargetRules Target) : base(Target)
     {
-        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "GameplayTasks", "NavigationSystem" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Inventory", "Vitals" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "GameplayTasks", "NavigationSystem", "Inventory", "Vitals" });
     }
 }

@@ -11,6 +11,8 @@
 #include "Interfaces/DamagedByWind.h"
 #include "Deployable.generated.h"
 
+class UNavModifierComponent;
+
 UCLASS()
 class DEPLOYABLES_API ADeployable : public AActor, public IDurabilityInterface, public ISavableObject, public IRequiredForLoad, public IDamagedByWind
 {
@@ -55,6 +57,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UNavModifierComponent* NavigationModifier;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Sound")
 	USoundBase* PlacementSound;

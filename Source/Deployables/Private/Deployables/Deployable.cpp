@@ -8,6 +8,7 @@
 #include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "NavModifierComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/DamageEvents.h"
 
@@ -29,6 +30,8 @@ ADeployable::ADeployable()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(DeployableRootComponent);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Overlap);
+
+	NavigationModifier = CreateDefaultSubobject<UNavModifierComponent>(TEXT("NavigationModifier"));
 
 	MaxDurability = 100.0f;
 

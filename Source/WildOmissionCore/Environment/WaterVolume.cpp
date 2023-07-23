@@ -3,11 +3,12 @@
 
 #include "WaterVolume.h"
 #include "Components/BrushComponent.h" 
+#include "NavModifierComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 AWaterVolume::AWaterVolume()
 {
-	WaterPlane = CreateDefaultSubobject<UStaticMeshComponent>(FName("WaterPlane"));
+	WaterPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WaterPlane"));
 	WaterPlane->SetupAttachment(RootComponent);
 	WaterPlane->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	WaterPlane->SetWorldScale3D(FVector(2.0f));
@@ -18,10 +19,8 @@ AWaterVolume::AWaterVolume()
 	GetBrushComponent()->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> WaterPlaneMesh(TEXT("/Game/WildOmissionCore/Art/Environment/SM_WaterPlane"));
-	if (!WaterPlaneMesh.Succeeded())
+	if (WaterPlaneMesh.Succeeded())
 	{
-		return;
+		WaterPlane->SetStaticMesh(WaterPlaneMesh.Object);
 	}
-
-	WaterPlane->SetStaticMesh(WaterPlaneMesh.Object);
 }
