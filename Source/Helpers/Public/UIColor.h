@@ -21,4 +21,6 @@ struct HELPERS_API FUIColor : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SelectedOffset;
 
+	FUIColor();
+
 };

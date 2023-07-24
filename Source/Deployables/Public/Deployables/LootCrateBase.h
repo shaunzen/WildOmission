@@ -16,7 +16,7 @@ struct DEPLOYABLES_API FLootCrateItem
 	FInventoryItem Item;
 
 	UPROPERTY(EditDefaultsOnly)
-	float Probability; // 1 = Certain | 0.5 = Even | 0 = Impossible
+	float Probability = 1.0f; // 1 = Certain | 0.5 = Even | 0 = Impossible
 };
 
 UCLASS()

@@ -6,9 +6,10 @@
 
 FItemData::FItemData()
 {
-	DisplayName = FString(TEXT("Item"));
-	Description = FString(TEXT("This is an Item."));
+	DisplayName = TEXT("Item");
 	Thumbnail = nullptr;
+	Description = TEXT("This is an Item.");
+	Category = EItemCategory::Item;
 	Mesh = nullptr;
 	StackSize = 1000;
 	EquipItemClass = nullptr;
