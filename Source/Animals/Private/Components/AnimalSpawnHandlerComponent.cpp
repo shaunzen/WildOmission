@@ -8,10 +8,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Log.h"
 
 const static int32 MIN_SPAWN_CHECK_TIME_SECONDS = 5.0f;
 const static int32 MAX_SPAWN_CHECK_TIME_SECONDS = 15.0f;
-const static float SPAWN_RADIUS_CENTIMETERS = 10000.0f;
+const static float SPAWN_RADIUS_CENTIMETERS = 1000.0f;
 
 static UDataTable* AnimalSpawnDataTable = nullptr;
 
@@ -49,21 +50,25 @@ void UAnimalSpawnHandlerComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 void UAnimalSpawnHandlerComponent::CheckSpawnConditions()
 {
+	UE_LOG(LogAnimals, Verbose, TEXT("Checking animal spawn conditions."));
 
 	// Check how many animals are in range of this component
 	TArray<AActor*> AnimalActorsList;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAnimal::StaticClass(), AnimalActorsList);
 	const int32 AnimalsInRange = GetNumActorsWithinRange(AnimalActorsList, SPAWN_RADIUS_CENTIMETERS);
+	UE_LOG(LogAnimals, VeryVerbose, TEXT("%i animals found in range of player."), AnimalsInRange);
 
 	// Set timer to call this function again in the future
 	float NextCheckTimeSeconds = FMath::RandRange(MIN_SPAWN_CHECK_TIME_SECONDS, MAX_SPAWN_CHECK_TIME_SECONDS);
+	UE_LOG(LogAnimals, VeryVerbose, TEXT("Next condition check set for %f seconds."), NextCheckTimeSeconds);
 	FTimerDelegate NextSpawnCheckTimerDelegate;
 	NextSpawnCheckTimerDelegate.BindUObject(this, &UAnimalSpawnHandlerComponent::CheckSpawnConditions);
 	GetWorld()->GetTimerManager().SetTimer(NextSpawnCheckTimerHandler, NextSpawnCheckTimerDelegate, NextCheckTimeSeconds, false);
 
 	// If no animals are present, there is a chance we will spawn some
-	if (AnimalsInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(0.1f))
+	if (AnimalsInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(0.5f))
 	{
+		UE_LOG(LogAnimals, Verbose, TEXT("Animal spawn condition not met."));
 		return;
 	}
 
@@ -99,6 +104,7 @@ void UAnimalSpawnHandlerComponent::SpawnAnimals()
 
 	int32 AnimalToSpawn = FMath::RandRange(0, SpawnData.Num() - 1);
 
+	UE_LOG(LogAnimals, VeryVerbose, TEXT("Spawning animal with ID %i"), AnimalToSpawn);
 	for (int32 i = 0; i < SpawnData[AnimalToSpawn]->SpawnGroupSize; ++i)
 	{
 		GetWorld()->SpawnActor<AAnimal>(SpawnData[AnimalToSpawn]->Class, GetSpawnTransform());
@@ -110,13 +116,13 @@ FTransform UAnimalSpawnHandlerComponent::GetSpawnTransform() const
 	const float TraceHeight = 50000.0f;
 	const float SpawnDistance = FMath::RandRange(250.0f, SPAWN_RADIUS_CENTIMETERS);
 	const float SpawnAngle = FMath::RandRange(0.0f, 360.0f);
-
-	FVector SpawnLocationWithinRadius = GetOwner()->GetActorForwardVector() * SpawnDistance;
-	SpawnLocationWithinRadius = SpawnLocationWithinRadius.RotateAngleAxis(SpawnAngle / 360.0f, FVector::UpVector);
-
+	
+	FVector SpawnLocationWithinRadius = FVector::ForwardVector * SpawnDistance;
+	SpawnLocationWithinRadius = SpawnLocationWithinRadius.RotateAngleAxis(SpawnAngle, FVector::UpVector);
+	
 	FVector Start = SpawnLocationWithinRadius + GetOwner()->GetActorLocation();
 	Start.Z = TraceHeight;
-	FVector End = Start - TraceHeight;
+	FVector End = Start - (FVector::UpVector * -TraceHeight);
 
 	FTransform SpawnTransform;
 
