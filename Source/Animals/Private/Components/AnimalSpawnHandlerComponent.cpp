@@ -66,7 +66,7 @@ void UAnimalSpawnHandlerComponent::CheckSpawnConditions()
 	GetWorld()->GetTimerManager().SetTimer(NextSpawnCheckTimerHandler, NextSpawnCheckTimerDelegate, NextCheckTimeSeconds, false);
 
 	// If no animals are present, there is a chance we will spawn some
-	if (AnimalsInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(0.5f))
+	if (AnimalsInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(0.1f))
 	{
 		UE_LOG(LogAnimals, Verbose, TEXT("Animal spawn condition not met."));
 		return;
@@ -122,7 +122,7 @@ FTransform UAnimalSpawnHandlerComponent::GetSpawnTransform() const
 	
 	FVector Start = SpawnLocationWithinRadius + GetOwner()->GetActorLocation();
 	Start.Z = TraceHeight;
-	FVector End = Start - (FVector::UpVector * -TraceHeight);
+	FVector End = Start - FVector(0.0f, 0.0f, TraceHeight);
 
 	FTransform SpawnTransform;
 
