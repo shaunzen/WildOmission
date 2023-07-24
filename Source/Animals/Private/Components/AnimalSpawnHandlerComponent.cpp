@@ -3,6 +3,11 @@
 
 #include "Components/AnimalSpawnHandlerComponent.h"
 
+const static int32 MIN_SPAWN_CHECK_TIME_SECONDS = 5.0f;
+const static int32 MAX_SPAWN_CHECK_TIME_SECONDS = 15.0f;
+// Need some kind of data table for referencing the diferent animals to spawn
+
+
 // Sets default values for this component's properties
 UAnimalSpawnHandlerComponent::UAnimalSpawnHandlerComponent()
 {
@@ -19,8 +24,6 @@ void UAnimalSpawnHandlerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
 }
 
 

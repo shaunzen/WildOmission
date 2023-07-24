@@ -20,9 +20,9 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"AIModule"
+				"AIModule",
+				"CoreUObject"
 			]
-
 		},
 		{
 			"Name": "Crafting",
