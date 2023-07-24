@@ -6,6 +6,8 @@
 #include "Components/SceneComponent.h"
 #include "AnimalSpawnHandlerComponent.generated.h"
 
+struct FAnimalSpawnData;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ANIMALS_API UAnimalSpawnHandlerComponent : public USceneComponent
 {
@@ -33,5 +35,9 @@ private:
 
 	UFUNCTION()
 	void SpawnAnimals();
+
+	FTransform GetSpawnTransform() const;
+
+	static FAnimalSpawnData* GetSpawnData(const FName& AnimalName);
 
 };

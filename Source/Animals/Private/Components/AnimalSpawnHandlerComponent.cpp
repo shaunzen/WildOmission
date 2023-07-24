@@ -3,6 +3,7 @@
 
 #include "Components/AnimalSpawnHandlerComponent.h"
 #include "Animals/Animal.h"
+#include "Structs/AnimalSpawnData.h"
 #include "Engine/DataTable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -10,6 +11,8 @@
 
 const static int32 MIN_SPAWN_CHECK_TIME_SECONDS = 5.0f;
 const static int32 MAX_SPAWN_CHECK_TIME_SECONDS = 15.0f;
+const static float SPAWN_RADIUS_CENTIMETERS = 10000.0f;
+
 static UDataTable* AnimalSpawnDataTable = nullptr;
 
 // Sets default values for this component's properties
@@ -50,8 +53,7 @@ void UAnimalSpawnHandlerComponent::CheckSpawnConditions()
 	// Check how many animals are in range of this component
 	TArray<AActor*> AnimalActorsList;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAnimal::StaticClass(), AnimalActorsList);
-	const float SearchRadiusCentimeters = 10000.0f;
-	const int32 AnimalsInRange = GetNumActorsWithinRange(AnimalActorsList, SearchRadiusCentimeters);
+	const int32 AnimalsInRange = GetNumActorsWithinRange(AnimalActorsList, SPAWN_RADIUS_CENTIMETERS);
 
 	// Set timer to call this function again in the future
 	float NextCheckTimeSeconds = FMath::RandRange(MIN_SPAWN_CHECK_TIME_SECONDS, MAX_SPAWN_CHECK_TIME_SECONDS);
@@ -86,5 +88,60 @@ int32 UAnimalSpawnHandlerComponent::GetNumActorsWithinRange(const TArray<AActor*
 
 void UAnimalSpawnHandlerComponent::SpawnAnimals()
 {
+	if (AnimalSpawnDataTable == nullptr)
+	{
+		return;
+	}
+	TArray<FAnimalSpawnData*> SpawnData;
+	const FString AnimalSpawnDataContextString = TEXT("AnimalSpawnData Context String");
 
+	AnimalSpawnDataTable->GetAllRows(AnimalSpawnDataContextString, SpawnData);
+
+	int32 AnimalToSpawn = FMath::RandRange(0, SpawnData.Num() - 1);
+
+	for (int32 i = 0; i < SpawnData[AnimalToSpawn]->SpawnGroupSize; ++i)
+	{
+		GetWorld()->SpawnActor<AAnimal>(SpawnData[AnimalToSpawn]->Class, GetSpawnTransform());
+	}
+}
+
+FTransform UAnimalSpawnHandlerComponent::GetSpawnTransform() const
+{
+	const float TraceHeight = 50000.0f;
+	const float SpawnDistance = FMath::RandRange(250.0f, SPAWN_RADIUS_CENTIMETERS);
+	const float SpawnAngle = FMath::RandRange(0.0f, 360.0f);
+
+	FVector SpawnLocationWithinRadius = GetOwner()->GetActorForwardVector() * SpawnDistance;
+	SpawnLocationWithinRadius = SpawnLocationWithinRadius.RotateAngleAxis(SpawnAngle / 360.0f, FVector::UpVector);
+
+	FVector Start = SpawnLocationWithinRadius + GetOwner()->GetActorLocation();
+	Start.Z = TraceHeight;
+	FVector End = Start - TraceHeight;
+
+	FTransform SpawnTransform;
+
+	FHitResult HitResult;
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+	{
+		return SpawnTransform;
+	}
+
+	FRotator SpawnRotation = FRotator::ZeroRotator;
+	SpawnRotation.Yaw = FMath::RandRange(0.0f, 360.0f);
+
+	SpawnTransform.SetLocation(HitResult.ImpactPoint);
+	SpawnTransform.SetRotation(FQuat(SpawnRotation));
+
+	return SpawnTransform;
+}
+
+FAnimalSpawnData* UAnimalSpawnHandlerComponent::GetSpawnData(const FName& AnimalName)
+{
+	if (AnimalSpawnDataTable == nullptr)
+	{
+		return nullptr;
+	}
+	
+	static const FString ContextString = TEXT("AnimalSpawnData Context");
+	return AnimalSpawnDataTable->FindRow<FAnimalSpawnData>(AnimalName, ContextString, true);
 }
