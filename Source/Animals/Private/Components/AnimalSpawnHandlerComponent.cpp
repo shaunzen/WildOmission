@@ -2,14 +2,15 @@
 
 
 #include "Components/AnimalSpawnHandlerComponent.h"
+#include "Animals/Animal.h"
 #include "Engine/DataTable.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 
 const static int32 MIN_SPAWN_CHECK_TIME_SECONDS = 5.0f;
 const static int32 MAX_SPAWN_CHECK_TIME_SECONDS = 15.0f;
 static UDataTable* AnimalSpawnDataTable = nullptr;
-// Need some kind of data table for referencing the diferent animals to spawn
-
 
 // Sets default values for this component's properties
 UAnimalSpawnHandlerComponent::UAnimalSpawnHandlerComponent()
@@ -31,8 +32,9 @@ void UAnimalSpawnHandlerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-}
+	CheckSpawnConditions();
 
+}
 
 // Called every frame
 void UAnimalSpawnHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -42,3 +44,47 @@ void UAnimalSpawnHandlerComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	// ...
 }
 
+void UAnimalSpawnHandlerComponent::CheckSpawnConditions()
+{
+
+	// Check how many animals are in range of this component
+	TArray<AActor*> AnimalActorsList;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAnimal::StaticClass(), AnimalActorsList);
+	const float SearchRadiusCentimeters = 10000.0f;
+	const int32 AnimalsInRange = GetNumActorsWithinRange(AnimalActorsList, SearchRadiusCentimeters);
+
+	// Set timer to call this function again in the future
+	float NextCheckTimeSeconds = FMath::RandRange(MIN_SPAWN_CHECK_TIME_SECONDS, MAX_SPAWN_CHECK_TIME_SECONDS);
+	FTimerDelegate NextSpawnCheckTimerDelegate;
+	NextSpawnCheckTimerDelegate.BindUObject(this, &UAnimalSpawnHandlerComponent::CheckSpawnConditions);
+	GetWorld()->GetTimerManager().SetTimer(NextSpawnCheckTimerHandler, NextSpawnCheckTimerDelegate, NextCheckTimeSeconds, false);
+
+	// If no animals are present, there is a chance we will spawn some
+	if (AnimalsInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(0.1f))
+	{
+		return;
+	}
+
+	SpawnAnimals();
+}
+
+int32 UAnimalSpawnHandlerComponent::GetNumActorsWithinRange(const TArray<AActor*>& Actors, const float& Distance) const
+{
+	int32 ActorsInRange = 0;
+
+	for (AActor* Actor : Actors)
+	{
+		if (Actor == nullptr || FVector::Distance(Actor->GetActorLocation(), GetComponentLocation()) > Distance)
+		{
+			continue;
+		}
+		++ActorsInRange;
+	}
+
+	return ActorsInRange;
+}
+
+void UAnimalSpawnHandlerComponent::SpawnAnimals()
+{
+
+}
