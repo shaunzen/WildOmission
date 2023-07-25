@@ -55,4 +55,9 @@ void UDistanceDespawnComponent::CheckDespawnConditions()
 			DistanceFromClosestPlayer = DistanceFromThisPlayer;
 		}
 	}
+
+	if (DistanceFromClosestPlayer > DespawnDistance && OnDespawnConditionMet.IsBound())
+	{
+		OnDespawnConditionMet.Broadcast();
+	}
 }

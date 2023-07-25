@@ -8,6 +8,7 @@
 
 class UNavigationInvokerComponent;
 class UVitalsComponent;
+class UDistanceDespawnComponent;
 
 UCLASS()
 class ANIMALS_API AAnimal : public ACharacter
@@ -34,5 +35,11 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	UVitalsComponent* VitalsComponent;
+	
+	UPROPERTY(VisibleAnywhere)
+	UDistanceDespawnComponent* DespawnComponent;
+
+	UFUNCTION()
+	void HandleDespawn();
 
 };

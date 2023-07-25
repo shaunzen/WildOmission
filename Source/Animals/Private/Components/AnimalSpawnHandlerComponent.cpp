@@ -12,7 +12,8 @@
 
 const static int32 MIN_SPAWN_CHECK_TIME_SECONDS = 5.0f;
 const static int32 MAX_SPAWN_CHECK_TIME_SECONDS = 15.0f;
-const static float SPAWN_RADIUS_CENTIMETERS = 40000.0f;
+const static float OUTER_SPAWN_RADIUS_CENTIMETERS = 4000.0f;
+const static float INNER_SPAWN_RADIUS_CENTIMETERS = 3000.0f;
 
 static UDataTable* AnimalSpawnDataTable = nullptr;
 
@@ -55,7 +56,7 @@ void UAnimalSpawnHandlerComponent::CheckSpawnConditions()
 	// Check how many animals are in range of this component
 	TArray<AActor*> AnimalActorsList;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAnimal::StaticClass(), AnimalActorsList);
-	const int32 AnimalsInRange = GetNumActorsWithinRange(AnimalActorsList, SPAWN_RADIUS_CENTIMETERS);
+	const int32 AnimalsInRange = GetNumActorsWithinRange(AnimalActorsList, OUTER_SPAWN_RADIUS_CENTIMETERS);
 	UE_LOG(LogAnimals, VeryVerbose, TEXT("%i animals found in range of player."), AnimalsInRange);
 
 	// Set timer to call this function again in the future
@@ -114,7 +115,7 @@ void UAnimalSpawnHandlerComponent::SpawnAnimals()
 FTransform UAnimalSpawnHandlerComponent::GetSpawnTransform() const
 {
 	const float TraceHeight = 50000.0f;
-	const float SpawnDistance = FMath::RandRange(3000.0f, SPAWN_RADIUS_CENTIMETERS);
+	const float SpawnDistance = FMath::RandRange(INNER_SPAWN_RADIUS_CENTIMETERS, OUTER_SPAWN_RADIUS_CENTIMETERS);
 	const float SpawnAngle = FMath::RandRange(0.0f, 360.0f);
 	
 	FVector SpawnLocationWithinRadius = FVector::ForwardVector * SpawnDistance;

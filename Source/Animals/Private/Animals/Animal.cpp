@@ -4,6 +4,7 @@
 #include "Animals/Animal.h"
 #include "NavigationInvokerComponent.h"
 #include "Components/VitalsComponent.h"
+#include "Components/DistanceDespawnComponent.h"
 
 // Sets default values
 AAnimal::AAnimal()
@@ -14,7 +15,9 @@ AAnimal::AAnimal()
 	
 	NavigationInvoker = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavigationInvoker"));
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
-	
+
+	DespawnComponent = CreateDefaultSubobject<UDistanceDespawnComponent>(TEXT("DespawnComponent"));
+	DespawnComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -22,6 +25,17 @@ void AAnimal::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	DespawnComponent->OnDespawnConditionMet.AddDynamic(this, &AAnimal::HandleDespawn);
+}
+
+void AAnimal::HandleDespawn()
+{
+	Destroy();
 }
 
 // Called every frame

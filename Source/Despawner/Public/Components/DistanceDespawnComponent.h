@@ -6,6 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "DistanceDespawnComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDespawnConditionMetSignature);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DESPAWNER_API UDistanceDespawnComponent : public USceneComponent
@@ -15,6 +16,8 @@ class DESPAWNER_API UDistanceDespawnComponent : public USceneComponent
 public:	
 	// Sets default values for this component's properties
 	UDistanceDespawnComponent();
+
+	FOnDespawnConditionMetSignature OnDespawnConditionMet;
 
 	float GetDespawnDistance() const;
 	void SetDespawnDistance(const float& NewDespawnDistance);
