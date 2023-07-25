@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
+#include "Components/ActorComponent.h"
 #include "AnimalSpawnHandlerComponent.generated.h"
 
 struct FAnimalSpawnData;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ANIMALS_API UAnimalSpawnHandlerComponent : public USceneComponent
+class ANIMALS_API UAnimalSpawnHandlerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
