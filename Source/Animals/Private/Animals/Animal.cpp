@@ -5,6 +5,7 @@
 #include "NavigationInvokerComponent.h"
 #include "Components/VitalsComponent.h"
 #include "Components/DistanceDespawnComponent.h"
+#include "Components/AnimalSpawnHandlerComponent.h"
 
 // Sets default values
 AAnimal::AAnimal()
@@ -35,6 +36,7 @@ void AAnimal::BeginPlay()
 
 void AAnimal::HandleDespawn()
 {
+	UAnimalSpawnHandlerComponent::GetSpawnedAnimals()->Remove(this);
 	Destroy();
 }
 

@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/SceneComponent.h"
 #include "AnimalSpawnHandlerComponent.generated.h"
 
+class AAnimal;
 struct FAnimalSpawnData;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ANIMALS_API UAnimalSpawnHandlerComponent : public UActorComponent
+class ANIMALS_API UAnimalSpawnHandlerComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
@@ -17,8 +18,7 @@ public:
 	// Sets default values for this component's properties
 	UAnimalSpawnHandlerComponent();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	static TArray<AAnimal*>* GetSpawnedAnimals();
 
 protected:
 	// Called when the game starts
@@ -31,7 +31,7 @@ private:
 	UFUNCTION()
 	void CheckSpawnConditions();
 
-	int32 GetNumActorsWithinRange(const TArray<AActor*>& Actors, const float& Distance) const;
+	int32 GetNumAnimalsWithinSpawnRadius() const;
 
 	UFUNCTION()
 	void SpawnAnimals();

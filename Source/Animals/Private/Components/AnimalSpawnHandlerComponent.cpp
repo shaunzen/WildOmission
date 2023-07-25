@@ -16,13 +16,14 @@ const static float OUTER_SPAWN_RADIUS_CENTIMETERS = 4000.0f;
 const static float INNER_SPAWN_RADIUS_CENTIMETERS = 3000.0f;
 
 static UDataTable* AnimalSpawnDataTable = nullptr;
+static TArray<AAnimal*> SpawnedAnimals;
 
 // Sets default values for this component's properties
 UAnimalSpawnHandlerComponent::UAnimalSpawnHandlerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> AnimalDataTableObject(TEXT("/Game/Animals/DataTables/DT_AnimalSpawnData"));
 	if (AnimalDataTableObject.Succeeded())
@@ -31,6 +32,10 @@ UAnimalSpawnHandlerComponent::UAnimalSpawnHandlerComponent()
 	}
 }
 
+TArray<AAnimal*>* UAnimalSpawnHandlerComponent::GetSpawnedAnimals()
+{
+	return &SpawnedAnimals;
+}
 
 // Called when the game starts
 void UAnimalSpawnHandlerComponent::BeginPlay()
@@ -41,26 +46,16 @@ void UAnimalSpawnHandlerComponent::BeginPlay()
 
 }
 
-// Called every frame
-void UAnimalSpawnHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
 void UAnimalSpawnHandlerComponent::CheckSpawnConditions()
 {
 	UE_LOG(LogAnimals, Verbose, TEXT("Checking animal spawn conditions."));
 
 	// Check how many animals are in range of this component
-	TArray<AActor*> AnimalActorsList;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAnimal::StaticClass(), AnimalActorsList);
-	const int32 AnimalsInRange = GetNumActorsWithinRange(AnimalActorsList, OUTER_SPAWN_RADIUS_CENTIMETERS);
+	const int32 AnimalsInRange = GetNumAnimalsWithinSpawnRadius();
 	UE_LOG(LogAnimals, VeryVerbose, TEXT("%i animals found in range of player."), AnimalsInRange);
 
 	// Set timer to call this function again in the future
-	float NextCheckTimeSeconds = FMath::RandRange(MIN_SPAWN_CHECK_TIME_SECONDS, MAX_SPAWN_CHECK_TIME_SECONDS);
+	const float NextCheckTimeSeconds = FMath::RandRange(MIN_SPAWN_CHECK_TIME_SECONDS, MAX_SPAWN_CHECK_TIME_SECONDS);
 	UE_LOG(LogAnimals, VeryVerbose, TEXT("Next condition check set for %f seconds."), NextCheckTimeSeconds);
 	FTimerDelegate NextSpawnCheckTimerDelegate;
 	NextSpawnCheckTimerDelegate.BindUObject(this, &UAnimalSpawnHandlerComponent::CheckSpawnConditions);
@@ -76,20 +71,20 @@ void UAnimalSpawnHandlerComponent::CheckSpawnConditions()
 	SpawnAnimals();
 }
 
-int32 UAnimalSpawnHandlerComponent::GetNumActorsWithinRange(const TArray<AActor*>& Actors, const float& Distance) const
+int32 UAnimalSpawnHandlerComponent::GetNumAnimalsWithinSpawnRadius() const
 {
-	int32 ActorsInRange = 0;
+	int32 AnimalsInRange = 0;
 
-	for (AActor* Actor : Actors)
+	for (AAnimal* Animal: SpawnedAnimals)
 	{
-		if (Actor == nullptr || FVector::Distance(Actor->GetActorLocation(), GetOwner()->GetActorLocation()) > Distance)
+		if (Animal == nullptr || FVector::Distance(Animal->GetActorLocation(), GetComponentLocation()) > OUTER_SPAWN_RADIUS_CENTIMETERS)
 		{
 			continue;
 		}
-		++ActorsInRange;
+		++AnimalsInRange;
 	}
 
-	return ActorsInRange;
+	return AnimalsInRange;
 }
 
 void UAnimalSpawnHandlerComponent::SpawnAnimals()
@@ -108,7 +103,8 @@ void UAnimalSpawnHandlerComponent::SpawnAnimals()
 	UE_LOG(LogAnimals, VeryVerbose, TEXT("Spawning animal with ID %i"), AnimalToSpawn);
 	for (int32 i = 0; i < SpawnData[AnimalToSpawn]->SpawnGroupSize; ++i)
 	{
-		GetWorld()->SpawnActor<AAnimal>(SpawnData[AnimalToSpawn]->Class, GetSpawnTransform());
+		AAnimal* SpawnedAnimal = GetWorld()->SpawnActor<AAnimal>(SpawnData[AnimalToSpawn]->Class, GetSpawnTransform());
+		SpawnedAnimals.Add(SpawnedAnimal);
 	}
 }
 

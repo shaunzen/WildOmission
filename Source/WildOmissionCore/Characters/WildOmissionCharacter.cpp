@@ -396,6 +396,7 @@ void AWildOmissionCharacter::SetupAnimalSpawnHandler()
 	}
 
 	AnimalSpawnHandlerComponent->RegisterComponent();
+	AnimalSpawnHandlerComponent->SetupAttachment(RootComponent);
 }
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
