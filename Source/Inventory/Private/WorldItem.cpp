@@ -5,7 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
-#include "Components/ActorDespawnComponent.h"
+#include "Components/TimerDespawnComponent.h"
 #include "Structs/ItemStat.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -22,11 +22,11 @@ AWorldItem::AWorldItem()
 	SetReplicateMovement(true);
 
 	// Setup default values
-	Item.Name = FName(TEXT("Item"));
+	Item.Name = TEXT("Item");
 	Item.Quantity = 1;
 
 	// Create static mesh component
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
@@ -35,7 +35,7 @@ AWorldItem::AWorldItem()
 	MeshComponent->SetIsReplicated(true);
 
 	// Setup Despawner
-	DespawnComponent = CreateDefaultSubobject<UTimerDespawnComponent>(FName("DespawnComponent"));
+	DespawnComponent = CreateDefaultSubobject<UTimerDespawnComponent>(TEXT("DespawnComponent"));
 	DespawnComponent->SetDespawnTime(300.0f);
 
 	ConstructorHelpers::FObjectFinder<USoundBase> ClumpSoundObject(TEXT("/Game/Inventory/Audio/ItemClump_Cue"));
