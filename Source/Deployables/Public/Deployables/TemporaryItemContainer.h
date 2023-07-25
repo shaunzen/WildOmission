@@ -6,7 +6,7 @@
 #include "ItemContainerBase.h"
 #include "TemporaryItemContainer.generated.h"
 
-class UActorDespawnComponent;
+class UTimerDespawnComponent;
 
 UCLASS()
 class DEPLOYABLES_API ATemporaryItemContainer : public AItemContainerBase
@@ -17,6 +17,6 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	UActorDespawnComponent* DespawnComponent;
+	UTimerDespawnComponent* DespawnComponent;
 
 };

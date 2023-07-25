@@ -3,28 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-#include "Interfaces/SavableObject.h"
-#include "ActorDespawnComponent.generated.h"
+#include "Components/SceneComponent.h"
+#include "DistanceDespawnComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class DESPAWNER_API UActorDespawnComponent : public UActorComponent, public ISavableObject
+class DESPAWNER_API UDistanceDespawnComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UActorDespawnComponent();
+	UDistanceDespawnComponent();
 
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	float GetTimeRemaining() const;
-	void SetDespawnTime(float TimeInSeconds);
-
-private:	
-	UPROPERTY(EditDefaultsOnly, SaveGame)
-	float DespawnTimeSeconds;
-
+		
 };

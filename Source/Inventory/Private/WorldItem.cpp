@@ -35,7 +35,7 @@ AWorldItem::AWorldItem()
 	MeshComponent->SetIsReplicated(true);
 
 	// Setup Despawner
-	DespawnComponent = CreateDefaultSubobject<UActorDespawnComponent>(FName("DespawnComponent"));
+	DespawnComponent = CreateDefaultSubobject<UTimerDespawnComponent>(FName("DespawnComponent"));
 	DespawnComponent->SetDespawnTime(300.0f);
 
 	ConstructorHelpers::FObjectFinder<USoundBase> ClumpSoundObject(TEXT("/Game/Inventory/Audio/ItemClump_Cue"));

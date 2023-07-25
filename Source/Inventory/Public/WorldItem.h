@@ -10,7 +10,7 @@
 #include "Structs/InventoryItem.h"
 #include "WorldItem.generated.h"
 
-class UActorDespawnComponent;
+class UTimerDespawnComponent;
 
 UCLASS()
 class INVENTORY_API AWorldItem : public AActor, public IInteractable, public ISavableObject, public IRequiredForLoad
@@ -42,7 +42,7 @@ private:
 	FInventoryItem Item;
 
 	UPROPERTY(VisibleAnywhere)
-	UActorDespawnComponent* DespawnComponent;
+	UTimerDespawnComponent* DespawnComponent;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
 	UStaticMeshComponent* MeshComponent;

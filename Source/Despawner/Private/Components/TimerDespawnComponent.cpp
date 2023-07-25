@@ -1,10 +1,10 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Components/ActorDespawnComponent.h"
+#include "Components/TimerDespawnComponent.h"
 
 // Sets default values for this component's properties
-UActorDespawnComponent::UActorDespawnComponent()
+UTimerDespawnComponent::UTimerDespawnComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -14,7 +14,7 @@ UActorDespawnComponent::UActorDespawnComponent()
 }
 
 // Called every frame
-void UActorDespawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UTimerDespawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -31,12 +31,12 @@ void UActorDespawnComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 }
 
-float UActorDespawnComponent::GetTimeRemaining() const
+float UTimerDespawnComponent::GetTimeRemaining() const
 {
 	return DespawnTimeSeconds;
 }
 
-void UActorDespawnComponent::SetDespawnTime(float TimeInSeconds)
+void UTimerDespawnComponent::SetDespawnTime(float TimeInSeconds)
 {
 	DespawnTimeSeconds = TimeInSeconds;
 }
