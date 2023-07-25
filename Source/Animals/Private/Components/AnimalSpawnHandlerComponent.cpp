@@ -12,7 +12,7 @@
 
 const static int32 MIN_SPAWN_CHECK_TIME_SECONDS = 5.0f;
 const static int32 MAX_SPAWN_CHECK_TIME_SECONDS = 15.0f;
-const static float SPAWN_RADIUS_CENTIMETERS = 10000.0f;
+const static float SPAWN_RADIUS_CENTIMETERS = 40000.0f;
 
 static UDataTable* AnimalSpawnDataTable = nullptr;
 
@@ -114,7 +114,7 @@ void UAnimalSpawnHandlerComponent::SpawnAnimals()
 FTransform UAnimalSpawnHandlerComponent::GetSpawnTransform() const
 {
 	const float TraceHeight = 50000.0f;
-	const float SpawnDistance = FMath::RandRange(1000.0f, SPAWN_RADIUS_CENTIMETERS);
+	const float SpawnDistance = FMath::RandRange(3000.0f, SPAWN_RADIUS_CENTIMETERS);
 	const float SpawnAngle = FMath::RandRange(0.0f, 360.0f);
 	
 	FVector SpawnLocationWithinRadius = FVector::ForwardVector * SpawnDistance;
