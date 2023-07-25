@@ -150,13 +150,13 @@ void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)
 	
 	if (SpawnedRainComponent == nullptr)
 	{
-		SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, GetOwner()->GetRootComponent(), FName(), FVector(0.0f, 0.0f, 1000.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, this, FName(), FVector(0.0f, 0.0f, 1000.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	}
 	SpawnedRainComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
 
 	if (SpawnedRainAudioComponent == nullptr)
 	{
-		SpawnedRainAudioComponent = UGameplayStatics::SpawnSoundAttached(RainSound, GetOwner()->GetRootComponent());
+		SpawnedRainAudioComponent = UGameplayStatics::SpawnSoundAttached(RainSound, this);
 	}
 	SpawnedRainAudioComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
 
@@ -211,7 +211,7 @@ AStorm* USpecialEffectsHandlerComponent::CastToStorm(AActor* InActor)
 
 bool USpecialEffectsHandlerComponent::LineTraceIntoSkyOnChannel(ECollisionChannel ChannelToTrace, FHitResult& OutHitResult) const
 {
-	FVector Start = GetOwner()->GetActorLocation();
+	FVector Start = GetComponentLocation();
 	FVector End = Start + FVector::UpVector * 100000.0f;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());

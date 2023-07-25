@@ -380,6 +380,7 @@ void AWildOmissionCharacter::SetupWeatherEffectHandler()
 	}
 
 	SpecialEffectsHandlerComponent->RegisterComponent();
+	SpecialEffectsHandlerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void AWildOmissionCharacter::SetupAnimalSpawnHandler()
@@ -396,7 +397,7 @@ void AWildOmissionCharacter::SetupAnimalSpawnHandler()
 	}
 
 	AnimalSpawnHandlerComponent->RegisterComponent();
-	AnimalSpawnHandlerComponent->SetupAttachment(RootComponent);
+	AnimalSpawnHandlerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)

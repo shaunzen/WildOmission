@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/SceneComponent.h"
 #include "SpecialEffectsHandlerComponent.generated.h"
 
 class UNiagaraSystem;
@@ -14,7 +14,7 @@ class UCameraComponent;
 class AStorm;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSIONCORE_API USpecialEffectsHandlerComponent : public UActorComponent
+class WILDOMISSIONCORE_API USpecialEffectsHandlerComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
