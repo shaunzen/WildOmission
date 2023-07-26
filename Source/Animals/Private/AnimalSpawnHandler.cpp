@@ -56,6 +56,16 @@ void AAnimalSpawnHandler::CheckSpawnConditionsForAllPlayers()
 	NextSpawnCheckTimerDelegate.BindUObject(this, &AAnimalSpawnHandler::CheckSpawnConditionsForAllPlayers);
 	GetWorld()->GetTimerManager().SetTimer(NextSpawnCheckTimerHandle, NextSpawnCheckTimerDelegate, NextCheckTimeSeconds, false);
 
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr || PlayerController->GetPawn() == nullptr)
+		{
+			continue;
+		}
+
+		CheckSpawnConditionsForPlayer(PlayerController->GetPawn());
+	}
 }
 
 void AAnimalSpawnHandler::CheckSpawnConditionsForPlayer(APawn* Player)
