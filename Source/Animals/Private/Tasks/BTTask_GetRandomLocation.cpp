@@ -21,13 +21,13 @@ EBTNodeResult::Type UBTTask_GetRandomLocation::ExecuteTask(UBehaviorTreeComponen
 	if (NavigationSystem == nullptr)
 	{
 		UE_LOG(LogAnimals, Warning, TEXT("GetRandomLocation, Failed to find NavigationSystem in world."));
-		return EBTNodeResult::Type::Aborted;
+		return EBTNodeResult::Type::Failed;
 	}
 	FNavLocation NavLocation;
 	if (!NavigationSystem->GetRandomReachablePointInRadius(CurrentLocation, 5000.0f, NavLocation))
 	{
 		UE_LOG(LogAnimals, Warning, TEXT("GetRandomLocation, Failed to find random location."));
-		return EBTNodeResult::Type::Aborted;
+		return EBTNodeResult::Type::Failed;
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), NavLocation.Location);
