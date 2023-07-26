@@ -10,6 +10,7 @@ class ASaveHandler;
 class AWorldGenerationHandler;
 class ATimeOfDayHandler;
 class AWeatherHandler;
+class AAnimalSpawnHandler;
 class AWildOmissionCharacter;
 class AWildOmissionPlayerController;
 
@@ -69,5 +70,8 @@ private:
 	
 	UPROPERTY()
 	AWeatherHandler* WeatherHandler;
+
+	UPROPERTY()
+	AAnimalSpawnHandler* AnimalSpawnHandler;
 	
 };

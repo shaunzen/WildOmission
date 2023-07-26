@@ -21,7 +21,6 @@
 #include "Components/CraftingComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
-#include "Components/AnimalSpawnHandlerComponent.h"
 #include "WildOmissionCore/WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "UI/InventoryMenuWidget.h"
@@ -83,8 +82,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 
 	SpecialEffectsHandlerComponent = nullptr;
-
-	AnimalSpawnHandlerComponent = nullptr;
 
 	GetCharacterMovement()->JumpZVelocity = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
@@ -258,7 +255,6 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupFieldOfView();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
-	SetupAnimalSpawnHandler();
 	EndSprint();
 
 	if (HasAuthority())
@@ -295,7 +291,6 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	SetupFieldOfView();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
-	SetupAnimalSpawnHandler();
 }
 
 void AWildOmissionCharacter::UnPossessed()
@@ -381,23 +376,6 @@ void AWildOmissionCharacter::SetupWeatherEffectHandler()
 
 	SpecialEffectsHandlerComponent->RegisterComponent();
 	SpecialEffectsHandlerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-}
-
-void AWildOmissionCharacter::SetupAnimalSpawnHandler()
-{
-	if (!HasAuthority() || AnimalSpawnHandlerComponent != nullptr)
-	{
-		return;
-	}
-
-	AnimalSpawnHandlerComponent = NewObject<UAnimalSpawnHandlerComponent>(this, UAnimalSpawnHandlerComponent::StaticClass(), TEXT("AnimalSpawnHandlerComponent"));
-	if (AnimalSpawnHandlerComponent == nullptr)
-	{
-		return;
-	}
-
-	AnimalSpawnHandlerComponent->RegisterComponent();
-	AnimalSpawnHandlerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)

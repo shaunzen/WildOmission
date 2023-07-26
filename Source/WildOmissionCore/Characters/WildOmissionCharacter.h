@@ -20,7 +20,6 @@ class UEquipComponent;
 class UCraftingComponent;
 class UNameTagComponent;
 class USpecialEffectsHandlerComponent;
-class UAnimalSpawnHandlerComponent;
 
 class AItemContainerBase;
 class UPlayerHUDWidget;
@@ -115,9 +114,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UNameTagComponent* NameTag;
-
-	UPROPERTY(VisibleAnywhere)
-	UAnimalSpawnHandlerComponent* AnimalSpawnHandlerComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
@@ -251,7 +247,5 @@ private:
 	void SetupPlayerHUD();
 
 	void SetupWeatherEffectHandler();
-
-	void SetupAnimalSpawnHandler();
 
 };

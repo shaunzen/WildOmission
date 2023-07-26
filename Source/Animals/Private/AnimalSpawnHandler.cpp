@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Components/AnimalSpawnHandlerComponent.h"
+#include "AnimalSpawnHandler.h"
 #include "Animals/Animal.h"
 #include "Structs/AnimalSpawnData.h"
 #include "Engine/DataTable.h"
@@ -18,13 +18,11 @@ const static float INNER_SPAWN_RADIUS_CENTIMETERS = 3000.0f;
 static UDataTable* AnimalSpawnDataTable = nullptr;
 static TArray<AAnimal*> SpawnedAnimals;
 
-// Sets default values for this component's properties
-UAnimalSpawnHandlerComponent::UAnimalSpawnHandlerComponent()
+// Sets default values
+AAnimalSpawnHandler::AAnimalSpawnHandler()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
-
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = false;
 	static ConstructorHelpers::FObjectFinder<UDataTable> AnimalDataTableObject(TEXT("/Game/Animals/DataTables/DT_AnimalSpawnData"));
 	if (AnimalDataTableObject.Succeeded())
 	{
@@ -32,34 +30,45 @@ UAnimalSpawnHandlerComponent::UAnimalSpawnHandlerComponent()
 	}
 }
 
-TArray<AAnimal*>* UAnimalSpawnHandlerComponent::GetSpawnedAnimals()
+TArray<AAnimal*>* AAnimalSpawnHandler::GetSpawnedAnimals()
 {
 	return &SpawnedAnimals;
 }
 
-// Called when the game starts
-void UAnimalSpawnHandlerComponent::BeginPlay()
+// Called when the game starts or when spawned
+void AAnimalSpawnHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CheckSpawnConditions();
+	SpawnedAnimals.Empty();
 
+	CheckSpawnConditionsForAllPlayers();
 }
 
-void UAnimalSpawnHandlerComponent::CheckSpawnConditions()
+void AAnimalSpawnHandler::CheckSpawnConditionsForAllPlayers()
 {
 	UE_LOG(LogAnimals, Verbose, TEXT("Checking animal spawn conditions."));
-
-	// Check how many animals are in range of this component
-	const int32 AnimalsInRange = GetNumAnimalsWithinSpawnRadius();
-	UE_LOG(LogAnimals, VeryVerbose, TEXT("%i animals found in range of player."), AnimalsInRange);
-
+	
 	// Set timer to call this function again in the future
 	const float NextCheckTimeSeconds = FMath::RandRange(MIN_SPAWN_CHECK_TIME_SECONDS, MAX_SPAWN_CHECK_TIME_SECONDS);
 	UE_LOG(LogAnimals, VeryVerbose, TEXT("Next condition check set for %f seconds."), NextCheckTimeSeconds);
 	FTimerDelegate NextSpawnCheckTimerDelegate;
-	NextSpawnCheckTimerDelegate.BindUObject(this, &UAnimalSpawnHandlerComponent::CheckSpawnConditions);
-	GetWorld()->GetTimerManager().SetTimer(NextSpawnCheckTimerHandler, NextSpawnCheckTimerDelegate, NextCheckTimeSeconds, false);
+	NextSpawnCheckTimerDelegate.BindUObject(this, &AAnimalSpawnHandler::CheckSpawnConditionsForAllPlayers);
+	GetWorld()->GetTimerManager().SetTimer(NextSpawnCheckTimerHandle, NextSpawnCheckTimerDelegate, NextCheckTimeSeconds, false);
+
+}
+
+void AAnimalSpawnHandler::CheckSpawnConditionsForPlayer(APawn* Player)
+{
+	if (Player == nullptr)
+	{
+		UE_LOG(LogAnimals, Warning, TEXT("Tried to check animal spawn conditions for player, but the player was nullptr."))
+		return;
+	}
+
+	// Check how many animals are in range of this component
+	const int32 AnimalsInRange = GetNumAnimalsWithinRadiusFromLocation(Player->GetActorLocation());
+	UE_LOG(LogAnimals, VeryVerbose, TEXT("%i animals found in range of player."), AnimalsInRange);
 
 	// If no animals are present, there is a chance we will spawn some
 	if (AnimalsInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(0.1f))
@@ -68,10 +77,10 @@ void UAnimalSpawnHandlerComponent::CheckSpawnConditions()
 		return;
 	}
 
-	SpawnAnimals();
+	SpawnAnimalsInRadiusFromOrigin(Player->GetActorLocation());
 }
 
-int32 UAnimalSpawnHandlerComponent::GetNumAnimalsWithinSpawnRadius() const
+int32 AAnimalSpawnHandler::GetNumAnimalsWithinRadiusFromLocation(const FVector& TestLocation) const
 {
 	if (SpawnedAnimals.IsEmpty())
 	{
@@ -82,7 +91,7 @@ int32 UAnimalSpawnHandlerComponent::GetNumAnimalsWithinSpawnRadius() const
 
 	for (AAnimal* Animal : SpawnedAnimals)
 	{
-		if (Animal == nullptr) //|| FVector::Distance(Animal->GetActorLocation(), GetComponentLocation()) > OUTER_SPAWN_RADIUS_CENTIMETERS)
+		if (Animal == nullptr || FVector::Distance(Animal->GetActorLocation(), TestLocation) > OUTER_SPAWN_RADIUS_CENTIMETERS)
 		{
 			continue;
 		}
@@ -92,12 +101,13 @@ int32 UAnimalSpawnHandlerComponent::GetNumAnimalsWithinSpawnRadius() const
 	return AnimalsInRange;
 }
 
-void UAnimalSpawnHandlerComponent::SpawnAnimals()
+void AAnimalSpawnHandler::SpawnAnimalsInRadiusFromOrigin(const FVector& SpawnOrigin)
 {
 	if (AnimalSpawnDataTable == nullptr)
 	{
 		return;
 	}
+
 	TArray<FAnimalSpawnData*> SpawnData;
 	const FString AnimalSpawnDataContextString = TEXT("AnimalSpawnData Context String");
 
@@ -108,21 +118,21 @@ void UAnimalSpawnHandlerComponent::SpawnAnimals()
 	UE_LOG(LogAnimals, VeryVerbose, TEXT("Spawning animal with ID %i"), AnimalToSpawn);
 	for (int32 i = 0; i < SpawnData[AnimalToSpawn]->SpawnGroupSize; ++i)
 	{
-		AAnimal* SpawnedAnimal = GetWorld()->SpawnActor<AAnimal>(SpawnData[AnimalToSpawn]->Class, GetSpawnTransform());
+		AAnimal* SpawnedAnimal = GetWorld()->SpawnActor<AAnimal>(SpawnData[AnimalToSpawn]->Class, GetSpawnTransform(SpawnOrigin));
 		SpawnedAnimals.Add(SpawnedAnimal);
 	}
 }
 
-FTransform UAnimalSpawnHandlerComponent::GetSpawnTransform() const
+FTransform AAnimalSpawnHandler::GetSpawnTransform(const FVector& SpawnOrigin) const
 {
 	const float TraceHeight = 50000.0f;
 	const float SpawnDistance = FMath::RandRange(INNER_SPAWN_RADIUS_CENTIMETERS, OUTER_SPAWN_RADIUS_CENTIMETERS);
 	const float SpawnAngle = FMath::RandRange(0.0f, 360.0f);
-	
+
 	FVector SpawnLocationWithinRadius = FVector::ForwardVector * SpawnDistance;
 	SpawnLocationWithinRadius = SpawnLocationWithinRadius.RotateAngleAxis(SpawnAngle, FVector::UpVector);
-	
-	FVector Start = SpawnLocationWithinRadius + GetOwner()->GetActorLocation();
+
+	FVector Start = SpawnLocationWithinRadius + SpawnOrigin;
 	Start.Z = TraceHeight;
 	FVector End = Start - FVector(0.0f, 0.0f, TraceHeight);
 
@@ -143,13 +153,13 @@ FTransform UAnimalSpawnHandlerComponent::GetSpawnTransform() const
 	return SpawnTransform;
 }
 
-FAnimalSpawnData* UAnimalSpawnHandlerComponent::GetSpawnData(const FName& AnimalName)
+FAnimalSpawnData* AAnimalSpawnHandler::GetSpawnData(const FName& AnimalName)
 {
 	if (AnimalSpawnDataTable == nullptr)
 	{
 		return nullptr;
 	}
-	
+
 	static const FString ContextString = TEXT("AnimalSpawnData Context");
 	return AnimalSpawnDataTable->FindRow<FAnimalSpawnData>(AnimalName, ContextString, true);
 }
