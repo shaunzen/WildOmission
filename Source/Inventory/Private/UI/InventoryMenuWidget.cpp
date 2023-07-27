@@ -104,7 +104,7 @@ void UInventoryMenuWidget::CreateOpenContainerWidget(UInventoryComponent* OpenCo
 
 	OpenContainerWidget = CreateWidget<UInventoryWidget>(this, OpenContainer->GetWidgetClass());
 
-	OpenContainerWidget->Setup(nullptr, OpenContainer);
+	OpenContainerWidget->Setup(this, OpenContainer);
 	OpenContainerWidget->CreateSlots();
 	OpenContainerWidget->Open();
 
