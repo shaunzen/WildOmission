@@ -25,6 +25,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void PlayCallSound();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,7 +41,13 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UDistanceDespawnComponent* DespawnComponent;
 
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* CallSound;
+
 	UFUNCTION()
 	void HandleDespawn();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayCallSound();
 
 };

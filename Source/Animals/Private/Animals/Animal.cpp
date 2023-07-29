@@ -6,6 +6,7 @@
 #include "Components/VitalsComponent.h"
 #include "Components/DistanceDespawnComponent.h"
 #include "Components/AnimalSpawnHandlerComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AAnimal::AAnimal()
@@ -19,6 +20,8 @@ AAnimal::AAnimal()
 
 	DespawnComponent = CreateDefaultSubobject<UDistanceDespawnComponent>(TEXT("DespawnComponent"));
 	DespawnComponent->SetupAttachment(RootComponent);
+
+	CallSound = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -54,3 +57,22 @@ void AAnimal::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void AAnimal::PlayCallSound()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	Multi_PlayCallSound();
+}
+
+void AAnimal::Multi_PlayCallSound_Implementation()
+{
+	if (CallSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CallSound, this->GetActorLocation());
+}
