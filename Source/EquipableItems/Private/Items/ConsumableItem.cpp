@@ -32,17 +32,17 @@ void AConsumableItem::OnPrimaryPressed()
 	int32 Energy = ItemData->GetStat(FName("Energy"));
 	int32 Hydration = ItemData->GetStat(FName("Hydration"));
 	
-	if (Health > 0)
+	if (Health != 0)
 	{
 		OwnerVitalsComponent->AddHealth(Health);
 	}
 	
-	if (Energy > 0)
+	if (Energy != 0)
 	{
 		OwnerVitalsComponent->AddHunger(Energy);
 	}
 	
-	if (Hydration > 0)
+	if (Hydration != 0)
 	{
 		OwnerVitalsComponent->AddThirst(Hydration);
 	}
