@@ -6,6 +6,7 @@
 #include "Components/VitalsComponent.h"
 #include "Components/DistanceDespawnComponent.h"
 #include "Components/AnimalSpawnHandlerComponent.h"
+#include "Components/InventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -34,6 +35,7 @@ void AAnimal::BeginPlay()
 		return;
 	}
 
+	VitalsComponent->OnHealthDepleted.AddDynamic(this, &AAnimal::HandleDeath);
 	DespawnComponent->OnDespawnConditionMet.AddDynamic(this, &AAnimal::HandleDespawn);
 }
 
@@ -41,6 +43,16 @@ void AAnimal::HandleDespawn()
 {
 	UAnimalSpawnHandlerComponent::GetSpawnedAnimals()->Remove(this);
 	Destroy();
+}
+
+void AAnimal::HandleDeath()
+{
+	for (const FInventoryItem& ItemToDrop : Drops)
+	{
+		UInventoryComponent::SpawnWorldItem(GetWorld(), ItemToDrop, this);
+	}
+
+	HandleDespawn();
 }
 
 // Called every frame

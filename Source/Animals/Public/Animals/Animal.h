@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Structs/InventoryItem.h"
 #include "Animal.generated.h"
 
 class UNavigationInvokerComponent;
@@ -44,8 +45,14 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* CallSound;
 
+	UPROPERTY(EditDefaultsOnly)
+	TArray<FInventoryItem> Drops;
+
 	UFUNCTION()
 	void HandleDespawn();
+
+	UFUNCTION()
+	void HandleDeath();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayCallSound();
