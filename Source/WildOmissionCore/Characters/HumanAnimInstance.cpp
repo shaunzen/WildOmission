@@ -8,7 +8,17 @@
 
 UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializer) : UWildOmissionAnimInstance(ObjectInitializer)
 {
+	HeadAngle = 0.0f;
+	EquipedItemPose = nullptr;
 	FirstPersonInstance = false;
+}
+
+void UHumanAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+	Super::NativeUpdateAnimation(DeltaSeconds);
+
+	CalculateHeadAngle();
+	HandleEquipedItemPose();
 }
 
 void UHumanAnimInstance::OnPrimaryMontageClimax()
@@ -35,46 +45,48 @@ void UHumanAnimInstance::OnPrimaryMontageClimax()
 	EquipedTool->OnPrimaryAnimationClimax(FirstPersonInstance);
 }
 
-float UHumanAnimInstance::GetHeadAngle() const
+void UHumanAnimInstance::CalculateHeadAngle()
 {
 	AWildOmissionCharacter* CharacterOwner = Cast<AWildOmissionCharacter>(TryGetPawnOwner());
 	if (CharacterOwner == nullptr)
 	{
-		return 0.0f;
+		return;
 	}
 
-	return -CharacterOwner->GetHeadPitch() * 0.5f;
+	HeadAngle = -CharacterOwner->GetHeadPitch() * 0.5f;
 }
 
-UAnimSequence* UHumanAnimInstance::GetEquipedItemPose() const
+void UHumanAnimInstance::HandleEquipedItemPose()
 {
 	if (TryGetPawnOwner() == nullptr)
 	{
-		return nullptr;
+		return;
 	}
 
 	UEquipComponent* PlayerEquipComponent = TryGetPawnOwner()->FindComponentByClass<UEquipComponent>();
 	if (PlayerEquipComponent == nullptr)
 	{
-		return nullptr;
+		return;
 	}
 
 	if (TryGetPawnOwner()->IsLocallyControlled())
 	{
 		if (PlayerEquipComponent->GetLocalEquipedItemDefaultClass() == nullptr)
 		{
-			return nullptr;
+			EquipedItemPose = nullptr;
+			return;
 		}
 
-		return PlayerEquipComponent->GetLocalEquipedItemDefaultClass()->GetEquipPose();
+		EquipedItemPose = PlayerEquipComponent->GetLocalEquipedItemDefaultClass()->GetEquipPose();
 	}
 	else
 	{
 		if (PlayerEquipComponent->GetEquipedItem() == nullptr)
 		{
-			return nullptr;
+			EquipedItemPose = nullptr;
+			return;
 		}
 
-		return PlayerEquipComponent->GetEquipedItem()->GetEquipPose();
+		EquipedItemPose = PlayerEquipComponent->GetEquipedItem()->GetEquipPose();
 	}
 }

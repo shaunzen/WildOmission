@@ -15,7 +15,12 @@ static USoundBase* WoodFootstepSound = nullptr;
 static USoundBase* WaterSplashSound = nullptr;
 
 UWildOmissionAnimInstance::UWildOmissionAnimInstance(const FObjectInitializer& ObjectInitializer)
-{	
+{
+	Speed = 0.0f;
+	Angle = 0.0f;
+	Falling = false;
+	Swimming = false;
+
 	static ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
 	if (GrassFootstepSoundObject.Succeeded())
 	{
@@ -47,6 +52,15 @@ UWildOmissionAnimInstance::UWildOmissionAnimInstance(const FObjectInitializer& O
 	}
 }
 
+void UWildOmissionAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+	Super::NativeUpdateAnimation(DeltaSeconds);
+
+	CalculateSpeedAndAngle();
+	HandleFalling();
+	HandleSwimming();
+}
+
 void UWildOmissionAnimInstance::PlayMontage(UAnimMontage* Montage, float MontagePlayRate)
 {
 	if (Montage_IsPlaying(Montage))
@@ -65,7 +79,7 @@ void UWildOmissionAnimInstance::PlayFootstepSound()
 		return;
 	}
 
-	if (IsSwimming())
+	if (Swimming == true)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WaterSplashSound, PawnOwner->GetActorLocation());
 		return;
@@ -117,46 +131,36 @@ void UWildOmissionAnimInstance::PlayFootstepSound()
 	}
 }
 
-float UWildOmissionAnimInstance::GetSpeed() const
+void UWildOmissionAnimInstance::CalculateSpeedAndAngle()
 {
 	APawn* PawnOwner = TryGetPawnOwner();
 	if (PawnOwner == nullptr)
 	{
-		return 0.0f;
+		return;
 	}
 
-	return PawnOwner->GetVelocity().Length();
+	Speed = PawnOwner->GetVelocity().Length();
+	Angle = PawnOwner->GetTransform().InverseTransformVector(PawnOwner->GetVelocity()).Rotation().Yaw;
 }
 
-float UWildOmissionAnimInstance::GetAngle() const
-{
-	APawn* PawnOwner = TryGetPawnOwner();
-	if (PawnOwner == nullptr)
-	{
-		return 0.0f;
-	}
-
-	return PawnOwner->GetTransform().InverseTransformVector(PawnOwner->GetVelocity()).Rotation().Yaw;
-}
-
-bool UWildOmissionAnimInstance::IsFalling() const
+void UWildOmissionAnimInstance::HandleFalling()
 {
 	ACharacter* CharacterOwner = Cast<ACharacter>(TryGetPawnOwner());
 	if (CharacterOwner == nullptr)
 	{
-		return false;
+		return;
 	}
 
-	return CharacterOwner->GetCharacterMovement()->IsFalling();
+	Falling = CharacterOwner->GetCharacterMovement()->IsFalling();
 }
 
-bool UWildOmissionAnimInstance::IsSwimming() const
+void UWildOmissionAnimInstance::HandleSwimming()
 {
 	ACharacter* CharacterOwner = Cast<ACharacter>(TryGetPawnOwner());
 	if (CharacterOwner == nullptr)
 	{
-		return false;
+		return;
 	}
 
-	return CharacterOwner->GetCharacterMovement()->IsSwimming();
+	Swimming = CharacterOwner->GetCharacterMovement()->IsSwimming();
 }

@@ -17,22 +17,34 @@ class ANIMATION_API UWildOmissionAnimInstance : public UAnimInstance
 public:
 	UWildOmissionAnimInstance(const FObjectInitializer& ObjectInitializer);
 
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
 	UFUNCTION(BlueprintCallable)
 	void PlayMontage(UAnimMontage* Montage, float MontagePlayRate);
 
 	UFUNCTION(BlueprintCallable)
 	void PlayFootstepSound();
 	
-	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
-	virtual float GetSpeed() const;
+	UPROPERTY(BlueprintReadonly)
+	float Speed;
 
-	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
-	virtual float GetAngle() const;
+	UPROPERTY(BlueprintReadOnly)
+	float Angle;
 	
-	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
-	bool IsFalling() const;
+	UPROPERTY(BlueprintReadOnly)
+	bool Falling;
+	
+	UPROPERTY(BlueprintReadOnly)
+	bool Swimming;
 
-	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
-	bool IsSwimming() const;
+private:
+	UFUNCTION()
+	void CalculateSpeedAndAngle();
+
+	UFUNCTION()
+	void HandleFalling();
 	
+	UFUNCTION()
+	void HandleSwimming();
+
 };

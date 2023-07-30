@@ -14,17 +14,25 @@ class WILDOMISSIONCORE_API UHumanAnimInstance : public UWildOmissionAnimInstance
 public:
 	UHumanAnimInstance(const FObjectInitializer& ObjectInitializer);
 	
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryMontageClimax();
 
-	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
-	float GetHeadAngle() const;
+	UPROPERTY(BlueprintReadOnly)
+	float HeadAngle;
 
-	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
-	UAnimSequence* GetEquipedItemPose() const;
+	UPROPERTY(BlueprintReadOnly)
+	UAnimSequence* EquipedItemPose;
 
 private:
 	UPROPERTY(EditDefaultsOnly)
 	bool FirstPersonInstance;
+
+	UFUNCTION()
+	void CalculateHeadAngle();
+
+	UFUNCTION()
+	void HandleEquipedItemPose();
 
 };
