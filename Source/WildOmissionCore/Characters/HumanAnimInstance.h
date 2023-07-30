@@ -17,10 +17,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryMontageClimax();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
 	float GetHeadAngle() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
 	UAnimSequence* GetEquipedItemPose() const;
 
 private:

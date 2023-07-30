@@ -23,16 +23,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayFootstepSound();
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
 	virtual float GetSpeed() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
 	virtual float GetAngle() const;
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
 	bool IsFalling() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintThreadSafe)
 	bool IsSwimming() const;
 	
 };
