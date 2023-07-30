@@ -100,6 +100,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
+		UE_LOG(LogEquipableItems, Warning, TEXT("Nothing was hit by tool."));
 		return;
 	}
 	
@@ -220,6 +221,7 @@ void AToolItem::PlayImpactSound(const FHitResult& HitResult)
 	USoundBase* ImpactSound = USurfaceHelpers::GetImpactSound(HitResult.PhysMaterial.Get()->SurfaceType);
 	if (ImpactSound == nullptr)
 	{
+		UE_LOG(LogEquipableItems, Warning, TEXT("Failed to get impact sound."));
 		return;
 	}
 
