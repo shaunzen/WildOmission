@@ -2,6 +2,8 @@
 
 
 #include "WildOmissionAnimInstance.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -65,6 +67,7 @@ void UWildOmissionAnimInstance::PlayMontage(UAnimMontage* Montage, float Montage
 	{
 		return;
 	}
+
 	Montage_Play(Montage, MontagePlayRate);
 }
 
@@ -150,12 +153,34 @@ bool UWildOmissionAnimInstance::IsSwimming() const
 
 void UWildOmissionAnimInstance::CalculateSpeedAndAngle()
 {
+	APawn* PawnOwner = TryGetPawnOwner();
+	if (PawnOwner == nullptr)
+	{
+		return;
+	}
+
+	Speed = PawnOwner->GetVelocity().Length();
+	Angle = PawnOwner->GetTransform().InverseTransformVector(PawnOwner->GetVelocity()).Rotation().Yaw;
 }
 
 void UWildOmissionAnimInstance::HandleFalling()
 {
+	ACharacter* CharacterOwner = Cast<ACharacter>(TryGetPawnOwner());
+	if (CharacterOwner == nullptr)
+	{
+		return;
+	}
+
+	Falling = CharacterOwner->GetCharacterMovement()->IsFalling();
 }
 
 void UWildOmissionAnimInstance::HandleSwimming()
 {
+	ACharacter* CharacterOwner = Cast<ACharacter>(TryGetPawnOwner());
+	if (CharacterOwner == nullptr)
+	{
+		return;
+	}
+
+	Swimming = CharacterOwner->GetCharacterMovement()->IsSwimming();
 }
