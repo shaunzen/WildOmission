@@ -100,7 +100,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
-		UE_LOG(LogEquipableItems, Warning, TEXT("Nothing was hit by tool."));
+		UE_LOG(LogEquipableItems, Verbose, TEXT("Nothing was hit by tool."));
 		return;
 	}
 	
