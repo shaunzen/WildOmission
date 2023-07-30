@@ -2,11 +2,11 @@
 
 using UnrealBuildTool;
 
-public class Animals: ModuleRules
+public class Animals : ModuleRules
 {
     public Animals(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "GameplayTasks", "NavigationSystem", "Despawner", "Inventory", "Vitals" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "GameplayTasks", "NavigationSystem", "Animation", "Despawner", "Inventory", "Vitals" });
     }
 }

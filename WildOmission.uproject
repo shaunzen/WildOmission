@@ -25,6 +25,15 @@
 			]
 		},
 		{
+			"Name": "Animation",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"CoreUObject"
+			]
+		},
+		{
 			"Name": "Crafting",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
