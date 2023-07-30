@@ -20,6 +20,9 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UFUNCTION(BlueprintCallable)
+	void PlayMontage(UAnimMontage* Montage, float MontagePlayRate);
+
+	UFUNCTION(BlueprintCallable)
 	void PlayFootstepSound();
 	
 	UPROPERTY(BlueprintCallable)
@@ -34,31 +37,15 @@ public:
 	UPROPERTY(BlueprintCallable)
 	bool IsSwimming() const;
 	
+protected:
+	virtual void CalculateSpeedAndAngle();
+
 private:
 	float Speed;
-
 	float Angle;
-
 	bool Falling;
-
 	bool Swimming;
 
-	UPROPERTY()
-	USoundBase* GrassFootstepSound;
-	
-	UPROPERTY()
-	USoundBase* GravelFootstepSound;
-	
-	UPROPERTY()
-	USoundBase* RockFootstepSound;
-	
-	UPROPERTY()
-	USoundBase* WoodFootstepSound;
-	
-	UPROPERTY()
-	USoundBase* WaterSplashSound;
-
-	void CalculateSpeedAndAngle();
 	void HandleFalling();
 	void HandleSwimming();
 
