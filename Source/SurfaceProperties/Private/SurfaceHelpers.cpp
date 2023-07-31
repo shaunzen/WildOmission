@@ -29,6 +29,9 @@ FSurfaceProperties* USurfaceHelpers::GetSurfaceProperties(TEnumAsByte<EPhysicalS
 	case SurfaceType7:	// METAL
 		return GetSurfaceData(TEXT("Metal"));
 		break;
+	case SurfaceType8:	// FLESH
+		return GetSurfaceData(TEXT("Flesh"));
+		break;
 	}
 
 	return GetSurfaceData(TEXT("Rock"));
