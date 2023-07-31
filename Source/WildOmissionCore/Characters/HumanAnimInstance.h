@@ -25,6 +25,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	UAnimSequence* EquipedItemPose;
 
+protected:
+	virtual void CalculateSpeedAndAngle() override;
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	bool FirstPersonInstance;

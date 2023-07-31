@@ -45,6 +45,17 @@ void UHumanAnimInstance::OnPrimaryMontageClimax()
 	EquipedTool->OnPrimaryAnimationClimax(FirstPersonInstance);
 }
 
+void UHumanAnimInstance::CalculateSpeedAndAngle()
+{
+	Super::CalculateSpeedAndAngle();
+
+	if (FirstPersonInstance && (Falling || Swimming))
+	{
+		Speed = 0.0f;
+		Angle = 0.0f;
+	}
+}
+
 void UHumanAnimInstance::CalculateHeadAngle()
 {
 	AWildOmissionCharacter* CharacterOwner = Cast<AWildOmissionCharacter>(TryGetPawnOwner());

@@ -37,10 +37,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool Swimming;
 
-private:
+protected:
 	UFUNCTION()
-	void CalculateSpeedAndAngle();
+	virtual void CalculateSpeedAndAngle();
 
+private:
 	UFUNCTION()
 	void HandleFalling();
 	
