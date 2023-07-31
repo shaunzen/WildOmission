@@ -6,7 +6,7 @@
 #include "NavigationInvokerComponent.h"
 #include "Components/VitalsComponent.h"
 #include "Components/DistanceDespawnComponent.h"
-#include "Components/AnimalSpawnHandlerComponent.h"
+#include "AnimalSpawnHandler.h"
 #include "Components/InventoryComponent.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Kismet/GameplayStatics.h"
@@ -48,7 +48,13 @@ void AAnimal::BeginPlay()
 
 void AAnimal::HandleDespawn()
 {
-	UAnimalSpawnHandlerComponent::GetSpawnedAnimals()->Remove(this);
+	const int32 AnimalIndex = AAnimalSpawnHandler::GetSpawnedAnimals()->IndexOfByKey(this);
+	if (AnimalIndex == INDEX_NONE)
+	{
+		return;
+	}
+
+	AAnimalSpawnHandler::GetSpawnedAnimals()->RemoveAtSwap(AnimalIndex, 1, false);
 	Destroy();
 }
 
