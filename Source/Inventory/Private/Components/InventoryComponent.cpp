@@ -9,6 +9,7 @@
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "EngineUtils.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Log.h"
 
 static UDataTable* ItemDataTable = nullptr;
 
@@ -251,7 +252,7 @@ void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& I
 			UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
 
 			// Add item to the container's inventory
-			Interaction.Manipulator->GetOpenContainer()->AddItem(MovingItem);
+			Interaction.Manipulator->GetOpenContainer()->AddItem(MovingItem, GetOwner());
 		}
 		else // Move within the player's inventory
 		{
