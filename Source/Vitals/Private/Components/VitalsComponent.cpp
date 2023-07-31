@@ -33,6 +33,9 @@ UVitalsComponent::UVitalsComponent()
 	ThirstThreshold = 30.0f;
 	HungerThreshold = 30.0f;
 
+	ThirstCanDeplete = true;
+	HungerCanDeplete = true;
+
 	BeginThirstBroadcasted = false;
 	EndThirstBroadcasted = false;
 
@@ -88,8 +91,14 @@ void UVitalsComponent::CalculateDepletion()
 	}
 
 	// Remove from thirst and hunger, and clamp to min and max value
-	CurrentThirst = FMath::Clamp(CurrentThirst - (ThirstDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxThirst);
-	CurrentHunger = FMath::Clamp(CurrentHunger - (HungerDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxHunger);
+	if (ThirstCanDeplete)
+	{
+		CurrentThirst = FMath::Clamp(CurrentThirst - (ThirstDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxThirst);
+	}
+	if (HungerCanDeplete)
+	{
+		CurrentHunger = FMath::Clamp(CurrentHunger - (HungerDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxHunger);
+	}
 	
 	// If Thirst or Hunger is below threshold start removing Health
 	if (IsThirsty() || IsStarving())
@@ -98,7 +107,7 @@ void UVitalsComponent::CalculateDepletion()
 	}
 
 	// If Health is too low kill the player
-	if (CurrentHealth < KINDA_SMALL_NUMBER)
+	if (CurrentHealth <= 0.0f)
 	{
 		CurrentHealth = 0.0f;
 		OnHealthDepleted.Broadcast();
@@ -237,6 +246,16 @@ float UVitalsComponent::GetThirst() const
 float UVitalsComponent::GetHunger() const
 {
 	return CurrentHunger;
+}
+
+void UVitalsComponent::SetThirstCanDeplete(bool InCanDeplete)
+{
+	ThirstCanDeplete = InCanDeplete;
+}
+
+void UVitalsComponent::SetHungerCanDeplete(bool InCanDeplete)
+{
+	HungerCanDeplete = InCanDeplete;
 }
 
 bool UVitalsComponent::IsThirsty() const

@@ -2,11 +2,13 @@
 
 
 #include "Animals/Animal.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "NavigationInvokerComponent.h"
 #include "Components/VitalsComponent.h"
 #include "Components/DistanceDespawnComponent.h"
 #include "Components/AnimalSpawnHandlerComponent.h"
 #include "Components/InventoryComponent.h"
+#include "GameFramework/PhysicsVolume.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -19,7 +21,10 @@ AAnimal::AAnimal()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Block);
 
 	NavigationInvoker = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavigationInvoker"));
+
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
+	VitalsComponent->SetThirstCanDeplete(false);
+	VitalsComponent->SetHungerCanDeplete(false);
 
 	DespawnComponent = CreateDefaultSubobject<UDistanceDespawnComponent>(TEXT("DespawnComponent"));
 	DespawnComponent->SetupAttachment(RootComponent);
@@ -62,6 +67,10 @@ void AAnimal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (GetMovementComponent()->GetPhysicsVolume()->bWaterVolume == true)
+	{
+		AddMovementInput(FVector::UpVector);
+	}
 }
 
 // Called to bind functionality to input

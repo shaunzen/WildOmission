@@ -64,6 +64,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetHunger() const;
 
+	void SetThirstCanDeplete(bool InCanDeplete);
+	void SetHungerCanDeplete(bool InCanDeplete);
+
 	UFUNCTION(BlueprintCallable)
 	bool IsThirsty() const;
 
@@ -128,6 +131,9 @@ private:
 	UPROPERTY(Replicated)
 	float CurrentHunger;
 
+	bool ThirstCanDeplete;
+	bool HungerCanDeplete;
+
 	void CalculateDepletion();
 	
 	void HandleDelegates();
@@ -147,4 +153,5 @@ private:
 
 	UFUNCTION()
 	void OnOwnerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
+
 };
