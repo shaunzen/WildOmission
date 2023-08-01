@@ -21,25 +21,25 @@ UWildOmissionAnimInstance::UWildOmissionAnimInstance(const FObjectInitializer& O
 	Falling = false;
 	Swimming = false;
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Grass/HumanFootstep_Grass_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Grass/Footstep_Grass_Cue"));
 	if (GrassFootstepSoundObject.Succeeded())
 	{
 		GrassFootstepSound = GrassFootstepSoundObject.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Gravel/HumanFootstep_Gravel_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Gravel/Footstep_Gravel_Cue"));
 	if (GravelFootstepSoundObject.Succeeded())
 	{
 		GravelFootstepSound = GravelFootstepSoundObject.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Rock/HumanFootstep_Rock_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Rock/Footstep_Rock_Cue"));
 	if (RockFootstepSoundObject.Succeeded())
 	{
 		RockFootstepSound = RockFootstepSoundObject.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Wood/HumanFootstep_Wood_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Wood/Footstep_Wood_Cue"));
 	if (WoodFootstepSoundObject.Succeeded())
 	{
 		WoodFootstepSound = WoodFootstepSoundObject.Object;
