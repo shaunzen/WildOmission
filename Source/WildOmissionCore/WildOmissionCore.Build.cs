@@ -15,7 +15,7 @@ public class WildOmissionCore : ModuleRules
 			"Deployables", "Despawner", "Durability",
 			"EquipableItems", "GameChat", "GatherableResources",
 			"Helpers", "Interaction", "Inventory", "Notifications", "SaveSystem",
-			"SurfaceProperties", "TimeOfDay", "Vitals", "Weather",
+			"SurfaceProperties", "TimeOfDay", "Vitals", "Weapons", "Weather",
 			"WorldGeneration"
 		});
 

@@ -133,6 +133,22 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "Weapons",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		},
+		{
+			"Name": "Weather",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		},
+		{
 			"Name": "WorldGeneration",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
