@@ -2,15 +2,14 @@
 
 
 #include "Weapons/Firearm.h"
+#include "Components/EquipComponent.h"
 #include "Projectiles/FirearmProjectile.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 AFirearm::AFirearm()
 {
 	ProjectileClass = nullptr;
-
-	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
-	ProjectileSpawnPoint->SetupAttachment(Mesh);
 }
 
 void AFirearm::OnPrimaryPressed()
@@ -26,8 +25,12 @@ void AFirearm::FireProjectile()
 		return;
 	}
 
+	// Find Spawn location for projectile
+	const FVector OwnerForwardVector = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerEquipComponent()->GetOwnerControlRotation().Yaw, 0.0f));
+	const FVector ProjectileSpawnLocation = GetOwner()->GetActorLocation() + FVector(0.0f, 0.0f, 70.0f) + OwnerForwardVector * 50.0f;
+	
 	// Spawn the projectile
-	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation());
 }
 
 void AFirearm::Multi_PlayFireSound_Implementation()

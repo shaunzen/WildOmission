@@ -18,9 +18,6 @@ public:
 	virtual void OnPrimaryPressed() override;
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	USceneComponent* ProjectileSpawnPoint;
-
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* FireSound;
 

@@ -14,6 +14,8 @@ AFirearmProjectile::AFirearmProjectile()
 	RootComponent = MeshComponent;
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
+	MovementComponent->InitialSpeed = 5000.0f;
+	MovementComponent->MaxSpeed = 5000.0f;
 }
 
 // Called when the game starts or when spawned
