@@ -72,7 +72,9 @@ private:
 	TSubclassOf<UGameplayMenuWidget> GameplayMenuWidgetBlueprintClass;
 	UPROPERTY()
 	UGameplayMenuWidget* GameplayMenuWidget;
-	
+	UFUNCTION()
+	void ClearGameplayMenuWidget();
+
 	UPROPERTY()
 	TSubclassOf<ULoadingMenuWidget> LoadingMenuWidgetBlueprintClass;
 	UPROPERTY()

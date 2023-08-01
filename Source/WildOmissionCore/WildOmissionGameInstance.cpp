@@ -139,6 +139,12 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	}
 
 	GameplayMenuWidget->Show();
+	GameplayMenuWidget->OnClosed.AddDynamic(this, &UWildOmissionGameInstance::ClearGameplayMenuWidget);
+}
+
+void UWildOmissionGameInstance::ClearGameplayMenuWidget()
+{
+	GameplayMenuWidget = nullptr;
 }
 
 void UWildOmissionGameInstance::StartLoading()

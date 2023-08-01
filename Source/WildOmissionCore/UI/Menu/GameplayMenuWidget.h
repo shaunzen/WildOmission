@@ -11,6 +11,8 @@ class UButton;
 class UWidgetSwitcher;
 class UOptionsWidget;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameplayMenuClosedSignature);
+
 UCLASS()
 class WILDOMISSIONCORE_API UGameplayMenuWidget : public UUserWidget
 {
@@ -20,13 +22,16 @@ public:
 	UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeConstruct() override;
-	
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+
 	UFUNCTION(BlueprintCallable)
 	void Show();
 	
 	UFUNCTION()
 	void OpenGameMenu();
 	
+	FOnGameplayMenuClosedSignature OnClosed;
+
 	UFUNCTION()
 	void OpenOptionsMenu();
 	

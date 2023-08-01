@@ -27,6 +27,18 @@ void UGameplayMenuWidget::NativeConstruct()
 	OptionsMenu->SetParent(this);
 }
 
+FReply UGameplayMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+	
+	if (InKeyEvent.GetKey() == EKeys::Escape)
+	{
+		this->Teardown();
+	}
+
+	return FReply::Handled();
+}
+
 void UGameplayMenuWidget::Show()
 {
 	bOpen = true;
@@ -84,6 +96,12 @@ bool UGameplayMenuWidget::IsOpen() const
 void UGameplayMenuWidget::Teardown()
 {
 	bOpen = false;
+	
+	if (OnClosed.IsBound())
+	{
+		OnClosed.Broadcast();
+	}
+
 	RemoveFromParent();
 	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
