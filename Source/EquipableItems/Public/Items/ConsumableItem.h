@@ -21,6 +21,6 @@ private:
 	USoundBase* ConsumptionSound;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayConsumeSound();
+	void Multi_PlayConsumeSound();
 
 };

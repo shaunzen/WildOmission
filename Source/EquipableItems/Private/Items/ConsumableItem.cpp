@@ -47,17 +47,17 @@ void AConsumableItem::OnPrimaryPressed()
 		OwnerVitalsComponent->AddThirst(Hydration);
 	}
 
-	Client_PlayConsumeSound();
+	Multi_PlayConsumeSound();
 
 	OwnerInventoryComponent->RemoveHeldItem();
 }
 
-void AConsumableItem::Client_PlayConsumeSound_Implementation()
+void AConsumableItem::Multi_PlayConsumeSound_Implementation()
 {
-	if (ConsumptionSound == nullptr)
+	if (ConsumptionSound == nullptr || GetOwner() == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ConsumptionSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ConsumptionSound, GetOwner()->GetActorLocation());
 }
