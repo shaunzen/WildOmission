@@ -30,7 +30,10 @@ void AFirearm::FireProjectile()
 	const FVector ProjectileSpawnLocation = GetOwner()->GetActorLocation() + FVector(0.0f, 0.0f, 70.0f) + OwnerForwardVector * 50.0f;
 	
 	// Spawn the projectile
-	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation());
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = GetOwnerPawn();
+	SpawnParams.Owner = GetOwner();
+	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation(), SpawnParams);
 }
 
 void AFirearm::Multi_PlayFireSound_Implementation()
