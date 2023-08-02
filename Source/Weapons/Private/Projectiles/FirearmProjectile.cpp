@@ -5,6 +5,11 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine/DamageEvents.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "SurfaceHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
+#include "Components/AudioComponent.h"
 #include "Log.h"
 
 // Sets default values
@@ -14,7 +19,12 @@ AFirearmProjectile::AFirearmProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->bTraceComplexOnMove = true;
+	MeshComponent->bReturnMaterialOnMove = true;
 	RootComponent = MeshComponent;
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->SetupAttachment(MeshComponent);
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
 	MovementComponent->InitialSpeed = 50000.0f;
@@ -50,7 +60,31 @@ void AFirearmProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 void AFirearmProjectile::SpawnImpactEffects(const FHitResult& HitResult)
 {
-	UE_LOG(LogWeapons, Warning, TEXT("There should be some dust and stuff spawning but I havent added that yet."));
+	const UPhysicalMaterial* PhysMaterial = HitResult.PhysMaterial.Get();
+	if (PhysMaterial == nullptr)
+	{
+		UE_LOG(LogWeapons, Warning, TEXT("Failed to spawn impact effects, PhysicalMaterial returned a nullptr."));
+		return;
+	}
+	
+	USoundBase* ImpactSound = USurfaceHelpers::GetImpactSound(PhysMaterial->SurfaceType);
+	if (ImpactSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
+	}
+
+	UNiagaraSystem* ImpactParticles = USurfaceHelpers::GetImpactParticles(PhysMaterial->SurfaceType);
+	if (ImpactParticles)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactParticles, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
+	}
+
+	UMaterialInterface* ImpactDecalMaterial = USurfaceHelpers::GetImpactDecal(PhysMaterial->SurfaceType);
+	if (ImpactDecalMaterial)
+	{
+		const FVector DecalSize = FVector(8.0f, 8.0f, 8.0f);
+		UGameplayStatics::SpawnDecalAttached(ImpactDecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 120.0f);
+	}
 }
 
 // Called every frame

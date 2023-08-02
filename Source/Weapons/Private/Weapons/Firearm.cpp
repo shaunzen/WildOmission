@@ -38,10 +38,10 @@ void AFirearm::FireProjectile()
 
 void AFirearm::Multi_PlayFireSound_Implementation()
 {
-	if (FireSound == nullptr)
+	if (GetOwner() == nullptr || FireSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
 }

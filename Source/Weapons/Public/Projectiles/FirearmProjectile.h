@@ -27,6 +27,9 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UAudioComponent* AudioComponent;
 	
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* MovementComponent;
