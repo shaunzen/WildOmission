@@ -52,7 +52,7 @@ protected:
 	int32 Durability;
 
 	UFUNCTION()
-	void ApplyDamage();
+	void UpdateDurability();
 	
 	void PlayImpactSound(const FHitResult& HitResult);
 	void SpawnImpactParticles(const FHitResult& HitResult, const FVector& ImpactorForwardVector);

@@ -350,9 +350,9 @@ FInventoryContents* UInventoryComponent::GetContents()
 	return &Contents;
 }
 
-FInventorySlot* UInventoryComponent::GetSlot(const int32& SlotIndex)
+FInventorySlot* UInventoryComponent::GetSlot(const int32& SlotIndex, bool bUseServerState)
 {
-	return &Slots[SlotIndex];
+	return bUseServerState? &ServerState.Slots[SlotIndex] :  &Slots[SlotIndex];
 }
 
 uint8 UInventoryComponent::GetSlotCount() const
@@ -363,6 +363,11 @@ uint8 UInventoryComponent::GetSlotCount() const
 TArray<FInventorySlot>& UInventoryComponent::GetSlots()
 {
 	return Slots;
+}
+
+void UInventoryComponent::RequestInventoryRefresh()
+{
+	OnRep_ServerState();
 }
 
 void UInventoryComponent::SetDisplayName(const FString& NewDisplayName)
@@ -769,7 +774,7 @@ void UInventoryComponent::DropSingle(const int32& ToSlotIndex, UInventoryManipul
 	}
 }
 
-bool UInventoryComponent::WithinStackSize(const FInventoryItem& BaseItem, const int32& AmountToAdd)
+bool UInventoryComponent::WithinStackSize(const FInventoryItem& BaseItem, const int32& AmountToAdd) const
 {
 	return (BaseItem.Quantity + AmountToAdd) <= GetItemData(BaseItem.Name)->StackSize;
 }

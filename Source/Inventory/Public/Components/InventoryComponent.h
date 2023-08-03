@@ -48,9 +48,11 @@ public:
 	FString GetDisplayName() const;
 	UClass* GetWidgetClass() const;
 	FInventoryContents* GetContents();
-	FInventorySlot* GetSlot(const int32& SlotIndex);
+	FInventorySlot* GetSlot(const int32& SlotIndex, bool bUseServerState = false);
 	uint8 GetSlotCount() const;
 	TArray<FInventorySlot>& GetSlots();
+
+	void RequestInventoryRefresh();
 	
 	void SetDisplayName(const FString& NewDisplayName);
 	void SetSlotCount(const uint8& InSlotCount);

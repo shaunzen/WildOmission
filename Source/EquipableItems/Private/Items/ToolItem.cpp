@@ -46,13 +46,13 @@ void AToolItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonM
 		return;
 	}
 
-	FInventoryItem* InventoryItem = OwnerInventory->FindItemWithUniqueID(UniqueID);
-	if (InventoryItem == nullptr)
+	FInventorySlot* FromSlot = OwnerInventory->GetSlot(InFromSlotIndex);
+	if (FromSlot == nullptr)
 	{
 		return;
 	}
 
-	Durability = InventoryItem->GetStat(FName("Durability"));
+	Durability = FromSlot->Item.GetStat(TEXT("Durability"));
 }
 
 void AToolItem::OnUnequip()

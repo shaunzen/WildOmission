@@ -33,7 +33,6 @@ public:
 
 	void SetToolbarSelectionIndex(int8 SelectionIndex);
 
-	void SetHeldItemDurability(const int32& NewDurability);
 	void RemoveHeldItem();
 
 	virtual void OnRep_ServerState() override;

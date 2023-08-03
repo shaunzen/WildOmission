@@ -104,6 +104,7 @@ void AFirearm::UpdateInventoryStats()
 
 	FromSlot->Item.SetStat(TEXT("CurrentAmmo"), CurrentAmmo);
 	FromSlot->Item.SetStat(TEXT("Durability"), Durability);
+	OwnerInventory->RequestInventoryRefresh();
 }
 
 UPlayerInventoryComponent* AFirearm::GetOwningPlayerInventory() const
