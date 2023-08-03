@@ -48,10 +48,6 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 	{
 		QuantityString = FString::Printf(TEXT("x%i"), Item.Quantity);
 	}
-	else if (Item.GetStat(TEXT("CurrentAmmo")) != INDEX_NONE)
-	{
-		QuantityString = FString::Printf(TEXT("%i/%i"), Item.GetStat(TEXT("CurrentAmmo")), Item.GetStat(TEXT("MaxAmmo")));
-	}
 	else
 	{
 		QuantityString = FString("");
@@ -73,11 +69,11 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 		// Set the item icon color opaque white
 		ItemIconBorder->SetBrushColor(FLinearColor::White);
 
-		if (SlotItemData->GetStat(FName("Durability")) > 0)
+		if (SlotItemData->GetStat(TEXT("Durability")) != INDEX_NONE)
 		{
 			DurabilityBar->SetVisibility(ESlateVisibility::Visible);
 			float Percent;
-			Percent = (float)Item.GetStat(FName("Durability")) / (float)SlotItemData->GetStat(FName("Durability"));
+			Percent = (float)Item.GetStat(TEXT("Durability")) / (float)SlotItemData->GetStat(TEXT("Durability"));
 			DurabilityBar->SetPercent(Percent);
 			DurabilityBar->SetFillColorAndOpacity(FMath::Lerp(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f), FLinearColor(0.0f, 1.0f, 0.0f, 1.0f), Percent));
 		}
@@ -85,10 +81,15 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 		{
 			DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
 		}
+
+		if (SlotItemData->GetStat(TEXT("MaxAmmo")) != INDEX_NONE)
+		{
+			QuantityString = FString::Printf(TEXT("%i/%i"), Item.GetStat(TEXT("CurrentAmmo")), Item.GetStat(TEXT("MaxAmmo")));
+		}
 	}
 	else
 	{
-		CurrentItemName = FName();
+		CurrentItemName = NAME_None;
 		CurrentItemQuantity = 0;
 		ItemIconBorder->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 		DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
