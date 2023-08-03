@@ -98,7 +98,7 @@ private:
 	void DropAll(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator, TArray<FInventorySlot>& SlotsToModify, FInventoryContents& ContentsToModify);
 	void DropSingle(const int32& ToSlotIndex, UInventoryManipulatorComponent* Manipulator, TArray<FInventorySlot>& SlotsToModify, FInventoryContents& ContentsToModify);
 
-	bool WithinStackSize(const FInventoryItem& Item, const int32& AmountToAdd);
+	bool WithinStackSize(const FInventoryItem& Item, const int32& AmountToAdd) const;
 
 	TArray<FInventorySlotInteraction> UnacknowalgedInteractions;
 

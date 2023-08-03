@@ -7,6 +7,7 @@
 #include "Firearm.generated.h"
 
 class AFirearmProjectile;
+class UPlayerInventoryComponent;
 
 UCLASS()
 class WEAPONS_API AFirearm : public AEquipableItem
@@ -32,10 +33,18 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	FName AmmoItemID;
 
+	UPROPERTY()
 	int32 CurrentAmmo;
+	UPROPERTY()
 	int32 MaxAmmo;
+	UPROPERTY()
+	int32 Durability;
 	
 	void FireProjectile();
+
+	void RetrieveInventoryStats();
+	void UpdateInventoryStats();
+	UPlayerInventoryComponent* GetOwningPlayerInventory() const;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayFireSound();

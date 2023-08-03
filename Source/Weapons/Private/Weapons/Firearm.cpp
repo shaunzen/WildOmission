@@ -2,7 +2,7 @@
 
 
 #include "Weapons/Firearm.h"
-#include "Components/InventoryComponent.h"
+#include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Projectiles/FirearmProjectile.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -13,13 +13,17 @@ AFirearm::AFirearm()
 	FireSound = nullptr;
 	ProjectileClass = nullptr;
 	AmmoItemID = NAME_None;
+
+	Durability = 100;
+	CurrentAmmo = 0;
+	MaxAmmo = 0;
 }
 
 void AFirearm::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
 {
 	Super::Equip(InOwnerPawn, InThirdPersonMeshComponent, InItemName, InFromSlotIndex, InUniqueID);
 
-	RetrieveAmmoInformationFromInventory();
+	RetrieveInventoryStats();
 }
 
 void AFirearm::OnPrimaryPressed()
@@ -39,8 +43,10 @@ void AFirearm::FireProjectile()
 {
 	Multi_PlayFireSound();
 
-	if (ProjectileClass == nullptr)
+	if (ProjectileClass == nullptr || CurrentAmmo <= 0)
 	{
+		// TODO play click
+		UE_LOG(LogTemp, Warning, TEXT("Out of ammo"));
 		return;
 	}
 
@@ -54,12 +60,18 @@ void AFirearm::FireProjectile()
 	SpawnParams.Owner = GetOwner();
 	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation(), SpawnParams);
 
-
+	--CurrentAmmo;
+	--Durability;
+	if (Durability <= 0 && GetOwningPlayerInventory())
+	{
+		GetOwningPlayerInventory()->RemoveHeldItem();
+	}
+	UpdateInventoryStats();
 }
 
-void AFirearm::RetrieveAmmoInformationFromInventory()
+void AFirearm::RetrieveInventoryStats()
 {
-	UInventoryComponent* OwnerInventory = GetOwner()->FindComponentByClass<UInventoryComponent>();
+	UPlayerInventoryComponent* OwnerInventory = GetOwningPlayerInventory();
 	if (OwnerInventory == nullptr)
 	{
 		return;
@@ -73,11 +85,12 @@ void AFirearm::RetrieveAmmoInformationFromInventory()
 
 	CurrentAmmo = FromSlot->Item.GetStat(TEXT("CurrentAmmo"));
 	MaxAmmo = FromSlot->Item.GetStat(TEXT("MaxAmmo"));
+	Durability = FromSlot->Item.GetStat(TEXT("Durability"));
 }
 
-void AFirearm::UpdateInventoryAmmoInformation()
+void AFirearm::UpdateInventoryStats()
 {
-	UInventoryComponent* OwnerInventory = GetOwner()->FindComponentByClass<UInventoryComponent>();
+	UPlayerInventoryComponent* OwnerInventory = GetOwningPlayerInventory();
 	if (OwnerInventory == nullptr)
 	{
 		return;
@@ -90,6 +103,17 @@ void AFirearm::UpdateInventoryAmmoInformation()
 	}
 
 	FromSlot->Item.SetStat(TEXT("CurrentAmmo"), CurrentAmmo);
+	FromSlot->Item.SetStat(TEXT("Durability"), Durability);
+}
+
+UPlayerInventoryComponent* AFirearm::GetOwningPlayerInventory() const
+{
+	if (GetOwner() == nullptr)
+	{
+		return nullptr;
+	}
+
+	return GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 }
 
 void AFirearm::Multi_PlayFireSound_Implementation()

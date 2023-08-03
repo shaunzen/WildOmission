@@ -48,6 +48,10 @@ void UInventorySlotWidget::SetItem(const FInventoryItem& Item)
 	{
 		QuantityString = FString::Printf(TEXT("x%i"), Item.Quantity);
 	}
+	else if (Item.GetStat(TEXT("CurrentAmmo")) != INDEX_NONE)
+	{
+		QuantityString = FString::Printf(TEXT("%i/%i"), Item.GetStat(TEXT("CurrentAmmo")), Item.GetStat(TEXT("MaxAmmo")));
+	}
 	else
 	{
 		QuantityString = FString("");

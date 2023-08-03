@@ -155,7 +155,7 @@ float AToolItem::GetSwingSpeedRate() const
 
 void AToolItem::ApplyDamage()
 {
-	Durability -= 1;
+	--Durability;
 
 	UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventory == nullptr)
