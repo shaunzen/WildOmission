@@ -96,7 +96,7 @@ void AFirearm::UpdateInventoryStats()
 		return;
 	}
 
-	FInventorySlot* FromSlot = OwnerInventory->GetSlot(this->GetFromSlotIndex());
+	FInventorySlot* FromSlot = OwnerInventory->GetSlot(this->GetFromSlotIndex(), true);
 	if (FromSlot == nullptr)
 	{
 		return;

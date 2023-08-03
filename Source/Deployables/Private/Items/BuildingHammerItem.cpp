@@ -68,7 +68,7 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		HitDeployable->TakeDamage(DamageAmount, HitByToolEvent, GetOwnerPawn()->GetController(), this);
 	}
 
-	ApplyDamage();
+	UpdateDurability();
 }
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const

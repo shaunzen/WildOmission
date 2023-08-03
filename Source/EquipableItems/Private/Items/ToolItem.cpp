@@ -135,7 +135,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		HitResult.GetActor()->TakeDamage(DamageAmount * GatherMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
 	}
 
-	ApplyDamage();
+	UpdateDurability();
 }
 
 UAnimMontage* AToolItem::GetPrimaryMontage() const
@@ -153,7 +153,7 @@ float AToolItem::GetSwingSpeedRate() const
 	return SwingSpeedRate;
 }
 
-void AToolItem::ApplyDamage()
+void AToolItem::UpdateDurability()
 {
 	--Durability;
 
@@ -163,7 +163,14 @@ void AToolItem::ApplyDamage()
 		return;
 	}
 
-	OwnerInventory->SetHeldItemDurability(Durability);
+	FInventorySlot* FromSlot = OwnerInventory->GetSlot(GetFromSlotIndex(), true);
+	if (FromSlot == nullptr)
+	{
+		return;
+	}
+
+	FromSlot->Item.SetStat(TEXT("Durability"), Durability);
+	OwnerInventory->RequestInventoryRefresh();
 	
 	if (Durability <= 0)
 	{
