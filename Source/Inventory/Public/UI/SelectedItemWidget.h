@@ -18,10 +18,7 @@ class INVENTORY_API USelectedItemWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	void SetItem(UMaterialInstance* ItemIcon, const int32& Quantity);
-	
 	void Show();
-	
 	void Hide();
 
 private:
@@ -34,8 +31,6 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UProgressBar* DurabilityBar;
 
-	FString GetQuantityString(const int32& Quantity);
-	
 	UFUNCTION()
 	void Refresh(const FInventoryItem& SelectedItem);
 };

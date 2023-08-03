@@ -27,11 +27,6 @@ void USelectedItemWidget::NativeConstruct()
 	PlayerInventoryManipulator->OnSelectionChanged.AddDynamic(this, &USelectedItemWidget::Refresh);
 }
 
-void USelectedItemWidget::SetItem(UMaterialInstance* ItemIcon, const int32& Quantity)
-{
-	IconBorder->SetBrushFromMaterial(ItemIcon);
-	QuantityText->SetText(FText::FromString(GetQuantityString(Quantity)));
-}
 
 void USelectedItemWidget::Show()
 {
@@ -43,35 +38,30 @@ void USelectedItemWidget::Hide()
 	SetVisibility(ESlateVisibility::Hidden);
 }
 
-FString USelectedItemWidget::GetQuantityString(const int32& Quantity)
+void USelectedItemWidget::Refresh(const FInventoryItem& SelectedItem)
 {
 	FString QuantityString;
-	
-	if (Quantity > 1)
+
+	if (SelectedItem.Quantity > 1)
 	{
-		QuantityString = FString::Printf(TEXT("x%i"), Quantity);
+		QuantityString = FString::Printf(TEXT("x%i"), SelectedItem.Quantity);
 	}
 	else
 	{
 		QuantityString = FString("");
 	}
 
-	return QuantityString;
-}
-
-void USelectedItemWidget::Refresh(const FInventoryItem& SelectedItem)
-{
 	if (SelectedItem.Quantity > 0)
 	{
 		Show();
-		FItemData* SelectedItemData = UInventoryComponent::GetItemData(SelectedItem.Name);
-		SetItem(SelectedItemData->Thumbnail, SelectedItem.Quantity);
 		
 		FItemData* SlotItemData = UInventoryComponent::GetItemData(SelectedItem.Name);
 		if (SlotItemData == nullptr)
 		{
 			return;
 		}
+		
+		IconBorder->SetBrushFromMaterial(SlotItemData->Thumbnail);
 		
 		if (SlotItemData->GetStat(FName("Durability")) > 0)
 		{
@@ -85,6 +75,13 @@ void USelectedItemWidget::Refresh(const FInventoryItem& SelectedItem)
 		{
 			DurabilityBar->SetVisibility(ESlateVisibility::Hidden);
 		}
+		
+		if (SlotItemData->GetStat(TEXT("MaxAmmo")) != INDEX_NONE)
+		{
+			QuantityString = FString::Printf(TEXT("%i/%i"), SelectedItem.GetStat(TEXT("CurrentAmmo")), SelectedItem.GetStat(TEXT("MaxAmmo")));
+		}
+
+		QuantityText->SetText(FText::FromString(QuantityString));
 	}
 	else
 	{
