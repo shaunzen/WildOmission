@@ -37,6 +37,9 @@ public:
 	virtual void OnSecondaryHeld();
 	virtual void OnSecondaryReleased();
 
+	// Reload function of the item. example(Reload the magazine)
+	virtual void OnReloadPressed();
+
 	UStaticMesh* GetMesh();
 	
 	void SetLocalVisibility(bool bVisible);
@@ -91,6 +94,6 @@ protected:
 	UEquipComponent* GetOwnerEquipComponent() const;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayThirdPersonEquipMontage();
+	void Multi_PlayThirdPersonEquipMontage();
 
 };

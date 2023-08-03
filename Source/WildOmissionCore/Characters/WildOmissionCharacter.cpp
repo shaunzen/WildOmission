@@ -575,7 +575,7 @@ void AWildOmissionCharacter::SecondaryReleased()
 
 void AWildOmissionCharacter::ReloadPressed()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Reload pressed"));
+	EquipComponent->ReloadPressed();
 }
 
 void AWildOmissionCharacter::ToggleInventoryMenu()

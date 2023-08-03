@@ -59,6 +59,8 @@ public:
 	void SecondaryPressed();
 	void SecondaryReleased();
 
+	void ReloadPressed();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -106,4 +108,8 @@ private:
 	void Server_SecondaryPressed();
 	UFUNCTION(Server, Reliable)
 	void Server_SecondaryReleased();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ReloadPressed();
+
 };

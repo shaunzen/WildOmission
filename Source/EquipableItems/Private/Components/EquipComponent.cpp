@@ -315,6 +315,21 @@ void UEquipComponent::SecondaryReleased()
 	EquipedItem->OnSecondaryReleased();
 }
 
+void UEquipComponent::ReloadPressed()
+{
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_ReloadPressed();
+	}
+
+	if (!IsEquipedItemValid() || PrimaryHeld || SecondaryHeld)
+	{
+		return;
+	}
+
+	EquipedItem->OnReloadPressed();
+}
+
 void UEquipComponent::OnRep_EquipedItem()
 {
 	if (OwnerPawn == nullptr)
@@ -439,4 +454,9 @@ void UEquipComponent::Server_SecondaryPressed_Implementation()
 void UEquipComponent::Server_SecondaryReleased_Implementation()
 {
 	SecondaryReleased();
+}
+
+void UEquipComponent::Server_ReloadPressed_Implementation()
+{
+	ReloadPressed();
 }
