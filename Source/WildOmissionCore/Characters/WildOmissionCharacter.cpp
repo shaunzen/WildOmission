@@ -171,11 +171,16 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		SecondaryAction = SecondaryActionBlueprint.Object;
 	}
 	
+	ConstructorHelpers::FObjectFinder<UInputAction> ReloadActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Reload"));
+	if (ReloadActionBlueprint.Succeeded())
+	{
+		ReloadAction = ReloadActionBlueprint.Object;
+	}
+
 	ConstructorHelpers::FObjectFinder<UInputAction> ToggleInventoryMenuActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_ToggleInventoryMenu"));
 	if (ToggleInventoryMenuActionBlueprint.Succeeded())
 	{
 		ToggleInventoryMenuAction = ToggleInventoryMenuActionBlueprint.Object;
-
 	}
 
 	ConstructorHelpers::FObjectFinder<UInputAction> ToggleCraftingMenuActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_ToggleCraftingMenu"));
@@ -451,6 +456,7 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::PrimaryReleased);
 	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::SecondaryPressed);
 	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::SecondaryReleased);
+	EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ReloadPressed);
 	EnhancedInputComponent->BindAction(ToggleInventoryMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleInventoryMenu);
 	EnhancedInputComponent->BindAction(ToggleCraftingMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleCraftingMenu);
 	EnhancedInputComponent->BindAction(ToggleChatAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleChat);
@@ -565,6 +571,11 @@ void AWildOmissionCharacter::SecondaryPressed()
 void AWildOmissionCharacter::SecondaryReleased()
 {
 	EquipComponent->SecondaryReleased();
+}
+
+void AWildOmissionCharacter::ReloadPressed()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Reload pressed"));
 }
 
 void AWildOmissionCharacter::ToggleInventoryMenu()

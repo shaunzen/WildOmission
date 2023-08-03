@@ -162,6 +162,9 @@ private:
 	
 	UPROPERTY()
 	UInputAction* SecondaryAction;
+
+	UPROPERTY()
+	UInputAction* ReloadAction;
 	
 	UPROPERTY()
 	UInputAction* ToggleInventoryMenuAction;
@@ -196,12 +199,14 @@ private:
 	UPROPERTY()
 	UInputAction* ToolbarSelection6Action;
 	
+	UFUNCTION()
 	void Move(const FInputActionValue& Value);
-	
+	UFUNCTION()
 	void Look(const FInputActionValue& Value);
 
+	UFUNCTION()
 	void StartSprint();
-
+	UFUNCTION()
 	void EndSprint();
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MovementSpeed)
@@ -213,27 +218,45 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_Sprint(bool bShouldSprint);
 
+	UFUNCTION()
 	void PrimaryPressed();
+	UFUNCTION()
 	void PrimaryReleased();
 
+	UFUNCTION()
 	void SecondaryPressed();
+	UFUNCTION()
 	void SecondaryReleased();
 
+	UFUNCTION()
+	void ReloadPressed();
+
+	UFUNCTION()
 	void ToggleInventoryMenu();
 	
+	UFUNCTION()
 	void ToggleCraftingMenu();
 
+	UFUNCTION()
 	void ToggleChat();
 
+	UFUNCTION()
 	void ToolbarSelectionIncrement();
 	
+	UFUNCTION()
 	void ToolbarSelectionDecrement();
 
+	UFUNCTION()
 	void SelectToolbarSlot1();
+	UFUNCTION()
 	void SelectToolbarSlot2();
+	UFUNCTION()
 	void SelectToolbarSlot3();
+	UFUNCTION()
 	void SelectToolbarSlot4();
+	UFUNCTION()
 	void SelectToolbarSlot5();
+	UFUNCTION()
 	void SelectToolbarSlot6();
 
 	//********************************	
