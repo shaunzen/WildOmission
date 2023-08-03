@@ -15,7 +15,12 @@ class WEAPONS_API AFirearm : public AEquipableItem
 	
 public:
 	AFirearm();
+	
+	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
+
 	virtual void OnPrimaryPressed() override;
+	virtual void OnReloadPressed() override;
+
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -24,6 +29,12 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AFirearmProjectile> ProjectileClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	FName AmmoItemID;
+
+	int32 CurrentAmmo;
+	int32 MaxAmmo;
+	
 	void FireProjectile();
 
 	UFUNCTION(NetMulticast, Reliable)
