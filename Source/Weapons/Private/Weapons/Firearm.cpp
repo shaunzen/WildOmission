@@ -40,7 +40,11 @@ void AFirearm::OnReloadPressed()
 {
 	Super::OnReloadPressed();
 
-	if (GetOwner() == nullptr || GetOwnerEquipComponent() == nullptr || GetOwnerEquipComponent()->IsItemMontagePlaying(ReloadMontage))
+	if (GetOwner() == nullptr 
+		|| GetOwnerPawn() == nullptr 
+		|| GetOwnerEquipComponent() == nullptr 
+		|| CurrentAmmo == MaxAmmo
+		|| GetOwnerEquipComponent()->IsItemMontagePlaying(ReloadMontage))
 	{
 		return;
 	}
@@ -63,14 +67,14 @@ void AFirearm::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 
 void AFirearm::FireProjectile()
 {
-	Multi_PlayFireSound();
-
 	if (ProjectileClass == nullptr || CurrentAmmo <= 0)
 	{
 		// TODO play click
 		UE_LOG(LogTemp, Warning, TEXT("Out of ammo"));
 		return;
 	}
+
+	Multi_PlayFireSound();
 
 	// Find Spawn location for projectile
 	const FVector OwnerForwardVector = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerEquipComponent()->GetOwnerControlRotation().Yaw, 0.0f));
