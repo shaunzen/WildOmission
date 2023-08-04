@@ -64,7 +64,7 @@ void UHumanAnimInstance::CalculateHeadAngle()
 		return;
 	}
 
-	HeadAngle = -CharacterOwner->GetHeadPitch() * 0.5f;
+	HeadAngle = CharacterOwner->GetHeadPitch() * 0.5f;
 }
 
 void UHumanAnimInstance::HandleEquipedItemPose()
