@@ -34,10 +34,8 @@ public:
 	void UpdateControlRotation(const FRotator& InNewControlRotation);
 	FRotator GetOwnerControlRotation() const;
 
-	void PlayEquipMontage(bool FirstPerson);
-	void PlayPrimaryMontage(bool FirstPerson);
-
-	bool PrimaryMontagePlaying() const;
+	void PlayItemMontage(UAnimMontage* Montage, bool FirstPerson);
+	bool IsItemMontagePlaying(UAnimMontage* Montage) const;
 	
 	FRefreshEquipedSlotUISignature RefreshEquipedSlotUI;
 

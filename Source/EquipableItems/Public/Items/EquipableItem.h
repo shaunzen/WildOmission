@@ -66,16 +66,25 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	FTransform SocketOffset;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* EquipMontage;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* PrimaryMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* SecondaryMontage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* ReloadMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimSequence* EquipPose;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	USoundBase* EquipSound;
 
 	UPROPERTY()

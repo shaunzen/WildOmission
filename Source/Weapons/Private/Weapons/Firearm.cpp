@@ -30,13 +30,30 @@ void AFirearm::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 
-	FireProjectile();
+	if (HasAuthority())
+	{
+		FireProjectile();
+	}
 }
 
 void AFirearm::OnReloadPressed()
 {
 	Super::OnReloadPressed();
 
+	if (GetOwner() == nullptr || GetOwnerEquipComponent() == nullptr || GetOwnerEquipComponent()->IsItemMontagePlaying(ReloadMontage))
+	{
+		return;
+	}
+
+	if (GetOwnerPawn()->IsLocallyControlled())
+	{
+		GetOwnerEquipComponent()->PlayItemMontage(ReloadMontage, true);
+	}
+
+	if (HasAuthority())
+	{
+		Multi_PlayThirdPersonReloadMontage();
+	}
 }
 
 void AFirearm::OnReloadAnimationClimax(bool FromFirstPersonInstance)
@@ -120,6 +137,22 @@ UPlayerInventoryComponent* AFirearm::GetOwningPlayerInventory() const
 	}
 
 	return GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
+}
+
+void AFirearm::Multi_PlayThirdPersonReloadMontage_Implementation()
+{
+	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
+	{
+		return;
+	}
+
+	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerEquipComponent->PlayItemMontage(ReloadMontage, false);
 }
 
 void AFirearm::Multi_PlayFireSound_Implementation()

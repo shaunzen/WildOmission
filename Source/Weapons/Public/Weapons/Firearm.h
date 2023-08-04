@@ -25,13 +25,13 @@ public:
 	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance);
 
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	USoundBase* FireSound;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TSubclassOf<AFirearmProjectile> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	FName AmmoItemID;
 
 	UPROPERTY()
@@ -49,5 +49,8 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayFireSound();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayThirdPersonReloadMontage();
 
 };

@@ -28,24 +28,21 @@ public:
 
 	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance);
 
-	UFUNCTION(BlueprintCallable)
-	UAnimMontage* GetPrimaryMontage() const;
-
 	float GetGatherMultiplier() const;
 	
 	float GetSwingSpeedRate() const;
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TEnumAsByte<EToolType> ToolType;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	float GatherMultiplier;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	float EffectiveRangeCentimeters;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	float SwingSpeedRate;
 
 	UPROPERTY()
@@ -61,10 +58,7 @@ protected:
 	FInventoryItem* FindInInventory();
 
 private:
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* PrimaryMontage;
-
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayThirdPersonPrimaryMontage();
+	void Multi_PlayThirdPersonPrimaryMontage();
 
 };

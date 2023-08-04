@@ -135,7 +135,7 @@ FRotator UEquipComponent::GetOwnerControlRotation() const
 	return OwnerReplicatedControlRotation;
 }
 
-void UEquipComponent::PlayEquipMontage(bool FirstPerson)
+void UEquipComponent::PlayItemMontage(UAnimMontage* Montage, bool FirstPerson)
 {
 	if (FirstPerson && LocalEquipedItemDefaultClass)
 	{
@@ -145,7 +145,7 @@ void UEquipComponent::PlayEquipMontage(bool FirstPerson)
 			return;
 		}
 
-		FirstPersonArmsAnimInstance->Montage_Play(LocalEquipedItemDefaultClass->GetEquipMontage());
+		FirstPersonArmsAnimInstance->Montage_Play(Montage);
 	}
 	else if (!FirstPerson && EquipedItem)
 	{
@@ -155,48 +155,12 @@ void UEquipComponent::PlayEquipMontage(bool FirstPerson)
 			return;
 		}
 
-		ThirdPersonAnimInstance->Montage_Play(EquipedItem->GetEquipMontage());
+		ThirdPersonAnimInstance->Montage_Play(Montage);
 	}
 }
 
-void UEquipComponent::PlayPrimaryMontage(bool FirstPerson)
+bool UEquipComponent::IsItemMontagePlaying(UAnimMontage* Montage) const
 {
-	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
-	if (EquipedTool == nullptr)
-	{
-		return;
-	}
-
-	if (FirstPerson)
-	{
-		UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
-		if (OwnerPawn == nullptr || FirstPersonArmsAnimInstance == nullptr)
-		{
-			return;
-		}
-
-		FirstPersonArmsAnimInstance->Montage_Play(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
-	}
-	else
-	{
-		UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
-		if (ThirdPersonAnimInstance == nullptr)
-		{
-			return;
-		}
-
-		ThirdPersonAnimInstance->Montage_Play(EquipedTool->GetPrimaryMontage(), EquipedTool->GetSwingSpeedRate());
-	}
-}
-
-bool UEquipComponent::PrimaryMontagePlaying() const
-{
-	AToolItem* EquipedTool = Cast<AToolItem>(EquipedItem);
-	if (EquipedTool == nullptr)
-	{
-		return false;
-	}
-
 	UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
 	if (OwnerPawn == nullptr || FirstPersonArmsAnimInstance == nullptr)
 	{
@@ -209,7 +173,7 @@ bool UEquipComponent::PrimaryMontagePlaying() const
 		return false;
 	}
 
-	return FirstPersonArmsAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage()) || ThirdPersonAnimInstance->Montage_IsPlaying(EquipedTool->GetPrimaryMontage());
+	return FirstPersonArmsAnimInstance->Montage_IsPlaying(Montage) || ThirdPersonAnimInstance->Montage_IsPlaying(Montage);
 }
 
 AEquipableItem* UEquipComponent::GetEquipedItem()
@@ -343,7 +307,7 @@ void UEquipComponent::OnRep_EquipedItem()
 		
 		EquipedItem->SetLocalVisibility(!OwnerPawn->IsLocallyControlled());
 
-		PlayEquipMontage(false);
+		PlayItemMontage(EquipedItem->GetEquipMontage(), false);
 	}
 }
 
@@ -370,7 +334,7 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 		FirstPersonItemMeshComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
 		FirstPersonItemMeshComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
 
-		PlayEquipMontage(true);
+		PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipMontage(), true);
 	}
 	else
 	{
