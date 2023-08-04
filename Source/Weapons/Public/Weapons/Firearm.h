@@ -22,6 +22,7 @@ public:
 	virtual void OnPrimaryPressed() override;
 	virtual void OnReloadPressed() override;
 
+	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance);
 
 private:
 	UPROPERTY(EditDefaultsOnly)

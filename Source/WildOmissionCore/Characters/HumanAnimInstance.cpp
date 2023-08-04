@@ -4,6 +4,7 @@
 #include "HumanAnimInstance.h"
 #include "Components/EquipComponent.h"
 #include "Items/ToolItem.h"
+#include "Weapons/Firearm.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
 
 UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializer) : UWildOmissionAnimInstance(ObjectInitializer)
@@ -43,6 +44,29 @@ void UHumanAnimInstance::OnPrimaryMontageClimax()
 	}
 
 	EquipedTool->OnPrimaryAnimationClimax(FirstPersonInstance);
+}
+
+void UHumanAnimInstance::OnReloadMontageClimax()
+{
+	APawn* PawnOwner = TryGetPawnOwner();
+	if (PawnOwner == nullptr)
+	{
+		return;
+	}
+
+	UEquipComponent* OwnerEquipComponent = PawnOwner->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	AFirearm* EquipedFirearm = Cast<AFirearm>(OwnerEquipComponent->GetEquipedItem());
+	if (EquipedFirearm == nullptr)
+	{
+		return;
+	}
+
+	EquipedFirearm->OnReloadAnimationClimax(FirstPersonInstance);
 }
 
 void UHumanAnimInstance::CalculateSpeedAndAngle()

@@ -39,6 +39,11 @@ void AFirearm::OnReloadPressed()
 
 }
 
+void AFirearm::OnReloadAnimationClimax(bool FromFirstPersonInstance)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Ja reloadin."));
+}
+
 void AFirearm::FireProjectile()
 {
 	Multi_PlayFireSound();

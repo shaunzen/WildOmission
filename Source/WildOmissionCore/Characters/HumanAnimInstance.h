@@ -19,6 +19,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryMontageClimax();
 
+	UFUNCTION(BlueprintCallable)
+	void OnReloadMontageClimax();
+
 	UPROPERTY(BlueprintReadOnly)
 	float HeadAngle;
 
