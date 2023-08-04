@@ -5,6 +5,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Projectiles/FirearmProjectile.h"
+#include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -89,7 +90,10 @@ void AFirearm::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 
 void AFirearm::FireProjectile()
 {
-	if (ProjectileClass == nullptr || CurrentAmmo <= 0)
+	if (ProjectileClass == nullptr 
+		|| CurrentAmmo <= 0
+		|| GetOwner() == nullptr
+		|| GetOwner()->FindComponentByClass<UCameraComponent>() == nullptr)
 	{
 		// TODO play click
 		UE_LOG(LogTemp, Warning, TEXT("Out of ammo"));
@@ -99,8 +103,7 @@ void AFirearm::FireProjectile()
 	Multi_PlayFireSound();
 
 	// Find Spawn location for projectile
-	const FVector OwnerForwardVector = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetOwnerEquipComponent()->GetOwnerControlRotation().Yaw, 0.0f));
-	const FVector ProjectileSpawnLocation = GetOwner()->GetActorLocation() + FVector(0.0f, 0.0f, 70.0f) + OwnerForwardVector * 50.0f;
+	const FVector ProjectileSpawnLocation = GetOwner()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
 	
 	// Spawn the projectile
 	FActorSpawnParameters SpawnParams;

@@ -38,11 +38,17 @@ void AFirearmProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MeshComponent->IgnoreActorWhenMoving(GetOwner(), true);
 	MeshComponent->OnComponentHit.AddDynamic(this, &AFirearmProjectile::OnHit);
 }
 
 void AFirearmProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (OtherActor == GetOwner())
+	{
+		return;
+	}
+
 	// Spawn impact effects
 	SpawnImpactEffects(Hit);
 
