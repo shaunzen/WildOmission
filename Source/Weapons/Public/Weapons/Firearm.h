@@ -45,6 +45,10 @@ private:
 
 	void RetrieveInventoryStats();
 	void UpdateInventoryStats();
+
+	int32 GetRemainingAmmoInInventory() const;
+	void RemoveAmmoFromInventory(const int32 AmountToRemove);
+
 	UPlayerInventoryComponent* GetOwningPlayerInventory() const;
 
 	UFUNCTION(NetMulticast, Reliable)

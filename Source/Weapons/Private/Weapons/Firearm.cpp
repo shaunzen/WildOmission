@@ -44,6 +44,7 @@ void AFirearm::OnReloadPressed()
 		|| GetOwnerPawn() == nullptr 
 		|| GetOwnerEquipComponent() == nullptr 
 		|| CurrentAmmo == MaxAmmo
+		|| GetRemainingAmmoInInventory() == 0
 		|| GetOwnerEquipComponent()->IsItemMontagePlaying(ReloadMontage))
 	{
 		return;
@@ -62,7 +63,28 @@ void AFirearm::OnReloadPressed()
 
 void AFirearm::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Ja reloadin."));
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	const int32 RemainingInventoryAmmo = GetRemainingAmmoInInventory();
+	const int32 AmmoRequiredToFillMag = MaxAmmo - CurrentAmmo;
+	
+	int32 AmmoUsedInReload = 0;
+	
+	if (GetRemainingAmmoInInventory() < AmmoRequiredToFillMag)
+	{
+		AmmoUsedInReload += GetRemainingAmmoInInventory();
+	}
+	else
+	{
+		AmmoUsedInReload = AmmoRequiredToFillMag;
+	}
+
+	CurrentAmmo += AmmoUsedInReload;
+	RemoveAmmoFromInventory(AmmoUsedInReload);
+	UpdateInventoryStats();
 }
 
 void AFirearm::FireProjectile()
@@ -131,6 +153,41 @@ void AFirearm::UpdateInventoryStats()
 	FromSlot->Item.SetStat(TEXT("CurrentAmmo"), CurrentAmmo);
 	FromSlot->Item.SetStat(TEXT("Durability"), Durability);
 	OwnerInventory->RequestInventoryRefresh();
+}
+
+int32 AFirearm::GetRemainingAmmoInInventory() const
+{
+	if (GetOwner() == nullptr)
+	{
+		return 0;
+	}
+
+	UInventoryComponent* OwnerInventory = GetOwner()->FindComponentByClass<UInventoryComponent>();
+	if (OwnerInventory == nullptr)
+	{
+		return 0;
+	}
+
+	return OwnerInventory->GetContents()->GetItemQuantity(AmmoItemID);
+}
+
+void AFirearm::RemoveAmmoFromInventory(const int32 AmountToRemove)
+{
+	if (GetOwner() == nullptr)
+	{
+		return;
+	}
+
+	UInventoryComponent* OwnerInventory = GetOwner()->FindComponentByClass<UInventoryComponent>();
+	if (OwnerInventory == nullptr)
+	{
+		return;
+	}
+
+	FInventoryItem AmmoToRemove;
+	AmmoToRemove.Name = AmmoItemID;
+	AmmoToRemove.Quantity = AmountToRemove;
+	OwnerInventory->RemoveItem(AmmoToRemove);
 }
 
 UPlayerInventoryComponent* AFirearm::GetOwningPlayerInventory() const
