@@ -209,12 +209,12 @@ void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
 	NewSaveGame->LastPlayedTime = Time;
 
 	NewSaveGame->LevelFile = TEXT("LV_Island");
+	NewSaveGame->Version = CURRENT_SAVE_FILE_VERSION;
 
 	NewSaveGame->CreationInformation.Name = WorldName;
 	NewSaveGame->CreationInformation.Day = Time.GetDay();
 	NewSaveGame->CreationInformation.Month = Time.GetMonth();
 	NewSaveGame->CreationInformation.Year = Time.GetYear();
-
 
 	UGameplayStatics::SaveGameToSlot(NewSaveGame, WorldName, 0);
 }
