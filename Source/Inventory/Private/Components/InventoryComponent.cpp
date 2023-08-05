@@ -65,6 +65,8 @@ void UInventoryComponent::BeginPlay()
 	}
 
 	LoadedFromSave = false;
+
+	OnRep_ServerState();
 }
 
 void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems, bool ForceClientUpdate)
@@ -204,8 +206,34 @@ void UInventoryComponent::SpawnWorldItem(UWorld* WorldContextObject, const FInve
 
 void UInventoryComponent::OnLoadComplete_Implementation()
 {
+	if (ServerState.Slots.Num() < SlotCount)
+	{
+		for (int32 i = ServerState.Slots.Num(); i < SlotCount; ++i)
+		{
+			FInventorySlot Slot;
+			Slot.Index = i;
+			ServerState.Slots.Add(Slot);
+		}
+	}
+	else if (ServerState.Slots.Num() > SlotCount)
+	{
+		for (int32 i = SlotCount; i < ServerState.Slots.Num(); i++)
+		{
+			if (ServerState.Slots[i].IsEmpty())
+			{
+				ServerState.Slots.Remove(ServerState.Slots.Last());
+				continue;
+			}
+			FInventoryItem SlotItem = ServerState.Slots[i].Item;
+			ServerState.Contents.RemoveItem(SlotItem.Name, SlotItem.Quantity);
+			ServerState.Slots.Remove(ServerState.Slots.Last());
+		}
+		ServerState.Slots.Shrink();
+	}
+
 	ServerState.Contents = Contents;
 	ServerState.Slots = Slots;
+
 	LoadedFromSave = true;
 }
 
