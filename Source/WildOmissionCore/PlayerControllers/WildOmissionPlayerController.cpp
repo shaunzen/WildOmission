@@ -91,7 +91,7 @@ FString AWildOmissionPlayerController::GetUniqueID()
 
 bool AWildOmissionPlayerController::IsHost()
 {
-	return GetRemoteRole() == ENetRole::ROLE_Authority;
+	return GetLocalRole() == ENetRole::ROLE_Authority && GetRemoteRole() == ENetRole::ROLE_SimulatedProxy;
 }
 
 void AWildOmissionPlayerController::SendMessage(APlayerState* Sender, const FString& Message)
