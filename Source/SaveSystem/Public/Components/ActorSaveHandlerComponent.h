@@ -21,7 +21,7 @@ public:
 	void SaveActors(TArray<FActorSaveData>& OutSaves);
 	
 	UFUNCTION()
-	void LoadActors(const TArray<FActorSaveData>& InSaves);
+	void LoadActors(const TArray<FActorSaveData>& InSaves, const int32& SaveFileVersion);
 
 protected:
 	// Called when the game starts
@@ -29,5 +29,7 @@ protected:
 private:
 	TArray<FActorComponentSaveData> FindComponentsByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* Class);
 	FActorComponentSaveData FindComponentDataByName(const TArray<FActorComponentSaveData>& ComponentSaveList, const FName& ComponentName, UClass* ComponentClass = nullptr);
+
+	void FixSaveCompatibility(AActor* ActorToFix, const int32& OldSaveFileVersion);
 
 };

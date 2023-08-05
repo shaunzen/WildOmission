@@ -59,6 +59,8 @@ void ASaveHandler::SaveGame()
 
 	ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
+	
+	SaveFile->Version = CURRENT_SAVE_FILE_VERSION;
 
 	UpdateSaveFile(SaveFile);
 }
@@ -98,7 +100,7 @@ void ASaveHandler::LoadWorld()
 	}
 
 	GameSaveLoadController->SetLoadingSubtitle(FString("Loading objects."));
-	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves);
+	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves, SaveFile->Version);
 
 	FTimerHandle ActorLoadedTimerHandle;
 	FTimerDelegate ActorLoadedDelegate;

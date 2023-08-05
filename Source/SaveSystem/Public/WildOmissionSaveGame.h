@@ -7,16 +7,20 @@
 #include "Structs/PlayerSave.h"
 #include "WildOmissionSaveGame.generated.h"
 
+const int32 CURRENT_SAVE_FILE_VERSION = 1;
+
 USTRUCT()
 struct FActorComponentSaveData
 {
 	GENERATED_BODY()
 
+	FActorComponentSaveData();
+
 	UPROPERTY()
 	FName Name;
 
 	UPROPERTY()
-	UClass* Class = nullptr;
+	UClass* Class;
 
 	UPROPERTY()
 	TArray<uint8> ByteData;
@@ -26,15 +30,17 @@ USTRUCT()
 struct FActorSaveData
 {
 	GENERATED_BODY()
+
+	FActorSaveData();
+
+	UPROPERTY()
+	FName Name;
 	
 	UPROPERTY()
-	FName Name = FName();
+	FTransform Transform;
 	
 	UPROPERTY()
-	FTransform Transform = FTransform::Identity;
-	
-	UPROPERTY()
-	UClass* Class = nullptr;
+	UClass* Class;
 
 	UPROPERTY()
 	TArray<uint8> ByteData;
@@ -48,9 +54,11 @@ USTRUCT()
 struct FWeatherHandlerSave
 {
 	GENERATED_BODY()
-	
+
+	FWeatherHandlerSave();
+
 	UPROPERTY()
-	float NextStormSpawnTime = 0.0f;
+	float NextStormSpawnTime;
 
 };
 
@@ -59,20 +67,22 @@ struct FWildOmissionSaveCreationInformation
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	FString Name = FString();
+	FWildOmissionSaveCreationInformation();
 
 	UPROPERTY()
-	bool LevelHasGenerated = false;
+	FString Name;
 
 	UPROPERTY()
-	uint8 Day = 1;
+	bool LevelHasGenerated;
+
+	UPROPERTY()
+	uint8 Day;
 	
 	UPROPERTY()
-	uint8 Month = 1;
+	uint8 Month;
 	
 	UPROPERTY()
-	uint16 Year = 2023;
+	uint16 Year;
 
 };
 
@@ -85,16 +95,16 @@ public:
 	UWildOmissionSaveGame();
 
 	UPROPERTY()
-	uint32 DaysPlayed = 0;
+	uint32 DaysPlayed;
 	
 	UPROPERTY()
-	float NormalizedProgressThroughDay = 0.0f;
+	float NormalizedProgressThroughDay;
 
 	UPROPERTY()
 	FDateTime LastPlayedTime;
 
 	UPROPERTY()
-	FString LevelFile = FString("LV_Sandbox");
+	FString LevelFile;
 
 	UPROPERTY()
 	FWeatherHandlerSave WeatherHandlerSave;
@@ -103,8 +113,12 @@ public:
 	FWildOmissionSaveCreationInformation CreationInformation;
 
 	UPROPERTY()
+	int32 Version;
+
+	UPROPERTY()
 	TArray<FActorSaveData> ActorSaves;
 	
 	UPROPERTY()
 	TArray<FPlayerSave> PlayerSaves;
+
 };

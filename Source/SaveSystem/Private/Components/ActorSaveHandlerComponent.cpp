@@ -64,7 +64,7 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 	}
 }
 
-void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSaves)
+void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSaves, const int32& SaveFileVersion)
 {
 	for (const FActorSaveData& ActorData : InSaves)
 	{
@@ -96,6 +96,11 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 
 			ActorComponent->Serialize(ComponentArchive);
 			ISavableObject::Execute_OnLoadComplete(ActorComponent);
+		}
+
+		if (SaveFileVersion < CURRENT_SAVE_FILE_VERSION)
+		{
+			FixSaveCompatibility(SpawnedActor, SaveFileVersion);
 		}
 
 		ISavableObject::Execute_OnLoadComplete(SpawnedActor);
@@ -131,4 +136,15 @@ FActorComponentSaveData UActorSaveHandlerComponent::FindComponentDataByName(cons
 	}
 
 	return FActorComponentSaveData();
+}
+
+void UActorSaveHandlerComponent::FixSaveCompatibility(AActor* ActorToFix, const int32& OldSaveFileVersion)
+{
+	if (OldSaveFileVersion <= 0)
+	{
+		const FVector OldActorLocation = ActorToFix->GetActorLocation();
+		const FVector SeaLevelDifference = FVector(0.0f, 0.0f, 360.0f);
+		ActorToFix->SetActorLocation(OldActorLocation - SeaLevelDifference);
+	}
+	// for future fuckups use if (OldSaveFileVersion <= 1, 2, 3, 4, 5, etc)
 }
