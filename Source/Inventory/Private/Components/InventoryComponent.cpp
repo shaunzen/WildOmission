@@ -221,12 +221,13 @@ void UInventoryComponent::OnLoadComplete_Implementation()
 		{
 			if (ServerState.Slots[i].IsEmpty())
 			{
-				ServerState.Slots.Remove(ServerState.Slots.Last());
+				ServerState.Slots.RemoveAt(ServerState.Slots.Num() - 1);
 				continue;
 			}
 			FInventoryItem SlotItem = ServerState.Slots[i].Item;
 			ServerState.Contents.RemoveItem(SlotItem.Name, SlotItem.Quantity);
-			ServerState.Slots.Remove(ServerState.Slots.Last());
+			UInventoryComponent::SpawnWorldItem(GetWorld(), SlotItem, nullptr);
+			ServerState.Slots.RemoveAt(ServerState.Slots.Num() - 1);
 		}
 		ServerState.Slots.Shrink();
 	}
