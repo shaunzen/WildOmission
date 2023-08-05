@@ -38,7 +38,11 @@ void UPlayerSaveHandlerComponent::AddToPending(APlayerController* PlayerControll
 
 void UPlayerSaveHandlerComponent::Save(TArray<FPlayerSave>& OutUpdatedSavesList)
 {
-	AddSavesToList(PendingSaves, OutUpdatedSavesList);
+	for (const FPlayerSave& InSave : PendingSaves)
+	{
+		AddSaveToList(InSave, OutUpdatedSavesList);
+	}
+
 	PendingSaves.Empty();
 }
 
@@ -52,16 +56,28 @@ void UPlayerSaveHandlerComponent::Load(APlayerController* PlayerController)
 		return;
 	}
 
-	int32 SaveIndex = 0;
 	FString PlayerUniqueID = SavablePlayer->GetUniqueID();
+	bool PlayerIsHost = SavablePlayer->IsHost();
+
+	if (PlayerIsHost)
+	{
+		const int32 SaveIndex = GetHostSaveIndexFromList(SaveHandlerOwner->GetSaveFile()->PlayerSaves);
+		if (SaveIndex == INDEX_NONE)
+		{
+			return;
+		}
+
+		SavablePlayer->LoadPlayerSave(SaveHandlerOwner->GetSaveFile()->PlayerSaves[SaveIndex]);
+		return;
+	}
 
 	// Does the player have a pending save that is more up to date than the save file
-	if (GetSaveIndexInList(PendingSaves, PlayerUniqueID, SaveIndex))
+	if (const int32 SaveIndex = GetSaveIndexFromList(PendingSaves, PlayerUniqueID) != INDEX_NONE)
 	{
 		SavablePlayer->LoadPlayerSave(PendingSaves[SaveIndex]);
 	}
-	// If there is no pending saves does the player exist in the save file
-	else if (GetSaveIndexInList(SaveHandlerOwner->GetSaveFile()->PlayerSaves, PlayerUniqueID, SaveIndex))
+	// If there is no pending saves, does the player exist in the save file
+	else if (const int32 SaveIndex = GetSaveIndexFromList(SaveHandlerOwner->GetSaveFile()->PlayerSaves, PlayerUniqueID) != INDEX_NONE)
 	{
 		SavablePlayer->LoadPlayerSave(SaveHandlerOwner->GetSaveFile()->PlayerSaves[SaveIndex]);
 	}
@@ -75,18 +91,9 @@ void UPlayerSaveHandlerComponent::AddAllToPending()
 	}
 }
 
-void UPlayerSaveHandlerComponent::AddSavesToList(const TArray<FPlayerSave>& InSavesList, TArray<FPlayerSave>& OutSavesList)
-{
-	for (const FPlayerSave& InSave : InSavesList)
-	{
-		AddSaveToList(InSave, OutSavesList);
-	}
-}
-
 void UPlayerSaveHandlerComponent::AddSaveToList(const FPlayerSave& InSave, TArray<FPlayerSave>& OutSavesList)
 {
-	int32 SaveIndex = 0;
-	if (GetSaveIndexInList(OutSavesList, InSave.UniqueID, SaveIndex))
+	if (const int32 SaveIndex = GetSaveIndexFromList(OutSavesList, InSave.UniqueID) != INDEX_NONE)
 	{
 		OutSavesList[SaveIndex] = InSave;
 	}
@@ -96,23 +103,38 @@ void UPlayerSaveHandlerComponent::AddSaveToList(const FPlayerSave& InSave, TArra
 	}
 }
 
-bool UPlayerSaveHandlerComponent::GetSaveIndexInList(const TArray<FPlayerSave>& List, const FString& UniqueID, int32& OutIndex)
+int32 UPlayerSaveHandlerComponent::GetSaveIndexFromList(const TArray<FPlayerSave>& SaveList, const FString& UniqueID) const
 {
 	int32 Index = 0;
-	bool SaveFound = false;
-	for (const FPlayerSave& Save : List)
+	for (const FPlayerSave& Save : SaveList)
 	{
 		if (Save.UniqueID != UniqueID)
 		{
 			++Index;
 			continue;
 		}
-		SaveFound = true;
-		break;
+
+		return Index;
 	}
 
-	OutIndex = Index;
-	return SaveFound;
+	return -1;
+}
+
+int32 UPlayerSaveHandlerComponent::GetHostSaveIndexFromList(const TArray<FPlayerSave>& SaveList) const
+{
+	int32 Index = 0;
+	for (const FPlayerSave& Save : SaveList)
+	{
+		if (Save.IsHost == false)
+		{
+			++Index;
+			continue;
+		}
+
+		return Index;
+	}
+
+	return -1;
 }
 
 TArray<APlayerController*> UPlayerSaveHandlerComponent::GetAllPlayerControllers()

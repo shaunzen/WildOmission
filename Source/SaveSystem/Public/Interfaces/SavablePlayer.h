@@ -27,5 +27,6 @@ public:
 	virtual void LoadPlayerSave(const FPlayerSave& Save) = 0;
 
 	virtual FString GetUniqueID() = 0;
+	virtual bool IsHost() = 0;
 
 };

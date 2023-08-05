@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "PlayerSaveHandlerComponent.generated.h"
 
+struct FPlayerSave;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SAVESYSTEM_API UPlayerSaveHandlerComponent : public UActorComponent
@@ -31,16 +32,15 @@ protected:
 
 private:
 	UPROPERTY()
-	TArray<struct FPlayerSave> PendingSaves;
+	TArray<FPlayerSave> PendingSaves;
 
 	UFUNCTION()
 	void AddAllToPending();
 
-	void AddSavesToList(const TArray<struct FPlayerSave>& InSaveList, TArray<struct FPlayerSave>& OutSavesList);
-	
-	void AddSaveToList(const struct FPlayerSave& InSave, TArray<struct FPlayerSave>& OutSavesList);
-	
-	bool GetSaveIndexInList(const TArray<struct FPlayerSave>& List, const FString& UniqueID, int32& OutIndex);
+	void AddSaveToList(const FPlayerSave& InSave, TArray<FPlayerSave>& OutSavesList);
+
+	int32 GetSaveIndexFromList(const TArray<FPlayerSave>& SaveList, const FString& UniqueID) const;
+	int32 GetHostSaveIndexFromList(const TArray<FPlayerSave>& SaveList) const;
 
 	TArray<APlayerController*> GetAllPlayerControllers();
 
