@@ -27,6 +27,7 @@ public:
 	virtual FPlayerSave SavePlayer() override;
 	virtual void LoadPlayerSave(const FPlayerSave& PlayerSave) override;
 	virtual FString GetUniqueID() override;
+	virtual bool IsHost() override;
 	// End ISavablePlayer Implementation
 
 	// Begin IChatMessageSender Implementation

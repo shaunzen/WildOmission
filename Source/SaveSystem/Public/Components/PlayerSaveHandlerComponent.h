@@ -39,8 +39,8 @@ private:
 
 	void AddSaveToList(const FPlayerSave& InSave, TArray<FPlayerSave>& OutSavesList);
 
-	int32 GetSaveIndexFromList(const TArray<FPlayerSave>& SaveList, const FString& UniqueID) const;
-	int32 GetHostSaveIndexFromList(const TArray<FPlayerSave>& SaveList) const;
+	bool FindSaveIndexInList(const TArray<FPlayerSave>& SaveList, const FString& UniqueID, int32& OutIndex) const;
+	bool FindHostSaveIndexInList(const TArray<FPlayerSave>& SaveList, int32& OutIndex) const;
 
 	TArray<APlayerController*> GetAllPlayerControllers();
 

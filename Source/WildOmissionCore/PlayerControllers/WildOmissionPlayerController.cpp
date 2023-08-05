@@ -89,6 +89,11 @@ FString AWildOmissionPlayerController::GetUniqueID()
 	return ID;
 }
 
+bool AWildOmissionPlayerController::IsHost()
+{
+	return GetRemoteRole() == ENetRole::ROLE_Authority;
+}
+
 void AWildOmissionPlayerController::SendMessage(APlayerState* Sender, const FString& Message)
 {
 	Server_SendChatMessage(Sender, Message);
