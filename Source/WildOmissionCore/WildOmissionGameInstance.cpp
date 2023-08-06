@@ -151,17 +151,17 @@ void UWildOmissionGameInstance::ClearGameplayMenuWidget()
 
 void UWildOmissionGameInstance::RunAutoConfigQualitySettings()
 {
-	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	if (UserSettings == nullptr || UserSettings->GetHasRunAutoConfig())
+	UWildOmissionGameUserSettings* WOUserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (WOUserSettings == nullptr || WOUserSettings->GetHasRunAutoConfig())
 	{
 		return;
 	}
 
-	UserSettings->RunHardwareBenchmark();
-	UserSettings->ApplyHardwareBenchmarkResults();
+	WOUserSettings->RunHardwareBenchmark();
+	WOUserSettings->ApplyHardwareBenchmarkResults();
 
-	UserSettings->SetHasRunAutoConfig(true);
-	UserSettings->ApplySettings(false);
+	WOUserSettings->SetHasRunAutoConfig(true);
+	WOUserSettings->ApplySettings(false);
 }
 
 void UWildOmissionGameInstance::StartLoading()
