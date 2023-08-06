@@ -17,31 +17,31 @@ ATornado::ATornado()
 	SetReplicateMovement(true);
 	bAlwaysRelevant = true;
 
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
-	MeshComponent->SetCollisionProfileName(FName("OverlapAllDynamic"));
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	RootComponent = MeshComponent;
 
-	SuctionAnchor = CreateDefaultSubobject<USceneComponent>(FName("SuctionAnchor"));
+	SuctionAnchor = CreateDefaultSubobject<USceneComponent>(TEXT("SuctionAnchor"));
 	SuctionAnchor->SetupAttachment(MeshComponent);
 	SuctionAnchor->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
 
-	CloseSuctionComponent1 = CreateDefaultSubobject<UWindSuckerComponent>(FName("CloseSuctionComponent1"));
+	CloseSuctionComponent1 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent1"));
 	CloseSuctionComponent1->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent1->SetRelativeLocation(FVector(2000.0f, 0.0f, 0.0f));
 	
-	CloseSuctionComponent2 = CreateDefaultSubobject<UWindSuckerComponent>(FName("CloseSuctionComponent2"));
+	CloseSuctionComponent2 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent2"));
 	CloseSuctionComponent2->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent2->SetRelativeLocation(FVector(-2000.0f, 0.0f, 0.0f));
 
-	CloseSuctionComponent3 = CreateDefaultSubobject<UWindSuckerComponent>(FName("CloseSuctionComponent3"));
+	CloseSuctionComponent3 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent3"));
 	CloseSuctionComponent3->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent3->SetRelativeLocation(FVector(0.0f, 2000.0f, 0.0f));
 
-	CloseSuctionComponent4 = CreateDefaultSubobject<UWindSuckerComponent>(FName("CloseSuctionComponent4"));
+	CloseSuctionComponent4 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent4"));
 	CloseSuctionComponent4->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent4->SetRelativeLocation(FVector(0.0f, -2000.0f, 0.0f));
 
-	FarSuctionComponent= CreateDefaultSubobject<UWindSuckerComponent>(FName("FarSuctionComponent"));
+	FarSuctionComponent= CreateDefaultSubobject<UWindSuckerComponent>(TEXT("FarSuctionComponent"));
 	FarSuctionComponent->SetRadius(20000.0f);
 	FarSuctionComponent->SetForceStrength(-99999.0f);
 	FarSuctionComponent->SetupAttachment(SuctionAnchor);
