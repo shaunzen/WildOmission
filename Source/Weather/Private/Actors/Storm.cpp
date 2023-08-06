@@ -164,7 +164,7 @@ void AStorm::HandleMovement()
 void AStorm::HandleSeverity()
 {
 	// Update severity values
-	Client_UpdateSeverity(FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f));
+	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
 
 	if (Severity > TornadoSeverityThreshold && SpawnedTornado == nullptr && HasSpawnedTornado == false)
 	{
@@ -273,6 +273,7 @@ void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStorm, SpawnedTornado);
+	DOREPLIFETIME(AStorm, Severity);
 	DOREPLIFETIME_CONDITION(AStorm, MovementVector, COND_InitialOnly);
 }
 
@@ -293,11 +294,6 @@ void AStorm::OnLoadComplete_Implementation()
 	{
 		SpawnTornado(true);
 	}
-}
-
-void AStorm::Client_UpdateSeverity_Implementation(float NewSeverity)
-{
-	Severity = NewSeverity;
 }
 
 void AStorm::CalculateTargetLocation()

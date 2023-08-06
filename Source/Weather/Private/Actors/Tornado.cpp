@@ -181,6 +181,8 @@ void ATornado::HandleMovement()
 
 void ATornado::HandleDamage()
 {
+	UE_LOG(LogWeather, Verbose, TEXT("Handling Tornado Damage."));
+
 	TArray<FOverlapResult> Overlaps;
 	FVector WindOrigin = FarSuctionComponent->GetComponentLocation();
 	float WindRadius = FarSuctionComponent->GetRadius() * 0.5f;

@@ -44,7 +44,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* StormRootComponent;
@@ -71,7 +70,7 @@ private:
 	float MovementSpeed;
 	UPROPERTY(SaveGame)
 	float SeverityMultiplier;
-	UPROPERTY(SaveGame)
+	UPROPERTY(Replicated, SaveGame)
 	float Severity;
 	UPROPERTY(SaveGame)
 	FTornadoSaveInformation TornadoSave;
@@ -109,7 +108,5 @@ private:
 
 	UFUNCTION()
 	virtual void OnLoadComplete_Implementation() override;
-	UFUNCTION(NetMulticast, Unreliable)
-	void Client_UpdateSeverity(float NewSeverity);
 
 };

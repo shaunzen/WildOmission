@@ -18,8 +18,6 @@ AHarvestableResource::AHarvestableResource()
 	NetDormancy = ENetDormancy::DORM_DormantAll;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	MeshComponent->SetGenerateOverlapEvents(false);
-	MeshComponent->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
 	RootComponent = MeshComponent;
 

@@ -25,6 +25,10 @@ void ATree::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 
 void ATree::OnContactWithTornado()
 {
+	if (bIsStump == true)
+	{
+		return;
+	}
 	bIsStump = true;
 	FlushNetDormancy();
 	UpdateMeshState();
