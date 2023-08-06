@@ -75,6 +75,10 @@ private:
 	UFUNCTION()
 	void ClearGameplayMenuWidget();
 
+	// Will try to auto-configure graphics settings if first launch of game
+	UFUNCTION()
+	void RunAutoConfigQualitySettings();
+
 	UPROPERTY()
 	TSubclassOf<ULoadingMenuWidget> LoadingMenuWidgetBlueprintClass;
 	UPROPERTY()

@@ -27,6 +27,12 @@ public:
 	float GetMasterVolume() const;
 
 	UFUNCTION()
+	void SetHasRunAutoConfig(bool HasRun);
+
+	UFUNCTION()
+	bool GetHasRunAutoConfig() const;
+
+	UFUNCTION()
 	int32 GetResolutionScaleAsInt32() const;
 
 	UFUNCTION()
@@ -38,5 +44,8 @@ private:
 	
 	UPROPERTY(Config)
 	float MasterVolume;
+
+	UPROPERTY(Config)
+	bool HasRunAutoConfig;
 
 };

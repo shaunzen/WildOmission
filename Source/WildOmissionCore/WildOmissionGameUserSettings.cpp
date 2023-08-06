@@ -10,6 +10,7 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
 {
     FieldOfView = DEFAULT_FIELDOFVIEW;
     MasterVolume = DEFAULT_MASTERVOLUME;
+    HasRunAutoConfig = false;
 }
 
 void UWildOmissionGameUserSettings::SetToDefaults()
@@ -38,6 +39,16 @@ void UWildOmissionGameUserSettings::SetMasterVolume(float NewMasterVolume)
 float UWildOmissionGameUserSettings::GetMasterVolume() const
 {
     return MasterVolume;
+}
+
+void UWildOmissionGameUserSettings::SetHasRunAutoConfig(bool HasRun)
+{
+    HasRunAutoConfig = HasRun;
+}
+
+bool UWildOmissionGameUserSettings::GetHasRunAutoConfig() const
+{
+    return HasRunAutoConfig;
 }
 
 int32 UWildOmissionGameUserSettings::GetResolutionScaleAsInt32() const

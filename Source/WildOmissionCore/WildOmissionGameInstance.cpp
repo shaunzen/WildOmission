@@ -100,6 +100,8 @@ void UWildOmissionGameInstance::Init()
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
+
+	RunAutoConfigQualitySettings();
 }
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()
@@ -145,6 +147,21 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 void UWildOmissionGameInstance::ClearGameplayMenuWidget()
 {
 	GameplayMenuWidget = nullptr;
+}
+
+void UWildOmissionGameInstance::RunAutoConfigQualitySettings()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr || UserSettings->GetHasRunAutoConfig())
+	{
+		return;
+	}
+
+	UserSettings->RunHardwareBenchmark();
+	UserSettings->ApplyHardwareBenchmarkResults();
+
+	UserSettings->SetHasRunAutoConfig(true);
+	UserSettings->ApplySettings(false);
 }
 
 void UWildOmissionGameInstance::StartLoading()
