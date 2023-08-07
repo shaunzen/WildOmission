@@ -26,6 +26,6 @@ public:
 	void OnLoadComplete();
 
 	UFUNCTION()
-	virtual FName GetIdentifier() const = 0;
+	virtual FName GetIdentifier() const;
 
 };

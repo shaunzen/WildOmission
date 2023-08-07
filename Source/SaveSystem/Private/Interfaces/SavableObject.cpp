@@ -5,3 +5,7 @@
 
 // Add default functionality here for any ISavableObject functions that are not pure virtual.
 
+FName ISavableObject::GetIdentifier() const
+{
+    return NAME_None;
+}
