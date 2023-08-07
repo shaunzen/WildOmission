@@ -208,6 +208,7 @@ void UInventoryComponent::OnLoadComplete_Implementation()
 {
 	if (ServerState.Slots.Num() < SlotCount)
 	{
+		UE_LOG(LogInventory, Warning, TEXT("Container Slot Count Invalid Resizing, SlotsNum: %i, SlotCount: %i"), ServerState.Slots.Num(), SlotCount);
 		for (int32 i = ServerState.Slots.Num(); i < SlotCount; ++i)
 		{
 			FInventorySlot Slot;
@@ -217,6 +218,7 @@ void UInventoryComponent::OnLoadComplete_Implementation()
 	}
 	else if (ServerState.Slots.Num() > SlotCount)
 	{
+		UE_LOG(LogInventory, Warning, TEXT("Container Slot Count Invalid Resizing, SlotsNum: %i, SlotCount: %i"), ServerState.Slots.Num(), SlotCount);
 		for (int32 i = SlotCount; i < ServerState.Slots.Num(); i++)
 		{
 			if (ServerState.Slots[i].IsEmpty())
