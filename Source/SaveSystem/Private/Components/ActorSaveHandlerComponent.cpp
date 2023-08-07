@@ -143,7 +143,7 @@ void UActorSaveHandlerComponent::FixSaveCompatibility(AActor* ActorToFix, const 
 	if (OldSaveFileVersion <= 0)
 	{
 		const FVector OldActorLocation = ActorToFix->GetActorLocation();
-		const FVector SeaLevelDifference = FVector(0.0f, 0.0f, 350.0f);
+		const FVector SeaLevelDifference = FVector(0.0f, 0.0f, 360.0f);
 		ActorToFix->SetActorLocation(OldActorLocation - SeaLevelDifference);
 	}
 	// for future fuckups use if (OldSaveFileVersion <= 1, 2, 3, 4, 5, etc)
