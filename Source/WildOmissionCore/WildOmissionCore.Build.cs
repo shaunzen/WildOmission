@@ -9,7 +9,7 @@ public class WildOmissionCore : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] {
-			"Core", "CoreUObject", "Engine", 
+			"Core", "CoreUObject", "Engine",
 			"InputCore", "EnhancedInput", "UMG", 
 			"Niagara", "NavigationSystem", "MetasoundEngine", "Animals", "Animation", "Crafting",
 			"Deployables", "Despawner", "Durability",
