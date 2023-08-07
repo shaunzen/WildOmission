@@ -21,14 +21,21 @@ public:
 	// Sets default values for this actor's properties
 	ACollectableResource();
 
-	//* Begin Interactable Interface Implementation
+	// Begin Interactable Interface Implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
-	//* End Interactable Interface Implementation
+	// End Interactable Interface Implementation
+
+	// Begin ISavableObject Implementation
+	virtual FName GetIdentifier() const override;
+	// End ISavableObject Implementation
 
 private:
 	UPROPERTY(EditDefaultsOnly)
 	FInventoryItem Yield;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Save System")
+	FName Identifier;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;

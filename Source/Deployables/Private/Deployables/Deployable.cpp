@@ -35,6 +35,8 @@ ADeployable::ADeployable()
 
 	MaxDurability = 100.0f;
 
+	Identifier = NAME_None;
+
 	bCanSpawnOnGround = true;
 	bCanSpawnOnFloor = false;
 	bCanSpawnOnWall = false;
@@ -130,6 +132,11 @@ float ADeployable::GetCurrentDurability()
 float ADeployable::GetMaxDurability()
 {
 	return MaxDurability;
+}
+
+FName ADeployable::GetIdentifier() const
+{
+	return Identifier;
 }
 
 bool ADeployable::CanSpawnOnGround() const

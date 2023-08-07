@@ -41,6 +41,10 @@ public:
 	virtual float GetMaxDurability() override;
 	// End IDurabilityInterface Implementation
 	
+	// Begin ISavableObject Implementation
+	virtual FName GetIdentifier() const override;
+	// End ISavableObject Implementation
+
 	bool CanSpawnOnGround() const;
 	bool CanSpawnOnFloor() const;
 	bool CanSpawnOnWall() const;
@@ -75,6 +79,9 @@ protected:
 
 	UPROPERTY(SaveGame)
 	float NormalizedDurability;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Save System")
+	FName Identifier;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Placement Settings")
 	bool bCanSpawnOnGround;

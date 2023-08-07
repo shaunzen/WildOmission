@@ -29,6 +29,11 @@ public:
 	
 	void SetDurability(const int32& InDurability);
 
+	// Begin ISavableObject Implementation
+	virtual FName GetIdentifier() const override;
+	// End ISavableObject Implementation
+
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	FInventoryItem ItemYield;
@@ -41,6 +46,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, SaveGame)
 	int32 Durability;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Save System")
+	FName Identifier;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;

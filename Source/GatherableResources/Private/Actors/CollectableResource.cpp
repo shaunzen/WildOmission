@@ -21,6 +21,8 @@ ACollectableResource::ACollectableResource()
 	RootComponent = MeshComponent;
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 	
+	Identifier = NAME_None;
+
 	NavigationModifier = CreateDefaultSubobject<UNavModifierComponent>(TEXT("NavigationModifier"));
 
 	ConstructorHelpers::FObjectFinder<USoundBase> CollectSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Pickup/Pickup_Cue"));
@@ -63,6 +65,11 @@ FString ACollectableResource::PromptText()
 	YieldedItemDisplayName = ItemData->DisplayName;
 
 	return FString::Printf(TEXT("Press 'E' to harvest %s"), *YieldedItemDisplayName);
+}
+
+FName ACollectableResource::GetIdentifier() const
+{
+	return Identifier;
 }
 
 void ACollectableResource::Client_PlayCollectSound_Implementation()

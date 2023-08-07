@@ -25,4 +25,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnLoadComplete();
 
+	UFUNCTION()
+	virtual FName GetIdentifier() const = 0;
+
 };

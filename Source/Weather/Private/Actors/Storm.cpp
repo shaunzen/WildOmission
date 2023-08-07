@@ -55,6 +55,8 @@ AStorm::AStorm()
 
 	Tags.Add(FName("StormCloud"));
 
+	Identifier = NAME_None;
+
 	static ConstructorHelpers::FClassFinder<ATornado> TornadoBlueprint(TEXT("/Game/Weather/Actors/BP_Tornado"));
 	if (TornadoBlueprint.Succeeded())
 	{
@@ -320,6 +322,11 @@ bool AStorm::IsRaining(float& OutDensity) const
 void AStorm::SetLocalPlayerUnderneath(bool IsUnder)
 {
 	LocalPlayerUnder = IsUnder;
+}
+
+FName AStorm::GetIdentifier() const
+{
+	return Identifier;
 }
 
 void AStorm::SetSeverity(float NewSeverity)

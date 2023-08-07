@@ -21,6 +21,8 @@ AHarvestableResource::AHarvestableResource()
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
 	RootComponent = MeshComponent;
 
+	Identifier = NAME_None;
+
 	NavigationModifier = CreateDefaultSubobject<UNavModifierComponent>(TEXT("NavigationModifier"));
 
 	Durability = 10;
@@ -99,4 +101,9 @@ int32 AHarvestableResource::GetDurability() const
 void AHarvestableResource::SetDurability(const int32& InDurability)
 {
 	Durability = InDurability;
+}
+
+FName AHarvestableResource::GetIdentifier() const
+{
+	return Identifier;
 }

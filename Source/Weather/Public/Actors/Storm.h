@@ -40,6 +40,10 @@ public:
 	bool IsRaining(float& OutDensity) const;
 	void SetLocalPlayerUnderneath(bool IsUnder);
 
+	// Begin ISavableObject Implementation
+	virtual FName GetIdentifier() const override;
+	// End ISavableObject Implementation
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -62,6 +66,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float TornadoSeverityThreshold;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Save System")
+	FName Identifier;
+
 	UPROPERTY(SaveGame)
 	FVector SpawnLocation;
 	UPROPERTY(Replicated, SaveGame)

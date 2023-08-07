@@ -126,6 +126,11 @@ IWorldGenerator* ASaveHandler::GetWorldGenerator() const
 	return WorldGenerator;
 }
 
+ISavableTimeOfDayHandler* ASaveHandler::GetTimeOfDayHandler() const
+{
+	return TimeOfDayHandler;
+}
+
 ISavableWeatherHandler* ASaveHandler::GetWeatherHandler() const
 {
 	return WeatherHandler;
