@@ -146,19 +146,19 @@ void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)
 	FogComponent->SetFogDensity(0.05f);
 	FogComponent->SetFogHeightFalloff(0.001f);
 
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Effects, TEXT("FogIntensity"), RainDensity / 2000.0f);
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Effects, TEXT("FogIntensity"), RainDensity / 2200.0f);
 	
 	if (SpawnedRainComponent == nullptr)
 	{
-		SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, this, FName(), FVector(0.0f, 0.0f, 1000.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		SpawnedRainComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(RainParticleSystem, this, NAME_None, FVector(0.0f, 0.0f, 1000.0f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	}
-	SpawnedRainComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
+	SpawnedRainComponent->SetFloatParameter(TEXT("RainDensity"), RainDensity);
 
 	if (SpawnedRainAudioComponent == nullptr)
 	{
 		SpawnedRainAudioComponent = UGameplayStatics::SpawnSoundAttached(RainSound, this);
 	}
-	SpawnedRainAudioComponent->SetFloatParameter(FName("RainDensity"), RainDensity);
+	SpawnedRainAudioComponent->SetFloatParameter(TEXT("RainDensity"), RainDensity);
 
 	FHitResult HitResult;
 	if (LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && CastToStorm(HitResult.GetActor()) == nullptr)

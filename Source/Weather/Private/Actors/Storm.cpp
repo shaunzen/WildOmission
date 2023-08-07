@@ -136,9 +136,9 @@ void AStorm::HandleDestruction()
 void AStorm::HandleCloudAppearance()
 {
 	FVector CloudScale = FVector::ZeroVector;
-	CloudScale.X = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
-	CloudScale.Y = FMath::Lerp(1000.0f, 1500.0f, Severity / 100.0f);
-	CloudScale.Z = FMath::Lerp(50.0f, 700.0f, Severity / 100.0f);
+	CloudScale.X = FMath::Lerp(1000.0f, 1200.0f, Severity / 100.0f);
+	CloudScale.Y = FMath::Lerp(1000.0f, 1200.0f, Severity / 100.0f);
+	CloudScale.Z = FMath::Lerp(50.0f, 250.0f, Severity / 100.0f);
 	CloudMeshComponent->SetWorldScale3D(CloudScale);
 
 	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
