@@ -170,33 +170,6 @@ FActorComponentSaveData UActorSaveHandlerComponent::FindComponentDataByName(cons
 	return FActorComponentSaveData();
 }
 
-// TODO remove this
-FName UActorSaveHandlerComponent::FindSavableObjectIdentifierByClassPointer(const UClass* Class)
-{
-	if (DT_SavableObjectDefinitions == nullptr)
-	{
-		UE_LOG(LogSaveSystem, Error, TEXT("SavableObjectDefinitions DataTable is nullptr."));
-		return NAME_None;
-	}
-	
-	TArray<FName> ObjectIdentifiers = DT_SavableObjectDefinitions->GetRowNames();
-	if (ObjectIdentifiers.IsEmpty())
-	{
-		UE_LOG(LogSaveSystem, Warning, TEXT("Object Definitions has no elements."));
-		return NAME_None;
-	}
-
-	for (const FName& ObjectIdentifier : ObjectIdentifiers)
-	{
-		if (Class != FindSavableObjectClassUsingIdentifier(ObjectIdentifier))
-		{
-			continue;
-		}
-
-		return ObjectIdentifier;
-	}
-}
-
 UClass* UActorSaveHandlerComponent::FindSavableObjectClassUsingIdentifier(const FName& Identifier)
 {
 	if (DT_SavableObjectDefinitions == nullptr)
