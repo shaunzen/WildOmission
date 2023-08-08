@@ -87,7 +87,18 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 {
 	for (const FActorSaveData& ActorData : InSaves)
 	{
-		UClass* ActorClass = FindSavableObjectClassUsingIdentifier(ActorData.Identifier);
+		// Begin Temporary Compatibility Code
+		UClass* ActorClass = nullptr;
+		if (ActorData.Class == nullptr)
+		{
+			ActorClass = FindSavableObjectClassUsingIdentifier(ActorData.Identifier);
+		}
+		else
+		{
+			ActorClass = ActorData.Class;
+		}
+		// End Temporary Compatibility Code
+
 		if (ActorClass == nullptr)
 		{
 			UE_LOG(LogSaveSystem, Warning, TEXT("Savable Object Definition was unable to find class for %s"), *ActorData.Identifier.ToString());
@@ -157,6 +168,33 @@ FActorComponentSaveData UActorSaveHandlerComponent::FindComponentDataByName(cons
 	}
 
 	return FActorComponentSaveData();
+}
+
+// TODO remove this
+FName UActorSaveHandlerComponent::FindSavableObjectIdentifierByClassPointer(const UClass* Class)
+{
+	if (DT_SavableObjectDefinitions == nullptr)
+	{
+		UE_LOG(LogSaveSystem, Error, TEXT("SavableObjectDefinitions DataTable is nullptr."));
+		return NAME_None;
+	}
+	
+	TArray<FName> ObjectIdentifiers = DT_SavableObjectDefinitions->GetRowNames();
+	if (ObjectIdentifiers.IsEmpty())
+	{
+		UE_LOG(LogSaveSystem, Warning, TEXT("Object Definitions has no elements."));
+		return NAME_None;
+	}
+
+	for (const FName& ObjectIdentifier : ObjectIdentifiers)
+	{
+		if (Class != FindSavableObjectClassUsingIdentifier(ObjectIdentifier))
+		{
+			continue;
+		}
+
+		return ObjectIdentifier;
+	}
 }
 
 UClass* UActorSaveHandlerComponent::FindSavableObjectClassUsingIdentifier(const FName& Identifier)
