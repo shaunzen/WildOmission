@@ -104,6 +104,11 @@ FString AWorldItem::PromptText()
 	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName);
 }
 
+FName AWorldItem::GetIdentifier() const
+{
+	return TEXT("WorldItem");
+}
+
 // TODO on replicate update mesh why tf are we replicating the mesh and what item we are using wtf?
 void AWorldItem::SetItem(const FInventoryItem& InItem)
 {

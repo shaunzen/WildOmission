@@ -28,6 +28,10 @@ public:
 	virtual FString PromptText() override;
 	//* End Interactable Interface implementation
 
+	// Begin ISavableObject Implementation
+	virtual FName GetIdentifier() const;
+	// End ISavableObject Implementation
+
 	void SetItem(const FInventoryItem& InItem);
 	void AddImpulse(FVector Impulse);
 

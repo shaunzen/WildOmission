@@ -11,7 +11,7 @@ FActorComponentSaveData::FActorComponentSaveData()
 
 FActorSaveData::FActorSaveData()
 {
-	Name = NAME_None;
+	Identifier = NAME_None;
 	Transform = FTransform::Identity;
 	Class = nullptr;
 }

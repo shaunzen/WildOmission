@@ -30,6 +30,8 @@ private:
 	TArray<FActorComponentSaveData> FindComponentsByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* Class);
 	FActorComponentSaveData FindComponentDataByName(const TArray<FActorComponentSaveData>& ComponentSaveList, const FName& ComponentName, UClass* ComponentClass = nullptr);
 
+	static UClass* FindSavableObjectClassUsingIdentifier(const FName& Identifier);
+
 	void FixSaveCompatibility(AActor* ActorToFix, const int32& OldSaveFileVersion);
 
 };

@@ -3,6 +3,7 @@
 
 #include "Components/ActorSaveHandlerComponent.h"
 #include "Interfaces/SavableObject.h"
+#include "Structs/SavableObjectDefinition.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "Engine/DataTable.h"
 #include "EngineUtils.h"
@@ -44,10 +45,19 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 			continue;
 		}
 
+		ISavableObject* SavableObjectActor = Cast<ISavableObject>(Actor);
+		if (SavableObjectActor == nullptr)
+		{
+			UE_LOG(LogSaveSystem, Warning, TEXT("Cannot Cast to SavableObject, Actor: %s"), *Actor->GetActorNameOrLabel());
+			continue;
+		}
+
 		FActorSaveData ActorData;
-		ActorData.Name = Actor->GetFName();
+		ActorData.Identifier = SavableObjectActor->GetIdentifier();
 		ActorData.Transform = Actor->GetActorTransform();
-		ActorData.Class = Actor->GetClass();
+
+		// TODO Deprecated
+		ActorData.Class = nullptr;
 
 		FMemoryWriter MemoryWriter(ActorData.ByteData);
 		FObjectAndNameAsStringProxyArchive Archive(MemoryWriter, true);
@@ -77,16 +87,18 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 {
 	for (const FActorSaveData& ActorData : InSaves)
 	{
-		if (ActorData.Class == nullptr)
+		UClass* ActorClass = FindSavableObjectClassUsingIdentifier(ActorData.Identifier);
+		if (ActorClass == nullptr)
 		{
+			UE_LOG(LogSaveSystem, Warning, TEXT("Savable Object Definition was unable to find class for %s"), *ActorData.Identifier.ToString());
 			continue;
 		}
 
-		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorData.Class, ActorData.Transform);
+		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, ActorData.Transform);
 		if (SpawnedActor == nullptr)
 		{
-			UE_LOG(LogSaveSystem, Warning, TEXT("Failed to load actor from save file: %s"), *ActorData.Name.ToString());
-			return;
+			UE_LOG(LogSaveSystem, Warning, TEXT("Failed to load actor from save file: %s"), *ActorData.Identifier.ToString());
+			continue;
 		}
 
 		FMemoryReader MemoryReader(ActorData.ByteData);
@@ -147,8 +159,29 @@ FActorComponentSaveData UActorSaveHandlerComponent::FindComponentDataByName(cons
 	return FActorComponentSaveData();
 }
 
+UClass* UActorSaveHandlerComponent::FindSavableObjectClassUsingIdentifier(const FName& Identifier)
+{
+	if (DT_SavableObjectDefinitions == nullptr)
+	{
+		UE_LOG(LogSaveSystem, Error, TEXT("SavableObjectDefinitions DataTable is nullptr."));
+		return nullptr;
+	}
+
+	static const FString ContextString = TEXT("SavableObjectDefinition Context");
+
+	FSavableObjectDefinition* ObjectDefinition = DT_SavableObjectDefinitions->FindRow<FSavableObjectDefinition>(Identifier, ContextString, true);
+	if (ObjectDefinition == nullptr)
+	{
+		UE_LOG(LogSaveSystem, Warning, TEXT("Couldn't find SavableObjectDefinition for %s."), *Identifier.ToString());
+		return nullptr;
+	}
+
+	return ObjectDefinition->Class.Get();
+}
+
 void UActorSaveHandlerComponent::FixSaveCompatibility(AActor* ActorToFix, const int32& OldSaveFileVersion)
 {
+	// Sea Level Change
 	if (OldSaveFileVersion <= 0)
 	{
 		const FVector OldActorLocation = ActorToFix->GetActorLocation();
