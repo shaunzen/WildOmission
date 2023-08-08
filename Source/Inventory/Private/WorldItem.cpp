@@ -38,16 +38,17 @@ AWorldItem::AWorldItem()
 	DespawnComponent = CreateDefaultSubobject<UTimerDespawnComponent>(TEXT("DespawnComponent"));
 	DespawnComponent->SetDespawnTime(300.0f);
 
-	ConstructorHelpers::FObjectFinder<USoundBase> ClumpSoundObject(TEXT("/Game/Inventory/Audio/ItemClump_Cue"));
-	ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Pickup/Pickup_Cue"));
-	
-	if (!ClumpSoundObject.Succeeded() || !PickupSoundObject.Succeeded())
+	static ConstructorHelpers::FObjectFinder<USoundBase> ClumpSoundObject(TEXT("/Game/Inventory/Audio/ItemClump_Cue"));
+	if (ClumpSoundObject.Succeeded())
 	{
-		return;
+		ClumpSound = ClumpSoundObject.Object;
 	}
 
-	ClumpSound = ClumpSoundObject.Object;
-	PickupSound = PickupSoundObject.Object;
+	static ConstructorHelpers::FObjectFinder<USoundBase> PickupSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Pickup/Pickup_Cue"));
+	if (PickupSoundObject.Succeeded())
+	{
+		PickupSound = PickupSoundObject.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -132,6 +133,12 @@ FInventoryItem AWorldItem::GetItem() const
 	return Item;
 }
 
+// TODO Uhh what?
+void AWorldItem::OnRep_Item()
+{
+	SetItem(Item);
+}
+
 void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	AWorldItem* OtherWorldItem = Cast<AWorldItem>(OtherActor);
@@ -169,6 +176,11 @@ void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 	}
 
 	Client_PlayClumpSound();
+}
+
+void AWorldItem::OnLoadComplete_Implementation()
+{
+	OnRep_Item();
 }
 
 void AWorldItem::Client_PlayClumpSound_Implementation()

@@ -29,7 +29,7 @@ public:
 	//* End Interactable Interface implementation
 
 	// Begin ISavableObject Implementation
-	virtual FName GetIdentifier() const;
+	virtual FName GetIdentifier() const override;
 	// End ISavableObject Implementation
 
 	void SetItem(const FInventoryItem& InItem);
@@ -42,13 +42,13 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(Replicated, EditAnywhere, SaveGame)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Item, EditAnywhere, SaveGame)
 	FInventoryItem Item;
 
 	UPROPERTY(VisibleAnywhere)
 	UTimerDespawnComponent* DespawnComponent;
 
-	UPROPERTY(VisibleAnywhere, SaveGame)
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY()
@@ -58,6 +58,9 @@ private:
 	USoundBase* PickupSound;
 
 	UFUNCTION()
+	void OnRep_Item();
+
+	UFUNCTION()
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -65,5 +68,8 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayPickupSound();
+
+	UFUNCTION()
+	void OnLoadComplete_Implementation();
 
 };
