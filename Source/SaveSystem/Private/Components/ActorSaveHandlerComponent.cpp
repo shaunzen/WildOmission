@@ -4,8 +4,12 @@
 #include "Components/ActorSaveHandlerComponent.h"
 #include "Interfaces/SavableObject.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+#include "Engine/DataTable.h"
 #include "EngineUtils.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Log.h"
+
+static UDataTable* DT_SavableObjectDefinitions = nullptr;
 
 // Sets default values for this component's properties
 UActorSaveHandlerComponent::UActorSaveHandlerComponent()
@@ -14,6 +18,11 @@ UActorSaveHandlerComponent::UActorSaveHandlerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+	static ConstructorHelpers::FObjectFinder<UDataTable> SavableObjectDefinitionsBlueprint(TEXT("/Game/SaveSystem/DataTables/DT_SavableObjectDefinitions"));
+	if (SavableObjectDefinitionsBlueprint.Succeeded())
+	{
+		DT_SavableObjectDefinitions = SavableObjectDefinitionsBlueprint.Object;
+	}
 }
 
 // Called when the game starts

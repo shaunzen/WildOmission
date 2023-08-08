@@ -34,7 +34,7 @@ struct FActorSaveData
 	FActorSaveData();
 
 	UPROPERTY()
-	FName Name;
+	FName Identifier;
 	
 	UPROPERTY()
 	FTransform Transform;
