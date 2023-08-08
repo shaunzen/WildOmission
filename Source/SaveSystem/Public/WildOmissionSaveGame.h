@@ -116,6 +116,9 @@ public:
 	int32 Version;
 
 	UPROPERTY()
+	bool CheatsEnabled;
+
+	UPROPERTY()
 	TArray<FActorSaveData> ActorSaves;
 	
 	UPROPERTY()

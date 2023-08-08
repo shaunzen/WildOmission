@@ -51,3 +51,8 @@ void AWildOmissionGameState::GetChatMessages(TArray<FChatMessage>& OutChatMessag
 {
 	OutChatMessages = ChatMessages;
 }
+
+bool AWildOmissionGameState::IsCheatingEnabled() const
+{
+	return false;
+}

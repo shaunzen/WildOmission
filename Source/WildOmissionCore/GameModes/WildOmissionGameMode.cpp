@@ -34,7 +34,6 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	WeatherHandler->Setup(WorldGenerationHandler);
 	SaveHandler->Setup(WorldGenerationHandler, TimeOfDayHandler, WeatherHandler, Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));
 
-
 	if (SaveHandler == nullptr)
 	{
 		return;

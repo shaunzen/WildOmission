@@ -20,6 +20,9 @@ public:
 	virtual void GetChatMessages(TArray<FChatMessage>& OutChatMessages) override;
 	// End IChatMessageContainer Implementation
 
+	UFUNCTION(BlueprintCallable)
+	bool IsCheatingEnabled() const;
+
 private:
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ChatMessages)
 	TArray<FChatMessage> ChatMessages;

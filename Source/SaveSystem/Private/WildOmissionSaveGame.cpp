@@ -37,4 +37,5 @@ UWildOmissionSaveGame::UWildOmissionSaveGame()
 	LastPlayedTime = FDateTime::Now();
 	LevelFile = TEXT("LV_Sandbox");
 	Version = 0;
+	CheatsEnabled = false;
 }

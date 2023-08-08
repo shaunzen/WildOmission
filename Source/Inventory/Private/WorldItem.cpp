@@ -113,14 +113,8 @@ FName AWorldItem::GetIdentifier() const
 // TODO on replicate update mesh why tf are we replicating the mesh and what item we are using wtf?
 void AWorldItem::SetItem(const FInventoryItem& InItem)
 {
-	FItemData* NewItemData = UInventoryComponent::GetItemData(InItem.Name);
-	if (NewItemData == nullptr)
-	{
-		return;
-	}
-
-	MeshComponent->SetStaticMesh(NewItemData->Mesh);
 	Item = InItem;
+	OnRep_Item();
 }
 
 void AWorldItem::AddImpulse(FVector Impulse)
@@ -133,10 +127,15 @@ FInventoryItem AWorldItem::GetItem() const
 	return Item;
 }
 
-// TODO Uhh what?
 void AWorldItem::OnRep_Item()
 {
-	SetItem(Item);
+	FItemData* NewItemData = UInventoryComponent::GetItemData(Item.Name);
+	if (NewItemData == nullptr)
+	{
+		return;
+	}
+
+	MeshComponent->SetStaticMesh(NewItemData->Mesh);
 }
 
 void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
