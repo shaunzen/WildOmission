@@ -117,6 +117,15 @@ void AWildOmissionPlayerController::Save()
 	GameMode->SaveGame();
 }
 
+bool AWildOmissionPlayerController::IsEditorPlayer() const
+{
+#if WITH_EDITOR
+	return true;
+#else
+	return false;
+#endif
+}
+
 void AWildOmissionPlayerController::Client_SetNumRequiredActors_Implementation(const int32& InNum)
 {
 	UE_LOG(LogTemp, Warning, TEXT("NumRequiredActorsSet: %i"), InNum);

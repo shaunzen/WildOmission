@@ -36,6 +36,9 @@ public:
 
 	void Save();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsEditorPlayer() const;
+
 	UFUNCTION(Client, Reliable)
 	void Client_ShowDeathMenu();
 
