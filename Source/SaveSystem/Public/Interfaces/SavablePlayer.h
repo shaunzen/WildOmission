@@ -8,7 +8,7 @@
 #include "SavablePlayer.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, NotBlueprintable)
 class USavablePlayer : public UInterface
 {
 	GENERATED_BODY()
@@ -26,6 +26,7 @@ public:
 	virtual FPlayerSave SavePlayer() = 0;
 	virtual void LoadPlayerSave(const FPlayerSave& Save) = 0;
 
+	UFUNCTION(BlueprintCallable)
 	virtual FString GetUniqueID() = 0;
 	virtual bool IsHost() = 0;
 
