@@ -64,8 +64,8 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* FirstPersonItemMeshComponent;
-
+	USkeletalMeshComponent* FirstPersonItemComponent;
+	
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_EquipedItem)
 	AEquipableItem* EquipedItem;
 

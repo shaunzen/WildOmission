@@ -17,19 +17,18 @@ AEquipableItem::AEquipableItem()
 
 	// setup item mesh, for some reason we cant modify it from the editor
 	// game seems to be crashing because no mesh is specified and we are trying to use the mesh to create a first person decoy
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("Mesh"));
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	RootComponent = Mesh;
+	RootComponent = MeshComponent;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_EquipTool_01_Montage"));
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_HoldTool_01"));
-
 	if (EquipMontageAsset.Succeeded())
 	{
 		EquipMontage = EquipMontageAsset.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_HoldTool_01"));
 	if (EquipPoseAsset.Succeeded())
 	{
 		EquipPose = EquipPoseAsset.Object;
@@ -47,8 +46,8 @@ void AEquipableItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Mesh->SetRelativeLocation(SocketOffset.GetLocation());
-	Mesh->SetRelativeRotation(SocketOffset.GetRotation());
+	MeshComponent->SetRelativeLocation(SocketOffset.GetLocation());
+	MeshComponent->SetRelativeRotation(SocketOffset.GetRotation());
 }
 
 APawn* AEquipableItem::GetOwnerPawn() const
@@ -126,9 +125,9 @@ void AEquipableItem::OnReloadPressed()
 
 }
 
-UStaticMesh* AEquipableItem::GetMesh()
+USkeletalMesh* AEquipableItem::GetMesh()
 {
-	return Mesh->GetStaticMesh();
+	return MeshComponent->GetSkeletalMeshAsset();
 }
 
 void AEquipableItem::Multi_PlayThirdPersonEquipMontage_Implementation()
@@ -149,7 +148,7 @@ void AEquipableItem::Multi_PlayThirdPersonEquipMontage_Implementation()
 
 void AEquipableItem::SetLocalVisibility(bool bVisible)
 {
-	Mesh->SetVisibility(bVisible);
+	MeshComponent->SetVisibility(bVisible);
 }
 
 int8 AEquipableItem::GetFromSlotIndex() const

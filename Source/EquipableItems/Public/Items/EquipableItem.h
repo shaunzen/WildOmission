@@ -40,7 +40,7 @@ public:
 	// Reload function of the item. example(Reload the magazine)
 	virtual void OnReloadPressed();
 
-	UStaticMesh* GetMesh();
+	USkeletalMesh* GetMesh();
 	
 	void SetLocalVisibility(bool bVisible);
 
@@ -64,7 +64,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* Mesh;
+	USkeletalMeshComponent* MeshComponent;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	FTransform SocketOffset;

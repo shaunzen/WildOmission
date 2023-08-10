@@ -16,9 +16,9 @@ UEquipComponent::UEquipComponent()
 	
 	SetIsReplicatedByDefault(true);
 
-	FirstPersonItemMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("FirstPersonItemMeshComponent"));
-	FirstPersonItemMeshComponent->SetCastShadow(false);
-
+	FirstPersonItemComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonItemComponent"));
+	FirstPersonItemComponent->SetCastShadow(false);
+	
 	PrimaryHeld = false;
 	SecondaryHeld = false;
 	EquipedItem = nullptr;
@@ -55,7 +55,7 @@ void UEquipComponent::Setup(USkeletalMeshComponent* FirstPersonMeshComponent, US
 {
 	OwnerFirstPersonMesh = FirstPersonMeshComponent;
 	OwnerThirdPersonMesh = ThirdPersonMeshComponent;
-	FirstPersonItemMeshComponent->AttachToComponent(FirstPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
+	FirstPersonItemComponent->AttachToComponent(FirstPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
 }
 
 void UEquipComponent::BeginPlay()
@@ -328,18 +328,18 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 			return;
 		}
 
-		FirstPersonItemMeshComponent->SetStaticMesh(LocalEquipedItemDefaultClass->GetMesh());
+		FirstPersonItemComponent->SetSkeletalMeshAsset(LocalEquipedItemDefaultClass->GetMesh());
 
-		FirstPersonItemMeshComponent->SetVisibility(OwnerPawn->IsLocallyControlled());
-		FirstPersonItemMeshComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
-		FirstPersonItemMeshComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
+		FirstPersonItemComponent->SetVisibility(OwnerPawn->IsLocallyControlled());
+		FirstPersonItemComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
+		FirstPersonItemComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
 
 		PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipMontage(), true);
 	}
 	else
 	{
 		LocalEquipedItemDefaultClass = nullptr;
-		FirstPersonItemMeshComponent->SetVisibility(false);
+		FirstPersonItemComponent->SetVisibility(false);
 	}
 }
 

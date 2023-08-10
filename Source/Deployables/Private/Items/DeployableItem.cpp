@@ -17,10 +17,10 @@ ADeployableItem::ADeployableItem()
 	DeployableActorClass = nullptr;
 	DeployableRange = 500.0f;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> HammerStaticMesh(TEXT("/Game/Deployables/Art/SM_Hammer"));
-	if (HammerStaticMesh.Succeeded())
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> HammerMesh(TEXT("/Game/Deployables/Art/SK_Hammer"));
+	if (HammerMesh.Succeeded())
 	{
-		Mesh->SetStaticMesh(HammerStaticMesh.Object);
+		MeshComponent->SetSkeletalMeshAsset(HammerMesh.Object);
 	}
 }
 
