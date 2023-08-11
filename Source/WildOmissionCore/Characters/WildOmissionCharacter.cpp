@@ -89,6 +89,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	DesiredMovementSpeed = 300.0f;
 
+	// TODO make these static
+
 	ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmissionCore/UI/Player/WBP_PlayerHUD"));
 	if (PlayerHUDWidgetBlueprintClass.Succeeded())
 	{

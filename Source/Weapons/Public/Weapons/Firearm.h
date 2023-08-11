@@ -52,7 +52,7 @@ private:
 	UPlayerInventoryComponent* GetOwningPlayerInventory() const;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayFireSound();
+	void Multi_PlayFireEffects();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayThirdPersonReloadMontage();

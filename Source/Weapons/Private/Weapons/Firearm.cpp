@@ -31,6 +31,11 @@ void AFirearm::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 
+	if (GetOwnerPawn()->IsLocallyControlled())
+	{
+		GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, true);
+	}
+
 	if (HasAuthority())
 	{
 		FireProjectile();
@@ -100,7 +105,7 @@ void AFirearm::FireProjectile()
 		return;
 	}
 
-	Multi_PlayFireSound();
+	Multi_PlayFireEffects();
 
 	// Find Spawn location for projectile
 	const FVector ProjectileSpawnLocation = GetOwner()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
@@ -219,12 +224,20 @@ void AFirearm::Multi_PlayThirdPersonReloadMontage_Implementation()
 	OwnerEquipComponent->PlayItemMontage(ReloadMontage, false);
 }
 
-void AFirearm::Multi_PlayFireSound_Implementation()
+void AFirearm::Multi_PlayFireEffects_Implementation()
 {
-	if (GetOwner() == nullptr || FireSound == nullptr)
+	if (GetOwner() == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
+	if (PrimaryMontage)
+	{
+		GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, false);
+	}
+
+	if (FireSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
+	}
 }
