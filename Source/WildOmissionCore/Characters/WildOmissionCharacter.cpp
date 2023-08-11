@@ -40,44 +40,46 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	RagdollClass = nullptr;
 
-	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(FName("FirstPersonCamera"));
+	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	GetMesh()->SetRelativeScale3D(FVector(0.95f, 0.95f, 0.95f));
+
+	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(RootComponent);
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
-	FirstPersonSpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(FName("FirstPersonSpringArmComponent"));
+	FirstPersonSpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("FirstPersonSpringArmComponent"));
 	FirstPersonSpringArmComponent->TargetArmLength = 0.0f;
 	FirstPersonSpringArmComponent->bEnableCameraRotationLag = true;
 	FirstPersonSpringArmComponent->CameraRotationLagSpeed = 25.0f;
 	FirstPersonSpringArmComponent->SetupAttachment(FirstPersonCameraComponent);
 
-	FirstPersonArmsMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonArmsComponent"));
+	FirstPersonArmsMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonArmsComponent"));
 	FirstPersonArmsMeshComponent->SetupAttachment(FirstPersonSpringArmComponent);
 	FirstPersonArmsMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
-	
-	FirstPersonArmsMeshComponent->SetRelativeLocation(FVector(-5.0f, 0.0f, -150.0f));
+	FirstPersonArmsMeshComponent->SetRelativeLocation(FVector(-5.0f, 0.0f, -160.0f));
 	FirstPersonArmsMeshComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-	FirstPersonArmsMeshComponent->SetRelativeScale3D(FVector(0.9f, 0.9f, 0.9f));
+	FirstPersonArmsMeshComponent->SetRelativeScale3D(FVector(0.95f, 0.95f, 0.95f));
 	FirstPersonArmsMeshComponent->SetVisibility(false);
 	FirstPersonArmsMeshComponent->SetCastShadow(false);
 
-	EquipComponent = CreateDefaultSubobject<UEquipComponent>(FName("EquipComponent"));
+	EquipComponent = CreateDefaultSubobject<UEquipComponent>(TEXT("EquipComponent"));
 	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
 	EquipComponent->Setup(FirstPersonArmsMeshComponent, this->GetMesh());
 
-	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(FName("VitalsComponent"));
+	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
 
-	InventoryManipulatorComponent = CreateDefaultSubobject<UInventoryManipulatorComponent>(FName("InventoryManipulatorComponent"));
+	InventoryManipulatorComponent = CreateDefaultSubobject<UInventoryManipulatorComponent>(TEXT("InventoryManipulatorComponent"));
 
-	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(FName("InventoryComponent"));
+	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(TEXT("InventoryComponent"));
 
-	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(FName("CraftingComponent"));
+	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(TEXT("CraftingComponent"));
 
-	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(FName("InteractionComponent"));
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComponent"));
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
 
-	NameTag = CreateDefaultSubobject<UNameTagComponent>(FName("NameTag"));
+	NameTag = CreateDefaultSubobject<UNameTagComponent>(TEXT("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 

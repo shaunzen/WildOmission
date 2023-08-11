@@ -55,7 +55,7 @@ void UEquipComponent::Setup(USkeletalMeshComponent* FirstPersonMeshComponent, US
 {
 	OwnerFirstPersonMesh = FirstPersonMeshComponent;
 	OwnerThirdPersonMesh = ThirdPersonMeshComponent;
-	FirstPersonItemComponent->AttachToComponent(FirstPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
+	FirstPersonItemComponent->AttachToComponent(FirstPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, TEXT("RightHandMountSocket"));
 }
 
 void UEquipComponent::BeginPlay()
