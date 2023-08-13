@@ -68,14 +68,15 @@ void AFirearm::OnReloadPressed()
 		|| GetOwnerEquipComponent() == nullptr 
 		|| CurrentAmmo == MaxAmmo
 		|| GetRemainingAmmoInInventory() == 0
-		|| GetOwnerEquipComponent()->IsItemMontagePlaying(ReloadMontage))
+		|| GetOwnerEquipComponent()->IsMontagePlaying(ReloadMontage))
 	{
 		return;
 	}
 
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
-		GetOwnerEquipComponent()->PlayItemMontage(ReloadMontage, true);
+		GetOwnerEquipComponent()->PlayMontage(ReloadMontage, true);
+		GetOwnerEquipComponent()->PlayItemMontage(ReloadItemMontage, true);
 	}
 
 	if (HasAuthority())
@@ -118,7 +119,8 @@ void AFirearm::SimulateFire()
 		PlayFireSoundEffect();
 	}
 	
-	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, true);
+	GetOwnerEquipComponent()->PlayMontage(PrimaryMontage, true);
+	GetOwnerEquipComponent()->PlayItemMontage(PrimaryItemMontage, true);
 }
 
 void AFirearm::Fire()
@@ -204,7 +206,8 @@ void AFirearm::PlayFireAnimation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayItemMontage(PrimaryMontage, false);
+	OwnerEquipComponent->PlayMontage(PrimaryMontage, false);
+	OwnerEquipComponent->PlayItemMontage(PrimaryItemMontage, false);
 }
 
 void AFirearm::PlayFireSoundEffect()
@@ -287,5 +290,6 @@ void AFirearm::Multi_PlayThirdPersonReloadMontage_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayItemMontage(ReloadMontage, false);
+	OwnerEquipComponent->PlayMontage(ReloadMontage, false);
+	OwnerEquipComponent->PlayItemMontage(ReloadItemMontage, false);
 }

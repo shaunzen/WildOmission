@@ -12,15 +12,25 @@ AEquipableItem::AEquipableItem()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 	bReplicates = true;
 
 	// setup item mesh, for some reason we cant modify it from the editor
 	// game seems to be crashing because no mesh is specified and we are trying to use the mesh to create a first person decoy
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->SetAnimInstanceClass(UAnimInstance::StaticClass());
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	RootComponent = MeshComponent;
+
+	EquipMontage = nullptr;
+	EquipItemMontage = nullptr;
+	PrimaryMontage = nullptr;
+	PrimaryItemMontage = nullptr;
+	SecondaryMontage = nullptr;
+	SecondaryItemMontage = nullptr;
+	ReloadMontage = nullptr;
+	ReloadItemMontage = nullptr;
+	EquipPose = nullptr;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_EquipTool_01_Montage"));
 	if (EquipMontageAsset.Succeeded())
@@ -125,9 +135,9 @@ void AEquipableItem::OnReloadPressed()
 
 }
 
-USkeletalMesh* AEquipableItem::GetMesh()
+USkeletalMeshComponent* AEquipableItem::GetMeshComponent() const
 {
-	return MeshComponent->GetSkeletalMeshAsset();
+	return MeshComponent;
 }
 
 void AEquipableItem::Multi_PlayThirdPersonEquipMontage_Implementation()
@@ -143,7 +153,7 @@ void AEquipableItem::Multi_PlayThirdPersonEquipMontage_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayItemMontage(EquipMontage, false);
+	OwnerEquipComponent->PlayMontage(EquipMontage, false);
 }
 
 void AEquipableItem::SetLocalVisibility(bool bVisible)
@@ -169,6 +179,11 @@ uint32 AEquipableItem::GetUniqueItemID() const
 UAnimMontage* AEquipableItem::GetEquipMontage() const
 {
 	return EquipMontage;
+}
+
+UAnimMontage* AEquipableItem::GetEquipItemMontage() const
+{
+    return EquipItemMontage;
 }
 
 UAnimSequence* AEquipableItem::GetEquipPose() const

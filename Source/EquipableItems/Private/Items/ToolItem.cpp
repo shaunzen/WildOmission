@@ -65,14 +65,14 @@ void AToolItem::OnPrimaryHeld()
 {
 	Super::OnPrimaryHeld();
 
-	if (GetOwner() == nullptr || GetOwnerEquipComponent() == nullptr || GetOwnerEquipComponent()->IsItemMontagePlaying(PrimaryMontage))
+	if (GetOwner() == nullptr || GetOwnerEquipComponent() == nullptr || GetOwnerEquipComponent()->IsMontagePlaying(PrimaryMontage))
 	{
 		return;
 	}
 
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
-		GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, true);
+		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage, true);
 	}
 
 	if (HasAuthority())
@@ -212,7 +212,7 @@ void AToolItem::Multi_PlayThirdPersonPrimaryMontage_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayItemMontage(PrimaryMontage, false);
+	OwnerEquipComponent->PlayMontage(PrimaryMontage, false);
 }
 
 void AToolItem::PlayImpactSound(const FHitResult& HitResult)

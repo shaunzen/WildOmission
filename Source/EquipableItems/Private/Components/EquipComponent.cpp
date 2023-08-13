@@ -17,6 +17,7 @@ UEquipComponent::UEquipComponent()
 	SetIsReplicatedByDefault(true);
 
 	FirstPersonItemComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonItemComponent"));
+	FirstPersonItemComponent->SetAnimInstanceClass(UAnimInstance::StaticClass());
 	FirstPersonItemComponent->SetCastShadow(false);
 	
 	PrimaryHeld = false;
@@ -135,12 +136,12 @@ FRotator UEquipComponent::GetOwnerControlRotation() const
 	return OwnerReplicatedControlRotation;
 }
 
-void UEquipComponent::PlayItemMontage(UAnimMontage* Montage, bool FirstPerson)
+void UEquipComponent::PlayMontage(UAnimMontage* Montage, bool FirstPerson)
 {
 	if (FirstPerson && LocalEquipedItemDefaultClass)
 	{
 		UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
-		if (OwnerPawn == nullptr || FirstPersonArmsAnimInstance == nullptr)
+		if (FirstPersonArmsAnimInstance == nullptr)
 		{
 			return;
 		}
@@ -159,10 +160,36 @@ void UEquipComponent::PlayItemMontage(UAnimMontage* Montage, bool FirstPerson)
 	}
 }
 
-bool UEquipComponent::IsItemMontagePlaying(UAnimMontage* Montage) const
+void UEquipComponent::PlayItemMontage(UAnimMontage* Montage, bool FirstPerson)
+{
+	if (FirstPerson && LocalEquipedItemDefaultClass)
+	{
+		UAnimInstance* FirstPersonItemAnimInstance = FirstPersonItemComponent->GetAnimInstance();
+		if (FirstPersonItemAnimInstance == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("FirstPersonItemAnimInstance nullptr."));
+			return;
+		}
+
+		FirstPersonItemAnimInstance->Montage_Play(Montage);
+	}
+	else if (!FirstPerson && EquipedItem)
+	{
+		UAnimInstance* ThirdPersonItemAnimInstance = EquipedItem->GetMeshComponent()->GetAnimInstance();
+		if (ThirdPersonItemAnimInstance == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ThirdPersonItemAnimInstance nullptr."));
+			return;
+		}
+
+		ThirdPersonItemAnimInstance->Montage_Play(Montage);
+	}
+}
+
+bool UEquipComponent::IsMontagePlaying(UAnimMontage* Montage) const
 {
 	UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
-	if (OwnerPawn == nullptr || FirstPersonArmsAnimInstance == nullptr)
+	if (FirstPersonArmsAnimInstance == nullptr)
 	{
 		return false;
 	}
@@ -174,6 +201,23 @@ bool UEquipComponent::IsItemMontagePlaying(UAnimMontage* Montage) const
 	}
 
 	return FirstPersonArmsAnimInstance->Montage_IsPlaying(Montage) || ThirdPersonAnimInstance->Montage_IsPlaying(Montage);
+}
+
+bool UEquipComponent::IsItemMontagePlaying(UAnimMontage* Montage) const
+{
+	UAnimInstance* FirstPersonItemAnimInstance = FirstPersonItemComponent->GetAnimInstance();
+	if (FirstPersonItemAnimInstance == nullptr || EquipedItem == nullptr)
+	{
+		return false;
+	}
+
+	UAnimInstance* ThirdPersonItemAnimInstance = EquipedItem->GetMeshComponent()->GetAnimInstance();
+	if (ThirdPersonItemAnimInstance == nullptr)
+	{
+		return false;
+	}
+
+	return FirstPersonItemAnimInstance->Montage_IsPlaying(Montage) || ThirdPersonItemAnimInstance->Montage_IsPlaying(Montage);
 }
 
 AEquipableItem* UEquipComponent::GetEquipedItem()
@@ -307,7 +351,11 @@ void UEquipComponent::OnRep_EquipedItem()
 		
 		EquipedItem->SetLocalVisibility(!OwnerPawn->IsLocallyControlled());
 
-		PlayItemMontage(EquipedItem->GetEquipMontage(), false);
+		PlayMontage(EquipedItem->GetEquipMontage(), false);
+		if (EquipedItem->GetEquipItemMontage() != nullptr)
+		{
+			PlayItemMontage(EquipedItem->GetEquipItemMontage(), false);
+		}
 	}
 }
 
@@ -328,13 +376,18 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 			return;
 		}
 
-		FirstPersonItemComponent->SetSkeletalMeshAsset(LocalEquipedItemDefaultClass->GetMesh());
+		FirstPersonItemComponent->SetSkeletalMeshAsset(LocalEquipedItemDefaultClass->GetMeshComponent()->GetSkeletalMeshAsset());
 
 		FirstPersonItemComponent->SetVisibility(OwnerPawn->IsLocallyControlled());
 		FirstPersonItemComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
 		FirstPersonItemComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
 
-		PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipMontage(), true);
+		PlayMontage(LocalEquipedItemDefaultClass->GetEquipMontage(), true);
+
+		if (LocalEquipedItemDefaultClass->GetEquipItemMontage() != nullptr)
+		{
+			PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipItemMontage(), true);
+		}
 	}
 	else
 	{

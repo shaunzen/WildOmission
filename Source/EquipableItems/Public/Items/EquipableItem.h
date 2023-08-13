@@ -40,7 +40,7 @@ public:
 	// Reload function of the item. example(Reload the magazine)
 	virtual void OnReloadPressed();
 
-	USkeletalMesh* GetMesh();
+	USkeletalMeshComponent* GetMeshComponent() const;
 	
 	void SetLocalVisibility(bool bVisible);
 
@@ -51,6 +51,7 @@ public:
 	uint32 GetUniqueItemID() const;
 
 	UAnimMontage* GetEquipMontage() const;
+	UAnimMontage* GetEquipItemMontage() const;
 
 	UAnimSequence* GetEquipPose() const;
 
@@ -73,19 +74,28 @@ protected:
 	UAnimMontage* EquipMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* EquipItemMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* PrimaryMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* PrimaryItemMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* SecondaryMontage;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* SecondaryItemMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* ReloadMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimSequence* EquipPose;
+	UAnimMontage* ReloadItemMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	USoundBase* EquipSound;
+	UAnimSequence* EquipPose;
 
 	UPROPERTY()
 	FName ItemName;
