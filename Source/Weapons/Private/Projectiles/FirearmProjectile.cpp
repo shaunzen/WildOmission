@@ -2,6 +2,7 @@
 
 
 #include "Projectiles/FirearmProjectile.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine/DamageEvents.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
@@ -16,15 +17,16 @@
 AFirearmProjectile::AFirearmProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	MeshComponent->bTraceComplexOnMove = true;
-	MeshComponent->bReturnMaterialOnMove = true;
-	RootComponent = MeshComponent;
+	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
+
+	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
+	CollisionComponent->bTraceComplexOnMove = true;
+	CollisionComponent->bReturnMaterialOnMove = true;
+	RootComponent = CollisionComponent;
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
-	AudioComponent->SetupAttachment(MeshComponent);
+	AudioComponent->SetupAttachment(CollisionComponent);
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
 	MovementComponent->InitialSpeed = 50000.0f;
@@ -38,8 +40,8 @@ void AFirearmProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	MeshComponent->IgnoreActorWhenMoving(GetOwner(), true);
-	MeshComponent->OnComponentHit.AddDynamic(this, &AFirearmProjectile::OnHit);
+	CollisionComponent->IgnoreActorWhenMoving(GetOwner(), true);
+	CollisionComponent->OnComponentHit.AddDynamic(this, &AFirearmProjectile::OnHit);
 }
 
 void AFirearmProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -91,11 +93,4 @@ void AFirearmProjectile::SpawnImpactEffects(const FHitResult& HitResult)
 		const FVector DecalSize = FVector(8.0f, 8.0f, 8.0f);
 		UGameplayStatics::SpawnDecalAttached(ImpactDecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 120.0f);
 	}
-}
-
-// Called every frame
-void AFirearmProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
