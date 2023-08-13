@@ -43,21 +43,23 @@ private:
 	UPROPERTY(Replicated)
 	int32 Durability;
 	
-	void FireProjectile();
+	void SimulateFire();
+	void Fire();
 
 	void RetrieveInventoryStats();
 	void UpdateInventoryStats();
 
+	void SpawnProjectile();
+	void PlayFireAnimation();
+	void PlayFireSoundEffect();
+	
 	int32 GetRemainingAmmoInInventory() const;
 	void RemoveAmmoFromInventory(const int32 AmountToRemove);
 
 	UPlayerInventoryComponent* GetOwningPlayerInventory() const;
 
-	void PlayFireSoundEffect();
-	//void PlayMuzzleFlashEffect();
-
 	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayFireEffects();
+	void Multi_FireEffects();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayThirdPersonReloadMontage();

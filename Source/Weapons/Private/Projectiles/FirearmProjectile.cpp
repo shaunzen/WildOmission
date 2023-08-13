@@ -18,7 +18,6 @@ AFirearmProjectile::AFirearmProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	bReplicates = true;
 
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
 	CollisionComponent->bTraceComplexOnMove = true;
@@ -42,7 +41,7 @@ AFirearmProjectile::AFirearmProjectile()
 void AFirearmProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	CollisionComponent->IgnoreActorWhenMoving(GetOwner(), true);
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AFirearmProjectile::OnHit);
 }

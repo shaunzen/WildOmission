@@ -44,20 +44,18 @@ void AFirearm::OnPrimaryPressed()
 
 	if (CurrentAmmo == 0)
 	{
+		// TODO click sound
 		return;
 	}
 
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
-		UE_LOG(LogWeapons, Display, TEXT("Playing Fire effects."));
-		PlayFireSoundEffect();
-		GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, true);
+		SimulateFire();
 	}
 
 	if (HasAuthority())
 	{
-		Multi_PlayFireEffects();
-		FireProjectile();
+		Fire();
 	}
 }
 
@@ -112,24 +110,25 @@ void AFirearm::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 	UpdateInventoryStats();
 }
 
-void AFirearm::FireProjectile()
+void AFirearm::SimulateFire()
 {
-	if (ProjectileClass == nullptr 
-		|| CurrentAmmo <= 0
-		|| GetOwner() == nullptr
-		|| GetOwner()->FindComponentByClass<UCameraComponent>() == nullptr)
+	if (!HasAuthority())
+	{
+		SpawnProjectile();
+		PlayFireSoundEffect();
+	}
+	
+	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, true);
+}
+
+void AFirearm::Fire()
+{
+	if (CurrentAmmo <= 0)
 	{
 		return;
 	}
 
-	// Find Spawn location for projectile
-	const FVector ProjectileSpawnLocation = GetOwner()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
-	
-	// Spawn the projectile
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Instigator = GetOwnerPawn();
-	SpawnParams.Owner = GetOwner();
-	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation(), SpawnParams);
+	Multi_FireEffects();
 
 	--CurrentAmmo;
 	--Durability;
@@ -178,6 +177,46 @@ void AFirearm::UpdateInventoryStats()
 	OwnerInventory->RequestInventoryRefresh();
 }
 
+void AFirearm::SpawnProjectile()
+{
+	if (GetOwnerPawn() == nullptr 
+	|| GetOwner()->FindComponentByClass<UCameraComponent>() == nullptr
+	|| GetOwnerEquipComponent() == nullptr
+	|| ProjectileClass == nullptr)
+	{
+		return;
+	}
+
+	const FVector ProjectileSpawnLocation = GetOwner()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = GetOwnerPawn();
+	SpawnParams.Owner = GetOwnerPawn();
+	
+	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation(), SpawnParams);
+}
+
+void AFirearm::PlayFireAnimation()
+{
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (OwnerEquipComponent == nullptr || PrimaryMontage == nullptr)
+	{
+		return;
+	}
+
+	OwnerEquipComponent->PlayItemMontage(PrimaryMontage, false);
+}
+
+void AFirearm::PlayFireSoundEffect()
+{
+	if (FireSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
+}
+
 int32 AFirearm::GetRemainingAmmoInInventory() const
 {
 	if (GetOwner() == nullptr)
@@ -223,14 +262,16 @@ UPlayerInventoryComponent* AFirearm::GetOwningPlayerInventory() const
 	return GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 }
 
-void AFirearm::PlayFireSoundEffect()
+void AFirearm::Multi_FireEffects_Implementation()
 {
-	if (FireSound == nullptr)
+	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
 	{
 		return;
 	}
-	
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
+
+	SpawnProjectile();
+	PlayFireAnimation();
+	PlayFireSoundEffect();
 }
 
 void AFirearm::Multi_PlayThirdPersonReloadMontage_Implementation()
@@ -247,18 +288,4 @@ void AFirearm::Multi_PlayThirdPersonReloadMontage_Implementation()
 	}
 
 	OwnerEquipComponent->PlayItemMontage(ReloadMontage, false);
-}
-
-void AFirearm::Multi_PlayFireEffects_Implementation()
-{
-	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
-	{
-		return;
-	}
-
-	PlayFireSoundEffect();
-	if (PrimaryMontage)
-	{
-		GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, false);
-	}
 }
