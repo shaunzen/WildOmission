@@ -9,7 +9,7 @@
 #include "SurfaceHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
-#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Log.h"
 
@@ -24,6 +24,9 @@ AFirearmProjectile::AFirearmProjectile()
 	CollisionComponent->bTraceComplexOnMove = true;
 	CollisionComponent->bReturnMaterialOnMove = true;
 	RootComponent = CollisionComponent;
+
+	TrailComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TrailComponent"));
+	TrailComponent->SetupAttachment(CollisionComponent);
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	AudioComponent->SetupAttachment(CollisionComponent);

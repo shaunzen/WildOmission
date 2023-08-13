@@ -7,6 +7,7 @@
 #include "FirearmProjectile.generated.h"
 
 class USphereComponent;
+class UNiagaraComponent;
 class UProjectileMovementComponent;
 
 UCLASS()
@@ -25,6 +26,9 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* CollisionComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* TrailComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;
