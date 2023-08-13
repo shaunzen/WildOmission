@@ -383,6 +383,15 @@ FInventoryContents* UInventoryComponent::GetContents()
 
 FInventorySlot* UInventoryComponent::GetSlot(const int32& SlotIndex, bool bUseServerState)
 {
+	if (bUseServerState ? SlotIndex >= ServerState.Slots.Num() : SlotIndex > Slots.Num())
+	{
+		return nullptr;
+	}
+	else if (SlotIndex < 0)
+	{
+		return nullptr;
+	}
+
 	return bUseServerState? &ServerState.Slots[SlotIndex] :  &Slots[SlotIndex];
 }
 

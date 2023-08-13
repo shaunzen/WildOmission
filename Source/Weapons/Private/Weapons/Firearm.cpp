@@ -8,6 +8,8 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
+#include "Log.h"
 
 AFirearm::AFirearm()
 {
@@ -20,10 +22,19 @@ AFirearm::AFirearm()
 	MaxAmmo = 0;
 }
 
-void AFirearm::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
+void AFirearm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AFirearm, CurrentAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AFirearm, MaxAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AFirearm, Durability, COND_OwnerOnly);
+}
+
+void AFirearm::Equip(APawn *InOwnerPawn, USkeletalMeshComponent *InThirdPersonMeshComponent, const FName &InItemName, const int8 &InFromSlotIndex, const uint32 &InUniqueID)
 {
 	Super::Equip(InOwnerPawn, InThirdPersonMeshComponent, InItemName, InFromSlotIndex, InUniqueID);
-
+	
 	RetrieveInventoryStats();
 }
 
@@ -31,13 +42,21 @@ void AFirearm::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 
+	if (CurrentAmmo == 0)
+	{
+		return;
+	}
+
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
+		UE_LOG(LogWeapons, Display, TEXT("Playing Fire effects."));
+		PlayFireSoundEffect();
 		GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, true);
 	}
 
 	if (HasAuthority())
 	{
+		Multi_PlayFireEffects();
 		FireProjectile();
 	}
 }
@@ -100,12 +119,8 @@ void AFirearm::FireProjectile()
 		|| GetOwner() == nullptr
 		|| GetOwner()->FindComponentByClass<UCameraComponent>() == nullptr)
 	{
-		// TODO play click
-		UE_LOG(LogTemp, Warning, TEXT("Out of ammo"));
 		return;
 	}
-
-	Multi_PlayFireEffects();
 
 	// Find Spawn location for projectile
 	const FVector ProjectileSpawnLocation = GetOwner()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
@@ -208,6 +223,16 @@ UPlayerInventoryComponent* AFirearm::GetOwningPlayerInventory() const
 	return GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 }
 
+void AFirearm::PlayFireSoundEffect()
+{
+	if (FireSound == nullptr)
+	{
+		return;
+	}
+	
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
+}
+
 void AFirearm::Multi_PlayThirdPersonReloadMontage_Implementation()
 {
 	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
@@ -215,7 +240,7 @@ void AFirearm::Multi_PlayThirdPersonReloadMontage_Implementation()
 		return;
 	}
 
-	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr)
 	{
 		return;
@@ -226,18 +251,14 @@ void AFirearm::Multi_PlayThirdPersonReloadMontage_Implementation()
 
 void AFirearm::Multi_PlayFireEffects_Implementation()
 {
-	if (GetOwner() == nullptr)
+	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
 	{
 		return;
 	}
 
+	PlayFireSoundEffect();
 	if (PrimaryMontage)
 	{
 		GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, false);
-	}
-
-	if (FireSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
 	}
 }

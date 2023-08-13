@@ -17,6 +17,8 @@ class WEAPONS_API AFirearm : public AEquipableItem
 public:
 	AFirearm();
 	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
 
 	virtual void OnPrimaryPressed() override;
@@ -34,11 +36,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	FName AmmoItemID;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int32 CurrentAmmo;
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int32 MaxAmmo;
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int32 Durability;
 	
 	void FireProjectile();
@@ -50,6 +52,9 @@ private:
 	void RemoveAmmoFromInventory(const int32 AmountToRemove);
 
 	UPlayerInventoryComponent* GetOwningPlayerInventory() const;
+
+	void PlayFireSoundEffect();
+	//void PlayMuzzleFlashEffect();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayFireEffects();

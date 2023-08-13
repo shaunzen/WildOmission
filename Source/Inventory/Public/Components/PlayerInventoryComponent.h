@@ -35,13 +35,14 @@ public:
 
 	void RemoveHeldItem();
 
-	virtual void OnRep_ServerState() override;
-
 	//**************************************************************
 	// Getters
 	//**************************************************************
 
 	int8 GetToolbarSelectionIndex();	
+
+protected:
+	virtual void OnRep_ServerState() override;
 
 private:
 
