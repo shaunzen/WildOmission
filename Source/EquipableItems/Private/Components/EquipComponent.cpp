@@ -377,6 +377,7 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 		}
 
 		FirstPersonItemComponent->SetSkeletalMeshAsset(LocalEquipedItemDefaultClass->GetMeshComponent()->GetSkeletalMeshAsset());
+		FirstPersonItemComponent->SetAnimInstanceClass(LocalEquipedItemDefaultClass->GetMeshComponent()->GetAnimClass());
 
 		FirstPersonItemComponent->SetVisibility(OwnerPawn->IsLocallyControlled());
 		FirstPersonItemComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
