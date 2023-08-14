@@ -50,12 +50,24 @@ void AFirearm::OnPrimaryPressed()
 
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
-		SimulateFire();
+		SpawnProjectile();
+		PlayFireSoundEffect();
+
+		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage, true);
+		GetOwnerEquipComponent()->PlayItemMontage(PrimaryItemMontage, true);
 	}
 
 	if (HasAuthority())
 	{
-		Fire();
+		Multi_FireEffects();
+
+		--CurrentAmmo;
+		--Durability;
+		if (Durability <= 0 && GetOwningPlayerInventory())
+		{
+			GetOwningPlayerInventory()->RemoveHeldItem();
+		}
+		UpdateInventoryStats();
 	}
 }
 
@@ -108,36 +120,6 @@ void AFirearm::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 
 	CurrentAmmo += AmmoUsedInReload;
 	RemoveAmmoFromInventory(AmmoUsedInReload);
-	UpdateInventoryStats();
-}
-
-void AFirearm::SimulateFire()
-{
-	if (!HasAuthority())
-	{
-		SpawnProjectile();
-		PlayFireSoundEffect();
-	}
-	
-	GetOwnerEquipComponent()->PlayMontage(PrimaryMontage, true);
-	GetOwnerEquipComponent()->PlayItemMontage(PrimaryItemMontage, true);
-}
-
-void AFirearm::Fire()
-{
-	if (CurrentAmmo <= 0)
-	{
-		return;
-	}
-
-	Multi_FireEffects();
-
-	--CurrentAmmo;
-	--Durability;
-	if (Durability <= 0 && GetOwningPlayerInventory())
-	{
-		GetOwningPlayerInventory()->RemoveHeldItem();
-	}
 	UpdateInventoryStats();
 }
 
@@ -198,7 +180,7 @@ void AFirearm::SpawnProjectile()
 	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation(), SpawnParams);
 }
 
-void AFirearm::PlayFireAnimation()
+void AFirearm::PlayThirdPersonFireAnimation()
 {
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr || PrimaryMontage == nullptr)
@@ -267,13 +249,13 @@ UPlayerInventoryComponent* AFirearm::GetOwningPlayerInventory() const
 
 void AFirearm::Multi_FireEffects_Implementation()
 {
-	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
+	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled() || (GetOwnerPawn()->IsLocallyControlled() && GetOwnerPawn()->GetRemoteRole() == ROLE_Authority))
 	{
 		return;
 	}
 
 	SpawnProjectile();
-	PlayFireAnimation();
+	PlayThirdPersonFireAnimation();
 	PlayFireSoundEffect();
 }
 

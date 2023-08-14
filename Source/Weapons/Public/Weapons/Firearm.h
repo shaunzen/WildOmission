@@ -42,15 +42,12 @@ private:
 	int32 MaxAmmo;
 	UPROPERTY(Replicated)
 	int32 Durability;
-	
-	void SimulateFire();
-	void Fire();
 
 	void RetrieveInventoryStats();
 	void UpdateInventoryStats();
 
 	void SpawnProjectile();
-	void PlayFireAnimation();
+	void PlayThirdPersonFireAnimation();
 	void PlayFireSoundEffect();
 	
 	int32 GetRemainingAmmoInInventory() const;
