@@ -20,6 +20,18 @@ AFirearmProjectile::AFirearmProjectile()
 	PrimaryActorTick.bCanEverTick = false;
 
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
+	CollisionComponent->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndProbe);
+	CollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
+	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Ignore);
+	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Ignore);
+	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Ignore);
+	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel7, ECollisionResponse::ECR_Ignore);
+	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel8, ECollisionResponse::ECR_Ignore);
+	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Ignore);
 	CollisionComponent->bTraceComplexOnMove = true;
 	CollisionComponent->bReturnMaterialOnMove = true;
 	RootComponent = CollisionComponent;
