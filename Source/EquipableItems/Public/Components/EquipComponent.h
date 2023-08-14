@@ -34,6 +34,8 @@ public:
 	void UpdateControlRotation(const FRotator& InNewControlRotation);
 	FRotator GetOwnerControlRotation() const;
 
+	USkeletalMeshComponent* GetFirstPersonItemComponent() const;
+
 	void PlayMontage(UAnimMontage* Montage, bool FirstPerson);
 	void PlayItemMontage(UAnimMontage* Montage, bool FirstPerson);
 

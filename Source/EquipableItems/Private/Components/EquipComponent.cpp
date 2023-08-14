@@ -136,6 +136,11 @@ FRotator UEquipComponent::GetOwnerControlRotation() const
 	return OwnerReplicatedControlRotation;
 }
 
+USkeletalMeshComponent* UEquipComponent::GetFirstPersonItemComponent() const
+{
+	return FirstPersonItemComponent;
+}
+
 void UEquipComponent::PlayMontage(UAnimMontage* Montage, bool FirstPerson)
 {
 	if (FirstPerson && LocalEquipedItemDefaultClass)

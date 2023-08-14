@@ -6,6 +6,7 @@
 #include "Components/EquipComponent.h"
 #include "Projectiles/FirearmProjectile.h"
 #include "Camera/CameraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -20,6 +21,9 @@ AFirearm::AFirearm()
 	Durability = 100;
 	CurrentAmmo = 0;
 	MaxAmmo = 0;
+
+	MuzzleComponent = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleComponent"));
+	MuzzleComponent->SetupAttachment(RootComponent);
 }
 
 void AFirearm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
@@ -51,6 +55,7 @@ void AFirearm::OnPrimaryPressed()
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
 		SpawnProjectile();
+		SpawnMuzzleFlash();
 		PlayFireSoundEffect();
 
 		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage, true);
@@ -180,6 +185,21 @@ void AFirearm::SpawnProjectile()
 	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation(), SpawnParams);
 }
 
+void AFirearm::SpawnMuzzleFlash()
+{
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	const FVector MuzzleLocation = GetOwnerPawn()->IsLocallyControlled()
+		? OwnerEquipComponent->GetFirstPersonItemComponent()->GetComponentLocation() + MuzzleComponent->GetComponentLocation()
+		: MuzzleComponent->GetComponentLocation();
+
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), nullptr/*put muzzle flash here*/, MuzzleLocation, OwnerEquipComponent->GetOwnerControlRotation());
+}
+
 void AFirearm::PlayThirdPersonFireAnimation()
 {
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
@@ -255,6 +275,7 @@ void AFirearm::Multi_FireEffects_Implementation()
 	}
 
 	SpawnProjectile();
+	SpawnMuzzleFlash();
 	PlayThirdPersonFireAnimation();
 	PlayFireSoundEffect();
 }

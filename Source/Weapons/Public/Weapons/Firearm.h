@@ -27,6 +27,9 @@ public:
 	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance);
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* MuzzleComponent;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	USoundBase* FireSound;
 
@@ -48,6 +51,7 @@ private:
 
 	void SpawnProjectile();
 	void PlayThirdPersonFireAnimation();
+	void SpawnMuzzleFlash();
 	void PlayFireSoundEffect();
 	
 	int32 GetRemainingAmmoInInventory() const;
