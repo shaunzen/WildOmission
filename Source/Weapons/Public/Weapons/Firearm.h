@@ -7,6 +7,7 @@
 #include "Firearm.generated.h"
 
 class AFirearmProjectile;
+class UNiagaraSystem;
 class UPlayerInventoryComponent;
 
 UCLASS()
@@ -31,7 +32,13 @@ private:
 	USceneComponent* MuzzleComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UNiagaraSystem* MuzzleFlashEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	USoundBase* FireSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	USoundBase* OutOfAmmoSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TSubclassOf<AFirearmProjectile> ProjectileClass;
