@@ -54,8 +54,8 @@ void ATimeOfDayHandler::CalculateMoonPhase()
 		UE_LOG(LogTimeOfDay, Error, TEXT("Couldn't calculate moon phase, MPC missing."));
 		return;
 	}
-
-	float MoonPhase = (static_cast<float>(DaysPlayed) / 30.0f) - FMath::Floor((static_cast<float>(DaysPlayed) / 30.0f));
+	
+	const float MoonPhase = (static_cast<float>(DaysPlayed) / 8.0f) - FMath::Floor((static_cast<float>(DaysPlayed) / 8.0f));
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Sky, TEXT("MoonPhase"), MoonPhase);
 }
 
