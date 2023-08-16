@@ -179,12 +179,18 @@ void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		APlayerController* PlayerController = Iterator->Get();
-		if (PlayerController == nullptr)
+		if (PlayerController == nullptr || PlayerController->GetPawn() == nullptr)
 		{
 			return;
 		}
 
-		PlayerController->GetPawn()->SetActorLocation(FVector(0.0f, 0.0f, 2600.0f));
+		FHitResult HitResult;
+		const FVector Start = FVector(0.0f, 0.0f, 5000.0f);
+		const FVector End = -(Start * 2.0f);
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+		{
+			PlayerController->GetPawn()->SetActorLocation(HitResult.ImpactPoint);
+		}
 	}
 }
 
