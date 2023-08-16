@@ -28,6 +28,7 @@ AWorldItem::AWorldItem()
 	// Create static mesh component
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
+	MeshComponent->SetStaticMesh(nullptr);
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
@@ -61,7 +62,7 @@ void AWorldItem::BeginPlay()
 		return;
 	}
 
-	MeshComponent->SetMassOverrideInKg(FName(), 20.0f);
+	MeshComponent->SetMassOverrideInKg(NAME_None, 20.0f);
 	MeshComponent->OnComponentHit.AddDynamic(this, &AWorldItem::OnComponentHit);
 }
 
