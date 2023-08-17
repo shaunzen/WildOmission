@@ -98,6 +98,16 @@
 			]
 		},
 		{
+			"Name": "Monsters",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"AIModule",
+				"CoreUObject"
+			]
+		},
+		{
 			"Name": "Notifications",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
