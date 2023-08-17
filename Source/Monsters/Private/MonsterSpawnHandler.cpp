@@ -81,7 +81,7 @@ void AMonsterSpawnHandler::CheckSpawnConditionsForPlayer(APawn* Player)
 	UE_LOG(LogMonsters, VeryVerbose, TEXT("%i monsters found in range of player."), MonstersInRange);
 
 	// If no animals are present, there is a chance we will spawn some
-	if (MonstersInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(0.1f))
+	if (MonstersInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(0.6f))
 	{
 		UE_LOG(LogMonsters, Verbose, TEXT("Monster spawn condition not met."));
 		return;

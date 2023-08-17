@@ -11,6 +11,7 @@ class AWorldGenerationHandler;
 class ATimeOfDayHandler;
 class AWeatherHandler;
 class AAnimalSpawnHandler;
+class AMonsterSpawnHandler;
 class AWildOmissionCharacter;
 class AWildOmissionPlayerController;
 
@@ -73,5 +74,8 @@ private:
 
 	UPROPERTY()
 	AAnimalSpawnHandler* AnimalSpawnHandler;
+
+	UPROPERTY()
+	AMonsterSpawnHandler* MonsterSpawnHandler;
 	
 };

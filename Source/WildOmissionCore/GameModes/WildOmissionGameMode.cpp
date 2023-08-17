@@ -9,6 +9,7 @@
 #include "Interfaces/RequiredForLoad.h"
 #include "Actors/WeatherHandler.h"
 #include "AnimalSpawnHandler.h"
+#include "MonsterSpawnHandler.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
 #include "WildOmissionCore/WildOmissionGameState.h"
@@ -31,6 +32,7 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	TimeOfDayHandler = GetWorld()->SpawnActor<ATimeOfDayHandler>();
 	WeatherHandler = GetWorld()->SpawnActor<AWeatherHandler>();
 	AnimalSpawnHandler = GetWorld()->SpawnActor<AAnimalSpawnHandler>();
+	MonsterSpawnHandler = GetWorld()->SpawnActor<AMonsterSpawnHandler>();
 	WeatherHandler->Setup(WorldGenerationHandler);
 	SaveHandler->Setup(WorldGenerationHandler, TimeOfDayHandler, WeatherHandler, Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));
 
