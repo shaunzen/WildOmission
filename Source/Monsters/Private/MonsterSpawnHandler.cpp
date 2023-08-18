@@ -128,7 +128,7 @@ void AMonsterSpawnHandler::SpawnMonstersInRadiusFromOrigin(const FVector& SpawnO
 	UE_LOG(LogMonsters, VeryVerbose, TEXT("Spawning monster with ID %i"), MonsterToSpawn);
 	for (int32 i = 0; i < SpawnData[MonsterToSpawn]->SpawnGroupSize; ++i)
 	{
-		AMonster* SpawnedMonster= GetWorld()->SpawnActor<AMonster>(SpawnData[MonsterToSpawn]->Class, GetSpawnTransform(SpawnOrigin));
+		AMonster* SpawnedMonster = GetWorld()->SpawnActor<AMonster>(SpawnData[MonsterToSpawn]->Class, GetSpawnTransform(SpawnOrigin));
 		SpawnedMonsters.Add(SpawnedMonster);
 	}
 }
