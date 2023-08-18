@@ -7,6 +7,7 @@
 #include "Components/VitalsComponent.h"
 #include "Components/DistanceDespawnComponent.h"
 #include "Components/InventoryComponent.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -91,6 +92,25 @@ void AMonster::PlayIdleSound()
 	}
 
 	Multi_PlayIdleSound();
+}
+
+void AMonster::Attack(AActor* Target)
+{
+	Multi_PlayAttackEffects();
+
+	APawn* TargetPawn = Cast<APawn>(Target);
+	if (TargetPawn == nullptr)
+	{
+		return;
+	}
+
+	FPointDamageEvent HitByMonsterEvent(10.0f, FHitResult(), GetActorForwardVector(), nullptr);
+	TargetPawn->TakeDamage(10.0f, HitByMonsterEvent, this->GetController(), this);
+}
+
+void AMonster::Multi_PlayAttackEffects_Implementation()
+{
+	// TODO Attack Effects
 }
 
 void AMonster::Multi_PlayIdleSound_Implementation()

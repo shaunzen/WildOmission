@@ -1,17 +1,17 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Services/BTService_ClosestPlayerLocation.h"
+#include "Services/BTService_ClosestVisiblePlayer.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-UBTService_ClosestPlayerLocation::UBTService_ClosestPlayerLocation()
+UBTService_ClosestVisiblePlayer::UBTService_ClosestVisiblePlayer()
 {
-	NodeName = TEXT("Find Closest Chasable Player Location");
+	NodeName = TEXT("Find Closest Chasable Player");
 	MaxChaseDistance = 1500.0f;
 }
 
-void UBTService_ClosestPlayerLocation::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void UBTService_ClosestVisiblePlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
@@ -83,5 +83,5 @@ void UBTService_ClosestPlayerLocation::TickNode(UBehaviorTreeComponent& OwnerCom
 		return;
 	}
 
-	OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), ClosestVisiblePlayer->GetActorLocation());
+	OwnerComp.GetBlackboardComponent()->SetValueAsObject(GetSelectedBlackboardKey(), ClosestVisiblePlayer);
 }
