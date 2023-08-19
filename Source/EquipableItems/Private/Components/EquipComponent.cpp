@@ -84,7 +84,7 @@ void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableIte
 		return;
 	}
 
-	if (OwnerPawn->IsLocallyControlled())
+	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController())
 	{
 		EquipFirstPersonViewModel(ItemClass, UniqueID);
 	}
@@ -101,7 +101,7 @@ void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableIte
 
 void UEquipComponent::Disarm()
 {
-	if (OwnerPawn && OwnerPawn->IsLocallyControlled())
+	if (OwnerPawn && OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController())
 	{
 		EquipFirstPersonViewModel(nullptr, 0);
 	}
@@ -193,19 +193,7 @@ void UEquipComponent::PlayItemMontage(UAnimMontage* Montage, bool FirstPerson)
 
 bool UEquipComponent::IsMontagePlaying(UAnimMontage* Montage) const
 {
-	UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
-	if (FirstPersonArmsAnimInstance == nullptr)
-	{
-		return false;
-	}
-
-	UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
-	if (ThirdPersonAnimInstance == nullptr)
-	{
-		return false;
-	}
-
-	return FirstPersonArmsAnimInstance->Montage_IsPlaying(Montage) || ThirdPersonAnimInstance->Montage_IsPlaying(Montage);
+	return IsFirstPersonMontagePlaying(Montage) || IsThirdPersonMontagePlaying(Montage);
 }
 
 bool UEquipComponent::IsItemMontagePlaying(UAnimMontage* Montage) const
@@ -447,12 +435,44 @@ void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlo
 
 bool UEquipComponent::IsEquipedItemValid() const
 {
-	if (OwnerPawn->IsLocallyControlled())
+	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController())
 	{
 		return EquipedItem != nullptr && LocalEquipedItemDefaultClass != nullptr && EquipedItem->GetClass() == LocalEquipedItemDefaultClass->GetClass();
 	}
 
 	return EquipedItem != nullptr;
+}
+
+bool UEquipComponent::IsFirstPersonMontagePlaying(UAnimMontage* Montage) const
+{
+	if (OwnerFirstPersonMesh == nullptr)
+	{
+		return false;
+	}
+
+	UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
+	if (FirstPersonArmsAnimInstance == nullptr)
+	{
+		return false;
+	}
+
+	return FirstPersonArmsAnimInstance->Montage_IsPlaying(Montage);
+}
+
+bool UEquipComponent::IsThirdPersonMontagePlaying(UAnimMontage* Montage) const
+{
+	if (OwnerThirdPersonMesh == nullptr)
+	{
+		return false;
+	}
+	
+	UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
+	if (ThirdPersonAnimInstance == nullptr)
+	{
+		return false;
+	}
+
+	return ThirdPersonAnimInstance->Montage_IsPlaying(Montage);
 }
 
 //******************************************

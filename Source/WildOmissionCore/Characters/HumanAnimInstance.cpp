@@ -104,7 +104,7 @@ void UHumanAnimInstance::HandleEquipedItemPose()
 		return;
 	}
 
-	if (TryGetPawnOwner()->IsLocallyControlled())
+	if (TryGetPawnOwner()->IsLocallyControlled() && TryGetPawnOwner()->GetController()->IsPlayerController())
 	{
 		if (PlayerEquipComponent->GetLocalEquipedItemDefaultClass() == nullptr)
 		{

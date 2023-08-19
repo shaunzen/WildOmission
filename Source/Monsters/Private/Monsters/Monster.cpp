@@ -57,7 +57,7 @@ void AMonster::BeginPlay()
 	ZombieArmsItem.Name = TEXT("zombie.arms");
 	ZombieArmsItem.Quantity = 1;
 	InventoryComponent->AddItem(ZombieArmsItem);
-	InventoryComponent->SetToolbarSelectionIndex(0);
+	InventoryComponent->SetToolbarSelectionIndex(1);
 	VitalsComponent->OnHealthDepleted.AddDynamic(this, &AMonster::HandleDeath);
 	DespawnComponent->OnDespawnConditionMet.AddDynamic(this, &AMonster::HandleDespawn);
 }
@@ -110,25 +110,16 @@ void AMonster::PlayIdleSound()
 	Multi_PlayIdleSound();
 }
 
-void AMonster::Attack(AActor* Target)
+APawn* AMonster::GetTargetPawn() const
 {
-	Multi_PlayAttackEffects();
-
-	TargetPawn = Cast<APawn>(Target);
-	
+	return TargetPawn;
 }
 
-void AMonster::OnAttackAnimationClimax()
+void AMonster::Attack(AActor* Target)
 {
-	UE_LOG(LogMonsters, Warning, TEXT("Attack Climax."));
-
-	if (TargetPawn == nullptr || FVector::Distance(this->GetActorLocation(), TargetPawn->GetActorLocation()) > MaxAttackRange)
-	{
-		return;
-	}
-
-	FPointDamageEvent HitByMonsterEvent(10.0f, FHitResult(), GetActorForwardVector(), nullptr);
-	TargetPawn->TakeDamage(10.0f, HitByMonsterEvent, this->GetController(), this);
+	TargetPawn = Cast<APawn>(Target);
+	EquipComponent->PrimaryPressed();
+	//Multi_PlayAttackEffects();
 }
 
 void AMonster::Multi_PlayAttackEffects_Implementation()

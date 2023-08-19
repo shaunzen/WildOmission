@@ -104,7 +104,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"CoreUObject"
+				"CoreUObject",
+				"EquipableItems"
 			]
 		},
 		{

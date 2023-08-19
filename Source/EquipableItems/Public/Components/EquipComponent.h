@@ -102,6 +102,9 @@ private:
 
 	bool IsEquipedItemValid() const;
 
+	bool IsFirstPersonMontagePlaying(UAnimMontage* Montage) const;
+	bool IsThirdPersonMontagePlaying(UAnimMontage* Montage) const;
+
 	UFUNCTION(Server, Reliable)
 	void Server_PrimaryPressed();
 	UFUNCTION(Server, Reliable)

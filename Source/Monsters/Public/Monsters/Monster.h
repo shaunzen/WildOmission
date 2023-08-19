@@ -34,10 +34,10 @@ public:
 
 	void PlayIdleSound();
 
-	void Attack(AActor* Target);
-	UFUNCTION(BlueprintCallable)
-	void OnAttackAnimationClimax();
+	APawn* GetTargetPawn() const;
 
+	void Attack(AActor* Target);
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

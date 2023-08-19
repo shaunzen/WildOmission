@@ -70,7 +70,7 @@ void AToolItem::OnPrimaryHeld()
 		return;
 	}
 
-	if (GetOwnerPawn()->IsLocallyControlled())
+	if (GetOwnerPawn()->IsLocallyControlled() && GetOwnerPawn()->GetController()->IsPlayerController())
 	{
 		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage, true);
 	}
@@ -201,7 +201,7 @@ FInventoryItem* AToolItem::FindInInventory()
 
 void AToolItem::Multi_PlayThirdPersonPrimaryMontage_Implementation()
 {
-	if (GetOwnerPawn()->IsLocallyControlled())
+	if (GetOwnerPawn()->IsLocallyControlled() && GetOwnerPawn()->GetController()->IsPlayerController())
 	{
 		return;
 	}
