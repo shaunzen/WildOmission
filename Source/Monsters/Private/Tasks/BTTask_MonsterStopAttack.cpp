@@ -26,13 +26,6 @@ EBTNodeResult::Type UBTTask_MonsterStopAttack::ExecuteTask(UBehaviorTreeComponen
 		return EBTNodeResult::Type::Failed;
 	}
 
-	UObject* BlackboardObject = OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey());
-	AActor* BlackboardActor = Cast<AActor>(BlackboardObject);
-	if (BlackboardActor == nullptr)
-	{
-		return EBTNodeResult::Type::Failed;
-	}
-
 	OwnerMonster->StopAttack();
 
 	return EBTNodeResult::Type::Succeeded;

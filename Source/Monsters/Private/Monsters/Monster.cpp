@@ -127,6 +127,7 @@ void AMonster::StopAttack()
 {
 	EquipComponent->PrimaryReleased();
 	TargetPawn = nullptr;
+	UE_LOG(LogTemp, Warning, TEXT("Monster Attack Stoped"));
 }
 
 void AMonster::Multi_PlayIdleSound_Implementation()

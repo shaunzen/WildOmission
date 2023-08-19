@@ -37,5 +37,8 @@ void UBTService_MonsterAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, 
 	}
 
 	// Set selected blackboard key respectively
-	OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(), FVector::Distance(OwnerMonster->GetActorLocation(), AttackedActor->GetActorLocation()) < MaxAttackDistance);
+	const bool IsInAttackRange = FVector::Distance(OwnerMonster->GetActorLocation(), AttackedActor->GetActorLocation()) < MaxAttackDistance;
+	IsInAttackRange ?
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(), true)
+		: OwnerComp.GetBlackboardComponent()->ClearValue(GetSelectedBlackboardKey());
 }
