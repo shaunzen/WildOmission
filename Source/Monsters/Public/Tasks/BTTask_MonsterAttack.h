@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/BTTaskNode.h"
-#include "BTTask_AnimalPlaySound.generated.h"
+#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+#include "BTTask_MonsterAttack.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ANIMALS_API UBTTask_AnimalPlaySound : public UBTTaskNode
+class MONSTERS_API UBTTask_MonsterAttack : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
 public:
-	UBTTask_AnimalPlaySound();
+	UBTTask_MonsterAttack();
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
+	
 };

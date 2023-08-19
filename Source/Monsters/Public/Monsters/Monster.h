@@ -9,6 +9,8 @@
 
 class UNavigationInvokerComponent;
 class UVitalsComponent;
+class UPlayerInventoryComponent;
+class UEquipComponent;
 class UDistanceDespawnComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMonsterDespawnSignature, AMonster*, DespawningMonster);
@@ -33,6 +35,8 @@ public:
 	void PlayIdleSound();
 
 	void Attack(AActor* Target);
+	UFUNCTION(BlueprintCallable)
+	void OnAttackAnimationClimax();
 
 protected:
 	// Called when the game starts or when spawned
@@ -46,6 +50,12 @@ private:
 	UVitalsComponent* VitalsComponent;
 	
 	UPROPERTY(VisibleAnywhere)
+	UPlayerInventoryComponent* InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UEquipComponent* EquipComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	UDistanceDespawnComponent* DespawnComponent;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -53,6 +63,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FInventoryItem> Drops;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MaxAttackRange;
+
+	UPROPERTY()
+	APawn* TargetPawn;
 
 	UFUNCTION()
 	void HandleDespawn();

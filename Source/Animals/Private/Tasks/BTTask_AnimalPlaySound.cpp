@@ -13,6 +13,8 @@ UBTTask_AnimalPlaySound::UBTTask_AnimalPlaySound()
 
 EBTNodeResult::Type UBTTask_AnimalPlaySound::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	Super::ExecuteTask(OwnerComp, NodeMemory);
+
 	if (OwnerComp.GetAIOwner() == nullptr || OwnerComp.GetAIOwner()->GetPawn() == nullptr || !OwnerComp.GetAIOwner()->GetPawn()->HasAuthority())
 	{
 		return EBTNodeResult::Type::Failed;

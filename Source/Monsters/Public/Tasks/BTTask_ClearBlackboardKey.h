@@ -16,5 +16,6 @@ class MONSTERS_API UBTTask_ClearBlackboardKey : public UBTTask_BlackboardBase
 	
 public:
 	UBTTask_ClearBlackboardKey();
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
 };

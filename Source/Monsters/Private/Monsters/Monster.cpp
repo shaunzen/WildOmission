@@ -5,11 +5,14 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "NavigationInvokerComponent.h"
 #include "Components/VitalsComponent.h"
+#include "Components/PlayerInventoryComponent.h"
+#include "Components/EquipComponent.h"
 #include "Components/DistanceDespawnComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Kismet/GameplayStatics.h"
+#include "Log.h"
 
 // Sets default values
 AMonster::AMonster()
@@ -26,10 +29,19 @@ AMonster::AMonster()
 	VitalsComponent->SetThirstCanDeplete(false);
 	VitalsComponent->SetHungerCanDeplete(false);
 
+	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(TEXT("InventoryComponent"));
+
+	EquipComponent = CreateDefaultSubobject<UEquipComponent>(TEXT("EquipComponent"));
+	EquipComponent->SetupAttachment(RootComponent);
+	EquipComponent->Setup(nullptr, GetMesh());
+
+
 	DespawnComponent = CreateDefaultSubobject<UDistanceDespawnComponent>(TEXT("DespawnComponent"));
 	DespawnComponent->SetupAttachment(RootComponent);
 
 	IdleSound = nullptr;
+
+	MaxAttackRange = 300.0f;
 }
 
 // Called when the game starts or when spawned
@@ -41,7 +53,11 @@ void AMonster::BeginPlay()
 	{
 		return;
 	}
-
+	FInventoryItem ZombieArmsItem;
+	ZombieArmsItem.Name = TEXT("zombie.arms");
+	ZombieArmsItem.Quantity = 1;
+	InventoryComponent->AddItem(ZombieArmsItem);
+	InventoryComponent->SetToolbarSelectionIndex(0);
 	VitalsComponent->OnHealthDepleted.AddDynamic(this, &AMonster::HandleDeath);
 	DespawnComponent->OnDespawnConditionMet.AddDynamic(this, &AMonster::HandleDespawn);
 }
@@ -98,8 +114,15 @@ void AMonster::Attack(AActor* Target)
 {
 	Multi_PlayAttackEffects();
 
-	APawn* TargetPawn = Cast<APawn>(Target);
-	if (TargetPawn == nullptr)
+	TargetPawn = Cast<APawn>(Target);
+	
+}
+
+void AMonster::OnAttackAnimationClimax()
+{
+	UE_LOG(LogMonsters, Warning, TEXT("Attack Climax."));
+
+	if (TargetPawn == nullptr || FVector::Distance(this->GetActorLocation(), TargetPawn->GetActorLocation()) > MaxAttackRange)
 	{
 		return;
 	}
@@ -111,6 +134,7 @@ void AMonster::Attack(AActor* Target)
 void AMonster::Multi_PlayAttackEffects_Implementation()
 {
 	// TODO Attack Effects
+	UE_LOG(LogMonsters, Warning, TEXT("Playing Attack Effects..."));
 }
 
 void AMonster::Multi_PlayIdleSound_Implementation()
