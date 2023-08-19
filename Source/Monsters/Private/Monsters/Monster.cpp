@@ -121,13 +121,12 @@ void AMonster::Attack(AActor* Target)
 {
 	TargetPawn = Cast<APawn>(Target);
 	EquipComponent->PrimaryPressed();
-	//Multi_PlayAttackEffects();
 }
 
-void AMonster::Multi_PlayAttackEffects_Implementation()
+void AMonster::StopAttack()
 {
-	// TODO Attack Effects
-	UE_LOG(LogMonsters, Warning, TEXT("Playing Attack Effects..."));
+	EquipComponent->PrimaryReleased();
+	TargetPawn = nullptr;
 }
 
 void AMonster::Multi_PlayIdleSound_Implementation()
