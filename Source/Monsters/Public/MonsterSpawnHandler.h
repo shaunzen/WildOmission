@@ -7,6 +7,7 @@
 #include "MonsterSpawnHandler.generated.h"
 
 class AMonster;
+class ATimeOfDayHandler;
 struct FMonsterSpawnData;
 
 UCLASS()
@@ -17,6 +18,7 @@ class MONSTERS_API AMonsterSpawnHandler : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AMonsterSpawnHandler();
+	void Setup(ATimeOfDayHandler* InTimeOfDayHandler);
 
 	static TArray<AMonster*>* GetSpawnedMonsters();
 
@@ -32,10 +34,16 @@ private:
 	void CheckSpawnConditionsForAllPlayers();
 	void CheckSpawnConditionsForPlayer(APawn* PlayerToCheck);
 
+	UPROPERTY()
+	ATimeOfDayHandler* TimeOfDayHandler;
+
 	int32 GetNumMonstersWithinRadiusFromLocation(const FVector& TestLocation) const;
 
 	UFUNCTION()
 	void SpawnMonstersInRadiusFromOrigin(const FVector& SpawnOrigin);
+
+	UFUNCTION()
+	void RemoveMonsterFromList(AMonster* MonsterToRemove);
 
 	FTransform GetSpawnTransform(const FVector& SpawnOrigin) const;
 

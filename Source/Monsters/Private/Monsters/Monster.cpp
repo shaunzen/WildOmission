@@ -40,6 +40,7 @@ AMonster::AMonster()
 	DespawnComponent->SetupAttachment(RootComponent);
 
 	IdleSound = nullptr;
+	TargetPawn = nullptr;
 
 	MaxAttackRange = 300.0f;
 }
@@ -53,6 +54,7 @@ void AMonster::BeginPlay()
 	{
 		return;
 	}
+
 	FInventoryItem ZombieArmsItem;
 	ZombieArmsItem.Name = TEXT("zombie.arms");
 	ZombieArmsItem.Quantity = 1;

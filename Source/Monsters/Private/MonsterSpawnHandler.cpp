@@ -4,6 +4,7 @@
 #include "MonsterSpawnHandler.h"
 #include "Monsters/Monster.h"
 #include "Structs/MonsterSpawnData.h"
+#include "TimeOfDayHandler.h"
 #include "Engine/DataTable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -12,8 +13,8 @@
 
 const static int32 MIN_SPAWN_CHECK_TIME_SECONDS = 5.0f;
 const static int32 MAX_SPAWN_CHECK_TIME_SECONDS = 15.0f;
-const static float OUTER_SPAWN_RADIUS_CENTIMETERS = 4000.0f;
-const static float INNER_SPAWN_RADIUS_CENTIMETERS = 3000.0f;
+const static float OUTER_SPAWN_RADIUS_CENTIMETERS = 10000.0f;
+const static float INNER_SPAWN_RADIUS_CENTIMETERS = 5000.0f;
 
 static UDataTable* MonsterSpawnDataTable = nullptr;
 static TArray<AMonster*> SpawnedMonsters;
@@ -28,6 +29,11 @@ AMonsterSpawnHandler::AMonsterSpawnHandler()
 	{
 		MonsterSpawnDataTable = MonsterDataTableObject.Object;
 	}
+}
+
+void AMonsterSpawnHandler::Setup(ATimeOfDayHandler* InTimeOfDayHandler)
+{
+	TimeOfDayHandler = InTimeOfDayHandler;
 }
 
 TArray<AMonster*>* AMonsterSpawnHandler::GetSpawnedMonsters()
@@ -55,6 +61,11 @@ void AMonsterSpawnHandler::CheckSpawnConditionsForAllPlayers()
 	FTimerDelegate NextSpawnCheckTimerDelegate;
 	NextSpawnCheckTimerDelegate.BindUObject(this, &AMonsterSpawnHandler::CheckSpawnConditionsForAllPlayers);
 	GetWorld()->GetTimerManager().SetTimer(NextSpawnCheckTimerHandle, NextSpawnCheckTimerDelegate, NextCheckTimeSeconds, false);
+
+	if (TimeOfDayHandler->IsNight() == false)
+	{
+		return;
+	}
 
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
@@ -129,8 +140,20 @@ void AMonsterSpawnHandler::SpawnMonstersInRadiusFromOrigin(const FVector& SpawnO
 	for (int32 i = 0; i < SpawnData[MonsterToSpawn]->SpawnGroupSize; ++i)
 	{
 		AMonster* SpawnedMonster = GetWorld()->SpawnActor<AMonster>(SpawnData[MonsterToSpawn]->Class, GetSpawnTransform(SpawnOrigin));
+		SpawnedMonster->OnDespawn.AddDynamic(this, &AMonsterSpawnHandler::RemoveMonsterFromList);
 		SpawnedMonsters.Add(SpawnedMonster);
 	}
+}
+
+void AMonsterSpawnHandler::RemoveMonsterFromList(AMonster* MonsterToRemove)
+{
+	const int32 MonsterIndex = SpawnedMonsters.IndexOfByKey(MonsterToRemove);
+	if (MonsterIndex == INDEX_NONE)
+	{
+		return;
+	}
+
+	SpawnedMonsters.RemoveAtSwap(MonsterIndex, 1, false);
 }
 
 FTransform AMonsterSpawnHandler::GetSpawnTransform(const FVector& SpawnOrigin) const
