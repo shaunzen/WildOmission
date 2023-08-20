@@ -32,8 +32,6 @@ public:
 
 	FOnMonsterDespawnSignature OnDespawn;
 
-	void PlayIdleSound();
-
 	APawn* GetTargetPawn() const;
 
 	void Attack(AActor* Target);
@@ -76,8 +74,10 @@ private:
 
 	UFUNCTION()
 	void HandleDeath();
+	
+	void SetIdleSoundTimer();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayIdleSound();
+	UFUNCTION()
+	void PlayIdleSound();
 
 };

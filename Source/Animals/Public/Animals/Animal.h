@@ -11,6 +11,8 @@ class UNavigationInvokerComponent;
 class UVitalsComponent;
 class UDistanceDespawnComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnimalDespawnSignature, AAnimal*, DespawningAnimal);
+
 UCLASS()
 class ANIMALS_API AAnimal : public ACharacter
 {
@@ -25,8 +27,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	void PlayCallSound();
 
 protected:
 	// Called when the game starts or when spawned
@@ -43,7 +43,7 @@ private:
 	UDistanceDespawnComponent* DespawnComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	USoundBase* CallSound;
+	USoundBase* IdleSound;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FInventoryItem> Drops;
@@ -54,7 +54,9 @@ private:
 	UFUNCTION()
 	void HandleDeath();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayCallSound();
+	void SetIdleSoundTimer();
+
+	UFUNCTION()
+	void PlayIdleSound();
 
 };

@@ -50,6 +50,8 @@ void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SetIdleSoundTimer();
+
 	if (!HasAuthority())
 	{
 		return;
@@ -84,6 +86,28 @@ void AMonster::HandleDeath()
 	HandleDespawn();
 }
 
+void AMonster::SetIdleSoundTimer()
+{
+	FTimerHandle IdleSoundTimerHandle;
+	FTimerDelegate IdleSoundTimerDelegate;
+	const float IdleSoundDelay = FMath::RandRange(1.0f, 5.0f);
+
+	IdleSoundTimerDelegate.BindUObject(this, &AMonster::PlayIdleSound);
+	GetWorld()->GetTimerManager().SetTimer(IdleSoundTimerHandle, IdleSoundTimerDelegate, IdleSoundDelay, false);
+}
+
+void AMonster::PlayIdleSound()
+{
+	SetIdleSoundTimer();
+
+	if (GetWorld() == nullptr || IdleSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), IdleSound, GetActorLocation());
+}
+
 // Called every frame
 void AMonster::Tick(float DeltaTime)
 {
@@ -102,16 +126,6 @@ void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AMonster::PlayIdleSound()
-{
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	Multi_PlayIdleSound();
-}
-
 APawn* AMonster::GetTargetPawn() const
 {
 	return TargetPawn;
@@ -127,15 +141,4 @@ void AMonster::StopAttack()
 {
 	EquipComponent->PrimaryReleased();
 	TargetPawn = nullptr;
-	UE_LOG(LogTemp, Warning, TEXT("Monster Attack Stoped"));
-}
-
-void AMonster::Multi_PlayIdleSound_Implementation()
-{
-	if (IdleSound == nullptr)
-	{
-		return;
-	}
-
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), IdleSound, this->GetActorLocation());
 }
