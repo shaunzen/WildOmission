@@ -3,6 +3,7 @@
 
 #include "Components/InteractionComponent.h"
 #include "Interfaces/Interactable.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UInteractionComponent::UInteractionComponent()
 {
@@ -20,19 +21,7 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UInteractionComponent::Interact()
 {
-	FHitResult HitResult;
-	if (!LineTraceOnVisibility(HitResult))
-	{
-		return;
-	}
-
-	IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor());
-	if (Interactable == nullptr)
-	{
-		return;
-	}
-
-	Server_Interact(HitResult.GetActor());
+	Server_Interact();
 }
 
 FString UInteractionComponent::GetInteractionString() const
@@ -61,21 +50,42 @@ void UInteractionComponent::UpdateInteractionPrompt()
 
 bool UInteractionComponent::LineTraceOnVisibility(FHitResult& OutHitResult) const
 {
-	FVector Start = GetComponentLocation();
-	FVector End = Start + (GetForwardVector() * InteractionRange);
-	FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
+	const FVector Start = GetComponentLocation();
+	const FVector End = Start + (GetOwnerForwardVector() * InteractionRange);
+	const FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this->GetOwner());
 	return GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_Visibility, Sphere, Params);
 }
 
-void UInteractionComponent::Server_Interact_Implementation(AActor* ActorToInteract)
+FVector UInteractionComponent::GetOwnerForwardVector() const
 {
-	IInteractable* InteractableActor = Cast<IInteractable>(ActorToInteract);
-	if (InteractableActor == nullptr)
+	APawn* PawnOwner = Cast<APawn>(GetOwner());
+	if (PawnOwner == nullptr)
 	{
+		return this->GetForwardVector();
+	}
+
+	return UKismetMathLibrary::GetForwardVector(PawnOwner->GetControlRotation());
+}
+
+void UInteractionComponent::Server_Interact_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Interation On Server."));
+	FHitResult HitResult;
+	if (!LineTraceOnVisibility(HitResult))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Interation On Server, LineTrace Failed."));
 		return;
 	}
 
-	InteractableActor->Interact(GetOwner());
+	IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor());
+	if (Interactable == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Interation On Server, Interactable nullptr."));
+		return;
+	}
+
+	Interactable->Interact(GetOwner());
+	UE_LOG(LogTemp, Warning, TEXT("Interation On Server, Success."));
 }

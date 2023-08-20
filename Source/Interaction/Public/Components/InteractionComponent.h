@@ -23,7 +23,6 @@ public:
 	FString GetInteractionString() const;
 
 private:
-
 	UPROPERTY(EditDefaultsOnly)
 	float InteractionRange;
 
@@ -35,7 +34,9 @@ private:
 	void UpdateInteractionPrompt();
 
 	bool LineTraceOnVisibility(FHitResult& OutHitResult) const;
-	
+	FVector GetOwnerForwardVector() const;
+
 	UFUNCTION(Server, Reliable)
-	void Server_Interact(AActor* ActorToInteract);
+	void Server_Interact();
+
 };
