@@ -37,6 +37,9 @@ private:
 	UFUNCTION()
 	void SpawnAnimalsInRadiusFromOrigin(const FVector& SpawnOrigin);
 
+	UFUNCTION()
+	void RemoveAnimalFromList(AAnimal* AnimalToRemove);
+
 	FTransform GetSpawnTransform(const FVector& SpawnOrigin) const;
 
 	static FAnimalSpawnData* GetSpawnData(const FName& AnimalName);

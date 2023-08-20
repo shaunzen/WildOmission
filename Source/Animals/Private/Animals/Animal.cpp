@@ -50,13 +50,10 @@ void AAnimal::BeginPlay()
 
 void AAnimal::HandleDespawn()
 {
-	const int32 AnimalIndex = AAnimalSpawnHandler::GetSpawnedAnimals()->IndexOfByKey(this);
-	if (AnimalIndex == INDEX_NONE)
+	if (OnDespawn.IsBound())
 	{
-		return;
+		OnDespawn.Broadcast(this);
 	}
-
-	AAnimalSpawnHandler::GetSpawnedAnimals()->RemoveAtSwap(AnimalIndex, 1, false);
 	Destroy();
 }
 

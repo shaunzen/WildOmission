@@ -22,7 +22,7 @@ const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
-const static FString GameVersion = FString("Pre Alpha 0.9.3");
+const static FString GameVersion = FString("Pre Alpha 0.9.4");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;

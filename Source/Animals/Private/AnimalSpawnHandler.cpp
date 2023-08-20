@@ -129,8 +129,20 @@ void AAnimalSpawnHandler::SpawnAnimalsInRadiusFromOrigin(const FVector& SpawnOri
 	for (int32 i = 0; i < SpawnData[AnimalToSpawn]->SpawnGroupSize; ++i)
 	{
 		AAnimal* SpawnedAnimal = GetWorld()->SpawnActor<AAnimal>(SpawnData[AnimalToSpawn]->Class, GetSpawnTransform(SpawnOrigin));
+		SpawnedAnimal->OnDespawn.AddDynamic(this, &AAnimalSpawnHandler::RemoveAnimalFromList);
 		SpawnedAnimals.Add(SpawnedAnimal);
 	}
+}
+
+void AAnimalSpawnHandler::RemoveAnimalFromList(AAnimal* AnimalToRemove)
+{
+	const int32 AnimalIndex = SpawnedAnimals.IndexOfByKey(AnimalToRemove);
+	if (AnimalIndex == INDEX_NONE)
+	{
+		return;
+	}
+
+	SpawnedAnimals.RemoveAtSwap(AnimalIndex, 1, false);
 }
 
 FTransform AAnimalSpawnHandler::GetSpawnTransform(const FVector& SpawnOrigin) const
