@@ -71,21 +71,17 @@ FVector UInteractionComponent::GetOwnerForwardVector() const
 
 void UInteractionComponent::Server_Interact_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Interation On Server."));
 	FHitResult HitResult;
 	if (!LineTraceOnVisibility(HitResult))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Interation On Server, LineTrace Failed."));
 		return;
 	}
 
 	IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor());
 	if (Interactable == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Interation On Server, Interactable nullptr."));
 		return;
 	}
 
 	Interactable->Interact(GetOwner());
-	UE_LOG(LogTemp, Warning, TEXT("Interation On Server, Success."));
 }
