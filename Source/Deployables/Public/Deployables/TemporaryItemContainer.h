@@ -14,9 +14,20 @@ class DEPLOYABLES_API ATemporaryItemContainer : public AItemContainerBase
 	GENERATED_BODY()
 public:
 	ATemporaryItemContainer();
+	
+	// Begin IInteractable Implementation
+	virtual void Interact(AActor* Interactor) override;
+	virtual FString PromptText() override;
+	// End IInteractable Implementation
+
+protected:
+	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	UTimerDespawnComponent* DespawnComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool CanBeInteractedWith;
 
 };
