@@ -7,6 +7,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "Actors/HarvestableResource.h"
+#include "Components/HarvestableComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -120,10 +121,15 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	}
 
 	AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
+	UHarvestableComponent* HitHarvestableComponent = HitResult.GetActor()->FindComponentByClass<UHarvestableComponent>();
 	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
 	if (HitHarvestable != nullptr && (HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
 	{
 		HitHarvestable->OnHarvest(GetOwner(), GatherMultiplier);
+	}
+	else if (HitHarvestableComponent != nullptr && (HitHarvestableComponent->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
+	{
+		HitHarvestableComponent->OnHarvest(GetOwner(), GatherMultiplier);
 	}
 	else if (HitPawn)
 	{

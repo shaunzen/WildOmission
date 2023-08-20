@@ -19,7 +19,7 @@ public:
 	UHarvestableComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual void OnHarvest(AActor* HarvestingActor);
+	virtual void OnHarvest(AActor* HarvestingActor, float GatherMultiplier);
 
 	TEnumAsByte<EToolType> GetRequiredToolType() const;
 	
@@ -44,5 +44,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	FName Type;
+
+	FInventoryItem HandleYield(float GatherMultiplier);
 
 };

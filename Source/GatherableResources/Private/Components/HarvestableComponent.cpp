@@ -4,12 +4,12 @@
 #include "Components/HarvestableComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "Log.h"
 
 UHarvestableComponent::UHarvestableComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
-
 }
 
 void UHarvestableComponent::BeginPlay()
@@ -24,38 +24,42 @@ void UHarvestableComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 }
 
-void UHarvestableComponent::OnHarvest(AActor* HarvestingActor)
+void UHarvestableComponent::OnHarvest(AActor* HarvestingActor, float GatherMultiplier)
 {
-	//UInventoryComponent* HarvestingInventoryComponent = HarvestingActor->FindComponentByClass<UInventoryComponent>();
-	//UEquipComponent* HarvestingEquipComponent = HarvestingActor->FindComponentByClass<UEquipComponent>();
-	//if (HarvestingInventoryComponent == nullptr || HarvestingEquipComponent == nullptr)
-	//{
-	//	return;
-	//}
+	if (HarvestingActor == nullptr)
+	{
+		UE_LOG(LogGatherableResources, Warning, TEXT("Could not harvest resource, HarvestingActor was nullptr."));
+		return;
+	}
 
-	//AToolItem* HarvestingTool = Cast<AToolItem>(HarvestingEquipComponent->GetEquipedItem());
-	//if (HarvestingTool == nullptr)
-	//{
-	//	return;
-	//}
+	UInventoryComponent* HarvestingInventoryComponent = HarvestingActor->FindComponentByClass<UInventoryComponent>();
+	if (HarvestingInventoryComponent == nullptr)
+	{
+		UE_LOG(LogGatherableResources, Warning, TEXT("Could not harvest resource, HarvestingActor has no InventoryComponent."));
+		return;
+	}
 
-	//FInventoryItem ItemToGive;
-	//ItemToGive = ItemYield;
-	//ItemToGive.Quantity = ItemYield.Quantity * HarvestingTool->GetGatherMultiplier();
+	HarvestingInventoryComponent->AddItem(HandleYield(GatherMultiplier), nullptr, true);
+	Durability--;
 
-	//if (ItemToGive.Quantity <= 0)
-	//{
-	//	ItemToGive.Quantity = 1;
-	//}
+	if (Durability <= 0)
+	{
+		GetOwner()->Destroy();
+	}
+}
 
-	//HarvestingInventoryComponent->AddItem(ItemToGive);
+FInventoryItem UHarvestableComponent::HandleYield(float GatherMultiplier)
+{
+	FInventoryItem ItemToGive;
+	ItemToGive = ItemYield;
+	ItemToGive.Quantity = ItemYield.Quantity * GatherMultiplier;
 
-	//Durability -= ItemYield.Quantity;
+	if (ItemToGive.Quantity <= 0)
+	{
+		ItemToGive.Quantity = 1;
+	}
 
-	//if (Durability <= 0.0f)
-	//{
-	//	GetOwner()->Destroy();
-	//}
+	return ItemToGive;
 }
 
 TEnumAsByte<EToolType> UHarvestableComponent::GetRequiredToolType() const
