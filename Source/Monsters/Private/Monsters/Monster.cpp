@@ -41,6 +41,7 @@ AMonster::AMonster()
 
 	IdleSound = nullptr;
 	TargetPawn = nullptr;
+	RagdollClass = nullptr;
 
 	MaxAttackRange = 300.0f;
 }
@@ -78,11 +79,10 @@ void AMonster::HandleDespawn()
 
 void AMonster::HandleDeath()
 {
-	for (const FInventoryItem& ItemToDrop : Drops)
+	if (RagdollClass)
 	{
-		UInventoryComponent::SpawnWorldItem(GetWorld(), ItemToDrop, this);
+		GetWorld()->SpawnActor<AActor>(RagdollClass, GetActorLocation(), GetActorRotation());
 	}
-
 	HandleDespawn();
 }
 

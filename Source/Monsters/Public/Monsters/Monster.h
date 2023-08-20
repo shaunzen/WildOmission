@@ -61,7 +61,7 @@ private:
 	USoundBase* IdleSound;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<FInventoryItem> Drops;
+	TSubclassOf<AActor> RagdollClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	float MaxAttackRange;

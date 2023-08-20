@@ -48,7 +48,7 @@ private:
 	USoundBase* IdleSound;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<FInventoryItem> Drops;
+	TSubclassOf<AActor> RagdollClass;
 
 	UFUNCTION()
 	void HandleDespawn();

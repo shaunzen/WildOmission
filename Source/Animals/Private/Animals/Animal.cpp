@@ -30,6 +30,7 @@ AAnimal::AAnimal()
 	DespawnComponent->SetupAttachment(RootComponent);
 
 	IdleSound = nullptr;
+	RagdollClass = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -59,11 +60,10 @@ void AAnimal::HandleDespawn()
 
 void AAnimal::HandleDeath()
 {
-	for (const FInventoryItem& ItemToDrop : Drops)
+	if (RagdollClass)
 	{
-		UInventoryComponent::SpawnWorldItem(GetWorld(), ItemToDrop, this);
+		GetWorld()->SpawnActor<AActor>(RagdollClass, GetActorLocation(), GetActorRotation());
 	}
-
 	HandleDespawn();
 }
 
