@@ -12,6 +12,7 @@ AMonsterArmsItem::AMonsterArmsItem()
 
 void AMonsterArmsItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Primary"));
 	if (!HasAuthority())
 	{
 		return;
