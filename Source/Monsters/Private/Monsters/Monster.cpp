@@ -8,6 +8,8 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Components/DistanceDespawnComponent.h"
+#include "NiagaraComponent.h"
+#include "TimeOfDayHandler.h"
 #include "Components/InventoryComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/PhysicsVolume.h"
@@ -35,9 +37,12 @@ AMonster::AMonster()
 	EquipComponent->SetupAttachment(RootComponent);
 	EquipComponent->Setup(nullptr, GetMesh());
 
-
 	DespawnComponent = CreateDefaultSubobject<UDistanceDespawnComponent>(TEXT("DespawnComponent"));
 	DespawnComponent->SetupAttachment(RootComponent);
+
+	FireEffects = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FireEffects"));
+	FireEffects->SetupAttachment(RootComponent);
+	FireEffects->SetAutoActivate(false);
 
 	IdleSound = nullptr;
 	TargetPawn = nullptr;
@@ -108,6 +113,20 @@ void AMonster::PlayIdleSound()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), IdleSound, GetActorLocation());
 }
 
+void AMonster::SetBurnDamageTimer()
+{
+	FTimerHandle BurnDamageTimerHandle;
+	FTimerDelegate BurnDamageTimerDelegate;
+	BurnDamageTimerDelegate.BindUObject(this, &AMonster::ApplyBurnDamage);
+	GetWorld()->GetTimerManager().SetTimer(BurnDamageTimerHandle, BurnDamageTimerDelegate, 1.0f, false);
+}
+
+void AMonster::ApplyBurnDamage()
+{
+	VitalsComponent->AddHealth(-10.0f);
+	SetBurnDamageTimer();
+}
+
 // Called every frame
 void AMonster::Tick(float DeltaTime)
 {
@@ -117,6 +136,16 @@ void AMonster::Tick(float DeltaTime)
 	{
 		AddMovementInput(FVector::UpVector);
 	}
+
+	if (TimeOfDayHandler && TimeOfDayHandler->IsDay() && FireEffects->IsActive() == false)
+	{
+		FireEffects->Activate();
+
+		if (HasAuthority())
+		{
+			SetBurnDamageTimer();
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -124,6 +153,11 @@ void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AMonster::Setup(ATimeOfDayHandler* InTimeOfDayHandler)
+{
+	TimeOfDayHandler = InTimeOfDayHandler;
 }
 
 APawn* AMonster::GetTargetPawn() const

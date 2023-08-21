@@ -12,6 +12,8 @@ class UVitalsComponent;
 class UPlayerInventoryComponent;
 class UEquipComponent;
 class UDistanceDespawnComponent;
+class UNiagaraComponent;
+class ATimeOfDayHandler;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMonsterDespawnSignature, AMonster*, DespawningMonster);
 
@@ -29,6 +31,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	void Setup(ATimeOfDayHandler* InTimeOfDayHandler);
 
 	FOnMonsterDespawnSignature OnDespawn;
 
@@ -57,6 +61,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UDistanceDespawnComponent* DespawnComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* FireEffects;
+
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* IdleSound;
 
@@ -69,6 +76,9 @@ private:
 	UPROPERTY()
 	APawn* TargetPawn;
 
+	UPROPERTY()
+	ATimeOfDayHandler* TimeOfDayHandler;
+
 	UFUNCTION()
 	void HandleDespawn();
 
@@ -79,5 +89,11 @@ private:
 
 	UFUNCTION()
 	void PlayIdleSound();
+
+	UFUNCTION()
+	void SetBurnDamageTimer();
+	
+	UFUNCTION()
+	void ApplyBurnDamage();
 
 };
