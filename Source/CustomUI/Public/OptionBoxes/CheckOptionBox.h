@@ -13,7 +13,7 @@ class UImage;
 class UTextBlock;
 
 UCLASS()
-class MENUSYSTEM_API UCheckOptionBox : public UUserWidget
+class CUSTOMUI_API UCheckOptionBox : public UUserWidget
 {
 	GENERATED_BODY()
 public:

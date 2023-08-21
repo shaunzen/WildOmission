@@ -23,7 +23,7 @@ void UGameplayMenuWidget::NativeConstruct()
 	OptionsButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenOptionsMenu);
 	QuitButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
 
-	OptionsMenu->SetParent(this);
+	OptionsMenu->OnBackButtonPressed.AddDynamic(this, &UGameplayMenuWidget::OpenGameMenu);
 }
 
 FReply UGameplayMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -38,8 +38,10 @@ FReply UGameplayMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const F
 	return FReply::Handled();
 }
 
-void UGameplayMenuWidget::Show()
+void UGameplayMenuWidget::Show(IMenuInterface* InMenuInterface)
 {
+	MenuInterface = InMenuInterface;
+
 	bOpen = true;
 	AddToViewport();
 	
@@ -92,6 +94,11 @@ bool UGameplayMenuWidget::IsOpen() const
 	return bOpen;
 }
 
+IMenuInterface* UGameplayMenuWidget::GetMenuInterface() const
+{
+	return MenuInterface;
+}
+
 void UGameplayMenuWidget::Teardown()
 {
 	bOpen = false;
@@ -128,13 +135,12 @@ void UGameplayMenuWidget::Save()
 
 void UGameplayMenuWidget::QuitToMenu()
 {
-	/*UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	if (!GameInstance)
+	if (MenuInterface == nullptr)
 	{
 		return;
 	}
 
-	GameInstance->QuitToMenu();*/
+	MenuInterface->QuitToMenu();
 }
 
 void UGameplayMenuWidget::SetQuitButtonText(bool PlayerHasAuthority)

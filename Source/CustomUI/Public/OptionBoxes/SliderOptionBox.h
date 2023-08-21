@@ -10,7 +10,7 @@ class USlider;
 class UTextBlock;
 
 UCLASS()
-class MENUSYSTEM_API USliderOptionBox : public UUserWidget
+class CUSTOMUI_API USliderOptionBox : public UUserWidget
 {
 	GENERATED_BODY()
 

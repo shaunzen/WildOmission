@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/MenuInterface.h"
 #include "GameplayMenuWidget.generated.h"
 
 class UTextBlock;
@@ -25,7 +26,7 @@ public:
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Show();
+	void Show(IMenuInterface* InMenuInterface);
 	
 	UFUNCTION()
 	void OpenGameMenu();
@@ -37,6 +38,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsOpen() const;
+
+	IMenuInterface* GetMenuInterface() const;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -59,6 +62,8 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	UOptionsWidget* OptionsMenu;
+
+	IMenuInterface* MenuInterface;
 
 	bool bOpen;
 

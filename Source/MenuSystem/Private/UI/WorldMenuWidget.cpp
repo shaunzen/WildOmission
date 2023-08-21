@@ -5,7 +5,7 @@
 #include "UI/MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
-#include "UI/Custom/CheckOptionBox.h"
+#include "OptionBoxes/CheckOptionBox.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
 

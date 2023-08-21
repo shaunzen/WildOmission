@@ -2,11 +2,11 @@
 
 
 #include "WorldCreationWidget.h"
-#include "MainMenuWidget.h"
+#include "UI/MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "WorldSelectionWidget.h"
-#include "WildOmissionCore/WildOmissionGameInstance.h"
+#include "Interfaces/GameSaveLoadController.h"
 
 void UWorldCreationWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
@@ -29,9 +29,9 @@ void UWorldCreationWidget::CreateWorld()
 		return;
 	}
 
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	IGameSaveLoadController* GameSaveLoadController = Cast<IGameSaveLoadController>(GetGameInstance());
 	// Create a new world with that name
-	GameInstance->CreateWorld(NewWorldName);
+	GameSaveLoadController->CreateWorld(NewWorldName);
 
 	// To World Menu
 	ParentMenu->OpenWorldMenuForWorld(NewWorldName);

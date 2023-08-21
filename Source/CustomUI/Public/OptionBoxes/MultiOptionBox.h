@@ -12,7 +12,7 @@ class UButton;
 class UTextBlock;
 
 UCLASS()
-class MENUSYSTEM_API UMultiOptionBox : public UUserWidget
+class CUSTOMUI_API UMultiOptionBox : public UUserWidget
 {
 	GENERATED_BODY()
 public:

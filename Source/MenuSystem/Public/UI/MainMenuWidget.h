@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Structs/ServerData.h"
+#include "Interfaces/MenuInterface.h"
 #include "MainMenuWidget.generated.h"
 
 class UWidgetSwitcher;
@@ -24,7 +25,7 @@ public:
 	UMainMenuWidget(const FObjectInitializer& ObjectInitializer);
 	
 	virtual void NativeConstruct() override;
-
+	
 	UFUNCTION()
 	void OpenMainMenu();
 	UFUNCTION()
@@ -44,8 +45,10 @@ public:
 
 	void SetServerList(TArray<FServerData> InServerData);
 
-	void Setup();
+	void Setup(IMenuInterface* InMenuInterface);
 	void Teardown();
+
+	IMenuInterface* GetMenuInterface() const;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -70,5 +73,7 @@ private:
 	UServerBrowserWidget* ServerBrowserMenu;
 	UPROPERTY(Meta = (BindWidget))
 	UOptionsWidget* OptionsMenu;
+
+	IMenuInterface* MenuInterface;
 
 };

@@ -21,7 +21,7 @@
 #include "Components/CraftingComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
-#include "WildOmissionCore/WildOmissionGameUserSettings.h"
+#include "WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "UI/InventoryMenuWidget.h"
 #include "Deployables/ItemContainerBase.h"

@@ -6,8 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/PanelWidget.h"
-#include "MainMenuWidget.h"
-#include "WildOmissionCore/WildOmissionGameInstance.h"
+#include "UI/MainMenuWidget.h"
 
 UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -88,9 +87,8 @@ void UServerBrowserWidget::UpdateServerListChildren()
 
 void UServerBrowserWidget::RefreshList()
 {
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-
-	if (GameInstance == nullptr)
+	IMenuInterface* MenuInterface = ParentMenu->GetMenuInterface();
+	if (MenuInterface == nullptr)
 	{
 		return;
 	}
@@ -98,17 +96,16 @@ void UServerBrowserWidget::RefreshList()
 	FString WaitingString = FString("...");
 	RefreshListButtonText->SetText(FText::FromString(WaitingString));
 
-	GameInstance->RefreshServerList();
+	MenuInterface->RefreshServerList();
 }
 
 void UServerBrowserWidget::JoinServer()
 {
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-
-	if (GameInstance == nullptr || SelectedServerIndex.IsSet() == false)
+	IMenuInterface* MenuInterface = ParentMenu->GetMenuInterface();
+	if (MenuInterface == nullptr || SelectedServerIndex.IsSet() == false)
 	{
 		return;
 	}
 
-	GameInstance->Join(SelectedServerIndex.GetValue());
+	MenuInterface->Join(SelectedServerIndex.GetValue());
 }

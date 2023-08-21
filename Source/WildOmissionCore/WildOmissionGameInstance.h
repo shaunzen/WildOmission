@@ -7,6 +7,7 @@
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Interfaces/GameSaveLoadController.h"
+#include "Interfaces/MenuInterface.h"
 #include "WildOmissionGameInstance.generated.h"
 
 class UMainMenuWidget;
@@ -15,7 +16,7 @@ class ULoadingMenuWidget;
 class FOnlineSessionSearch;
 
 UCLASS()
-class WILDOMISSIONCORE_API UWildOmissionGameInstance : public UGameInstance, public IGameSaveLoadController
+class WILDOMISSIONCORE_API UWildOmissionGameInstance : public UGameInstance, public IMenuInterface, public IGameSaveLoadController
 {
 	GENERATED_BODY()
 public:

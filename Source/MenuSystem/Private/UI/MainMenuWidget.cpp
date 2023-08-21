@@ -8,7 +8,7 @@
 #include "WorldCreationWidget.h"
 #include "WorldMenuWidget.h"
 #include "ServerBrowserWidget.h"
-#include "OptionsWidget.h"
+#include "UI/OptionsWidget.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -27,8 +27,7 @@ void UMainMenuWidget::NativeConstruct()
 	WorldCreationMenu->Setup(this);
 	WorldMenu->Setup(this);
 	ServerBrowserMenu->Setup(this);
-	OptionsMenu->SetParent(this);
-	
+	OptionsMenu->OnBackButtonPressed.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> InServerData)
@@ -36,7 +35,7 @@ void UMainMenuWidget::SetServerList(TArray<FServerData> InServerData)
 	ServerBrowserMenu->SetServerList(InServerData);
 }
 
-void UMainMenuWidget::Setup()
+void UMainMenuWidget::Setup(IMenuInterface* InMenuInterface)
 {
 	this->AddToViewport();
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
@@ -48,6 +47,8 @@ void UMainMenuWidget::Setup()
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = true;
 	}
+
+	MenuInterface = InMenuInterface;
 }
 
 void UMainMenuWidget::Teardown()
@@ -60,6 +61,11 @@ void UMainMenuWidget::Teardown()
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = false;
 	}
+}
+
+IMenuInterface* UMainMenuWidget::GetMenuInterface() const
+{
+	return MenuInterface;
 }
 
 void UMainMenuWidget::OpenMainMenu()
@@ -75,14 +81,13 @@ void UMainMenuWidget::OpenMainMenu()
 
 void UMainMenuWidget::OpenWorldSelectionMenu()
 {
-	//UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	//if (MenuSwitcher == nullptr || WorldSelectionMenu == nullptr || GameInstance == nullptr)
-	//{
-	//	return;
-	//}
+	if (MenuSwitcher == nullptr || WorldSelectionMenu == nullptr || MenuInterface == nullptr)
+	{
+		return;
+	}
 
-	//WorldSelectionMenu->SetWorldList(GameInstance->GetAllWorldNames());
-	//MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
+	WorldSelectionMenu->SetWorldList(MenuInterface->GetAllWorldNames());
+	MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
 }
 
 void UMainMenuWidget::OpenWorldCreationMenu()

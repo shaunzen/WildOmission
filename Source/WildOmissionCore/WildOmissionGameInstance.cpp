@@ -10,7 +10,7 @@
 #include "UI/GameplayMenuWidget.h"
 #include "UI/LoadingMenuWidget.h"
 #include "WildOmissionSaveGame.h"
-#include "WildOmissionCore/WildOmissionGameUserSettings.h"
+#include "WildOmissionGameUserSettings.h"
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundMix.h"
 #include "Sound/SoundClass.h"
@@ -120,7 +120,7 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 		return;
 	}
 
-	MainMenuWidget->Setup();
+	MainMenuWidget->Setup(this);
 	OnMainMenu = true;
 }
 

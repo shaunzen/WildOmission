@@ -10,16 +10,19 @@ class UMultiOptionBox;
 class UButton;
 class USliderOptionBox;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOptionsOnBackButtonPressedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFieldOfViewChangedSignature);
+
 UCLASS()
 class GAMESETTINGS_API UOptionsWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
-
-	void SetParent(UWidget* ParentMenu);
-
 	void Refresh();
+
+	FOptionsOnBackButtonPressedSignature OnBackButtonPressed;
+	FOnFieldOfViewChangedSignature OnFieldOfViewChanged;
 
 private:
 	UPROPERTY(Meta = (BindWidget))

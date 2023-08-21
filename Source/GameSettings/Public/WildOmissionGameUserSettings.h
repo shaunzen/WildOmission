@@ -7,7 +7,7 @@
 #include "WildOmissionGameUserSettings.generated.h"
 
 UCLASS()
-class WILDOMISSIONCORE_API UWildOmissionGameUserSettings : public UGameUserSettings
+class GAMESETTINGS_API UWildOmissionGameUserSettings : public UGameUserSettings
 {
 	GENERATED_UCLASS_BODY()
 

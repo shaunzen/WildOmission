@@ -2,7 +2,7 @@
 
 
 #include "WorldSelectionWidget.h"
-#include "MainMenuWidget.h"
+#include "UI/MainMenuWidget.h"
 #include "WorldRowWidget.h"
 #include "CreateWorldButtonWidget.h"
 #include "Components/PanelWidget.h"

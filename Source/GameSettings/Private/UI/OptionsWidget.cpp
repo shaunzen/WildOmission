@@ -2,21 +2,21 @@
 
 
 #include "UI/OptionsWidget.h"
-#include "UI/MainMenuWidget.h"
-#include "UI/GameplayMenuWidget.h"
+#include "WildOmissionGameUserSettings.h"
+#include "Interfaces/CharacterSettingsUser.h"
 #include "Components/Button.h"
-#include "UI/Custom/SliderOptionBox.h"
-#include "UI/Custom/MultiOptionBox.h"
+#include "OptionBoxes/SliderOptionBox.h"
+#include "OptionBoxes/MultiOptionBox.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // TODO interface
-static UGameUserSettings* UserSettings = nullptr;
+static UWildOmissionGameUserSettings* UserSettings = nullptr;
 
 void UOptionsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UserSettings = nullptr;//UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 
 	FieldOfViewSliderOptionBox->SetMinValue(60.0f);
 	FieldOfViewSliderOptionBox->SetMaxValue(110.0f);
@@ -70,11 +70,6 @@ void UOptionsWidget::NativeConstruct()
 	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
 	ResetButton->OnClicked.AddDynamic(this, &UOptionsWidget::Reset);
 	BackButton->OnClicked.AddDynamic(this, &UOptionsWidget::Back);
-}
-
-void UOptionsWidget::SetParent(UWidget* InParentMenu)
-{
-	ParentMenu = InParentMenu;
 }
 
 void UOptionsWidget::Refresh()
@@ -268,29 +263,24 @@ void UOptionsWidget::ApplyCustomGraphicsSettings()
 
 void UOptionsWidget::ApplyFieldOfViewSettings()
 {
-	UGameplayMenuWidget* GameMenuOwner = Cast<UGameplayMenuWidget>(ParentMenu);
-	if (GameMenuOwner == nullptr)
+	ICharacterSettingsUser* CharacterSettingsUser = GetOwningPlayerPawn<ICharacterSettingsUser>();
+	if (CharacterSettingsUser == nullptr)
 	{
 		return;
 	}
 
-	AWildOmissionCharacter* Character = GetOwningPlayerPawn<AWildOmissionCharacter>();
-	if (Character == nullptr)
-	{
-		return;
-	}
-	Character->SetupFieldOfView();
+	CharacterSettingsUser->ApplyFieldOfView();
 }
 
 void UOptionsWidget::ApplyMasterVolumeSettings()
 {
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
-	if (GameInstance == nullptr)
-	{
-		return;
-	}
+	//UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	//if (GameInstance == nullptr)
+	//{
+	//	return;
+	//}
 
-	GameInstance->RefreshMasterVolume();
+	//GameInstance->RefreshMasterVolume();
 }
 
 void UOptionsWidget::Reset()
@@ -301,16 +291,12 @@ void UOptionsWidget::Reset()
 
 void UOptionsWidget::Back()
 {
-	UMainMenuWidget* MainMenu = Cast<UMainMenuWidget>(ParentMenu);
-	UGameplayMenuWidget* GameplayMenu = Cast<UGameplayMenuWidget>(ParentMenu);
-	if (MainMenu)
+	if (!OnBackButtonPressed.IsBound())
 	{
-		MainMenu->OpenMainMenu();
+		return;
 	}
-	else if (GameplayMenu)
-	{
-		GameplayMenu->OpenGameMenu();
-	}
+
+	OnBackButtonPressed.Broadcast();
 }
 
 void UOptionsWidget::OnOverallQualityOptionChange(const FString& NewSelection)

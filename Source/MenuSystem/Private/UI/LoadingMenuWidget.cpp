@@ -3,7 +3,6 @@
 
 #include "UI/LoadingMenuWidget.h"
 #include "Components/TextBlock.h"
-#include "WildOmissionCore/WildOmissionGameInstance.h"
 
 ULoadingMenuWidget::ULoadingMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
