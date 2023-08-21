@@ -5,7 +5,7 @@
 #include "UI/MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
-#include "WildOmissionCore/UI/Custom/CheckOptionBox.h"
+#include "UI/Custom/CheckOptionBox.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
 

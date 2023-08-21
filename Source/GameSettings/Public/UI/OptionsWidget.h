@@ -11,7 +11,7 @@ class UButton;
 class USliderOptionBox;
 
 UCLASS()
-class UOptionsWidget : public UUserWidget
+class GAMESETTINGS_API UOptionsWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:

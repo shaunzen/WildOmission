@@ -13,7 +13,7 @@ class UImage;
 class UTextBlock;
 
 UCLASS()
-class WILDOMISSIONCORE_API UCheckOptionBox : public UUserWidget
+class MENUSYSTEM_API UCheckOptionBox : public UUserWidget
 {
 	GENERATED_BODY()
 public:

@@ -1,24 +1,22 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "OptionsWidget.h"
-#include "MainMenuWidget.h"
-#include "GameplayMenuWidget.h"
+#include "UI/OptionsWidget.h"
+#include "UI/MainMenuWidget.h"
+#include "UI/GameplayMenuWidget.h"
 #include "Components/Button.h"
-#include "WildOmissionCore/UI/Custom/SliderOptionBox.h"
-#include "WildOmissionCore/UI/Custom/MultiOptionBox.h"
+#include "UI/Custom/SliderOptionBox.h"
+#include "UI/Custom/MultiOptionBox.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "WildOmissionCore/WildOmissionGameUserSettings.h"
-#include "WildOmissionCore/WildOmissionGameInstance.h"
-#include "WildOmissionCore/Characters/WildOmissionCharacter.h"
 
-static UWildOmissionGameUserSettings* UserSettings = nullptr;
+// TODO interface
+static UGameUserSettings* UserSettings = nullptr;
 
 void UOptionsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	UserSettings = nullptr;//UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 
 	FieldOfViewSliderOptionBox->SetMinValue(60.0f);
 	FieldOfViewSliderOptionBox->SetMaxValue(110.0f);

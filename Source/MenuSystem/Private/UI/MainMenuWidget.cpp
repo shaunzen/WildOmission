@@ -1,10 +1,9 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "MainMenuWidget.h"
+#include "UI/MainMenuWidget.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/Button.h"
-#include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "WorldSelectionWidget.h"
 #include "WorldCreationWidget.h"
 #include "WorldMenuWidget.h"
@@ -76,14 +75,14 @@ void UMainMenuWidget::OpenMainMenu()
 
 void UMainMenuWidget::OpenWorldSelectionMenu()
 {
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-	if (MenuSwitcher == nullptr || WorldSelectionMenu == nullptr || GameInstance == nullptr)
-	{
-		return;
-	}
+	//UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	//if (MenuSwitcher == nullptr || WorldSelectionMenu == nullptr || GameInstance == nullptr)
+	//{
+	//	return;
+	//}
 
-	WorldSelectionMenu->SetWorldList(GameInstance->GetAllWorldNames());
-	MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
+	//WorldSelectionMenu->SetWorldList(GameInstance->GetAllWorldNames());
+	//MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
 }
 
 void UMainMenuWidget::OpenWorldCreationMenu()

@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "UI/OptionsWidget.h"
+#include "Interfaces/SavablePlayer.h"
 
 UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -127,13 +128,13 @@ void UGameplayMenuWidget::Save()
 
 void UGameplayMenuWidget::QuitToMenu()
 {
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
+	/*UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
 	if (!GameInstance)
 	{
 		return;
 	}
 
-	GameInstance->QuitToMenu();
+	GameInstance->QuitToMenu();*/
 }
 
 void UGameplayMenuWidget::SetQuitButtonText(bool PlayerHasAuthority)

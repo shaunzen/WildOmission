@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "SliderOptionBox.h"
+#include "UI/Custom/SliderOptionBox.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 

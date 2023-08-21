@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "WildOmissionCore/Structs/ServerData.h"
+#include "Structs/ServerData.h"
 #include "MainMenuWidget.generated.h"
 
 class UWidgetSwitcher;
