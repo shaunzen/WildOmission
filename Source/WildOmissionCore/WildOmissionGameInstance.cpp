@@ -36,19 +36,19 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	FriendsOnlySession = false;
 	OnMainMenu = false;
 	
-	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_MainMenu"));
+	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_MainMenu"));
 	if (MainMenuBlueprint.Succeeded())
 	{
 		MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
 	}
 	
-	static ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_GameplayMenu"));
+	static ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_GameplayMenu"));
 	if (GameplayMenuBlueprint.Succeeded())
 	{
 		GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
 	}
 	
-	static ConstructorHelpers::FClassFinder<ULoadingMenuWidget> LoadingMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_LoadingMenu"));
+	static ConstructorHelpers::FClassFinder<ULoadingMenuWidget> LoadingMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_LoadingMenu"));
 	if (LoadingMenuBlueprint.Succeeded())
 	{
 		LoadingMenuWidgetBlueprintClass = LoadingMenuBlueprint.Class;

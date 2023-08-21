@@ -39,6 +39,10 @@ public:
 	virtual void CreateWorld(const FString& NewWorldName) override;
 	// End IGameSaveLoadController Implementation
 
+	// Begin IMenuInterface Implementation
+
+	// End IMenuInterface Implementation
+
 	UFUNCTION()
 	void StartSingleplayer(const FString& WorldName);
 

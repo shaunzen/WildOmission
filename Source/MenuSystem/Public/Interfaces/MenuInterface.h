@@ -22,8 +22,22 @@ class MENUSYSTEM_API IMenuInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void Join(uint32 Index) = 0;
-	virtual void RefeshServerList() = 0;
+	UFUNCTION()
+	virtual void StartSingleplayer(const FString& WorldName) = 0;
+
+	UFUNCTION()
+	virtual void Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false) = 0;
+	
+	UFUNCTION()
+	virtual void Join(const uint32& Index) = 0;
+
+	UFUNCTION()
+	virtual void RefreshServerList() = 0;
+
+	UFUNCTION()
 	virtual void QuitToMenu() = 0;
+
+	UFUNCTION()
 	virtual TArray<FString> GetAllWorldNames() = 0;
+
 };

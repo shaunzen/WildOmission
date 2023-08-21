@@ -55,9 +55,8 @@ void UWorldMenuWidget::MultiplayerCheckboxChanged(bool bIsChecked)
 
 void UWorldMenuWidget::PlayButtonClicked()
 {
-	/*UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetGameInstance());
-
-	if (GameInstance == nullptr || WorldName == FString())
+	IMenuInterface* MenuInterface = ParentMenu->GetMenuInterface();
+	if (MenuInterface == nullptr || WorldName == FString())
 	{
 		return;
 	}
@@ -70,10 +69,10 @@ void UWorldMenuWidget::PlayButtonClicked()
 			return;
 		}
 
-		GameInstance->Host(ServerName, WorldName, FriendsOnlyCheckOptionBox->IsChecked());
+		MenuInterface->Host(ServerName, WorldName, FriendsOnlyCheckOptionBox->IsChecked());
 	}
 	else
 	{
-		GameInstance->StartSingleplayer(WorldName);
-	}*/
+		MenuInterface->StartSingleplayer(WorldName);
+	}
 }
