@@ -115,7 +115,6 @@ void AMonster::PlayIdleSound()
 
 void AMonster::SetBurnDamageTimer()
 {
-	FTimerHandle BurnDamageTimerHandle;
 	FTimerDelegate BurnDamageTimerDelegate;
 	BurnDamageTimerDelegate.BindUObject(this, &AMonster::ApplyBurnDamage);
 	GetWorld()->GetTimerManager().SetTimer(BurnDamageTimerHandle, BurnDamageTimerDelegate, 1.0f, false);
@@ -132,11 +131,6 @@ void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetMovementComponent()->GetPhysicsVolume()->bWaterVolume == true)
-	{
-		AddMovementInput(FVector::UpVector);
-	}
-
 	if (TimeOfDayHandler && TimeOfDayHandler->IsDay() && FireEffects->IsActive() == false)
 	{
 		FireEffects->Activate();
@@ -145,6 +139,19 @@ void AMonster::Tick(float DeltaTime)
 		{
 			SetBurnDamageTimer();
 		}
+	}
+
+	if (GetMovementComponent()->GetPhysicsVolume()->bWaterVolume == true)
+	{
+		if (FireEffects->IsActive())
+		{
+			FireEffects->Deactivate();
+			if (HasAuthority())
+			{
+				GetWorld()->GetTimerManager().ClearTimer(BurnDamageTimerHandle);
+			}
+		}
+		AddMovementInput(FVector::UpVector);
 	}
 }
 

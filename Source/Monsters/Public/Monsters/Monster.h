@@ -79,6 +79,8 @@ private:
 	UPROPERTY()
 	ATimeOfDayHandler* TimeOfDayHandler;
 
+	FTimerHandle BurnDamageTimerHandle;
+
 	UFUNCTION()
 	void HandleDespawn();
 
