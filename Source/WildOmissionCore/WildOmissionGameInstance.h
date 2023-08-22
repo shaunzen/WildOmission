@@ -6,6 +6,8 @@
 #include "Engine/GameInstance.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Interfaces/MenuInterface.h"
+#include "Interfaces/GameSettingsInterface.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionGameInstance.generated.h"
 
@@ -15,7 +17,7 @@ class ULoadingMenuWidget;
 class FOnlineSessionSearch;
 
 UCLASS()
-class WILDOMISSIONCORE_API UWildOmissionGameInstance : public UGameInstance, public IGameSaveLoadController
+class WILDOMISSIONCORE_API UWildOmissionGameInstance : public UGameInstance, public IMenuInterface, public IGameSettingsInterface, public IGameSaveLoadController
 {
 	GENERATED_BODY()
 public:
@@ -38,25 +40,20 @@ public:
 	virtual void CreateWorld(const FString& NewWorldName) override;
 	// End IGameSaveLoadController Implementation
 
-	UFUNCTION()
-	void StartSingleplayer(const FString& WorldName);
-
-	UFUNCTION()
-	void Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false);
-	
-	UFUNCTION()
-	void Join(const uint32& Index);
+	// Begin IMenuInterface Implementation
+	virtual void StartSingleplayer(const FString& WorldName) override;
+	virtual void Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false) override;
+	virtual void Join(const uint32& Index) override;
+	virtual void RefreshServerList() override;
+	virtual void QuitToMenu() override;
+	// End IMenuInterface Implementation
 
 	void StartSession();
 
-	void QuitToMenu();
+	// Begin IGameSettingsInterface Implementation
+	virtual void ApplyMasterVolume() override;
+	// End IGameSettingsInterface Implementation
 
-	void RefreshServerList();
-
-	void RefreshMasterVolume();
-
-	static TArray<FString> GetAllWorldNames();
-	
 	IOnlineFriendsPtr GetFriendsInterface() const;
 
 	UFUNCTION(BlueprintCallable)

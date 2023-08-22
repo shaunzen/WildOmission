@@ -11,7 +11,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
-#include "UIHelpers.h"
+#include "Color/UIColors.h"
 
 UInventorySlotWidget::UInventorySlotWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -110,7 +110,7 @@ void UInventorySlotWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 
 	if (IsSelected())
 	{
-		FUIColor* Blue = UUIHelpers::GetUIColor(FName("Blue"));
+		FUIColor* Blue = UUIColors::GetBaseColor(FName("Blue"));
 		if (Blue == nullptr)
 		{
 			return;
@@ -118,7 +118,7 @@ void UInventorySlotWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 
 		if (Hovering)
 		{
-			SlotBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(Blue));
+			SlotBorder->SetBrushColor(UUIColors::GetHighlightedColor(Blue));
 		}
 		else
 		{
@@ -127,7 +127,7 @@ void UInventorySlotWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 	}
 	else
 	{
-		FUIColor* LightGray = UUIHelpers::GetUIColor(FName("LightGray"));
+		FUIColor* LightGray = UUIColors::GetBaseColor(FName("LightGray"));
 		if (LightGray == nullptr)
 		{
 			return;
@@ -135,7 +135,7 @@ void UInventorySlotWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 
 		if (Hovering)
 		{
-			SlotBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(LightGray));
+			SlotBorder->SetBrushColor(UUIColors::GetHighlightedColor(LightGray));
 		}
 		else
 		{

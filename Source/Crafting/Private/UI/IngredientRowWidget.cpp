@@ -3,7 +3,7 @@
 
 #include "IngredientRowWidget.h"
 #include "Components/TextBlock.h"
-#include "UIHelpers.h"
+#include "Color/UIColors.h"
 
 void UIngredientRowWidget::Setup(const FString& IngredientName, const int32& IngredientAmountNeeded, const int32& IngredientHasAmount)
 {
@@ -34,12 +34,12 @@ void UIngredientRowWidget::SetColor()
 {
 	if (bHasEnough)
 	{
-		FUIColor* White = UUIHelpers::GetUIColor(FName("White"));
+		FUIColor* White = UUIColors::GetBaseColor(FName("White"));
 		SetColorAndOpacity(White->Default);
 	}
 	else
 	{
-		FUIColor* Red = UUIHelpers::GetUIColor(FName("Red"));
+		FUIColor* Red = UUIColors::GetBaseColor(FName("Red"));
 		SetColorAndOpacity(Red->Default);
 	}
 }

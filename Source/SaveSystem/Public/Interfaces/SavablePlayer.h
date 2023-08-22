@@ -26,6 +26,8 @@ public:
 	virtual FPlayerSave SavePlayer() = 0;
 	virtual void LoadPlayerSave(const FPlayerSave& Save) = 0;
 
+	virtual void Save() = 0;
+
 	UFUNCTION(BlueprintCallable)
 	virtual FString GetUniqueID() = 0;
 	virtual bool IsHost() = 0;

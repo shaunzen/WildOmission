@@ -6,11 +6,11 @@
 #include "UObject/ConstructorHelpers.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
-#include "WildOmissionCore/UI/Menu/MainMenuWidget.h"
-#include "WildOmissionCore/UI/Menu/GameplayMenuWidget.h"
-#include "WildOmissionCore/UI/Menu/LoadingMenuWidget.h"
+#include "UI/MainMenuWidget.h"
+#include "UI/GameplayMenuWidget.h"
+#include "UI/LoadingMenuWidget.h"
 #include "WildOmissionSaveGame.h"
-#include "WildOmissionCore/WildOmissionGameUserSettings.h"
+#include "WildOmissionGameUserSettings.h"
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundMix.h"
 #include "Sound/SoundClass.h"
@@ -36,19 +36,19 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	FriendsOnlySession = false;
 	OnMainMenu = false;
 	
-	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_MainMenu"));
+	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_MainMenu"));
 	if (MainMenuBlueprint.Succeeded())
 	{
 		MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
 	}
 	
-	static ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_GameplayMenu"));
+	static ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_GameplayMenu"));
 	if (GameplayMenuBlueprint.Succeeded())
 	{
 		GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
 	}
 	
-	static ConstructorHelpers::FClassFinder<ULoadingMenuWidget> LoadingMenuBlueprint(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_LoadingMenu"));
+	static ConstructorHelpers::FClassFinder<ULoadingMenuWidget> LoadingMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_LoadingMenu"));
 	if (LoadingMenuBlueprint.Succeeded())
 	{
 		LoadingMenuWidgetBlueprintClass = LoadingMenuBlueprint.Class;
@@ -76,7 +76,7 @@ void UWildOmissionGameInstance::Init()
 {
 	Super::Init();
 
-	RefreshMasterVolume();
+	ApplyMasterVolume();
 
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
 
@@ -120,7 +120,7 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 		return;
 	}
 
-	MainMenuWidget->Setup();
+	MainMenuWidget->Setup(this);
 	OnMainMenu = true;
 }
 
@@ -141,6 +141,7 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	}
 
 	GameplayMenuWidget->Show();
+	GameplayMenuWidget->SetMenuInterface(this);
 	GameplayMenuWidget->OnClosed.AddDynamic(this, &UWildOmissionGameInstance::ClearGameplayMenuWidget);
 }
 
@@ -274,7 +275,7 @@ void UWildOmissionGameInstance::RefreshServerList()
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
 
-void UWildOmissionGameInstance::RefreshMasterVolume()
+void UWildOmissionGameInstance::ApplyMasterVolume()
 {
 	UWildOmissionGameUserSettings* WOUserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MasterSoundClass, WOUserSettings->GetMasterVolume(), 1.0f, 0.2f);
@@ -522,46 +523,6 @@ void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetD
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 20.0f, FColor::Red, FString::Printf(TEXT("Error String %s"), *ErrorString));
 	UE_LOG(LogTemp, Error, TEXT("Network failure disconnecting..."));
 	UE_LOG(LogTemp, Error, TEXT("Damnit larch you forgot to add disconnecting"));
-}
-
-TArray<FString> UWildOmissionGameInstance::GetAllWorldNames()
-{
-	////////////////////////////////////////////////////////////////////////////////////
-	// Special thanks to Ixiguis on the Unreal Engine forums for this useful function //
-	////////////////////////////////////////////////////////////////////////////////////
-	class FFindSavesVisitor : public IPlatformFile::FDirectoryVisitor
-	{
-	public:
-		FFindSavesVisitor() {}
-
-		virtual bool Visit(const TCHAR* FilenameOrDirectory, bool bIsDirectory)
-		{
-			if (!bIsDirectory)
-			{
-				FString FullFilePath(FilenameOrDirectory);
-				if (FPaths::GetExtension(FullFilePath) == TEXT("sav"))
-				{
-					FString CleanFilename = FPaths::GetBaseFilename(FullFilePath);
-					CleanFilename = CleanFilename.Replace(TEXT(".sav"), TEXT(""));
-					SavesFound.Add(CleanFilename);
-				}
-			}
-			return true;
-		}
-		TArray<FString> SavesFound;
-	};
-
-	TArray<FString> Saves;
-	const FString SavesFolder = FPaths::ProjectSavedDir() + TEXT("SaveGames");
-
-	if (!SavesFolder.IsEmpty())
-	{
-		FFindSavesVisitor Visitor;
-		FPlatformFileManager::Get().GetPlatformFile().IterateDirectory(*SavesFolder, Visitor);
-		Saves = Visitor.SavesFound;
-	}
-
-	return Saves;
 }
 
 IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const

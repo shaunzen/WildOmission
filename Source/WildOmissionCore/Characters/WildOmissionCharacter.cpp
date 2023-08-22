@@ -21,7 +21,7 @@
 #include "Components/CraftingComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
-#include "WildOmissionCore/WildOmissionGameUserSettings.h"
+#include "WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "UI/InventoryMenuWidget.h"
 #include "Deployables/ItemContainerBase.h"
@@ -261,7 +261,7 @@ void AWildOmissionCharacter::BeginPlay()
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
-	SetupFieldOfView();
+	ApplyFieldOfView();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
 	EndSprint();
@@ -297,7 +297,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
-	SetupFieldOfView();
+	ApplyFieldOfView();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
 }
@@ -347,7 +347,7 @@ void AWildOmissionCharacter::SetupMesh()
 	FirstPersonArmsMeshComponent->SetVisibility(IsLocallyControlled());
 }
 
-void AWildOmissionCharacter::SetupFieldOfView()
+void AWildOmissionCharacter::ApplyFieldOfView()
 {
 	if (!IsLocallyControlled())
 	{
