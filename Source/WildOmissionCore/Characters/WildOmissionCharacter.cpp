@@ -261,7 +261,7 @@ void AWildOmissionCharacter::BeginPlay()
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
-	SetupFieldOfView();
+	ApplyFieldOfView();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
 	EndSprint();
@@ -297,7 +297,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
-	SetupFieldOfView();
+	ApplyFieldOfView();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
 }
@@ -347,7 +347,7 @@ void AWildOmissionCharacter::SetupMesh()
 	FirstPersonArmsMeshComponent->SetVisibility(IsLocallyControlled());
 }
 
-void AWildOmissionCharacter::SetupFieldOfView()
+void AWildOmissionCharacter::ApplyFieldOfView()
 {
 	if (!IsLocallyControlled())
 	{

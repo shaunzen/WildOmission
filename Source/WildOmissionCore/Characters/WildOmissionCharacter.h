@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/CharacterSettingsUser.h"
 #include "WildOmissionCharacter.generated.h"
 
 class UInputAction;
@@ -25,7 +26,7 @@ class AItemContainerBase;
 class UPlayerHUDWidget;
 
 UCLASS()
-class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter
+class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public ICharacterSettingsUser
 {
 	GENERATED_BODY()
 
@@ -43,7 +44,9 @@ public:
 
 	virtual void Landed(const FHitResult& HitResult) override;
 
-	void SetupFieldOfView();
+	// Begin ICharacterSettingsUser Implementation
+	virtual void ApplyFieldOfView() override;
+	// End ICharacterSettingsUser Implementation
 
 	UFUNCTION()
 	void HandleDeath();
