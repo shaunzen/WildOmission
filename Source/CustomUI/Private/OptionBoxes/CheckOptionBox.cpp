@@ -12,13 +12,13 @@ static UMaterialInterface* UncheckedMaterial = nullptr;
 
 UCheckOptionBox::UCheckOptionBox(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> CheckedMaterialBlueprint(TEXT("/Game/WildOmissionCore/UI/Icons/Options/M_Checked_Inst"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> CheckedMaterialBlueprint(TEXT("/Game/CustomUI/OptionBoxes/M_Checked_Inst"));
 	if (CheckedMaterialBlueprint.Succeeded())
 	{
 		CheckedMaterial = CheckedMaterialBlueprint.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> UncheckedMaterialBlueprint(TEXT("/Game/WildOmissionCore/UI/Icons/Options/M_Unchecked_Inst"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> UncheckedMaterialBlueprint(TEXT("/Game/CustomUI/OptionBoxes/M_Unchecked_Inst"));
 	if (UncheckedMaterialBlueprint.Succeeded())
 	{
 		UncheckedMaterial = UncheckedMaterialBlueprint.Object;

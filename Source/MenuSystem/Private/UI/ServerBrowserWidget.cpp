@@ -10,7 +10,15 @@
 
 UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/WildOmissionCore/UI/Menu/WBP_ServerRow"));
+	ServerList = nullptr;
+	JoinButton = nullptr;
+	BackButton = nullptr;
+	RefreshListButton = nullptr;
+	RefreshListButtonText = nullptr;
+	ParentMenu = nullptr;
+	ServerRowWidgetClass = nullptr;
+
+	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/WBP_ServerRow"));
 	if (ServerRowWidgetBPClass.Succeeded())
 	{
 		ServerRowWidgetClass = ServerRowWidgetBPClass.Class;

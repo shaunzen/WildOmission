@@ -13,6 +13,17 @@
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	SetIsFocusable(true);
+	MenuSwitcher = nullptr;
+	PlayButton = nullptr;
+	OptionsButton = nullptr;
+	ExitButton = nullptr;
+	MainMenu = nullptr;
+	WorldSelectionMenu = nullptr;
+	WorldCreationMenu = nullptr;
+	WorldMenu = nullptr;
+	ServerBrowserMenu = nullptr;
+	OptionsMenu = nullptr;
+	MenuInterface = nullptr;
 }
 
 void UMainMenuWidget::NativeConstruct()
