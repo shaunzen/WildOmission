@@ -7,6 +7,6 @@ public class MenuSystem: ModuleRules
     public MenuSystem(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "InputCore", "Slate", "SlateCore", "Helpers", "CustomUI", "GameSettings", "SaveSystem", "OnlineSubsystem", "OnlineSubsystemSteam" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "InputCore", "Slate", "SlateCore", "CustomUI", "GameSettings", "SaveSystem", "OnlineSubsystem", "OnlineSubsystemSteam" });
     }
 }

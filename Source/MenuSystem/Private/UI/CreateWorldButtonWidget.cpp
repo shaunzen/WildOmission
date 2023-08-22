@@ -4,7 +4,7 @@
 #include "CreateWorldButtonWidget.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
-#include "UIHelpers.h"
+#include "Color/UIColors.h"
 
 UButton* UCreateWorldButtonWidget::GetButton() const
 {
@@ -15,11 +15,11 @@ void UCreateWorldButtonWidget::NativeTick(const FGeometry& MyGeometry, float InD
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	FUIColor* DarkGray = UUIHelpers::GetUIColor(FName("DarkGray"));
+	FUIColor* DarkGray = UUIColors::GetBaseColor(FName("DarkGray"));
 
 	if (Hovering)
 	{
-		RowBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(DarkGray));
+		RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(DarkGray));
 	}
 	else
 	{

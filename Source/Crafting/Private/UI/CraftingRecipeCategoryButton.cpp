@@ -6,7 +6,7 @@
 #include "Structs/ItemData.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "UIHelpers.h"
+#include "Color/UIColors.h"
 
 UCraftingRecipeCategoryButton::UCraftingRecipeCategoryButton(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -65,12 +65,12 @@ void UCraftingRecipeCategoryButton::NativeTick(const FGeometry& MyGeometry, floa
 
 	if (ParentCraftingMenu && ParentCraftingMenu->GetCategoryFilter() == Category)
 	{
-		FUIColor* Blue = UUIHelpers::GetUIColor(FName("Blue"));
+		FUIColor* Blue = UUIColors::GetBaseColor(FName("Blue"));
 		Button->SetBackgroundColor(Blue->Default);
 	}
 	else
 	{
-		FUIColor* DarkGray = UUIHelpers::GetUIColor(FName("DarkGray"));
+		FUIColor* DarkGray = UUIColors::GetBaseColor(FName("DarkGray"));
 		Button->SetBackgroundColor(DarkGray->Default);
 	}
 }

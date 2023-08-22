@@ -6,7 +6,7 @@
 #include "Components/Border.h"
 #include "UI/CraftingMenuWidget.h"
 #include "Structs/ItemData.h"
-#include "UIHelpers.h"
+#include "Color/UIColors.h"
 
 void URecipeIconWidget::Setup(UCraftingMenuWidget* InParentMenu, const FCraftingRecipeEntry& InParentEntry)
 {
@@ -37,10 +37,10 @@ void URecipeIconWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 {
 	if (IsSelected())
 	{
-		FUIColor* Blue = UUIHelpers::GetUIColor(FName("Blue"));
+		FUIColor* Blue = UUIColors::GetBaseColor(FName("Blue"));
 		if (Hovering)
 		{
-			BackgroundBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(Blue) - FLinearColor(0.0f, 0.0f, 0.0f, 0.7f));
+			BackgroundBorder->SetBrushColor(UUIColors::GetHighlightedColor(Blue) - FLinearColor(0.0f, 0.0f, 0.0f, 0.7f));
 		}
 		else
 		{
@@ -49,11 +49,11 @@ void URecipeIconWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	}
 	else
 	{
-		FUIColor* White = UUIHelpers::GetUIColor(FName("White"));
+		FUIColor* White = UUIColors::GetBaseColor(FName("White"));
 
 		if (Hovering)
 		{
-			BackgroundBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(White) - FLinearColor(0.0f, 0.0f, 0.0f, 0.7f));
+			BackgroundBorder->SetBrushColor(UUIColors::GetHighlightedColor(White) - FLinearColor(0.0f, 0.0f, 0.0f, 0.7f));
 		}
 		else
 		{

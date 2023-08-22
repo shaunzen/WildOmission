@@ -39,6 +39,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "CustomUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "Deployables",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -70,12 +75,12 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "GatherableResources",
+			"Name": "GameSettings",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "Helpers",
+			"Name": "GatherableResources",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

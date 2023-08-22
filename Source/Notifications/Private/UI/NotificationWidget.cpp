@@ -4,7 +4,7 @@
 #include "NotificationWidget.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
-#include "UIHelpers.h"
+#include "Color/UIColors.h"
 
 UNotificationWidget::UNotificationWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -21,7 +21,7 @@ void UNotificationWidget::Setup(const FNotification& InNotification)
 
 	if (Notification.Negative)
 	{
-		FUIColor* NegativeColor = UUIHelpers::GetUIColor(FName("Red"));
+		FUIColor* NegativeColor = UUIColors::GetBaseColor(FName("Red"));
 		Border->SetBrushColor(NegativeColor->Default - FLinearColor(0.0f, 0.0f, 0.0f, 0.5f));
 	}
 	Icon->SetBrushFromMaterial(Notification.Icon);

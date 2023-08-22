@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Components/Border.h"
 #include "ServerBrowserWidget.h"
-#include "UIHelpers.h"
+#include "Color/UIColors.h"
 
 void UServerRowWidget::Setup(UServerBrowserWidget* InParent, uint32 InIndex)
 {
@@ -20,11 +20,11 @@ void UServerRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	if (Selected)
 	{
-		FUIColor* Blue = UUIHelpers::GetUIColor(FName("Blue"));
+		FUIColor* Blue = UUIColors::GetBaseColor(FName("Blue"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(Blue));
+			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(Blue));
 		}
 		else
 		{
@@ -33,11 +33,11 @@ void UServerRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	}
 	else
 	{
-		FUIColor* DarkGray = UUIHelpers::GetUIColor(FName("DarkGray"));
+		FUIColor* DarkGray = UUIColors::GetBaseColor(FName("DarkGray"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(DarkGray));
+			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(DarkGray));
 		}
 		else
 		{

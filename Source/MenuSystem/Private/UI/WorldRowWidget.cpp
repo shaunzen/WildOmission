@@ -5,7 +5,7 @@
 #include "Components/Button.h"
 #include "Components/Border.h"
 #include "WorldSelectionWidget.h"
-#include "UIHelpers.h"
+#include "Color/UIColors.h"
 
 void UWorldRowWidget::Setup(UWorldSelectionWidget* InParent, const FString& InWorldName)
 {
@@ -26,11 +26,11 @@ void UWorldRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 	if (Selected)
 	{
-		FUIColor* Blue = UUIHelpers::GetUIColor(FName("Blue"));
+		FUIColor* Blue = UUIColors::GetBaseColor(FName("Blue"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(Blue));
+			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(Blue));
 		}
 		else
 		{
@@ -39,11 +39,11 @@ void UWorldRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	}
 	else
 	{
-		FUIColor* DarkGray = UUIHelpers::GetUIColor(FName("DarkGray"));
+		FUIColor* DarkGray = UUIColors::GetBaseColor(FName("DarkGray"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UUIHelpers::GetHighlightedColor(DarkGray));
+			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(DarkGray));
 		}
 		else
 		{

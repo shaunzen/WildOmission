@@ -5,17 +5,17 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "UIColor.h"
-#include "UIHelpers.generated.h"
+#include "UIColors.generated.h"
 
 UCLASS()
-class HELPERS_API UUIHelpers: public UObject
+class CUSTOMUI_API UUIColors : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UUIHelpers();
+	UUIColors();
 
-	static FUIColor* GetUIColor(const FName& ColorName);
+	static FUIColor* GetBaseColor(const FName& ColorName);
 	static FLinearColor GetHighlightedColor(FUIColor* Color);
 	static FLinearColor GetSelectedColor(FUIColor* Color);
 

@@ -8,7 +8,7 @@
 #include "UIColor.generated.h"
 
 USTRUCT(BlueprintType)
-struct HELPERS_API FUIColor : public FTableRowBase
+struct CUSTOMUI_API FUIColor : public FTableRowBase
 {
 	GENERATED_BODY()
 	
