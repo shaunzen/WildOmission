@@ -37,7 +37,6 @@ public:
 	UFUNCTION()
 	virtual void QuitToMenu() = 0;
 
-	UFUNCTION()
-	virtual TArray<FString> GetAllWorldNames() = 0;
+	static TArray<FString> GetAllWorldNames();
 
 };

@@ -40,28 +40,17 @@ public:
 	// End IGameSaveLoadController Implementation
 
 	// Begin IMenuInterface Implementation
-
+	virtual void StartSingleplayer(const FString& WorldName) override;
+	virtual void Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false) override;
+	virtual void Join(const uint32& Index) override;
+	virtual void RefreshServerList() override;
+	virtual void QuitToMenu() override;
 	// End IMenuInterface Implementation
-
-	UFUNCTION()
-	void StartSingleplayer(const FString& WorldName);
-
-	UFUNCTION()
-	void Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false);
-	
-	UFUNCTION()
-	void Join(const uint32& Index);
 
 	void StartSession();
 
-	void QuitToMenu();
-
-	void RefreshServerList();
-
 	void RefreshMasterVolume();
 
-	static TArray<FString> GetAllWorldNames();
-	
 	IOnlineFriendsPtr GetFriendsInterface() const;
 
 	UFUNCTION(BlueprintCallable)

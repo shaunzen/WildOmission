@@ -38,10 +38,8 @@ FReply UGameplayMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const F
 	return FReply::Handled();
 }
 
-void UGameplayMenuWidget::Show(IMenuInterface* InMenuInterface)
+void UGameplayMenuWidget::Show()
 {
-	MenuInterface = InMenuInterface;
-
 	bOpen = true;
 	AddToViewport();
 	
@@ -67,6 +65,11 @@ void UGameplayMenuWidget::Show(IMenuInterface* InMenuInterface)
 	PlayerController->SetMouseLocation(ViewportSizeX / 2, ViewportSizeY / 2);
 
 	Save();
+}
+
+void UGameplayMenuWidget::SetMenuInterface(IMenuInterface* InMenuInterface)
+{
+	MenuInterface = InMenuInterface;
 }
 
 void UGameplayMenuWidget::OpenGameMenu()

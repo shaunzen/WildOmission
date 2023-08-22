@@ -26,8 +26,10 @@ public:
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Show(IMenuInterface* InMenuInterface);
+	void Show();
 	
+	void SetMenuInterface(IMenuInterface* InMenuInterface);
+
 	UFUNCTION()
 	void OpenGameMenu();
 	
