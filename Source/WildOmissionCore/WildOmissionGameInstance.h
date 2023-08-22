@@ -6,8 +6,9 @@
 #include "Engine/GameInstance.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
-#include "Interfaces/GameSaveLoadController.h"
 #include "Interfaces/MenuInterface.h"
+#include "Interfaces/GameSettingsInterface.h"
+#include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionGameInstance.generated.h"
 
 class UMainMenuWidget;
@@ -16,7 +17,7 @@ class ULoadingMenuWidget;
 class FOnlineSessionSearch;
 
 UCLASS()
-class WILDOMISSIONCORE_API UWildOmissionGameInstance : public UGameInstance, public IMenuInterface, public IGameSaveLoadController
+class WILDOMISSIONCORE_API UWildOmissionGameInstance : public UGameInstance, public IMenuInterface, public IGameSettingsInterface, public IGameSaveLoadController
 {
 	GENERATED_BODY()
 public:
@@ -49,7 +50,9 @@ public:
 
 	void StartSession();
 
-	void RefreshMasterVolume();
+	// Begin IGameSettingsInterface Implementation
+	virtual void ApplyMasterVolume() override;
+	// End IGameSettingsInterface Implementation
 
 	IOnlineFriendsPtr GetFriendsInterface() const;
 

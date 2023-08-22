@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "CharacterSettingsUser.generated.h"
+#include "GameSettingsInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UCharacterSettingsUser : public UInterface
+class UGameSettingsInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,12 +16,12 @@ class UCharacterSettingsUser : public UInterface
 /**
  * 
  */
-class GAMESETTINGS_API ICharacterSettingsUser
+class GAMESETTINGS_API IGameSettingsInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void ApplyFieldOfView() = 0;
+	virtual void ApplyMasterVolume() = 0;
 
 };

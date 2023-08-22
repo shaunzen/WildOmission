@@ -76,7 +76,7 @@ void UWildOmissionGameInstance::Init()
 {
 	Super::Init();
 
-	RefreshMasterVolume();
+	ApplyMasterVolume();
 
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
 
@@ -275,7 +275,7 @@ void UWildOmissionGameInstance::RefreshServerList()
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
 
-void UWildOmissionGameInstance::RefreshMasterVolume()
+void UWildOmissionGameInstance::ApplyMasterVolume()
 {
 	UWildOmissionGameUserSettings* WOUserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MasterSoundClass, WOUserSettings->GetMasterVolume(), 1.0f, 0.2f);

@@ -3,7 +3,8 @@
 
 #include "UI/OptionsWidget.h"
 #include "WildOmissionGameUserSettings.h"
-#include "Interfaces/CharacterSettingsUser.h"
+#include "Interfaces/CharacterSettingsInterface.h"
+#include "Interfaces/GameSettingsInterface.h"
 #include "Components/Button.h"
 #include "OptionBoxes/SliderOptionBox.h"
 #include "OptionBoxes/MultiOptionBox.h"
@@ -263,24 +264,24 @@ void UOptionsWidget::ApplyCustomGraphicsSettings()
 
 void UOptionsWidget::ApplyFieldOfViewSettings()
 {
-	ICharacterSettingsUser* CharacterSettingsUser = GetOwningPlayerPawn<ICharacterSettingsUser>();
-	if (CharacterSettingsUser == nullptr)
+	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
+	if (CharacterSettingsInterface == nullptr)
 	{
 		return;
 	}
 
-	CharacterSettingsUser->ApplyFieldOfView();
+	CharacterSettingsInterface->ApplyFieldOfView();
 }
 
 void UOptionsWidget::ApplyMasterVolumeSettings()
 {
-	IGameSettingsInterface* GameSettingsInterface = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
-	if (GameInstance == nullptr)
+	IGameSettingsInterface* GameSettingsInterface = Cast<IGameSettingsInterface>(GetWorld()->GetGameInstance());
+	if (GameSettingsInterface == nullptr)
 	{
 		return;
 	}
 
-	GameInstance->RefreshMasterVolume();
+	GameSettingsInterface->ApplyMasterVolume();
 }
 
 void UOptionsWidget::Reset()
