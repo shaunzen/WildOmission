@@ -274,13 +274,13 @@ void UOptionsWidget::ApplyFieldOfViewSettings()
 
 void UOptionsWidget::ApplyMasterVolumeSettings()
 {
-	//UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
-	//if (GameInstance == nullptr)
-	//{
-	//	return;
-	//}
+	IGameSettingsInterface* GameSettingsInterface = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
 
-	//GameInstance->RefreshMasterVolume();
+	GameInstance->RefreshMasterVolume();
 }
 
 void UOptionsWidget::Reset()
