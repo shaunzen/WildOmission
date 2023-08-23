@@ -5,9 +5,8 @@
 #include "Components/WidgetSwitcher.h"
 #include "Components/Button.h"
 #include "WorldSelectionWidget.h"
-#include "WorldCreationWidget.h"
 #include "WorldMenuWidget.h"
-#include "ServerBrowserWidget.h"
+#include "Interfaces/GameSaveLoadController.h"
 #include "UI/OptionsWidget.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -19,9 +18,7 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	ExitButton = nullptr;
 	MainMenu = nullptr;
 	WorldSelectionMenu = nullptr;
-	WorldCreationMenu = nullptr;
 	WorldMenu = nullptr;
-	ServerBrowserMenu = nullptr;
 	OptionsMenu = nullptr;
 	MenuInterface = nullptr;
 }
@@ -35,15 +32,8 @@ void UMainMenuWidget::NativeConstruct()
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
 	WorldSelectionMenu->Setup(this);
-	WorldCreationMenu->Setup(this);
 	WorldMenu->Setup(this);
-	ServerBrowserMenu->Setup(this);
 	OptionsMenu->OnBackButtonPressed.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
-}
-
-void UMainMenuWidget::SetServerList(TArray<FServerData> InServerData)
-{
-	ServerBrowserMenu->SetServerList(InServerData);
 }
 
 void UMainMenuWidget::Setup(IMenuInterface* InMenuInterface)
@@ -101,14 +91,17 @@ void UMainMenuWidget::OpenWorldSelectionMenu()
 	MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
 }
 
-void UMainMenuWidget::OpenWorldCreationMenu()
+void UMainMenuWidget::CreateDemoWorld()
 {
-	if (MenuSwitcher == nullptr || WorldCreationMenu == nullptr)
+	IGameSaveLoadController* GameSaveLoadController = Cast<IGameSaveLoadController>(GetGameInstance());
+	if (GameSaveLoadController == nullptr)
 	{
 		return;
 	}
 
-	MenuSwitcher->SetActiveWidget(WorldCreationMenu);
+	const FString DemoWorldName = TEXT("Demo World");
+	GameSaveLoadController->CreateWorld(DemoWorldName);
+	OpenWorldMenuForWorld(DemoWorldName);
 }
 
 void UMainMenuWidget::OpenWorldMenu()
@@ -125,17 +118,6 @@ void UMainMenuWidget::OpenWorldMenuForWorld(const FString& WorldName)
 {
 	MenuSwitcher->SetActiveWidget(WorldMenu);
 	WorldMenu->Open(WorldName);
-}
-
-void UMainMenuWidget::OpenServerBrowserMenu()
-{
-	if (MenuSwitcher == nullptr || ServerBrowserMenu == nullptr)
-	{
-		return;
-	}
-
-	MenuSwitcher->SetActiveWidget(ServerBrowserMenu);
-	ServerBrowserMenu->Open();
 }
 
 void UMainMenuWidget::OpenOptionsMenu()

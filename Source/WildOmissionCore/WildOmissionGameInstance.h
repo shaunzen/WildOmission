@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "OnlineSubsystem.h"
-#include "Interfaces/OnlineSessionInterface.h"
 #include "Interfaces/MenuInterface.h"
 #include "Interfaces/GameSettingsInterface.h"
 #include "Interfaces/GameSaveLoadController.h"
@@ -14,7 +12,6 @@
 class UMainMenuWidget;
 class UGameplayMenuWidget;
 class ULoadingMenuWidget;
-class FOnlineSessionSearch;
 
 UCLASS()
 class WILDOMISSIONCORE_API UWildOmissionGameInstance : public UGameInstance, public IMenuInterface, public IGameSettingsInterface, public IGameSaveLoadController
@@ -42,19 +39,12 @@ public:
 
 	// Begin IMenuInterface Implementation
 	virtual void StartSingleplayer(const FString& WorldName) override;
-	virtual void Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false) override;
-	virtual void Join(const uint32& Index) override;
-	virtual void RefreshServerList() override;
 	virtual void QuitToMenu() override;
 	// End IMenuInterface Implementation
-
-	void StartSession();
 
 	// Begin IGameSettingsInterface Implementation
 	virtual void ApplyMasterVolume() override;
 	// End IGameSettingsInterface Implementation
-
-	IOnlineFriendsPtr GetFriendsInterface() const;
 
 	UFUNCTION(BlueprintCallable)
 	FString GetVersion() const;
@@ -67,6 +57,7 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<UGameplayMenuWidget> GameplayMenuWidgetBlueprintClass;
+
 	UPROPERTY()
 	UGameplayMenuWidget* GameplayMenuWidget;
 	UFUNCTION()
@@ -80,29 +71,11 @@ private:
 	TSubclassOf<ULoadingMenuWidget> LoadingMenuWidgetBlueprintClass;
 	UPROPERTY()
 	ULoadingMenuWidget* LoadingMenuWidget;
-	
-	IOnlineSessionPtr SessionInterface;
-	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 
-	IOnlineFriendsPtr FriendsInterface;
-
-	void OnCreateSessionComplete(FName SessionName, bool Success);
-	void OnDestroySessionComplete(FName SessionName, bool Success);
-	void OnFindSessionsComplete(bool Success);
-	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-	void OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
-
-	FString DesiredServerName;
 	FString WorldToLoad;
-	bool FriendsOnlySession;
-
-	UFUNCTION()
-	void CreateSession(FName SessionName = FName(""), bool Success = true);
 
 	UFUNCTION()
 	void LoadedNewMap(UWorld* InWorld);
-
-	void EndExistingSession();
 
 	bool OnMainMenu;
 	bool Loading;

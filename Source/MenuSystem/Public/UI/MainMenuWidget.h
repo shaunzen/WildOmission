@@ -28,6 +28,8 @@ public:
 	UFUNCTION()
 	void OpenWorldSelectionMenu();
 	UFUNCTION()
+	void CreateDemoWorld();
+	UFUNCTION()
 	void OpenWorldMenu();
 	UFUNCTION()
 	void OpenWorldMenuForWorld(const FString& WorldName);

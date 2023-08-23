@@ -44,19 +44,7 @@ void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 
 	WorldListBox->ClearChildren();
 
-
-	//TODO only do this if no worlds exist
-	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
-	if (CreateWorldButton == nullptr)
-	{
-		return;
-	}
-	// TODO Make Demo World!!!
-	CreateWorldButton->GetButton()->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldCreationMenu);
-	WorldListBox->AddChild(CreateWorldButton);
-
 	TArray<UWildOmissionSaveGame*> SortedWorlds = GetWorldsSortedByLastPlayed(WorldNames);
-
 	for (UWildOmissionSaveGame* SaveGame : SortedWorlds)
 	{
 		if (SaveGame == nullptr)
@@ -80,6 +68,19 @@ void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 
 		WorldListBox->AddChild(Row);
 	}
+
+	if (SortedWorlds.IsEmpty())
+	{
+		return;
+	}
+
+	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
+	if (CreateWorldButton == nullptr)
+	{
+		return;
+	}
+	CreateWorldButton->GetButton()->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::CreateDemoWorld);
+	WorldListBox->AddChild(CreateWorldButton);
 }
 
 void UWorldSelectionWidget::SetSelectedWorld(const FString& WorldName)

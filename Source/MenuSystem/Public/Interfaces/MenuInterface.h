@@ -26,15 +26,6 @@ public:
 	virtual void StartSingleplayer(const FString& WorldName) = 0;
 
 	UFUNCTION()
-	virtual void Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false) = 0;
-	
-	UFUNCTION()
-	virtual void Join(const uint32& Index) = 0;
-
-	UFUNCTION()
-	virtual void RefreshServerList() = 0;
-
-	UFUNCTION()
 	virtual void QuitToMenu() = 0;
 
 	static TArray<FString> GetAllWorldNames();

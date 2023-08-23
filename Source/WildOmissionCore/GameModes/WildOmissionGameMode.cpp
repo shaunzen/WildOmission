@@ -54,11 +54,11 @@ void AWildOmissionGameMode::StartPlay()
 
 void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	UWildOmissionGameInstance* GameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(GetWorld());
-	if (FriendsOnly && !GameInstance->GetFriendsInterface()->IsFriend(0, *UniqueId.GetUniqueNetId().Get(), FString()))
-	{
-		ErrorMessage = TEXT("Player not friend, revoking connection attempt.");
-	}
+	//UWildOmissionGameInstance* GameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(GetWorld());
+	//if (FriendsOnly && !GameInstance->GetFriendsInterface()->IsFriend(0, *UniqueId.GetUniqueNetId().Get(), FString()))
+	//{
+	//	ErrorMessage = TEXT("Player not friend, revoking connection attempt.");
+	//}
 
 	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
 }
