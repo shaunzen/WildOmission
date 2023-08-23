@@ -31,7 +31,6 @@ void UWorldSelectionWidget::Setup(UMainMenuWidget* InMainMenuParent)
 	ParentMenu = InMainMenuParent;
 
 	SelectButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldMenu);
-	BrowseServersButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenServerBrowserMenu);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenMainMenu);
 }
 
@@ -45,14 +44,15 @@ void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 
 	WorldListBox->ClearChildren();
 
+
+	//TODO only do this if no worlds exist
 	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
 	if (CreateWorldButton == nullptr)
 	{
 		return;
 	}
-
+	// TODO Make Demo World!!!
 	CreateWorldButton->GetButton()->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldCreationMenu);
-
 	WorldListBox->AddChild(CreateWorldButton);
 
 	TArray<UWildOmissionSaveGame*> SortedWorlds = GetWorldsSortedByLastPlayed(WorldNames);

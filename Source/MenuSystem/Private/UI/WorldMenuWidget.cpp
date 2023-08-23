@@ -12,7 +12,7 @@
 void UWorldMenuWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
 	ParentMenu = InMainMenuParent;
-
+	MultiplayerCheckOptionBox->SetIsEnabled(false);
 	PlayButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::PlayButtonClicked);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
 	MultiplayerCheckOptionBox->OnCheckStateChanged.AddDynamic(this, &UWorldMenuWidget::MultiplayerCheckboxChanged);
@@ -61,18 +61,5 @@ void UWorldMenuWidget::PlayButtonClicked()
 		return;
 	}
 
-	if (MultiplayerCheckOptionBox->IsChecked())
-	{
-		FString ServerName = ServerNameInputBox->GetText().ToString();
-		if (ServerName == FString(""))
-		{
-			return;
-		}
-
-		MenuInterface->Host(ServerName, WorldName, FriendsOnlyCheckOptionBox->IsChecked());
-	}
-	else
-	{
-		MenuInterface->StartSingleplayer(WorldName);
-	}
+	MenuInterface->StartSingleplayer(WorldName);
 }

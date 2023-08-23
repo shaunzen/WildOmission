@@ -4,16 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Structs/ServerData.h"
 #include "Interfaces/MenuInterface.h"
 #include "MainMenuWidget.generated.h"
 
 class UWidgetSwitcher;
 class UButton;
 class UWorldSelectionWidget;
-class UWorldCreationWidget;
 class UWorldMenuWidget;
-class UServerBrowserWidget;
 class UOptionsWidget;
 
 UCLASS()
@@ -31,19 +28,13 @@ public:
 	UFUNCTION()
 	void OpenWorldSelectionMenu();
 	UFUNCTION()
-	void OpenWorldCreationMenu();
-	UFUNCTION()
 	void OpenWorldMenu();
 	UFUNCTION()
 	void OpenWorldMenuForWorld(const FString& WorldName);
 	UFUNCTION()
-	void OpenServerBrowserMenu();
-	UFUNCTION()
 	void OpenOptionsMenu();
 	UFUNCTION()
 	void ExitGame();
-
-	void SetServerList(TArray<FServerData> InServerData);
 
 	void Setup(IMenuInterface* InMenuInterface);
 	void Teardown();
@@ -66,11 +57,7 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UWorldSelectionWidget* WorldSelectionMenu;
 	UPROPERTY(Meta = (BindWidget))
-	UWorldCreationWidget* WorldCreationMenu;
-	UPROPERTY(Meta = (BindWidget))
 	UWorldMenuWidget* WorldMenu;
-	UPROPERTY(Meta = (BindWidget))
-	UServerBrowserWidget* ServerBrowserMenu;
 	UPROPERTY(Meta = (BindWidget))
 	UOptionsWidget* OptionsMenu;
 
