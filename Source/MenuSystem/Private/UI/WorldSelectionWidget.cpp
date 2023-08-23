@@ -69,7 +69,7 @@ void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 		WorldListBox->AddChild(Row);
 	}
 
-	if (SortedWorlds.IsEmpty())
+	if (!SortedWorlds.IsEmpty())
 	{
 		return;
 	}
