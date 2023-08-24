@@ -14,7 +14,7 @@
 #include "Sound/SoundClass.h"
 #include "Kismet/GameplayStatics.h"
 
-const static FString GameVersion = TEXT("Pre Alpha 0.9.4");
+const static FString GameVersion = TEXT("Demo Preview 1.0.0");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
