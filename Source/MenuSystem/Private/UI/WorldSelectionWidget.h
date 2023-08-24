@@ -35,9 +35,6 @@ private:
 	UButton* SelectButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* BrowseServersButton;
-	
-	UPROPERTY(Meta = (BindWidget))
 	UButton* BackButton;
 
 	UPROPERTY()
