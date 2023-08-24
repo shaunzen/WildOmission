@@ -20,6 +20,7 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	WorldSelectionMenu = nullptr;
 	WorldMenu = nullptr;
 	OptionsMenu = nullptr;
+	CreditsMenu = nullptr;
 	MenuInterface = nullptr;
 }
 
@@ -29,6 +30,7 @@ void UMainMenuWidget::NativeConstruct()
 
 	PlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 	OptionsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenOptionsMenu);
+	CreditsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenCreditsMenu);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
 	WorldSelectionMenu->Setup(this);
@@ -131,6 +133,16 @@ void UMainMenuWidget::OpenOptionsMenu()
 	OptionsMenu->Refresh();
 }
 
+void UMainMenuWidget::OpenCreditsMenu()
+{
+	if (MenuSwitcher == nullptr || CreditsMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(CreditsMenu);
+}
+
 void UMainMenuWidget::ExitGame()
 {
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
@@ -139,5 +151,5 @@ void UMainMenuWidget::ExitGame()
 		return;
 	}
 
-	PlayerController->ConsoleCommand(FString("quit"));
+	PlayerController->ConsoleCommand(TEXT("quit"));
 }

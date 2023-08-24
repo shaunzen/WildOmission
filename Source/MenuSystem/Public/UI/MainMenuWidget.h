@@ -23,19 +23,21 @@ public:
 	
 	virtual void NativeConstruct() override;
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OpenMainMenu();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OpenWorldSelectionMenu();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void CreateDemoWorld();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OpenWorldMenu();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OpenWorldMenuForWorld(const FString& WorldName);
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OpenOptionsMenu();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
+	void OpenCreditsMenu();
+	UFUNCTION(BlueprintCallable)
 	void ExitGame();
 
 	void Setup(IMenuInterface* InMenuInterface);
@@ -52,6 +54,8 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* OptionsButton;
 	UPROPERTY(Meta = (BindWidget))
+	UButton* CreditsButton;
+	UPROPERTY(Meta = (BindWidget))
 	UButton* ExitButton;
 
 	UPROPERTY(Meta = (BindWidget))
@@ -62,6 +66,8 @@ private:
 	UWorldMenuWidget* WorldMenu;
 	UPROPERTY(Meta = (BindWidget))
 	UOptionsWidget* OptionsMenu;
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* CreditsMenu;
 
 	IMenuInterface* MenuInterface;
 
