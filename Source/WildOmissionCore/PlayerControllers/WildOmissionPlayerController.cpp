@@ -249,7 +249,7 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(aPawn);
 
-	if (WildOmissionCharacter == nullptr || StoredPlayerSave.IsAlive == false)
+	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSave.IsAlive == false)
 	{
 		return;
 	}

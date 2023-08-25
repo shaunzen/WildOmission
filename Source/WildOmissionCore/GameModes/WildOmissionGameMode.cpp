@@ -144,12 +144,7 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 		return;
 	}
 
-	if (Controller->GetPawn() != nullptr)
-	{
-		// If we have an existing pawn, just use it's rotation
-		SpawnRotation = Controller->GetPawn()->GetActorRotation();
-	}
-	else if (HumanCharacterClass != nullptr)
+	if (HumanCharacterClass != nullptr)
 	{
 		// Try to create a pawn to use of the default class for this player
 		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, StartSpot->GetActorLocation(), SpawnRotation);
