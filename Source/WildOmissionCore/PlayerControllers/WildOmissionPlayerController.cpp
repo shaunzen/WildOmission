@@ -13,6 +13,7 @@
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
+#include "UI/GameplayMenuWidget.h"
 #include "WildOmissionCore/WildOmissionStatics.h"
 #include "WildOmissionCore/WildOmissionGameState.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
@@ -20,13 +21,14 @@
 
 AWildOmissionPlayerController::AWildOmissionPlayerController()
 {
-	ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmissionCore/UI/Player/WBP_DeathMenu"));
+	bIsStillLoading = true;
+	NumRequiredActorsForLoad = 0;
+
+	static ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmissionCore/UI/Player/WBP_DeathMenu"));
 	if (DeathMenuWidgetBlueprint.Succeeded())
 	{
 		DeathMenuWidgetClass = DeathMenuWidgetBlueprint.Class;
 	}
-
-	bIsStillLoading = true;
 }
 
 void AWildOmissionPlayerController::PlayerTick(float DeltaTime)
@@ -79,7 +81,7 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& PlayerSave
 
 FString AWildOmissionPlayerController::GetUniqueID()
 {
-	FString ID = FString("");
+	FString ID = TEXT("");
 
 	if (PlayerState)
 	{
@@ -128,7 +130,7 @@ bool AWildOmissionPlayerController::IsEditorPlayer() const
 
 void AWildOmissionPlayerController::Client_SetNumRequiredActors_Implementation(const int32& InNum)
 {
-	UE_LOG(LogTemp, Warning, TEXT("NumRequiredActorsSet: %i"), InNum);
+	UE_LOG(LogTemp, Verbose, TEXT("NumRequiredActorsSet: %i"), InNum);
 	NumRequiredActorsForLoad = InNum;
 }
 
@@ -308,7 +310,14 @@ void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()
 		return;
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("Showing Death Menu."));
+	// Make Sure to Close Pause Menu So it Doesn't Get Stuck on Screen!
+	UWildOmissionGameInstance* WOGameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(GetWorld());
+	if (WOGameInstance && WOGameInstance->GetGameplayMenuWidget() != nullptr)
+	{
+		WOGameInstance->GetGameplayMenuWidget()->Teardown();
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("Bringing Up Death Menu."));
 
 	UDeathMenuWidget* DeathMenu = CreateWidget<UDeathMenuWidget>(this, DeathMenuWidgetClass);
 	if (DeathMenu == nullptr)

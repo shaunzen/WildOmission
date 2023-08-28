@@ -59,6 +59,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FString GetVersion() const;
 
+	UMainMenuWidget* GetMainMenuWidget() const;
+	UGameplayMenuWidget* GetGameplayMenuWidget() const;
+
 private:
 	UPROPERTY()
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetBlueprintClass;

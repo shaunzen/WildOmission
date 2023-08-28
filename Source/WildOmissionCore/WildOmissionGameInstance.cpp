@@ -534,3 +534,13 @@ FString UWildOmissionGameInstance::GetVersion() const
 {
 	return GameVersion;
 }
+
+UMainMenuWidget* UWildOmissionGameInstance::GetMainMenuWidget() const
+{
+	return MainMenuWidget;
+}
+
+UGameplayMenuWidget* UWildOmissionGameInstance::GetGameplayMenuWidget() const
+{
+	return GameplayMenuWidget;
+}
