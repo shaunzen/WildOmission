@@ -8,6 +8,7 @@
 
 class UEditableTextBox;
 class UButton;
+class UScrollBox;
 class UChatMessageWidget;
 class IGameChatParentWidget;
 class IChatMessageContainer;
@@ -35,7 +36,7 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* MessageContainerPanel;
+	UScrollBox* MessageContainerPanel;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* MessagePanel;
