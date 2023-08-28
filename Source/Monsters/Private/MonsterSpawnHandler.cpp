@@ -140,7 +140,6 @@ void AMonsterSpawnHandler::SpawnMonstersInRadiusFromOrigin(const FVector& SpawnO
 	for (int32 i = 0; i < SpawnData[MonsterToSpawn]->SpawnGroupSize; ++i)
 	{
 		AMonster* SpawnedMonster = GetWorld()->SpawnActor<AMonster>(SpawnData[MonsterToSpawn]->Class, GetSpawnTransform(SpawnOrigin));
-		SpawnedMonster->Setup(TimeOfDayHandler);
 		SpawnedMonster->OnDespawn.AddDynamic(this, &AMonsterSpawnHandler::RemoveMonsterFromList);
 		SpawnedMonsters.Add(SpawnedMonster);
 	}

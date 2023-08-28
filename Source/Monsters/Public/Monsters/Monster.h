@@ -31,8 +31,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	void Setup(ATimeOfDayHandler* InTimeOfDayHandler);
 
 	FOnMonsterDespawnSignature OnDespawn;
 
@@ -75,9 +73,6 @@ private:
 
 	UPROPERTY()
 	APawn* TargetPawn;
-
-	UPROPERTY()
-	ATimeOfDayHandler* TimeOfDayHandler;
 
 	FTimerHandle BurnDamageTimerHandle;
 

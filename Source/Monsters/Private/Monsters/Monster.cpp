@@ -14,7 +14,10 @@
 #include "Engine/DamageEvents.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "Log.h"
+
+static ATimeOfDayHandler* TIME_OF_DAY_HANDLER = nullptr;
 
 // Sets default values
 AMonster::AMonster()
@@ -56,6 +59,11 @@ void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (TIME_OF_DAY_HANDLER == nullptr)
+	{
+		TIME_OF_DAY_HANDLER = Cast<ATimeOfDayHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeOfDayHandler::StaticClass()));
+	}
+
 	SetIdleSoundTimer();
 
 	if (!HasAuthority())
@@ -131,7 +139,7 @@ void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (TimeOfDayHandler && TimeOfDayHandler->IsDay() && FireEffects->IsActive() == false)
+	if (TIME_OF_DAY_HANDLER && TIME_OF_DAY_HANDLER->IsDay() && FireEffects->IsActive() == false)
 	{
 		FireEffects->Activate();
 
@@ -160,11 +168,6 @@ void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
-
-void AMonster::Setup(ATimeOfDayHandler* InTimeOfDayHandler)
-{
-	TimeOfDayHandler = InTimeOfDayHandler;
 }
 
 APawn* AMonster::GetTargetPawn() const
