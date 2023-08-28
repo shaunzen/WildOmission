@@ -209,7 +209,9 @@ void AStorm::SpawnLightning()
 
 void AStorm::SpawnTornado(bool bFromSave)
 {
-	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass, FVector(0.0f,0.0f, 999999.0f), FRotator::ZeroRotator);
+	FActorSpawnParameters TornadoSpawnParams;
+	TornadoSpawnParams.Owner = this;
+	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass, FVector(0.0f,0.0f, 999999.0f), FRotator::ZeroRotator, TornadoSpawnParams);
 	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	if (bFromSave)
 	{

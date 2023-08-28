@@ -152,25 +152,26 @@ void ATornado::HandleMovement()
 {
 	FVector CurrentLocation = FVector(MeshComponent->GetRelativeLocation().X, MeshComponent->GetRelativeLocation().Y, 0.0f);
 	FVector VectorTowardTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
+	const float GroundLevelZ = -GetOwner()->GetActorLocation().Z;
 	float DistanceFromTarget = FVector::Distance(TargetLocation, CurrentLocation);
 	
 	if (DistanceFromTarget < 100.0f)
 	{
-		UE_LOG(LogWeather, Warning, TEXT("Getting new tornado target location."));
+		UE_LOG(LogWeather, Verbose, TEXT("Getting New Target Location For Tornado."));
 		TargetLocation = GetRandomLocationInStorm();
 	}
 
 	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * GetWorld()->GetDeltaSeconds());
 	float TotalTimeAlive = TotalLifetime - RemainingLifetime;
 
-	float ZAxis = 0.0f;
+	float ZAxis = GroundLevelZ;
 	if (TotalTimeAlive < 5.0f)
 	{
-		ZAxis = FMath::Lerp(10000.0f, 0.0f, TotalTimeAlive / 5.0f);
+		ZAxis = FMath::Lerp(0.0f, GroundLevelZ, TotalTimeAlive / 5.0f);
 	}
 	else if (RemainingLifetime < 5.0f)
 	{
-		ZAxis = FMath::Lerp(0.0f, 10000.0f, (5.0f / RemainingLifetime) - 1.0f);
+		ZAxis = FMath::Lerp(GroundLevelZ, 0.0f, (5.0f / RemainingLifetime) - 1.0f);
 	}
 
 	NewLocation.Z = ZAxis;
