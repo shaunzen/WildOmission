@@ -211,7 +211,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 
 	AStorm* SpawnedStorm = WeatherHandler->SpawnStorm(true);
 	
-	if (WeatherToSet == FString("Rain"))
+	if (WeatherToSet == TEXT("Rain"))
 	{
 		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
 		NewStormLocation.X = 0.0f;
@@ -219,7 +219,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 		SpawnedStorm->SetActorLocation(NewStormLocation);
 		SpawnedStorm->SetSeverity(30.0f);
 	}
-	else if (WeatherToSet == FString("Tornado"))
+	else if (WeatherToSet == TEXT("Tornado"))
 	{
 		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
 		NewStormLocation.X = 0.0f;
@@ -227,7 +227,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 		SpawnedStorm->SetActorLocation(NewStormLocation);
 		SpawnedStorm->SetSeverity(90.0f);
 	}
-	else if (WeatherToSet == FString("Clear"))
+	else if (WeatherToSet == TEXT("Clear"))
 	{
 		WeatherHandler->ClearStorm();
 	}

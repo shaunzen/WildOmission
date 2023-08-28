@@ -21,15 +21,15 @@ AStorm::AStorm()
 	bAlwaysRelevant = true;
 	SetReplicateMovement(true);
 
-	StormRootComponent = CreateDefaultSubobject<USceneComponent>(FName("StormRootComponent"));
+	StormRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("StormRootComponent"));
 	RootComponent = StormRootComponent;
 
-	CloudMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("CloudMeshComponent"));
+	CloudMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CloudMeshComponent"));
 	CloudMeshComponent->SetupAttachment(StormRootComponent);
 	CloudMeshComponent->SetWorldScale3D(FVector(1000.0f , 1000.0f, 50.0f));
 	CloudMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECR_Block);
 
-	RainHazeComponent = CreateDefaultSubobject<UNiagaraComponent>(FName("RainHazeComponent"));
+	RainHazeComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("RainHazeComponent"));
 	RainHazeComponent->SetupAttachment(StormRootComponent);
 
 	RainSeverityThreshold = 30.0f;
@@ -53,7 +53,7 @@ AStorm::AStorm()
 	LightningClass = nullptr;
 	TornadoClass = nullptr;
 
-	Tags.Add(FName("StormCloud"));
+	Tags.Add(TEXT("StormCloud"));
 
 	Identifier = NAME_None;
 

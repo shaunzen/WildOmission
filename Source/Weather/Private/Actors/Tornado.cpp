@@ -73,12 +73,11 @@ void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnAtWorldOrigin)
 	OwnerStorm = InOwnerStorm;
 
 	GetStormRadius();
-	SetActorLocation(GetRandomLocationInStorm());
+	SetActorRelativeLocation(GetRandomLocationInStorm());
 	if (SpawnAtWorldOrigin)
 	{
 		FVector NewSpawnLocation = FVector::ZeroVector;
-		NewSpawnLocation.Z = 0.0f;
-		SetActorLocation(NewSpawnLocation);
+		SetActorRelativeLocation(NewSpawnLocation);
 	}
 	
 	TargetLocation = GetRandomLocationInStorm();
@@ -96,7 +95,7 @@ void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnAtWorldOrigin)
 FTornadoSaveInformation ATornado::GetSaveInformation()
 {
 	FTornadoSaveInformation NewSave;
-	NewSave.Transform = GetActorTransform();
+	NewSave.Transform = MeshComponent->GetRelativeTransform();
 	NewSave.MovementSpeed = MovementSpeed;
 	NewSave.TotalLifetime = TotalLifetime;
 	NewSave.RemainingLifetime = RemainingLifetime;
@@ -110,7 +109,7 @@ void ATornado::LoadSaveInformation(const FTornadoSaveInformation& InSave, AStorm
 {
 	OwnerStorm = InOwnerStorm;
 
-	SetActorTransform(InSave.Transform);
+	MeshComponent->SetRelativeTransform(InSave.Transform);
 	MovementSpeed = InSave.MovementSpeed;
 	TotalLifetime = InSave.TotalLifetime;
 	RemainingLifetime = InSave.RemainingLifetime;
@@ -151,7 +150,7 @@ void ATornado::OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AA
 
 void ATornado::HandleMovement()
 {
-	FVector CurrentLocation = FVector(GetActorLocation().X, GetActorLocation().Y, 0.0f);
+	FVector CurrentLocation = FVector(MeshComponent->GetRelativeLocation().X, MeshComponent->GetRelativeLocation().Y, 0.0f);
 	FVector VectorTowardTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
 	float DistanceFromTarget = FVector::Distance(TargetLocation, CurrentLocation);
 	
@@ -176,7 +175,7 @@ void ATornado::HandleMovement()
 
 	NewLocation.Z = ZAxis;
 
-	SetActorLocation(NewLocation);
+	MeshComponent->SetRelativeLocation(NewLocation);
 }
 
 void ATornado::HandleDamage()
@@ -246,6 +245,6 @@ void ATornado::GetStormRadius()
 	FVector Origin;
 	FVector BoxExtent;
 	OwnerStorm->GetActorBounds(true, Origin, BoxExtent);
-
+	
 	StormRadius = BoxExtent.Length() - (BoxExtent.Length() * 0.2f);
 }
