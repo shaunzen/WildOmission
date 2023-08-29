@@ -20,13 +20,13 @@ EBTNodeResult::Type UBTTask_GetRandomLocation::ExecuteTask(UBehaviorTreeComponen
 	UNavigationSystemV1* NavigationSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	if (NavigationSystem == nullptr)
 	{
-		UE_LOG(LogAnimals, Warning, TEXT("GetRandomLocation, Failed to find NavigationSystem in world."));
+		UE_LOG(LogWildOmissionAI, Warning, TEXT("BTTask_GetRandomLocation, Failed to find NavigationSystem in world."));
 		return EBTNodeResult::Type::Failed;
 	}
 	FNavLocation NavLocation;
 	if (!NavigationSystem->GetRandomReachablePointInRadius(CurrentLocation, 5000.0f, NavLocation))
 	{
-		UE_LOG(LogAnimals, Warning, TEXT("GetRandomLocation, Failed to find random location."));
+		UE_LOG(LogWildOmissionAI, Verbose, TEXT("BTTask_GetRandomLocation, Failed to find random location."));
 		return EBTNodeResult::Type::Failed;
 	}
 

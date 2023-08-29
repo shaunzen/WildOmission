@@ -1,9 +1,9 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Structs/MonsterSpawnData.h"
+#include "Structs/AISpawnData.h"
 
-FMonsterSpawnData::FMonsterSpawnData()
+FAISpawnData::FAISpawnData()
 {
 	Class = nullptr;
 	SpawnGroupSize = 4;

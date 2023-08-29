@@ -1,9 +1,9 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Controllers/MonsterController.h"
+#include "Controllers/WildOmissionAIController.h"
 
-void AMonsterController::BeginPlay()
+void AWildOmissionAIController::BeginPlay()
 {
 	Super::BeginPlay();
 

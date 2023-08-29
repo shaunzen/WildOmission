@@ -4,23 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Services/BTService_BlackboardBase.h"
-#include "BTService_LastKnownLocation.generated.h"
+#include "BTService_ClosestVisiblePlayer.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MONSTERS_API UBTService_LastKnownLocation : public UBTService_BlackboardBase
+class WILDOMISSIONAI_API UBTService_ClosestVisiblePlayer : public UBTService_BlackboardBase
 {
 	GENERATED_BODY()
-	
+
 public:
-	UBTService_LastKnownLocation();
+	UBTService_ClosestVisiblePlayer();
 
 protected:
-	UPROPERTY(EditAnywhere, Category = Blackboard)
-	struct FBlackboardKeySelector PlayerActorBlackboardKey;
-	
+	UPROPERTY(EditAnywhere)
+	float MaxChaseDistance;
+
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 };
