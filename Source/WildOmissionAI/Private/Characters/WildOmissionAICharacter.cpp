@@ -28,6 +28,9 @@ AWildOmissionAICharacter::AWildOmissionAICharacter()
 	DespawnComponent = CreateDefaultSubobject<UDistanceDespawnComponent>(TEXT("DespawnComponent"));
 	DespawnComponent->SetupAttachment(RootComponent);
 
+	MinTimeBetweenIdleSoundSeconds = 1.0f;
+	MaxTimeBetweenIdleSoundSeconds = 5.0f;
+
 	IdleSound = nullptr;
 	RagdollClass = nullptr;
 }
@@ -71,7 +74,7 @@ void AWildOmissionAICharacter::SetIdleSoundTimer()
 {
 	FTimerHandle IdleSoundTimerHandle;
 	FTimerDelegate IdleSoundTimerDelegate;
-	const float IdleSoundDelay = FMath::RandRange(1.0f, 5.0f);
+	const float IdleSoundDelay = FMath::RandRange(MinTimeBetweenIdleSoundSeconds, MaxTimeBetweenIdleSoundSeconds);
 
 	IdleSoundTimerDelegate.BindUObject(this, &AWildOmissionAICharacter::PlayIdleSound);
 	GetWorld()->GetTimerManager().SetTimer(IdleSoundTimerHandle, IdleSoundTimerDelegate, IdleSoundDelay, false);

@@ -33,6 +33,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
+	UPROPERTY(EditDefaultsOnly)
+	float MinTimeBetweenIdleSoundSeconds;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MaxTimeBetweenIdleSoundSeconds;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	UNavigationInvokerComponent* NavigationInvoker;
