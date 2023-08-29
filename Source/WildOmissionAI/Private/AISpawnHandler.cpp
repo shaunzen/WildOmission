@@ -10,28 +10,25 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
-const static int32 MIN_SPAWN_CHECK_TIME_SECONDS = 5.0f;
-const static int32 MAX_SPAWN_CHECK_TIME_SECONDS = 15.0f;
-const static float OUTER_SPAWN_RADIUS_CENTIMETERS = 10000.0f;
-const static float INNER_SPAWN_RADIUS_CENTIMETERS = 5000.0f;
-
-static TArray<AWildOmissionAICharacter*> SpawnedCharacters;
+static TArray<AWildOmissionAICharacter*> SpawnedAICharacters;
 
 // Sets default values
 AAISpawnHandler::AAISpawnHandler()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+	MinSpawnCheckTimeSeconds = 5.0f;
+	MaxSpawnCheckTimeSeconds = 15.0f;
+	OuterSpawnRadiusCentimeters = 10000.0f;
+	InnerSpawnRadiusCentimeters = 5000.0f;
+
+	AISpawnDataTable = nullptr;
 }
 
-void AAISpawnHandler::Setup(ATimeOfDayHandler* InTimeOfDayHandler)
+TArray<AWildOmissionAICharacter*>* AAISpawnHandler::GetSpawnedAICharacters()
 {
-	TimeOfDayHandler = InTimeOfDayHandler;
-}
-
-TArray<AMonster*>* AAISpawnHandler::GetSpawnedMonsters()
-{
-	return &SpawnedMonsters;
+	return &SpawnedAICharacters;
 }
 
 // Called when the game starts or when spawned
@@ -39,23 +36,28 @@ void AAISpawnHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SpawnedMonsters.Empty();
+	SpawnedAICharacters.Empty();
 
 	CheckSpawnConditionsForAllPlayers();
 }
 
+bool AAISpawnHandler::IsSpawnConditionValid()
+{
+	return true;
+}
+
 void AAISpawnHandler::CheckSpawnConditionsForAllPlayers()
 {
-	UE_LOG(LogMonsters, Verbose, TEXT("Checking monster spawn conditions."));
+	UE_LOG(LogWildOmissionAI, Verbose, TEXT("Checking AICharacter Spawn Conditions."));
 	
 	// Set timer to call this function again in the future
-	const float NextCheckTimeSeconds = FMath::RandRange(MIN_SPAWN_CHECK_TIME_SECONDS, MAX_SPAWN_CHECK_TIME_SECONDS);
-	UE_LOG(LogMonsters, VeryVerbose, TEXT("Next condition check set for %f seconds."), NextCheckTimeSeconds);
+	const float NextCheckTimeSeconds = FMath::RandRange(MinSpawnCheckTimeSeconds, MaxSpawnCheckTimeSeconds);
+	UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("Making Next AICharacter Spawn Check In %f Seconds."), NextCheckTimeSeconds);
 	FTimerDelegate NextSpawnCheckTimerDelegate;
 	NextSpawnCheckTimerDelegate.BindUObject(this, &AAISpawnHandler::CheckSpawnConditionsForAllPlayers);
 	GetWorld()->GetTimerManager().SetTimer(NextSpawnCheckTimerHandle, NextSpawnCheckTimerDelegate, NextCheckTimeSeconds, false);
 
-	if (TimeOfDayHandler->IsNight() == false)
+	if (!IsSpawnConditionValid())
 	{
 		return;
 	}
@@ -76,83 +78,83 @@ void AAISpawnHandler::CheckSpawnConditionsForPlayer(APawn* Player)
 {
 	if (Player == nullptr)
 	{
-		UE_LOG(LogMonsters, Warning, TEXT("Tried to check animal spawn conditions for player, but the player was nullptr."))
+		UE_LOG(LogWildOmissionAI, Warning, TEXT("Tried to check AI spawn conditions for player, but the player was nullptr."))
 		return;
 	}
 
-	// Check how many animals are in range of this component
-	const int32 MonstersInRange = GetNumMonstersWithinRadiusFromLocation(Player->GetActorLocation());
-	UE_LOG(LogMonsters, VeryVerbose, TEXT("%i monsters found in range of player."), MonstersInRange);
+	// Check how many AICharacter are in range of this component
+	const int32 AICharactersInRange = GetNumAICharactersWithinRadiusFromLocation(Player->GetActorLocation());
+	UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("%i AICharacters Found In Range Of Player."), AICharactersInRange);
 
-	// If no animals are present, there is a chance we will spawn some
-	if (MonstersInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(1.0f)) // TODO change weight later
+	// If no AICharacters are present, there is a chance we will spawn some
+	if (AICharactersInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(SpawnChance)) // TODO change weight later
 	{
-		UE_LOG(LogMonsters, Verbose, TEXT("Monster spawn condition not met."));
+		UE_LOG(LogWildOmissionAI, Verbose, TEXT("AICharacter Spawn Conditions Not Met."));
 		return;
 	}
 
-	SpawnMonstersInRadiusFromOrigin(Player->GetActorLocation());
+	SpawnAICharactersInRadiusFromLocation(Player->GetActorLocation());
 }
 
-int32 AAISpawnHandler::GetNumMonstersWithinRadiusFromLocation(const FVector& TestLocation) const
+int32 AAISpawnHandler::GetNumAICharactersWithinRadiusFromLocation(const FVector& TestLocation) const
 {
-	if (SpawnedMonsters.IsEmpty())
+	if (SpawnedAICharacters.IsEmpty())
 	{
 		return 0;
 	}
 
-	int32 MonstersInRange = 0;
+	int32 AICharactersInRange = 0;
 
-	for (AMonster* Monster : SpawnedMonsters)
+	for (AWildOmissionAICharacter* AICharacter : SpawnedAICharacters)
 	{
-		if (Monster == nullptr || FVector::Distance(Monster->GetActorLocation(), TestLocation) > OUTER_SPAWN_RADIUS_CENTIMETERS)
+		if (AICharacter == nullptr || FVector::Distance(AICharacter->GetActorLocation(), TestLocation) > OuterSpawnRadiusCentimeters)
 		{
 			continue;
 		}
-		++MonstersInRange;
+		++AICharactersInRange;
 	}
 
-	return MonstersInRange;
+	return AICharactersInRange;
 }
 
-void AAISpawnHandler::SpawnMonstersInRadiusFromOrigin(const FVector& SpawnOrigin)
+void AAISpawnHandler::SpawnAICharactersInRadiusFromLocation(const FVector& SpawnLocation)
 {
-	if (MonsterSpawnDataTable == nullptr)
+	if (AISpawnDataTable == nullptr)
 	{
 		return;
 	}
 
-	TArray<FMonsterSpawnData*> SpawnData;
-	static const FString MonsterSpawnDataContextString = TEXT("MonsterSpawnData Context String");
+	TArray<FAISpawnData*> SpawnData;
+	static const FString AISpawnDataContextString = TEXT("AISpawnData Context String");
 
-	MonsterSpawnDataTable->GetAllRows(MonsterSpawnDataContextString, SpawnData);
+	AISpawnDataTable->GetAllRows(AISpawnDataContextString, SpawnData);
 
-	int32 MonsterToSpawn = FMath::RandRange(0, SpawnData.Num() - 1);
+	int32 AICharacterToSpawn= FMath::RandRange(0, SpawnData.Num() - 1);
 
-	UE_LOG(LogMonsters, VeryVerbose, TEXT("Spawning monster with ID %i"), MonsterToSpawn);
-	for (int32 i = 0; i < SpawnData[MonsterToSpawn]->SpawnGroupSize; ++i)
+	UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("Spawning AICharacter With An Index Of %i."), AICharacterToSpawn);
+	for (int32 i = 0; i < SpawnData[AICharacterToSpawn]->SpawnGroupSize; ++i)
 	{
-		AMonster* SpawnedMonster = GetWorld()->SpawnActor<AMonster>(SpawnData[MonsterToSpawn]->Class, GetSpawnTransform(SpawnOrigin));
-		SpawnedMonster->OnDespawn.AddDynamic(this, &AAISpawnHandler::RemoveMonsterFromList);
-		SpawnedMonsters.Add(SpawnedMonster);
+		AWildOmissionAICharacter* SpawnedAICharacter = GetWorld()->SpawnActor<AWildOmissionAICharacter>(SpawnData[AICharacterToSpawn]->Class, GetSpawnTransform(SpawnLocation));
+		SpawnedAICharacter->OnDespawn.AddDynamic(this, &AAISpawnHandler::RemoveAICharacterFromList);
+		SpawnedAICharacters.Add(SpawnedAICharacter);
 	}
 }
 
-void AAISpawnHandler::RemoveMonsterFromList(AMonster* MonsterToRemove)
+void AAISpawnHandler::RemoveAICharacterFromList(AWildOmissionAICharacter* CharacterToRemove)
 {
-	const int32 MonsterIndex = SpawnedMonsters.IndexOfByKey(MonsterToRemove);
-	if (MonsterIndex == INDEX_NONE)
+	const int32 AICharacterIndex = SpawnedAICharacters.IndexOfByKey(CharacterToRemove);
+	if (AICharacterIndex == INDEX_NONE)
 	{
 		return;
 	}
 
-	SpawnedMonsters.RemoveAtSwap(MonsterIndex, 1, false);
+	SpawnedAICharacters.RemoveAtSwap(AICharacterIndex, 1, false);
 }
 
 FTransform AAISpawnHandler::GetSpawnTransform(const FVector& SpawnOrigin) const
 {
 	const float TraceHeight = 50000.0f;
-	const float SpawnDistance = FMath::RandRange(INNER_SPAWN_RADIUS_CENTIMETERS, OUTER_SPAWN_RADIUS_CENTIMETERS);
+	const float SpawnDistance = FMath::RandRange(InnerSpawnRadiusCentimeters, OuterSpawnRadiusCentimeters);
 	const float SpawnAngle = FMath::RandRange(0.0f, 360.0f);
 
 	FVector SpawnLocationWithinRadius = FVector::ForwardVector * SpawnDistance;
@@ -179,13 +181,13 @@ FTransform AAISpawnHandler::GetSpawnTransform(const FVector& SpawnOrigin) const
 	return SpawnTransform;
 }
 
-FMonsterSpawnData* AAISpawnHandler::GetSpawnData(const FName& MonsterName)
+FAISpawnData* AAISpawnHandler::GetSpawnData(const FName& AIName)
 {
-	if (MonsterSpawnDataTable == nullptr)
+	if (AISpawnDataTable== nullptr)
 	{
 		return nullptr;
 	}
 
-	static const FString ContextString = TEXT("MonsterSpawnData Context");
-	return MonsterSpawnDataTable->FindRow<FMonsterSpawnData>(MonsterName, ContextString, true);
+	static const FString ContextString = TEXT("AISpawnData Context");
+	return AISpawnDataTable->FindRow<FAISpawnData>(AIName, ContextString, true);
 }

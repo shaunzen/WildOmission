@@ -17,13 +17,34 @@ class WILDOMISSIONAI_API AAISpawnHandler : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AAISpawnHandler();
-	void Setup(ATimeOfDayHandler* InTimeOfDayHandler);
-
-	static TArray<AWildOmissionAICharacter*>* GetSpawnedCharacters();
+	
+	static TArray<AWildOmissionAICharacter*>* GetSpawnedAICharacters();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 MinSpawnCheckTimeSeconds;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 MaxSpawnCheckTimeSeconds;
+
+	UPROPERTY(EditDefaultsOnly)
+	float OuterSpawnRadiusCentimeters;
+
+	UPROPERTY(EditDefaultsOnly)
+	float InnerSpawnRadiusCentimeters;
+
+	UPROPERTY(EditDefaultsOnly)
+	float SpawnChance;
+
+	UPROPERTY(EditDefaultsOnly)
+	UDataTable* AISpawnDataTable;
+
+	virtual bool IsSpawnConditionValid();
+
+	FAISpawnData* GetSpawnData(const FName& AIName);
 
 private:
 	UPROPERTY()
@@ -36,13 +57,11 @@ private:
 	int32 GetNumAICharactersWithinRadiusFromLocation(const FVector& TestLocation) const;
 
 	UFUNCTION()
-	void SpawnAICharactersInRadiusFromOrigin(const FVector& SpawnOrigin);
+	void SpawnAICharactersInRadiusFromLocation(const FVector& SpawnLocation);
 
 	UFUNCTION()
-	void RemoveAICharacterFromList(AWildOmissionAICharacter* MonsterToRemove);
+	void RemoveAICharacterFromList(AWildOmissionAICharacter* CharacterToRemove);
 
-	FTransform GetSpawnTransform(const FVector& SpawnOrigin) const;
-
-	static FAISpawnData* GetSpawnData(const FName& AIName);
+	FTransform GetSpawnTransform(const FVector& SpawnLocation) const;
 
 };
