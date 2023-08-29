@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "AISpawnHandler.h"
 #include "AnimalSpawnHandler.generated.h"
 
 class AAnimal;
 struct FAnimalSpawnData;
 
 UCLASS()
-class ANIMALS_API AAnimalSpawnHandler : public AActor
+class ANIMALS_API AAnimalSpawnHandler : public AAISpawnHandler
 {
 	GENERATED_BODY()
 	

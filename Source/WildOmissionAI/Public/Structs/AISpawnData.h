@@ -5,17 +5,17 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Engine/DataTable.h"
-#include "AnimalSpawnData.generated.h"
+#include "AISpawnData.generated.h"
 
-class AAnimal;
+class AWildOmissionAICharacter;
 
 USTRUCT(BlueprintType)
-struct FAnimalSpawnData : public FTableRowBase
+struct FAISpawnData: public FTableRowBase
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AAnimal> Class;
+	TSubclassOf<AWildOmissionAICharacter> Class;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 SpawnGroupSize;
@@ -23,6 +23,6 @@ struct FAnimalSpawnData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 SpawnWeight;
 
-	FAnimalSpawnData();
+	FAISpawnData();
 
 };

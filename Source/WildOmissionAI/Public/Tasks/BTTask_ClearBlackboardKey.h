@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class MONSTERS_API UBTTask_ClearBlackboardKey : public UBTTask_BlackboardBase
+class WILDOMISSIONAI_API UBTTask_ClearBlackboardKey : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 	

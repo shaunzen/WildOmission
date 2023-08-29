@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class ANIMALS_API UBTTask_GetRandomLocation : public UBTTask_BlackboardBase
+class WILDOMISSIONAI_API UBTTask_GetRandomLocation : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
