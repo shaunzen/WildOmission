@@ -31,10 +31,10 @@ protected:
 	int32 MaxSpawnCheckTimeSeconds;
 
 	UPROPERTY(EditDefaultsOnly)
-	float OuterSpawnRadiusCentimeters;
+	float InnerSpawnRadiusCentimeters;
 
 	UPROPERTY(EditDefaultsOnly)
-	float InnerSpawnRadiusCentimeters;
+	float OuterSpawnRadiusCentimeters;
 
 	UPROPERTY(EditDefaultsOnly)
 	float SpawnChance;
