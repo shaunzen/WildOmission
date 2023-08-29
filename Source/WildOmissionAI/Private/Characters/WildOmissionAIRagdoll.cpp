@@ -10,8 +10,8 @@ AWildOmissionAIRagdoll::AWildOmissionAIRagdoll()
 {
 	bReplicates = true;
 	SetReplicateMovement(true);
-	NetUpdateFrequency = 1.0f;
-
+	NetUpdateFrequency = 2.0f;
+	
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
