@@ -6,7 +6,7 @@ public class WildOmissionAI : ModuleRules
 {
     public WildOmissionAI(ReadOnlyTargetRules Target) : base(Target)
     {
-        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "GameplayTasks", "NavigationSystem", "Animation", "Despawner", "Inventory", "Vitals" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "GameplayTasks", "Vitals" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "NavigationSystem", "Despawner", "Inventory" });
     }
 }

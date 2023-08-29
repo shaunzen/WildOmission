@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "AISpawnHandler.generated.h"
 
+class UDataTable;
 class AWildOmissionAICharacter;
 struct FAISpawnData;
 

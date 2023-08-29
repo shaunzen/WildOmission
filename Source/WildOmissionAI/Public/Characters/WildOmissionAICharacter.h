@@ -33,19 +33,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditDefaultsOnly)
-	float MinTimeBetweenIdleSoundSeconds;
-
-	UPROPERTY(EditDefaultsOnly)
-	float MaxTimeBetweenIdleSoundSeconds;
-
-private:
 	UPROPERTY(VisibleAnywhere)
 	UNavigationInvokerComponent* NavigationInvoker;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	UVitalsComponent* VitalsComponent;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	UDistanceDespawnComponent* DespawnComponent;
 
@@ -55,6 +48,13 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> RagdollClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	float MinTimeBetweenIdleSoundSeconds;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MaxTimeBetweenIdleSoundSeconds;
+
+private:
 	UFUNCTION()
 	void HandleDespawn();
 

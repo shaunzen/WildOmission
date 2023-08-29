@@ -39,10 +39,10 @@ void AMonsterSpawnHandler::BeginPlay()
 
 bool AMonsterSpawnHandler::IsSpawnConditionValid()
 {
-	if (!TimeOfDayHandler || TimeOfDayHandler->IsDay())
+	if (TimeOfDayHandler && TimeOfDayHandler->IsNight())
 	{
-		return false;
+		return true;
 	}
 
-	return true;
+	return false;
 }
