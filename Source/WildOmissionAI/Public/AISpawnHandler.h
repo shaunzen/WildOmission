@@ -19,8 +19,6 @@ public:
 	// Sets default values for this actor's properties
 	AAISpawnHandler();
 	
-	static TArray<AWildOmissionAICharacter*>* GetSpawnedAICharacters();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,6 +40,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* AISpawnDataTable;
+
+	TArray<AWildOmissionAICharacter*> SpawnedAICharacters;
 
 	virtual bool IsSpawnConditionValid();
 

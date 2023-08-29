@@ -10,8 +10,6 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
-static TArray<AWildOmissionAICharacter*> SpawnedAICharacters;
-
 // Sets default values
 AAISpawnHandler::AAISpawnHandler()
 {
@@ -22,13 +20,9 @@ AAISpawnHandler::AAISpawnHandler()
 	MaxSpawnCheckTimeSeconds = 15.0f;
 	OuterSpawnRadiusCentimeters = 10000.0f;
 	InnerSpawnRadiusCentimeters = 5000.0f;
+	SpawnChance = 1.0f;
 
 	AISpawnDataTable = nullptr;
-}
-
-TArray<AWildOmissionAICharacter*>* AAISpawnHandler::GetSpawnedAICharacters()
-{
-	return &SpawnedAICharacters;
 }
 
 // Called when the game starts or when spawned
@@ -87,7 +81,7 @@ void AAISpawnHandler::CheckSpawnConditionsForPlayer(APawn* Player)
 	UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("%i AICharacters Found In Range Of Player."), AICharactersInRange);
 
 	// If no AICharacters are present, there is a chance we will spawn some
-	if (AICharactersInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(SpawnChance)) // TODO change weight later
+	if (AICharactersInRange != 0 || !UKismetMathLibrary::RandomBoolWithWeight(SpawnChance))
 	{
 		UE_LOG(LogWildOmissionAI, Verbose, TEXT("AICharacter Spawn Conditions Not Met."));
 		return;
@@ -129,7 +123,7 @@ void AAISpawnHandler::SpawnAICharactersInRadiusFromLocation(const FVector& Spawn
 
 	AISpawnDataTable->GetAllRows(AISpawnDataContextString, SpawnData);
 
-	int32 AICharacterToSpawn= FMath::RandRange(0, SpawnData.Num() - 1);
+	int32 AICharacterToSpawn = FMath::RandRange(0, SpawnData.Num() - 1);
 
 	UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("Spawning AICharacter With An Index Of %i."), AICharacterToSpawn);
 	for (int32 i = 0; i < SpawnData[AICharacterToSpawn]->SpawnGroupSize; ++i)

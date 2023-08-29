@@ -6,6 +6,7 @@
 #include "NavigationInvokerComponent.h"
 #include "Components/VitalsComponent.h"
 #include "Components/DistanceDespawnComponent.h"
+#include "Characters/WildOmissionAIRagdoll.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Kismet/GameplayStatics.h"
 #include "Log.h"
@@ -65,7 +66,7 @@ void AWildOmissionAICharacter::HandleDeath()
 {
 	if (RagdollClass)
 	{
-		GetWorld()->SpawnActor<AActor>(RagdollClass, GetActorLocation(), GetActorRotation());
+		GetWorld()->SpawnActor<AWildOmissionAIRagdoll>(RagdollClass, GetActorLocation(), GetActorRotation());
 	}
 	HandleDespawn();
 }

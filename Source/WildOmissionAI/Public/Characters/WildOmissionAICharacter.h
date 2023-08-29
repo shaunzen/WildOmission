@@ -9,6 +9,7 @@
 class UNavigationInvokerComponent;
 class UVitalsComponent;
 class UDistanceDespawnComponent;
+class AWildOmissionAIRagdoll;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAICharacterDespawnSignature, AWildOmissionAICharacter*, DespawningAICharacter);
 
@@ -42,16 +43,16 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UDistanceDespawnComponent* DespawnComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
 	USoundBase* IdleSound;
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AActor> RagdollClass;
+	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
+	TSubclassOf<AWildOmissionAIRagdoll> RagdollClass;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
 	float MinTimeBetweenIdleSoundSeconds;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
 	float MaxTimeBetweenIdleSoundSeconds;
 
 private:
