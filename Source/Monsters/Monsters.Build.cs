@@ -7,6 +7,6 @@ public class Monsters : ModuleRules
     public Monsters(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Niagara", "GameplayTasks", "NavigationSystem", "Animation", "Despawner", "EquipableItems", "Inventory", "TimeOfDay", "Vitals" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "GameplayTasks", "Niagara", "EquipableItems", "Inventory", "TimeOfDay", "Vitals", "WildOmissionAI" });
     }
 }

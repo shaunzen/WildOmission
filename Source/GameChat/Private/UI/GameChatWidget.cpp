@@ -4,16 +4,18 @@
 #include "UI/GameChatWidget.h"
 #include "ChatMessageWidget.h"
 #include "Components/Button.h"
+#include "Components/ScrollBox.h"
 #include "Components/EditableTextBox.h"
 #include "Interfaces/GameChatParentWidget.h"
 #include "Interfaces/ChatMessageContainer.h"
 #include "Interfaces/ChatMessageSender.h"
 #include "GameFramework/PlayerState.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Log.h"
 
 UGameChatWidget::UGameChatWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UChatMessageWidget> ChatMessageBlueprint(TEXT("/Game/GameChat/UI/WBP_ChatMessage"));
+	static ConstructorHelpers::FClassFinder<UChatMessageWidget> ChatMessageBlueprint(TEXT("/Game/GameChat/UI/WBP_ChatMessage"));
 	if (ChatMessageBlueprint.Succeeded())
 	{
 		ChatMessageClass = ChatMessageBlueprint.Class;
@@ -96,6 +98,8 @@ void UGameChatWidget::Open(IChatMessageSender* InOwnerMessageSender)
 	{
 		Widget->SetVisibility(ESlateVisibility::Visible);
 	}
+
+	MessageContainerPanel->ScrollToEnd();
 }
 
 void UGameChatWidget::Close()
@@ -123,7 +127,7 @@ void UGameChatWidget::AttemptSendMessage()
 		|| GetOwningPlayer() == nullptr 
 		|| GetOwningPlayerState() == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot send nothing in game chat."));
+		UE_LOG(LogGameChat, Warning, TEXT("Cannot send nothing in game chat."));
 		return;
 	}
 

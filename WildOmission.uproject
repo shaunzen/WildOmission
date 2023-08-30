@@ -179,6 +179,16 @@
 			]
 		},
 		{
+			"Name": "WildOmissionAI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"AIModule",
+				"CoreUObject"
+			]
+		},
+		{
 			"Name": "WorldGeneration",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",

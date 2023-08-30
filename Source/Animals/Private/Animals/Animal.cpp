@@ -3,101 +3,28 @@
 
 #include "Animals/Animal.h"
 #include "GameFramework/PawnMovementComponent.h"
-#include "NavigationInvokerComponent.h"
-#include "Components/VitalsComponent.h"
-#include "Components/DistanceDespawnComponent.h"
-#include "AnimalSpawnHandler.h"
-#include "Components/InventoryComponent.h"
-#include "GameFramework/PhysicsVolume.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AAnimal::AAnimal()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	
-	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Block);
-
-	NavigationInvoker = CreateDefaultSubobject<UNavigationInvokerComponent>(TEXT("NavigationInvoker"));
-
-	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
-	VitalsComponent->SetThirstCanDeplete(false);
-	VitalsComponent->SetHungerCanDeplete(false);
-
-	DespawnComponent = CreateDefaultSubobject<UDistanceDespawnComponent>(TEXT("DespawnComponent"));
-	DespawnComponent->SetupAttachment(RootComponent);
-
-	IdleSound = nullptr;
-	RagdollClass = nullptr;
 }
 
 // Called when the game starts or when spawned
 void AAnimal::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SetIdleSoundTimer();
 
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	VitalsComponent->OnHealthDepleted.AddDynamic(this, &AAnimal::HandleDeath);
-	DespawnComponent->OnDespawnConditionMet.AddDynamic(this, &AAnimal::HandleDespawn);
 }
 
-void AAnimal::HandleDespawn()
-{
-	if (OnDespawn.IsBound())
-	{
-		OnDespawn.Broadcast(this);
-	}
-	Destroy();
-}
-
-void AAnimal::HandleDeath()
-{
-	if (RagdollClass)
-	{
-		GetWorld()->SpawnActor<AActor>(RagdollClass, GetActorLocation(), GetActorRotation());
-	}
-	HandleDespawn();
-}
-
-void AAnimal::SetIdleSoundTimer()
-{
-	FTimerHandle IdleSoundTimerHandle;
-	FTimerDelegate IdleSoundTimerDelegate;
-	const float IdleSoundDelay = FMath::RandRange(3.0f, 10.0f);
-
-	IdleSoundTimerDelegate.BindUObject(this, &AAnimal::PlayIdleSound);
-	GetWorld()->GetTimerManager().SetTimer(IdleSoundTimerHandle, IdleSoundTimerDelegate, IdleSoundDelay, false);
-}
-
-void AAnimal::PlayIdleSound()
-{
-	SetIdleSoundTimer();
-
-	if (GetWorld() == nullptr || IdleSound == nullptr)
-	{
-		return;
-	}
-
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), IdleSound, GetActorLocation());
-}
 
 // Called every frame
 void AAnimal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetMovementComponent()->GetPhysicsVolume()->bWaterVolume == true)
-	{
-		AddMovementInput(FVector::UpVector);
-	}
 }
 
 // Called to bind functionality to input

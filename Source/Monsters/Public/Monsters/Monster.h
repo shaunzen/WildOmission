@@ -3,22 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "Characters/WildOmissionAICharacter.h"
 #include "Structs/InventoryItem.h"
 #include "Monster.generated.h"
 
-class UNavigationInvokerComponent;
-class UVitalsComponent;
 class UPlayerInventoryComponent;
 class UEquipComponent;
-class UDistanceDespawnComponent;
 class UNiagaraComponent;
 class ATimeOfDayHandler;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMonsterDespawnSignature, AMonster*, DespawningMonster);
-
 UCLASS()
-class MONSTERS_API AMonster : public ACharacter
+class MONSTERS_API AMonster : public AWildOmissionAICharacter
 {
 	GENERATED_BODY()
 
@@ -31,10 +26,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	void Setup(ATimeOfDayHandler* InTimeOfDayHandler);
-
-	FOnMonsterDespawnSignature OnDespawn;
 
 	APawn* GetTargetPawn() const;
 
@@ -47,50 +38,21 @@ protected:
 	
 private:
 	UPROPERTY(VisibleAnywhere)
-	UNavigationInvokerComponent* NavigationInvoker;
-	
-	UPROPERTY(VisibleAnywhere)
-	UVitalsComponent* VitalsComponent;
-	
-	UPROPERTY(VisibleAnywhere)
 	UPlayerInventoryComponent* InventoryComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UEquipComponent* EquipComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UDistanceDespawnComponent* DespawnComponent;
-
-	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* FireEffects;
-
-	UPROPERTY(EditDefaultsOnly)
-	USoundBase* IdleSound;
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AActor> RagdollClass;
-
+	
 	UPROPERTY(EditDefaultsOnly)
 	float MaxAttackRange;
 
 	UPROPERTY()
 	APawn* TargetPawn;
 
-	UPROPERTY()
-	ATimeOfDayHandler* TimeOfDayHandler;
-
 	FTimerHandle BurnDamageTimerHandle;
-
-	UFUNCTION()
-	void HandleDespawn();
-
-	UFUNCTION()
-	void HandleDeath();
-	
-	void SetIdleSoundTimer();
-
-	UFUNCTION()
-	void PlayIdleSound();
 
 	UFUNCTION()
 	void SetBurnDamageTimer();

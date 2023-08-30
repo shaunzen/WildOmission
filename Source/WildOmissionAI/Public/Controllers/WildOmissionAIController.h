@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "AnimalController.generated.h"
+#include "WildOmissionAIController.generated.h"
 
 class UBehaviorTree;
 
 UCLASS()
-class ANIMALS_API AAnimalController : public AAIController
+class WILDOMISSIONAI_API AWildOmissionAIController : public AAIController
 {
 	GENERATED_BODY()
 

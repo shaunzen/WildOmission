@@ -54,12 +54,6 @@ void AWildOmissionGameMode::StartPlay()
 
 void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	//UWildOmissionGameInstance* GameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(GetWorld());
-	//if (FriendsOnly && !GameInstance->GetFriendsInterface()->IsFriend(0, *UniqueId.GetUniqueNetId().Get(), FString()))
-	//{
-	//	ErrorMessage = TEXT("Player not friend, revoking connection attempt.");
-	//}
-
 	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
 }
 
@@ -144,12 +138,7 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 		return;
 	}
 
-	if (Controller->GetPawn() != nullptr)
-	{
-		// If we have an existing pawn, just use it's rotation
-		SpawnRotation = Controller->GetPawn()->GetActorRotation();
-	}
-	else if (HumanCharacterClass != nullptr)
+	if (HumanCharacterClass != nullptr)
 	{
 		// Try to create a pawn to use of the default class for this player
 		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, StartSpot->GetActorLocation(), SpawnRotation);
@@ -216,7 +205,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 
 	AStorm* SpawnedStorm = WeatherHandler->SpawnStorm(true);
 	
-	if (WeatherToSet == FString("Rain"))
+	if (WeatherToSet == TEXT("Rain"))
 	{
 		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
 		NewStormLocation.X = 0.0f;
@@ -224,7 +213,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 		SpawnedStorm->SetActorLocation(NewStormLocation);
 		SpawnedStorm->SetSeverity(30.0f);
 	}
-	else if (WeatherToSet == FString("Tornado"))
+	else if (WeatherToSet == TEXT("Tornado"))
 	{
 		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
 		NewStormLocation.X = 0.0f;
@@ -232,7 +221,7 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 		SpawnedStorm->SetActorLocation(NewStormLocation);
 		SpawnedStorm->SetSeverity(90.0f);
 	}
-	else if (WeatherToSet == FString("Clear"))
+	else if (WeatherToSet == TEXT("Clear"))
 	{
 		WeatherHandler->ClearStorm();
 	}

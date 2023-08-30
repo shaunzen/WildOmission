@@ -28,6 +28,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Show();
 	
+	UFUNCTION(BlueprintCallable)
+	void Teardown();
+
 	void SetMenuInterface(IMenuInterface* InMenuInterface);
 
 	UFUNCTION()
@@ -68,9 +71,6 @@ private:
 	IMenuInterface* MenuInterface;
 
 	bool bOpen;
-
-	UFUNCTION()
-	void Teardown();
 
 	UFUNCTION()
 	void Save();

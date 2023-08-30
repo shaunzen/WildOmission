@@ -14,7 +14,7 @@
 #include "Sound/SoundClass.h"
 #include "Kismet/GameplayStatics.h"
 
-const static FString GameVersion = TEXT("Demo Preview 1.0.1");
+const static FString GameVersion = TEXT("Demo Preview 1.0.2");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -267,4 +267,14 @@ void UWildOmissionGameInstance::LoadedNewMap(UWorld* InWorld)
 FString UWildOmissionGameInstance::GetVersion() const
 {
 	return GameVersion;
+}
+
+UMainMenuWidget* UWildOmissionGameInstance::GetMainMenuWidget() const
+{
+	return MainMenuWidget;
+}
+
+UGameplayMenuWidget* UWildOmissionGameInstance::GetGameplayMenuWidget() const
+{
+	return GameplayMenuWidget;
 }
