@@ -16,7 +16,7 @@ class UGraphicsSettingsWidget : public USettingsCategoryWidget
 public:
 	virtual void NativeConstruct() override;
 	virtual void OnApply() override;
-	virtual void OnRefresh();
+	virtual void OnRefresh() override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
