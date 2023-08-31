@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "SettingsCategoryMenu.generated.h"
+#include "SettingsCategoryWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class USettingsCategoryMenu : public UUserWidget
+class USettingsCategoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
