@@ -12,7 +12,6 @@ AMonsterArmsItem::AMonsterArmsItem()
 
 void AMonsterArmsItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Primary"));
 	if (!HasAuthority())
 	{
 		return;
@@ -30,6 +29,6 @@ void AMonsterArmsItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 
-	FPointDamageEvent HitByMonsterEvent(10.0f, FHitResult(), OwnerMonster->GetActorForwardVector(), nullptr);
-	TargetPawn->TakeDamage(10.0f, HitByMonsterEvent, OwnerMonster->GetController(), this);
+	FPointDamageEvent HitByMonsterEvent(30.0f, FHitResult(), OwnerMonster->GetActorForwardVector(), nullptr);
+	TargetPawn->TakeDamage(30.0f, HitByMonsterEvent, OwnerMonster->GetController(), this);
 }
