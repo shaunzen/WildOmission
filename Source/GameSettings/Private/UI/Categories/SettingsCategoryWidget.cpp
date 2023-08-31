@@ -12,3 +12,8 @@ void USettingsCategoryWidget::OnReset()
 {
 
 }
+
+void USettingsCategoryWidget::OnRefresh()
+{
+
+}

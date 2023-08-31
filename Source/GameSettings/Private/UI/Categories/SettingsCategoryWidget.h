@@ -17,5 +17,6 @@ class USettingsCategoryWidget : public UUserWidget
 public:
 	virtual void OnApply();
 	virtual void OnReset();
-	
+	virtual void OnRefresh();
+
 };
