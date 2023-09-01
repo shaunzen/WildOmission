@@ -9,6 +9,8 @@
 class UMultiOptionBox;
 class UButton;
 class USliderOptionBox;
+class UWidgetSwitcher;
+class USettingsCategoryWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOptionsOnBackButtonPressedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFieldOfViewChangedSignature);
@@ -18,6 +20,7 @@ class GAMESETTINGS_API UOptionsWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	UOptionsWidget(const FObjectInitializer& ObjectInitializer);
 	virtual void NativeConstruct() override;
 	void Refresh();
 
@@ -26,11 +29,37 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
+	UButton* GameplaySettingsButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* WindowSettingsButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* GraphicsSettingsButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	UWidgetSwitcher* CategorySwitcher;
+
+	UPROPERTY(Meta= (BindWidget))
+	USettingsCategoryWidget* GameplaySettings;
+	UPROPERTY(Meta = (BindWidget))
+	USettingsCategoryWidget* WindowSettings;
+	UPROPERTY(Meta = (BindWidget))
+	USettingsCategoryWidget* GraphicsSettings;
+
+
+	UPROPERTY(Meta = (BindWidget))
 	UButton* ApplyButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ResetButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* BackButton;
+
+	UFUNCTION()
+	void OpenGameplaySettings();
+	UFUNCTION()
+	void OpenWindowSettings();
+	UFUNCTION()
+	void OpenGraphicsSettings();
+
 
 	UFUNCTION()
 	void Apply();

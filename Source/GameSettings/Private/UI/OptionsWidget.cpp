@@ -3,16 +3,27 @@
 
 #include "UI/OptionsWidget.h"
 #include "WildOmissionGameUserSettings.h"
-#include "Interfaces/CharacterSettingsInterface.h"
-#include "Interfaces/GameSettingsInterface.h"
 #include "Components/Button.h"
-#include "OptionBoxes/SliderOptionBox.h"
-#include "OptionBoxes/MultiOptionBox.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Components/WidgetSwitcher.h"
+#include "Categories/SettingsCategoryWidget.h"
+
+UOptionsWidget::UOptionsWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	GameplaySettingsButton = nullptr;
+	WindowSettingsButton = nullptr;
+	GraphicsSettingsButton = nullptr;
+	ApplyButton = nullptr;
+	ResetButton = nullptr;
+	BackButton = nullptr;
+}
 
 void UOptionsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	GameplaySettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenGameplaySettings);
+	WindowSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenWindowSettings);
+	GraphicsSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenGraphicsSettings);
 
 	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
 	ResetButton->OnClicked.AddDynamic(this, &UOptionsWidget::Reset);
@@ -21,7 +32,44 @@ void UOptionsWidget::NativeConstruct()
 
 void UOptionsWidget::Refresh()
 {
-	// TODO refresh all children of widget switcher
+	GameplaySettings->OnRefresh();
+	WindowSettings->OnRefresh();
+	GraphicsSettings->OnRefresh();
+}
+
+void UOptionsWidget::OpenGameplaySettings()
+{
+	if (CategorySwitcher == nullptr || GameplaySettings == nullptr)
+	{
+		return;
+	}
+
+	CategorySwitcher->SetActiveWidget(GameplaySettings);
+	GameplaySettings->OnRefresh();
+}
+
+void UOptionsWidget::OpenWindowSettings()
+{
+
+	if (CategorySwitcher == nullptr || WindowSettings == nullptr)
+	{
+		return;
+	}
+
+	CategorySwitcher->SetActiveWidget(WindowSettings);
+	WindowSettings->OnRefresh();
+}
+
+void UOptionsWidget::OpenGraphicsSettings()
+{
+
+	if (CategorySwitcher == nullptr || GraphicsSettings == nullptr)
+	{
+		return;
+	}
+
+	CategorySwitcher->SetActiveWidget(GraphicsSettings);
+	GraphicsSettings->OnRefresh();
 }
 
 void UOptionsWidget::Apply()
@@ -31,12 +79,15 @@ void UOptionsWidget::Apply()
 	{
 		return;
 	}
-	// TODO apply settings of all children of widget switcher
+	
+	GameplaySettings->OnApply();
+	WindowSettings->OnApply();
+	GraphicsSettings->OnApply();
+
 
 	UserSettings->ApplySettings(false);
 	Refresh();
 }
-
 
 void UOptionsWidget::Reset()
 {
