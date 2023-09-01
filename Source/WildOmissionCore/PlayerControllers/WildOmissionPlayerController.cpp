@@ -62,6 +62,7 @@ FPlayerSave AWildOmissionPlayerController::SavePlayer()
 
 	PlayerSave.WorldLocation = WildOmissionCharacter->GetActorLocation();
 	PlayerSave.IsAlive = true;
+	PlayerSave.IsHost = IsHost();
 	
 	PlayerSave.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
 	PlayerSave.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
