@@ -261,6 +261,7 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	ApplyFieldOfView();
+	ApplyPostProcessing();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
 	EndSprint();
@@ -297,6 +298,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	ApplyFieldOfView();
+	ApplyPostProcessing();
 	SetupPlayerHUD();
 	SetupWeatherEffectHandler();
 }
@@ -348,13 +350,29 @@ void AWildOmissionCharacter::SetupMesh()
 
 void AWildOmissionCharacter::ApplyFieldOfView()
 {
-	if (!IsLocallyControlled())
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (!IsLocallyControlled() || UserSettings == nullptr)
 	{
 		return;
 	}
 
-	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	FirstPersonCameraComponent->SetFieldOfView(UserSettings->GetFieldOfView());
+}
+
+void AWildOmissionCharacter::ApplyPostProcessing()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (!IsLocallyControlled() || UserSettings == nullptr)
+	{
+		return;
+	}
+
+	FirstPersonCameraComponent->PostProcessSettings.AutoExposureMinBrightness = UserSettings->GetAutoExposureEnabled() ? -10.0f : 1.0f;
+	FirstPersonCameraComponent->PostProcessSettings.AutoExposureMaxBrightness = UserSettings->GetAutoExposureEnabled() ? 20.0f : 1.0f;
+	FirstPersonCameraComponent->PostProcessSettings.MotionBlurAmount = UserSettings->GetMotionBlurEnabled() ? 0.3f : 0.0f;
+	FirstPersonCameraComponent->PostProcessSettings.BloomIntensity = UserSettings->GetBloomEnabled() ? 0.675f : 0.0f;
+	FirstPersonCameraComponent->PostProcessSettings.AmbientOcclusionIntensity = UserSettings->GetAmbientOcclusionEnabled() ? 0.5f : 0.0f;
+	FirstPersonCameraComponent->PostProcessSettings.FilmGrainIntensity = UserSettings->GetFilmGrainEnabled() ? 0.5f : 0.0f;
 }
 
 void AWildOmissionCharacter::SetupPlayerHUD()

@@ -46,6 +46,7 @@ public:
 
 	// Begin ICharacterSettingsInterface Implementation
 	virtual void ApplyFieldOfView() override;
+	virtual void ApplyPostProcessing() override;
 	// End ICharacterSettingsInterface Implementation
 
 	UFUNCTION()
@@ -95,7 +96,6 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* FirstPersonSpringArmComponent;
-
 
 	UPROPERTY(VisibleAnywhere)
 	UVitalsComponent* VitalsComponent;

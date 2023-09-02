@@ -4,6 +4,7 @@
 #include "PostProcessingSettingsWidget.h"
 #include "WildOmissionGameUserSettings.h"
 #include "OptionBoxes/CheckOptionBox.h"
+#include "Interfaces/CharacterSettingsInterface.h"
 
 void UPostProcessingSettingsWidget::NativeConstruct()
 {
@@ -31,6 +32,12 @@ void UPostProcessingSettingsWidget::OnApply()
 	UserSettings->SetBloomEnabled(BloomCheckOptionBox->IsChecked());
 	UserSettings->SetAmbientOcclusionEnabled(AmbientOcclusionCheckOptionBox->IsChecked());
 	UserSettings->SetFilmGrainEnabled(FilmGrainCheckOptionBox->IsChecked());
+
+	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
+	if (CharacterSettingsInterface)
+	{
+		CharacterSettingsInterface->ApplyPostProcessing();
+	}
 }
 
 void UPostProcessingSettingsWidget::OnRefresh()
