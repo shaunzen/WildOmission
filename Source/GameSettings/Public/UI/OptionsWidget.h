@@ -26,6 +26,8 @@ public:
 
 	FOptionsOnBackButtonPressedSignature OnBackButtonPressed;
 	FOnFieldOfViewChangedSignature OnFieldOfViewChanged;
+protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -60,6 +62,7 @@ private:
 	UFUNCTION()
 	void OpenGraphicsSettings();
 
+	void RefreshCategoryButtonColor();
 
 	UFUNCTION()
 	void Apply();

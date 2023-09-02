@@ -6,6 +6,7 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Categories/SettingsCategoryWidget.h"
+#include "Color/UIColors.h"
 
 UOptionsWidget::UOptionsWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -35,6 +36,21 @@ void UOptionsWidget::Refresh()
 	GameplaySettings->OnRefresh();
 	WindowSettings->OnRefresh();
 	GraphicsSettings->OnRefresh();
+}
+
+void UOptionsWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	//UUIColors::GetBaseColor(TEXT("Blue"));
+	//switch (CategorySwitcher->ActiveWidgetIndex)
+	//{
+	//case 0:
+	//	GameplaySettingsButton->SetBackgroundColor(FLinearColor::Red);
+	//	break;
+	//default:
+	//	GameplaySettingsButton->SetBackgroundColor(FLinearColor::Black);
+	//	break;
+	//}
 }
 
 void UOptionsWidget::OpenGameplaySettings()
@@ -70,6 +86,11 @@ void UOptionsWidget::OpenGraphicsSettings()
 
 	CategorySwitcher->SetActiveWidget(GraphicsSettings);
 	GraphicsSettings->OnRefresh();
+}
+
+void UOptionsWidget::RefreshCategoryButtonColor()
+{
+
 }
 
 void UOptionsWidget::Apply()
