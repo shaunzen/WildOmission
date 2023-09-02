@@ -3,6 +3,7 @@
 
 #include "UI/OptionsWidget.h"
 #include "WildOmissionGameUserSettings.h"
+#include "Components/VerticalBox.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Categories/SettingsCategoryWidget.h"
@@ -10,9 +11,14 @@
 
 UOptionsWidget::UOptionsWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	CategoryButtonsVerticalBox = nullptr;
 	GameplaySettingsButton = nullptr;
 	WindowSettingsButton = nullptr;
 	GraphicsSettingsButton = nullptr;
+	CategorySwitcher = nullptr;
+	GameplaySettings = nullptr;
+	WindowSettings = nullptr;
+	GraphicsSettings = nullptr;
 	ApplyButton = nullptr;
 	ResetButton = nullptr;
 	BackButton = nullptr;
@@ -36,21 +42,13 @@ void UOptionsWidget::Refresh()
 	GameplaySettings->OnRefresh();
 	WindowSettings->OnRefresh();
 	GraphicsSettings->OnRefresh();
+	RefreshAllCategoryButtons();
 }
 
 void UOptionsWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	//UUIColors::GetBaseColor(TEXT("Blue"));
-	//switch (CategorySwitcher->ActiveWidgetIndex)
-	//{
-	//case 0:
-	//	GameplaySettingsButton->SetBackgroundColor(FLinearColor::Red);
-	//	break;
-	//default:
-	//	GameplaySettingsButton->SetBackgroundColor(FLinearColor::Black);
-	//	break;
-	//}
+
 }
 
 void UOptionsWidget::OpenGameplaySettings()
@@ -61,7 +59,7 @@ void UOptionsWidget::OpenGameplaySettings()
 	}
 
 	CategorySwitcher->SetActiveWidget(GameplaySettings);
-	GameplaySettings->OnRefresh();
+	Refresh();
 }
 
 void UOptionsWidget::OpenWindowSettings()
@@ -73,7 +71,7 @@ void UOptionsWidget::OpenWindowSettings()
 	}
 
 	CategorySwitcher->SetActiveWidget(WindowSettings);
-	WindowSettings->OnRefresh();
+	Refresh();
 }
 
 void UOptionsWidget::OpenGraphicsSettings()
@@ -85,12 +83,27 @@ void UOptionsWidget::OpenGraphicsSettings()
 	}
 
 	CategorySwitcher->SetActiveWidget(GraphicsSettings);
-	GraphicsSettings->OnRefresh();
+	Refresh();
 }
 
-void UOptionsWidget::RefreshCategoryButtonColor()
+void UOptionsWidget::RefreshAllCategoryButtons()
 {
+	RefreshCategoryButtonColor(GameplaySettingsButton);
+	RefreshCategoryButtonColor(WindowSettingsButton);
+	RefreshCategoryButtonColor(GraphicsSettingsButton);
+}
 
+void UOptionsWidget::RefreshCategoryButtonColor(UButton* ButtonToRefresh)
+{
+	FUIColor* Blue = UUIColors::GetBaseColor(TEXT("Blue"));
+	FUIColor* LightGray = UUIColors::GetBaseColor(TEXT("LightGray"));
+	if (Blue == nullptr || LightGray == nullptr || CategorySwitcher == nullptr)
+	{
+		return;
+	}
+
+	const FLinearColor& ColorToSet = CategoryButtonsVerticalBox->GetChildIndex(ButtonToRefresh) == CategorySwitcher->ActiveWidgetIndex ? Blue->Default : LightGray->Default;
+	ButtonToRefresh->SetBackgroundColor(ColorToSet);
 }
 
 void UOptionsWidget::Apply()

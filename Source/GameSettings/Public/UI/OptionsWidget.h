@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "OptionsWidget.generated.h"
 
-class UMultiOptionBox;
+class UVerticalBox;
 class UButton;
 class USliderOptionBox;
 class UWidgetSwitcher;
@@ -30,6 +30,8 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
+	UPROPERTY(Meta = (BindWidget))
+	UVerticalBox* CategoryButtonsVerticalBox;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* GameplaySettingsButton;
 	UPROPERTY(Meta = (BindWidget))
@@ -62,7 +64,8 @@ private:
 	UFUNCTION()
 	void OpenGraphicsSettings();
 
-	void RefreshCategoryButtonColor();
+	void RefreshAllCategoryButtons();
+	void RefreshCategoryButtonColor(UButton* ButtonToRefresh);
 
 	UFUNCTION()
 	void Apply();
