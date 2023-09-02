@@ -37,6 +37,8 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* WindowSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
+	UButton* PostProcessingSettingsButton;
+	UPROPERTY(Meta = (BindWidget))
 	UButton* GraphicsSettingsButton;
 
 	UPROPERTY(Meta = (BindWidget))
@@ -47,8 +49,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	USettingsCategoryWidget* WindowSettings;
 	UPROPERTY(Meta = (BindWidget))
+	USettingsCategoryWidget* PostProcessingSettings;
+	UPROPERTY(Meta = (BindWidget))
 	USettingsCategoryWidget* GraphicsSettings;
-
 
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ApplyButton;
@@ -61,6 +64,8 @@ private:
 	void OpenGameplaySettings();
 	UFUNCTION()
 	void OpenWindowSettings();
+	UFUNCTION()
+	void OpenPostProcessingSettings();
 	UFUNCTION()
 	void OpenGraphicsSettings();
 

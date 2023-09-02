@@ -14,10 +14,12 @@ UOptionsWidget::UOptionsWidget(const FObjectInitializer& ObjectInitializer) : UU
 	CategoryButtonsVerticalBox = nullptr;
 	GameplaySettingsButton = nullptr;
 	WindowSettingsButton = nullptr;
+	PostProcessingSettingsButton = nullptr;
 	GraphicsSettingsButton = nullptr;
 	CategorySwitcher = nullptr;
 	GameplaySettings = nullptr;
 	WindowSettings = nullptr;
+	PostProcessingSettings = nullptr;
 	GraphicsSettings = nullptr;
 	ApplyButton = nullptr;
 	ResetButton = nullptr;
@@ -74,6 +76,17 @@ void UOptionsWidget::OpenWindowSettings()
 	Refresh();
 }
 
+void UOptionsWidget::OpenPostProcessingSettings()
+{
+	if (CategorySwitcher == nullptr || PostProcessingSettings == nullptr)
+	{
+		return;
+	}
+
+	CategorySwitcher->SetActiveWidget(PostProcessingSettings);
+	Refresh();
+}
+
 void UOptionsWidget::OpenGraphicsSettings()
 {
 
@@ -90,6 +103,7 @@ void UOptionsWidget::RefreshAllCategoryButtons()
 {
 	RefreshCategoryButtonColor(GameplaySettingsButton);
 	RefreshCategoryButtonColor(WindowSettingsButton);
+	RefreshCategoryButtonColor(PostProcessingSettingsButton);
 	RefreshCategoryButtonColor(GraphicsSettingsButton);
 }
 
@@ -116,6 +130,7 @@ void UOptionsWidget::Apply()
 	
 	GameplaySettings->OnApply();
 	WindowSettings->OnApply();
+	PostProcessingSettings->OnApply();
 	GraphicsSettings->OnApply();
 
 
