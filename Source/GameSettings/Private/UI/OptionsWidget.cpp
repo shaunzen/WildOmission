@@ -11,16 +11,18 @@
 
 UOptionsWidget::UOptionsWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	CategoryButtonsVerticalBox = nullptr;
-	GameplaySettingsButton = nullptr;
-	WindowSettingsButton = nullptr;
-	PostProcessingSettingsButton = nullptr;
-	GraphicsSettingsButton = nullptr;
 	CategorySwitcher = nullptr;
 	GameplaySettings = nullptr;
+	ControlsSettings = nullptr;
 	WindowSettings = nullptr;
 	PostProcessingSettings = nullptr;
 	GraphicsSettings = nullptr;
+	CategoryButtonsVerticalBox = nullptr;
+	GameplaySettingsButton = nullptr;
+	ControlsSettingsButton = nullptr;
+	WindowSettingsButton = nullptr;
+	PostProcessingSettingsButton = nullptr;
+	GraphicsSettingsButton = nullptr;
 	ApplyButton = nullptr;
 	ResetButton = nullptr;
 	BackButton = nullptr;
@@ -31,7 +33,9 @@ void UOptionsWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	GameplaySettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenGameplaySettings);
+	ControlsSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenControlsSettings);
 	WindowSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenWindowSettings);
+	PostProcessingSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenPostProcessingSettings);
 	GraphicsSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenGraphicsSettings);
 
 	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
@@ -42,15 +46,16 @@ void UOptionsWidget::NativeConstruct()
 void UOptionsWidget::Refresh()
 {
 	GameplaySettings->OnRefresh();
+	ControlsSettings->OnRefresh();
 	WindowSettings->OnRefresh();
+	PostProcessingSettings->OnRefresh();
 	GraphicsSettings->OnRefresh();
-	RefreshAllCategoryButtons();
-}
 
-void UOptionsWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
+	RefreshCategoryButtonColor(GameplaySettingsButton);
+	RefreshCategoryButtonColor(ControlsSettingsButton);
+	RefreshCategoryButtonColor(WindowSettingsButton);
+	RefreshCategoryButtonColor(PostProcessingSettingsButton);
+	RefreshCategoryButtonColor(GraphicsSettingsButton);
 }
 
 void UOptionsWidget::OpenGameplaySettings()
@@ -61,6 +66,17 @@ void UOptionsWidget::OpenGameplaySettings()
 	}
 
 	CategorySwitcher->SetActiveWidget(GameplaySettings);
+	Refresh();
+}
+
+void UOptionsWidget::OpenControlsSettings()
+{
+	if (CategorySwitcher == nullptr || ControlsSettings == nullptr)
+	{
+		return;
+	}
+
+	CategorySwitcher->SetActiveWidget(ControlsSettings);
 	Refresh();
 }
 
@@ -99,14 +115,6 @@ void UOptionsWidget::OpenGraphicsSettings()
 	Refresh();
 }
 
-void UOptionsWidget::RefreshAllCategoryButtons()
-{
-	RefreshCategoryButtonColor(GameplaySettingsButton);
-	RefreshCategoryButtonColor(WindowSettingsButton);
-	RefreshCategoryButtonColor(PostProcessingSettingsButton);
-	RefreshCategoryButtonColor(GraphicsSettingsButton);
-}
-
 void UOptionsWidget::RefreshCategoryButtonColor(UButton* ButtonToRefresh)
 {
 	FUIColor* Blue = UUIColors::GetBaseColor(TEXT("Blue"));
@@ -116,7 +124,7 @@ void UOptionsWidget::RefreshCategoryButtonColor(UButton* ButtonToRefresh)
 		return;
 	}
 
-	const FLinearColor& ColorToSet = CategoryButtonsVerticalBox->GetChildIndex(ButtonToRefresh) == CategorySwitcher->ActiveWidgetIndex ? Blue->Default : LightGray->Default;
+	const FLinearColor& ColorToSet = CategoryButtonsVerticalBox->GetChildIndex(ButtonToRefresh) == CategorySwitcher->GetActiveWidgetIndex() ? Blue->Default : LightGray->Default;
 	ButtonToRefresh->SetBackgroundColor(ColorToSet);
 }
 
@@ -129,10 +137,10 @@ void UOptionsWidget::Apply()
 	}
 	
 	GameplaySettings->OnApply();
+	ControlsSettings->OnApply();
 	WindowSettings->OnApply();
 	PostProcessingSettings->OnApply();
 	GraphicsSettings->OnApply();
-
 
 	UserSettings->ApplySettings(false);
 	Refresh();

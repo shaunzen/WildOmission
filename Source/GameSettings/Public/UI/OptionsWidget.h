@@ -26,14 +26,14 @@ public:
 
 	FOptionsOnBackButtonPressedSignature OnBackButtonPressed;
 	FOnFieldOfViewChangedSignature OnFieldOfViewChanged;
-protected:
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UVerticalBox* CategoryButtonsVerticalBox;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* GameplaySettingsButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* ControlsSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* WindowSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
@@ -46,6 +46,8 @@ private:
 
 	UPROPERTY(Meta= (BindWidget))
 	USettingsCategoryWidget* GameplaySettings;
+	UPROPERTY(Meta = (BindWidget))
+	USettingsCategoryWidget* ControlsSettings;
 	UPROPERTY(Meta = (BindWidget))
 	USettingsCategoryWidget* WindowSettings;
 	UPROPERTY(Meta = (BindWidget))
@@ -63,13 +65,14 @@ private:
 	UFUNCTION()
 	void OpenGameplaySettings();
 	UFUNCTION()
+	void OpenControlsSettings();
+	UFUNCTION()
 	void OpenWindowSettings();
 	UFUNCTION()
 	void OpenPostProcessingSettings();
 	UFUNCTION()
 	void OpenGraphicsSettings();
 
-	void RefreshAllCategoryButtons();
 	void RefreshCategoryButtonColor(UButton* ButtonToRefresh);
 
 	UFUNCTION()
