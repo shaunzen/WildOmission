@@ -27,6 +27,36 @@ public:
 	float GetMasterVolume() const;
 
 	UFUNCTION()
+	void SetAutoExposureEnabled(bool UseAutoExposure);
+
+	UFUNCTION()
+	bool GetAutoExposureEnabled() const;
+
+	UFUNCTION()
+	void SetMotionBlurEnabled(bool UseMotionBlur);
+
+	UFUNCTION()
+	bool GetMotionBlurEnabled() const;
+
+	UFUNCTION()
+	void SetBloomEnabled(bool UseBloom);
+
+	UFUNCTION()
+	bool GetBloomEnabled() const;
+
+	UFUNCTION()
+	void SetAmbientOcclusionEnabled(bool UseAmbientOcclusion);
+
+	UFUNCTION()
+	bool GetAmbientOcclusionEnabled() const;
+
+	UFUNCTION()
+	void SetFilmGrainEnabled(bool UseFilmGrain);
+
+	UFUNCTION()
+	bool GetFilmGrainEnabled() const;
+
+	UFUNCTION()
 	void SetHasRunAutoConfig(bool HasRun);
 
 	UFUNCTION()
@@ -44,6 +74,21 @@ private:
 	
 	UPROPERTY(Config)
 	float MasterVolume;
+
+	UPROPERTY(Config)
+	bool AutoExposureEnabled;
+
+	UPROPERTY(Config)
+	bool MotionBlurEnabled;
+
+	UPROPERTY(Config)
+	bool BloomEnabled;
+
+	UPROPERTY(Config)
+	bool AmbientOcclusionEnabled;
+
+	UPROPERTY(Config)
+	bool FilmGrainEnabled;
 
 	UPROPERTY(Config)
 	bool HasRunAutoConfig;
