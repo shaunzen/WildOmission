@@ -6,9 +6,11 @@
 #include "Blueprint/UserWidget.h"
 #include "OptionsWidget.generated.h"
 
-class UMultiOptionBox;
+class UVerticalBox;
 class UButton;
 class USliderOptionBox;
+class UWidgetSwitcher;
+class USettingsCategoryWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOptionsOnBackButtonPressedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFieldOfViewChangedSignature);
@@ -18,6 +20,7 @@ class GAMESETTINGS_API UOptionsWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	UOptionsWidget(const FObjectInitializer& ObjectInitializer);
 	virtual void NativeConstruct() override;
 	void Refresh();
 
@@ -26,66 +29,55 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* FieldOfViewSliderOptionBox;
+	UVerticalBox* CategoryButtonsVerticalBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* MasterVolumeSliderOptionBox;
+	UButton* GameplaySettingsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* WindowModeOptionBox;
+	UButton* ControlsSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ResolutionOptionBox;
+	UButton* WindowSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* FrameRateLimitOptionBox;
+	UButton* PostProcessingSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* OverallGraphicsQualityOptionBox;
+	UButton* GraphicsSettingsButton;
+
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ViewDistanceQualityOptionBox;
+	UWidgetSwitcher* CategorySwitcher;
+
+	UPROPERTY(Meta= (BindWidget))
+	USettingsCategoryWidget* GameplaySettings;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ShadowQualityOptionBox;
+	USettingsCategoryWidget* ControlsSettings;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* GlobalIlluminationQualityOptionBox;
+	USettingsCategoryWidget* WindowSettings;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ReflectionQualityOptionBox;
+	USettingsCategoryWidget* PostProcessingSettings;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* AntiAliasingQualityOptionBox;
-	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* TextureQualityOptionBox;
-	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* VisualEffectQualityOptionBox;
-	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* PostProcessingQualityOptionBox;
-	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* FoliageQualityOptionBox;
-	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ShaderQualityOptionBox;
+	USettingsCategoryWidget* GraphicsSettings;
 
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ApplyButton;
-
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ResetButton;
-	
 	UPROPERTY(Meta = (BindWidget))
 	UButton* BackButton;
 
-	UPROPERTY()
-	UWidget* ParentMenu;
-
-	void RefreshGameplaySettings();
-	void RefreshWindowSettings();
-	void RefreshGraphicsSettings();
-	void RefreshCustomGraphicsSettings(bool IsUsingCustomSettings);
-
 	UFUNCTION()
-	void OnOverallQualityOptionChange(const FString& NewSelection);
+	void OpenGameplaySettings();
+	UFUNCTION()
+	void OpenControlsSettings();
+	UFUNCTION()
+	void OpenWindowSettings();
+	UFUNCTION()
+	void OpenPostProcessingSettings();
+	UFUNCTION()
+	void OpenGraphicsSettings();
+
+	void RefreshCategoryButtonColor(UButton* ButtonToRefresh);
 
 	UFUNCTION()
 	void Apply();
 
-	void ApplyWindowSettings();
-	void ApplyCustomGraphicsSettings();
-	void ApplyFieldOfViewSettings();
-	void ApplyMasterVolumeSettings();
-	
 	UFUNCTION()
 	void Reset();
 

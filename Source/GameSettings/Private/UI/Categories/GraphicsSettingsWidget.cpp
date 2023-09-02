@@ -1,0 +1,129 @@
+// Copyright Telephone Studios. All Rights Reserved.
+
+
+#include "GraphicsSettingsWidget.h"
+#include "OptionBoxes/MultiOptionBox.h"
+#include "WildOmissionGameUserSettings.h"
+
+void UGraphicsSettingsWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	// Setup Graphics Quality
+	OverallGraphicsQualityOptionBox->GiveQualityOptions();
+	OverallGraphicsQualityOptionBox->AddOption(TEXT("Custom"));
+	OverallGraphicsQualityOptionBox->OnSelectionChange.AddDynamic(this, &UGraphicsSettingsWidget::OnOverallQualityOptionChange);
+
+	// Setup Custom Settings
+	ViewDistanceQualityOptionBox->GiveQualityOptions();
+	ShadowQualityOptionBox->GiveQualityOptions();
+	GlobalIlluminationQualityOptionBox->GiveQualityOptions();
+	ReflectionQualityOptionBox->GiveQualityOptions();
+	AntiAliasingQualityOptionBox->GiveQualityOptions();
+	TextureQualityOptionBox->GiveQualityOptions();
+	VisualEffectQualityOptionBox->GiveQualityOptions();
+	PostProcessingQualityOptionBox->GiveQualityOptions();
+	FoliageQualityOptionBox->GiveQualityOptions();
+	ShaderQualityOptionBox->GiveQualityOptions();
+}
+
+void UGraphicsSettingsWidget::OnApply()
+{
+	Super::OnApply();
+	
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr)
+	{
+		return;
+	}
+
+	UserSettings->SetViewDistanceQuality(ViewDistanceQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetShadowQuality(ShadowQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetGlobalIlluminationQuality(GlobalIlluminationQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetReflectionQuality(ReflectionQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetAntiAliasingQuality(AntiAliasingQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetTextureQuality(TextureQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetVisualEffectQuality(VisualEffectQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetPostProcessingQuality(PostProcessingQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetFoliageQuality(FoliageQualityOptionBox->GetSelectedIndex());
+	UserSettings->SetShadingQuality(ShaderQualityOptionBox->GetSelectedIndex());
+
+	if (OverallGraphicsQualityOptionBox->GetSelectedOption() != TEXT("Custom"))
+	{
+		UserSettings->SetOverallScalabilityLevel(OverallGraphicsQualityOptionBox->GetSelectedIndex());
+	}
+}
+
+void UGraphicsSettingsWidget::OnRefresh()
+{
+	Super::OnRefresh();
+	
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr)
+	{
+		return;
+	}
+
+	int32 OverallGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
+	bool UsingCustomSettings = OverallGraphicsQuality == -1;
+
+	OverallGraphicsQualityOptionBox->SetSelectedIndex(OverallGraphicsQuality);
+	if (UsingCustomSettings)
+	{
+		OverallGraphicsQualityOptionBox->SetSelectedOption(TEXT("Custom"));
+	}
+
+	RefreshCustomGraphicsSettings(UsingCustomSettings);
+}
+
+void UGraphicsSettingsWidget::RefreshCustomGraphicsSettings(bool IsUsingCustomSettings)
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr)
+	{
+		return;
+	}
+
+	ViewDistanceQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	ShadowQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	GlobalIlluminationQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	ReflectionQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	AntiAliasingQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	TextureQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	VisualEffectQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	PostProcessingQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	FoliageQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+	ShaderQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
+
+	ViewDistanceQualityOptionBox->SetSelectedIndex(UserSettings->GetViewDistanceQuality());
+	ShadowQualityOptionBox->SetSelectedIndex(UserSettings->GetShadowQuality());
+	GlobalIlluminationQualityOptionBox->SetSelectedIndex(UserSettings->GetGlobalIlluminationQuality());
+	ReflectionQualityOptionBox->SetSelectedIndex(UserSettings->GetReflectionQuality());
+	AntiAliasingQualityOptionBox->SetSelectedIndex(UserSettings->GetAntiAliasingQuality());
+	TextureQualityOptionBox->SetSelectedIndex(UserSettings->GetTextureQuality());
+	VisualEffectQualityOptionBox->SetSelectedIndex(UserSettings->GetVisualEffectQuality());
+	PostProcessingQualityOptionBox->SetSelectedIndex(UserSettings->GetPostProcessingQuality());
+	FoliageQualityOptionBox->SetSelectedIndex(UserSettings->GetFoliageQuality());
+	ShaderQualityOptionBox->SetSelectedIndex(UserSettings->GetShadingQuality());
+
+	if (!IsUsingCustomSettings)
+	{
+		int32 SelectedGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
+
+		ViewDistanceQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		ShadowQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		GlobalIlluminationQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		ReflectionQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		AntiAliasingQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		TextureQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		VisualEffectQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		PostProcessingQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		ShaderQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+	}
+
+}
+
+void UGraphicsSettingsWidget::OnOverallQualityOptionChange(const FString& NewSelection)
+{
+	RefreshCustomGraphicsSettings(NewSelection == TEXT("Custom"));
+}

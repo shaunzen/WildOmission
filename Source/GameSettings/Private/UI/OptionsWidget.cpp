@@ -3,70 +3,40 @@
 
 #include "UI/OptionsWidget.h"
 #include "WildOmissionGameUserSettings.h"
-#include "Interfaces/CharacterSettingsInterface.h"
-#include "Interfaces/GameSettingsInterface.h"
+#include "Components/VerticalBox.h"
 #include "Components/Button.h"
-#include "OptionBoxes/SliderOptionBox.h"
-#include "OptionBoxes/MultiOptionBox.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Components/WidgetSwitcher.h"
+#include "Categories/SettingsCategoryWidget.h"
+#include "Color/UIColors.h"
 
-// TODO interface
-static UWildOmissionGameUserSettings* UserSettings = nullptr;
+UOptionsWidget::UOptionsWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	CategorySwitcher = nullptr;
+	GameplaySettings = nullptr;
+	ControlsSettings = nullptr;
+	WindowSettings = nullptr;
+	PostProcessingSettings = nullptr;
+	GraphicsSettings = nullptr;
+	CategoryButtonsVerticalBox = nullptr;
+	GameplaySettingsButton = nullptr;
+	ControlsSettingsButton = nullptr;
+	WindowSettingsButton = nullptr;
+	PostProcessingSettingsButton = nullptr;
+	GraphicsSettingsButton = nullptr;
+	ApplyButton = nullptr;
+	ResetButton = nullptr;
+	BackButton = nullptr;
+}
 
 void UOptionsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-
-	FieldOfViewSliderOptionBox->SetMinValue(60.0f);
-	FieldOfViewSliderOptionBox->SetMaxValue(110.0f);
-
-	MasterVolumeSliderOptionBox->SetMinValue(0.0f);
-	MasterVolumeSliderOptionBox->SetMaxValue(100.0f);
-
-	// Setup Window Mode
-	WindowModeOptionBox->ClearOptions();
-	WindowModeOptionBox->AddOption(TEXT("Windowed"));
-	WindowModeOptionBox->AddOption(TEXT("Windowed Fullscreen"));
-	WindowModeOptionBox->AddOption(TEXT("Fullscreen"));
-
-	// Setup Resolution Settings
-	ResolutionOptionBox->ClearOptions();
-	TArray<FIntPoint> SupportedResolutions;
-	UKismetSystemLibrary::GetSupportedFullscreenResolutions(SupportedResolutions);
-	for (const FIntPoint& Resolution : SupportedResolutions)
-	{
-		FString ResolutionString = FString::Printf(TEXT("%i X %i"), Resolution.X, Resolution.Y);
-		ResolutionOptionBox->AddOption(ResolutionString);
-	}
-
-	// Setup Frame Rate Limit Settings
-	FrameRateLimitOptionBox->ClearOptions();
-	FrameRateLimitOptionBox->AddOption(TEXT("Unlimited"));
-	FrameRateLimitOptionBox->AddOption(TEXT("30"));
-	FrameRateLimitOptionBox->AddOption(TEXT("60"));
-	FrameRateLimitOptionBox->AddOption(TEXT("100"));
-	FrameRateLimitOptionBox->AddOption(TEXT("120"));
-	FrameRateLimitOptionBox->AddOption(TEXT("144"));
-	FrameRateLimitOptionBox->AddOption(TEXT("240"));
-
-	// Setup Graphics Quality
-	OverallGraphicsQualityOptionBox->GiveQualityOptions();
-	OverallGraphicsQualityOptionBox->AddOption(TEXT("Custom"));
-	OverallGraphicsQualityOptionBox->OnSelectionChange.AddDynamic(this, &UOptionsWidget::OnOverallQualityOptionChange);
-
-	// Setup Custom Settings
-	ViewDistanceQualityOptionBox->GiveQualityOptions();
-	ShadowQualityOptionBox->GiveQualityOptions();
-	GlobalIlluminationQualityOptionBox->GiveQualityOptions();
-	ReflectionQualityOptionBox->GiveQualityOptions();
-	AntiAliasingQualityOptionBox->GiveQualityOptions();
-	TextureQualityOptionBox->GiveQualityOptions();
-	VisualEffectQualityOptionBox->GiveQualityOptions();
-	PostProcessingQualityOptionBox->GiveQualityOptions();
-	FoliageQualityOptionBox->GiveQualityOptions();
-	ShaderQualityOptionBox->GiveQualityOptions();
+	GameplaySettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenGameplaySettings);
+	ControlsSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenControlsSettings);
+	WindowSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenWindowSettings);
+	PostProcessingSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenPostProcessingSettings);
+	GraphicsSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenGraphicsSettings);
 
 	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
 	ResetButton->OnClicked.AddDynamic(this, &UOptionsWidget::Reset);
@@ -75,217 +45,115 @@ void UOptionsWidget::NativeConstruct()
 
 void UOptionsWidget::Refresh()
 {
-	RefreshGameplaySettings();
-	RefreshWindowSettings();
-	RefreshGraphicsSettings();
+	GameplaySettings->OnRefresh();
+	ControlsSettings->OnRefresh();
+	WindowSettings->OnRefresh();
+	PostProcessingSettings->OnRefresh();
+	GraphicsSettings->OnRefresh();
+
+	RefreshCategoryButtonColor(GameplaySettingsButton);
+	RefreshCategoryButtonColor(ControlsSettingsButton);
+	RefreshCategoryButtonColor(WindowSettingsButton);
+	RefreshCategoryButtonColor(PostProcessingSettingsButton);
+	RefreshCategoryButtonColor(GraphicsSettingsButton);
 }
 
-void UOptionsWidget::RefreshGameplaySettings()
+void UOptionsWidget::OpenGameplaySettings()
 {
-	float FieldOfView = UserSettings->GetFieldOfView();
-	float MasterVolume = UserSettings->GetMasterVolume() * 100.0f;
+	if (CategorySwitcher == nullptr || GameplaySettings == nullptr)
+	{
+		return;
+	}
 
-	FieldOfViewSliderOptionBox->SetValue(FieldOfView);
-	MasterVolumeSliderOptionBox->SetValue(MasterVolume);
+	CategorySwitcher->SetActiveWidget(GameplaySettings);
+	Refresh();
 }
 
-void UOptionsWidget::RefreshWindowSettings()
+void UOptionsWidget::OpenControlsSettings()
 {
-	FIntPoint CurrentResolution = UserSettings->GetScreenResolution();
-	FString CurrentResolutionString = FString::Printf(TEXT("%i X %i"), CurrentResolution.X, CurrentResolution.Y);
-	ResolutionOptionBox->SetSelectedOption(CurrentResolutionString);
-	ResolutionOptionBox->SetIsEnabled(UserSettings->GetFullscreenMode() == EWindowMode::Type::Fullscreen || UserSettings->GetFullscreenMode() == EWindowMode::Type::Windowed);
-
-	switch (UserSettings->GetFullscreenMode())
+	if (CategorySwitcher == nullptr || ControlsSettings == nullptr)
 	{
-	case EWindowMode::Type::Windowed:
-		WindowModeOptionBox->SetSelectedIndex(0);
-		break;
-	case EWindowMode::Type::WindowedFullscreen:
-		WindowModeOptionBox->SetSelectedIndex(1);
-		break;
-	case EWindowMode::Type::Fullscreen:
-		WindowModeOptionBox->SetSelectedIndex(2);
-		break;
+		return;
 	}
 
-	switch (FMath::RoundToInt32(UserSettings->GetFrameRateLimit()))
-	{
-	case 0:
-		FrameRateLimitOptionBox->SetSelectedOption(TEXT("Unlimited"));
-		break;
-	default:
-		FString FrameLimitString = FString::Printf(TEXT("%i"), FMath::RoundToInt32(UserSettings->GetFrameRateLimit()));
-		FrameRateLimitOptionBox->SetSelectedOption(FrameLimitString);
-		break;
-	}
+	CategorySwitcher->SetActiveWidget(ControlsSettings);
+	Refresh();
 }
 
-void UOptionsWidget::RefreshGraphicsSettings()
+void UOptionsWidget::OpenWindowSettings()
 {
-	int32 OverallGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
-	bool UsingCustomSettings = OverallGraphicsQuality == -1;
 
-	OverallGraphicsQualityOptionBox->SetSelectedIndex(OverallGraphicsQuality);
-	if (UsingCustomSettings)
+	if (CategorySwitcher == nullptr || WindowSettings == nullptr)
 	{
-		OverallGraphicsQualityOptionBox->SetSelectedOption(TEXT("Custom"));
+		return;
 	}
 
-	RefreshCustomGraphicsSettings(UsingCustomSettings);
+	CategorySwitcher->SetActiveWidget(WindowSettings);
+	Refresh();
 }
 
-void UOptionsWidget::RefreshCustomGraphicsSettings(bool IsUsingCustomSettings)
+void UOptionsWidget::OpenPostProcessingSettings()
 {
-	ViewDistanceQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	ShadowQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	GlobalIlluminationQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	ReflectionQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	AntiAliasingQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	TextureQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	VisualEffectQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	PostProcessingQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	FoliageQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	ShaderQualityOptionBox->SetIsEnabled(IsUsingCustomSettings);
-	
-	ViewDistanceQualityOptionBox->SetSelectedIndex(UserSettings->GetViewDistanceQuality());
-	ShadowQualityOptionBox->SetSelectedIndex(UserSettings->GetShadowQuality());
-	GlobalIlluminationQualityOptionBox->SetSelectedIndex(UserSettings->GetGlobalIlluminationQuality());
-	ReflectionQualityOptionBox->SetSelectedIndex(UserSettings->GetReflectionQuality());
-	AntiAliasingQualityOptionBox->SetSelectedIndex(UserSettings->GetAntiAliasingQuality());
-	TextureQualityOptionBox->SetSelectedIndex(UserSettings->GetTextureQuality());
-	VisualEffectQualityOptionBox->SetSelectedIndex(UserSettings->GetVisualEffectQuality());
-	PostProcessingQualityOptionBox->SetSelectedIndex(UserSettings->GetPostProcessingQuality());
-	FoliageQualityOptionBox->SetSelectedIndex(UserSettings->GetFoliageQuality());
-	ShaderQualityOptionBox->SetSelectedIndex(UserSettings->GetShadingQuality());
-
-	if (!IsUsingCustomSettings)
+	if (CategorySwitcher == nullptr || PostProcessingSettings == nullptr)
 	{
-		int32 SelectedGraphicsQuality = UserSettings->GetOverallScalabilityLevel();
-
-		ViewDistanceQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
-		ShadowQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
-		GlobalIlluminationQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
-		ReflectionQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
-		AntiAliasingQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
-		TextureQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
-		VisualEffectQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
-		PostProcessingQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
-		ShaderQualityOptionBox->SetSelectedIndex(SelectedGraphicsQuality);
+		return;
 	}
+
+	CategorySwitcher->SetActiveWidget(PostProcessingSettings);
+	Refresh();
+}
+
+void UOptionsWidget::OpenGraphicsSettings()
+{
+
+	if (CategorySwitcher == nullptr || GraphicsSettings == nullptr)
+	{
+		return;
+	}
+
+	CategorySwitcher->SetActiveWidget(GraphicsSettings);
+	Refresh();
+}
+
+void UOptionsWidget::RefreshCategoryButtonColor(UButton* ButtonToRefresh)
+{
+	FUIColor* Blue = UUIColors::GetBaseColor(TEXT("Blue"));
+	FUIColor* LightGray = UUIColors::GetBaseColor(TEXT("LightGray"));
+	if (Blue == nullptr || LightGray == nullptr || CategorySwitcher == nullptr)
+	{
+		return;
+	}
+
+	const FLinearColor& ColorToSet = CategoryButtonsVerticalBox->GetChildIndex(ButtonToRefresh) == CategorySwitcher->GetActiveWidgetIndex() ? Blue->Default : LightGray->Default;
+	ButtonToRefresh->SetBackgroundColor(ColorToSet);
 }
 
 void UOptionsWidget::Apply()
 {
-	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
-	UserSettings->SetMasterVolume(MasterVolumeSliderOptionBox->GetValue() / 100.0f);
-
-	ApplyWindowSettings();
-
-	// Apply Graphics Quality
-	ApplyCustomGraphicsSettings();
-	
-	if (OverallGraphicsQualityOptionBox->GetSelectedOption() != TEXT("Custom"))
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr)
 	{
-		UserSettings->SetOverallScalabilityLevel(OverallGraphicsQualityOptionBox->GetSelectedIndex());
+		return;
 	}
+	
+	GameplaySettings->OnApply();
+	ControlsSettings->OnApply();
+	WindowSettings->OnApply();
+	PostProcessingSettings->OnApply();
+	GraphicsSettings->OnApply();
 
 	UserSettings->ApplySettings(false);
-	
-	ApplyFieldOfViewSettings();
-	ApplyMasterVolumeSettings();
-
 	Refresh();
-}
-
-void UOptionsWidget::ApplyWindowSettings()
-{
-	FString XString;
-	FString YString;
-	FString SelectedResolutionString = ResolutionOptionBox->GetSelectedOption();
-	SelectedResolutionString.Split(TEXT(" X "), &XString, &YString);
-	FIntPoint NewResolution = FIntPoint::ZeroValue;
-	NewResolution.X = FCString::Atoi(*XString);
-	NewResolution.Y = FCString::Atoi(*YString);
-	UserSettings->SetScreenResolution(NewResolution);
-
-	switch (WindowModeOptionBox->GetSelectedIndex())
-	{
-	case 0:
-		UserSettings->SetFullscreenMode(EWindowMode::Type::Windowed);
-		break;
-	case 1:
-		UserSettings->SetFullscreenMode(EWindowMode::Type::WindowedFullscreen);
-		break;
-	case 2:
-		UserSettings->SetFullscreenMode(EWindowMode::Type::Fullscreen);
-		break;
-	}
-
-	switch (FrameRateLimitOptionBox->GetSelectedIndex())
-	{
-	case 0:
-		UserSettings->SetFrameRateLimit(0.0f);
-		break;
-	case 1:
-		UserSettings->SetFrameRateLimit(30.0f);
-		break;
-	case 2:
-		UserSettings->SetFrameRateLimit(60.0f);
-		break;
-	case 3:
-		UserSettings->SetFrameRateLimit(100.0f);
-		break;
-	case 4:
-		UserSettings->SetFrameRateLimit(120.0f);
-		break;
-	case 5:
-		UserSettings->SetFrameRateLimit(144.0f);
-		break;
-	case 6:
-		UserSettings->SetFrameRateLimit(240.0f);
-		break;
-	}
-}
-
-void UOptionsWidget::ApplyCustomGraphicsSettings()
-{
-	UserSettings->SetViewDistanceQuality(ViewDistanceQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetShadowQuality(ShadowQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetGlobalIlluminationQuality(GlobalIlluminationQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetReflectionQuality(ReflectionQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetAntiAliasingQuality(AntiAliasingQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetTextureQuality(TextureQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetVisualEffectQuality(VisualEffectQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetPostProcessingQuality(PostProcessingQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetFoliageQuality(FoliageQualityOptionBox->GetSelectedIndex());
-	UserSettings->SetShadingQuality(ShaderQualityOptionBox->GetSelectedIndex());
-}
-
-void UOptionsWidget::ApplyFieldOfViewSettings()
-{
-	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
-	if (CharacterSettingsInterface == nullptr)
-	{
-		return;
-	}
-
-	CharacterSettingsInterface->ApplyFieldOfView();
-}
-
-void UOptionsWidget::ApplyMasterVolumeSettings()
-{
-	IGameSettingsInterface* GameSettingsInterface = Cast<IGameSettingsInterface>(GetWorld()->GetGameInstance());
-	if (GameSettingsInterface == nullptr)
-	{
-		return;
-	}
-
-	GameSettingsInterface->ApplyMasterVolume();
 }
 
 void UOptionsWidget::Reset()
 {
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr)
+	{
+		return;
+	}
+
 	UserSettings->SetToDefaults();
 	Refresh();
 }
@@ -298,9 +166,4 @@ void UOptionsWidget::Back()
 	}
 
 	OnBackButtonPressed.Broadcast();
-}
-
-void UOptionsWidget::OnOverallQualityOptionChange(const FString& NewSelection)
-{
-	RefreshCustomGraphicsSettings(NewSelection == TEXT("Custom"));
 }
