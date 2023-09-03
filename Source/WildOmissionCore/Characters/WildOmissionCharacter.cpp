@@ -89,6 +89,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	DesiredMovementSpeed = 300.0f;
 
+	LookUpInverted = false;
+
 	static ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmissionCore/UI/Player/WBP_PlayerHUD"));
 	if (PlayerHUDWidgetBlueprintClass.Succeeded())
 	{
@@ -378,7 +380,7 @@ void AWildOmissionCharacter::ApplyInputSettings()
 	}
 
 	DefaultMappingContext->UnmapAll();
-
+	LookUpInverted = UserSettings->GetInvertedMouseY();
 	DefaultMappingContext->MapKey(MoveForwardAction, UserSettings->GetMoveForwardKey());
 	DefaultMappingContext->MapKey(MoveBackwardAction, UserSettings->GetMoveBackwardKey());
 	DefaultMappingContext->MapKey(MoveLeftAction, UserSettings->GetMoveLeftKey());
@@ -398,7 +400,9 @@ void AWildOmissionCharacter::ApplyInputSettings()
 	DefaultMappingContext->MapKey(ToolbarSelection4Action, EKeys::Four);
 	DefaultMappingContext->MapKey(ToolbarSelection5Action, EKeys::Five);
 	DefaultMappingContext->MapKey(ToolbarSelection6Action, EKeys::Six);
-
+	DefaultMappingContext->MapKey(ToggleInventoryMenuAction, UserSettings->GetInventoryKey());
+	DefaultMappingContext->MapKey(ToggleCraftingMenuAction, UserSettings->GetCraftingKey());
+	DefaultMappingContext->MapKey(ToggleChatAction, UserSettings->GetChatKey());
 }
 
 void AWildOmissionCharacter::ApplyFieldOfView()
@@ -528,15 +532,12 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartSprint);
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndSprint);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
-	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, InteractionComponent, &UInteractionComponent::Interact);
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::PrimaryPressed);
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::PrimaryReleased);
 	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::SecondaryPressed);
 	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::SecondaryReleased);
+	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, InteractionComponent, &UInteractionComponent::Interact);
 	EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ReloadPressed);
-	EnhancedInputComponent->BindAction(ToggleInventoryMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleInventoryMenu);
-	EnhancedInputComponent->BindAction(ToggleCraftingMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleCraftingMenu);
-	EnhancedInputComponent->BindAction(ToggleChatAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleChat);
 	EnhancedInputComponent->BindAction(ToolbarSelectionIncrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionIncrement);
 	EnhancedInputComponent->BindAction(ToolbarSelectionDecrementAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToolbarSelectionDecrement);
 	EnhancedInputComponent->BindAction(ToolbarSelection1Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot1);
@@ -545,6 +546,9 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(ToolbarSelection4Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot4);
 	EnhancedInputComponent->BindAction(ToolbarSelection5Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot5);
 	EnhancedInputComponent->BindAction(ToolbarSelection6Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot6);
+	EnhancedInputComponent->BindAction(ToggleInventoryMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleInventoryMenu);
+	EnhancedInputComponent->BindAction(ToggleCraftingMenuAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleCraftingMenu);
+	EnhancedInputComponent->BindAction(ToggleChatAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ToggleChat);
 }
 
 void AWildOmissionCharacter::MoveForward()
@@ -598,7 +602,6 @@ void AWildOmissionCharacter::MoveRight()
 
 void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 {
-
 	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
@@ -607,7 +610,7 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 	FVector2D LookAxis = Value.Get<FVector2D>();
 
 	AddControllerYawInput(LookAxis.X);
-	AddControllerPitchInput(LookAxis.Y);
+	AddControllerPitchInput(LookAxis.Y * (LookUpInverted ? 1.0f : -1.0f));
 }
 
 void AWildOmissionCharacter::StartSprint()

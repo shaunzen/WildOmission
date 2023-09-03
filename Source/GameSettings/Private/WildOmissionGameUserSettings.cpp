@@ -28,6 +28,7 @@ static const FKey DEFAULT_INVENTORY = EKeys::Tab;
 static const FKey DEFAULT_CRAFTING = EKeys::Q;
 static const FKey DEFAULT_CHAT = EKeys::T;
 
+static const bool DEFAULT_INVERTEDMOUSEY = false;
 
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {
@@ -55,6 +56,8 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
     InventoryKey = DEFAULT_INVENTORY;
     CraftingKey = DEFAULT_CRAFTING;
     ChatKey = DEFAULT_CHAT;
+
+    InvertedMouseY = DEFAULT_INVERTEDMOUSEY;
 
     HasRunAutoConfig = false;
 }
@@ -87,6 +90,8 @@ void UWildOmissionGameUserSettings::SetToDefaults()
     InventoryKey = DEFAULT_INVENTORY;
     CraftingKey = DEFAULT_CRAFTING;
     ChatKey = DEFAULT_CHAT;
+
+    InvertedMouseY = DEFAULT_INVERTEDMOUSEY;
 }
 
 void UWildOmissionGameUserSettings::SetFieldOfView(float NewFieldOfView)
@@ -287,6 +292,16 @@ void UWildOmissionGameUserSettings::SetChatKey(const FKey& NewKey)
 FKey UWildOmissionGameUserSettings::GetChatKey() const
 {
     return ChatKey;
+}
+
+void UWildOmissionGameUserSettings::SetInvertedMouseY(bool Inverted)
+{
+    InvertedMouseY = Inverted;
+}
+
+bool UWildOmissionGameUserSettings::GetInvertedMouseY() const
+{
+    return InvertedMouseY;
 }
 
 void UWildOmissionGameUserSettings::SetHasRunAutoConfig(bool HasRun)

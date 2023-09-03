@@ -135,6 +135,12 @@ public:
 	FKey GetChatKey() const;
 
 	UFUNCTION()
+	void SetInvertedMouseY(bool Inverted);
+
+	UFUNCTION()
+	bool GetInvertedMouseY() const;
+
+	UFUNCTION()
 	void SetHasRunAutoConfig(bool HasRun);
 
 	UFUNCTION()
@@ -194,6 +200,9 @@ private:
 	FKey CraftingKey;
 	UPROPERTY(Config)
 	FKey ChatKey;
+
+	UPROPERTY(Config)
+	bool InvertedMouseY;
 
 	UPROPERTY(Config)
 	bool HasRunAutoConfig;

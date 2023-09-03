@@ -212,6 +212,8 @@ private:
 	UPROPERTY()
 	UInputAction* ToggleChatAction;
 
+	bool LookUpInverted;
+
 	UFUNCTION()
 	void MoveForward();
 
