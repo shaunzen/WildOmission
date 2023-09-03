@@ -8,7 +8,20 @@
 void UKeyOptionBox::NativeConstruct()
 {
 	AwaitingInput = false;
+	SelectedKey = EKeys::Semicolon;
 	Button->OnClicked.AddDynamic(this, &UKeyOptionBox::OnClicked);
+	RefreshTextBlock();
+}
+
+void UKeyOptionBox::SetSelectedKey(const FKey& NewSelectedKey)
+{
+	SelectedKey = NewSelectedKey;
+	RefreshTextBlock();
+}
+
+FKey UKeyOptionBox::GetSelectedKey() const
+{
+	return SelectedKey;
 }
 
 FReply UKeyOptionBox::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -19,11 +32,23 @@ FReply UKeyOptionBox::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEve
 	{
 		return FReply::Handled();
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("KeyPressed: %s"), *InKeyEvent.GetKey().ToString());
+	
 	AwaitingInput = false;
-
+	SetSelectedKey(InKeyEvent.GetKey());
+	
 	return FReply::Handled();
+}
+
+void UKeyOptionBox::RefreshTextBlock()
+{
+	FString DisplayString = SelectedKey.ToString();
+
+	if (AwaitingInput)
+	{
+		DisplayString = TEXT("Press Desired Key.");
+	}
+
+	TextBlock->SetText(FText::FromString(DisplayString));
 }
 
 void UKeyOptionBox::OnClicked()
@@ -32,6 +57,7 @@ void UKeyOptionBox::OnClicked()
 	{
 		return;
 	}
+	
 	AwaitingInput = true;
-
+	RefreshTextBlock();
 }

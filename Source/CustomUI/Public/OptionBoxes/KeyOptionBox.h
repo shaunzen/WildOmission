@@ -16,7 +16,8 @@ class CUSTOMUI_API UKeyOptionBox : public UUserWidget
 	
 public:
 	virtual void NativeConstruct() override;
-	
+	void SetSelectedKey(const FKey& NewSelectedKey);
+	FKey GetSelectedKey() const;
 protected:
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
@@ -28,6 +29,8 @@ private:
 
 	FKey SelectedKey;
 	bool AwaitingInput;
+
+	void RefreshTextBlock();
 
 	UFUNCTION()
 	void OnClicked();
