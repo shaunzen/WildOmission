@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/Categories/SettingsCategoryWidget.h"
+#include "SettingsCategoryWidget.h"
 #include "ControlsSettingsWidget.generated.h"
 
 /**
