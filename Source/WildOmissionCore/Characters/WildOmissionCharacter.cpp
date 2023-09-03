@@ -131,12 +131,30 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		DefaultMappingContext = DefaultMappingContextBlueprint.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Move"));
-	if (MoveActionBlueprint.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UInputAction> MoveForwardActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_MoveForward"));
+	if (MoveForwardActionBlueprint.Succeeded())
 	{
-		MoveAction = MoveActionBlueprint.Object;
+		MoveForwardAction = MoveForwardActionBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> MoveBackwardActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_MoveBackward"));
+	if (MoveBackwardActionBlueprint.Succeeded())
+	{
+		MoveBackwardAction = MoveBackwardActionBlueprint.Object;
 	}
 	
+	static ConstructorHelpers::FObjectFinder<UInputAction> MoveLeftActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_MoveLeft"));
+	if (MoveLeftActionBlueprint.Succeeded())
+	{
+		MoveLeftAction = MoveLeftActionBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> MoveRightActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_MoveRight"));
+	if (MoveRightActionBlueprint.Succeeded())
+	{
+		MoveRightAction = MoveRightActionBlueprint.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<UInputAction> LookActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Look"));
 	if (LookActionBlueprint.Succeeded())
 	{
@@ -155,12 +173,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		JumpAction = JumpActionBlueprint.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Interact"));
-	if (InteractActionBlueprint.Succeeded())
-	{
-		InteractAction = InteractActionBlueprint.Object;
-	}
-
 	static ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Primary"));
 	if (PrimaryActionBlueprint.Succeeded())
 	{
@@ -172,29 +184,17 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	{
 		SecondaryAction = SecondaryActionBlueprint.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> InteractActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Interact"));
+	if (InteractActionBlueprint.Succeeded())
+	{
+		InteractAction = InteractActionBlueprint.Object;
+	}
 	
 	static ConstructorHelpers::FObjectFinder<UInputAction> ReloadActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Reload"));
 	if (ReloadActionBlueprint.Succeeded())
 	{
 		ReloadAction = ReloadActionBlueprint.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleInventoryMenuActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_ToggleInventoryMenu"));
-	if (ToggleInventoryMenuActionBlueprint.Succeeded())
-	{
-		ToggleInventoryMenuAction = ToggleInventoryMenuActionBlueprint.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleCraftingMenuActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_ToggleCraftingMenu"));
-	if (ToggleCraftingMenuActionBlueprint.Succeeded())
-	{
-		ToggleCraftingMenuAction = ToggleCraftingMenuActionBlueprint.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleChatActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_ToggleChat"));
-	if (ToggleChatActionBlueprint.Succeeded())
-	{
-		ToggleChatAction = ToggleChatActionBlueprint.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> ToolbarSelectionIncrementBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_ToolbarSelectionIncrement"));
@@ -244,6 +244,25 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	{
 		ToolbarSelection6Action = ToolbarSelection6Blueprint.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleInventoryMenuActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_ToggleInventoryMenu"));
+	if (ToggleInventoryMenuActionBlueprint.Succeeded())
+	{
+		ToggleInventoryMenuAction = ToggleInventoryMenuActionBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleCraftingMenuActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_ToggleCraftingMenu"));
+	if (ToggleCraftingMenuActionBlueprint.Succeeded())
+	{
+		ToggleCraftingMenuAction = ToggleCraftingMenuActionBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleChatActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_ToggleChat"));
+	if (ToggleChatActionBlueprint.Succeeded())
+	{
+		ToggleChatAction = ToggleChatActionBlueprint.Object;
+	}
+
 }
 
 void AWildOmissionCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -260,6 +279,7 @@ void AWildOmissionCharacter::BeginPlay()
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
+	ApplyInputSettings();
 	ApplyFieldOfView();
 	ApplyPostProcessing();
 	SetupPlayerHUD();
@@ -297,6 +317,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
+	ApplyInputSettings();
 	ApplyFieldOfView();
 	ApplyPostProcessing();
 	SetupPlayerHUD();
@@ -346,6 +367,38 @@ void AWildOmissionCharacter::SetupMesh()
 {
 	GetMesh()->SetVisibility(!IsLocallyControlled());
 	FirstPersonArmsMeshComponent->SetVisibility(IsLocallyControlled());
+}
+
+void AWildOmissionCharacter::ApplyInputSettings()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (!IsLocallyControlled() || UserSettings == nullptr)
+	{
+		return;
+	}
+
+	DefaultMappingContext->UnmapAll();
+
+	DefaultMappingContext->MapKey(MoveForwardAction, UserSettings->GetMoveForwardKey());
+	DefaultMappingContext->MapKey(MoveBackwardAction, UserSettings->GetMoveBackwardKey());
+	DefaultMappingContext->MapKey(MoveLeftAction, UserSettings->GetMoveLeftKey());
+	DefaultMappingContext->MapKey(MoveRightAction, UserSettings->GetMoveRightKey());
+	DefaultMappingContext->MapKey(LookAction, EKeys::Mouse2D);
+	DefaultMappingContext->MapKey(SprintAction, UserSettings->GetSprintKey());
+	DefaultMappingContext->MapKey(JumpAction, UserSettings->GetJumpKey());
+	DefaultMappingContext->MapKey(PrimaryAction, UserSettings->GetPrimaryKey());
+	DefaultMappingContext->MapKey(SecondaryAction, UserSettings->GetSecondaryKey());
+	DefaultMappingContext->MapKey(InteractAction, UserSettings->GetInteractKey());
+	DefaultMappingContext->MapKey(ReloadAction, UserSettings->GetReloadKey());
+	DefaultMappingContext->MapKey(ToolbarSelectionIncrementAction, EKeys::MouseScrollDown);
+	DefaultMappingContext->MapKey(ToolbarSelectionDecrementAction, EKeys::MouseScrollUp);
+	DefaultMappingContext->MapKey(ToolbarSelection1Action, EKeys::One);
+	DefaultMappingContext->MapKey(ToolbarSelection2Action, EKeys::Two);
+	DefaultMappingContext->MapKey(ToolbarSelection3Action, EKeys::Three);
+	DefaultMappingContext->MapKey(ToolbarSelection4Action, EKeys::Four);
+	DefaultMappingContext->MapKey(ToolbarSelection5Action, EKeys::Five);
+	DefaultMappingContext->MapKey(ToolbarSelection6Action, EKeys::Six);
+
 }
 
 void AWildOmissionCharacter::ApplyFieldOfView()
@@ -467,7 +520,10 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
 	// Bind function callbacks to input actions
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::Move);
+	EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveForward);
+	EnhancedInputComponent->BindAction(MoveBackwardAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveBackward);
+	EnhancedInputComponent->BindAction(MoveLeftAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveLeft);
+	EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveRight);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::Look);
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartSprint);
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndSprint);
@@ -491,19 +547,52 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(ToolbarSelection6Action, ETriggerEvent::Started, this, &AWildOmissionCharacter::SelectToolbarSlot6);
 }
 
-void AWildOmissionCharacter::Move(const FInputActionValue& Value)
+void AWildOmissionCharacter::MoveForward()
 {
-	FVector2D MoveAxis = Value.Get<FVector2D>();
-
 	if (!GetCharacterMovement()->IsSwimming())
 	{
-		AddMovementInput(GetActorForwardVector(), MoveAxis.Y);
-		AddMovementInput(GetActorRightVector(), MoveAxis.X);
+		AddMovementInput(GetActorForwardVector(), 1.0f);
 	}
 	else
 	{
-		AddMovementInput(UKismetMathLibrary::GetForwardVector(GetControlRotation()), MoveAxis.Y);
-		AddMovementInput(UKismetMathLibrary::GetRightVector(GetControlRotation()), MoveAxis.X);
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(GetControlRotation()), 1.0f);
+	}
+}
+
+void AWildOmissionCharacter::MoveBackward()
+{
+	if (!GetCharacterMovement()->IsSwimming())
+	{
+		AddMovementInput(GetActorForwardVector(), -1.0f);
+	}
+	else
+	{
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(GetControlRotation()), -1.0f);
+	}
+}
+
+void AWildOmissionCharacter::MoveLeft()
+{
+	if (!GetCharacterMovement()->IsSwimming())
+	{
+		AddMovementInput(GetActorRightVector(), -1.0f);
+	}
+	else
+	{
+		
+		AddMovementInput(UKismetMathLibrary::GetRightVector(GetControlRotation()), -1.0f);
+	}
+}
+
+void AWildOmissionCharacter::MoveRight()
+{
+	if (!GetCharacterMovement()->IsSwimming())
+	{
+		AddMovementInput(GetActorRightVector(), 1.0f);
+	}
+	else
+	{
+		AddMovementInput(UKismetMathLibrary::GetRightVector(GetControlRotation()), 1.0f);
 	}
 }
 

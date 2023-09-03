@@ -45,6 +45,7 @@ public:
 	virtual void Landed(const FHitResult& HitResult) override;
 
 	// Begin ICharacterSettingsInterface Implementation
+	virtual void ApplyInputSettings() override;
 	virtual void ApplyFieldOfView() override;
 	virtual void ApplyPostProcessing() override;
 	// End ICharacterSettingsInterface Implementation
@@ -146,7 +147,16 @@ private:
 	UInputMappingContext* DefaultMappingContext;
 
 	UPROPERTY()
-	UInputAction* MoveAction;
+	UInputAction* MoveForwardAction;
+
+	UPROPERTY()
+	UInputAction* MoveBackwardAction;
+
+	UPROPERTY()
+	UInputAction* MoveLeftAction;
+
+	UPROPERTY()
+	UInputAction* MoveRightAction;
 
 	UPROPERTY()
 	UInputAction* LookAction;
@@ -156,10 +166,7 @@ private:
 
 	UPROPERTY()
 	UInputAction* JumpAction;
-	
-	UPROPERTY()
-	UInputAction* InteractAction;
-	
+		
 	UPROPERTY()
 	UInputAction* PrimaryAction;
 	
@@ -167,16 +174,10 @@ private:
 	UInputAction* SecondaryAction;
 
 	UPROPERTY()
+	UInputAction* InteractAction;
+
+	UPROPERTY()
 	UInputAction* ReloadAction;
-	
-	UPROPERTY()
-	UInputAction* ToggleInventoryMenuAction;
-
-	UPROPERTY()
-	UInputAction* ToggleCraftingMenuAction;
-
-	UPROPERTY()
-	UInputAction* ToggleChatAction;
 	
 	UPROPERTY()
 	UInputAction* ToolbarSelectionIncrementAction;
@@ -202,8 +203,27 @@ private:
 	UPROPERTY()
 	UInputAction* ToolbarSelection6Action;
 	
+	UPROPERTY()
+	UInputAction* ToggleInventoryMenuAction;
+
+	UPROPERTY()
+	UInputAction* ToggleCraftingMenuAction;
+
+	UPROPERTY()
+	UInputAction* ToggleChatAction;
+
 	UFUNCTION()
-	void Move(const FInputActionValue& Value);
+	void MoveForward();
+
+	UFUNCTION()
+	void MoveBackward();
+
+	UFUNCTION()
+	void MoveLeft();
+
+	UFUNCTION()
+	void MoveRight();
+
 	UFUNCTION()
 	void Look(const FInputActionValue& Value);
 

@@ -105,7 +105,6 @@ void UOptionsWidget::OpenPostProcessingSettings()
 
 void UOptionsWidget::OpenGraphicsSettings()
 {
-
 	if (CategorySwitcher == nullptr || GraphicsSettings == nullptr)
 	{
 		return;
