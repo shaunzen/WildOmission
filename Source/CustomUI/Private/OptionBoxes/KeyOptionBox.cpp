@@ -2,14 +2,15 @@
 
 
 #include "OptionBoxes/KeyOptionBox.h"
-#include "Components/Button.h"
+#include "Components/Border.h"
 #include "Components/TextBlock.h"
+#include "Color/UIColors.h"
 
 void UKeyOptionBox::NativeConstruct()
 {
+	Border->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 	AwaitingInput = false;
 	SelectedKey = EKeys::Semicolon;
-	Button->OnClicked.AddDynamic(this, &UKeyOptionBox::OnClicked);
 	RefreshTextBlock();
 }
 
@@ -24,6 +25,19 @@ FKey UKeyOptionBox::GetSelectedKey() const
 	return SelectedKey;
 }
 
+void UKeyOptionBox::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
+{
+	Super::NativeOnFocusLost(InFocusEvent);
+
+	if (AwaitingInput == false)
+	{
+		return;
+	}
+
+	AwaitingInput = false;
+	RefreshTextBlock();
+}
+
 FReply UKeyOptionBox::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
@@ -34,9 +48,56 @@ FReply UKeyOptionBox::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEve
 	}
 	
 	AwaitingInput = false;
+	if (InKeyEvent.GetKey() == EKeys::Escape)
+	{
+		RefreshTextBlock();
+		return FReply::Handled();
+	}
+
 	SetSelectedKey(InKeyEvent.GetKey());
 	
 	return FReply::Handled();
+}
+
+FReply UKeyOptionBox::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	if (AwaitingInput == false && InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
+		SetFocus();
+		AwaitingInput = true;
+		RefreshTextBlock();
+		return FReply::Handled();
+	}
+
+	if (AwaitingInput)
+	{
+		AwaitingInput = false;
+		SetSelectedKey(InMouseEvent.GetEffectingButton());
+	}
+
+	return FReply::Handled();
+}
+
+void UKeyOptionBox::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	FUIColor* LightGray = UUIColors::GetBaseColor(TEXT("LightGray"));
+	if (LightGray == nullptr)
+	{
+		return;
+	}
+	FLinearColor HoveredColor = LightGray->Default;
+	HoveredColor.A = 0.2f;
+	Border->SetBrushColor(HoveredColor);
+}
+
+void UKeyOptionBox::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	Border->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
 void UKeyOptionBox::RefreshTextBlock()
@@ -49,15 +110,4 @@ void UKeyOptionBox::RefreshTextBlock()
 	}
 
 	TextBlock->SetText(FText::FromString(DisplayString));
-}
-
-void UKeyOptionBox::OnClicked()
-{
-	if (AwaitingInput)
-	{
-		return;
-	}
-	
-	AwaitingInput = true;
-	RefreshTextBlock();
 }

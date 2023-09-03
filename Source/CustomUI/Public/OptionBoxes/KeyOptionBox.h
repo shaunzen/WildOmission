@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "KeyOptionBox.generated.h"
 
-class UButton;
+class UBorder;
 class UTextBlock;
 
 UCLASS()
@@ -19,11 +19,15 @@ public:
 	void SetSelectedKey(const FKey& NewSelectedKey);
 	FKey GetSelectedKey() const;
 protected:
+	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UButton* Button;
+	UBorder* Border;
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* TextBlock;
 
@@ -32,6 +36,4 @@ private:
 
 	void RefreshTextBlock();
 
-	UFUNCTION()
-	void OnClicked();
 };
