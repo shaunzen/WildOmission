@@ -213,6 +213,7 @@ private:
 	UInputAction* ToggleChatAction;
 
 	bool LookUpInverted;
+	float LookSensitivity;
 
 	UFUNCTION()
 	void MoveForward();

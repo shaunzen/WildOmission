@@ -90,6 +90,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	DesiredMovementSpeed = 300.0f;
 
 	LookUpInverted = false;
+	LookSensitivity = 1.0f;
 
 	static ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmissionCore/UI/Player/WBP_PlayerHUD"));
 	if (PlayerHUDWidgetBlueprintClass.Succeeded())
@@ -381,6 +382,7 @@ void AWildOmissionCharacter::ApplyInputSettings()
 
 	DefaultMappingContext->UnmapAll();
 	LookUpInverted = UserSettings->GetInvertedMouseY();
+	LookSensitivity = UserSettings->GetMouseSensitivity();
 	DefaultMappingContext->MapKey(MoveForwardAction, UserSettings->GetMoveForwardKey());
 	DefaultMappingContext->MapKey(MoveBackwardAction, UserSettings->GetMoveBackwardKey());
 	DefaultMappingContext->MapKey(MoveLeftAction, UserSettings->GetMoveLeftKey());
@@ -609,8 +611,9 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 	FVector2D LookAxis = Value.Get<FVector2D>();
 
-	AddControllerYawInput(LookAxis.X);
-	AddControllerPitchInput(LookAxis.Y * (LookUpInverted ? 1.0f : -1.0f));
+	AddControllerYawInput(LookAxis.X * LookSensitivity);
+	const float Invert = LookUpInverted ? 1.0f : -1.0f;
+	AddControllerPitchInput((LookAxis.Y * LookSensitivity) * Invert);
 }
 
 void AWildOmissionCharacter::StartSprint()

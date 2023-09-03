@@ -2,13 +2,18 @@
 
 
 #include "ControlsSettingsWidget.h"
+#include "OptionBoxes/CheckOptionBox.h"
 #include "OptionBoxes/KeyOptionBox.h"
+#include "OptionBoxes/SliderOptionBox.h"
 #include "Interfaces/CharacterSettingsInterface.h"
 #include "WildOmissionGameUserSettings.h"
 
 void UControlsSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	MouseSensitivitySliderOptionBox->SetMinValue(0.01f);
+	MouseSensitivitySliderOptionBox->SetMaxValue(5.0f);
 }
 
 void UControlsSettingsWidget::OnApply()
@@ -20,6 +25,9 @@ void UControlsSettingsWidget::OnApply()
 	{
 		return;
 	}
+
+	UserSettings->SetInvertedMouseY(InvertMouseYCheckOptionBox->IsChecked());
+	UserSettings->SetMouseSensitivity(MouseSensitivitySliderOptionBox->GetValue());
 
 	UserSettings->SetMoveForwardKey(MoveForwardKeyOptionBox->GetSelectedKey());
 	UserSettings->SetMoveBackwardKey(MoveBackwardKeyOptionBox->GetSelectedKey());
@@ -55,6 +63,9 @@ void UControlsSettingsWidget::OnRefresh()
 	{
 		return;
 	}
+
+	InvertMouseYCheckOptionBox->SetChecked(UserSettings->GetInvertedMouseY());
+	MouseSensitivitySliderOptionBox->SetValue(UserSettings->GetMouseSensitivity());
 
 	MoveForwardKeyOptionBox->SetSelectedKey(UserSettings->GetMoveForwardKey());
 	MoveBackwardKeyOptionBox->SetSelectedKey(UserSettings->GetMoveBackwardKey());

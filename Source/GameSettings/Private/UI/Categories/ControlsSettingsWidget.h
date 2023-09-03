@@ -8,6 +8,8 @@
 
 class UVerticalBox;
 class UKeyOptionBox;
+class UCheckOptionBox;
+class USliderOptionBox;
 
 UCLASS()
 class UControlsSettingsWidget : public USettingsCategoryWidget
@@ -19,6 +21,10 @@ public:
 	virtual void OnRefresh() override;
 
 private:
+	UPROPERTY(Meta = (BindWidget))
+	UCheckOptionBox* InvertMouseYCheckOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	USliderOptionBox* MouseSensitivitySliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	UKeyOptionBox* MoveForwardKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))

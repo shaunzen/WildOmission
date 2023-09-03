@@ -29,6 +29,7 @@ static const FKey DEFAULT_CRAFTING = EKeys::Q;
 static const FKey DEFAULT_CHAT = EKeys::T;
 
 static const bool DEFAULT_INVERTEDMOUSEY = false;
+static const float DEFAULT_MOUSESENSITIVITY = 1.0f;
 
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {
@@ -58,6 +59,7 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
     ChatKey = DEFAULT_CHAT;
 
     InvertedMouseY = DEFAULT_INVERTEDMOUSEY;
+    MouseSensitivity = DEFAULT_MOUSESENSITIVITY;
 
     HasRunAutoConfig = false;
 }
@@ -92,6 +94,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
     ChatKey = DEFAULT_CHAT;
 
     InvertedMouseY = DEFAULT_INVERTEDMOUSEY;
+    MouseSensitivity = DEFAULT_MOUSESENSITIVITY;
 }
 
 void UWildOmissionGameUserSettings::SetFieldOfView(float NewFieldOfView)
@@ -302,6 +305,16 @@ void UWildOmissionGameUserSettings::SetInvertedMouseY(bool Inverted)
 bool UWildOmissionGameUserSettings::GetInvertedMouseY() const
 {
     return InvertedMouseY;
+}
+
+void UWildOmissionGameUserSettings::SetMouseSensitivity(float Sensitivity)
+{
+    MouseSensitivity = Sensitivity;
+}
+
+float UWildOmissionGameUserSettings::GetMouseSensitivity() const
+{
+    return MouseSensitivity;
 }
 
 void UWildOmissionGameUserSettings::SetHasRunAutoConfig(bool HasRun)

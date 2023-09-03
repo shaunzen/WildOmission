@@ -141,6 +141,12 @@ public:
 	bool GetInvertedMouseY() const;
 
 	UFUNCTION()
+	void SetMouseSensitivity(float Sensitivity);
+
+	UFUNCTION()
+	float GetMouseSensitivity() const;
+
+	UFUNCTION()
 	void SetHasRunAutoConfig(bool HasRun);
 
 	UFUNCTION()
@@ -203,6 +209,8 @@ private:
 
 	UPROPERTY(Config)
 	bool InvertedMouseY;
+	UPROPERTY(Config)
+	float MouseSensitivity;
 
 	UPROPERTY(Config)
 	bool HasRunAutoConfig;
