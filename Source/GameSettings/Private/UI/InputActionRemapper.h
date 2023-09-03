@@ -8,6 +8,8 @@
 
 class UTextBlock;
 class UKeyOptionBox;
+class UInputAction;
+class UInputMappingContext;
 
 UCLASS()
 class UInputActionRemapper : public UUserWidget
@@ -15,7 +17,9 @@ class UInputActionRemapper : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetActionName(const FString& ActionName);
+	void SetInputAction(UInputAction* InInputAction);
+	UInputAction* GetInputAction() const;
+
 	UKeyOptionBox* GetKeyOptionBox() const;
 
 private:
@@ -25,4 +29,7 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UKeyOptionBox* KeyOptionBox;
 
+	UPROPERTY()
+	UInputAction* InputAction;
+	
 };

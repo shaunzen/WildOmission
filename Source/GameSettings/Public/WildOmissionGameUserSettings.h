@@ -57,6 +57,84 @@ public:
 	bool GetFilmGrainEnabled() const;
 
 	UFUNCTION()
+	void SetMoveForwardKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetMoveForwardKey() const;
+
+	UFUNCTION()
+	void SetMoveBackwardKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetMoveBackwardKey() const;
+
+	UFUNCTION()
+	void SetMoveLeftKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetMoveLeftKey() const;
+	
+	UFUNCTION()
+	void SetMoveRightKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetMoveRightKey() const;
+
+	UFUNCTION()
+	void SetSprintKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetSprintKey() const;
+
+	UFUNCTION()
+	void SetJumpKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetJumpKey() const;
+
+	UFUNCTION()
+	void SetPrimaryKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetPrimaryKey() const;
+
+	UFUNCTION()
+	void SetSecondaryKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetSecondaryKey() const;
+
+	UFUNCTION()
+	void SetInteractKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetInteractKey() const;
+
+	UFUNCTION()
+	void SetReloadKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetReloadKey() const;
+
+	UFUNCTION()
+	void SetInventoryKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetInventoryKey() const;
+
+	UFUNCTION()
+	void SetCraftingKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetCraftingKey() const;
+
+	UFUNCTION()
+	void SetChatKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetChatKey() const;
+
+	UFUNCTION()
 	void SetHasRunAutoConfig(bool HasRun);
 
 	UFUNCTION()
@@ -89,6 +167,33 @@ private:
 
 	UPROPERTY(Config)
 	bool FilmGrainEnabled;
+
+	UPROPERTY(Config)
+	FKey MoveForwardKey;
+	UPROPERTY(Config)
+	FKey MoveBackwardKey;
+	UPROPERTY(Config)
+	FKey MoveLeftKey;
+	UPROPERTY(Config)
+	FKey MoveRightKey;
+	UPROPERTY(Config)
+	FKey SprintKey;
+	UPROPERTY(Config)
+	FKey JumpKey;
+	UPROPERTY(Config)
+	FKey PrimaryKey;
+	UPROPERTY(Config)
+	FKey SecondaryKey;
+	UPROPERTY(Config)
+	FKey InteractKey;
+	UPROPERTY(Config)
+	FKey ReloadKey;
+	UPROPERTY(Config)
+	FKey InventoryKey;
+	UPROPERTY(Config)
+	FKey CraftingKey;
+	UPROPERTY(Config)
+	FKey ChatKey;
 
 	UPROPERTY(Config)
 	bool HasRunAutoConfig;
