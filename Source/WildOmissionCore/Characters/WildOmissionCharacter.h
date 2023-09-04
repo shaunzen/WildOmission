@@ -42,6 +42,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void UnPossessed() override;
 
+	virtual void BeginDestroy() override;
+
 	virtual void Landed(const FHitResult& HitResult) override;
 
 	// Begin ICharacterSettingsInterface Implementation

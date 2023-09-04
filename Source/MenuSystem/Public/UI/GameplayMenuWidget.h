@@ -54,6 +54,9 @@ private:
 	UButton* OptionsButton;
 
 	UPROPERTY(Meta = (BindWidget))
+	UButton* HowToPlayButton;
+
+	UPROPERTY(Meta = (BindWidget))
 	UButton* QuitButton;
 
 	UPROPERTY(Meta = (BindWidget))
@@ -71,6 +74,9 @@ private:
 	IMenuInterface* MenuInterface;
 
 	bool bOpen;
+
+	UFUNCTION()
+	void OpenHelpGuide();
 
 	UFUNCTION()
 	void Save();

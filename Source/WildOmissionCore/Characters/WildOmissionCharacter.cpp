@@ -334,6 +334,13 @@ void AWildOmissionCharacter::UnPossessed()
 	EquipComponent->DestroyEquipedItem();
 }
 
+void AWildOmissionCharacter::BeginDestroy()
+{
+
+
+	Super::BeginDestroy();
+}
+
 void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 {
 	Super::Landed(HitResult);
@@ -466,6 +473,17 @@ void AWildOmissionCharacter::SetupWeatherEffectHandler()
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	Super::EndPlay(EndPlayReason);
+
+	if (InventoryManipulatorComponent && InventoryManipulatorComponent->GetOpenContainer())
+	{
+		AItemContainerBase* OpenItemContainer = Cast<AItemContainerBase>(InventoryManipulatorComponent->GetOpenContainer()->GetOwner());
+		if (OpenItemContainer)
+		{
+			OpenItemContainer->UnOccupy();
+		}
+	}
+
 	if (PlayerHUDWidget == nullptr)
 	{
 		return;
@@ -494,7 +512,7 @@ void AWildOmissionCharacter::HandleDeath()
 
 	// Set Items to be this players items
 	SpawnedRagdoll->GetInventoryComponent()->Load(InventoryComponent->Save());
-
+	
 	Destroy();
 }
 

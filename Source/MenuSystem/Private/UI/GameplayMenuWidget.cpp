@@ -7,6 +7,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "UI/OptionsWidget.h"
 #include "Interfaces/SavablePlayer.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -21,6 +22,7 @@ void UGameplayMenuWidget::NativeConstruct()
 	// Bind button delegates
 	ResumeButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::Teardown);
 	OptionsButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenOptionsMenu);
+	HowToPlayButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenHelpGuide);
 	QuitButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
 
 	OptionsMenu->OnBackButtonPressed.AddDynamic(this, &UGameplayMenuWidget::OpenGameMenu);
@@ -122,6 +124,11 @@ void UGameplayMenuWidget::Teardown()
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = false;
+}
+
+void UGameplayMenuWidget::OpenHelpGuide()
+{
+	UKismetSystemLibrary::LaunchURL(TEXT("https://steamcommunity.com/sharedfiles/filedetails/?id=3029189957"));
 }
 
 void UGameplayMenuWidget::Save()
