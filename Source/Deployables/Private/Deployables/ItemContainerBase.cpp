@@ -53,10 +53,10 @@ FString AItemContainerBase::PromptText()
 {
 	if (bOccupied == false)
 	{
-		return FString::Printf(TEXT("Press 'E' to open %s"), *ContainerName);
+		return FString::Printf(TEXT("open %s"), *ContainerName);
 	}
 
-	return FString("Occupied");
+	return TEXT("NOPRESSPROMPT_Occupied");
 }
 
 void AItemContainerBase::Server_UnOccupy_Implementation()

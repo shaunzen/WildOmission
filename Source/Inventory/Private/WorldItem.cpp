@@ -98,12 +98,12 @@ FString AWorldItem::PromptText()
 	FItemData* ItemData = UInventoryComponent::GetItemData(Item.Name);
 	if (ItemData == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to pickup %s"), *Item.Name.ToString());
+		return FString::Printf(TEXT("pickup %s"), *Item.Name.ToString());
 	}
 
 	ItemDisplayName = ItemData->DisplayName;
 
-	return FString::Printf(TEXT("Press 'E' to pickup %s"), *ItemDisplayName);
+	return FString::Printf(TEXT("pickup %s"), *ItemDisplayName);
 }
 
 FName AWorldItem::GetIdentifier() const

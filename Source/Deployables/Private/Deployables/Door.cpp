@@ -76,10 +76,10 @@ FString ADoor::PromptText()
 {
 	if (!bIsOpen)
 	{
-		return FString("Press 'E' to open door");
+		return TEXT("open door");
 	}
 
-	return FString("Press 'E' to close door");
+	return TEXT("close door");
 }
 
 void ADoor::Client_PlayOpenSound_Implementation()

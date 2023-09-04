@@ -25,13 +25,13 @@ ACollectableResource::ACollectableResource()
 
 	NavigationModifier = CreateDefaultSubobject<UNavModifierComponent>(TEXT("NavigationModifier"));
 
-	ConstructorHelpers::FObjectFinder<USoundBase> CollectSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Pickup/Pickup_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> CollectSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Pickup/Pickup_Cue"));
 	if (CollectSoundObject.Succeeded())
 	{
 		CollectSound = CollectSoundObject.Object;
 	}
 
-	Tags.Add(FName("Collectable"));
+	Tags.Add(TEXT("Collectable"));
 }
 
 void ACollectableResource::Interact(AActor* Interactor)
@@ -59,12 +59,12 @@ FString ACollectableResource::PromptText()
 	FItemData* ItemData = UInventoryComponent::GetItemData(Yield.Name);
 	if (ItemData == nullptr)
 	{
-		return FString::Printf(TEXT("Press 'E' to harvest %s"), *Yield.Name.ToString());
+		return FString::Printf(TEXT("harvest %s"), *Yield.Name.ToString());
 	}
 
 	YieldedItemDisplayName = ItemData->DisplayName;
 
-	return FString::Printf(TEXT("Press 'E' to harvest %s"), *YieldedItemDisplayName);
+	return FString::Printf(TEXT("harvest %s"), *YieldedItemDisplayName);
 }
 
 FName ACollectableResource::GetIdentifier() const

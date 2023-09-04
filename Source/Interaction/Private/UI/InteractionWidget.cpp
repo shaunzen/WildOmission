@@ -20,6 +20,6 @@ void UInteractionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	{
 		return;
 	}
-
+	
 	InteractionPromptTextBlock->SetText(FText::FromString(OwnerInteractionComopnent->GetInteractionString()));
 }
