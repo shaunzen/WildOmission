@@ -26,7 +26,7 @@ AWildOmissionAIRagdoll::AWildOmissionAIRagdoll()
 	RootComponent = MeshComponent;
 
 	DespawnComponent = CreateDefaultSubobject<UTimerDespawnComponent>(TEXT("DespawnComponent"));
-	DespawnComponent->SetDespawnTime(1200.0f);
+	DespawnComponent->SetDespawnTime(600.0f);
 
 	HarvestableComponent = CreateDefaultSubobject<UHarvestableComponent>(TEXT("HarvestableComponent"));
 }

@@ -7,7 +7,7 @@
 ATemporaryItemContainer::ATemporaryItemContainer()
 {
 	DespawnComponent = CreateDefaultSubobject<UTimerDespawnComponent>(TEXT("DespawnComponent"));
-	DespawnComponent->SetDespawnTime(1200.0f);
+	DespawnComponent->SetDespawnTime(600.0f);
 
 	CanBeInteractedWith = true;
 }
