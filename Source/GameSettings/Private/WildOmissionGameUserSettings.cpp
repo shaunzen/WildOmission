@@ -6,6 +6,7 @@
 static const float DEFAULT_FIELDOFVIEW = 90.0f;
 static const float DEFAULT_MASTERVOLUME = 1.0f;
 
+static const float DEFAULT_GAMMA = 100.0f;
 static const bool DEFAULT_AUTOEXPOSUREENABLED = true;
 static const bool DEFAULT_MOTIONBLURENABLED = false;
 static const bool DEFAULT_BLOOMENABLED = true;
@@ -36,6 +37,7 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
     FieldOfView = DEFAULT_FIELDOFVIEW;
     MasterVolume = DEFAULT_MASTERVOLUME;
 
+    Gamma = DEFAULT_GAMMA;
     AutoExposureEnabled = DEFAULT_AUTOEXPOSUREENABLED;
     MotionBlurEnabled = DEFAULT_MOTIONBLURENABLED;
     BloomEnabled = DEFAULT_BLOOMENABLED;
@@ -71,6 +73,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
     FieldOfView = DEFAULT_FIELDOFVIEW;
     MasterVolume = DEFAULT_MASTERVOLUME;
 
+    Gamma = DEFAULT_GAMMA;
     AutoExposureEnabled = DEFAULT_AUTOEXPOSUREENABLED;
     MotionBlurEnabled = DEFAULT_MOTIONBLURENABLED;
     BloomEnabled = DEFAULT_BLOOMENABLED;
@@ -115,6 +118,16 @@ void UWildOmissionGameUserSettings::SetMasterVolume(float NewMasterVolume)
 float UWildOmissionGameUserSettings::GetMasterVolume() const
 {
     return MasterVolume;
+}
+
+void UWildOmissionGameUserSettings::SetGamma(float NewGamma)
+{
+    Gamma = NewGamma;
+}
+
+float UWildOmissionGameUserSettings::GetGamma() const
+{
+    return Gamma;
 }
 
 void UWildOmissionGameUserSettings::SetAutoExposureEnabled(bool UseAutoExposure)

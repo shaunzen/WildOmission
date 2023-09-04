@@ -6,6 +6,7 @@
 #include "SettingsCategoryWidget.h"
 #include "PostProcessingSettingsWidget.generated.h"
 
+class USliderOptionBox;
 class UCheckOptionBox;
 
 UCLASS()
@@ -19,6 +20,8 @@ public:
 	virtual void OnRefresh() override;
 
 private:
+	UPROPERTY(Meta = (BindWidget))
+	USliderOptionBox* GammaSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	UCheckOptionBox* AutoExposureCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))

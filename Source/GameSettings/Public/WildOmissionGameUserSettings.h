@@ -27,6 +27,12 @@ public:
 	float GetMasterVolume() const;
 
 	UFUNCTION()
+	void SetGamma(float NewGamma);
+
+	UFUNCTION()
+	float GetGamma() const;
+
+	UFUNCTION()
 	void SetAutoExposureEnabled(bool UseAutoExposure);
 
 	UFUNCTION()
@@ -161,22 +167,19 @@ public:
 private:
 	UPROPERTY(Config)
 	float FieldOfView;
-	
 	UPROPERTY(Config)
 	float MasterVolume;
 
 	UPROPERTY(Config)
+	float Gamma;
+	UPROPERTY(Config)
 	bool AutoExposureEnabled;
-
 	UPROPERTY(Config)
 	bool MotionBlurEnabled;
-
 	UPROPERTY(Config)
 	bool BloomEnabled;
-
 	UPROPERTY(Config)
 	bool AmbientOcclusionEnabled;
-
 	UPROPERTY(Config)
 	bool FilmGrainEnabled;
 

@@ -3,6 +3,7 @@
 
 #include "PostProcessingSettingsWidget.h"
 #include "WildOmissionGameUserSettings.h"
+#include "OptionBoxes/SliderOptionBox.h"
 #include "OptionBoxes/CheckOptionBox.h"
 #include "Interfaces/CharacterSettingsInterface.h"
 
@@ -10,6 +11,8 @@ void UPostProcessingSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	GammaSliderOptionBox->SetMinValue(80.0f);
+	GammaSliderOptionBox->SetMaxValue(120.0f);
 	AutoExposureCheckOptionBox->SetChecked(true);
 	MotionBlurCheckOptionBox->SetChecked(false);
 	BloomCheckOptionBox->SetChecked(true);
@@ -27,6 +30,7 @@ void UPostProcessingSettingsWidget::OnApply()
 		return;
 	}
 	
+	UserSettings->SetGamma(GammaSliderOptionBox->GetValue());
 	UserSettings->SetAutoExposureEnabled(AutoExposureCheckOptionBox->IsChecked());
 	UserSettings->SetMotionBlurEnabled(MotionBlurCheckOptionBox->IsChecked());
 	UserSettings->SetBloomEnabled(BloomCheckOptionBox->IsChecked());
@@ -50,6 +54,7 @@ void UPostProcessingSettingsWidget::OnRefresh()
 		return;
 	}
 
+	GammaSliderOptionBox->SetValue(UserSettings->GetGamma());
 	AutoExposureCheckOptionBox->SetChecked(UserSettings->GetAutoExposureEnabled());
 	MotionBlurCheckOptionBox->SetChecked(UserSettings->GetMotionBlurEnabled());
 	BloomCheckOptionBox->SetChecked(UserSettings->GetBloomEnabled());

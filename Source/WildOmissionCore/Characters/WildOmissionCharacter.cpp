@@ -425,7 +425,8 @@ void AWildOmissionCharacter::ApplyPostProcessing()
 	{
 		return;
 	}
-
+	const float GammaValue = UserSettings->GetGamma() / 100.0f;
+	FirstPersonCameraComponent->PostProcessSettings.ColorGamma = FVector4(GammaValue, GammaValue, GammaValue, GammaValue);
 	FirstPersonCameraComponent->PostProcessSettings.AutoExposureMinBrightness = UserSettings->GetAutoExposureEnabled() ? -10.0f : 1.0f;
 	FirstPersonCameraComponent->PostProcessSettings.AutoExposureMaxBrightness = UserSettings->GetAutoExposureEnabled() ? 20.0f : 1.0f;
 	FirstPersonCameraComponent->PostProcessSettings.MotionBlurAmount = UserSettings->GetMotionBlurEnabled() ? 0.3f : 0.0f;
