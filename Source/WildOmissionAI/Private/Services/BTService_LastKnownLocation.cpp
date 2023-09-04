@@ -17,7 +17,6 @@ void UBTService_LastKnownLocation::TickNode(UBehaviorTreeComponent& OwnerComp, u
 	AActor* ChasingPlayerActor = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(PlayerActorBlackboardKey.SelectedKeyName));
 	if (ChasingPlayerActor == nullptr)
 	{
-		OwnerComp.GetBlackboardComponent()->ClearValue(GetSelectedBlackboardKey());
 		return;
 	}
 

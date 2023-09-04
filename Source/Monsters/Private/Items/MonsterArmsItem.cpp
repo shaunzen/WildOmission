@@ -12,23 +12,26 @@ AMonsterArmsItem::AMonsterArmsItem()
 
 void AMonsterArmsItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	if (!HasAuthority())
+	if (!HasAuthority() || GetOwnerPawn() == nullptr)
 	{
 		return;
 	}
 
-	AMonster* OwnerMonster = Cast<AMonster>(GetOwner());
-	if (OwnerMonster == nullptr)
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
+	const FVector Start = GetOwner()->GetActorLocation();
+	const FVector ForwardVector = GetOwner()->GetActorForwardVector();
+	const FVector End = Start + (ForwardVector * EffectiveRangeCentimeters);
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
 	{
 		return;
 	}
-
-	APawn* TargetPawn = OwnerMonster->GetTargetPawn();
-	if (TargetPawn == nullptr || FVector::Distance(this->GetActorLocation(), TargetPawn->GetActorLocation()) > EffectiveRangeCentimeters)
+	
+	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
+	if (HitPawn)
 	{
-		return;
+		FPointDamageEvent HitByMonsterEvent(30.0f, HitResult, GetOwner()->GetActorForwardVector(), nullptr);
+		HitPawn->TakeDamage(30.0f, HitByMonsterEvent, GetOwnerPawn()->GetController(), this);
 	}
-
-	FPointDamageEvent HitByMonsterEvent(30.0f, FHitResult(), OwnerMonster->GetActorForwardVector(), nullptr);
-	TargetPawn->TakeDamage(30.0f, HitByMonsterEvent, OwnerMonster->GetController(), this);
 }
