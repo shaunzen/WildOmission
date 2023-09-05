@@ -30,7 +30,8 @@ void UBuildingHammerWidget::Setup(ADeployable* InDeployable)
 	}
 	else
 	{
-
+		// this is not upgradable
+		// disable text
 	}
 }
 
