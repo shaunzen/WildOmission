@@ -4,9 +4,11 @@
 #include "UI/BuildingHammerWidget.h"
 #include "Deployables/Deployable.h"
 #include "Deployables/BuildingBlock.h"
+#include "Components/TextBlock.h"
 
-void UBuildingHammerWidget::Setup(ADeployable* Deployable)
+void UBuildingHammerWidget::Setup(ADeployable* InDeployable)
 {
+	Deployable = InDeployable;
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
 	{
@@ -21,6 +23,15 @@ void UBuildingHammerWidget::Setup(ADeployable* Deployable)
 	PlayerController->bShowMouseCursor = true;
 	SetMouseCursorToCenter();
 	this->SetFocus();
+	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
+	if (BuildingBlock && BuildingBlock->IsUpgradable())
+	{
+		UpgradeTextBlock->SetText(FText::FromString(GetUpgradeString(BuildingBlock)));
+	}
+	else
+	{
+
+	}
 }
 
 void UBuildingHammerWidget::Teardown()
@@ -48,6 +59,12 @@ FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry,
 	this->Teardown();
 
 	return FReply::Handled();
+}
+
+FString UBuildingHammerWidget::GetUpgradeString(ABuildingBlock* BuildingBlock) const
+{
+	FString UpgradeString = FString::Printf(TEXT("Upgrade To %s (%i %s)"), /*buildtier*/, /*upgrade resource quantity*/, /*upgrade resource name*/);
+	return UpgradeString;
 }
 
 void UBuildingHammerWidget::SetMouseCursorToCenter()

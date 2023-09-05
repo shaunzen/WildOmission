@@ -25,3 +25,8 @@ void ABuildingBlock::Upgrade()
 
 	this->Destroy();
 }
+
+bool ABuildingBlock::IsUpgradable() const
+{
+	return UpgradedTier != nullptr;
+}

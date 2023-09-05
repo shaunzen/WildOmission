@@ -17,6 +17,7 @@ class DEPLOYABLES_API ABuildingBlock : public ADeployable
 public:
 	ABuildingBlock();
 	void Upgrade();
+	bool IsUpgradable() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable")
