@@ -7,6 +7,7 @@
 #include "BuildingHammerItem.generated.h"
 
 class ADeployable;
+class UBuildingHammerWidget;
 
 UCLASS()
 class DEPLOYABLES_API ABuildingHammerItem : public AToolItem
@@ -16,7 +17,11 @@ class DEPLOYABLES_API ABuildingHammerItem : public AToolItem
 public:
 	ABuildingHammerItem();
 
+	virtual void OnSecondaryPressed() override;
+
 	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
+
+	virtual void OnUnequip() override;
 
 	bool GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const;
 
@@ -24,7 +29,14 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxRepairAmount;
 
+	UPROPERTY()
+	UBuildingHammerWidget* Widget;
+
+	UFUNCTION()
+	void ClearWidget();
+
 	void AttemptDeployableRepair(ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector);
-	FInventoryItem GetBaseRepairCostForDeployable(ADeployable* DeployableToRepair) const;
+	bool CanRepairDeployable(ADeployable* DeployableToRepair, FInventoryItem& RepairCost) const;
+	bool LineTraceOnVisibility(FHitResult& OutHitResult) const;
 
 };
