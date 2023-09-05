@@ -11,6 +11,7 @@ enum EToolType
 {
 	WOOD	UMETA(DisplayName = "Wood"),
 	STONE	UMETA(DisplayName = "Stone"),
+	METAL	UMETA(DisplayName = "Metal"),
 	MULTI	UMETA(DisplayName = "Multi-Tool"),
 	NONE	UMETA(DisplayName = "None"),
 	BUILD	UMETA(DisplayName = "Building Tool"),

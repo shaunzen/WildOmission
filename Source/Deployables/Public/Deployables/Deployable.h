@@ -8,6 +8,7 @@
 #include "Interfaces/SavableObject.h"
 #include "Interfaces/RequiredForLoad.h"
 #include "Interfaces/DurabilityInterface.h"
+#include "Enums/ToolType.h"
 #include "Interfaces/DamagedByWind.h"
 #include "Deployable.generated.h"
 
@@ -45,6 +46,8 @@ public:
 	virtual FName GetIdentifier() const override;
 	// End ISavableObject Implementation
 
+	TEnumAsByte<EToolType> GetMaterialType();
+
 	bool CanSpawnOnGround() const;
 	bool CanSpawnOnFloor() const;
 	bool CanSpawnOnWall() const;
@@ -73,6 +76,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable")
 	float MaxDurability;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Deployable")
+	TEnumAsByte<EToolType> MaterialType;
 
 	UPROPERTY(Replicated)
 	float CurrentDurability;

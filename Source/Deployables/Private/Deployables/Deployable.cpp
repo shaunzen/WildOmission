@@ -37,6 +37,8 @@ ADeployable::ADeployable()
 
 	Identifier = NAME_None;
 
+	MaterialType = EToolType::WOOD;
+
 	bCanSpawnOnGround = true;
 	bCanSpawnOnFloor = false;
 	bCanSpawnOnWall = false;
@@ -103,8 +105,8 @@ float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEven
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	CurrentDurability -= DamageAmount;
-
+	CurrentDurability = FMath::Clamp(CurrentDurability - DamageAmount, 0.0f, MaxDurability);
+	
 	if (CurrentDurability < KINDA_SMALL_NUMBER)
 	{
 		this->Destroy();
@@ -137,6 +139,11 @@ float ADeployable::GetMaxDurability()
 FName ADeployable::GetIdentifier() const
 {
 	return Identifier;
+}
+
+TEnumAsByte<EToolType> ADeployable::GetMaterialType()
+{
+	return MaterialType;
 }
 
 bool ADeployable::CanSpawnOnGround() const

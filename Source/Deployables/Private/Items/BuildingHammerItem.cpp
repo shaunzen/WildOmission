@@ -4,6 +4,7 @@
 #include "Items/BuildingHammerItem.h"
 #include "Components/EquipComponent.h"
 #include "Interfaces/DurabilityInterface.h"
+#include "Components/InventoryComponent.h"
 #include "Deployables/Deployable.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -13,17 +14,18 @@ ABuildingHammerItem::ABuildingHammerItem()
 {
 	ToolType = BUILD;
 	EffectiveRangeCentimeters = 300.0f;
+	MaxRepairAmount = 15.0f;
 }
 
 void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
-	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	const UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr)
 	{
 		return;
 	}
 
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(OwnerEquipComponent->GetOwnerControlRotation());
+	const FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(OwnerEquipComponent->GetOwnerControlRotation());
 
 	FHitResult HitResult;
 
@@ -32,8 +34,8 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	CollisionParams.bTraceComplex = true;
 	CollisionParams.bReturnPhysicalMaterial = true;
 
-	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
-	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
+	const FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
+	const FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
@@ -44,31 +46,21 @@ void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	{
 		PlayImpactSound(HitResult);
 		SpawnImpactParticles(HitResult, OwnerCharacterLookVector);
-		SpawnImpactDecal(HitResult);
+		//SpawnImpactDecal(HitResult);
 	}
 
 	if (!HasAuthority())
 	{
 		return;
 	}
-
-	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
-	if (HitPawn)
-	{
-		FPointDamageEvent HitByToolEvent(20.0f, HitResult, OwnerCharacterLookVector, nullptr);
-		HitPawn->TakeDamage(20.0f, HitByToolEvent, GetOwnerPawn()->GetController(), this);
-	}
-
+	
 	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
 	if (HitDeployable)
 	{
-		float DamageAmount = 50.0f;
-
-		FPointDamageEvent HitByToolEvent(DamageAmount, HitResult, OwnerCharacterLookVector, nullptr);
-		HitDeployable->TakeDamage(DamageAmount, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+		AttemptDeployableRepair(HitDeployable, HitResult, OwnerCharacterLookVector);
+		UpdateDurability();
 	}
 
-	UpdateDurability();
 }
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const
@@ -102,4 +94,73 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability
 	OutMaxDurability = DurabilityInterfaceActor->GetMaxDurability();
 	OutActorName = HitResult.GetActor()->GetActorNameOrLabel();
 	return true;
+}
+
+void ABuildingHammerItem::AttemptDeployableRepair(ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector)
+{
+	// Check if this deployable is damaged
+	if (DeployableToRepair->GetCurrentDurability() >= DeployableToRepair->GetMaxDurability())
+	{
+		return;
+	}
+
+	// Get material type
+	FInventoryItem ItemRepairCost = GetBaseRepairCostForDeployable(DeployableToRepair);
+
+	// Check if the player has this amount of resources?
+	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
+	if (OwnerInventoryComponent == nullptr || !OwnerInventoryComponent->GetContents()->HasItem(ItemRepairCost.Name))
+	{
+		return;
+	}
+
+	// if the deployable needs less than we are willing to give, we need to cut back and only use the amount required
+	const float DurabilityDifference = DeployableToRepair->GetMaxDurability() - DeployableToRepair->GetCurrentDurability();
+	if (DurabilityDifference < ItemRepairCost.Quantity)
+	{
+		ItemRepairCost.Quantity = DurabilityDifference;
+	}
+
+	// if the player is lacking sufficient resources we must reduce the amount of repair performed
+	const int32 PlayerResourceQuantity = OwnerInventoryComponent->GetContents()->GetItemQuantity(ItemRepairCost.Name);
+	if (PlayerResourceQuantity < ItemRepairCost.Quantity)
+	{
+		ItemRepairCost.Quantity = PlayerResourceQuantity;
+	}
+
+
+	const float RepairAmount = -(ItemRepairCost.Quantity);
+
+	FPointDamageEvent HitByToolEvent(RepairAmount, HitResult, DirectionVector, nullptr);
+	DeployableToRepair->TakeDamage(RepairAmount, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+
+}
+
+FInventoryItem ABuildingHammerItem::GetBaseRepairCostForDeployable(ADeployable* DeployableToRepair) const
+{
+	FInventoryItem ItemToReturn;
+	if (DeployableToRepair == nullptr)
+	{
+		return ItemToReturn;
+	}
+
+	switch (DeployableToRepair->GetMaterialType())
+	{
+	case EToolType::WOOD:
+		ItemToReturn.Name = TEXT("wood");
+		break;
+	case EToolType::STONE:
+		ItemToReturn.Name = TEXT("stone");
+		break;
+	case EToolType::METAL:
+		ItemToReturn.Name = TEXT("metal");
+		break;
+	default:
+		ItemToReturn.Name = TEXT("wood");
+		break;
+	}
+
+	ItemToReturn.Quantity = MaxRepairAmount;
+
+	return ItemToReturn;
 }
