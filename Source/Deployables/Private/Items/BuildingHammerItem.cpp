@@ -61,7 +61,6 @@ void ABuildingHammerItem::OnSecondaryPressed()
 		Widget->Teardown();
 	}
 
-	// TODO show menu
 	Widget = CreateWidget<UBuildingHammerWidget>(OwnerPlayerController, WidgetClass);
 	if (Widget == nullptr)
 	{
@@ -114,12 +113,12 @@ void ABuildingHammerItem::OnUnequip()
 
 void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Upgrade hassa."));
+
 }
 
 void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("this is something else."));
+
 }
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const
