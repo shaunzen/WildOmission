@@ -68,7 +68,7 @@ void ABuildingHammerItem::OnSecondaryPressed()
 		return;
 	}
 	Widget->OnTeardown.AddDynamic(this, &ABuildingHammerItem::ClearWidget);
-	Widget->Setup(HitDeployable);
+	Widget->Setup(this, HitDeployable);
 }
 
 void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
@@ -110,6 +110,16 @@ void ABuildingHammerItem::OnUnequip()
 	{
 		Widget->Teardown();
 	}
+}
+
+void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Upgrade hassa."));
+}
+
+void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("this is something else."));
 }
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const

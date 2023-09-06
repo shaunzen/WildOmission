@@ -23,6 +23,11 @@ public:
 
 	virtual void OnUnequip() override;
 
+	UFUNCTION(Server, Reliable)
+	void Server_UpgradeCurrentDeployable();
+	UFUNCTION(Server, Reliable)
+	void Server_DestroyCurrentDeployable();
+
 	bool GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const;
 
 private:

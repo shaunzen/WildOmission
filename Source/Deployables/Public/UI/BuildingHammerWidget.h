@@ -10,6 +10,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBuildingHammerWidgetTeardownSignature);
 
 class UTextBlock;
 class ADeployable;
+class ABuildingHammerItem;
 class ABuildingBlock;
 
 UCLASS()
@@ -18,7 +19,7 @@ class DEPLOYABLES_API UBuildingHammerWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void Setup(ADeployable* InDeployable);
+	void Setup(ABuildingHammerItem* BuildingHammer, ADeployable* InDeployable);
 	void Teardown();
 	
 	FOnBuildingHammerWidgetTeardownSignature OnTeardown;
@@ -43,6 +44,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* ButtonSound;
 	
+	UPROPERTY()
+	ABuildingHammerItem* OwnerBuildingHammer;
 	UPROPERTY()
 	ADeployable* Deployable;
 

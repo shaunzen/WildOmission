@@ -3,14 +3,16 @@
 
 #include "UI/BuildingHammerWidget.h"
 #include "Deployables/Deployable.h"
+#include "Items/BuildingHammerItem.h"
 #include "Deployables/BuildingBlock.h"
 #include "Components/InventoryComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Log.h"
 
-void UBuildingHammerWidget::Setup(ADeployable* InDeployable)
+void UBuildingHammerWidget::Setup(ABuildingHammerItem* BuildingHammer, ADeployable* InDeployable)
 {
+	OwnerBuildingHammer = BuildingHammer;
 	Deployable = InDeployable;
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
@@ -97,7 +99,15 @@ FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry,
 {
 	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
 
-	// TODO Do Desired Action
+	if (OwnerBuildingHammer && UpgradeSelected)
+	{
+		OwnerBuildingHammer->Server_UpgradeCurrentDeployable();
+	}
+	else if (OwnerBuildingHammer && DestroySelected)
+	{
+		OwnerBuildingHammer->Server_DestroyCurrentDeployable();
+	}
+
 	this->Teardown();
 
 	return FReply::Handled();
