@@ -29,6 +29,7 @@ public:
 	void Server_DestroyCurrentDeployable();
 
 	bool GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const;
+	static FName GetResourceIDFromMaterialType(TEnumAsByte<EToolType> MaterialType);
 
 private:
 	UPROPERTY(EditDefaultsOnly)

@@ -126,8 +126,21 @@ void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 		return;
 	}
 
-	// TODO remove upgrade cost
+	UInventoryComponent* OwnerInventoryComponent = Cast<UInventoryComponent>(GetOwner()->FindComponentByClass<UInventoryComponent>());
+	if (OwnerInventoryComponent == nullptr)
+	{
+		return;
+	}
+	FInventoryItem UpgradeCost = GetUpgradeCostForBuildingBlock(HitBuildingBlock);
+	if (OwnerInventoryComponent->GetContents()->GetItemQuantity(UpgradeCost.Name) < UpgradeCost.Quantity)
+	{
+		return;
+	}
+
+	OwnerInventoryComponent->RemoveItem(UpgradeCost);
+
 	HitBuildingBlock->Upgrade();
+	UpdateDurability();
 }
 
 void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
@@ -144,8 +157,12 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 		return;
 	}
 
-	// TODO give player a refund
+	FInventoryItem RefundItem;
+	RefundItem.Name = GetResourceIDFromMaterialType(HitDeployable->GetMaterialType());
+	RefundItem.Quantity = FMath::Clamp(HitDeployable->GetCurrentDurability() * 0.25f, 1, 100);
+
 	HitDeployable->Destroy();
+	UpdateDurability();
 }
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const
@@ -171,6 +188,37 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability
 	OutMaxDurability = DurabilityInterfaceActor->GetMaxDurability();
 	OutActorName = HitResult.GetActor()->GetActorNameOrLabel();
 	return true;
+}
+
+FName ABuildingHammerItem::GetResourceIDFromMaterialType(TEnumAsByte<EToolType> MaterialType)
+{
+	FName ResourceID = NAME_None;
+
+	switch (MaterialType)
+	{
+	case EToolType::WOOD:
+		ResourceID = TEXT("wood");
+		break;
+	case EToolType::STONE:
+		ResourceID = TEXT("stone");
+		break;
+	case EToolType::METAL:
+		ResourceID = TEXT("metal");
+		break;
+	default:
+		ResourceID = TEXT("wood");
+		break;
+	}
+
+	return ResourceID;
+}
+
+FInventoryItem ABuildingHammerItem::GetUpgradeCostForBuildingBlock(ABuildingBlock* BuildingBlock)
+{
+	FInventoryItem UpgradeCost;
+	UpgradeCost.Name = GetResourceIDFromMaterialType(BuildingBlock->GetMaterialType());
+	UpgradeCost.Quantity = BuildingBlock->GetMaxDurability() * 0.75f;
+	return UpgradeCost;
 }
 
 void ABuildingHammerItem::ClearWidget()
@@ -212,22 +260,7 @@ bool ABuildingHammerItem::CanRepairDeployable(ADeployable* DeployableToRepair, F
 		return false;
 	}
 
-	switch (DeployableToRepair->GetMaterialType())
-	{
-	case EToolType::WOOD:
-		RepairCost.Name = TEXT("wood");
-		break;
-	case EToolType::STONE:
-		RepairCost.Name = TEXT("stone");
-		break;
-	case EToolType::METAL:
-		RepairCost.Name = TEXT("metal");
-		break;
-	default:
-		RepairCost.Name = TEXT("wood");
-		break;
-	}
-
+	RepairCost.Name = GetResourceIDFromMaterialType(DeployableToRepair->GetMaterialType());
 	RepairCost.Quantity = MaxRepairAmount;
 
 	// Check if the player has this amount of resources?
