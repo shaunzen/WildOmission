@@ -18,6 +18,7 @@ public:
 	ABuildingBlock();
 	void Upgrade();
 	bool IsUpgradable() const;
+	ABuildingBlock* GetUpgradeDefaultClass() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable")

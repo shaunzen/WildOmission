@@ -30,3 +30,13 @@ bool ABuildingBlock::IsUpgradable() const
 {
 	return UpgradedTier != nullptr;
 }
+
+ABuildingBlock* ABuildingBlock::GetUpgradeDefaultClass() const
+{
+	if (UpgradedTier == nullptr)
+	{
+		return nullptr;
+	}
+
+	return UpgradedTier.GetDefaultObject();
+}

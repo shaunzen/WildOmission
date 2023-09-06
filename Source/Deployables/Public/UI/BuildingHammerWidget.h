@@ -28,11 +28,18 @@ protected:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* UpgradePanel;
+	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* UpgradeTextBlock;
-	
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* UpgradeCostTextBlock;
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* UpgradeHasTextBlock;
+
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* DestroyTextBlock;
 
+	
 	UPROPERTY()
 	ADeployable* Deployable;
 

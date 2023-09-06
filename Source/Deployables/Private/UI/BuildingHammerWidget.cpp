@@ -4,7 +4,10 @@
 #include "UI/BuildingHammerWidget.h"
 #include "Deployables/Deployable.h"
 #include "Deployables/BuildingBlock.h"
+#include "Components/InventoryComponent.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
+#include "Log.h"
 
 void UBuildingHammerWidget::Setup(ADeployable* InDeployable)
 {
@@ -23,6 +26,7 @@ void UBuildingHammerWidget::Setup(ADeployable* InDeployable)
 	PlayerController->bShowMouseCursor = true;
 	SetMouseCursorToCenter();
 	this->SetFocus();
+	
 	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
 	if (BuildingBlock && BuildingBlock->IsUpgradable())
 	{
@@ -30,8 +34,8 @@ void UBuildingHammerWidget::Setup(ADeployable* InDeployable)
 	}
 	else
 	{
-		// this is not upgradable
-		// disable text
+		UpgradeTextBlock->SetText(FText::FromString(TEXT("Not Upgradable")));
+		UpgradeTextBlock->SetIsEnabled(false);
 	}
 }
 
@@ -56,7 +60,32 @@ FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry,
 {
 	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
 
-	// TODO figure out which side we were leaning towards
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		return FReply::Handled();
+	}
+
+	int32 ViewportSizeX = 0;
+	int32 ViewportSizeY = 0;
+	PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+
+	const int32 ViewportCenterX = ViewportSizeX * 0.5f;
+	const int32 ViewportCenterY = ViewportSizeY * 0.5f;
+	const FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
+
+	if (MousePosition.X < (ViewportCenterX - 100))
+	{
+		// Upgrade
+		UE_LOG(LogTemp, Warning, TEXT("Upgrading Building Block."));
+	}
+	else if (MousePosition.X > (ViewportCenterX + 100))
+	{
+		// Destroy
+		UE_LOG(LogTemp, Warning, TEXT("Destroying Deployable."));
+	}
+
+	
 	this->Teardown();
 
 	return FReply::Handled();
@@ -64,7 +93,31 @@ FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry,
 
 FString UBuildingHammerWidget::GetUpgradeString(ABuildingBlock* BuildingBlock) const
 {
-	FString UpgradeString = FString::Printf(TEXT("Upgrade To %s (%i %s)"), /*buildtier*/, /*upgrade resource quantity*/, /*upgrade resource name*/);
+	if (BuildingBlock == nullptr)
+	{
+		return TEXT("");
+	}
+
+	FInventoryItem UpgradeCost;
+	switch (BuildingBlock->GetUpgradeDefaultClass()->GetMaterialType())
+	{
+	case EToolType::STONE:
+		UpgradeCost.Name = TEXT("stone");
+		break;
+	case EToolType::METAL:
+		UpgradeCost.Name = TEXT("metal");
+		break;
+	}
+	UpgradeCost.Quantity = 50;
+
+	FItemData* ItemData = UInventoryComponent::GetItemData(UpgradeCost.Name);
+	if (ItemData == nullptr)
+	{
+		UE_LOG(LogDeployables, Warning, TEXT("Item Data for '%s' wasn't availible."), *UpgradeCost.Name.ToString());
+		return TEXT("");
+	}
+
+	FString UpgradeString = FString::Printf(TEXT("Upgrade To %s (%i %s)"), *ItemData->DisplayName, UpgradeCost.Quantity, *ItemData->DisplayName);
 	return UpgradeString;
 }
 
