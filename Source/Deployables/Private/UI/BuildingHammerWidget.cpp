@@ -56,39 +56,61 @@ void UBuildingHammerWidget::Teardown()
 	this->RemoveFromParent();
 }
 
-FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+void UBuildingHammerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
+	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
 	{
-		return FReply::Handled();
+		return;
 	}
+
+	bool UpgradeAlreadySelected = UpgradeSelected;
+	bool DestroyAlreadySelected = DestroySelected;
 
 	int32 ViewportSizeX = 0;
 	int32 ViewportSizeY = 0;
+	float MousePositionX = 0;
+	float MousePositionY = 0;
 	PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
-
+	PlayerController->GetMousePosition(MousePositionX, MousePositionY);
+	
 	const int32 ViewportCenterX = ViewportSizeX * 0.5f;
 	const int32 ViewportCenterY = ViewportSizeY * 0.5f;
-	const FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
-
-	if (MousePosition.X < (ViewportCenterX - 100))
-	{
-		// Upgrade
-		UE_LOG(LogTemp, Warning, TEXT("Upgrading Building Block."));
-	}
-	else if (MousePosition.X > (ViewportCenterX + 100))
-	{
-		// Destroy
-		UE_LOG(LogTemp, Warning, TEXT("Destroying Deployable."));
-	}
-
 	
+	UpgradeSelected = FMath::RoundToInt32(MousePositionX) < (ViewportCenterX - 100);
+	ScaleWidgetByBool(UpgradePanel, UpgradeSelected);
+
+	DestroySelected = FMath::RoundToInt32(MousePositionX) > (ViewportCenterX + 100);
+	ScaleWidgetByBool(DestroyTextBlock, DestroySelected);
+
+	if (ButtonSound &&
+		(UpgradeSelected && !UpgradeAlreadySelected) || (DestroySelected && !DestroyAlreadySelected))
+	{
+		PlaySound(ButtonSound);
+	}
+
+}
+
+FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
+
+	// TODO Do Desired Action
 	this->Teardown();
 
 	return FReply::Handled();
+}
+
+void UBuildingHammerWidget::ScaleWidgetByBool(UWidget* WidgetToScale, bool Increase)
+{
+	float ScaleAmount = Increase ? 2.0f : -2.0f;
+
+	FVector2D OldRenderScale = WidgetToScale->GetRenderTransform().Scale;
+	FVector2D NewRenderScale = FVector2D(FMath::Clamp(OldRenderScale.X + ScaleAmount * GetWorld()->GetDeltaSeconds(), 1.0f, 1.1f),
+		FMath::Clamp(OldRenderScale.Y + ScaleAmount * GetWorld()->GetDeltaSeconds(), 1.0f, 1.1f));
+	WidgetToScale->SetRenderScale(NewRenderScale);
 }
 
 FString UBuildingHammerWidget::GetUpgradeString(ABuildingBlock* BuildingBlock) const

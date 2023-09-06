@@ -24,6 +24,7 @@ public:
 	FOnBuildingHammerWidgetTeardownSignature OnTeardown;
 
 protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 private:
@@ -39,9 +40,16 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* DestroyTextBlock;
 
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* ButtonSound;
 	
 	UPROPERTY()
 	ADeployable* Deployable;
+
+	void ScaleWidgetByBool(UWidget* WidgetToScale, bool Increase);
+
+	bool UpgradeSelected;
+	bool DestroySelected;
 
 	FString GetUpgradeString(ABuildingBlock* BuildingBlock) const;
 	void SetMouseCursorToCenter();
