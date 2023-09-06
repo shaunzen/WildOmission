@@ -7,6 +7,7 @@
 #include "Components/InventoryComponent.h"
 #include "UI/BuildingHammerWidget.h"
 #include "Deployables/Deployable.h"
+#include "Deployables/BuildingBlock.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/DamageEvents.h"
@@ -113,12 +114,38 @@ void ABuildingHammerItem::OnUnequip()
 
 void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 {
+	FHitResult HitResult;
+	if (!LineTraceOnVisibility(HitResult))
+	{
+		return;
+	}
 
+	ABuildingBlock* HitBuildingBlock = Cast<ABuildingBlock>(HitResult.GetActor());
+	if (HitBuildingBlock == nullptr || !HitBuildingBlock->IsUpgradable())
+	{
+		return;
+	}
+
+	// TODO remove upgrade cost
+	HitBuildingBlock->Upgrade();
 }
 
 void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 {
+	FHitResult HitResult;
+	if (!LineTraceOnVisibility(HitResult))
+	{
+		return;
+	}
 
+	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
+	if (HitDeployable == nullptr)
+	{
+		return;
+	}
+
+	// TODO give player a refund
+	HitDeployable->Destroy();
 }
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const
