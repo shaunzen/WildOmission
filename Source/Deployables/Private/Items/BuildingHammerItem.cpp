@@ -221,8 +221,20 @@ FName ABuildingHammerItem::GetResourceIDFromMaterialType(TEnumAsByte<EToolType> 
 FInventoryItem ABuildingHammerItem::GetUpgradeCostForBuildingBlock(ABuildingBlock* BuildingBlock)
 {
 	FInventoryItem UpgradeCost;
-	UpgradeCost.Name = GetResourceIDFromMaterialType(BuildingBlock->GetMaterialType());
+	switch (BuildingBlock->GetMaterialType())
+	{
+	case EToolType::WOOD:
+		UpgradeCost.Name = GetResourceIDFromMaterialType(EToolType::STONE);
+		break;
+	case EToolType::STONE:
+		UpgradeCost.Name = GetResourceIDFromMaterialType(EToolType::METAL);
+		break;
+	default:
+		UpgradeCost.Name = GetResourceIDFromMaterialType(EToolType::WOOD);
+		break;
+	}
 	UpgradeCost.Quantity = BuildingBlock->GetMaxDurability() * 0.75f;
+
 	return UpgradeCost;
 }
 

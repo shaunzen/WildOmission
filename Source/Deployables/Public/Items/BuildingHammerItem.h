@@ -7,6 +7,7 @@
 #include "BuildingHammerItem.generated.h"
 
 class ADeployable;
+class ABuildingBlock;
 class UBuildingHammerWidget;
 
 UCLASS()

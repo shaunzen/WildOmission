@@ -32,13 +32,17 @@ void UBuildingHammerWidget::Setup(ABuildingHammerItem* BuildingHammer, ADeployab
 	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
 	if (BuildingBlock && BuildingBlock->IsUpgradable())
 	{
-		SetupUpgradeText(BuildingBlock);
+		SetupUpgradeText();
 	}
 	else
 	{
 		UpgradeTextBlock->SetText(FText::FromString(TEXT("Not Upgradable")));
 		UpgradeTextBlock->SetIsEnabled(false);
+		UpgradeCostTextBlock->SetVisibility(ESlateVisibility::Collapsed);
+		UpgradeHasTextBlock->SetVisibility(ESlateVisibility::Collapsed);
 	}
+
+	SetupDestroyText();
 }
 
 void UBuildingHammerWidget::Teardown()
@@ -74,7 +78,7 @@ void UBuildingHammerWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
 	if (BuildingBlock)
 	{ 
-		CanUpgradeIfUpgradeable = CanPlayerAffordUpgrade(BuildingBlock);
+		CanUpgradeIfUpgradeable = CanPlayerAffordUpgrade();
 	}
 
 	int32 ViewportSizeX = 0;
@@ -91,7 +95,7 @@ void UBuildingHammerWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 	ScaleWidgetByBool(UpgradePanel, UpgradeSelected && CanUpgradeIfUpgradeable);
 
 	DestroySelected = FMath::RoundToInt32(MousePositionX) > (ViewportCenterX + 100);
-	ScaleWidgetByBool(DestroyTextBlock, DestroySelected);
+	ScaleWidgetByBool(DestroyPanel, DestroySelected);
 
 	if (ButtonSound &&
 		(UpgradeSelected && !UpgradeAlreadySelected && CanUpgradeIfUpgradeable) || (DestroySelected && !DestroyAlreadySelected))
@@ -106,7 +110,7 @@ FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry,
 	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
 
 	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
-	if (BuildingBlock && OwnerBuildingHammer && UpgradeSelected && CanPlayerAffordUpgrade(BuildingBlock))
+	if (BuildingBlock && OwnerBuildingHammer && UpgradeSelected && CanPlayerAffordUpgrade())
 	{
 		OwnerBuildingHammer->Server_UpgradeCurrentDeployable();
 	}
@@ -130,9 +134,10 @@ void UBuildingHammerWidget::ScaleWidgetByBool(UWidget* WidgetToScale, bool Incre
 	WidgetToScale->SetRenderScale(NewRenderScale);
 }
 
-bool UBuildingHammerWidget::CanPlayerAffordUpgrade(ABuildingBlock* BuildingBlock) const
+bool UBuildingHammerWidget::CanPlayerAffordUpgrade() const
 {
-	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayer()->FindComponentByClass<UInventoryComponent>();
+	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
+	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
 	if (BuildingBlock == nullptr || OwnerInventoryComponent == nullptr)
 	{
 		return false;
@@ -147,8 +152,9 @@ bool UBuildingHammerWidget::CanPlayerAffordUpgrade(ABuildingBlock* BuildingBlock
 	return true;
 }
 
-void UBuildingHammerWidget::SetupUpgradeText(ABuildingBlock* BuildingBlock)
+void UBuildingHammerWidget::SetupUpgradeText()
 {
+	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
 	if (BuildingBlock == nullptr || GetOwningPlayerPawn() == nullptr)
 	{
 		UpgradeTextBlock->SetText(FText::FromString(TEXT("Invalid")));
@@ -192,13 +198,26 @@ void UBuildingHammerWidget::SetupUpgradeText(ABuildingBlock* BuildingBlock)
 	UpgradeHasTextBlock->SetText(FText::FromString(FString::Printf(TEXT("You Have %i %s"),
 		OwnerInventoryComponent->GetContents()->GetItemQuantity(UpgradeCost.Name), *ItemData->DisplayName)));
 
-	if (!CanPlayerAffordUpgrade(BuildingBlock))
+	if (!CanPlayerAffordUpgrade())
 	{
 		UpgradeTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Cannot Upgrade to %s"), *ItemData->DisplayName)));
 		UpgradeTextBlock->SetIsEnabled(false);
 		UpgradeCostTextBlock->SetIsEnabled(false);
 		UpgradeHasTextBlock->SetIsEnabled(false);
 	}
+}
+
+void UBuildingHammerWidget::SetupDestroyText()
+{
+	FInventoryItem RefundItem = ABuildingHammerItem::GetDestructionRefundForDeployable(Deployable);
+	FItemData* RefundItemData = UInventoryComponent::GetItemData(RefundItem.Name);
+	if (RefundItemData == nullptr)
+	{
+		DestroyRefundTextBlock->SetVisibility(ESlateVisibility::Collapsed);
+		return;
+	}
+
+	DestroyRefundTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Refund %i %s"), RefundItem.Quantity, *RefundItemData->DisplayName)));
 }
 
 void UBuildingHammerWidget::SetMouseCursorToCenter()

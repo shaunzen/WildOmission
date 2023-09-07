@@ -39,7 +39,11 @@ private:
 	UTextBlock* UpgradeHasTextBlock;
 
 	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* DestroyPanel;
+	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* DestroyTextBlock;
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* DestroyRefundTextBlock;
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* ButtonSound;
@@ -54,9 +58,10 @@ private:
 	bool UpgradeSelected;
 	bool DestroySelected;
 
-	bool CanPlayerAffordUpgrade(ABuildingBlock* BuildingBlock) const;
+	bool CanPlayerAffordUpgrade() const;
 
-	void SetupUpgradeText(ABuildingBlock* BuildingBlock);
+	void SetupUpgradeText();
+	void SetupDestroyText();
 
 	void SetMouseCursorToCenter();
 
