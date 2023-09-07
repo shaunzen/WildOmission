@@ -157,9 +157,14 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 		return;
 	}
 
-	FInventoryItem RefundItem;
-	RefundItem.Name = GetResourceIDFromMaterialType(HitDeployable->GetMaterialType());
-	RefundItem.Quantity = FMath::Clamp(HitDeployable->GetCurrentDurability() * 0.25f, 1, 100);
+	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
+	if (OwnerInventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	FInventoryItem Refund = GetDestructionRefundForDeployable(HitDeployable);
+	OwnerInventoryComponent->AddItem(Refund);
 
 	HitDeployable->Destroy();
 	UpdateDurability();
@@ -219,6 +224,14 @@ FInventoryItem ABuildingHammerItem::GetUpgradeCostForBuildingBlock(ABuildingBloc
 	UpgradeCost.Name = GetResourceIDFromMaterialType(BuildingBlock->GetMaterialType());
 	UpgradeCost.Quantity = BuildingBlock->GetMaxDurability() * 0.75f;
 	return UpgradeCost;
+}
+
+FInventoryItem ABuildingHammerItem::GetDestructionRefundForDeployable(ADeployable* Deployable)
+{
+	FInventoryItem RefundItem;
+	RefundItem.Name = GetResourceIDFromMaterialType(Deployable->GetMaterialType());
+	RefundItem.Quantity = FMath::Clamp(Deployable->GetCurrentDurability() * 0.25f, 1, 100);
+	return RefundItem;
 }
 
 void ABuildingHammerItem::ClearWidget()

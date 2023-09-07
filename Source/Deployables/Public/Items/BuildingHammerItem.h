@@ -31,6 +31,7 @@ public:
 	bool GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const;
 	static FName GetResourceIDFromMaterialType(TEnumAsByte<EToolType> MaterialType);
 	static FInventoryItem GetUpgradeCostForBuildingBlock(ABuildingBlock* BuildingBlock);
+	static FInventoryItem GetDestructionRefundForDeployable(ADeployable* Deployable);
 
 private:
 	UPROPERTY(EditDefaultsOnly)
