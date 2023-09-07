@@ -54,7 +54,10 @@ private:
 	bool UpgradeSelected;
 	bool DestroySelected;
 
-	FString GetUpgradeString(ABuildingBlock* BuildingBlock) const;
+	bool CanPlayerAffordUpgrade(ABuildingBlock* BuildingBlock) const;
+
+	void SetupUpgradeText(ABuildingBlock* BuildingBlock);
+
 	void SetMouseCursorToCenter();
 
 };
