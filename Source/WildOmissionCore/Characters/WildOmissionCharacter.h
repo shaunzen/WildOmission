@@ -48,8 +48,8 @@ public:
 
 	// Begin ICharacterSettingsInterface Implementation
 	virtual void ApplyInputSettings() override;
-	virtual void ApplyFieldOfView() override;
-	virtual void ApplyPostProcessing() override;
+	virtual void ApplyGameplaySettings() override;
+	virtual void ApplyPostProcessingSettings() override;
 	// End ICharacterSettingsInterface Implementation
 
 	UFUNCTION()

@@ -3,6 +3,8 @@
 
 #include "WildOmissionGameUserSettings.h"
 
+static const bool DEFAULT_SHOWBRANDING = true;
+static const bool DEFAULT_SHOWCROSSHAIR = true;
 static const float DEFAULT_FIELDOFVIEW = 90.0f;
 static const float DEFAULT_MASTERVOLUME = 1.0f;
 
@@ -34,70 +36,94 @@ static const float DEFAULT_MOUSESENSITIVITY = 1.0f;
 
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {
-    FieldOfView = DEFAULT_FIELDOFVIEW;
-    MasterVolume = DEFAULT_MASTERVOLUME;
+    SetShowBranding(DEFAULT_SHOWBRANDING);
+    SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
+    SetFieldOfView(DEFAULT_FIELDOFVIEW);
+    SetMasterVolume(DEFAULT_MASTERVOLUME);
+    
+    SetGamma(DEFAULT_GAMMA);
+    SetAutoExposureEnabled(DEFAULT_AUTOEXPOSUREENABLED);
+    SetMotionBlurEnabled(DEFAULT_MOTIONBLURENABLED);
+    SetBloomEnabled(DEFAULT_BLOOMENABLED);
+    SetAmbientOcclusionEnabled(DEFAULT_AMBIENTOCCLUSIONENABLED);
+    SetFilmGrainEnabled(DEFAULT_FILMGRAINENABLED);
 
-    Gamma = DEFAULT_GAMMA;
-    AutoExposureEnabled = DEFAULT_AUTOEXPOSUREENABLED;
-    MotionBlurEnabled = DEFAULT_MOTIONBLURENABLED;
-    BloomEnabled = DEFAULT_BLOOMENABLED;
-    AmbientOcclusionEnabled = DEFAULT_AMBIENTOCCLUSIONENABLED;
-    FilmGrainEnabled = DEFAULT_FILMGRAINENABLED;
+    SetMoveForwardKey(DEFAULT_MOVEFORWARD);
+    SetMoveBackwardKey(DEFAULT_MOVEBACKWARD);
+    SetMoveLeftKey(DEFAULT_MOVELEFT);
+    SetMoveRightKey(DEFAULT_MOVERIGHT);
+    SetSprintKey(DEFAULT_SPRINT);
+    SetJumpKey(DEFAULT_JUMP);
 
-    MoveForwardKey = DEFAULT_MOVEFORWARD;
-    MoveBackwardKey = DEFAULT_MOVEBACKWARD;
-    MoveLeftKey = DEFAULT_MOVELEFT;
-    MoveRightKey = DEFAULT_MOVERIGHT;
-    SprintKey = DEFAULT_SPRINT;
-    JumpKey = DEFAULT_JUMP;
+    SetPrimaryKey(DEFAULT_PRIMARY);
+    SetSecondaryKey(DEFAULT_SECONDARY);
+    SetInteractKey(DEFAULT_INTERACT);
+    SetReloadKey(DEFAULT_RELOAD);
 
-    PrimaryKey = DEFAULT_PRIMARY;
-    SecondaryKey = DEFAULT_SECONDARY;
-    InteractKey = DEFAULT_INTERACT;
-    ReloadKey = DEFAULT_RELOAD;
+    SetInventoryKey(DEFAULT_INVENTORY);
+    SetCraftingKey(DEFAULT_CRAFTING);
+    SetChatKey(DEFAULT_CHAT);
 
-    InventoryKey = DEFAULT_INVENTORY;
-    CraftingKey = DEFAULT_CRAFTING;
-    ChatKey = DEFAULT_CHAT;
+    SetInvertedMouseY(DEFAULT_INVERTEDMOUSEY);
+    SetMouseSensitivity(DEFAULT_MOUSESENSITIVITY);
 
-    InvertedMouseY = DEFAULT_INVERTEDMOUSEY;
-    MouseSensitivity = DEFAULT_MOUSESENSITIVITY;
-
-    HasRunAutoConfig = false;
+    SetHasRunAutoConfig(false);
 }
 
 void UWildOmissionGameUserSettings::SetToDefaults()
 {
     Super::SetToDefaults();
 
-    FieldOfView = DEFAULT_FIELDOFVIEW;
-    MasterVolume = DEFAULT_MASTERVOLUME;
+    SetShowBranding(DEFAULT_SHOWBRANDING);
+    SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
+    SetFieldOfView(DEFAULT_FIELDOFVIEW);
+    SetMasterVolume(DEFAULT_MASTERVOLUME);
 
-    Gamma = DEFAULT_GAMMA;
-    AutoExposureEnabled = DEFAULT_AUTOEXPOSUREENABLED;
-    MotionBlurEnabled = DEFAULT_MOTIONBLURENABLED;
-    BloomEnabled = DEFAULT_BLOOMENABLED;
-    AmbientOcclusionEnabled = DEFAULT_AMBIENTOCCLUSIONENABLED;
-    FilmGrainEnabled = DEFAULT_FILMGRAINENABLED;
+    SetGamma(DEFAULT_GAMMA);
+    SetAutoExposureEnabled(DEFAULT_AUTOEXPOSUREENABLED);
+    SetMotionBlurEnabled(DEFAULT_MOTIONBLURENABLED);
+    SetBloomEnabled(DEFAULT_BLOOMENABLED);
+    SetAmbientOcclusionEnabled(DEFAULT_AMBIENTOCCLUSIONENABLED);
+    SetFilmGrainEnabled(DEFAULT_FILMGRAINENABLED);
 
-    MoveForwardKey = DEFAULT_MOVEFORWARD;
-    MoveBackwardKey = DEFAULT_MOVEBACKWARD;
-    MoveLeftKey = DEFAULT_MOVELEFT;
-    MoveRightKey = DEFAULT_MOVERIGHT;
-    SprintKey = DEFAULT_SPRINT;
-    JumpKey = DEFAULT_JUMP;
+    SetMoveForwardKey(DEFAULT_MOVEFORWARD);
+    SetMoveBackwardKey(DEFAULT_MOVEBACKWARD);
+    SetMoveLeftKey(DEFAULT_MOVELEFT);
+    SetMoveRightKey(DEFAULT_MOVERIGHT);
+    SetSprintKey(DEFAULT_SPRINT);
+    SetJumpKey(DEFAULT_JUMP);
 
-    PrimaryKey = DEFAULT_PRIMARY;
-    SecondaryKey = DEFAULT_SECONDARY;
-    InteractKey = DEFAULT_INTERACT;
-    ReloadKey = DEFAULT_RELOAD;
+    SetPrimaryKey(DEFAULT_PRIMARY);
+    SetSecondaryKey(DEFAULT_SECONDARY);
+    SetInteractKey(DEFAULT_INTERACT);
+    SetReloadKey(DEFAULT_RELOAD);
 
-    InventoryKey = DEFAULT_INVENTORY;
-    CraftingKey = DEFAULT_CRAFTING;
-    ChatKey = DEFAULT_CHAT;
+    SetInventoryKey(DEFAULT_INVENTORY);
+    SetCraftingKey(DEFAULT_CRAFTING);
+    SetChatKey(DEFAULT_CHAT);
 
-    InvertedMouseY = DEFAULT_INVERTEDMOUSEY;
-    MouseSensitivity = DEFAULT_MOUSESENSITIVITY;
+    SetInvertedMouseY(DEFAULT_INVERTEDMOUSEY);
+    SetMouseSensitivity(DEFAULT_MOUSESENSITIVITY);
+}
+
+void UWildOmissionGameUserSettings::SetShowBranding(bool Show)
+{
+    ShowBranding = Show;
+}
+
+bool UWildOmissionGameUserSettings::GetShowBranding() const
+{
+    return ShowBranding;
+}
+
+void UWildOmissionGameUserSettings::SetShowCrosshair(bool Show)
+{
+    ShowCrosshair = Show;
+}
+
+bool UWildOmissionGameUserSettings::GetShowCrosshair() const
+{
+    return ShowCrosshair;
 }
 
 void UWildOmissionGameUserSettings::SetFieldOfView(float NewFieldOfView)

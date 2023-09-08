@@ -26,6 +26,9 @@ public:
 
 	virtual void NativeConstruct() override;	
 	
+	void ShowBranding(bool Show);
+	void ShowCrosshair(bool Show);
+
 	// Setters
 	UFUNCTION(BlueprintCallable)
 	void ToggleInventoryMenu(bool ForceOpen = false);

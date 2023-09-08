@@ -40,7 +40,7 @@ void UPostProcessingSettingsWidget::OnApply()
 	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
 	if (CharacterSettingsInterface)
 	{
-		CharacterSettingsInterface->ApplyPostProcessing();
+		CharacterSettingsInterface->ApplyPostProcessingSettings();
 	}
 }
 

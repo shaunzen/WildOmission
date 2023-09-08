@@ -2,6 +2,7 @@
 
 
 #include "GameplaySettingsWidget.h"
+#include "OptionBoxes/CheckOptionBox.h"
 #include "OptionBoxes/SliderOptionBox.h"
 #include "WildOmissionGameUserSettings.h"
 #include "Interfaces/GameSettingsInterface.h"
@@ -28,6 +29,8 @@ void UGameplaySettingsWidget::OnApply()
 		return;
 	}
 
+	UserSettings->SetShowBranding(ShowBrandingCheckOptionBox->IsChecked());
+	UserSettings->SetShowCrosshair(ShowBrandingCheckOptionBox->IsChecked());
 	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
 	UserSettings->SetMasterVolume(MasterVolumeSliderOptionBox->GetValue() / 100.0f);
 
@@ -40,7 +43,7 @@ void UGameplaySettingsWidget::OnApply()
 	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
 	if (CharacterSettingsInterface)
 	{
-		CharacterSettingsInterface->ApplyFieldOfView();
+		CharacterSettingsInterface->ApplyGameplaySettings();
 	}
 }
 
@@ -57,6 +60,8 @@ void UGameplaySettingsWidget::OnRefresh()
 	float FieldOfView = UserSettings->GetFieldOfView();
 	float MasterVolume = UserSettings->GetMasterVolume() * 100.0f;
 
+	ShowBrandingCheckOptionBox->SetChecked(UserSettings->GetShowBranding());
+	ShowCrosshairCheckOptionBox->SetChecked(UserSettings->GetShowCrosshair());
 	FieldOfViewSliderOptionBox->SetValue(FieldOfView);
 	MasterVolumeSliderOptionBox->SetValue(MasterVolume);
 }

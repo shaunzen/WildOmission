@@ -282,10 +282,10 @@ void AWildOmissionCharacter::BeginPlay()
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
-	ApplyInputSettings();
-	ApplyFieldOfView();
-	ApplyPostProcessing();
 	SetupPlayerHUD();
+	ApplyInputSettings();
+	ApplyGameplaySettings();
+	ApplyPostProcessingSettings();
 	SetupWeatherEffectHandler();
 	EndSprint();
 
@@ -320,10 +320,10 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
-	ApplyInputSettings();
-	ApplyFieldOfView();
-	ApplyPostProcessing();
 	SetupPlayerHUD();
+	ApplyInputSettings();
+	ApplyGameplaySettings();
+	ApplyPostProcessingSettings();
 	SetupWeatherEffectHandler();
 }
 
@@ -414,7 +414,7 @@ void AWildOmissionCharacter::ApplyInputSettings()
 	DefaultMappingContext->MapKey(ToggleChatAction, UserSettings->GetChatKey());
 }
 
-void AWildOmissionCharacter::ApplyFieldOfView()
+void AWildOmissionCharacter::ApplyGameplaySettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	if (!IsLocallyControlled() || UserSettings == nullptr)
@@ -423,9 +423,15 @@ void AWildOmissionCharacter::ApplyFieldOfView()
 	}
 
 	FirstPersonCameraComponent->SetFieldOfView(UserSettings->GetFieldOfView());
+
+	if (PlayerHUDWidget)
+	{
+		PlayerHUDWidget->ShowBranding(UserSettings->GetShowBranding());
+		PlayerHUDWidget->ShowCrosshair(UserSettings->GetShowCrosshair());
+	}
 }
 
-void AWildOmissionCharacter::ApplyPostProcessing()
+void AWildOmissionCharacter::ApplyPostProcessingSettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	if (!IsLocallyControlled() || UserSettings == nullptr)

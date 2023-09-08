@@ -43,6 +43,16 @@ void UPlayerHUDWidget::NativeConstruct()
 	PlayerInventoryManipulatorComponent->OnOpenContainerChanged.AddDynamic(this, &UPlayerHUDWidget::OnOpenContainerChanged);
 }
 
+void UPlayerHUDWidget::ShowBranding(bool Show)
+{
+	BrandingTextBlock->SetVisibility(Show ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
+}
+
+void UPlayerHUDWidget::ShowCrosshair(bool Show)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Please Implement Crosshair again..."));
+}
+
 void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
 {
 	if (!IsMenuOpen() || ForceOpen == true)

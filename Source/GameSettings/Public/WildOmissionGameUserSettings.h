@@ -15,6 +15,18 @@ public:
 	virtual void SetToDefaults() override;
 
 	UFUNCTION()
+	void SetShowBranding(bool Show);
+
+	UFUNCTION()
+	bool GetShowBranding() const;
+
+	UFUNCTION()
+	void SetShowCrosshair(bool Show);
+
+	UFUNCTION()
+	bool GetShowCrosshair() const;
+
+	UFUNCTION()
 	void SetFieldOfView(float NewFieldOfView);
 	
 	UFUNCTION()
@@ -165,6 +177,10 @@ public:
 	static UWildOmissionGameUserSettings* GetWildOmissionGameUserSettings();
 
 private:
+	UPROPERTY(Config)
+	bool ShowBranding;
+	UPROPERTY(Config)
+	bool ShowCrosshair;
 	UPROPERTY(Config)
 	float FieldOfView;
 	UPROPERTY(Config)

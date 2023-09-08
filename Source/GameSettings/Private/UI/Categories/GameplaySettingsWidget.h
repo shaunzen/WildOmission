@@ -6,6 +6,7 @@
 #include "SettingsCategoryWidget.h"
 #include "GameplaySettingsWidget.generated.h"
 
+class UCheckOptionBox;
 class USliderOptionBox;
 
 UCLASS()
@@ -19,6 +20,10 @@ public:
 	virtual void OnRefresh() override;
 
 private:
+	UPROPERTY(Meta = (BindWidget))
+	UCheckOptionBox* ShowBrandingCheckOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UCheckOptionBox* ShowCrosshairCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	USliderOptionBox* FieldOfViewSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
