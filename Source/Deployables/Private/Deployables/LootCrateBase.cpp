@@ -41,7 +41,7 @@ void ALootCrateBase::SpawnItems()
 FInventoryItem ALootCrateBase::GetDrop()
 {
 	FInventoryItem ItemToDrop;
-	while (ItemToDrop.Name == FName())
+	while (ItemToDrop.Name == NAME_None)
 	{
 		int32 LootItemIndex =  FMath::RandRange(0, ItemsToDrop.Num() - 1);
 		bool WillDrop = UKismetMathLibrary::RandomBoolWithWeight(ItemsToDrop[LootItemIndex].Probability);
