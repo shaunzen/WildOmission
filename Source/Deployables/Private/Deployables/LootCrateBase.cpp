@@ -20,6 +20,7 @@ void ALootCrateBase::BeginPlay()
 		return;
 	}
 
+	CurrentDurability = MaxDurability;
 	SpawnItems();
 }
 
