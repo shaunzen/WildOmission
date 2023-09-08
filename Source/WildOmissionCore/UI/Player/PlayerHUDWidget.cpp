@@ -45,12 +45,12 @@ void UPlayerHUDWidget::NativeConstruct()
 
 void UPlayerHUDWidget::ShowBranding(bool Show)
 {
-	BrandingTextBlock->SetVisibility(Show ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
+	BrandingTextBlock->SetVisibility(Show ? ESlateVisibility::Visible: ESlateVisibility::Hidden);
 }
 
 void UPlayerHUDWidget::ShowCrosshair(bool Show)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Please Implement Crosshair again..."));
+	Crosshair->SetVisibility(Show ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)

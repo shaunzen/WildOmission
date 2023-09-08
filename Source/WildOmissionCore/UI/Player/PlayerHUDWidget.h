@@ -77,6 +77,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* BrandingTextBlock;
 
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* Crosshair;
+
 	void UpdateBrandingText();
 
 	void OpenMenuPanel(bool ShowBackground = true);
