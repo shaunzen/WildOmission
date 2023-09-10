@@ -18,7 +18,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnPrimaryMontageClimax();
-
+	UFUNCTION(BlueprintCallable)
+	void OnSecondayMontageClimax();
 	UFUNCTION(BlueprintCallable)
 	void OnReloadMontageClimax();
 

@@ -42,13 +42,20 @@ public:
 	bool IsMontagePlaying(UAnimMontage* Montage) const;
 	bool IsItemMontagePlaying(UAnimMontage* Montage) const;
 	
+	UFUNCTION(BlueprintCallable)
+	void OnPrimaryAnimationClimax(bool FirstPerson);
+	UFUNCTION(BlueprintCallable)
+	void OnSecondaryAnimationClimax(bool FirstPerson);
+	UFUNCTION(BlueprintCallable)
+	void OnReloadAnimationClimax(bool FirstPerson);
+
 	FRefreshEquipedSlotUISignature RefreshEquipedSlotUI;
 
 	UFUNCTION(BlueprintCallable)
 	AEquipableItem* GetEquipedItem();
 
 	UFUNCTION(BlueprintCallable)
-	AEquipableItem* GetLocalEquipedItemDefaultClass();
+	UAnimSequence* GetEquipedItemPose();
 
 	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;

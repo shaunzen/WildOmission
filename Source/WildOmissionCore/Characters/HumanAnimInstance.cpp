@@ -37,13 +37,24 @@ void UHumanAnimInstance::OnPrimaryMontageClimax()
 		return;
 	}
 
-	AToolItem* EquipedTool = Cast<AToolItem>(OwnerEquipComponent->GetEquipedItem());
-	if (EquipedTool == nullptr)
+	OwnerEquipComponent->OnPrimaryAnimationClimax(FirstPersonInstance);
+}
+
+void UHumanAnimInstance::OnSecondayMontageClimax()
+{
+	APawn* PawnOwner = TryGetPawnOwner();
+	if (PawnOwner == nullptr)
 	{
 		return;
 	}
 
-	EquipedTool->OnPrimaryAnimationClimax(FirstPersonInstance);
+	UEquipComponent* OwnerEquipComponent = PawnOwner->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerEquipComponent->OnSecondaryAnimationClimax(FirstPersonInstance);
 }
 
 void UHumanAnimInstance::OnReloadMontageClimax()
@@ -60,13 +71,7 @@ void UHumanAnimInstance::OnReloadMontageClimax()
 		return;
 	}
 
-	AFirearmItem* EquipedFirearm = Cast<AFirearmItem>(OwnerEquipComponent->GetEquipedItem());
-	if (EquipedFirearm == nullptr)
-	{
-		return;
-	}
-
-	EquipedFirearm->OnReloadAnimationClimax(FirstPersonInstance);
+	OwnerEquipComponent->OnReloadAnimationClimax(FirstPersonInstance);
 }
 
 void UHumanAnimInstance::CalculateSpeedAndAngle()
@@ -98,30 +103,11 @@ void UHumanAnimInstance::HandleEquipedItemPose()
 		return;
 	}
 
-	UEquipComponent* PlayerEquipComponent = TryGetPawnOwner()->FindComponentByClass<UEquipComponent>();
-	if (PlayerEquipComponent == nullptr)
+	UEquipComponent* OwnerEquipComponent = TryGetPawnOwner()->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr)
 	{
 		return;
 	}
 
-	if (TryGetPawnOwner()->IsLocallyControlled() && TryGetPawnOwner()->GetController()->IsPlayerController())
-	{
-		if (PlayerEquipComponent->GetLocalEquipedItemDefaultClass() == nullptr)
-		{
-			EquipedItemPose = nullptr;
-			return;
-		}
-
-		EquipedItemPose = PlayerEquipComponent->GetLocalEquipedItemDefaultClass()->GetEquipPose();
-	}
-	else
-	{
-		if (PlayerEquipComponent->GetEquipedItem() == nullptr)
-		{
-			EquipedItemPose = nullptr;
-			return;
-		}
-
-		EquipedItemPose = PlayerEquipComponent->GetEquipedItem()->GetEquipPose();
-	}
+	EquipedItemPose = OwnerEquipComponent->GetEquipedItemPose();
 }

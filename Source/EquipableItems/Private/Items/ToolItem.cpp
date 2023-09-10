@@ -84,6 +84,8 @@ void AToolItem::OnPrimaryHeld()
 
 void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
+	Super::OnPrimaryAnimationClimax(FromFirstPersonInstance);
+
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr)
 	{

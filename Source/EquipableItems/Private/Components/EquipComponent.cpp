@@ -213,14 +213,66 @@ bool UEquipComponent::IsItemMontagePlaying(UAnimMontage* Montage) const
 	return FirstPersonItemAnimInstance->Montage_IsPlaying(Montage) || ThirdPersonItemAnimInstance->Montage_IsPlaying(Montage);
 }
 
+void UEquipComponent::OnPrimaryAnimationClimax(bool FirstPerson)
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnPrimaryAnimationClimax(FirstPerson);
+}
+
+void UEquipComponent::OnSecondaryAnimationClimax(bool FirstPerson)
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnSecondaryAnimationClimax(FirstPerson);
+}
+
+void UEquipComponent::OnReloadAnimationClimax(bool FirstPerson)
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnReloadAnimationClimax(FirstPerson);
+}
+
 AEquipableItem* UEquipComponent::GetEquipedItem()
 {
 	return EquipedItem;
 }
 
-AEquipableItem* UEquipComponent::GetLocalEquipedItemDefaultClass()
+UAnimSequence* UEquipComponent::GetEquipedItemPose()
 {
-	return LocalEquipedItemDefaultClass;
+	if (OwnerPawn == nullptr)
+	{
+		return nullptr;
+	}
+
+	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController())
+	{
+		if (LocalEquipedItemDefaultClass == nullptr)
+		{
+			return nullptr;
+		}
+
+		return LocalEquipedItemDefaultClass->GetEquipPose();
+	}
+	else
+	{
+		if (EquipedItem == nullptr)
+		{
+			return nullptr;
+		}
+
+		return EquipedItem->GetEquipPose();
+	}
 }
 
 bool UEquipComponent::IsItemEquiped() const
@@ -364,10 +416,14 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 		LocalEquipedItemDefaultClass = ItemClass.GetDefaultObject();
 		LocalEquipedItemDefaultClass->SetUniqueItemID(UniqueID);
 
-		if (LocalEquipedItemDefaultClass == nullptr)
+		if (LocalEquipedItemDefaultClass == nullptr || OwnerFirstPersonMesh == nullptr)
 		{
 			return;
 		}
+
+		LocalEquipedItemDefaultClass->IsLeftHandMounted() ?
+		FirstPersonItemComponent->AttachToComponent(OwnerFirstPersonMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("LeftHandMountSocket")) :
+		FirstPersonItemComponent->AttachToComponent(OwnerFirstPersonMesh, FAttachmentTransformRules::KeepRelativeTransform, TEXT("RightHandMountSocket"));
 
 		FirstPersonItemComponent->SetSkeletalMeshAsset(LocalEquipedItemDefaultClass->GetMeshComponent()->GetSkeletalMeshAsset());
 		FirstPersonItemComponent->SetAnimInstanceClass(LocalEquipedItemDefaultClass->GetMeshComponent()->GetAnimClass());
@@ -413,8 +469,8 @@ void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlo
 		return;
 	}
 
-	AEquipableItem* CurrentEquipedItem = GetEquipedItem();
-	AEquipableItem* CurrentEquipedDefaultClass = GetLocalEquipedItemDefaultClass();
+	AEquipableItem* CurrentEquipedItem = EquipedItem;
+	AEquipableItem* CurrentEquipedDefaultClass = LocalEquipedItemDefaultClass;
 
 	// is this item the same as we are already holding
 	if (GetOwner()->HasAuthority() && CurrentEquipedItem && SlotItemData->EquipItemClass.Get() == CurrentEquipedItem->GetClass() && NewSlot.Item.UniqueID == CurrentEquipedItem->GetUniqueItemID())

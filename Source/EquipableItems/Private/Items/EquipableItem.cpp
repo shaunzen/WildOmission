@@ -20,6 +20,9 @@ AEquipableItem::AEquipableItem()
 	MeshComponent->SetAnimInstanceClass(UAnimInstance::StaticClass());
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	SocketOffset = FTransform::Identity;
+	UseLeftHandMount = false;
+
 	RootComponent = MeshComponent;
 
 	EquipMontage = nullptr;
@@ -90,7 +93,9 @@ void AEquipableItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPe
 	FromSlotIndex = InFromSlotIndex;
 	UniqueID = InUniqueID;
 
-	AttachToComponent(InThirdPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, FName("RightHandMountSocket"));
+	UseLeftHandMount ?
+	AttachToComponent(InThirdPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, TEXT("LeftHandMountSocket")) :
+	AttachToComponent(InThirdPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, TEXT("RightHandMountSocket"));
 
 	Multi_PlayThirdPersonEquipMontage();
 }
@@ -115,6 +120,11 @@ void AEquipableItem::OnPrimaryReleased()
 
 }
 
+void AEquipableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
+{
+
+}
+
 void AEquipableItem::OnSecondaryPressed()
 {
 
@@ -130,7 +140,17 @@ void AEquipableItem::OnSecondaryReleased()
 
 }
 
+void AEquipableItem::OnSecondaryAnimationClimax(bool FromFirstPersonInstance)
+{
+
+}
+
 void AEquipableItem::OnReloadPressed()
+{
+
+}
+
+void AEquipableItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 {
 
 }
@@ -194,6 +214,11 @@ UAnimSequence* AEquipableItem::GetEquipPose() const
 FTransform AEquipableItem::GetSocketOffset()
 {
 	return SocketOffset;
+}
+
+bool AEquipableItem::IsLeftHandMounted() const
+{
+	return UseLeftHandMount;
 }
 
 bool AEquipableItem::PrimaryEnabled() const

@@ -26,7 +26,7 @@ public:
 
 	virtual void OnPrimaryHeld() override;
 
-	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance);
+	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
 
 	float GetGatherMultiplier() const;
 	

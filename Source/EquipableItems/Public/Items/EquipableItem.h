@@ -31,14 +31,17 @@ public:
 	virtual void OnPrimaryPressed();
 	virtual void OnPrimaryHeld();
 	virtual void OnPrimaryReleased();
+	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance);
 
 	// Secondary function of the item. example(Nothing, Aim, Heal others)
 	virtual void OnSecondaryPressed();
 	virtual void OnSecondaryHeld();
 	virtual void OnSecondaryReleased();
+	virtual void OnSecondaryAnimationClimax(bool FromFirstPersonInstance);
 
 	// Reload function of the item. example(Reload the magazine)
 	virtual void OnReloadPressed();
+	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance);
 
 	USkeletalMeshComponent* GetMeshComponent() const;
 	
@@ -56,6 +59,7 @@ public:
 	UAnimSequence* GetEquipPose() const;
 
 	FTransform GetSocketOffset();
+	bool IsLeftHandMounted() const;
 
 	bool PrimaryEnabled() const;
 	bool SecondaryEnabled() const;
@@ -69,6 +73,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	FTransform SocketOffset;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	bool UseLeftHandMount;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* EquipMontage;
