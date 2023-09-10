@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Items/EquipableItem.h"
-#include "Firearm.generated.h"
+#include "FirearmItem.generated.h"
 
 class AFirearmProjectile;
 class UNiagaraSystem;
 class UPlayerInventoryComponent;
 
 UCLASS()
-class WEAPONS_API AFirearm : public AEquipableItem
+class WEAPONS_API AFirearmItem : public AEquipableItem
 {
 	GENERATED_BODY()
 	
 public:
-	AFirearm();
+	AFirearmItem();
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

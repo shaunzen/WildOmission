@@ -4,7 +4,7 @@
 #include "HumanAnimInstance.h"
 #include "Components/EquipComponent.h"
 #include "Items/ToolItem.h"
-#include "Weapons/Firearm.h"
+#include "Items/FirearmItem.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
 
 UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializer) : UWildOmissionAnimInstance(ObjectInitializer)
@@ -60,7 +60,7 @@ void UHumanAnimInstance::OnReloadMontageClimax()
 		return;
 	}
 
-	AFirearm* EquipedFirearm = Cast<AFirearm>(OwnerEquipComponent->GetEquipedItem());
+	AFirearmItem* EquipedFirearm = Cast<AFirearmItem>(OwnerEquipComponent->GetEquipedItem());
 	if (EquipedFirearm == nullptr)
 	{
 		return;

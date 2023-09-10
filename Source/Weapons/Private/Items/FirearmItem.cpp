@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Weapons/Firearm.h"
+#include "Items/FirearmItem.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Projectiles/FirearmProjectile.h"
@@ -16,7 +16,7 @@
 
 #include "DrawDebugHelpers.h"
 
-AFirearm::AFirearm()
+AFirearmItem::AFirearmItem()
 {
 	MuzzleFlashEffect = nullptr;
 	FireSound = nullptr;
@@ -38,23 +38,23 @@ AFirearm::AFirearm()
 	}
 }
 
-void AFirearm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
+void AFirearmItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AFirearm, CurrentAmmo, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(AFirearm, MaxAmmo, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(AFirearm, Durability, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AFirearmItem, CurrentAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AFirearmItem, MaxAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AFirearmItem, Durability, COND_OwnerOnly);
 }
 
-void AFirearm::Equip(APawn *InOwnerPawn, USkeletalMeshComponent *InThirdPersonMeshComponent, const FName &InItemName, const int8 &InFromSlotIndex, const uint32 &InUniqueID)
+void AFirearmItem::Equip(APawn *InOwnerPawn, USkeletalMeshComponent *InThirdPersonMeshComponent, const FName &InItemName, const int8 &InFromSlotIndex, const uint32 &InUniqueID)
 {
 	Super::Equip(InOwnerPawn, InThirdPersonMeshComponent, InItemName, InFromSlotIndex, InUniqueID);
 	
 	RetrieveInventoryStats();
 }
 
-void AFirearm::OnPrimaryPressed()
+void AFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 
@@ -98,7 +98,7 @@ void AFirearm::OnPrimaryPressed()
 	}
 }
 
-void AFirearm::OnReloadPressed()
+void AFirearmItem::OnReloadPressed()
 {
 	Super::OnReloadPressed();
 
@@ -124,7 +124,7 @@ void AFirearm::OnReloadPressed()
 	}
 }
 
-void AFirearm::OnReloadAnimationClimax(bool FromFirstPersonInstance)
+void AFirearmItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 {
 	if (!HasAuthority())
 	{
@@ -150,7 +150,7 @@ void AFirearm::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 	UpdateInventoryStats();
 }
 
-void AFirearm::RetrieveInventoryStats()
+void AFirearmItem::RetrieveInventoryStats()
 {
 	UPlayerInventoryComponent* OwnerInventory = GetOwningPlayerInventory();
 	if (OwnerInventory == nullptr)
@@ -169,7 +169,7 @@ void AFirearm::RetrieveInventoryStats()
 	Durability = FromSlot->Item.GetStat(TEXT("Durability"));
 }
 
-void AFirearm::UpdateInventoryStats()
+void AFirearmItem::UpdateInventoryStats()
 {
 	UPlayerInventoryComponent* OwnerInventory = GetOwningPlayerInventory();
 	if (OwnerInventory == nullptr)
@@ -188,7 +188,7 @@ void AFirearm::UpdateInventoryStats()
 	OwnerInventory->RequestInventoryRefresh();
 }
 
-void AFirearm::SpawnProjectile()
+void AFirearmItem::SpawnProjectile()
 {
 	if (GetOwnerPawn() == nullptr 
 	|| GetOwner()->FindComponentByClass<UCameraComponent>() == nullptr
@@ -207,7 +207,7 @@ void AFirearm::SpawnProjectile()
 	GetWorld()->SpawnActor<AFirearmProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation(), SpawnParams);
 }
 
-void AFirearm::SpawnMuzzleFlash()
+void AFirearmItem::SpawnMuzzleFlash()
 {
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr || MuzzleFlashEffect == nullptr)
@@ -223,7 +223,7 @@ void AFirearm::SpawnMuzzleFlash()
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleFlashEffect, MuzzleLocation, GetOwnerEquipComponent()->GetOwnerControlRotation());
 }
 
-void AFirearm::PlayThirdPersonFireAnimation()
+void AFirearmItem::PlayThirdPersonFireAnimation()
 {
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr || PrimaryMontage == nullptr)
@@ -235,7 +235,7 @@ void AFirearm::PlayThirdPersonFireAnimation()
 	OwnerEquipComponent->PlayItemMontage(PrimaryItemMontage, false);
 }
 
-void AFirearm::PlayFireSoundEffect()
+void AFirearmItem::PlayFireSoundEffect()
 {
 	if (FireSound == nullptr)
 	{
@@ -245,7 +245,7 @@ void AFirearm::PlayFireSoundEffect()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
 }
 
-int32 AFirearm::GetRemainingAmmoInInventory() const
+int32 AFirearmItem::GetRemainingAmmoInInventory() const
 {
 	if (GetOwner() == nullptr)
 	{
@@ -261,7 +261,7 @@ int32 AFirearm::GetRemainingAmmoInInventory() const
 	return OwnerInventory->GetContents()->GetItemQuantity(AmmoItemID);
 }
 
-void AFirearm::RemoveAmmoFromInventory(const int32 AmountToRemove)
+void AFirearmItem::RemoveAmmoFromInventory(const int32 AmountToRemove)
 {
 	if (GetOwner() == nullptr)
 	{
@@ -280,7 +280,7 @@ void AFirearm::RemoveAmmoFromInventory(const int32 AmountToRemove)
 	OwnerInventory->RemoveItem(AmmoToRemove);
 }
 
-UPlayerInventoryComponent* AFirearm::GetOwningPlayerInventory() const
+UPlayerInventoryComponent* AFirearmItem::GetOwningPlayerInventory() const
 {
 	if (GetOwner() == nullptr)
 	{
@@ -290,7 +290,7 @@ UPlayerInventoryComponent* AFirearm::GetOwningPlayerInventory() const
 	return GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 }
 
-void AFirearm::Multi_FireEffects_Implementation()
+void AFirearmItem::Multi_FireEffects_Implementation()
 {
 	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled() || (GetOwnerPawn()->IsLocallyControlled() && GetOwnerPawn()->GetRemoteRole() == ROLE_Authority))
 	{
@@ -303,7 +303,7 @@ void AFirearm::Multi_FireEffects_Implementation()
 	PlayFireSoundEffect();
 }
 
-void AFirearm::Multi_PlayThirdPersonReloadMontage_Implementation()
+void AFirearmItem::Multi_PlayThirdPersonReloadMontage_Implementation()
 {
 	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
 	{
