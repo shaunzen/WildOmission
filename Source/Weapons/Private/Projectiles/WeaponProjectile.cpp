@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Projectiles/FirearmProjectile.h"
+#include "Projectiles/WeaponProjectile.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine/DamageEvents.h"
@@ -14,7 +14,7 @@
 #include "Log.h"
 
 // Sets default values
-AFirearmProjectile::AFirearmProjectile()
+AWeaponProjectile::AWeaponProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -50,15 +50,15 @@ AFirearmProjectile::AFirearmProjectile()
 }
 
 // Called when the game starts or when spawned
-void AFirearmProjectile::BeginPlay()
+void AWeaponProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
 	CollisionComponent->IgnoreActorWhenMoving(GetOwner(), true);
-	CollisionComponent->OnComponentHit.AddDynamic(this, &AFirearmProjectile::OnHit);
+	CollisionComponent->OnComponentHit.AddDynamic(this, &AWeaponProjectile::OnHit);
 }
 
-void AFirearmProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor == GetOwner())
 	{
@@ -80,7 +80,7 @@ void AFirearmProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 	Destroy();
 }
 
-void AFirearmProjectile::SpawnImpactEffects(const FHitResult& HitResult)
+void AWeaponProjectile::SpawnImpactEffects(const FHitResult& HitResult)
 {
 	const UPhysicalMaterial* PhysMaterial = HitResult.PhysMaterial.Get();
 	if (PhysMaterial == nullptr)

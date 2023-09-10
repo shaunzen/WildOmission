@@ -4,20 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "FirearmProjectile.generated.h"
+#include "WeaponProjectile.generated.h"
 
 class USphereComponent;
 class UNiagaraComponent;
 class UProjectileMovementComponent;
 
 UCLASS()
-class WEAPONS_API AFirearmProjectile : public AActor
+class WEAPONS_API AWeaponProjectile : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AFirearmProjectile();
+	AWeaponProjectile();
 
 protected:
 	// Called when the game starts or when spawned

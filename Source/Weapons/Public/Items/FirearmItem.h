@@ -3,71 +3,37 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Items/EquipableItem.h"
+#include "Items/ProjectileWeaponItem.h"
 #include "FirearmItem.generated.h"
 
-class AFirearmProjectile;
 class UNiagaraSystem;
-class UPlayerInventoryComponent;
 
 UCLASS()
-class WEAPONS_API AFirearmItem : public AEquipableItem
+class WEAPONS_API AFirearmItem : public AProjectileWeaponItem
 {
 	GENERATED_BODY()
 	
 public:
 	AFirearmItem();
 	
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
-
 	virtual void OnPrimaryPressed() override;
 	virtual void OnReloadPressed() override;
+	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance) override;
 
-	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance);
+	virtual bool CanFire() const override;
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* MuzzleComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UNiagaraSystem* MuzzleFlashEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	USoundBase* FireSound;
+	virtual void PlayFireEffects() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	USoundBase* OutOfAmmoSound;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	TSubclassOf<AFirearmProjectile> ProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	FName AmmoItemID;
-
-	UPROPERTY(Replicated)
-	int32 CurrentAmmo;
-	UPROPERTY(Replicated)
-	int32 MaxAmmo;
-	UPROPERTY(Replicated)
-	int32 Durability;
-
-	void RetrieveInventoryStats();
-	void UpdateInventoryStats();
-
-	void SpawnProjectile();
-	void PlayThirdPersonFireAnimation();
 	void SpawnMuzzleFlash();
-	void PlayFireSoundEffect();
-	
-	int32 GetRemainingAmmoInInventory() const;
-	void RemoveAmmoFromInventory(const int32 AmountToRemove);
 
-	UPlayerInventoryComponent* GetOwningPlayerInventory() const;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_FireEffects();
+	virtual void Fire();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayThirdPersonReloadMontage();
