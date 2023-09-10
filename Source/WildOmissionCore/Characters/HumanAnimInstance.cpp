@@ -22,9 +22,8 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	HandleEquipedItemPose();
 }
 
-void UHumanAnimInstance::OnPrimaryMontageClimax()
+void UHumanAnimInstance::OnPrimaryAnimationClimax()
 {
-	// get owner equip comp and tell it to harvest
 	APawn* PawnOwner = TryGetPawnOwner();
 	if (PawnOwner == nullptr)
 	{
@@ -40,7 +39,7 @@ void UHumanAnimInstance::OnPrimaryMontageClimax()
 	OwnerEquipComponent->OnPrimaryAnimationClimax(FirstPersonInstance);
 }
 
-void UHumanAnimInstance::OnSecondayMontageClimax()
+void UHumanAnimInstance::OnSecondaryAnimationClimax()
 {
 	APawn* PawnOwner = TryGetPawnOwner();
 	if (PawnOwner == nullptr)
@@ -57,7 +56,7 @@ void UHumanAnimInstance::OnSecondayMontageClimax()
 	OwnerEquipComponent->OnSecondaryAnimationClimax(FirstPersonInstance);
 }
 
-void UHumanAnimInstance::OnReloadMontageClimax()
+void UHumanAnimInstance::OnReloadAnimationClimax()
 {
 	APawn* PawnOwner = TryGetPawnOwner();
 	if (PawnOwner == nullptr)

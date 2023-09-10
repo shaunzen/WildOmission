@@ -17,11 +17,11 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UFUNCTION(BlueprintCallable)
-	void OnPrimaryMontageClimax();
+	void OnPrimaryAnimationClimax();
 	UFUNCTION(BlueprintCallable)
-	void OnSecondayMontageClimax();
+	void OnSecondaryAnimationClimax();
 	UFUNCTION(BlueprintCallable)
-	void OnReloadMontageClimax();
+	void OnReloadAnimationClimax();
 
 	UPROPERTY(BlueprintReadOnly)
 	float HeadAngle;
