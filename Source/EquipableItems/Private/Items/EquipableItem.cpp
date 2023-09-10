@@ -32,13 +32,13 @@ AEquipableItem::AEquipableItem()
 	ReloadItemMontage = nullptr;
 	EquipPose = nullptr;
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_EquipTool_01_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Equip_01_Montage"));
 	if (EquipMontageAsset.Succeeded())
 	{
 		EquipMontage = EquipMontageAsset.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_HoldTool_01"));
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> EquipPoseAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Hold_01"));
 	if (EquipPoseAsset.Succeeded())
 	{
 		EquipPose = EquipPoseAsset.Object;

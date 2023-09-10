@@ -30,7 +30,7 @@ AToolItem::AToolItem()
 
 	Durability = 100;
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_SwingTool_01_Montage"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Swing_01_Montage"));
 	if (PrimaryMontageObject.Succeeded())
 	{
 		PrimaryMontage = PrimaryMontageObject.Object;
