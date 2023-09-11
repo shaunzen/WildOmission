@@ -17,6 +17,8 @@ public:
 
 	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
 
+	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
+
 	virtual void OnSecondaryPressed() override;
 	virtual void OnSecondaryAnimationClimax(bool FromFirstPersonInstance) override;
 	virtual void OnSecondaryReleased() override;
@@ -29,8 +31,5 @@ private:
 
 	UPROPERTY()
 	bool AtFullDraw;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayThirdPersonSecondaryMontage();
 
 };

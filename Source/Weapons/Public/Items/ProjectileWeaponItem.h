@@ -48,9 +48,6 @@ protected:
 	void Multi_PlayFireEffects();
 	virtual void PlayFireEffects();
 
-	void SpawnProjectile();
-	void PlayFireSoundEffect();
-
 	void Reload();
 	void DecreaseAmmoAndDurability();
 
@@ -61,5 +58,9 @@ protected:
 	void PushInventoryStats();
 
 	UPlayerInventoryComponent* GetOwningPlayerInventory() const;
+
+private:
+	void SpawnProjectile();
+	void PlayFireSoundEffect();
 
 };

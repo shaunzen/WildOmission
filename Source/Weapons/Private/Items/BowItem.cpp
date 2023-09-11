@@ -22,23 +22,25 @@ void ABowItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMe
 	EquipPose = DefaultEquipPose;
 }
 
+void ABowItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
+{
+	Super::OnPrimaryAnimationClimax(FromFirstPersonInstance);
+
+	PlayFireEffects();
+	DecreaseAmmoAndDurability();
+}
+
 void ABowItem::OnSecondaryPressed()
 {
 	Super::OnSecondaryPressed();
 
-	if (GetOwnerPawn() && GetOwnerPawn()->IsLocallyControlled())
+	if (GetRemainingAmmoInInventory() <= 0)
 	{
-		GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage, SecondaryItemMontage);
-	}
-	if (GetOwnerPawn()->IsLocallyControlled())
-	{
-		GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage, SecondaryItemMontage);
+		return;
 	}
 
-	if (HasAuthority())
-	{
-		Multi_PlayThirdPersonSecondaryMontage();
-	}
+	Reload();
+	GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage, SecondaryItemMontage);
 }
 
 void ABowItem::OnSecondaryAnimationClimax(bool FromFirstPersonInstance)
@@ -58,42 +60,9 @@ void ABowItem::OnSecondaryReleased()
 	{
 		return;
 	}
+	
+	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
 
-	if (GetOwnerPawn() && GetOwnerPawn()->IsLocallyControlled())
-	{
-		SpawnProjectile();
-		PlayFireSoundEffect();
-
-		GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
-	}
-	if (HasAuthority())
-	{
-		Multi_PlayFireEffects();
-
-		--CurrentAmmo;
-		--Durability;
-		if (Durability <= 0 && GetOwningPlayerInventory())
-		{
-			GetOwningPlayerInventory()->RemoveHeldItem();
-		}
-		PushInventoryStats();
-	}
 	EquipPose = DefaultEquipPose;
 	AtFullDraw = false;
-}
-
-void ABowItem::Multi_PlayThirdPersonSecondaryMontage_Implementation()
-{
-	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
-	{
-		return;
-	}
-
-	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
-	if (OwnerEquipComponent == nullptr)
-	{
-		return;
-	}
-
-	OwnerEquipComponent->PlayItemMontage(SecondaryMontage, SecondaryItemMontage);
 }
