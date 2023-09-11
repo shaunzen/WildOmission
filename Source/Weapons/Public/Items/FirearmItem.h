@@ -20,8 +20,6 @@ public:
 	virtual void OnReloadPressed() override;
 	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance) override;
 
-	virtual bool CanFire() const override;
-
 protected:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* MuzzleComponent;
@@ -30,12 +28,8 @@ protected:
 	UNiagaraSystem* MuzzleFlashEffect;
 
 	virtual void PlayFireEffects() override;
-
-	void SpawnMuzzleFlash();
+	void PlayMuzzleFlash();
 
 	virtual void Fire();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayThirdPersonReloadMontage();
 
 };

@@ -31,7 +31,9 @@ AFirearmItem::AFirearmItem()
 void AFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
-
+	
+	// TODO make this only in the semi auto class
+	Fire();
 }
 
 void AFirearmItem::OnReloadPressed()
@@ -48,16 +50,7 @@ void AFirearmItem::OnReloadPressed()
 		return;
 	}
 
-	if (GetOwnerPawn()->IsLocallyControlled())
-	{
-		GetOwnerEquipComponent()->PlayMontage(ReloadMontage);
-		GetOwnerEquipComponent()->PlayItemMontage(ReloadItemMontage);
-	}
-
-	if (HasAuthority())
-	{
-		Multi_PlayThirdPersonReloadMontage();
-	}
+	GetOwnerEquipComponent()->PlayItemMontage(ReloadMontage, ReloadItemMontage);
 }
 
 void AFirearmItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
@@ -85,21 +78,16 @@ void AFirearmItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 
 	CurrentAmmo += AmmoUsedInReload;
 	RemoveAmmoFromInventory(AmmoUsedInReload);
-	UpdateInventoryStats();
-}
-
-bool AFirearmItem::CanFire() const
-{
-	return HasAmmo();
+	PushInventoryStats();
 }
 
 void AFirearmItem::PlayFireEffects()
 {
 	Super::PlayFireEffects();
-	SpawnMuzzleFlash();
+	PlayMuzzleFlash();
 }
 
-void AFirearmItem::SpawnMuzzleFlash()
+void AFirearmItem::PlayMuzzleFlash()
 {
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr || MuzzleFlashEffect == nullptr)
@@ -117,58 +105,29 @@ void AFirearmItem::SpawnMuzzleFlash()
 
 void AFirearmItem::Fire()
 {
-	if (GetOwnerPawn()->IsLocallyControlled())
+	if (!HasAmmo())
 	{
-		if (!HasAmmo())
-		{
-			if (OutOfAmmoSound == nullptr)
-			{
-				return;
-			}
-
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, GetOwner()->GetActorLocation());
-		}
-
-		if (!CanFire())
+		if (OutOfAmmoSound == nullptr)
 		{
 			return;
 		}
 
-		SpawnProjectile();
-		SpawnMuzzleFlash();
-		PlayFireSoundEffect();
-
-		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage);
-		GetOwnerEquipComponent()->PlayItemMontage(PrimaryItemMontage);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, GetOwner()->GetActorLocation());
 	}
+
+
+	HasAuthority() ? Multi_PlayFireEffects() : PlayFireEffects();
+
+	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
 
 	if (HasAuthority())
 	{
-		if (!CanFire())
-		{
-			return;
-		}
-
-		Multi_FireEffects();
-
 		--CurrentAmmo;
 		--Durability;
 		if (Durability <= 0 && GetOwningPlayerInventory())
 		{
 			GetOwningPlayerInventory()->RemoveHeldItem();
 		}
-		UpdateInventoryStats();
+		PushInventoryStats();
 	}
-}
-
-void AFirearmItem::Multi_PlayThirdPersonReloadMontage_Implementation()
-{
-	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
-	if (OwnerEquipComponent == nullptr || GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled() || GetOwnerPawn()->GetController()->IsPlayerController())
-	{
-		return;
-	}
-
-	OwnerEquipComponent->PlayMontage(ReloadMontage);
-	OwnerEquipComponent->PlayItemMontage(ReloadItemMontage);
 }

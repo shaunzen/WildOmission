@@ -97,7 +97,7 @@ void AEquipableItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPe
 	AttachToComponent(InThirdPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, TEXT("LeftHandMountSocket")) :
 	AttachToComponent(InThirdPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, TEXT("RightHandMountSocket"));
 
-	Multi_PlayThirdPersonEquipMontage();
+	GetOwnerEquipComponent()->PlayItemMontage(EquipMontage, EquipItemMontage);
 }
 
 void AEquipableItem::OnUnequip()
@@ -158,22 +158,6 @@ void AEquipableItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 USkeletalMeshComponent* AEquipableItem::GetMeshComponent() const
 {
 	return MeshComponent;
-}
-
-void AEquipableItem::Multi_PlayThirdPersonEquipMontage_Implementation()
-{
-	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
-	{
-		return;
-	}
-
-	UEquipComponent* OwnerEquipComponent = GetOwner()->FindComponentByClass<UEquipComponent>();
-	if (OwnerEquipComponent == nullptr)
-	{
-		return;
-	}
-
-	OwnerEquipComponent->PlayMontage(EquipMontage);
 }
 
 void AEquipableItem::SetLocalVisibility(bool bVisible)

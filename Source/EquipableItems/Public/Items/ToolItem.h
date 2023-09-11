@@ -57,8 +57,4 @@ protected:
 
 	FInventoryItem* FindInInventory();
 
-private:
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayThirdPersonPrimaryMontage();
-
 };

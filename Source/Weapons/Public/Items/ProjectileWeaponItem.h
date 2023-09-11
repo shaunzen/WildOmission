@@ -7,7 +7,6 @@
 #include "ProjectileWeaponItem.generated.h"
 
 class AWeaponProjectile;
-class UNiagaraSystem;
 class UPlayerInventoryComponent;
 
 UCLASS()
@@ -23,7 +22,6 @@ public:
 	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
 
 	bool HasAmmo() const;
-	virtual bool CanFire() const;
 
 protected:
 	UPROPERTY(Replicated)
@@ -47,18 +45,17 @@ protected:
 
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multi_FireEffects();
+	void Multi_PlayFireEffects();
 	virtual void PlayFireEffects();
 
 	void SpawnProjectile();
-	void PlayThirdPersonFireAnimation();
 	void PlayFireSoundEffect();
 
 	int32 GetRemainingAmmoInInventory() const;
 	void RemoveAmmoFromInventory(const int32 AmountToRemove);
-	void RetrieveInventoryStats();
-	void UpdateInventoryStats();
-	
+
+	void PullInventoryStats();
+	void PushInventoryStats();
 
 	UPlayerInventoryComponent* GetOwningPlayerInventory() const;
 

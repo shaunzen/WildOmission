@@ -141,77 +141,57 @@ USkeletalMeshComponent* UEquipComponent::GetFirstPersonItemComponent() const
 	return FirstPersonItemComponent;
 }
 
-void UEquipComponent::PlayMontage(UAnimMontage* Montage)
+void UEquipComponent::PlayItemMontage(UAnimMontage* PlayerMontage, UAnimMontage* ItemMontage)
 {
 	if (OwnerPawn == nullptr)
 	{
 		return;
 	}
-	
-	const bool UseFirstPersonInstance = OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController();
 
+	const bool UseFirstPersonInstance = OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled();
+	
 	if (UseFirstPersonInstance && LocalEquipedItemDefaultClass)
 	{
-		UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
-		if (FirstPersonArmsAnimInstance == nullptr)
+		UAnimInstance* FirstPersonAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
+		UAnimInstance* FirstPersonItemAnimInstance = FirstPersonItemComponent->GetAnimInstance();
+		if (FirstPersonAnimInstance == nullptr || FirstPersonItemAnimInstance == nullptr)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("FirstPersonAnimInstance nullptr."));
 			return;
 		}
 
-		FirstPersonArmsAnimInstance->Montage_Play(Montage);
+		if (PlayerMontage)
+		{
+			FirstPersonAnimInstance->Montage_Play(PlayerMontage);
+		}
+		if (ItemMontage)
+		{
+			FirstPersonItemAnimInstance->Montage_Play(ItemMontage);
+		}
 	}
 	else if (!UseFirstPersonInstance && EquipedItem)
 	{
 		UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
-		if (ThirdPersonAnimInstance == nullptr)
-		{
-			return;
-		}
-
-		ThirdPersonAnimInstance->Montage_Play(Montage);
-	}
-
-	if (GetOwner()->HasAuthority())
-	{
-		Multi_PlayMontage(Montage);
-	}
-}
-
-void UEquipComponent::PlayItemMontage(UAnimMontage* Montage)
-{
-	if (OwnerPawn == nullptr)
-	{
-		return;
-	}
-
-	const bool UseFirstPersonInstance = OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController();
-	
-	if (UseFirstPersonInstance && LocalEquipedItemDefaultClass)
-	{
-		UAnimInstance* FirstPersonItemAnimInstance = FirstPersonItemComponent->GetAnimInstance();
-		if (FirstPersonItemAnimInstance == nullptr)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("FirstPersonItemAnimInstance nullptr."));
-			return;
-		}
-
-		FirstPersonItemAnimInstance->Montage_Play(Montage);
-	}
-	else if (!UseFirstPersonInstance && EquipedItem)
-	{
 		UAnimInstance* ThirdPersonItemAnimInstance = EquipedItem->GetMeshComponent()->GetAnimInstance();
-		if (ThirdPersonItemAnimInstance == nullptr)
+		if (ThirdPersonAnimInstance == nullptr || ThirdPersonItemAnimInstance == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ThirdPersonItemAnimInstance nullptr."));
+			UE_LOG(LogTemp, Warning, TEXT("ThirdPersonAnimInstance nullptr."));
 			return;
 		}
 
-		ThirdPersonItemAnimInstance->Montage_Play(Montage);
+		if (PlayerMontage)
+		{
+			ThirdPersonAnimInstance->Montage_Play(PlayerMontage);
+		}
+		if (ItemMontage)
+		{
+			ThirdPersonItemAnimInstance->Montage_Play(ItemMontage);
+		}
 	}
 
-	if (GetOwner()->HasAuthority())
+	if (OwnerPawn->HasAuthority())
 	{
-		Multi_PlayItemMontage(Montage);
+		Multi_PlayItemMontage(PlayerMontage, ItemMontage);
 	}
 }
 
@@ -420,11 +400,12 @@ void UEquipComponent::OnRep_EquipedItem()
 		
 		EquipedItem->SetLocalVisibility(!OwnerPawn->IsLocallyControlled());
 
-		PlayMontage(EquipedItem->GetEquipMontage());
-		if (EquipedItem->GetEquipItemMontage() != nullptr)
+		if (OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled())
 		{
-			PlayItemMontage(EquipedItem->GetEquipItemMontage());
+			return;
 		}
+		
+		PlayItemMontage(EquipedItem->GetEquipMontage(), EquipedItem->GetEquipItemMontage());
 	}
 }
 
@@ -456,12 +437,7 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 		FirstPersonItemComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
 		FirstPersonItemComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
 
-		PlayMontage(LocalEquipedItemDefaultClass->GetEquipMontage());
-
-		if (LocalEquipedItemDefaultClass->GetEquipItemMontage() != nullptr)
-		{
-			PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipItemMontage());
-		}
+		PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipMontage(), LocalEquipedItemDefaultClass->GetEquipItemMontage());
 	}
 	else
 	{
@@ -586,40 +562,33 @@ void UEquipComponent::Server_ReloadPressed_Implementation()
 
 bool UEquipComponent::MulticastMontageConditionsValid() const
 {
-	if (OwnerPawn == nullptr || OwnerPawn->GetController() == nullptr)
+	if (OwnerPawn == nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Ownerpawn Is null."));
 		return false;
 	}
 
 	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Owner Is locally controlled."));
 		return false;
 	}
 
 	if (OwnerPawn->HasAuthority())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Owner Is auth."));
 		return false;
 	}
 
 	return true;
 }
 
-void UEquipComponent::Multi_PlayMontage_Implementation(UAnimMontage* Montage)
+void UEquipComponent::Multi_PlayItemMontage_Implementation(UAnimMontage* PlayerMontage, UAnimMontage* ItemMontage)
 {
 	if (!MulticastMontageConditionsValid())
 	{
 		return;
 	}
 
-	PlayMontage(Montage);
-}
-
-void UEquipComponent::Multi_PlayItemMontage_Implementation(UAnimMontage* Montage)
-{
-	if (!MulticastMontageConditionsValid())
-	{
-		return;
-	}
-
-	PlayMontage(Montage);
+	PlayItemMontage(PlayerMontage, ItemMontage);
 }

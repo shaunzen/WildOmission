@@ -119,7 +119,4 @@ protected:
 	APawn* GetOwnerPawn() const;
 	UEquipComponent* GetOwnerEquipComponent() const;
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayThirdPersonEquipMontage();
-
 };

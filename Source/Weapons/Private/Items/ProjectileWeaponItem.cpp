@@ -39,7 +39,7 @@ void AProjectileWeaponItem::Equip(APawn *InOwnerPawn, USkeletalMeshComponent *In
 {
 	Super::Equip(InOwnerPawn, InThirdPersonMeshComponent, InItemName, InFromSlotIndex, InUniqueID);
 	
-	RetrieveInventoryStats();
+	PullInventoryStats();
 }
 
 bool AProjectileWeaponItem::HasAmmo() const
@@ -52,12 +52,7 @@ bool AProjectileWeaponItem::HasAmmo() const
 	return true;
 }
 
-bool AProjectileWeaponItem::CanFire() const
-{
-	return true;
-}
-
-void AProjectileWeaponItem::RetrieveInventoryStats()
+void AProjectileWeaponItem::PullInventoryStats()
 {
 	UPlayerInventoryComponent* OwnerInventory = GetOwningPlayerInventory();
 	if (OwnerInventory == nullptr)
@@ -76,7 +71,7 @@ void AProjectileWeaponItem::RetrieveInventoryStats()
 	Durability = FromSlot->Item.GetStat(TEXT("Durability"));
 }
 
-void AProjectileWeaponItem::UpdateInventoryStats()
+void AProjectileWeaponItem::PushInventoryStats()
 {
 	UPlayerInventoryComponent* OwnerInventory = GetOwningPlayerInventory();
 	if (OwnerInventory == nullptr)
@@ -112,18 +107,6 @@ void AProjectileWeaponItem::SpawnProjectile()
 	SpawnParams.Owner = GetOwnerPawn();
 	
 	GetWorld()->SpawnActor<AWeaponProjectile>(ProjectileClass, ProjectileSpawnLocation, GetOwnerEquipComponent()->GetOwnerControlRotation(), SpawnParams);
-}
-
-void AProjectileWeaponItem::PlayThirdPersonFireAnimation()
-{
-	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
-	if (OwnerEquipComponent == nullptr || PrimaryMontage == nullptr)
-	{
-		return;
-	}
-
-	OwnerEquipComponent->PlayMontage(PrimaryMontage);
-	OwnerEquipComponent->PlayItemMontage(PrimaryItemMontage);
 }
 
 void AProjectileWeaponItem::PlayFireSoundEffect()
@@ -181,7 +164,7 @@ UPlayerInventoryComponent* AProjectileWeaponItem::GetOwningPlayerInventory() con
 	return GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 }
 
-void AProjectileWeaponItem::Multi_FireEffects_Implementation()
+void AProjectileWeaponItem::Multi_PlayFireEffects_Implementation()
 {
 	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled() || (GetOwnerPawn()->IsLocallyControlled() && GetOwnerPawn()->GetRemoteRole() == ROLE_Authority))
 	{
@@ -194,6 +177,5 @@ void AProjectileWeaponItem::Multi_FireEffects_Implementation()
 void AProjectileWeaponItem::PlayFireEffects()
 {
 	SpawnProjectile();
-	PlayThirdPersonFireAnimation();
 	PlayFireSoundEffect();
 }

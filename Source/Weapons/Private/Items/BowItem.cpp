@@ -28,13 +28,11 @@ void ABowItem::OnSecondaryPressed()
 
 	if (GetOwnerPawn() && GetOwnerPawn()->IsLocallyControlled())
 	{
-		GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage);
-		GetOwnerEquipComponent()->PlayItemMontage(SecondaryItemMontage);
+		GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage, SecondaryItemMontage);
 	}
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
-		GetOwnerEquipComponent()->PlayMontage(SecondaryMontage);
-		GetOwnerEquipComponent()->PlayItemMontage(SecondaryItemMontage);
+		GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage, SecondaryItemMontage);
 	}
 
 	if (HasAuthority())
@@ -66,12 +64,11 @@ void ABowItem::OnSecondaryReleased()
 		SpawnProjectile();
 		PlayFireSoundEffect();
 
-		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage);
-		GetOwnerEquipComponent()->PlayItemMontage(PrimaryItemMontage);
+		GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
 	}
 	if (HasAuthority())
 	{
-		Multi_FireEffects();
+		Multi_PlayFireEffects();
 
 		--CurrentAmmo;
 		--Durability;
@@ -79,7 +76,7 @@ void ABowItem::OnSecondaryReleased()
 		{
 			GetOwningPlayerInventory()->RemoveHeldItem();
 		}
-		UpdateInventoryStats();
+		PushInventoryStats();
 	}
 	EquipPose = DefaultEquipPose;
 	AtFullDraw = false;
@@ -98,6 +95,5 @@ void ABowItem::Multi_PlayThirdPersonSecondaryMontage_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayMontage(SecondaryMontage);
-	OwnerEquipComponent->PlayItemMontage(SecondaryItemMontage);
+	OwnerEquipComponent->PlayItemMontage(SecondaryMontage, SecondaryItemMontage);
 }
