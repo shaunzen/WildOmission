@@ -2,17 +2,10 @@
 
 
 #include "Items/FirearmItem.h"
-#include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
-#include "Projectiles/WeaponProjectile.h"
-#include "Camera/CameraComponent.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
-#include "Net/UnrealNetwork.h"
-#include "Log.h"
 
 AFirearmItem::AFirearmItem()
 {
@@ -31,19 +24,6 @@ AFirearmItem::AFirearmItem()
 void AFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
-	
-	if (!HasAmmo())
-	{
-		if (OutOfAmmoSound == nullptr)
-		{
-			return;
-		}
-
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, GetOwner()->GetActorLocation());
-		return;
-	}
-
-	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
 
 }
 

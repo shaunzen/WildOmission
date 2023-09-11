@@ -6,11 +6,8 @@
 #include "Components/EquipComponent.h"
 #include "Projectiles/WeaponProjectile.h"
 #include "Camera/CameraComponent.h"
-#include "NiagaraSystem.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
 
