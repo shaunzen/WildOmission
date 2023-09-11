@@ -51,6 +51,9 @@ protected:
 	void SpawnProjectile();
 	void PlayFireSoundEffect();
 
+	void Reload();
+	void DecreaseAmmoAndDurability();
+
 	int32 GetRemainingAmmoInInventory() const;
 	void RemoveAmmoFromInventory(const int32 AmountToRemove);
 

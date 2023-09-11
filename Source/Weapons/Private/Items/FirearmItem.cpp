@@ -32,7 +32,25 @@ void AFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 	
-	// TODO make this only in the semi auto class
+	if (!HasAmmo())
+	{
+		if (OutOfAmmoSound == nullptr)
+		{
+			return;
+		}
+
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, GetOwner()->GetActorLocation());
+		return;
+	}
+
+	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
+
+}
+
+void AFirearmItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
+{
+	Super::OnPrimaryAnimationClimax(FromFirstPersonInstance);
+
 	Fire();
 }
 
@@ -57,28 +75,7 @@ void AFirearmItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 {
 	Super::OnReloadAnimationClimax(FromFirstPersonInstance);
 
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	const int32 RemainingInventoryAmmo = GetRemainingAmmoInInventory();
-	const int32 AmmoRequiredToFillMag = MaxAmmo - CurrentAmmo;
-	
-	int32 AmmoUsedInReload = 0;
-	
-	if (GetRemainingAmmoInInventory() < AmmoRequiredToFillMag)
-	{
-		AmmoUsedInReload += GetRemainingAmmoInInventory();
-	}
-	else
-	{
-		AmmoUsedInReload = AmmoRequiredToFillMag;
-	}
-
-	CurrentAmmo += AmmoUsedInReload;
-	RemoveAmmoFromInventory(AmmoUsedInReload);
-	PushInventoryStats();
+	Reload();
 }
 
 void AFirearmItem::PlayFireEffects()
@@ -105,29 +102,6 @@ void AFirearmItem::PlayMuzzleFlash()
 
 void AFirearmItem::Fire()
 {
-	if (!HasAmmo())
-	{
-		if (OutOfAmmoSound == nullptr)
-		{
-			return;
-		}
-
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, GetOwner()->GetActorLocation());
-	}
-
-
-	HasAuthority() ? Multi_PlayFireEffects() : PlayFireEffects();
-
-	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
-
-	if (HasAuthority())
-	{
-		--CurrentAmmo;
-		--Durability;
-		if (Durability <= 0 && GetOwningPlayerInventory())
-		{
-			GetOwningPlayerInventory()->RemoveHeldItem();
-		}
-		PushInventoryStats();
-	}
+	PlayFireEffects();
+	DecreaseAmmoAndDurability();
 }

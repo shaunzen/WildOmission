@@ -119,6 +119,50 @@ void AProjectileWeaponItem::PlayFireSoundEffect()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
 }
 
+void AProjectileWeaponItem::Reload()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	const int32 RemainingInventoryAmmo = GetRemainingAmmoInInventory();
+	const int32 AmmoRequiredToFillMag = MaxAmmo - CurrentAmmo;
+
+	int32 AmmoUsedInReload = 0;
+
+	if (GetRemainingAmmoInInventory() < AmmoRequiredToFillMag)
+	{
+		AmmoUsedInReload += GetRemainingAmmoInInventory();
+	}
+	else
+	{
+		AmmoUsedInReload = AmmoRequiredToFillMag;
+	}
+
+	CurrentAmmo += AmmoUsedInReload;
+	RemoveAmmoFromInventory(AmmoUsedInReload);
+	PushInventoryStats();
+}
+
+void AProjectileWeaponItem::DecreaseAmmoAndDurability()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	--CurrentAmmo;
+	--Durability;
+	
+	if (Durability <= 0 && GetOwningPlayerInventory())
+	{
+		GetOwningPlayerInventory()->RemoveHeldItem();
+	}
+
+	PushInventoryStats();
+}
+
 int32 AProjectileWeaponItem::GetRemainingAmmoInInventory() const
 {
 	if (GetOwner() == nullptr)
@@ -166,7 +210,7 @@ UPlayerInventoryComponent* AProjectileWeaponItem::GetOwningPlayerInventory() con
 
 void AProjectileWeaponItem::Multi_PlayFireEffects_Implementation()
 {
-	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled() || (GetOwnerPawn()->IsLocallyControlled() && GetOwnerPawn()->GetRemoteRole() == ROLE_Authority))
+	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled() || GetOwnerPawn()->HasAuthority())
 	{
 		return;
 	}
@@ -176,6 +220,11 @@ void AProjectileWeaponItem::Multi_PlayFireEffects_Implementation()
 
 void AProjectileWeaponItem::PlayFireEffects()
 {
+	if (HasAuthority())
+	{
+		Multi_PlayFireEffects();
+	}
+
 	SpawnProjectile();
 	PlayFireSoundEffect();
 }
