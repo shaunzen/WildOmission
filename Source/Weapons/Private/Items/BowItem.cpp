@@ -28,13 +28,13 @@ void ABowItem::OnSecondaryPressed()
 
 	if (GetOwnerPawn() && GetOwnerPawn()->IsLocallyControlled())
 	{
-		GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage, true);
-		GetOwnerEquipComponent()->PlayItemMontage(SecondaryItemMontage, true);
+		GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage);
+		GetOwnerEquipComponent()->PlayItemMontage(SecondaryItemMontage);
 	}
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
-		GetOwnerEquipComponent()->PlayMontage(SecondaryMontage, true);
-		GetOwnerEquipComponent()->PlayItemMontage(SecondaryItemMontage, true);
+		GetOwnerEquipComponent()->PlayMontage(SecondaryMontage);
+		GetOwnerEquipComponent()->PlayItemMontage(SecondaryItemMontage);
 	}
 
 	if (HasAuthority())
@@ -66,8 +66,8 @@ void ABowItem::OnSecondaryReleased()
 		SpawnProjectile();
 		PlayFireSoundEffect();
 
-		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage, true);
-		GetOwnerEquipComponent()->PlayItemMontage(PrimaryItemMontage, true);
+		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage);
+		GetOwnerEquipComponent()->PlayItemMontage(PrimaryItemMontage);
 	}
 	if (HasAuthority())
 	{
@@ -98,6 +98,6 @@ void ABowItem::Multi_PlayThirdPersonSecondaryMontage_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayMontage(SecondaryMontage, false);
-	OwnerEquipComponent->PlayItemMontage(SecondaryItemMontage, false);
+	OwnerEquipComponent->PlayMontage(SecondaryMontage);
+	OwnerEquipComponent->PlayItemMontage(SecondaryItemMontage);
 }

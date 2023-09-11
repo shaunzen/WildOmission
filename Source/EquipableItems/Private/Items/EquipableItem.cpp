@@ -173,7 +173,7 @@ void AEquipableItem::Multi_PlayThirdPersonEquipMontage_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayMontage(EquipMontage, false);
+	OwnerEquipComponent->PlayMontage(EquipMontage);
 }
 
 void AEquipableItem::SetLocalVisibility(bool bVisible)

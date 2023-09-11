@@ -36,8 +36,8 @@ public:
 
 	USkeletalMeshComponent* GetFirstPersonItemComponent() const;
 
-	void PlayMontage(UAnimMontage* Montage, bool FirstPerson);
-	void PlayItemMontage(UAnimMontage* Montage, bool FirstPerson);
+	void PlayMontage(UAnimMontage* Montage);
+	void PlayItemMontage(UAnimMontage* Montage);
 
 	bool IsMontagePlaying(UAnimMontage* Montage) const;
 	bool IsItemMontagePlaying(UAnimMontage* Montage) const;
@@ -124,5 +124,12 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void Server_ReloadPressed();
+
+	bool MulticastMontageConditionsValid() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayMontage(UAnimMontage* Montage);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayItemMontage(UAnimMontage* Montage);
 
 };

@@ -141,9 +141,16 @@ USkeletalMeshComponent* UEquipComponent::GetFirstPersonItemComponent() const
 	return FirstPersonItemComponent;
 }
 
-void UEquipComponent::PlayMontage(UAnimMontage* Montage, bool FirstPerson)
+void UEquipComponent::PlayMontage(UAnimMontage* Montage)
 {
-	if (FirstPerson && LocalEquipedItemDefaultClass)
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+	
+	const bool UseFirstPersonInstance = OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController();
+
+	if (UseFirstPersonInstance && LocalEquipedItemDefaultClass)
 	{
 		UAnimInstance* FirstPersonArmsAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
 		if (FirstPersonArmsAnimInstance == nullptr)
@@ -153,7 +160,7 @@ void UEquipComponent::PlayMontage(UAnimMontage* Montage, bool FirstPerson)
 
 		FirstPersonArmsAnimInstance->Montage_Play(Montage);
 	}
-	else if (!FirstPerson && EquipedItem)
+	else if (!UseFirstPersonInstance && EquipedItem)
 	{
 		UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
 		if (ThirdPersonAnimInstance == nullptr)
@@ -163,11 +170,23 @@ void UEquipComponent::PlayMontage(UAnimMontage* Montage, bool FirstPerson)
 
 		ThirdPersonAnimInstance->Montage_Play(Montage);
 	}
+
+	if (GetOwner()->HasAuthority())
+	{
+		Multi_PlayMontage(Montage);
+	}
 }
 
-void UEquipComponent::PlayItemMontage(UAnimMontage* Montage, bool FirstPerson)
+void UEquipComponent::PlayItemMontage(UAnimMontage* Montage)
 {
-	if (FirstPerson && LocalEquipedItemDefaultClass)
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	const bool UseFirstPersonInstance = OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController();
+	
+	if (UseFirstPersonInstance && LocalEquipedItemDefaultClass)
 	{
 		UAnimInstance* FirstPersonItemAnimInstance = FirstPersonItemComponent->GetAnimInstance();
 		if (FirstPersonItemAnimInstance == nullptr)
@@ -178,7 +197,7 @@ void UEquipComponent::PlayItemMontage(UAnimMontage* Montage, bool FirstPerson)
 
 		FirstPersonItemAnimInstance->Montage_Play(Montage);
 	}
-	else if (!FirstPerson && EquipedItem)
+	else if (!UseFirstPersonInstance && EquipedItem)
 	{
 		UAnimInstance* ThirdPersonItemAnimInstance = EquipedItem->GetMeshComponent()->GetAnimInstance();
 		if (ThirdPersonItemAnimInstance == nullptr)
@@ -188,6 +207,11 @@ void UEquipComponent::PlayItemMontage(UAnimMontage* Montage, bool FirstPerson)
 		}
 
 		ThirdPersonItemAnimInstance->Montage_Play(Montage);
+	}
+
+	if (GetOwner()->HasAuthority())
+	{
+		Multi_PlayItemMontage(Montage);
 	}
 }
 
@@ -396,10 +420,10 @@ void UEquipComponent::OnRep_EquipedItem()
 		
 		EquipedItem->SetLocalVisibility(!OwnerPawn->IsLocallyControlled());
 
-		PlayMontage(EquipedItem->GetEquipMontage(), false);
+		PlayMontage(EquipedItem->GetEquipMontage());
 		if (EquipedItem->GetEquipItemMontage() != nullptr)
 		{
-			PlayItemMontage(EquipedItem->GetEquipItemMontage(), false);
+			PlayItemMontage(EquipedItem->GetEquipItemMontage());
 		}
 	}
 }
@@ -432,11 +456,11 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 		FirstPersonItemComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
 		FirstPersonItemComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
 
-		PlayMontage(LocalEquipedItemDefaultClass->GetEquipMontage(), true);
+		PlayMontage(LocalEquipedItemDefaultClass->GetEquipMontage());
 
 		if (LocalEquipedItemDefaultClass->GetEquipItemMontage() != nullptr)
 		{
-			PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipItemMontage(), true);
+			PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipItemMontage());
 		}
 	}
 	else
@@ -558,4 +582,44 @@ void UEquipComponent::Server_SecondaryReleased_Implementation()
 void UEquipComponent::Server_ReloadPressed_Implementation()
 {
 	ReloadPressed();
+}
+
+bool UEquipComponent::MulticastMontageConditionsValid() const
+{
+	if (OwnerPawn == nullptr || OwnerPawn->GetController() == nullptr)
+	{
+		return false;
+	}
+
+	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled())
+	{
+		return false;
+	}
+
+	if (OwnerPawn->HasAuthority())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void UEquipComponent::Multi_PlayMontage_Implementation(UAnimMontage* Montage)
+{
+	if (!MulticastMontageConditionsValid())
+	{
+		return;
+	}
+
+	PlayMontage(Montage);
+}
+
+void UEquipComponent::Multi_PlayItemMontage_Implementation(UAnimMontage* Montage)
+{
+	if (!MulticastMontageConditionsValid())
+	{
+		return;
+	}
+
+	PlayMontage(Montage);
 }

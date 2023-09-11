@@ -32,7 +32,6 @@ void AFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 
-	Fire();
 }
 
 void AFirearmItem::OnReloadPressed()
@@ -51,8 +50,8 @@ void AFirearmItem::OnReloadPressed()
 
 	if (GetOwnerPawn()->IsLocallyControlled())
 	{
-		GetOwnerEquipComponent()->PlayMontage(ReloadMontage, true);
-		GetOwnerEquipComponent()->PlayItemMontage(ReloadItemMontage, true);
+		GetOwnerEquipComponent()->PlayMontage(ReloadMontage);
+		GetOwnerEquipComponent()->PlayItemMontage(ReloadItemMontage);
 	}
 
 	if (HasAuthority())
@@ -139,8 +138,8 @@ void AFirearmItem::Fire()
 		SpawnMuzzleFlash();
 		PlayFireSoundEffect();
 
-		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage, true);
-		GetOwnerEquipComponent()->PlayItemMontage(PrimaryItemMontage, true);
+		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage);
+		GetOwnerEquipComponent()->PlayItemMontage(PrimaryItemMontage);
 	}
 
 	if (HasAuthority())
@@ -164,17 +163,12 @@ void AFirearmItem::Fire()
 
 void AFirearmItem::Multi_PlayThirdPersonReloadMontage_Implementation()
 {
-	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled())
-	{
-		return;
-	}
-
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
-	if (OwnerEquipComponent == nullptr)
+	if (OwnerEquipComponent == nullptr || GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled() || GetOwnerPawn()->GetController()->IsPlayerController())
 	{
 		return;
 	}
 
-	OwnerEquipComponent->PlayMontage(ReloadMontage, false);
-	OwnerEquipComponent->PlayItemMontage(ReloadItemMontage, false);
+	OwnerEquipComponent->PlayMontage(ReloadMontage);
+	OwnerEquipComponent->PlayItemMontage(ReloadItemMontage);
 }

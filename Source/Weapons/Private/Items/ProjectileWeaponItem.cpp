@@ -122,8 +122,8 @@ void AProjectileWeaponItem::PlayThirdPersonFireAnimation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayMontage(PrimaryMontage, false);
-	OwnerEquipComponent->PlayItemMontage(PrimaryItemMontage, false);
+	OwnerEquipComponent->PlayMontage(PrimaryMontage);
+	OwnerEquipComponent->PlayItemMontage(PrimaryItemMontage);
 }
 
 void AProjectileWeaponItem::PlayFireSoundEffect()

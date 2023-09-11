@@ -71,15 +71,12 @@ void AToolItem::OnPrimaryHeld()
 		return;
 	}
 
-	if (GetOwnerPawn()->IsLocallyControlled() && GetOwnerPawn()->GetController()->IsPlayerController())
-	{
-		GetOwnerEquipComponent()->PlayMontage(PrimaryMontage, true);
-	}
-
-	if (HasAuthority())
+	GetOwnerEquipComponent()->PlayMontage(PrimaryMontage);
+	
+	/*if (HasAuthority())
 	{
 		Multi_PlayThirdPersonPrimaryMontage();
-	}
+	}*/
 }
 
 void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
@@ -220,7 +217,7 @@ void AToolItem::Multi_PlayThirdPersonPrimaryMontage_Implementation()
 		return;
 	}
 
-	OwnerEquipComponent->PlayMontage(PrimaryMontage, false);
+	OwnerEquipComponent->PlayMontage(PrimaryMontage);
 }
 
 void AToolItem::PlayImpactSound(const FHitResult& HitResult)
