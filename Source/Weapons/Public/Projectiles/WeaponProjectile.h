@@ -23,7 +23,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* CollisionComponent;
 
@@ -32,13 +31,17 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* MovementComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float Damage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	bool DestroyOnImpact;
+
+private:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 

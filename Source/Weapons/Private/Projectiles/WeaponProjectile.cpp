@@ -47,6 +47,7 @@ AWeaponProjectile::AWeaponProjectile()
 	MovementComponent->MaxSpeed = 50000.0f;
 
 	Damage = 15.0f;
+	DestroyOnImpact = true;
 }
 
 // Called when the game starts or when spawned
@@ -76,8 +77,11 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 		HitPawn->TakeDamage(Damage, HitByProjectileEvent, GetInstigatorController<AController>(), this);
 	}
 
-	// Destroy self
-	Destroy();
+	if (DestroyOnImpact)
+	{
+		// Destroy self
+		Destroy();
+	}
 }
 
 void AWeaponProjectile::SpawnImpactEffects(const FHitResult& HitResult)
