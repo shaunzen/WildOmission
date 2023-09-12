@@ -23,6 +23,9 @@ public:
 	virtual void OnSecondaryAnimationClimax(bool FromFirstPersonInstance) override;
 	virtual void OnSecondaryReleased() override;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsDrawn() const;
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimSequence* DefaultEquipPose;

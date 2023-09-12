@@ -261,22 +261,21 @@ UAnimSequence* UEquipComponent::GetEquipedItemPose()
 
 	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController())
 	{
-		if (LocalEquipedItemDefaultClass == nullptr)
+		if (EquipedItem)
 		{
-			return nullptr;
+			return EquipedItem->GetEquipPose();
 		}
-
-		return LocalEquipedItemDefaultClass->GetEquipPose();
+		else if (LocalEquipedItemDefaultClass)
+		{
+			return LocalEquipedItemDefaultClass->GetEquipPose();
+		}
 	}
-	else
+	else if (EquipedItem)
 	{
-		if (EquipedItem == nullptr)
-		{
-			return nullptr;
-		}
-
 		return EquipedItem->GetEquipPose();
 	}
+
+	return nullptr;
 }
 
 bool UEquipComponent::IsItemEquiped() const

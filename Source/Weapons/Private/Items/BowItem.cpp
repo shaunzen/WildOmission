@@ -66,3 +66,8 @@ void ABowItem::OnSecondaryReleased()
 	EquipPose = DefaultEquipPose;
 	AtFullDraw = false;
 }
+
+bool ABowItem::IsDrawn() const
+{
+	return AtFullDraw;
+}
