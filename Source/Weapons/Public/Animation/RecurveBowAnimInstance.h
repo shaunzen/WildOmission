@@ -6,9 +6,8 @@
 #include "Animation/AnimInstance.h"
 #include "RecurveBowAnimInstance.generated.h"
 
-/**
- * 
- */
+class ABowItem;
+
 UCLASS()
 class WEAPONS_API URecurveBowAnimInstance : public UAnimInstance
 {
@@ -23,5 +22,7 @@ public:
 
 private:
 	void HandleDrawn();
+
+	ABowItem* GetEquipedBow() const;
 
 };

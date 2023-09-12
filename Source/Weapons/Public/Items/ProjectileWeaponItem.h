@@ -43,9 +43,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	FName AmmoItemID;
 
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayFireEffects();
 	virtual void PlayFireEffects();
 
 	void Reload();

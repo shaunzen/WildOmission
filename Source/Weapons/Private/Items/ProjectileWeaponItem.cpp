@@ -205,23 +205,8 @@ UPlayerInventoryComponent* AProjectileWeaponItem::GetOwningPlayerInventory() con
 	return GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
 }
 
-void AProjectileWeaponItem::Multi_PlayFireEffects_Implementation()
-{
-	if (GetOwnerPawn() == nullptr || GetOwnerPawn()->IsLocallyControlled() || GetOwnerPawn()->HasAuthority())
-	{
-		return;
-	}
-
-	PlayFireEffects();
-}
-
 void AProjectileWeaponItem::PlayFireEffects()
 {
-	if (HasAuthority())
-	{
-		Multi_PlayFireEffects();
-	}
-
 	SpawnProjectile();
 	PlayFireSoundEffect();
 }

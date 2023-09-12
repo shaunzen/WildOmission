@@ -19,26 +19,29 @@ void URecurveBowAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void URecurveBowAnimInstance::HandleDrawn()
 {
+	ABowItem* EquipedBow = GetEquipedBow();
+	if (EquipedBow == nullptr)
+	{
+		return;
+	}
+	Drawn = EquipedBow->IsDrawn();
+}
+
+ABowItem* URecurveBowAnimInstance::GetEquipedBow() const
+{
 	APawn* OwnerPawn = TryGetPawnOwner();
 	if (OwnerPawn == nullptr)
 	{
-		Drawn = false;
-		return;
+		return Cast<ABowItem>(GetOwningActor());
 	}
 
 	UEquipComponent* OwnerEquipComponent = OwnerPawn->FindComponentByClass<UEquipComponent>();
 	if (OwnerEquipComponent == nullptr)
 	{
-		Drawn = false;
-		return;
+		return nullptr;
 	}
 
 	ABowItem* EquipedBow = Cast<ABowItem>(OwnerEquipComponent->GetEquipedItem());
-	if (EquipedBow == nullptr)
-	{
-		Drawn = false;
-		return;
-	}
-
-	Drawn = EquipedBow->IsDrawn();
+	
+	return EquipedBow;
 }
