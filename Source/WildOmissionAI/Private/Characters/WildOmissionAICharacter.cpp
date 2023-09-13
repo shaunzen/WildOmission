@@ -67,6 +67,7 @@ void AWildOmissionAICharacter::HandleDeath()
 	if (RagdollClass)
 	{
 		GetWorld()->SpawnActor<AWildOmissionAIRagdoll>(RagdollClass, GetActorLocation(), GetActorRotation());
+		// TODO move all attached components to ragdoll
 	}
 	HandleDespawn();
 }

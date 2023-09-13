@@ -25,6 +25,8 @@ ACollectableProjectile::ACollectableProjectile()
 	ItemID = NAME_None;
 }
 
+
+
 void ACollectableProjectile::Interact(AActor* Interactor)
 {
 	if (Interactor == nullptr)

@@ -23,7 +23,7 @@ AWeaponProjectile::AWeaponProjectile()
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
 	CollisionComponent->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndProbe);
-	CollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	CollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel10);
 	CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
 	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
@@ -86,7 +86,7 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 			return;
 		}
 
-		SpawnedCollectable->AttachToComponent(HitComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, Hit.BoneName);
+		SpawnedCollectable->AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform, Hit.BoneName);
 	}	
 
 	// Destroy self
