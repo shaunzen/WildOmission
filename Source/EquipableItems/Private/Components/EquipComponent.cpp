@@ -195,6 +195,49 @@ void UEquipComponent::PlayItemMontage(UAnimMontage* PlayerMontage, UAnimMontage*
 	}
 }
 
+void UEquipComponent::StopAllItemMontages()
+{
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	const float BlendOutTimeSeconds = 0.1f;
+	const bool UseFirstPersonInstance = OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled();
+
+	if (UseFirstPersonInstance && OwnerFirstPersonMesh && FirstPersonItemComponent)
+	{
+		UAnimInstance* FirstPersonAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
+		UAnimInstance* FirstPersonItemAnimInstance = FirstPersonItemComponent->GetAnimInstance();
+		if (FirstPersonAnimInstance == nullptr || FirstPersonItemAnimInstance == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("FirstPersonAnimInstance nullptr."));
+			return;
+		}
+
+		FirstPersonAnimInstance->StopAllMontages(BlendOutTimeSeconds);
+		FirstPersonItemAnimInstance->StopAllMontages(BlendOutTimeSeconds);
+	}
+	else if (!UseFirstPersonInstance && OwnerThirdPersonMesh && EquipedItem)
+	{
+		UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
+		UAnimInstance* ThirdPersonItemAnimInstance = EquipedItem->GetMeshComponent()->GetAnimInstance();
+		if (ThirdPersonAnimInstance == nullptr || ThirdPersonItemAnimInstance == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ThirdPersonAnimInstance nullptr."));
+			return;
+		}
+
+		ThirdPersonAnimInstance->StopAllMontages(BlendOutTimeSeconds);
+		ThirdPersonItemAnimInstance->StopAllMontages(BlendOutTimeSeconds);
+	}
+
+	if (OwnerPawn->HasAuthority())
+	{
+		Multi_StopAllItemMontages();
+	}
+}
+
 bool UEquipComponent::IsMontagePlaying(UAnimMontage* Montage) const
 {
 	return IsFirstPersonMontagePlaying(Montage) || IsThirdPersonMontagePlaying(Montage);
@@ -582,6 +625,7 @@ bool UEquipComponent::MulticastMontageConditionsValid() const
 	return true;
 }
 
+
 void UEquipComponent::Multi_PlayItemMontage_Implementation(UAnimMontage* PlayerMontage, UAnimMontage* ItemMontage)
 {
 	if (!MulticastMontageConditionsValid())
@@ -590,4 +634,14 @@ void UEquipComponent::Multi_PlayItemMontage_Implementation(UAnimMontage* PlayerM
 	}
 
 	PlayItemMontage(PlayerMontage, ItemMontage);
+}
+
+void UEquipComponent::Multi_StopAllItemMontages_Implementation()
+{
+	if (!MulticastMontageConditionsValid())
+	{
+		return;
+	}
+
+	StopAllItemMontages();
 }

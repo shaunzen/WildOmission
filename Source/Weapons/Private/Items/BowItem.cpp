@@ -65,6 +65,7 @@ void ABowItem::OnSecondaryReleased()
 	
 	if (!Drawn)
 	{
+		GetOwnerEquipComponent()->StopAllItemMontages();
 		return;
 	}
 	

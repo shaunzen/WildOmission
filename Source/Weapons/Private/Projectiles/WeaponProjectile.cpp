@@ -4,6 +4,7 @@
 #include "Projectiles/WeaponProjectile.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Projectiles/CollectableProjectile.h"
 #include "Engine/DamageEvents.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "SurfaceHelpers.h"
@@ -47,7 +48,7 @@ AWeaponProjectile::AWeaponProjectile()
 	MovementComponent->MaxSpeed = 50000.0f;
 
 	Damage = 15.0f;
-	DestroyOnImpact = true;
+	CollectableClass = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -71,17 +72,25 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 
 	// Deal Damage
 	APawn* HitPawn = Cast<APawn>(OtherActor);
-	if (HasAuthority() && HitPawn)
+	if (GetOwner()->HasAuthority() && HitPawn)
 	{
 		FPointDamageEvent HitByProjectileEvent(Damage, Hit, NormalImpulse, nullptr);
 		HitPawn->TakeDamage(Damage, HitByProjectileEvent, GetInstigatorController<AController>(), this);
 	}
 
-	if (DestroyOnImpact)
+	if (GetOwner()->HasAuthority() && CollectableClass)
 	{
-		// Destroy self
-		Destroy();
-	}
+		ACollectableProjectile* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableProjectile>(CollectableClass, GetActorLocation(), GetActorRotation());
+		if (SpawnedCollectable == nullptr)
+		{
+			return;
+		}
+
+		SpawnedCollectable->AttachToComponent(HitComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, Hit.BoneName);
+	}	
+
+	// Destroy self
+	Destroy();
 }
 
 void AWeaponProjectile::SpawnImpactEffects(const FHitResult& HitResult)

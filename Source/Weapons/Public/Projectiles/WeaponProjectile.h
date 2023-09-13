@@ -9,6 +9,7 @@
 class USphereComponent;
 class UNiagaraComponent;
 class UProjectileMovementComponent;
+class ACollectableProjectile;
 
 UCLASS()
 class WEAPONS_API AWeaponProjectile : public AActor
@@ -39,12 +40,12 @@ protected:
 	float Damage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	bool DestroyOnImpact;
+	TSubclassOf<ACollectableProjectile> CollectableClass;
+
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 private:
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
 	void SpawnImpactEffects(const FHitResult& HitResult);
 
 };
