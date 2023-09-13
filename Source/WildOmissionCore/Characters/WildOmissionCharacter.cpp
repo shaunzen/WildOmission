@@ -508,12 +508,32 @@ void AWildOmissionCharacter::HandleDeath()
 	}
 	OurController->Client_ShowDeathMenu();
 
+	// Get all attached actors
+	TArray<AActor*> AttachedActors;
+	GetAttachedActors(AttachedActors);
+
 	// Create lootable container with inventory
 	// Is Spawning kinda in the air, might want to fix that
 	AItemContainerBase* SpawnedRagdoll = GetWorld()->SpawnActor<AItemContainerBase>(RagdollClass, GetActorTransform());
 	if (SpawnedRagdoll == nullptr)
 	{
 		return;
+	}
+
+	USkeletalMeshComponent* RagdollSkeletalMeshComponent = SpawnedRagdoll->FindComponentByClass<USkeletalMeshComponent>();
+	if (RagdollSkeletalMeshComponent)
+	{
+		for (AActor* AttachedActor : AttachedActors)
+		{
+			if (AttachedActor == nullptr)
+			{
+				continue;
+			}
+
+			const FName Socket = AttachedActor->GetAttachParentSocketName();
+			UE_LOG(LogTemp, Warning, TEXT("Attaching to %s, Socket: %s"), *SpawnedRagdoll->GetActorNameOrLabel(), *Socket.ToString());
+			AttachedActor->AttachToComponent(RagdollSkeletalMeshComponent, FAttachmentTransformRules::KeepWorldTransform, Socket);
+		}
 	}
 
 	// Set Items to be this players items

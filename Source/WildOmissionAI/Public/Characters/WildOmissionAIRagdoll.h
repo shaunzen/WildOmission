@@ -23,6 +23,8 @@ public:
 	virtual FName GetIdentifier() const override;
 	// End ISavableObject Implementation
 
+	USkeletalMeshComponent* GetMeshComponent() const;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* MeshComponent;

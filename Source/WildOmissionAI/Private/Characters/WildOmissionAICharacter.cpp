@@ -66,8 +66,24 @@ void AWildOmissionAICharacter::HandleDeath()
 {
 	if (RagdollClass)
 	{
-		GetWorld()->SpawnActor<AWildOmissionAIRagdoll>(RagdollClass, GetActorLocation(), GetActorRotation());
-		// TODO move all attached components to ragdoll
+		TArray<AActor*> AttachedActors;
+		GetAttachedActors(AttachedActors);
+		AWildOmissionAIRagdoll* SpawnedRagdoll = GetWorld()->SpawnActor<AWildOmissionAIRagdoll>(RagdollClass, GetActorLocation(), GetActorRotation());
+		if (SpawnedRagdoll == nullptr)
+		{
+			return;
+		}
+		
+		for (AActor* AttachedActor : AttachedActors)
+		{
+			if (AttachedActor == nullptr)
+			{
+				continue;
+			}
+
+			const FName Socket = AttachedActor->GetAttachParentSocketName();
+			AttachedActor->AttachToComponent(SpawnedRagdoll->GetMeshComponent(), FAttachmentTransformRules::KeepWorldTransform, Socket);
+		}
 	}
 	HandleDespawn();
 }

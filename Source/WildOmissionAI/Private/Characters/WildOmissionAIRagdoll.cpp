@@ -35,3 +35,8 @@ FName AWildOmissionAIRagdoll::GetIdentifier() const
 {
 	return Identifier;
 }
+
+USkeletalMeshComponent* AWildOmissionAIRagdoll::GetMeshComponent() const
+{
+	return MeshComponent;
+}
