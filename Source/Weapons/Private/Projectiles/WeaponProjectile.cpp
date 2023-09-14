@@ -9,6 +9,7 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "SurfaceHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h";
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
@@ -46,6 +47,7 @@ AWeaponProjectile::AWeaponProjectile()
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
 	MovementComponent->InitialSpeed = 50000.0f;
 	MovementComponent->MaxSpeed = 50000.0f;
+	MovementComponent->bRotationFollowsVelocity = true;
 
 	Damage = 15.0f;
 	CollectableClass = nullptr;
@@ -78,7 +80,8 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 		HitPawn->TakeDamage(Damage, HitByProjectileEvent, GetInstigatorController<AController>(), this);
 	}
 
-	if (GetOwner()->HasAuthority() && CollectableClass)
+	bool ProjectileIntact = UKismetMathLibrary::RandomBoolWithWeight(0.75f);
+	if (GetOwner()->HasAuthority() && ProjectileIntact && CollectableClass)
 	{
 		ACollectableProjectile* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableProjectile>(CollectableClass, GetActorLocation(), GetActorRotation());
 		if (SpawnedCollectable == nullptr)
