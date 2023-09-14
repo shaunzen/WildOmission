@@ -27,7 +27,7 @@ void AProjectileWeaponItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AProjectileWeaponItem, CurrentAmmo, COND_OwnerOnly);
+	DOREPLIFETIME(AProjectileWeaponItem, CurrentAmmo);
 	DOREPLIFETIME_CONDITION(AProjectileWeaponItem, MaxAmmo, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AProjectileWeaponItem, Durability, COND_OwnerOnly);
 }

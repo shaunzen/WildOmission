@@ -22,6 +22,7 @@ public:
 
 private:
 	void HandleDrawn();
+	void HandleArrowVisibility();
 
 	ABowItem* GetEquipedBow() const;
 

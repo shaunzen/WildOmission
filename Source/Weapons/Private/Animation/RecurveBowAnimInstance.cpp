@@ -15,6 +15,7 @@ void URecurveBowAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	HandleDrawn();
+	HandleArrowVisibility();
 }
 
 void URecurveBowAnimInstance::HandleDrawn()
@@ -25,6 +26,23 @@ void URecurveBowAnimInstance::HandleDrawn()
 		return;
 	}
 	Drawn = EquipedBow->IsDrawn();
+}
+
+void URecurveBowAnimInstance::HandleArrowVisibility()
+{
+	ABowItem* EquipedBow = GetEquipedBow();
+	if (EquipedBow == nullptr || GetSkelMeshComponent() == nullptr)
+	{
+		return;
+	}
+
+	if (!EquipedBow->HasAmmo())
+	{
+		GetSkelMeshComponent()->HideBoneByName(TEXT("Arrow"), EPhysBodyOp::PBO_None);
+		return;
+	}
+
+	GetSkelMeshComponent()->UnHideBoneByName(TEXT("Arrow"));
 }
 
 ABowItem* URecurveBowAnimInstance::GetEquipedBow() const
