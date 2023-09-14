@@ -31,4 +31,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FName ItemID;
 
+	UPROPERTY()
+	USoundBase* CollectSound;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayCollectSound();
+
 };

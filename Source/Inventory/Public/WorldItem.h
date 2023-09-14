@@ -64,10 +64,10 @@ private:
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayClumpSound();
+	void Multi_PlayClumpSound();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayPickupSound();
+	void Multi_PlayPickupSound();
 
 	UFUNCTION()
 	void OnLoadComplete_Implementation();

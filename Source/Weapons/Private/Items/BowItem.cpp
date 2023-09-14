@@ -42,7 +42,7 @@ void ABowItem::OnSecondaryPressed()
 {
 	Super::OnSecondaryPressed();
 
-	if (GetRemainingAmmoInInventory() <= 0)
+	if (!HasAmmo() && GetRemainingAmmoInInventory() <= 0)
 	{
 		return;
 	}

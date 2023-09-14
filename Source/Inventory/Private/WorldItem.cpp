@@ -85,7 +85,7 @@ void AWorldItem::Interact(AActor* Interactor)
 	InteractorInventoryComponent->AddItem(Item);
 
 	// Play Pickup sound
-	Client_PlayPickupSound();
+	Multi_PlayPickupSound();
 
 	// Destroy this Item
 	Destroy();
@@ -175,7 +175,7 @@ void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 		this->SetItem(OurItem);
 	}
 
-	Client_PlayClumpSound();
+	Multi_PlayClumpSound();
 }
 
 void AWorldItem::OnLoadComplete_Implementation()
@@ -183,7 +183,7 @@ void AWorldItem::OnLoadComplete_Implementation()
 	OnRep_Item();
 }
 
-void AWorldItem::Client_PlayClumpSound_Implementation()
+void AWorldItem::Multi_PlayClumpSound_Implementation()
 {
 	if (ClumpSound == nullptr)
 	{
@@ -193,7 +193,7 @@ void AWorldItem::Client_PlayClumpSound_Implementation()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ClumpSound, GetActorLocation());
 }
 
-void AWorldItem::Client_PlayPickupSound_Implementation()
+void AWorldItem::Multi_PlayPickupSound_Implementation()
 {
 	if (PickupSound == nullptr)
 	{

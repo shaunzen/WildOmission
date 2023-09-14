@@ -3,6 +3,8 @@
 
 #include "Projectiles/CollectableProjectile.h"
 #include "Components/InventoryComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 
 // Sets default values
 ACollectableProjectile::ACollectableProjectile()
@@ -23,9 +25,13 @@ ACollectableProjectile::ACollectableProjectile()
 	StaticMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECR_Block);
 
 	ItemID = NAME_None;
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> CollectSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Pickup/Pickup_Cue"));
+	if (CollectSoundObject.Succeeded())
+	{
+		CollectSound = CollectSoundObject.Object;
+	}
 }
-
-
 
 void ACollectableProjectile::Interact(AActor* Interactor)
 {
@@ -45,6 +51,8 @@ void ACollectableProjectile::Interact(AActor* Interactor)
 	ProjectileItem.Quantity = 1;
 	InteractorInventoryComponent->AddItem(ProjectileItem);
 
+	Multi_PlayCollectSound();
+
 	Destroy();
 }
 
@@ -53,8 +61,18 @@ FString ACollectableProjectile::PromptText()
 	FItemData* ProjectileItemData = UInventoryComponent::GetItemData(ItemID);
 	if (ProjectileItemData == nullptr)
 	{
-		return TEXT("ERROR");
+		return FString::Printf(TEXT("collect %s"), *ItemID.ToString());
 	}
 
 	return FString::Printf(TEXT("collect %s"), *ProjectileItemData->DisplayName);
+}
+
+void ACollectableProjectile::Multi_PlayCollectSound_Implementation()
+{
+	if (GetWorld() == nullptr || CollectSound == nullptr)
+	{
+		return;
+	}
+	
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollectSound, GetActorLocation());
 }
