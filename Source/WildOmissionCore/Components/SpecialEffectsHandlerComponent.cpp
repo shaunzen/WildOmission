@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
 #include "TimeOfDayHandler.h"
+#include "WildOmissionGameUserSettings.h"
 #include "Components/PostProcessComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
@@ -80,6 +81,11 @@ void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 
 void USpecialEffectsHandlerComponent::HandleNightTimeGamma()
 {
+	if (OwnerCamera == nullptr)
+	{
+		return;
+	}
+	
 	if (TimeOfDayHandler->IsNight())
 	{
 		NightGammaStrength = FMath::Clamp(NightGammaStrength + (0.1f * GetWorld()->GetDeltaSeconds()), 0.0f, 1.0f);
@@ -88,13 +94,20 @@ void USpecialEffectsHandlerComponent::HandleNightTimeGamma()
 	{
 		NightGammaStrength = FMath::Clamp(NightGammaStrength - (0.1f * GetWorld()->GetDeltaSeconds()), 0.0f, 1.0f);
 	}
-
+	
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings)
+	{
+		float GammaAddition = FMath::Lerp(0.0f, 0.1f, NightGammaStrength);
+		float ColorGammaValue = (UserSettings->GetGamma() / 100.0f) + GammaAddition;
+		OwnerCamera->PostProcessSettings.ColorGamma = FVector4(ColorGammaValue, ColorGammaValue, ColorGammaValue, ColorGammaValue);
+	}
 	OwnerCamera->PostProcessSettings.AutoExposureBias = FMath::Lerp(0.5f, -3.0f, NightGammaStrength);
 }
 
 void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
 {
-	if (GetOwner() == nullptr)
+	if (GetOwner() == nullptr || OwnerCamera == nullptr)
 	{
 		return;
 	}
