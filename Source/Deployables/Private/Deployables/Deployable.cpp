@@ -12,7 +12,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/DamageEvents.h"
 
-static UNiagaraSystem* PlacementDustSystem = nullptr;
+static UNiagaraSystem* DustSystem = nullptr;
 
 // Sets default values
 ADeployable::ADeployable()
@@ -50,13 +50,18 @@ ADeployable::ADeployable()
 	if (DefaultPlacementSound.Succeeded())
 	{
 		PlacementSound = DefaultPlacementSound.Object;
-		DestructionSound = DefaultPlacementSound.Object;
+	}
+	
+	static ConstructorHelpers::FObjectFinder<USoundBase> DefaultDestructionSound(TEXT("/Game/Deployables/Audio/Deployable_Destruction_Cue"));
+	if (DefaultDestructionSound.Succeeded())
+	{
+		DestructionSound = DefaultDestructionSound .Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> PlacementDustBlueprint(TEXT("/Game/Deployables/Art/NS_DeployablePlacement"));
-	if (PlacementDustBlueprint.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DustBlueprint(TEXT("/Game/Deployables/Art/NS_DeployableDust"));
+	if (DustBlueprint.Succeeded())
 	{
-		PlacementDustSystem = PlacementDustBlueprint.Object;
+		DustSystem = DustBlueprint.Object;
 	}
 }
 
@@ -75,7 +80,7 @@ void ADeployable::OnLoadComplete_Implementation()
 void ADeployable::OnSpawn()
 {
 	CurrentDurability = MaxDurability;
-	Multicast_PlayPlacementEffects();
+	Multi_PlayPlacementEffects();
 }
 
 void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -97,8 +102,13 @@ void ADeployable::Serialize(FArchive& Ar)
 void ADeployable::Destroyed()
 {
 	Super::Destroyed();
+	
+	if (!HasAuthority())
+	{
+		return;
+	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Hey this is destroyed."));
+	Multi_PlayDestructionEffects();
 }
 
 void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
@@ -183,36 +193,44 @@ bool ADeployable::CanRotate() const
 	return bCanRotate;
 }
 
-void ADeployable::Multicast_PlayPlacementEffects_Implementation()
+void ADeployable::Multi_PlayPlacementEffects_Implementation()
 {
 	if (PlacementSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlacementSound, GetActorLocation());
 	}
-	if (PlacementDustSystem)
-	{
-		FVector Origin = MeshComponent->GetStaticMesh()->GetBounds().Origin + GetActorLocation();
-		FVector BoxExtent = MeshComponent->GetStaticMesh()->GetBounds().BoxExtent;
-		int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
 
-		UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PlacementDustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
-		if (SpawnedDust == nullptr)
-		{
-			return;
-		}
-
-		SpawnedDust->SetVectorParameter(TEXT("BoundingBox"), BoxExtent);
-		SpawnedDust->SetIntParameter(TEXT("BoundingBoxArea"), BoxSurfaceArea);
-		SpawnedDust->Activate(true);
-	}
+	SpawnDustEffects();
 }
 
-void ADeployable::Multicast_PlayDestructionSound_Implementation()
+void ADeployable::Multi_PlayDestructionEffects_Implementation()
 {
-	if (DestructionSound == nullptr)
+	if (DestructionSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, GetActorLocation());
+	}
+	
+	SpawnDustEffects();
+}
+
+void ADeployable::SpawnDustEffects()
+{
+	if (DustSystem == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, GetActorLocation());
+	FVector Origin = MeshComponent->GetStaticMesh()->GetBounds().Origin + GetActorLocation();
+	FVector BoxExtent = MeshComponent->GetStaticMesh()->GetBounds().BoxExtent;
+	int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
+
+	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
+	if (SpawnedDust == nullptr)
+	{
+		return;
+	}
+
+	SpawnedDust->SetVectorParameter(TEXT("BoundingBox"), BoxExtent);
+	SpawnedDust->SetIntParameter(TEXT("BoundingBoxArea"), BoxSurfaceArea);
+	SpawnedDust->Activate(true);
 }

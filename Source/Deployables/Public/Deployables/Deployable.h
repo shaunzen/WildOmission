@@ -105,10 +105,12 @@ protected:
 	bool bCanRotate;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_PlayPlacementEffects();
+	void Multi_PlayPlacementEffects();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_PlayDestructionSound();
+	void Multi_PlayDestructionEffects();
+
+	void SpawnDustEffects();
 
 	UFUNCTION()
 	virtual void OnLoadComplete_Implementation() override;
