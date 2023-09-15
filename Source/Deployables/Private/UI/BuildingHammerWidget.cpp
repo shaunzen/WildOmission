@@ -91,10 +91,10 @@ void UBuildingHammerWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 	const int32 ViewportCenterX = ViewportSizeX * 0.5f;
 	const int32 ViewportCenterY = ViewportSizeY * 0.5f;
 	
-	UpgradeSelected = FMath::RoundToInt32(MousePositionX) < (ViewportCenterX - 100);
+	UpgradeSelected = FMath::RoundToInt32(MousePositionX) > (ViewportCenterX + 100);
 	ScaleWidgetByBool(UpgradePanel, UpgradeSelected && CanUpgradeIfUpgradeable);
 
-	DestroySelected = FMath::RoundToInt32(MousePositionX) > (ViewportCenterX + 100);
+	DestroySelected = FMath::RoundToInt32(MousePositionX) < (ViewportCenterX - 100);
 	ScaleWidgetByBool(DestroyPanel, DestroySelected);
 
 	if (ButtonSound &&
@@ -102,7 +102,6 @@ void UBuildingHammerWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 	{
 		PlaySound(ButtonSound);
 	}
-
 }
 
 FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
