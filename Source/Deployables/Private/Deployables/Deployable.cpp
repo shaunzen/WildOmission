@@ -94,6 +94,13 @@ void ADeployable::Serialize(FArchive& Ar)
 	Super::Serialize(Ar);
 }
 
+void ADeployable::Destroyed()
+{
+	Super::Destroyed();
+
+	UE_LOG(LogTemp, Warning, TEXT("Hey this is destroyed."));
+}
+
 void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
 {
 	float DamageToApply = BaseWindDamage * DamageMultiplier * GetWorld()->GetDeltaSeconds();

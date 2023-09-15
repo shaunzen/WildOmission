@@ -28,6 +28,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Serialize(FArchive& Ar) override;
 
+	virtual void Destroyed() override;
+
 	// Begin IDamagedByWind Implementation
 	virtual void ApplyWindDamage(AActor* WindCauser, float DamageMultiplier = 1.0f) override;
 	// End IDamagedByWind Implementation
