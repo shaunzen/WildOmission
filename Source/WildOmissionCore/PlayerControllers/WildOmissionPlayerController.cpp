@@ -131,7 +131,7 @@ bool AWildOmissionPlayerController::IsEditorPlayer() const
 
 void AWildOmissionPlayerController::Client_SetNumRequiredActors_Implementation(const int32& InNum)
 {
-	UE_LOG(LogTemp, Verbose, TEXT("NumRequiredActorsSet: %i"), InNum);
+	UE_LOG(LogPlayerController, Verbose, TEXT("NumRequiredActorsSet: %i"), InNum);
 	NumRequiredActorsForLoad = InNum;
 }
 
@@ -151,7 +151,7 @@ void AWildOmissionPlayerController::Server_SendChatMessage_Implementation(APlaye
 	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
 	if (GameState == nullptr || Sender == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to send chat message, couldn't get state."));
+		UE_LOG(LogPlayerController, Warning, TEXT("Failed to send chat message, couldn't get state."));
 		return;
 	}
 
@@ -318,12 +318,12 @@ void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()
 		WOGameInstance->GetGameplayMenuWidget()->Teardown();
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("Bringing Up Death Menu."));
+	UE_LOG(LogPlayerController, Verbose, TEXT("Bringing Up Death Menu."));
 
 	UDeathMenuWidget* DeathMenu = CreateWidget<UDeathMenuWidget>(this, DeathMenuWidgetClass);
 	if (DeathMenu == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to show death menu."));
+		UE_LOG(LogPlayerController, Warning, TEXT("Failed to show death menu."));
 		return;
 	}
 

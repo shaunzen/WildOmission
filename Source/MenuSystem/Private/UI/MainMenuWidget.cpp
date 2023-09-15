@@ -9,6 +9,7 @@
 #include "WorldMenuWidget.h"
 #include "ServerBrowserWidget.h"
 #include "UI/OptionsWidget.h"
+#include "Log.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -83,10 +84,10 @@ void UMainMenuWidget::OpenMainMenu()
 {
 	if (MenuSwitcher == nullptr || MainMenu == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to switch to main menu"));
+		UE_LOG(LogMenuSystem, Warning, TEXT("Failed to switch to main menu"));
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Switching to main menu"));
+	UE_LOG(LogMenuSystem, Verbose, TEXT("Switching to main menu"));
 	MenuSwitcher->SetActiveWidget(MainMenu);
 }
 

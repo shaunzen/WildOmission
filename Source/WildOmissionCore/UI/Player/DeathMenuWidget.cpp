@@ -48,7 +48,7 @@ void UDeathMenuWidget::RespawnButtonClicked()
 	AWildOmissionPlayerController* PlayerController = Cast<AWildOmissionPlayerController>(GetOwningPlayer());
 	if (PlayerController == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to respawn player couldnt get player controller"));
+		UE_LOG(LogPlayerController, Warning, TEXT("Failed to respawn player couldnt get player controller"));
 		return;
 	}
 
@@ -77,7 +77,7 @@ void UDeathMenuWidget::Teardown()
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to teardown death menu, couldn't get owning player controller"));
+		UE_LOG(LogPlayerController, Warning, TEXT("Failed to teardown death menu, couldn't get owning player controller"));
 		return;
 	}
 

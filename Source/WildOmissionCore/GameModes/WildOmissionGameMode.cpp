@@ -99,7 +99,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 void AWildOmissionGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
-	UE_LOG(LogTemp, Warning, TEXT("Player Has Logout."));
+
 	if (GetWorld()->IsPlayInEditor())
 	{
 		return;
@@ -117,14 +117,14 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 		return;
 	}
 
-	WOGameState->AddChatMessage(ExitingPlayerState, FString("Has Left The Game."), true);
+	WOGameState->AddChatMessage(ExitingPlayerState, TEXT("Has Left The Game."), true);
 }
 
 void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controller)
 {
 	if (Controller == nullptr || !IsValid(Controller))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn Human, PlayerController wasn't valid."));
+		UE_LOG(LogGameMode, Warning, TEXT("Failed to spawn Human, PlayerController wasn't valid."));
 		return;
 	}
 

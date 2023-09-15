@@ -108,15 +108,14 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 {
 	if (MainMenuWidgetBlueprintClass == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to create the main menu widget, blueprint class was nullptr"));
+		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the main menu widget, blueprint class was nullptr"));
 		return;
 	}
 	
 	MainMenuWidget = CreateWidget<UMainMenuWidget>(this, MainMenuWidgetBlueprintClass);
-	
 	if (MainMenuWidget == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to create the main menu widget"))
+		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the main menu widget"))
 		return;
 	}
 
@@ -128,7 +127,7 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 {
 	if (GameplayMenuWidgetBlueprintClass == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to create the gameplay menu widget, blueprint class was nullptr"));
+		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the gameplay menu widget, blueprint class was nullptr"));
 		return;
 	}
 	
@@ -136,7 +135,7 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	
 	if (GameplayMenuWidget == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to create gameplay menu widget"));
+		UE_LOG(LogPlayerController, Error, TEXT("Failed to create gameplay menu widget"));
 		return;
 	}
 
@@ -171,7 +170,7 @@ void UWildOmissionGameInstance::StartLoading()
 
 	if (LoadingMenuWidgetBlueprintClass == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Something went wrong displaying the loading screen."));
+		UE_LOG(LogLoad, Warning, TEXT("Something went wrong displaying the loading screen."));
 		return;
 	}
 
@@ -241,17 +240,17 @@ void UWildOmissionGameInstance::StartSession()
 {
 	if (SessionInterface.IsValid() == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Couldn't start Session, SessionInterface not valid."));
+		UE_LOG(LogOnlineSession, Warning, TEXT("Couldn't start Session, SessionInterface not valid."));
 		return;
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("Starting Session"));
+	UE_LOG(LogOnlineSession, Display, TEXT("Starting Session"));
 	SessionInterface->StartSession(SESSION_NAME);
 }
 
 void UWildOmissionGameInstance::QuitToMenu()
 {
-	UE_LOG(LogTemp, Display, TEXT("Returning to main menu."));
+	UE_LOG(LogPlayerController, Display, TEXT("Returning to main menu."));
 	ReturnToMainMenu();
 
 	EndExistingSession();
@@ -259,12 +258,12 @@ void UWildOmissionGameInstance::QuitToMenu()
 
 void UWildOmissionGameInstance::RefreshServerList()
 {
-	UE_LOG(LogTemp, Display, TEXT("Refreshing server list."));
+	UE_LOG(LogOnlineSession, Display, TEXT("Refreshing server list."));
 	
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid() == false)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Invalid Session Search"));
+		UE_LOG(LogOnlineSession, Warning, TEXT("Invalid Session Search"));
 		return;
 	}
 	// Uncomment for lan results using null
@@ -289,7 +288,7 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 {
 	if (MainMenuWidget == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot start singleplayer, MainMenuWidget was nullptr."));
+		UE_LOG(LogPlayerController, Error, TEXT("Cannot start singleplayer, MainMenuWidget was nullptr."));
 		return;
 	}
 
@@ -300,8 +299,8 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 
 	// Show the loading menu
 	StartLoading();
-	SetLoadingTitle(FString("Loading Game"));
-	SetLoadingSubtitle(FString("Loading level."));
+	SetLoadingTitle(TEXT("Loading Game"));
+	SetLoadingSubtitle(TEXT("Loading level."));
 
 	WorldToLoad = WorldName;
 
@@ -350,7 +349,7 @@ void UWildOmissionGameInstance::Join(const uint32& Index)
 	MainMenuWidget->Teardown();
 
 	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
-	UE_LOG(LogTemp, Display, TEXT("Joining Server Index: %i"), Index);
+	UE_LOG(LogOnlineSession, Display, TEXT("Joining Server Index: %i"), Index);
 }
 
 void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
@@ -409,7 +408,7 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 {
 	if (Success == false || MainMenuWidget == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Could not create session"));
+		UE_LOG(LogOnlineSession, Error, TEXT("Could not create session"));
 		return;
 	}
 
@@ -420,8 +419,8 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	
 	// Show the loading menu
 	StartLoading();
-	SetLoadingTitle(FString("Loading Game"));
-	SetLoadingSubtitle(FString("Loading level."));
+	SetLoadingTitle(TEXT("Loading Game"));
+	SetLoadingSubtitle(TEXT("Loading level."));
 
 	UWorld* World = GetWorld();
 	UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldToLoad, 0));
@@ -450,7 +449,7 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 {
 	if (OnMainMenu == false || Success == false || SessionSearch.IsValid() == false || MainMenuWidget == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Found sessions but they are invalid"));
+		UE_LOG(LogOnlineSession, Warning, TEXT("Found sessions but they are invalid"));
 		return;
 	}
 	/*
@@ -501,7 +500,7 @@ void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 	FString Address;
 	if (!SessionInterface->GetResolvedConnectString(SessionName, Address))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Could not resolve connect string"));
+		UE_LOG(LogOnline, Error, TEXT("Could not resolve connect string"));
 		return;
 	}
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
@@ -511,8 +510,8 @@ void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 	}
 
 	StartLoading();
-	SetLoadingTitle(FString("Loading Game"));
-	SetLoadingSubtitle(FString("Traveling to host."));
+	SetLoadingTitle(TEXT("Loading Game"));
+	SetLoadingSubtitle(TEXT("Traveling to host."));
 
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 }
@@ -521,8 +520,8 @@ void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetD
 {
 	//TODO goto main menu
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 20.0f, FColor::Red, FString::Printf(TEXT("Error String %s"), *ErrorString));
-	UE_LOG(LogTemp, Error, TEXT("Network failure disconnecting..."));
-	UE_LOG(LogTemp, Error, TEXT("Damnit larch you forgot to add disconnecting"));
+	UE_LOG(LogOnline, Error, TEXT("Network failure disconnecting..."));
+	UE_LOG(LogOnline, Error, TEXT("Damnit larch you forgot to add disconnecting"));
 }
 
 IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const

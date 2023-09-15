@@ -26,7 +26,7 @@ void AWildOmissionGameState::AddChatMessage(APlayerState* Sender, const FString&
 {
 	if (Sender == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to proccess message, Unknown Sender."));
+		UE_LOG(LogGameState, Warning, TEXT("Failed to proccess message, Unknown Sender."));
 		return;
 	}
 
@@ -40,7 +40,7 @@ void AWildOmissionGameState::AddChatMessage(APlayerState* Sender, const FString&
 
 	if (ChatMessages.Num() > 30)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cleaning old messages."));
+		UE_LOG(LogGameState, Warning, TEXT("Cleaning old messages."));
 		ChatMessages.RemoveAt(ChatMessages.Num() - 1);
 	}
 

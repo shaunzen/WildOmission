@@ -7,6 +7,7 @@
 #include "Components/EditableTextBox.h"
 #include "WorldSelectionWidget.h"
 #include "Interfaces/GameSaveLoadController.h"
+#include "Log.h"
 
 void UWorldCreationWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
@@ -23,9 +24,9 @@ void UWorldCreationWidget::CreateWorld()
 	FString NewWorldName;
 	NewWorldName = WorldNameInputBox->GetText().ToString();
 
-	if (NewWorldName == FString(""))
+	if (NewWorldName == TEXT(""))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot create a world without a name."));
+		UE_LOG(LogMenuSystem, Warning, TEXT("Cannot create a world without a name."));
 		return;
 	}
 

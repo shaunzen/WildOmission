@@ -136,7 +136,7 @@ void UGameplayMenuWidget::Save()
 	ISavablePlayer* SavablePlayer = Cast<ISavablePlayer>(GetOwningPlayer());
 	if (SavablePlayer == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Couldn't call save, SavablePlayer was nullptr."));
+		UE_LOG(LogPlayerController, Warning, TEXT("Couldn't call save, SavablePlayer was nullptr."));
 		return;
 	}
 

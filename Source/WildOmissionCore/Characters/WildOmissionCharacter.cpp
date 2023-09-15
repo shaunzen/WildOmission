@@ -531,7 +531,6 @@ void AWildOmissionCharacter::HandleDeath()
 			}
 
 			const FName Socket = AttachedActor->GetAttachParentSocketName();
-			UE_LOG(LogTemp, Warning, TEXT("Attaching to %s, Socket: %s"), *SpawnedRagdoll->GetActorNameOrLabel(), *Socket.ToString());
 			AttachedActor->AttachToComponent(RagdollSkeletalMeshComponent, FAttachmentTransformRules::KeepWorldTransform, Socket);
 		}
 	}
