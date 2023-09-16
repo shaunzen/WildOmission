@@ -11,6 +11,7 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 {
 	HeadAngle = 0.0f;
 	EquipedItemPose = nullptr;
+	AdditivePose = nullptr;
 	FirstPersonInstance = false;
 }
 
@@ -109,4 +110,29 @@ void UHumanAnimInstance::HandleEquipedItemPose()
 	}
 
 	EquipedItemPose = OwnerEquipComponent->GetEquipedItemPose();
+}
+
+void UHumanAnimInstance::HandleAdditvePose()
+{
+	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(TryGetPawnOwner());
+	if (OwnerCharacter == nullptr)
+	{
+		AdditivePose = nullptr;
+		return;
+	}
+
+	UEquipComponent* OwnerEquipComponent = OwnerCharacter->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr)
+	{
+		AdditivePose = nullptr;
+		return;
+	}
+
+	if (!OwnerCharacter->IsAiming())
+	{
+		AdditivePose = nullptr;
+		return;
+	}
+
+	AdditivePose = OwnerEquipComponent->GetAimAdditivePose();
 }

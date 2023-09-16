@@ -55,10 +55,13 @@ public:
 	FOnAimSignature OnAim;
 
 	UFUNCTION(BlueprintCallable)
-	AEquipableItem* GetEquipedItem();
+	AEquipableItem* GetEquipedItem() const;
 
 	UFUNCTION(BlueprintCallable)
-	UAnimSequence* GetEquipedItemPose();
+	UAnimSequence* GetEquipedItemPose() const;
+
+	UFUNCTION(BlueprintCallable)
+	UAnimSequence* GetAimAdditivePose() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;

@@ -29,6 +29,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	UAnimSequence* EquipedItemPose;
 
+	UPROPERTY(BlueprintReadOnly)
+	UAnimSequence* AdditivePose;
+
 protected:
 	virtual void CalculateSpeedAndAngle() override;
 
@@ -41,5 +44,8 @@ private:
 
 	UFUNCTION()
 	void HandleEquipedItemPose();
+
+	UFUNCTION()
+	void HandleAdditvePose();
 
 };

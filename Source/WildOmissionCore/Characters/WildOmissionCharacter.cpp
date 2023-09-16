@@ -939,6 +939,11 @@ FRotator AWildOmissionCharacter::GetReplicatedControlRotation() const
 	return GetControlRotation();
 }
 
+bool AWildOmissionCharacter::IsAiming() const
+{
+	return bAiming;
+}
+
 bool AWildOmissionCharacter::IsUnderwater() const
 {
 	return bUnderwater;

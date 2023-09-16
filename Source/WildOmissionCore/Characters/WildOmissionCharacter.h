@@ -65,6 +65,9 @@ public:
 	FRotator GetReplicatedControlRotation() const;
 
 	UFUNCTION()
+	bool IsAiming() const;
+
+	UFUNCTION()
 	bool IsUnderwater() const;
 
 	UFUNCTION()

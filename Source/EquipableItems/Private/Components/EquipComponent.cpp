@@ -297,12 +297,12 @@ void UEquipComponent::OnReloadAnimationClimax(bool FirstPerson)
 	EquipedItem->OnReloadAnimationClimax(FirstPerson);
 }
 
-AEquipableItem* UEquipComponent::GetEquipedItem()
+AEquipableItem* UEquipComponent::GetEquipedItem() const
 {
 	return EquipedItem;
 }
 
-UAnimSequence* UEquipComponent::GetEquipedItemPose()
+UAnimSequence* UEquipComponent::GetEquipedItemPose() const
 {
 	if (OwnerPawn == nullptr)
 	{
@@ -326,6 +326,16 @@ UAnimSequence* UEquipComponent::GetEquipedItemPose()
 	}
 
 	return nullptr;
+}
+
+UAnimSequence* UEquipComponent::GetAimAdditivePose() const
+{
+	if (EquipedItem == nullptr)
+	{
+		return nullptr;
+	}
+
+	return EquipedItem->GetAimAdditivePose();
 }
 
 bool UEquipComponent::IsItemEquiped() const
