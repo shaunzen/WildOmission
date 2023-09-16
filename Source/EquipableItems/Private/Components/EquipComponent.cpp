@@ -328,16 +328,6 @@ UAnimSequence* UEquipComponent::GetEquipedItemPose() const
 	return nullptr;
 }
 
-UAnimSequence* UEquipComponent::GetAimAdditivePose() const
-{
-	if (EquipedItem == nullptr)
-	{
-		return nullptr;
-	}
-
-	return EquipedItem->GetAimAdditivePose();
-}
-
 bool UEquipComponent::IsItemEquiped() const
 {
 	return EquipedItem != nullptr;

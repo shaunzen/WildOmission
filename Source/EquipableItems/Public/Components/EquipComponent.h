@@ -61,9 +61,6 @@ public:
 	UAnimSequence* GetEquipedItemPose() const;
 
 	UFUNCTION(BlueprintCallable)
-	UAnimSequence* GetAimAdditivePose() const;
-
-	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;
 
 	bool PrimaryEnabled() const;
