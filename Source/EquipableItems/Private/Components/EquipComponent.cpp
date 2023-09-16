@@ -114,6 +114,9 @@ void UEquipComponent::Disarm()
 
 		OnRep_EquipedItem();
 	}
+
+	StopAim();
+	StopAllItemMontages();
 }
 
 void UEquipComponent::DestroyEquipedItem()
