@@ -573,19 +573,19 @@ void AWildOmissionCharacter::HandleAiming()
 	// Calculate FOV
 	const float SettingsFOV = UserSettings->GetFieldOfView();
 	const float MaxFOVZoom = 10.0f;
-	const float FOVZoomSpeed = 0.1f;
-	float ResultFOV = 0.0f;
+	const float FOVZoomSpeed = 50.0f;
+	float CurrentFOV = FirstPersonCameraComponent->FieldOfView;
 	if (bAiming)
 	{
-		
-		ResultFOV = FMath::Clamp(ResultFOV - FOVZoomSpeed * GetWorld()->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
+		CurrentFOV = FMath::Clamp(CurrentFOV - FOVZoomSpeed * GetWorld()->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
 	}
 	else
 	{
-		ResultFOV = FMath::Clamp(ResultFOV + FOVZoomSpeed * GetWorld()->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
+		CurrentFOV = FMath::Clamp(CurrentFOV + FOVZoomSpeed * GetWorld()->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
 	}
 
-	FirstPersonCameraComponent->FieldOfView = ResultFOV;
+	UE_LOG(LogPlayerController, Warning, TEXT("ResultFOV: %f"), CurrentFOV);
+	FirstPersonCameraComponent->FieldOfView = CurrentFOV;
 
 }
 
