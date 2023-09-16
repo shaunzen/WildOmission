@@ -3,9 +3,13 @@
 
 #include "Components/EquipComponent.h"
 #include "Components/PlayerInventoryComponent.h"
+#include "WildOmissionGameUserSettings.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Items/EquipableItem.h"
 #include "Items/ToolItem.h"
 #include "Net/UnrealNetwork.h"
+#include "Log.h"
 
 // Sets default values for this component's properties
 UEquipComponent::UEquipComponent()
@@ -134,6 +138,16 @@ void UEquipComponent::UpdateControlRotation(const FRotator& NewControlRotation)
 FRotator UEquipComponent::GetOwnerControlRotation() const
 {
 	return OwnerReplicatedControlRotation;
+}
+
+FVector UEquipComponent::GetOwnerVelocity() const
+{
+	if (OwnerPawn == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
+	return OwnerPawn->GetVelocity();
 }
 
 USkeletalMeshComponent* UEquipComponent::GetFirstPersonItemComponent() const
@@ -423,6 +437,51 @@ void UEquipComponent::ReloadPressed()
 	}
 
 	EquipedItem->OnReloadPressed();
+}
+
+void UEquipComponent::StartAim()
+{
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return;
+	}
+
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	UCameraComponent* OwnerCamera = OwningActor->FindComponentByClass<UCameraComponent>();
+	UCharacterMovementComponent* OwnerMovementComponent = OwningActor->FindComponentByClass<UCharacterMovementComponent>();
+	if (UserSettings == nullptr || OwnerCamera == nullptr || OwnerMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	float SettingsFOV = UserSettings->GetFieldOfView();
+	OwnerCamera->FieldOfView = SettingsFOV - 5.0f;
+	OwnerMovementComponent->MaxWalkSpeed = 100.0f;
+
+	UE_LOG(LogEquipableItems, Warning, TEXT("Start Aim."));
+}
+
+void UEquipComponent::StopAim()
+{
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return;
+	}
+
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	UCameraComponent* OwnerCamera = OwningActor->FindComponentByClass<UCameraComponent>();
+	UCharacterMovementComponent* OwnerMovementComponent = OwningActor->FindComponentByClass<UCharacterMovementComponent>();
+	if (UserSettings == nullptr || OwnerCamera == nullptr || OwnerMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	float SettingsFOV = UserSettings->GetFieldOfView();
+	OwnerCamera->FieldOfView = SettingsFOV;
+
+	UE_LOG(LogEquipableItems, Warning, TEXT("Stop Aim."));
 }
 
 void UEquipComponent::OnRep_EquipedItem()

@@ -33,6 +33,7 @@ public:
 
 	void UpdateControlRotation(const FRotator& InNewControlRotation);
 	FRotator GetOwnerControlRotation() const;
+	FVector GetOwnerVelocity() const;
 
 	USkeletalMeshComponent* GetFirstPersonItemComponent() const;
 
@@ -70,6 +71,9 @@ public:
 	void SecondaryReleased();
 
 	void ReloadPressed();
+
+	void StartAim();
+	void StopAim();
 
 protected:
 	virtual void BeginPlay() override;
