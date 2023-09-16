@@ -57,6 +57,7 @@ public:
 	UAnimMontage* GetEquipItemMontage() const;
 
 	UAnimSequence* GetEquipPose() const;
+	UAnimSequence* GetAimAdditivePose() const;
 
 	FTransform GetSocketOffset();
 	bool IsLeftHandMounted() const;
@@ -103,6 +104,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimSequence* EquipPose;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimSequence* AimAdditivePose;
 
 	UPROPERTY()
 	FName ItemName;

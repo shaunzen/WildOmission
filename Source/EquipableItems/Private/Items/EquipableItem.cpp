@@ -34,6 +34,7 @@ AEquipableItem::AEquipableItem()
 	ReloadMontage = nullptr;
 	ReloadItemMontage = nullptr;
 	EquipPose = nullptr;
+	AimAdditivePose = nullptr;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Equip_01_Montage"));
 	if (EquipMontageAsset.Succeeded())
@@ -193,6 +194,11 @@ UAnimMontage* AEquipableItem::GetEquipItemMontage() const
 UAnimSequence* AEquipableItem::GetEquipPose() const
 {
 	return EquipPose;
+}
+
+UAnimSequence* AEquipableItem::GetAimAdditivePose() const
+{
+	return AimAdditivePose;
 }
 
 FTransform AEquipableItem::GetSocketOffset()
