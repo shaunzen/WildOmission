@@ -18,6 +18,8 @@ public:
 	
 	virtual void OnPrimaryPressed() override;
 	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
+	virtual void OnSecondaryPressed() override;
+	virtual void OnSecondaryReleased() override;
 	virtual void OnReloadPressed() override;
 	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance) override;
 

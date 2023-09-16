@@ -34,6 +34,32 @@ void AFirearmItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	Fire();
 }
 
+void AFirearmItem::OnSecondaryPressed()
+{
+	Super::OnSecondaryPressed();
+
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerEquipComponent->StartAim();
+}
+
+void AFirearmItem::OnSecondaryReleased()
+{
+	Super::OnSecondaryReleased();
+
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerEquipComponent->StopAim();
+}
+
 void AFirearmItem::OnReloadPressed()
 {
 	Super::OnReloadPressed();

@@ -21,6 +21,7 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	CalculateHeadAngle();
 	HandleEquipedItemPose();
+	HandleAdditvePose();
 }
 
 void UHumanAnimInstance::OnPrimaryAnimationClimax()
