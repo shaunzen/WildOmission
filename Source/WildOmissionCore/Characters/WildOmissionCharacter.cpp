@@ -584,7 +584,6 @@ void AWildOmissionCharacter::HandleAiming()
 		CurrentFOV = FMath::Clamp(CurrentFOV + FOVZoomSpeed * GetWorld()->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
 	}
 
-	UE_LOG(LogPlayerController, Warning, TEXT("ResultFOV: %f"), CurrentFOV);
 	FirstPersonCameraComponent->FieldOfView = CurrentFOV;
 
 }
