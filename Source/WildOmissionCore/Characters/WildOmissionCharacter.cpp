@@ -85,9 +85,17 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	SpecialEffectsHandlerComponent = nullptr;
 
+	bAiming = false;
+	bSprinting = false;
+	bUnderwater = false;
+
 	GetCharacterMovement()->JumpZVelocity = 350.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	DesiredMovementSpeed = 300.0f;
+	
+	WalkMovementSpeed = 300.0f;
+	SprintMovementSpeed = 600.0f;
+	AimMovementSpeed = 100.0f;
 
 	LookUpInverted = false;
 	LookSensitivity = 1.0f;
@@ -289,6 +297,8 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupWeatherEffectHandler();
 	EndSprint();
 
+	EquipComponent->OnAim.AddDynamic(this, &AWildOmissionCharacter::SetAiming);
+
 	if (HasAuthority())
 	{
 		VitalsComponent->OnHealthDepleted.AddDynamic(this, &AWildOmissionCharacter::HandleDeath);
@@ -300,6 +310,8 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	EquipComponent->UpdateControlRotation(GetReplicatedControlRotation());
+
+	HandleAiming();
 
 	if (!HasAuthority())
 	{
@@ -336,8 +348,6 @@ void AWildOmissionCharacter::UnPossessed()
 
 void AWildOmissionCharacter::BeginDestroy()
 {
-
-
 	Super::BeginDestroy();
 }
 
@@ -541,6 +551,44 @@ void AWildOmissionCharacter::HandleDeath()
 	Destroy();
 }
 
+void AWildOmissionCharacter::SetAiming(bool Aim)
+{
+	bAiming = Aim;
+	RefreshDesiredMovementSpeed();
+}
+
+void AWildOmissionCharacter::HandleAiming()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr)
+	{
+		return;
+	}
+
+	// Calculate Sensitivity
+	const float SettingsSensitivity = UserSettings->GetMouseSensitivity();
+	const float SensitivityReduction = 0.5f;
+	LookSensitivity = SettingsSensitivity - (SensitivityReduction * (float)bAiming);
+
+	// Calculate FOV
+	const float SettingsFOV = UserSettings->GetFieldOfView();
+	const float MaxFOVZoom = 10.0f;
+	const float FOVZoomSpeed = 0.1f;
+	float ResultFOV = 0.0f;
+	if (bAiming)
+	{
+		
+		ResultFOV = FMath::Clamp(ResultFOV - FOVZoomSpeed * GetWorld()->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
+	}
+	else
+	{
+		ResultFOV = FMath::Clamp(ResultFOV + FOVZoomSpeed * GetWorld()->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
+	}
+
+	FirstPersonCameraComponent->FieldOfView = ResultFOV;
+
+}
+
 void AWildOmissionCharacter::HandleUnderwater()
 {
 	FHitResult HitResult;
@@ -662,26 +710,26 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::StartSprint()
 {
-	if (GetOwner() == nullptr)
+	if (GetOwner() == nullptr || bAiming == true)
 	{
 		return;
 	}
 
 	Server_Sprint(true);
-	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	bSprinting = true;
+	RefreshDesiredMovementSpeed();
 }
 
 void AWildOmissionCharacter::EndSprint()
 {
-	if (GetOwner() == nullptr)
+	if (GetOwner() == nullptr || bAiming == true)
 	{
 		return;
 	}
 
 	Server_Sprint(false);
-	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	bSprinting = false;
+	RefreshDesiredMovementSpeed();
 }
 
 void AWildOmissionCharacter::OnRep_MovementSpeed()
@@ -689,18 +737,28 @@ void AWildOmissionCharacter::OnRep_MovementSpeed()
 	GetCharacterMovement()->MaxWalkSpeed = DesiredMovementSpeed;
 }
 
-void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
+void AWildOmissionCharacter::RefreshDesiredMovementSpeed()
 {
-	if (bShouldSprint == true)
+	if (bAiming)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
-		bSprinting = true;
+		DesiredMovementSpeed = AimMovementSpeed;
+	}
+	else if (bSprinting)
+	{
+		DesiredMovementSpeed = SprintMovementSpeed;
 	}
 	else
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
-		bSprinting = false;
+		DesiredMovementSpeed = WalkMovementSpeed;
 	}
+
+	OnRep_MovementSpeed();
+}
+
+void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
+{
+	bSprinting = bShouldSprint;
+	RefreshDesiredMovementSpeed();
 }
 
 void AWildOmissionCharacter::PrimaryPressed()

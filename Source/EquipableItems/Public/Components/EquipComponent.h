@@ -7,6 +7,7 @@
 #include "EquipComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshEquipedSlotUISignature, const uint8&, SlotIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAimSignature, bool, Aim);
 
 class AEquipableItem;
 
@@ -51,6 +52,7 @@ public:
 	void OnReloadAnimationClimax(bool FirstPerson);
 
 	FRefreshEquipedSlotUISignature RefreshEquipedSlotUI;
+	FOnAimSignature OnAim;
 
 	UFUNCTION(BlueprintCallable)
 	AEquipableItem* GetEquipedItem();

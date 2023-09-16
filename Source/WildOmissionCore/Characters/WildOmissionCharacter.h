@@ -138,6 +138,13 @@ private:
 	bool bSprinting;
 
 	UPROPERTY()
+	bool bAiming;
+
+	UFUNCTION()
+	void SetAiming(bool Aim);
+	void HandleAiming();
+
+	UPROPERTY()
 	bool bUnderwater;
 
 	void HandleUnderwater();
@@ -239,9 +246,21 @@ private:
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MovementSpeed)
 	float DesiredMovementSpeed;
+
+	UPROPERTY(EditDefaultsOnly)
+	float WalkMovementSpeed;
+
+	UPROPERTY(EditDefaultsOnly)
+	float SprintMovementSpeed;
+
+	UPROPERTY(EditDefaultsOnly)
+	float AimMovementSpeed;
 	
 	UFUNCTION()
 	void OnRep_MovementSpeed();
+
+	UFUNCTION()
+	void RefreshDesiredMovementSpeed();
 
 	UFUNCTION(Server, Reliable)
 	void Server_Sprint(bool bShouldSprint);

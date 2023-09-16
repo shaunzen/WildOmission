@@ -3,9 +3,6 @@
 
 #include "Components/EquipComponent.h"
 #include "Components/PlayerInventoryComponent.h"
-#include "WildOmissionGameUserSettings.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Items/EquipableItem.h"
 #include "Items/ToolItem.h"
 #include "Net/UnrealNetwork.h"
@@ -441,46 +438,23 @@ void UEquipComponent::ReloadPressed()
 
 void UEquipComponent::StartAim()
 {
-	AActor* OwningActor = GetOwner();
-	if (OwningActor == nullptr)
+	if (!OnAim.IsBound())
 	{
 		return;
 	}
 
-	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	UCameraComponent* OwnerCamera = OwningActor->FindComponentByClass<UCameraComponent>();
-	UCharacterMovementComponent* OwnerMovementComponent = OwningActor->FindComponentByClass<UCharacterMovementComponent>();
-	if (UserSettings == nullptr || OwnerCamera == nullptr || OwnerMovementComponent == nullptr)
-	{
-		return;
-	}
-
-	float SettingsFOV = UserSettings->GetFieldOfView();
-	OwnerCamera->FieldOfView = SettingsFOV - 5.0f;
-	OwnerMovementComponent->MaxWalkSpeed = 100.0f;
-
+	OnAim.Broadcast(true);
 	UE_LOG(LogEquipableItems, Warning, TEXT("Start Aim."));
 }
 
 void UEquipComponent::StopAim()
 {
-	AActor* OwningActor = GetOwner();
-	if (OwningActor == nullptr)
+	if (!OnAim.IsBound())
 	{
 		return;
 	}
 
-	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	UCameraComponent* OwnerCamera = OwningActor->FindComponentByClass<UCameraComponent>();
-	UCharacterMovementComponent* OwnerMovementComponent = OwningActor->FindComponentByClass<UCharacterMovementComponent>();
-	if (UserSettings == nullptr || OwnerCamera == nullptr || OwnerMovementComponent == nullptr)
-	{
-		return;
-	}
-
-	float SettingsFOV = UserSettings->GetFieldOfView();
-	OwnerCamera->FieldOfView = SettingsFOV;
-
+	OnAim.Broadcast(false);
 	UE_LOG(LogEquipableItems, Warning, TEXT("Stop Aim."));
 }
 
