@@ -21,6 +21,9 @@ AWeaponProjectile::AWeaponProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	bReplicates = true;
+	SetReplicatingMovement(true);
+
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
 	CollisionComponent->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndProbe);
@@ -59,6 +62,12 @@ void AWeaponProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	CollisionComponent->IgnoreActorWhenMoving(GetOwner(), true);
+	
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AWeaponProjectile::OnHit);
 }
 
@@ -70,18 +79,18 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	}
 
 	// Spawn impact effects
-	SpawnImpactEffects(Hit);
+	Multi_SpawnImpactEffects(Hit);
 
 	// Deal Damage
 	APawn* HitPawn = Cast<APawn>(OtherActor);
-	if (GetOwner()->HasAuthority() && HitPawn)
+	if (HitPawn)
 	{
 		FPointDamageEvent HitByProjectileEvent(Damage, Hit, NormalImpulse, nullptr);
 		HitPawn->TakeDamage(Damage, HitByProjectileEvent, GetInstigatorController<AController>(), this);
 	}
 
 	bool ProjectileIntact = UKismetMathLibrary::RandomBoolWithWeight(0.75f);
-	if (GetOwner()->HasAuthority() && ProjectileIntact && CollectableClass)
+	if (ProjectileIntact && CollectableClass)
 	{
 		ACollectableProjectile* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableProjectile>(CollectableClass, GetActorLocation(), GetActorRotation());
 		if (SpawnedCollectable == nullptr)
@@ -96,7 +105,7 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	Destroy();
 }
 
-void AWeaponProjectile::SpawnImpactEffects(const FHitResult& HitResult)
+void AWeaponProjectile::Multi_SpawnImpactEffects_Implementation(const FHitResult& HitResult)
 {
 	const UPhysicalMaterial* PhysMaterial = HitResult.PhysMaterial.Get();
 	if (PhysMaterial == nullptr)

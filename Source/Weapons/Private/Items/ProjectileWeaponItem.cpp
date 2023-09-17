@@ -217,6 +217,10 @@ UPlayerInventoryComponent* AProjectileWeaponItem::GetOwningPlayerInventory() con
 
 void AProjectileWeaponItem::PlayFireEffects()
 {
-	SpawnProjectile();
+	if (HasAuthority())
+	{
+		SpawnProjectile();
+	}
+
 	PlayFireSoundEffect();
 }
