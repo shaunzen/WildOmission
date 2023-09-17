@@ -26,6 +26,43 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	
+	IdleCameraShake = nullptr;
+	WalkCameraShake = nullptr;
+	SprintCameraShake = nullptr;
+	
+	RainParticleSystem = nullptr;
+
+	SpawnedRainComponent = nullptr;
+	SpawnedRainAudioComponent = nullptr;
+	RainSound = nullptr;
+	FogComponent = nullptr;
+	TimeOfDayHandler = nullptr;
+	OwnerCamera = nullptr;
+
+	PreviouslyHitStorm = nullptr;
+	
+	RainSoundCutoff = 20000.0f;
+	NightGammaStrength = 0.0f;
+	LowHealthEffectThreshold = 60.0f;
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> IdleCameraShakeBlueprint(TEXT("/Game/WildOmissionCore/Characters/Human/Effects/CS_Idle"));
+	if (IdleCameraShakeBlueprint.Succeeded())
+	{
+		IdleCameraShake = IdleCameraShakeBlueprint.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> WalkCameraShakeBlueprint(TEXT("/Game/WildOmissionCore/Characters/Human/Effects/CS_Walk"));
+	if (WalkCameraShakeBlueprint.Succeeded())
+	{
+		WalkCameraShake = WalkCameraShakeBlueprint.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> SprintCameraShakeBlueprint(TEXT("/Game/WildOmissionCore/Characters/Human/Effects/CS_Sprint"));
+	if (SprintCameraShakeBlueprint.Succeeded())
+	{
+		SprintCameraShake = SprintCameraShakeBlueprint.Class;
+	}
 
 	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> EffectsParameterCollection(TEXT("/Game/WildOmissionCore/Art/Environment/MPC_Effects"));
 	if (EffectsParameterCollection.Succeeded())
@@ -44,9 +81,6 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 	{
 		RainSound = RainSoundBlueprint.Object;
 	}
-	RainSoundCutoff = 20000.0f;
-	NightGammaStrength = 0.0f;
-	LowHealthEffectThreshold = 60.0f;
 }
 
 
@@ -77,6 +111,7 @@ void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 	HandleNightTimeGamma();
 	HandleLowHealthEffects();
 	HandleWeatherEffects();
+	HandleViewBobbing();
 }
 
 void USpecialEffectsHandlerComponent::HandleNightTimeGamma()
@@ -152,6 +187,38 @@ void USpecialEffectsHandlerComponent::HandleWeatherEffects()
 	}
 
 	EnableRainfallEffects(RainDensity);
+}
+
+void USpecialEffectsHandlerComponent::HandleViewBobbing()
+{
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	APlayerController* OwnerPlayerController = Cast<APlayerController>(OwnerPawn->GetController());
+	if (OwnerPlayerController == nullptr)
+	{
+		return;
+	}
+
+	const float OwnerVelocity = OwnerPawn->GetVelocity().Length();
+	if (OwnerVelocity > 0.0f && OwnerVelocity < 300.0f)
+	{
+		// Play Walk CameraShake
+		OwnerPlayerController->ClientStartCameraShake(WalkCameraShake);
+	}
+	else if (OwnerVelocity > 300.0f)
+	{
+		// Play Run CameraShake
+		OwnerPlayerController->ClientStartCameraShake(SprintCameraShake);
+	}
+	else
+	{
+		// Play Idle CameraShake
+		OwnerPlayerController->ClientStartCameraShake(IdleCameraShake);
+	}
 }
 
 void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)

@@ -274,5 +274,5 @@ void AToolItem::PlayCameraShake()
 		return;
 	}
 	
-	OwnerPlayerController->ClientPlayCameraShake(SwingCameraShake);
+	OwnerPlayerController->ClientStartCameraShake(SwingCameraShake);
 }

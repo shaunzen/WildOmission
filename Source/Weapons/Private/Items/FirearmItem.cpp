@@ -126,7 +126,7 @@ void AFirearmItem::PlayCameraShake()
 		return;
 	}
 
-	OwnerPlayerController->ClientPlayCameraShake(FireCameraShake);
+	OwnerPlayerController->ClientStartCameraShake(FireCameraShake);
 }
 
 void AFirearmItem::Fire()
