@@ -204,7 +204,7 @@ void USpecialEffectsHandlerComponent::HandleViewBobbing()
 	}
 
 	const float OwnerVelocity = OwnerPawn->GetVelocity().Length();
-	if (OwnerVelocity > 0.0f && OwnerVelocity < 300.0f)
+	if (OwnerVelocity > 0.0f && OwnerVelocity < 310.0f)
 	{
 		// Play Walk CameraShake
 		OwnerPlayerController->ClientStartCameraShake(WalkCameraShake);
