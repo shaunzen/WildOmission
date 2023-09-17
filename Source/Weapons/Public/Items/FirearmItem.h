@@ -7,6 +7,7 @@
 #include "FirearmItem.generated.h"
 
 class UNiagaraSystem;
+class UCameraShakeBase;
 
 UCLASS()
 class WEAPONS_API AFirearmItem : public AProjectileWeaponItem
@@ -30,8 +31,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UNiagaraSystem* MuzzleFlashEffect;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	TSubclassOf<UCameraShakeBase> FireCameraShake;
+
 	virtual void PlayFireEffects() override;
 	void PlayMuzzleFlash();
+	void PlayCameraShake();
 
 	virtual void Fire();
 

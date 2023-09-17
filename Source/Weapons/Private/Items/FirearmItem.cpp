@@ -19,6 +19,12 @@ AFirearmItem::AFirearmItem()
 	{
 		MuzzleFlashEffect = MuzzleFlashEffectBlueprint.Object;
 	}
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> FireCameraShakeBlueprint(TEXT("/Game/Weapons/Effects/CS_LightImpulse"));
+	if (FireCameraShakeBlueprint.Succeeded())
+	{
+		FireCameraShake = FireCameraShakeBlueprint.Class;
+	}
 }
 
 void AFirearmItem::OnPrimaryPressed()
@@ -88,6 +94,7 @@ void AFirearmItem::PlayFireEffects()
 {
 	Super::PlayFireEffects();
 	PlayMuzzleFlash();
+	PlayCameraShake();
 }
 
 void AFirearmItem::PlayMuzzleFlash()
@@ -104,6 +111,22 @@ void AFirearmItem::PlayMuzzleFlash()
 		: MuzzleComponent->GetComponentLocation();
 	
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleFlashEffect, MuzzleLocation, GetOwnerEquipComponent()->GetOwnerControlRotation());
+}
+
+void AFirearmItem::PlayCameraShake()
+{
+	if (GetOwnerPawn() == nullptr || FireCameraShake == nullptr || !GetOwnerPawn()->IsLocallyControlled())
+	{
+		return;
+	}
+
+	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwnerPawn()->GetController());
+	if (OwnerPlayerController == nullptr)
+	{
+		return;
+	}
+
+	OwnerPlayerController->ClientPlayCameraShake(FireCameraShake);
 }
 
 void AFirearmItem::Fire()
