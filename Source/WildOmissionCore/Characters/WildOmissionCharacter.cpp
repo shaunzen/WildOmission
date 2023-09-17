@@ -89,7 +89,14 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	bSprinting = false;
 	bUnderwater = false;
 
-	GetCharacterMovement()->JumpZVelocity = 350.0f;
+	GetCharacterMovement()->GravityScale = 1.5f;
+	GetCharacterMovement()->MaxAcceleration = 10000.0f;
+	GetCharacterMovement()->GroundFriction = 10.0f;
+	GetCharacterMovement()->AirControl = 0.0f;
+	GetCharacterMovement()->AirControlBoostMultiplier = 0.0f;
+	GetCharacterMovement()->FallingLateralFriction = 0.3f;
+
+	GetCharacterMovement()->JumpZVelocity = 550.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	DesiredMovementSpeed = 300.0f;
 	
@@ -100,7 +107,11 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	LookUpInverted = false;
 	LookSensitivity = 1.0f;
 
-	// TODO jump shake
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> JumpCameraShakeBlueprint(TEXT("/Game/WildOmissionCore/Characters/Human/Effects/CS_Jump"));
+	if (JumpCameraShakeBlueprint.Succeeded())
+	{
+		JumpCameraShake = JumpCameraShakeBlueprint.Class;
+	}
 
 	static ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmissionCore/UI/Player/WBP_PlayerHUD"));
 	if (PlayerHUDWidgetBlueprintClass.Succeeded())
@@ -351,6 +362,18 @@ void AWildOmissionCharacter::UnPossessed()
 void AWildOmissionCharacter::BeginDestroy()
 {
 	Super::BeginDestroy();
+}
+
+void AWildOmissionCharacter::Jump()
+{
+	Super::Jump();
+
+	UE_LOG(LogTemp, Warning, TEXT("Jump."));
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (IsLocallyControlled() && PlayerController && JumpCameraShake)
+	{
+		PlayerController->ClientStartCameraShake(JumpCameraShake);
+	}
 }
 
 void AWildOmissionCharacter::Landed(const FHitResult& HitResult)

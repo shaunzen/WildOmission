@@ -44,6 +44,7 @@ public:
 
 	virtual void BeginDestroy() override;
 
+	virtual void Jump() override;
 	virtual void Landed(const FHitResult& HitResult) override;
 
 	// Begin ICharacterSettingsInterface Implementation

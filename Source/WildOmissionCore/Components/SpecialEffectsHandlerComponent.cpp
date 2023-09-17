@@ -89,7 +89,6 @@ void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 	HandleNightTimeGamma();
 	HandleLowHealthEffects();
 	HandleWeatherEffects();
-	HandleViewBobbing();
 }
 
 void USpecialEffectsHandlerComponent::HandleNightTimeGamma()
