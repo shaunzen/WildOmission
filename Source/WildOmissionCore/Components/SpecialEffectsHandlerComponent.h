@@ -33,15 +33,6 @@ protected:
 	UNiagaraSystem* RainParticleSystem;
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	TSubclassOf<UCameraShakeBase> IdleCameraShake;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	TSubclassOf<UCameraShakeBase> WalkCameraShake;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	TSubclassOf<UCameraShakeBase> SprintCameraShake;
-	
 	UPROPERTY()
 	UNiagaraComponent* SpawnedRainComponent;
 
@@ -73,7 +64,6 @@ private:
 	void HandleNightTimeGamma();
 	void HandleLowHealthEffects();
 	void HandleWeatherEffects();
-	void HandleViewBobbing();
 
 	void EnableRainfallEffects(float RainDensity);
 	void DisableRainfallEffects();

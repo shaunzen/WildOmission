@@ -7,7 +7,6 @@
 #include "FirearmItem.generated.h"
 
 class UNiagaraSystem;
-class UCameraShakeBase;
 
 UCLASS()
 class WEAPONS_API AFirearmItem : public AProjectileWeaponItem

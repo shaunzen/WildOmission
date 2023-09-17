@@ -100,6 +100,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	LookUpInverted = false;
 	LookSensitivity = 1.0f;
 
+	// TODO jump shake
+
 	static ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBlueprintClass(TEXT("/Game/WildOmissionCore/UI/Player/WBP_PlayerHUD"));
 	if (PlayerHUDWidgetBlueprintClass.Succeeded())
 	{

@@ -128,6 +128,9 @@ private:
 	USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
 
 	UPROPERTY()
+	TSubclassOf<UCameraShakeBase> JumpCameraShake;
+
+	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;
 	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
 
