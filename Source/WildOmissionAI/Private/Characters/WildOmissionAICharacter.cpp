@@ -82,7 +82,7 @@ void AWildOmissionAICharacter::HandleDeath()
 			}
 
 			const FName Socket = AttachedActor->GetAttachParentSocketName();
-			AttachedActor->AttachToComponent(SpawnedRagdoll->GetMeshComponent(), FAttachmentTransformRules::KeepWorldTransform, Socket);
+			AttachedActor->AttachToComponent(SpawnedRagdoll->GetMeshComponent(), FAttachmentTransformRules::KeepRelativeTransform, Socket);
 		}
 	}
 	HandleDespawn();

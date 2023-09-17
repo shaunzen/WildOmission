@@ -541,7 +541,7 @@ void AWildOmissionCharacter::HandleDeath()
 			}
 
 			const FName Socket = AttachedActor->GetAttachParentSocketName();
-			AttachedActor->AttachToComponent(RagdollSkeletalMeshComponent, FAttachmentTransformRules::KeepWorldTransform, Socket);
+			AttachedActor->AttachToComponent(RagdollSkeletalMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, Socket);
 		}
 	}
 
