@@ -709,7 +709,7 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 
 void AWildOmissionCharacter::StartSprint()
 {
-	if (GetOwner() == nullptr || bAiming == true)
+	if (GetOwner() == nullptr)
 	{
 		return;
 	}
@@ -721,7 +721,7 @@ void AWildOmissionCharacter::StartSprint()
 
 void AWildOmissionCharacter::EndSprint()
 {
-	if (GetOwner() == nullptr || bAiming == true)
+	if (GetOwner() == nullptr)
 	{
 		return;
 	}

@@ -100,12 +100,11 @@ void AProjectileWeaponItem::SpawnProjectile()
 	const FVector ProjectileSpawnLocation = GetOwner()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
 	FRotator ProjectileSpawnRotation = GetOwnerEquipComponent()->GetOwnerControlRotation();
 
-	// Calculate an offset
+	// Calculate an offset based on player velocity
 	FVector PlayerVelocity = GetOwnerPawn()->GetVelocity();
 	PlayerVelocity.Z = 0.0f;
 	const float NormalizedPlayerVelocity = PlayerVelocity.Length() / 600.0f;
 	const FVector2D SpawnRotationOffset = FMath::RandPointInCircle(NormalizedPlayerVelocity * 10.0f);
-	// Multiply the offset by some factor, player velocity?
 
 	// Apply that offset to the SpawnRotation
 	ProjectileSpawnRotation += FRotator(SpawnRotationOffset.Y, SpawnRotationOffset.X, 0.0f);
