@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	float SwingSpeedRate;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	TSubclassOf<UCameraShakeBase> SwingCameraShake;
+
 	UPROPERTY()
 	int32 Durability;
 
@@ -54,6 +57,8 @@ protected:
 	void PlayImpactSound(const FHitResult& HitResult);
 	void SpawnImpactParticles(const FHitResult& HitResult, const FVector& ImpactorForwardVector);
 	void SpawnImpactDecal(const FHitResult& HitResult);
+
+	void PlayCameraShake();
 
 	FInventoryItem* FindInInventory();
 

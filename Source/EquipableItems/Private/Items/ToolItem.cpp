@@ -35,6 +35,12 @@ AToolItem::AToolItem()
 	{
 		PrimaryMontage = PrimaryMontageObject.Object;
 	}
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> DefaultSwingCameraShakeBlueprint(TEXT("/Game/EquipableItems/Effects/CS_ToolSwing"));
+	if (DefaultSwingCameraShakeBlueprint.Succeeded())
+	{
+		SwingCameraShake = DefaultSwingCameraShakeBlueprint.Class;
+	}
 }
 
 void AToolItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
@@ -83,6 +89,8 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	{
 		return;
 	}
+
+	PlayCameraShake();
 
 	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(OwnerEquipComponent->GetOwnerControlRotation());
 
@@ -251,4 +259,20 @@ void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 	
 	FVector DecalSize = FVector(8.0f, 15.0f, 15.0f);
 	UGameplayStatics::SpawnDecalAttached(DecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 120.0f);
+}
+
+void AToolItem::PlayCameraShake()
+{
+	if (SwingCameraShake == nullptr || GetOwnerPawn() == nullptr || !GetOwnerPawn()->IsLocallyControlled())
+	{
+		return;
+	}
+	
+	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwnerPawn()->GetController());
+	if (OwnerPlayerController == nullptr)
+	{
+		return;
+	}
+	
+	OwnerPlayerController->ClientPlayCameraShake(SwingCameraShake);
 }
