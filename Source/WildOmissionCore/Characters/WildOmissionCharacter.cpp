@@ -368,9 +368,8 @@ void AWildOmissionCharacter::Jump()
 {
 	Super::Jump();
 
-	UE_LOG(LogTemp, Warning, TEXT("Jump."));
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (IsLocallyControlled() && PlayerController && JumpCameraShake)
+	if (IsLocallyControlled() && CanJump() && PlayerController && JumpCameraShake)
 	{
 		PlayerController->ClientStartCameraShake(JumpCameraShake);
 	}
