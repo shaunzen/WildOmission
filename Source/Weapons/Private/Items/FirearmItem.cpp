@@ -25,6 +25,18 @@ AFirearmItem::AFirearmItem()
 	{
 		FireCameraShake = FireCameraShakeBlueprint.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> ReloadStartCameraShakeBlueprint(TEXT("/Game/Weapons/Effects/CS_ReloadStart"));
+	if (ReloadStartCameraShakeBlueprint.Succeeded())
+	{
+		ReloadStartCameraShake = ReloadStartCameraShakeBlueprint.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> ReloadClimaxCameraShakeBlueprint(TEXT("/Game/Weapons/Effects/CS_ReloadClimax"));
+	if (ReloadClimaxCameraShakeBlueprint.Succeeded())
+	{
+		ReloadClimaxCameraShake = ReloadClimaxCameraShakeBlueprint.Class;
+	}
 }
 
 void AFirearmItem::OnPrimaryPressed()
@@ -81,6 +93,7 @@ void AFirearmItem::OnReloadPressed()
 	}
 
 	GetOwnerEquipComponent()->PlayItemMontage(ReloadMontage, ReloadItemMontage);
+	PlayReloadStartCameraShake();
 }
 
 void AFirearmItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
@@ -88,13 +101,14 @@ void AFirearmItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 	Super::OnReloadAnimationClimax(FromFirstPersonInstance);
 
 	Reload();
+	PlayReloadClimaxCameraShake();
 }
 
 void AFirearmItem::PlayFireEffects()
 {
 	Super::PlayFireEffects();
 	PlayMuzzleFlash();
-	PlayCameraShake();
+	PlayFireCameraShake();
 }
 
 void AFirearmItem::PlayMuzzleFlash()
@@ -113,7 +127,7 @@ void AFirearmItem::PlayMuzzleFlash()
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleFlashEffect, MuzzleLocation, GetOwnerEquipComponent()->GetOwnerControlRotation());
 }
 
-void AFirearmItem::PlayCameraShake()
+void AFirearmItem::PlayFireCameraShake()
 {
 	if (GetOwnerPawn() == nullptr || FireCameraShake == nullptr || !GetOwnerPawn()->IsLocallyControlled())
 	{
@@ -127,6 +141,38 @@ void AFirearmItem::PlayCameraShake()
 	}
 
 	OwnerPlayerController->ClientStartCameraShake(FireCameraShake);
+}
+
+void AFirearmItem::PlayReloadStartCameraShake()
+{
+	if (GetOwnerPawn() == nullptr || ReloadStartCameraShake == nullptr || !GetOwnerPawn()->IsLocallyControlled())
+	{
+		return;
+	}
+
+	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwnerPawn()->GetController());
+	if (OwnerPlayerController == nullptr)
+	{
+		return;
+	}
+
+	OwnerPlayerController->ClientStartCameraShake(ReloadStartCameraShake);
+}
+
+void AFirearmItem::PlayReloadClimaxCameraShake()
+{
+	if (GetOwnerPawn() == nullptr || ReloadClimaxCameraShake == nullptr || !GetOwnerPawn()->IsLocallyControlled())
+	{
+		return;
+	}
+
+	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwnerPawn()->GetController());
+	if (OwnerPlayerController == nullptr)
+	{
+		return;
+	}
+
+	OwnerPlayerController->ClientStartCameraShake(ReloadClimaxCameraShake);
 }
 
 void AFirearmItem::Fire()

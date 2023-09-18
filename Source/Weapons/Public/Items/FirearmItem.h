@@ -33,9 +33,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TSubclassOf<UCameraShakeBase> FireCameraShake;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	TSubclassOf<UCameraShakeBase> ReloadStartCameraShake;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	TSubclassOf<UCameraShakeBase> ReloadClimaxCameraShake;
+
 	virtual void PlayFireEffects() override;
 	void PlayMuzzleFlash();
-	void PlayCameraShake();
+	
+	void PlayFireCameraShake();
+	void PlayReloadStartCameraShake();
+	void PlayReloadClimaxCameraShake();
 
 	virtual void Fire();
 
