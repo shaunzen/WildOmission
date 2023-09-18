@@ -447,7 +447,6 @@ void UEquipComponent::StartAim()
 	}
 
 	OnAim.Broadcast(true);
-	UE_LOG(LogEquipableItems, Warning, TEXT("Start Aim."));
 }
 
 void UEquipComponent::StopAim()
@@ -458,7 +457,6 @@ void UEquipComponent::StopAim()
 	}
 
 	OnAim.Broadcast(false);
-	UE_LOG(LogEquipableItems, Warning, TEXT("Stop Aim."));
 }
 
 void UEquipComponent::OnRep_EquipedItem()

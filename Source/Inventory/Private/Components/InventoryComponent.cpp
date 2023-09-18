@@ -270,6 +270,12 @@ void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& I
 {
 	bool WithinPlayerInventory = Interaction.Manipulator->GetOwnersInventory() == this;
 	bool ContainerOpen = Interaction.Manipulator->GetOpenContainer() != nullptr;
+	
+	FInventorySlot& InteractionSlot = UseServerState ? ServerState.Slots[Interaction.SlotIndex] : Slots[Interaction.SlotIndex];
+	if (InteractionSlot.IsEmpty())
+	{
+		return;
+	}
 
 	if (WithinPlayerInventory) // Interaction from within the players inventory
 	{
