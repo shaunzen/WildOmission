@@ -31,6 +31,7 @@ void UGameplaySettingsWidget::OnApply()
 
 	UserSettings->SetShowBranding(ShowBrandingCheckOptionBox->IsChecked());
 	UserSettings->SetShowCrosshair(ShowBrandingCheckOptionBox->IsChecked());
+	UserSettings->SetCameraShakeEnabled(CameraShakeEnabledCheckOptionBox->IsChecked());
 	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
 	UserSettings->SetMasterVolume(MasterVolumeSliderOptionBox->GetValue() / 100.0f);
 
@@ -62,6 +63,7 @@ void UGameplaySettingsWidget::OnRefresh()
 
 	ShowBrandingCheckOptionBox->SetChecked(UserSettings->GetShowBranding());
 	ShowCrosshairCheckOptionBox->SetChecked(UserSettings->GetShowCrosshair());
+	CameraShakeEnabledCheckOptionBox->SetChecked(UserSettings->GetCameraShakeEnabled());
 	FieldOfViewSliderOptionBox->SetValue(FieldOfView);
 	MasterVolumeSliderOptionBox->SetValue(MasterVolume);
 }

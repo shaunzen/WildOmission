@@ -5,6 +5,7 @@
 
 static const bool DEFAULT_SHOWBRANDING = true;
 static const bool DEFAULT_SHOWCROSSHAIR = true;
+static const bool DEFAULT_CAMERASHAKEENABLED = true;
 static const float DEFAULT_FIELDOFVIEW = 90.0f;
 static const float DEFAULT_MASTERVOLUME = 1.0f;
 
@@ -38,6 +39,7 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
 {
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
+    SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
     SetFieldOfView(DEFAULT_FIELDOFVIEW);
     SetMasterVolume(DEFAULT_MASTERVOLUME);
     
@@ -76,6 +78,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
 
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
+    SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
     SetFieldOfView(DEFAULT_FIELDOFVIEW);
     SetMasterVolume(DEFAULT_MASTERVOLUME);
 
@@ -124,6 +127,16 @@ void UWildOmissionGameUserSettings::SetShowCrosshair(bool Show)
 bool UWildOmissionGameUserSettings::GetShowCrosshair() const
 {
     return ShowCrosshair;
+}
+
+void UWildOmissionGameUserSettings::SetCameraShakeEnabled(bool Enabled)
+{
+    CameraShakeEnabled = Enabled;
+}
+
+bool UWildOmissionGameUserSettings::GetCameraShakeEnabled() const
+{
+    return CameraShakeEnabled;
 }
 
 void UWildOmissionGameUserSettings::SetFieldOfView(float NewFieldOfView)

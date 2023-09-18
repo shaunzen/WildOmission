@@ -5,6 +5,7 @@
 #include "Components/EquipComponent.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
+#include "WildOmissionGameUserSettings.h"
 #include "UObject/ConstructorHelpers.h"
 
 AFirearmItem::AFirearmItem()
@@ -134,6 +135,12 @@ void AFirearmItem::PlayFireCameraShake()
 		return;
 	}
 
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr || UserSettings->GetCameraShakeEnabled() == false)
+	{
+		return;
+	}
+
 	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwnerPawn()->GetController());
 	if (OwnerPlayerController == nullptr)
 	{
@@ -150,6 +157,12 @@ void AFirearmItem::PlayReloadStartCameraShake()
 		return;
 	}
 
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr || UserSettings->GetCameraShakeEnabled() == false)
+	{
+		return;
+	}
+
 	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwnerPawn()->GetController());
 	if (OwnerPlayerController == nullptr)
 	{
@@ -162,6 +175,12 @@ void AFirearmItem::PlayReloadStartCameraShake()
 void AFirearmItem::PlayReloadClimaxCameraShake()
 {
 	if (GetOwnerPawn() == nullptr || ReloadClimaxCameraShake == nullptr || !GetOwnerPawn()->IsLocallyControlled())
+	{
+		return;
+	}
+
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr || UserSettings->GetCameraShakeEnabled() == false)
 	{
 		return;
 	}

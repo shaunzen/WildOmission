@@ -368,8 +368,9 @@ void AWildOmissionCharacter::Jump()
 {
 	Super::Jump();
 
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (IsLocallyControlled() && CanJump() && PlayerController && JumpCameraShake)
+	if (IsLocallyControlled() && CanJump() && UserSettings && UserSettings->GetCameraShakeEnabled() && PlayerController && JumpCameraShake)
 	{
 		PlayerController->ClientStartCameraShake(JumpCameraShake);
 	}

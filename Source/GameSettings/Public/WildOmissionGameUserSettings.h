@@ -27,6 +27,12 @@ public:
 	bool GetShowCrosshair() const;
 
 	UFUNCTION()
+	void SetCameraShakeEnabled(bool Enabled);
+
+	UFUNCTION()
+	bool GetCameraShakeEnabled() const;
+
+	UFUNCTION()
 	void SetFieldOfView(float NewFieldOfView);
 	
 	UFUNCTION()
@@ -181,6 +187,8 @@ private:
 	bool ShowBranding;
 	UPROPERTY(Config)
 	bool ShowCrosshair;
+	UPROPERTY(Config)
+	bool CameraShakeEnabled;
 	UPROPERTY(Config)
 	float FieldOfView;
 	UPROPERTY(Config)

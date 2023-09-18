@@ -18,6 +18,7 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Engine/DamageEvents.h"
 #include "SurfaceHelpers.h"
+#include "WildOmissionGameUserSettings.h"
 #include "Log.h"
 
 AToolItem::AToolItem()
@@ -264,6 +265,12 @@ void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 void AToolItem::PlayCameraShake()
 {
 	if (SwingCameraShake == nullptr || GetOwnerPawn() == nullptr || !GetOwnerPawn()->IsLocallyControlled())
+	{
+		return;
+	}
+	
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr || UserSettings->GetCameraShakeEnabled() == false)
 	{
 		return;
 	}
