@@ -13,7 +13,6 @@ UNameTagComponent::UNameTagComponent()
 	FString Placeholder = FString("Jerald :s");
 	SetText(FText::FromString(Placeholder));
 
-
 	// Epic thats a typo lmao
 	SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
 }
@@ -21,11 +20,6 @@ UNameTagComponent::UNameTagComponent()
 void UNameTagComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (GetOwner()->GetLocalRole() == ROLE_AutonomousProxy)
-	{
-		SetVisibility(false);
-	}
 }
 
 void UNameTagComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -34,6 +28,7 @@ void UNameTagComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
 
 	UpdateRotation();
 	UpdateName();
+	UpdateVisibility();
 }
 
 void UNameTagComponent::UpdateRotation()
@@ -68,4 +63,15 @@ void UNameTagComponent::UpdateName()
 	}
 
 	SetText(FText::FromString(OwnerPlayerState->GetPlayerName()));
+}
+
+void UNameTagComponent::UpdateVisibility()
+{
+	APawn* PawnOwner = Cast<APawn>(GetOwner());
+	if (PawnOwner == nullptr || !PawnOwner->IsLocallyControlled())
+	{
+		return;
+	}
+
+	SetVisibility(false);
 }
