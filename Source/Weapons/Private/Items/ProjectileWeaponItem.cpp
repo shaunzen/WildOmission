@@ -122,8 +122,8 @@ void AProjectileWeaponItem::PlayFireSoundEffect()
 	{
 		return;
 	}
-
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetOwner()->GetActorLocation());
+	const FVector SoundLocation = GetOwner()->GetActorLocation() + (GetOwner()->GetActorForwardVector() * 100.0f);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, SoundLocation);
 }
 
 void AProjectileWeaponItem::Reload()
