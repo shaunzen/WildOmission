@@ -85,8 +85,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 
 	SpecialEffectsHandlerComponent = nullptr;
-
-	MusicPlayerComponent = CreateDefaultSubobject<UMusicPlayerComponent>(TEXT("MusicPlayerComponent"));
+	MusicPlayerComponent = nullptr;
 
 	bAiming = false;
 	bSprinting = false;
@@ -310,7 +309,7 @@ void AWildOmissionCharacter::BeginPlay()
 	ApplyInputSettings();
 	ApplyGameplaySettings();
 	ApplyPostProcessingSettings();
-	SetupWeatherEffectHandler();
+	SetupLocalComponents();
 	EndSprint();
 
 	EquipComponent->OnAim.AddDynamic(this, &AWildOmissionCharacter::SetAiming);
@@ -352,7 +351,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	ApplyInputSettings();
 	ApplyGameplaySettings();
 	ApplyPostProcessingSettings();
-	SetupWeatherEffectHandler();
+	SetupLocalComponents();
 }
 
 void AWildOmissionCharacter::UnPossessed()
@@ -498,21 +497,32 @@ void AWildOmissionCharacter::SetupPlayerHUD()
 	PlayerHUDWidget->AddToViewport();
 }
 
-void AWildOmissionCharacter::SetupWeatherEffectHandler()
+void AWildOmissionCharacter::SetupLocalComponents()
 {
-	if (!IsLocallyControlled() || SpecialEffectsHandlerComponent != nullptr)
+	if (!IsLocallyControlled())
 	{
 		return;
 	}
 
-	SpecialEffectsHandlerComponent = NewObject<USpecialEffectsHandlerComponent>(this, USpecialEffectsHandlerComponent::StaticClass(), TEXT("SpecialEffectsHandlerComponent"));
 	if (SpecialEffectsHandlerComponent == nullptr)
 	{
-		return;
+		SpecialEffectsHandlerComponent = NewObject<USpecialEffectsHandlerComponent>(this, USpecialEffectsHandlerComponent::StaticClass(), TEXT("SpecialEffectsHandlerComponent"));
+		if (SpecialEffectsHandlerComponent)
+		{
+			SpecialEffectsHandlerComponent->RegisterComponent();
+			SpecialEffectsHandlerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		}
 	}
 
-	SpecialEffectsHandlerComponent->RegisterComponent();
-	SpecialEffectsHandlerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	if (MusicPlayerComponent == nullptr)
+	{
+		MusicPlayerComponent = NewObject<UMusicPlayerComponent>(this, UMusicPlayerComponent::StaticClass(), TEXT("MusicPlayerComponent"));
+		if (MusicPlayerComponent)
+		{
+			MusicPlayerComponent->RegisterComponent();
+		}
+	}
+
 }
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)

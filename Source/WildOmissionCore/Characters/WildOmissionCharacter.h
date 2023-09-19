@@ -327,6 +327,6 @@ private:
 	
 	void SetupPlayerHUD();
 
-	void SetupWeatherEffectHandler();
+	void SetupLocalComponents();
 
 };

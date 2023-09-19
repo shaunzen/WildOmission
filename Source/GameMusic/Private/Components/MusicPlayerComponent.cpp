@@ -16,7 +16,7 @@ UMusicPlayerComponent::UMusicPlayerComponent()
 	TimeBetweenSongs = 300.0f;
 	MusicCue = nullptr;
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> MusicCueObject(TEXT("/Game/GameMusic/Music_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> MusicCueObject(TEXT("/Game/GameMusic/Audio/Music_Cue"));
 	if (MusicCueObject.Succeeded())
 	{
 		MusicCue = MusicCueObject.Object;
@@ -37,16 +37,20 @@ void UMusicPlayerComponent::BeginPlay()
 	FTimerDelegate PlayMusicTimerDelegate;
 	PlayMusicTimerDelegate.BindUObject(this, &UMusicPlayerComponent::PlayMusicTrack);
 	World->GetTimerManager().SetTimer(PlayMusicTimerHandle, PlayMusicTimerDelegate, TimeBetweenSongs, true);
+	PlayMusicTrack();
 }
 
 void UMusicPlayerComponent::PlayMusicTrack()
 {
 	UWorld* World = GetWorld();
+	UE_LOG(LogTemp, Warning, TEXT("Trying To Play Track."));
 	bool ShouldPlay = UKismetMathLibrary::RandomBoolWithWeight(0.5f);
 	if (!ShouldPlay || World == nullptr)
 	{
 		return;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Playing Something."));
 
 	UGameplayStatics::PlaySound2D(World, MusicCue);
 }
