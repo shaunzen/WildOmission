@@ -31,6 +31,8 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UVerticalBox* CategoryButtonsVerticalBox;
 	UPROPERTY(Meta = (BindWidget))
+	UButton* AudioSettingsButton;
+	UPROPERTY(Meta = (BindWidget))
 	UButton* GameplaySettingsButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ControlsSettingsButton;
@@ -44,7 +46,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UWidgetSwitcher* CategorySwitcher;
 
-	UPROPERTY(Meta= (BindWidget))
+	UPROPERTY(Meta = (BindWidget))
+	USettingsCategoryWidget* AudioSettings;
+	UPROPERTY(Meta = (BindWidget))
 	USettingsCategoryWidget* GameplaySettings;
 	UPROPERTY(Meta = (BindWidget))
 	USettingsCategoryWidget* ControlsSettings;
@@ -62,6 +66,8 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* BackButton;
 
+	UFUNCTION()
+	void OpenAudioSettings();
 	UFUNCTION()
 	void OpenGameplaySettings();
 	UFUNCTION()

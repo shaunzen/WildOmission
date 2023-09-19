@@ -28,7 +28,5 @@ private:
 	UCheckOptionBox* CameraShakeEnabledCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	USliderOptionBox* FieldOfViewSliderOptionBox;
-	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* MasterVolumeSliderOptionBox;
 	
 };

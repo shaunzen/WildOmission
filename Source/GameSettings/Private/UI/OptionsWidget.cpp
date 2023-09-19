@@ -12,12 +12,14 @@
 UOptionsWidget::UOptionsWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	CategorySwitcher = nullptr;
+	AudioSettings = nullptr;
 	GameplaySettings = nullptr;
 	ControlsSettings = nullptr;
 	WindowSettings = nullptr;
 	PostProcessingSettings = nullptr;
 	GraphicsSettings = nullptr;
 	CategoryButtonsVerticalBox = nullptr;
+	AudioSettingsButton = nullptr;
 	GameplaySettingsButton = nullptr;
 	ControlsSettingsButton = nullptr;
 	WindowSettingsButton = nullptr;
@@ -32,6 +34,7 @@ void UOptionsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	AudioSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenAudioSettings);
 	GameplaySettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenGameplaySettings);
 	ControlsSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenControlsSettings);
 	WindowSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenWindowSettings);
@@ -56,6 +59,17 @@ void UOptionsWidget::Refresh()
 	RefreshCategoryButtonColor(WindowSettingsButton);
 	RefreshCategoryButtonColor(PostProcessingSettingsButton);
 	RefreshCategoryButtonColor(GraphicsSettingsButton);
+}
+
+void UOptionsWidget::OpenAudioSettings()
+{
+	if (CategorySwitcher == nullptr || AudioSettings == nullptr)
+	{
+		return;
+	}
+
+	CategorySwitcher->SetActiveWidget(AudioSettings);
+	Refresh();
 }
 
 void UOptionsWidget::OpenGameplaySettings()
@@ -135,6 +149,7 @@ void UOptionsWidget::Apply()
 		return;
 	}
 	
+	AudioSettings->OnApply();
 	GameplaySettings->OnApply();
 	ControlsSettings->OnApply();
 	WindowSettings->OnApply();

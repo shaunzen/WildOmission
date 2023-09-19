@@ -12,6 +12,7 @@ UCLASS()
 class UWindowSettingsWidget : public USettingsCategoryWidget
 {
 	GENERATED_BODY()
+
 public:
 	virtual void NativeConstruct() override;
 	virtual void OnApply() override;
