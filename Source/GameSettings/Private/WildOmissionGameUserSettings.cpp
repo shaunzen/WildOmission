@@ -3,11 +3,13 @@
 
 #include "WildOmissionGameUserSettings.h"
 
+static const float DEFAULT_MASTERVOLUME = 1.0f;
+static const float DEFAULT_VOLUME = 1.0f;
+
 static const bool DEFAULT_SHOWBRANDING = true;
 static const bool DEFAULT_SHOWCROSSHAIR = true;
 static const bool DEFAULT_CAMERASHAKEENABLED = true;
 static const float DEFAULT_FIELDOFVIEW = 90.0f;
-static const float DEFAULT_MASTERVOLUME = 1.0f;
 
 static const float DEFAULT_GAMMA = 100.0f;
 static const bool DEFAULT_AUTOEXPOSUREENABLED = true;
@@ -37,11 +39,19 @@ static const float DEFAULT_MOUSESENSITIVITY = 1.0f;
 
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {
+    SetMasterVolume(DEFAULT_MASTERVOLUME);
+    SetMusicVolume(DEFAULT_VOLUME);
+    SetDeployablesVolume(DEFAULT_VOLUME);
+    SetEnvironmentVolume(DEFAULT_VOLUME);
+    SetFriendlyCreaturesVolume(DEFAULT_VOLUME);
+    SetHostileCreaturesVolume(DEFAULT_VOLUME);
+    SetPlayersVolume(DEFAULT_VOLUME);
+    SetWeatherVolume(DEFAULT_VOLUME);
+
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
     SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
     SetFieldOfView(DEFAULT_FIELDOFVIEW);
-    SetMasterVolume(DEFAULT_MASTERVOLUME);
     
     SetGamma(DEFAULT_GAMMA);
     SetAutoExposureEnabled(DEFAULT_AUTOEXPOSUREENABLED);
@@ -76,11 +86,19 @@ void UWildOmissionGameUserSettings::SetToDefaults()
 {
     Super::SetToDefaults();
 
+    SetMasterVolume(DEFAULT_MASTERVOLUME);
+    SetMusicVolume(DEFAULT_VOLUME);
+    SetDeployablesVolume(DEFAULT_VOLUME);
+    SetEnvironmentVolume(DEFAULT_VOLUME);
+    SetFriendlyCreaturesVolume(DEFAULT_VOLUME);
+    SetHostileCreaturesVolume(DEFAULT_VOLUME);
+    SetPlayersVolume(DEFAULT_VOLUME);
+    SetWeatherVolume(DEFAULT_VOLUME);
+
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
     SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
     SetFieldOfView(DEFAULT_FIELDOFVIEW);
-    SetMasterVolume(DEFAULT_MASTERVOLUME);
 
     SetGamma(DEFAULT_GAMMA);
     SetAutoExposureEnabled(DEFAULT_AUTOEXPOSUREENABLED);
@@ -108,6 +126,87 @@ void UWildOmissionGameUserSettings::SetToDefaults()
     SetInvertedMouseY(DEFAULT_INVERTEDMOUSEY);
     SetMouseSensitivity(DEFAULT_MOUSESENSITIVITY);
 }
+
+void UWildOmissionGameUserSettings::SetMasterVolume(float Volume)
+{
+    MasterVolume = Volume;
+}
+
+float UWildOmissionGameUserSettings::GetMasterVolume() const
+{
+    return MasterVolume;
+}
+
+void UWildOmissionGameUserSettings::SetMusicVolume(float Volume)
+{
+    MusicVolume = Volume;
+}
+
+float UWildOmissionGameUserSettings::GetMusicVolume() const
+{
+    return MusicVolume;
+}
+
+void UWildOmissionGameUserSettings::SetDeployablesVolume(float Volume)
+{
+    DeployablesVolume = Volume;
+}
+
+float UWildOmissionGameUserSettings::GetDeployablesVolume() const
+{
+    return DeployablesVolume;
+}
+
+void UWildOmissionGameUserSettings::SetEnvironmentVolume(float Volume)
+{
+    EnvironmentVolume = Volume;
+}
+
+float UWildOmissionGameUserSettings::GetEnvironmentVolume() const
+{
+    return EnvironmentVolume;
+}
+
+void UWildOmissionGameUserSettings::SetFriendlyCreaturesVolume(float Volume)
+{
+    FriendlyCreaturesVolume = Volume;
+}
+
+float UWildOmissionGameUserSettings::GetFriendlyCreaturesVolume() const
+{
+    return FriendlyCreaturesVolume;
+}
+
+void UWildOmissionGameUserSettings::SetHostileCreaturesVolume(float Volume)
+{
+    HostileCreaturesVolume = Volume;
+}
+
+float UWildOmissionGameUserSettings::GetHostileCreaturesVolume() const
+{
+    return HostileCreaturesVolume;
+}
+
+void UWildOmissionGameUserSettings::SetPlayersVolume(float Volume)
+{
+    PlayersVolume = Volume;
+}
+
+float UWildOmissionGameUserSettings::GetPlayersVolume() const
+{
+    return PlayersVolume;
+}
+
+void UWildOmissionGameUserSettings::SetWeatherVolume(float Volume)
+{
+    WeatherVolume = Volume;
+}
+
+float UWildOmissionGameUserSettings::GetWeatherVolume() const
+{
+    return WeatherVolume;
+}
+
 
 void UWildOmissionGameUserSettings::SetShowBranding(bool Show)
 {
@@ -147,16 +246,6 @@ void UWildOmissionGameUserSettings::SetFieldOfView(float NewFieldOfView)
 float UWildOmissionGameUserSettings::GetFieldOfView() const
 {
     return FieldOfView;
-}
-
-void UWildOmissionGameUserSettings::SetMasterVolume(float NewMasterVolume)
-{
-    MasterVolume = NewMasterVolume;
-}
-
-float UWildOmissionGameUserSettings::GetMasterVolume() const
-{
-    return MasterVolume;
 }
 
 void UWildOmissionGameUserSettings::SetGamma(float NewGamma)

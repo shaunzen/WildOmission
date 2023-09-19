@@ -15,6 +15,54 @@ public:
 	virtual void SetToDefaults() override;
 
 	UFUNCTION()
+	void SetMasterVolume(float Volume);
+
+	UFUNCTION()
+	float GetMasterVolume() const;
+
+	UFUNCTION()
+	void SetMusicVolume(float Volume);
+
+	UFUNCTION()
+	float GetMusicVolume() const;
+
+	UFUNCTION()
+	void SetDeployablesVolume(float Volume);
+
+	UFUNCTION()
+	float GetDeployablesVolume() const;
+
+	UFUNCTION()
+	void SetEnvironmentVolume(float Volume);
+
+	UFUNCTION()
+	float GetEnvironmentVolume() const;
+
+	UFUNCTION()
+	void SetFriendlyCreaturesVolume(float Volume);
+
+	UFUNCTION()
+	float GetFriendlyCreaturesVolume() const;
+
+	UFUNCTION()
+	void SetHostileCreaturesVolume(float Volume);
+
+	UFUNCTION()
+	float GetHostileCreaturesVolume() const;
+
+	UFUNCTION()
+	void SetPlayersVolume(float Volume);
+
+	UFUNCTION()
+	float GetPlayersVolume() const;
+
+	UFUNCTION()
+	void SetWeatherVolume(float Volume);
+
+	UFUNCTION()
+	float GetWeatherVolume() const;
+
+	UFUNCTION()
 	void SetShowBranding(bool Show);
 
 	UFUNCTION()
@@ -37,12 +85,6 @@ public:
 	
 	UFUNCTION()
 	float GetFieldOfView() const;
-
-	UFUNCTION()
-	void SetMasterVolume(float NewMasterVolume);
-	
-	UFUNCTION()
-	float GetMasterVolume() const;
 
 	UFUNCTION()
 	void SetGamma(float NewGamma);
@@ -184,6 +226,24 @@ public:
 
 private:
 	UPROPERTY(Config)
+	float MasterVolume;
+	UPROPERTY(Config)
+	float MusicVolume;
+	UPROPERTY(Config)
+	float DeployablesVolume;
+	UPROPERTY(Config)
+	float EnvironmentVolume;
+	UPROPERTY(Config)
+	float FriendlyCreaturesVolume;
+	UPROPERTY(Config)
+	float HostileCreaturesVolume;
+	UPROPERTY(Config)
+	float PlayersVolume;
+	UPROPERTY(Config)
+	float WeatherVolume;
+
+
+	UPROPERTY(Config)
 	bool ShowBranding;
 	UPROPERTY(Config)
 	bool ShowCrosshair;
@@ -191,9 +251,7 @@ private:
 	bool CameraShakeEnabled;
 	UPROPERTY(Config)
 	float FieldOfView;
-	UPROPERTY(Config)
-	float MasterVolume;
-
+	
 	UPROPERTY(Config)
 	float Gamma;
 	UPROPERTY(Config)
