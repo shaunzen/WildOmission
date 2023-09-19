@@ -18,4 +18,7 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void OnApply() override;
 	virtual void OnRefresh() override;
+
+private:
+
 };
