@@ -20,9 +20,17 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Music")
+	float TimeBetweenSongs;
 
-		
+	UPROPERTY(EditDefaultsOnly, Category = "Music")
+	USoundBase* MusicCue;
+
+	UPROPERTY()
+	FTimerHandle PlayMusicTimerHandle;
+
+	UFUNCTION()
+	void PlayMusicTrack();
+	
 };
