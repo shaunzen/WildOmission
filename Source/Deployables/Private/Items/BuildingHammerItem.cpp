@@ -73,6 +73,8 @@ void ABuildingHammerItem::OnSecondaryPressed()
 
 void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
+	PlayCameraShake();
+
 	FHitResult HitResult;
 	if (!LineTraceOnVisibility(HitResult) || GetOwnerEquipComponent() == nullptr)
 	{
