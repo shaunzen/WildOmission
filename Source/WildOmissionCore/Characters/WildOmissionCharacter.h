@@ -21,6 +21,7 @@ class UEquipComponent;
 class UCraftingComponent;
 class UNameTagComponent;
 class USpecialEffectsHandlerComponent;
+class UMusicPlayerComponent;
 
 class AItemContainerBase;
 class UPlayerHUDWidget;
@@ -127,6 +128,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UMusicPlayerComponent* MusicPlayerComponent;
 
 	UPROPERTY()
 	TSubclassOf<UCameraShakeBase> JumpCameraShake;

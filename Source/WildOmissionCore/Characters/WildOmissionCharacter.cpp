@@ -21,6 +21,7 @@
 #include "Components/CraftingComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
+#include "Components/MusicPlayerComponent.h"
 #include "WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "UI/InventoryMenuWidget.h"
@@ -84,6 +85,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 
 	SpecialEffectsHandlerComponent = nullptr;
+
+	MusicPlayerComponent = CreateDefaultSubobject<UMusicPlayerComponent>(TEXT("MusicPlayerComponent"));
 
 	bAiming = false;
 	bSprinting = false;
