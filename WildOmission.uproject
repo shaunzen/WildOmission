@@ -81,6 +81,14 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "GameMusic",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		},
+		{
 			"Name": "GameSettings",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",

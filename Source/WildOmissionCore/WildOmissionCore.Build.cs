@@ -13,7 +13,7 @@ public class WildOmissionCore : ModuleRules
 			"InputCore", "EnhancedInput", "UMG", 
 			"Niagara", "NavigationSystem", "MetasoundEngine", "Animals", "Animation", "Crafting",
 			"CustomUI", "Deployables", "Despawner", "Durability",
-			"EquipableItems", "GameChat", "GameSettings", "GatherableResources",
+			"EquipableItems", "GameChat", "GameMusic", "GameSettings", "GatherableResources",
 			"Interaction", "Inventory", "MenuSystem", "Monsters", "Notifications", "SaveSystem",
 			"SurfaceProperties", "TimeOfDay", "Vitals", "Weapons", "Weather",
 			"WildOmissionAI", "WorldGeneration"
