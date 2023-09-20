@@ -56,9 +56,6 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 		ActorData.Identifier = SavableObjectActor->GetIdentifier();
 		ActorData.Transform = Actor->GetActorTransform();
 
-		// TODO Deprecated
-		ActorData.Class = nullptr;
-
 		FMemoryWriter MemoryWriter(ActorData.ByteData);
 		FObjectAndNameAsStringProxyArchive Archive(MemoryWriter, true);
 		Archive.ArIsSaveGame = true;
@@ -87,18 +84,8 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 {
 	for (const FActorSaveData& ActorData : InSaves)
 	{
-		// Begin Temporary Compatibility Code
-		UClass* ActorClass = nullptr;
-		if (ActorData.Class == nullptr)
-		{
-			ActorClass = FindSavableObjectClassUsingIdentifier(ActorData.Identifier);
-		}
-		else
-		{
-			ActorClass = ActorData.Class;
-		}
-		// End Temporary Compatibility Code
-
+		UClass* ActorClass = FindSavableObjectClassUsingIdentifier(ActorData.Identifier);
+			
 		if (ActorClass == nullptr)
 		{
 			UE_LOG(LogSaveSystem, Warning, TEXT("Savable Object Definition was unable to find class for %s"), *ActorData.Identifier.ToString());

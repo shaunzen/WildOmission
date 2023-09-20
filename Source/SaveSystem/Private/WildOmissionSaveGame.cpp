@@ -13,7 +13,6 @@ FActorSaveData::FActorSaveData()
 {
 	Identifier = NAME_None;
 	Transform = FTransform::Identity;
-	Class = nullptr;
 }
 
 FWeatherHandlerSave::FWeatherHandlerSave()

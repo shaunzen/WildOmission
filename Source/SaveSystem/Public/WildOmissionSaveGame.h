@@ -40,9 +40,6 @@ struct FActorSaveData
 	FTransform Transform;
 	
 	UPROPERTY()
-	UClass* Class;
-
-	UPROPERTY()
 	TArray<uint8> ByteData;
 
 	UPROPERTY()

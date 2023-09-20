@@ -43,14 +43,11 @@ void UMusicPlayerComponent::BeginPlay()
 void UMusicPlayerComponent::PlayMusicTrack()
 {
 	UWorld* World = GetWorld();
-	UE_LOG(LogTemp, Warning, TEXT("Trying To Play Track."));
 	bool ShouldPlay = UKismetMathLibrary::RandomBoolWithWeight(0.5f);
 	if (!ShouldPlay || World == nullptr)
 	{
 		return;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Playing Something."));
 
 	UGameplayStatics::PlaySound2D(World, MusicCue);
 }

@@ -117,7 +117,7 @@ TArray<UWildOmissionSaveGame*> UWorldSelectionWidget::GetWorldsSortedByLastPlaye
 		}
 
 		// If this save was created before pre alpha 0.7.3, populate its Name Value
-		if (SaveGame->CreationInformation.Name == FString())
+		if (SaveGame->CreationInformation.Name == TEXT(""))
 		{
 			SaveGame->CreationInformation.Name = WorldName;
 			UGameplayStatics::SaveGameToSlot(SaveGame, WorldName, 0);
