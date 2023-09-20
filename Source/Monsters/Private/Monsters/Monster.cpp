@@ -42,11 +42,6 @@ AMonster::AMonster()
 void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (TIME_OF_DAY_HANDLER == nullptr)
-	{
-		TIME_OF_DAY_HANDLER = Cast<ATimeOfDayHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeOfDayHandler::StaticClass()));
-	}
 
 	if (!HasAuthority())
 	{
@@ -77,6 +72,11 @@ void AMonster::ApplyBurnDamage()
 void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (TIME_OF_DAY_HANDLER == nullptr)
+	{
+		TIME_OF_DAY_HANDLER = Cast<ATimeOfDayHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeOfDayHandler::StaticClass()));
+	}
 
 	if (TIME_OF_DAY_HANDLER && TIME_OF_DAY_HANDLER->IsDay() && FireEffects->IsActive() == false)
 	{
