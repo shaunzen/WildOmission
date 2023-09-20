@@ -48,12 +48,14 @@ void UOptionsWidget::NativeConstruct()
 
 void UOptionsWidget::Refresh()
 {
+	AudioSettings->OnRefresh();
 	GameplaySettings->OnRefresh();
 	ControlsSettings->OnRefresh();
 	WindowSettings->OnRefresh();
 	PostProcessingSettings->OnRefresh();
 	GraphicsSettings->OnRefresh();
 
+	RefreshCategoryButtonColor(AudioSettingsButton);
 	RefreshCategoryButtonColor(GameplaySettingsButton);
 	RefreshCategoryButtonColor(ControlsSettingsButton);
 	RefreshCategoryButtonColor(WindowSettingsButton);

@@ -51,7 +51,7 @@ public:
 	void StartSession();
 
 	// Begin IGameSettingsInterface Implementation
-	virtual void ApplyMasterVolume() override;
+	virtual void ApplyAudioSettings() override;
 	// End IGameSettingsInterface Implementation
 
 	IOnlineFriendsPtr GetFriendsInterface() const;

@@ -5,7 +5,6 @@
 #include "OptionBoxes/CheckOptionBox.h"
 #include "OptionBoxes/SliderOptionBox.h"
 #include "WildOmissionGameUserSettings.h"
-#include "Interfaces/GameSettingsInterface.h"
 #include "Interfaces/CharacterSettingsInterface.h"
 
 void UGameplaySettingsWidget::NativeConstruct()
@@ -30,12 +29,6 @@ void UGameplaySettingsWidget::OnApply()
 	UserSettings->SetShowCrosshair(ShowBrandingCheckOptionBox->IsChecked());
 	UserSettings->SetCameraShakeEnabled(CameraShakeEnabledCheckOptionBox->IsChecked());
 	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
-
-	IGameSettingsInterface* GameSettingsInterface = Cast<IGameSettingsInterface>(GetWorld()->GetGameInstance());
-	if (GameSettingsInterface)
-	{
-		GameSettingsInterface->ApplyMasterVolume();
-	}
 
 	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
 	if (CharacterSettingsInterface)

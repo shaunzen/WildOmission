@@ -4,6 +4,7 @@
 #include "AudioSettingsWidget.h"
 #include "OptionBoxes/SliderOptionBox.h"
 #include "WildOmissionGameUserSettings.h"
+#include "Interfaces/GameSettingsInterface.h"
 
 void UAudioSettingsWidget::NativeConstruct()
 {
@@ -46,7 +47,11 @@ void UAudioSettingsWidget::OnApply()
 	UserSettings->SetPlayersVolume(PlayersVolumeSliderOptionBox->GetValue() / 100.0f);
 	UserSettings->SetWeatherVolume(WeatherVolumeSliderOptionBox->GetValue() / 100.0f);
 
-	// TODO ask game instance to apply
+	IGameSettingsInterface* GameSettingsInterface = Cast<IGameSettingsInterface>(GetWorld()->GetGameInstance());
+	if (GameSettingsInterface)
+	{
+		GameSettingsInterface->ApplyAudioSettings();
+	}
 }
 
 void UAudioSettingsWidget::OnRefresh()

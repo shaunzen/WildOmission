@@ -26,6 +26,13 @@ const static FString GameVersion = TEXT("Pre Alpha 0.9.7");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
+static USoundClass* MusicSoundClass = nullptr;
+static USoundClass* DeployablesSoundClass = nullptr;
+static USoundClass* EnvironmentSoundClass = nullptr;
+static USoundClass* FriendlyCreaturesSoundClass = nullptr;
+static USoundClass* HostileCreaturesSoundClass = nullptr;
+static USoundClass* PlayersSoundClass = nullptr;
+static USoundClass* WeatherSoundClass = nullptr;
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
@@ -65,6 +72,48 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	{
 		MasterSoundClass = MasterSoundClassBlueprint.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<USoundClass> MusicSoundClassBlueprint(TEXT("/Game/WildOmissionCore/Audio/Music"));
+	if (MusicSoundClassBlueprint.Succeeded())
+	{
+		MusicSoundClass = MusicSoundClassBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundClass> DeployablesSoundClassBlueprint(TEXT("/Game/WildOmissionCore/Audio/Deployables"));
+	if (DeployablesSoundClassBlueprint.Succeeded())
+	{
+		DeployablesSoundClass = DeployablesSoundClassBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundClass> EnvironmentSoundClassBlueprint(TEXT("/Game/WildOmissionCore/Audio/Environment"));
+	if (EnvironmentSoundClassBlueprint.Succeeded())
+	{
+		EnvironmentSoundClass = EnvironmentSoundClassBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundClass> FriendlyCreaturesSoundClassBlueprint(TEXT("/Game/WildOmissionCore/Audio/FriendlyCreatures"));
+	if (FriendlyCreaturesSoundClassBlueprint.Succeeded())
+	{
+		FriendlyCreaturesSoundClass = FriendlyCreaturesSoundClassBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundClass> HostileCreaturesSoundClassBlueprint(TEXT("/Game/WildOmissionCore/Audio/HostileCreatures"));
+	if (HostileCreaturesSoundClassBlueprint.Succeeded())
+	{
+		HostileCreaturesSoundClass = HostileCreaturesSoundClassBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundClass> PlayersSoundClassBlueprint(TEXT("/Game/WildOmissionCore/Audio/Players"));
+	if (PlayersSoundClassBlueprint.Succeeded())
+	{
+		PlayersSoundClass = PlayersSoundClassBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundClass> WeatherSoundClassBlueprint(TEXT("/Game/WildOmissionCore/Audio/Weather"));
+	if (WeatherSoundClassBlueprint.Succeeded())
+	{
+		WeatherSoundClass = WeatherSoundClassBlueprint.Object;
+	}
 }
 
 UWildOmissionGameInstance* UWildOmissionGameInstance::GetWildOmissionGameInstance(UWorld* WorldContextObject)
@@ -76,7 +125,7 @@ void UWildOmissionGameInstance::Init()
 {
 	Super::Init();
 
-	ApplyMasterVolume();
+	ApplyAudioSettings();
 
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
 
@@ -274,10 +323,17 @@ void UWildOmissionGameInstance::RefreshServerList()
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
 
-void UWildOmissionGameInstance::ApplyMasterVolume()
+void UWildOmissionGameInstance::ApplyAudioSettings()
 {
 	UWildOmissionGameUserSettings* WOUserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MasterSoundClass, WOUserSettings->GetMasterVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MusicSoundClass, WOUserSettings->GetMusicVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, DeployablesSoundClass, WOUserSettings->GetDeployablesVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, EnvironmentSoundClass, WOUserSettings->GetEnvironmentVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, FriendlyCreaturesSoundClass, WOUserSettings->GetFriendlyCreaturesVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, HostileCreaturesSoundClass, WOUserSettings->GetHostileCreaturesVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, PlayersSoundClass, WOUserSettings->GetPlayersVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, WeatherSoundClass, WOUserSettings->GetWeatherVolume(), 1.0f, 0.2f);
 	UGameplayStatics::PushSoundMixModifier(GetWorld(), MasterSoundMixModifier);
 }
 
