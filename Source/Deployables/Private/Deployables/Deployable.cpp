@@ -215,7 +215,7 @@ void ADeployable::Multi_PlayDestructionEffects_Implementation()
 
 void ADeployable::SpawnDustEffects()
 {
-	if (DustSystem == nullptr)
+	if (DustSystem == nullptr || MeshComponent->GetStaticMesh() == nullptr)
 	{
 		return;
 	}
