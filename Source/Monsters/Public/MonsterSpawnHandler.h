@@ -16,8 +16,10 @@ class MONSTERS_API AMonsterSpawnHandler : public AAISpawnHandler
 public:	
 	// Sets default values for this actor's properties
 	AMonsterSpawnHandler();
+	
 	void Setup(ATimeOfDayHandler* InTimeOfDayHandler);
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -25,7 +27,10 @@ protected:
 	virtual bool IsSpawnConditionValid() override;
 
 private:
-	UPROPERTY()
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_TimeOfDayHandler)
 	ATimeOfDayHandler* TimeOfDayHandler;
+
+	UFUNCTION()
+	void OnRep_TimeOfDayHandler();
 
 };

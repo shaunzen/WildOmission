@@ -5,6 +5,7 @@
 #include "TimeOfDayHandler.h"
 #include "Engine/DataTable.h"
 #include "Monsters/Monster.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values
@@ -29,7 +30,14 @@ AMonsterSpawnHandler::AMonsterSpawnHandler()
 void AMonsterSpawnHandler::Setup(ATimeOfDayHandler* InTimeOfDayHandler)
 {
 	TimeOfDayHandler = InTimeOfDayHandler;
-	AMonster::SetTimeOfDayHandler(TimeOfDayHandler);
+	OnRep_TimeOfDayHandler();
+}
+
+void AMonsterSpawnHandler::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AMonsterSpawnHandler, TimeOfDayHandler, COND_InitialOnly);
 }
 
 // Called when the game starts or when spawned
@@ -47,4 +55,9 @@ bool AMonsterSpawnHandler::IsSpawnConditionValid()
 	}
 
 	return false;
+}
+
+void AMonsterSpawnHandler::OnRep_TimeOfDayHandler()
+{
+	AMonster::SetTimeOfDayHandler(TimeOfDayHandler);
 }
