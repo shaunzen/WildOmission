@@ -56,6 +56,9 @@ private:
 
 	FTimerHandle BurnDamageTimerHandle;
 
+	void SetFire();
+	void PutOutFire();
+
 	UFUNCTION()
 	void SetBurnDamageTimer();
 	

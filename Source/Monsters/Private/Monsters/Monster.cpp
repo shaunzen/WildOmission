@@ -60,6 +60,28 @@ void AMonster::BeginPlay()
 	InventoryComponent->SetToolbarSelectionIndex(1);
 }
 
+void AMonster::SetFire()
+{
+	FireEffects->Activate();
+
+	if (HasAuthority())
+	{
+		SetBurnDamageTimer();
+	}
+}
+
+void AMonster::PutOutFire()
+{
+	if (FireEffects->IsActive())
+	{
+		FireEffects->Deactivate();
+		if (HasAuthority())
+		{
+			GetWorld()->GetTimerManager().ClearTimer(BurnDamageTimerHandle);
+		}
+	}
+}
+
 void AMonster::SetBurnDamageTimer()
 {
 	FTimerDelegate BurnDamageTimerDelegate;
@@ -80,25 +102,23 @@ void AMonster::Tick(float DeltaTime)
 
 	if (TIME_OF_DAY_HANDLER && TIME_OF_DAY_HANDLER->IsDay() && FireEffects->IsActive() == false)
 	{
-		FireEffects->Activate();
-
-		if (HasAuthority())
-		{
-			SetBurnDamageTimer();
-		}
+		SetFire();
 	}
 
 	if (GetMovementComponent()->GetPhysicsVolume()->bWaterVolume == true)
 	{
-		if (FireEffects->IsActive())
-		{
-			FireEffects->Deactivate();
-			if (HasAuthority())
-			{
-				GetWorld()->GetTimerManager().ClearTimer(BurnDamageTimerHandle);
-			}
-		}
+		PutOutFire();
 		AddMovementInput(FVector::UpVector);
+	}
+
+	FHitResult HitResult;
+	FVector Start = GetActorLocation();
+	FVector End = Start + FVector(0.0f, 0.0f, 50000.0f);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	if (FireEffects->IsActive() && GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	{
+		PutOutFire();
 	}
 }
 
