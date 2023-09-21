@@ -38,6 +38,11 @@ AMonster::AMonster()
 	MaxAttackRange = 300.0f;
 }
 
+void AMonster::SetTimeOfDayHandler(ATimeOfDayHandler* InTimeOfDayHandler)
+{
+	TIME_OF_DAY_HANDLER = InTimeOfDayHandler;
+}
+
 // Called when the game starts or when spawned
 void AMonster::BeginPlay()
 {
@@ -72,11 +77,6 @@ void AMonster::ApplyBurnDamage()
 void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (TIME_OF_DAY_HANDLER == nullptr)
-	{
-		TIME_OF_DAY_HANDLER = Cast<ATimeOfDayHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeOfDayHandler::StaticClass()));
-	}
 
 	if (TIME_OF_DAY_HANDLER && TIME_OF_DAY_HANDLER->IsDay() && FireEffects->IsActive() == false)
 	{

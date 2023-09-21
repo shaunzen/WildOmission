@@ -4,6 +4,7 @@
 #include "MonsterSpawnHandler.h"
 #include "TimeOfDayHandler.h"
 #include "Engine/DataTable.h"
+#include "Monsters/Monster.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values
@@ -28,6 +29,7 @@ AMonsterSpawnHandler::AMonsterSpawnHandler()
 void AMonsterSpawnHandler::Setup(ATimeOfDayHandler* InTimeOfDayHandler)
 {
 	TimeOfDayHandler = InTimeOfDayHandler;
+	AMonster::SetTimeOfDayHandler(TimeOfDayHandler);
 }
 
 // Called when the game starts or when spawned

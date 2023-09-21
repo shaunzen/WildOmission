@@ -47,6 +47,8 @@ protected:
 
 	FAISpawnData* GetSpawnData(const FName& AIName);
 
+	virtual AWildOmissionAICharacter* HandleAISpawn(UClass* Class, const FTransform& SpawnTransform);
+
 private:
 	UPROPERTY()
 	FTimerHandle NextSpawnCheckTimerHandle;

@@ -128,9 +128,7 @@ void AAISpawnHandler::SpawnAICharactersInRadiusFromLocation(const FVector& Spawn
 	UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("Spawning AICharacter With An Index Of %i."), AICharacterToSpawn);
 	for (int32 i = 0; i < SpawnData[AICharacterToSpawn]->SpawnGroupSize; ++i)
 	{
-		AWildOmissionAICharacter* SpawnedAICharacter = GetWorld()->SpawnActor<AWildOmissionAICharacter>(SpawnData[AICharacterToSpawn]->Class, GetSpawnTransform(SpawnLocation));
-		SpawnedAICharacter->OnDespawn.AddDynamic(this, &AAISpawnHandler::RemoveAICharacterFromList);
-		SpawnedAICharacters.Add(SpawnedAICharacter);
+		HandleAISpawn(SpawnData[AICharacterToSpawn]->Class, GetSpawnTransform(SpawnLocation));
 	}
 }
 
@@ -184,4 +182,12 @@ FAISpawnData* AAISpawnHandler::GetSpawnData(const FName& AIName)
 
 	static const FString ContextString = TEXT("AISpawnData Context");
 	return AISpawnDataTable->FindRow<FAISpawnData>(AIName, ContextString, true);
+}
+
+AWildOmissionAICharacter* AAISpawnHandler::HandleAISpawn(UClass* Class, const FTransform& SpawnTransform)
+{
+	AWildOmissionAICharacter* SpawnedAICharacter = GetWorld()->SpawnActor<AWildOmissionAICharacter>(Class, SpawnTransform);
+	SpawnedAICharacter->OnDespawn.AddDynamic(this, &AAISpawnHandler::RemoveAICharacterFromList);
+	SpawnedAICharacters.Add(SpawnedAICharacter);
+	return SpawnedAICharacter;
 }
