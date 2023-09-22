@@ -554,6 +554,7 @@ void AWildOmissionCharacter::HandleDeath()
 	{
 		return;
 	}
+	OurController->Save();
 	OurController->Client_ShowDeathMenu();
 
 	// Get all attached actors

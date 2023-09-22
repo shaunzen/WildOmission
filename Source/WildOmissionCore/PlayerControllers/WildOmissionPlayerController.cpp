@@ -40,6 +40,7 @@ void AWildOmissionPlayerController::PlayerTick(float DeltaTime)
 FPlayerSave AWildOmissionPlayerController::SavePlayer()
 {
 	FPlayerSave PlayerSave;
+
 	if (HasAuthority() == false)
 	{
 		return PlayerSave;
@@ -50,7 +51,9 @@ FPlayerSave AWildOmissionPlayerController::SavePlayer()
 	{
 		return PlayerSave;
 	}
+
 	PlayerSave.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
+	PlayerSave.NewPlayer = false;
 	
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
 	if (WildOmissionCharacter == nullptr)
@@ -252,7 +255,8 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(aPawn);
 
-	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSave.IsAlive == false)
+	bool PlayerFromOldSave = (StoredPlayerSave.IsAlive == true && StoredPlayerSave.NewPlayer == true);
+	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSave.IsAlive == false || (StoredPlayerSave.NewPlayer == true && PlayerFromOldSave == false))
 	{
 		return;
 	}
@@ -294,7 +298,14 @@ void AWildOmissionPlayerController::StopLoading()
 void AWildOmissionPlayerController::Server_Spawn_Implementation()
 {
 	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	GameMode->SpawnHumanForController(this);
+	if (GameMode && (StoredPlayerSave.IsAlive || StoredPlayerSave.NewPlayer))
+	{
+		GameMode->SpawnHumanForController(this);
+	}
+	else
+	{
+		Client_ShowDeathMenu();
+	}
 
 	if (bIsStillLoading == true)
 	{

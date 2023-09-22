@@ -20,7 +20,10 @@ struct SAVESYSTEM_API FPlayerSave
 	bool IsAlive = false;
 
 	UPROPERTY()
-	FString UniqueID = FString("");
+	bool NewPlayer = true;
+
+	UPROPERTY()
+	FString UniqueID = TEXT("");
 
 	UPROPERTY()
 	FVector WorldLocation = FVector::ZeroVector;
