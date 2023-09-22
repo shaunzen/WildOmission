@@ -76,7 +76,7 @@ void AProjectileWeaponItem::PushInventoryStats()
 		return;
 	}
 
-	FInventorySlot* FromSlot = OwnerInventory->GetSlot(this->GetFromSlotIndex(), true);
+	FInventorySlot* FromSlot = OwnerInventory->GetSlot(this->GetFromSlotIndex());
 	if (FromSlot == nullptr)
 	{
 		return;

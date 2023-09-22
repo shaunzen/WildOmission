@@ -170,7 +170,7 @@ void AToolItem::UpdateDurability()
 		return;
 	}
 
-	FInventorySlot* FromSlot = OwnerInventory->GetSlot(GetFromSlotIndex(), true);
+	FInventorySlot* FromSlot = OwnerInventory->GetSlot(GetFromSlotIndex());
 	if (FromSlot == nullptr)
 	{
 		return;

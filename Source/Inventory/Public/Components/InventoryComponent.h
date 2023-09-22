@@ -48,7 +48,7 @@ public:
 	FString GetDisplayName() const;
 	UClass* GetWidgetClass() const;
 	FInventoryContents* GetContents();
-	FInventorySlot* GetSlot(const int32& SlotIndex, bool bUseServerState = false);
+	FInventorySlot* GetSlot(const int32& SlotIndex);
 	uint8 GetSlotCount() const;
 	TArray<FInventorySlot>& GetSlots();
 
@@ -122,7 +122,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_SlotInteraction(const FInventorySlotInteraction& Interaction);
 
-	void HandleItemSelection(const FInventorySlotInteraction& Interaction, bool UseServerState);
-	void HandleItemQuickMove(const FInventorySlotInteraction& Interaction, bool UseServerState);
+	void HandleItemSelection(const FInventorySlotInteraction& Interaction);
+	void HandleItemQuickMove(const FInventorySlotInteraction& Interaction);
 
 };

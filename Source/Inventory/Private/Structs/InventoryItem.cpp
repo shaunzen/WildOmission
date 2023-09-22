@@ -34,7 +34,7 @@ bool FInventoryItem::IsZero() const
 
 void FInventoryItem::Clear()
 {
-	Name = FName("");
+	Name = TEXT("");
 	Quantity = 0;
 	UniqueID = 0;
 }

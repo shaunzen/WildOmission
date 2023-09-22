@@ -156,7 +156,7 @@ void UInventoryComponent::SlotInteraction(const int32& SlotIndex, UInventoryMani
 		return;
 	}
 
-	CurrentInteraction.QuickMove ? HandleItemQuickMove(CurrentInteraction, false) : HandleItemSelection(CurrentInteraction, false);
+	CurrentInteraction.QuickMove ? HandleItemQuickMove(CurrentInteraction) : HandleItemSelection(CurrentInteraction);
 
 	BroadcastInventoryUpdate();
 }
@@ -240,8 +240,16 @@ void UInventoryComponent::OnLoadComplete_Implementation()
 	LoadedFromSave = true;
 }
 
-void UInventoryComponent::HandleItemSelection(const FInventorySlotInteraction& Interaction, bool UseServerState)
+void UInventoryComponent::HandleItemSelection(const FInventorySlotInteraction& Interaction)
 {
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return;
+	}
+	
+	bool UseServerState = OwningActor->HasAuthority();
+
 	if (!Interaction.Manipulator->IsDragging())
 	{
 		if (Interaction.Primary)
@@ -266,8 +274,16 @@ void UInventoryComponent::HandleItemSelection(const FInventorySlotInteraction& I
 	}
 }
 
-void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& Interaction, bool UseServerState)
+void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& Interaction)
 {
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return;
+	}
+
+	bool UseServerState = OwningActor->HasAuthority();
+	
 	bool WithinPlayerInventory = Interaction.Manipulator->GetOwnersInventory() == this;
 	bool ContainerOpen = Interaction.Manipulator->GetOpenContainer() != nullptr;
 	
@@ -323,16 +339,24 @@ void UInventoryComponent::Server_SlotInteraction_Implementation(const FInventory
 	// Update our server state
 	ServerState.LastInteraction = Interaction;
 
-	Interaction.QuickMove ? HandleItemQuickMove(Interaction, true) : HandleItemSelection(Interaction, true);
+	Interaction.QuickMove ? HandleItemQuickMove(Interaction) : HandleItemSelection(Interaction);
 
 	OnRep_ServerState();
 }
 
 FInventoryItem* UInventoryComponent::FindItemWithUniqueID(const uint32& UniqueID)
 {
-	FInventoryItem* FoundItem = nullptr;
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return nullptr;
+	}
 
-	for (FInventorySlot& Slot : ServerState.Slots)
+	const bool UseServerState = OwningActor->HasAuthority();
+
+	FInventoryItem* FoundItem = nullptr;
+	TArray<FInventorySlot>& SlotArray = UseServerState ? ServerState.Slots : Slots;
+	for (FInventorySlot& Slot : SlotArray)
 	{
 		if (Slot.IsEmpty())
 		{
@@ -352,9 +376,17 @@ FInventoryItem* UInventoryComponent::FindItemWithUniqueID(const uint32& UniqueID
 
 FInventorySlot* UInventoryComponent::FindSlotContainingItem(const FName& ItemToFind)
 {
-	FInventorySlot* FoundSlot = nullptr;
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return nullptr;
+	}
 
-	for (FInventorySlot& Slot : ServerState.Slots)
+	const bool UseServerState = OwningActor->HasAuthority();
+
+	FInventorySlot* FoundSlot = nullptr;
+	TArray<FInventorySlot>& SlotArray = UseServerState ? ServerState.Slots : Slots;
+	for (FInventorySlot& Slot : SlotArray)
 	{
 		if (Slot.IsEmpty())
 		{
@@ -387,9 +419,17 @@ FInventoryContents* UInventoryComponent::GetContents()
 	return &Contents;
 }
 
-FInventorySlot* UInventoryComponent::GetSlot(const int32& SlotIndex, bool bUseServerState)
+FInventorySlot* UInventoryComponent::GetSlot(const int32& SlotIndex)
 {
-	if (bUseServerState ? SlotIndex >= ServerState.Slots.Num() : SlotIndex > Slots.Num())
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return nullptr;
+	}
+	
+	const bool UseServerState = OwningActor->HasAuthority();
+	
+	if (UseServerState ? SlotIndex >= ServerState.Slots.Num() : SlotIndex > Slots.Num())
 	{
 		return nullptr;
 	}
@@ -398,7 +438,7 @@ FInventorySlot* UInventoryComponent::GetSlot(const int32& SlotIndex, bool bUseSe
 		return nullptr;
 	}
 
-	return bUseServerState? &ServerState.Slots[SlotIndex] :  &Slots[SlotIndex];
+	return UseServerState? &ServerState.Slots[SlotIndex] :  &Slots[SlotIndex];
 }
 
 uint8 UInventoryComponent::GetSlotCount() const
@@ -565,7 +605,16 @@ bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32&
 
 bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const int32& ItemStackSize, int32& QuantityToAdd)
 {
-	for (FInventorySlot& Slot : ServerState.Slots)
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return false;
+	}
+
+	const bool UseServerState = OwningActor->HasAuthority();
+
+	TArray<FInventorySlot>& SlotArray = UseServerState ? ServerState.Slots : Slots;
+	for (FInventorySlot& Slot : SlotArray)
 	{
 		if (QuantityToAdd == 0)
 		{
@@ -599,7 +648,15 @@ bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const
 
 bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, const int32& ItemStackSize, const TArray<FItemStat>& Stats, int32& QuantityToAdd)
 {
-	for (FInventorySlot& Slot : ServerState.Slots)
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return false;
+	}
+
+	const bool UseServerState = OwningActor->HasAuthority();
+	TArray<FInventorySlot>& SlotArray = UseServerState ? ServerState.Slots : Slots;
+	for (FInventorySlot& Slot : SlotArray)
 	{
 		if (QuantityToAdd == 0)
 		{
@@ -637,9 +694,17 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, const int
 
 bool UInventoryComponent::RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining)
 {
-	Remaining = Quantity;
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return false;
+	}
+	
+	bool UseServerState = OwningActor->HasAuthority();
 
-	for (FInventorySlot& Slot : ServerState.Slots)
+	Remaining = Quantity;
+	TArray<FInventorySlot>& SlotArray = UseServerState ? ServerState.Slots : Slots;
+	for (FInventorySlot& Slot : SlotArray)
 	{
 		if (Slot.Item.Name != ItemName)
 		{
