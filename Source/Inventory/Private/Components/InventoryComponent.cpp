@@ -71,11 +71,23 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems, bool ForceClientUpdate)
 {
-	FInventoryItemUpdate AdditionItemUpdate;
-	AdditionItemUpdate.Time = GetWorld()->GetRealTimeSeconds();
-	AdditionItemUpdate.Addition = true;
-	AdditionItemUpdate.Item = ItemToAdd;
-	ServerState.Updates.Add(AdditionItemUpdate);
+	AActor* OwningActor = GetOwner();
+	if (OwningActor == nullptr)
+	{
+		return;
+	}
+
+	const bool UseServerState = OwningActor->HasAuthority();
+
+	// Create the Item Update
+	if (UseServerState)
+	{
+		FInventoryItemUpdate AdditionItemUpdate;
+		AdditionItemUpdate.Time = GetWorld()->GetRealTimeSeconds();
+		AdditionItemUpdate.Addition = true;
+		AdditionItemUpdate.Item = ItemToAdd;
+		ServerState.Updates.Add(AdditionItemUpdate);
+	}
 	
 	// The amount of items we were unable to add
 	int32 Remaining;
@@ -87,9 +99,9 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* Actor
 
 	// Calculate how many were added and add that amount to our contents
 	AmountAdded = ItemToAdd.Quantity - Remaining;
-	ServerState.Contents.AddItem(ItemToAdd.Name, AmountAdded);
+	UseServerState ? ServerState.Contents.AddItem(ItemToAdd.Name, AmountAdded) : Contents.AddItem(ItemToAdd.Name, AmountAdded);
 
-	if (AddSuccess == false)
+	if (UseServerState == true && AddSuccess == false)
 	{
 		FInventoryItem DroppedItem = ItemToAdd;
 		DroppedItem.Quantity = Remaining;
