@@ -6,6 +6,8 @@
 
 ASapling::ASapling()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	MinMatureTimeSeconds = 15.0f;
 	MaxMatureTimeSeconds = 1200.0f;
 	TimeToMatureSeconds = 0.0f;
@@ -48,7 +50,7 @@ void ASapling::GrowUp()
 
 	// Spawn it
 	GetWorld()->SpawnActor<AActor>(MatureStates[MatureStateIndex], this->GetActorLocation(), this->GetActorRotation());
-	
+
 	// Destroy us
 	this->Destroy();
 }
