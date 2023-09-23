@@ -7,6 +7,10 @@
 
 UMultiOptionBox::UMultiOptionBox(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	NextButton = nullptr;
+	PreviousButton = nullptr;
+	SelectedTextBlock = nullptr;
+
 	SelectedOptionIndex = 0;
 }
 

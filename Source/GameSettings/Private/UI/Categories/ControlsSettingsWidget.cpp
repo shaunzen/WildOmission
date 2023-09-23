@@ -12,8 +12,8 @@ void UControlsSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	MouseSensitivitySliderOptionBox->SetMinValue(0.01f);
-	MouseSensitivitySliderOptionBox->SetMaxValue(5.0f);
+	MouseSensitivitySliderOptionBox->SetMinValue(1.0f);
+	MouseSensitivitySliderOptionBox->SetMaxValue(20.0f);
 }
 
 void UControlsSettingsWidget::OnApply()
@@ -26,8 +26,10 @@ void UControlsSettingsWidget::OnApply()
 		return;
 	}
 
+	const float MouseSensitivity = FMath::RoundToInt32(MouseSensitivitySliderOptionBox->GetValue()) / 10.0f;
+
 	UserSettings->SetInvertedMouseY(InvertMouseYCheckOptionBox->IsChecked());
-	UserSettings->SetMouseSensitivity(MouseSensitivitySliderOptionBox->GetValue());
+	UserSettings->SetMouseSensitivity(MouseSensitivity);
 
 	UserSettings->SetMoveForwardKey(MoveForwardKeyOptionBox->GetSelectedKey());
 	UserSettings->SetMoveBackwardKey(MoveBackwardKeyOptionBox->GetSelectedKey());
@@ -64,8 +66,10 @@ void UControlsSettingsWidget::OnRefresh()
 		return;
 	}
 
+	const float MouseSensitivity = UserSettings->GetMouseSensitivity() * 10.0f;
+
 	InvertMouseYCheckOptionBox->SetChecked(UserSettings->GetInvertedMouseY());
-	MouseSensitivitySliderOptionBox->SetValue(UserSettings->GetMouseSensitivity());
+	MouseSensitivitySliderOptionBox->SetValue(MouseSensitivity);
 
 	MoveForwardKeyOptionBox->SetSelectedKey(UserSettings->GetMoveForwardKey());
 	MoveBackwardKeyOptionBox->SetSelectedKey(UserSettings->GetMoveBackwardKey());

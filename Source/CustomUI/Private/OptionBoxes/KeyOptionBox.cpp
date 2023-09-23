@@ -6,6 +6,15 @@
 #include "Components/TextBlock.h"
 #include "Color/UIColors.h"
 
+UKeyOptionBox::UKeyOptionBox(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	Border = nullptr;
+	TextBlock = nullptr;
+
+	SelectedKey = FKey();
+	AwaitingInput = false;
+}
+
 void UKeyOptionBox::NativeConstruct()
 {
 	Border->SetBrushColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));

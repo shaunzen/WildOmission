@@ -15,9 +15,13 @@ class CUSTOMUI_API UKeyOptionBox : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UKeyOptionBox(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
+	
 	void SetSelectedKey(const FKey& NewSelectedKey);
 	FKey GetSelectedKey() const;
+
 protected:
 	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;

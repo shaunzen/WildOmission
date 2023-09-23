@@ -12,6 +12,10 @@ static UMaterialInterface* UncheckedMaterial = nullptr;
 
 UCheckOptionBox::UCheckOptionBox(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	Button = nullptr;
+	Image = nullptr;
+	TextBlock = nullptr;
+
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> CheckedMaterialBlueprint(TEXT("/Game/CustomUI/OptionBoxes/M_Checked_Inst"));
 	if (CheckedMaterialBlueprint.Succeeded())
 	{
