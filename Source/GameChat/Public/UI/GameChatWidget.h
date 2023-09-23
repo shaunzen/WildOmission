@@ -7,7 +7,6 @@
 #include "GameChatWidget.generated.h"
 
 class UEditableTextBox;
-class UButton;
 class UScrollBox;
 class UChatMessageWidget;
 class IGameChatParentWidget;
@@ -43,9 +42,6 @@ private:
 	
 	UPROPERTY(Meta = (BindWidget))
 	UEditableTextBox* MessageBox;
-	
-	UPROPERTY(Meta = (BindWidget))
-	UButton* SendMessageButton;
 	
 	TSubclassOf<UChatMessageWidget> ChatMessageClass;
 

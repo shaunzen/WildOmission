@@ -3,7 +3,6 @@
 
 #include "UI/GameChatWidget.h"
 #include "ChatMessageWidget.h"
-#include "Components/Button.h"
 #include "Components/ScrollBox.h"
 #include "Components/EditableTextBox.h"
 #include "Interfaces/GameChatParentWidget.h"
@@ -15,6 +14,16 @@
 
 UGameChatWidget::UGameChatWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	MessageContainerPanel = nullptr;
+	MessagePanel = nullptr;
+	MessageBox = nullptr;
+	
+	ChatMessageClass = nullptr;
+	
+	ParentWidget = nullptr;
+	MessageContainer = nullptr;
+	OwnerMessageSender = nullptr;
+
 	static ConstructorHelpers::FClassFinder<UChatMessageWidget> ChatMessageBlueprint(TEXT("/Game/GameChat/UI/WBP_ChatMessage"));
 	if (ChatMessageBlueprint.Succeeded())
 	{
@@ -29,9 +38,10 @@ void UGameChatWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	MessageContainerPanel->ClearChildren();
+	
 	Close();
+	
 	MessageBox->OnTextCommitted.AddDynamic(this, &UGameChatWidget::OnMessageBoxTextCommitted);
-	SendMessageButton->OnClicked.AddDynamic(this, &UGameChatWidget::AttemptSendMessage);
 }
 
 void UGameChatWidget::Setup(IGameChatParentWidget* InParentWidget, IChatMessageContainer* InMessageContainer)
@@ -55,7 +65,7 @@ void UGameChatWidget::RefreshMessages()
 		return;
 	}
 
-	FString OurPlayerNetName = OwnerPlayerState->GetPlayerName();
+	const FString OurPlayerNetName = OwnerPlayerState->GetPlayerName();
 
 	TArray<FChatMessage> Messages;
 	MessageContainer->GetChatMessages(Messages);
@@ -115,7 +125,14 @@ bool UGameChatWidget::IsOpen() const
 
 void UGameChatWidget::OnMessageBoxTextCommitted(const FText& MessageBoxText, ETextCommit::Type CommitMethod)
 {
-	AttemptSendMessage();
+	if (CommitMethod == ETextCommit::Type::OnEnter)
+	{
+		AttemptSendMessage();
+	}
+	else if (CommitMethod != ETextCommit::Type::OnEnter && ParentWidget)
+	{
+		ParentWidget->ToggleChatMenu();
+	}
 }
 
 void UGameChatWidget::AttemptSendMessage()
@@ -127,12 +144,11 @@ void UGameChatWidget::AttemptSendMessage()
 		|| GetOwningPlayer() == nullptr 
 		|| GetOwningPlayerState() == nullptr)
 	{
-		UE_LOG(LogGameChat, Warning, TEXT("Cannot send nothing in game chat."));
+		UE_LOG(LogGameChat, Display, TEXT("Cannot send nothing in game chat."));
 		return;
 	}
 
 	OwnerMessageSender->SendMessage(GetOwningPlayerState(), MessageBox->GetText().ToString());
 
 	MessageBox->SetText(FText());
-	ParentWidget->ToggleChatMenu();
 }
