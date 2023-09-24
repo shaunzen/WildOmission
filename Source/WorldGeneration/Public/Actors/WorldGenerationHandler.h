@@ -37,11 +37,14 @@ private:
 	UFUNCTION()
 	void Generate(const FWorldGenerationSettings& GenerationSettings);
 	
+	// TODO move regeneration to separate component
 	UFUNCTION()
-	void CheckRegenerationConditions();
+	void CheckNodeRegenerationConditions();
 	
 	UFUNCTION()
-	void RegenerateResources(const FWorldGenerationSettings& GenerationSettings);
+	void RegenerateNodesAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const FVector& Origin);
+
+	TArray<AActor*> FilterActorsByRange(const TArray<AActor*>& InList, const FVector& Origin, float Range);
 
 	void GenerateTrees(const FWorldGenerationSettings& GenerationSettings);
 	void GenerateNodes(const FWorldGenerationSettings& GenerationSettings);
@@ -50,5 +53,5 @@ private:
 
 	bool FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation, FVector& OutSurfaceNormal);
 	bool FindSpawnTransform(const FWorldGenerationSettings& GenerationSettings, FTransform& OutTransform, bool FollowSurfaceNormal = false);
-
+	bool FindSpawnTransformAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const FVector& Origin, FTransform& OutTransform, bool FollowSurfaceNormal = false);
 };

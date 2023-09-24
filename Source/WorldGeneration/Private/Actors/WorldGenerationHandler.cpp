@@ -7,6 +7,9 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Log.h"
+
+#include "DrawDebugHelpers.h"
 
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
@@ -44,14 +47,14 @@ void AWorldGenerationHandler::BeginPlay()
 	FTimerHandle RegenerationTimerHandle;
 	FTimerDelegate RegenerationTimerDelegate;
 
-	RegenerationTimerDelegate.BindUObject(this, &AWorldGenerationHandler::CheckRegenerationConditions);
-	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, RegenerationTimerDelegate, 120, true);
+	RegenerationTimerDelegate.BindUObject(this, &AWorldGenerationHandler::CheckNodeRegenerationConditions);
+	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, RegenerationTimerDelegate, 10.0f, true);
 }
 
 void AWorldGenerationHandler::Generate(const FWorldGenerationSettings& GenerationSettings)
 {
 	GenerateTrees(GenerationSettings);
-	GenerateNodes(GenerationSettings);
+	//GenerateNodes(GenerationSettings);
 	GenerateCollectables(GenerationSettings);
 	GenerateLootables(GenerationSettings);
 
@@ -63,32 +66,83 @@ void AWorldGenerationHandler::Generate(const FWorldGenerationSettings& Generatio
 	SaveHandler->GetSaveLoadController()->StopLoading();
 }
 
-void AWorldGenerationHandler::CheckRegenerationConditions()
+void AWorldGenerationHandler::CheckNodeRegenerationConditions()
 {
+	UE_LOG(LogWorldGeneration, Display, TEXT("Checking Node Regeneration Conditions."));
 	FWorldGenerationSettings GenerationSettings;
 
 	TArray<AActor*> AllNodesInWorld;
-	TArray<AActor*> AllCollectablesInWorld;
-
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Node"), AllNodesInWorld);
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("Collectable"), AllCollectablesInWorld);
-
-	if (AllNodesInWorld.Num() > GenerationSettings.MinNodeCount || AllCollectablesInWorld.Num() > GenerationSettings.MinCollectableCount)
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("Node"), AllNodesInWorld);
+	
+	// We only want to do this around players
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; Iterator++)
 	{
-		return;
-	}
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
+		{
+			continue;
+		}
 
-	RegenerateResources(GenerationSettings);
+		APawn* Pawn = PlayerController->GetPawn();
+		if (Pawn == nullptr)
+		{
+			continue;
+		}
+
+		DrawDebugSphere(GetWorld(), Pawn->GetActorLocation(), 5000.0f, 16, FColor::Green, false, 10.0f, 0, 100.0f);
+		DrawDebugSphere(GetWorld(), Pawn->GetActorLocation(), 10000.0f, 16, FColor::Red, false, 10.0f, 0, 100.0f);
+
+		const float MaxRange = 10000.0f;
+		TArray<AActor*> NodesWithinRange = FilterActorsByRange(AllNodesInWorld, Pawn->GetActorLocation(), MaxRange);
+		if (NodesWithinRange.Num() > GenerationSettings.MinNodeCount)
+		{
+			UE_LOG(LogWorldGeneration, Display, TEXT("Found %i Nodes Around Player, Less than %i is required to invoke regeneration."), NodesWithinRange.Num(), GenerationSettings.MinNodeCount);
+			continue;
+		}
+
+		RegenerateNodesAroundOrigin(GenerationSettings, Pawn->GetActorLocation());
+	}
 }
 
-void AWorldGenerationHandler::RegenerateResources(const FWorldGenerationSettings& GenerationSettings)
+void AWorldGenerationHandler::RegenerateNodesAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const FVector& Origin)
 {
-	FWorldGenerationSettings RegenerationSettings = GenerationSettings;
-	RegenerationSettings.SpawnLimiter = 0.1f;
+	const int32 AmountOfNodesToSpawn = FMath::RandRange(1, 10);
+	
+	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(TEXT("Plains"));
 
-	GenerateNodes(RegenerationSettings);
-	GenerateCollectables(RegenerationSettings);
-	GenerateLootables(RegenerationSettings);
+	for (int32 i = 0; i < AmountOfNodesToSpawn; i++)
+	{
+		const int32 NodeIndexToSpawn = FMath::RandRange(0, BiomeData->Nodes.Num() - 1);
+		FTransform SpawnTransform;
+		if (!FindSpawnTransformAroundOrigin(GenerationSettings, Origin, SpawnTransform, true))
+		{
+			continue;
+		}
+		GetWorld()->SpawnActor<AActor>(BiomeData->Nodes[NodeIndexToSpawn].BlueprintClass, SpawnTransform);
+		UE_LOG(LogWorldGeneration, Display, TEXT("Spawned Node Index: %i, At Location: %s"), NodeIndexToSpawn, *SpawnTransform.GetLocation().ToString());
+	}
+}
+
+TArray<AActor*> AWorldGenerationHandler::FilterActorsByRange(const TArray<AActor*>& InList, const FVector& Origin, float Range)
+{
+	TArray<AActor*> FilteredList;
+	for (AActor* InActor : InList)
+	{
+		if (InActor == nullptr)
+		{
+			continue;
+		}
+
+		const float Distance = FVector::Distance(InActor->GetActorLocation(), Origin);
+		if (Distance > Range)
+		{
+			continue;
+		}
+
+		FilteredList.Add(InActor);
+	}
+
+	return FilteredList;
 }
 
 FVector2D AWorldGenerationHandler::GetWorldSizeMeters()
@@ -258,28 +312,83 @@ bool AWorldGenerationHandler::FindSpawnTransform(const FWorldGenerationSettings&
 	Params.bTraceComplex = true;
 	Params.bReturnPhysicalMaterial = true;
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
 	{
-																					// SurfaceType1 = Grass
-		if (HitResult.PhysMaterial == nullptr || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
-		{
-			return false;
-		}
-
-		OutTransform.SetLocation(HitResult.ImpactPoint);
-
-		// Find the Rotation
-		FRotator SpawnRotation = FRotator::ZeroRotator;
-		float YawOffset = FMath::RandRange(0.0f, 360.0f);
-		if (FollowSurfaceNormal)
-		{
-			SpawnRotation = HitResult.ImpactNormal.RotateAngleAxis(90.0f, FVector(0.0f, 1.0f, 0.0f)).Rotation();
-		}
-
-		SpawnRotation.Yaw += YawOffset;
-		OutTransform.SetRotation(FQuat(SpawnRotation));
-		
-		return true;
+		return false;
 	}
-	return false;
+
+	// SurfaceType1 = Grass
+	if (HitResult.PhysMaterial == nullptr || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
+	{
+		return false;
+	}
+
+	OutTransform.SetLocation(HitResult.ImpactPoint);
+
+	// Find the Rotation
+	FRotator SpawnRotation = FRotator::ZeroRotator;
+	float YawOffset = FMath::RandRange(0.0f, 360.0f);
+	if (FollowSurfaceNormal)
+	{
+		SpawnRotation = HitResult.ImpactNormal.RotateAngleAxis(90.0f, FVector(0.0f, 1.0f, 0.0f)).Rotation();
+	}
+
+	SpawnRotation.Yaw += YawOffset;
+	OutTransform.SetRotation(FQuat(SpawnRotation));
+
+	return true;
+}
+
+bool AWorldGenerationHandler::FindSpawnTransformAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const FVector& Origin, FTransform& OutTransform, bool FollowSurfaceNormal)
+{
+	const float InnerSpawnRadiusCentimeters = 5000.0f;
+	const float OuterSpawnRadiusCentimeters = 10000.0f;
+
+	const float TraceHeight = 50000.0f;
+	const float SpawnDistance = FMath::RandRange(InnerSpawnRadiusCentimeters, OuterSpawnRadiusCentimeters);
+	const float SpawnAngle = FMath::RandRange(0.0f, 360.0f);
+
+	FVector SpawnLocationWithinRadius = FVector::ForwardVector * SpawnDistance;
+	SpawnLocationWithinRadius = SpawnLocationWithinRadius.RotateAngleAxis(SpawnAngle, FVector::UpVector);
+
+	FVector Start = SpawnLocationWithinRadius + Origin;
+	Start.Z = TraceHeight;
+	FVector End = Start - FVector(0.0f, 0.0f, TraceHeight * 2.0f);
+
+	FHitResult HitResult;
+	
+	//FVector Start = FVector(FMath::RandRange(-HalfWorldCentimetersX, HalfWorldCentimetersX), FMath::RandRange(-HalfWorldCentimetersY, HalfWorldCentimetersY), GenerationSettings.WorldHeightMeters * 100);
+	//FVector End = Start - FVector(0, 0, GenerationSettings.WorldHeightMeters * 200);
+
+	FCollisionQueryParams Params;
+	Params.bTraceComplex = true;
+	Params.bReturnPhysicalMaterial = true;
+
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	{
+		return false;
+	}
+
+	// SurfaceType1 = Grass
+	if (HitResult.PhysMaterial == nullptr || HitResult.PhysMaterial->SurfaceType != SurfaceType1)
+	{
+		return false;
+	}
+
+	OutTransform.SetLocation(HitResult.ImpactPoint);
+
+	// Find the Rotation
+	FRotator SpawnRotation = FRotator::ZeroRotator;
+	float YawOffset = FMath::RandRange(0.0f, 360.0f);
+	if (FollowSurfaceNormal)
+	{
+		FRotator ImpactRotation = HitResult.ImpactNormal.RotateAngleAxis(90.0f, FVector(0.0f, 1.0f, 0.0f)).Rotation();
+		SpawnRotation.Pitch = ImpactRotation.Pitch;
+		SpawnRotation.Roll = ImpactRotation.Roll;
+	}
+
+	SpawnRotation.Yaw = YawOffset;
+	OutTransform.SetRotation(FQuat(SpawnRotation));
+
+	return true;
 }
