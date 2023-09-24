@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "ResourceRegenerationComponent.generated.h"
 
+struct FWorldGenerationSettings;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UResourceRegenerationComponent : public UActorComponent
@@ -20,9 +21,21 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+private:
+	UFUNCTION()
+	void CheckNodeRegenerationConditions();
 
-		
+	UPROPERTY(EditDefaultsOnly, Category = "Generation")
+	float InnerRegenerationRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Generation")
+	float OuterRegenerationRadius;
+
+	UFUNCTION()
+	void RegenerateNodesAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const FVector& Origin);
+
+	bool IsTransformWithinInnerRangeOfAnyPlayer(const FTransform& TransformToCheck) const;
+	
+	TArray<AActor*> FilterActorsByRange(const TArray<AActor*>& InList, const FVector& Origin, float Range);
+	
 };

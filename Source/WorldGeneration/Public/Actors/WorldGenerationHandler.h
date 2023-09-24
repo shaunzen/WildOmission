@@ -9,6 +9,7 @@
 #include "Interfaces/WorldGenerator.h"
 #include "WorldGenerationHandler.generated.h"
 
+class UResourceRegenerationComponent;
 class ASaveHandler;
 
 UCLASS()
@@ -27,31 +28,25 @@ public:
 	FVector2D GetWorldSizeMeters();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
 
+	static bool FindSpawnTransformRandomLocation(UWorld* WorldContextObject, FTransform& OutTransform, const FWorldGenerationSettings& GenerationSettings, bool FollowSurfaceNormal = false);
+
+	// Origin = The Starting Location, InnerRadius = The Closest Possible Spawn, OuterRadius = The Farthest Possible Spawn
+	static bool FindSpawnTransformRadiusFromOrigin(UWorld* WorldContextObject, FTransform& OutTransform, const FVector& Origin, float InnerRadius, float OuterRadius, const FWorldGenerationSettings& GenerationSettings, bool FollowSurfaceNormal = false);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 private:
+	UPROPERTY(VisibleAnywhere)
+	UResourceRegenerationComponent* RegenerationComponent;
+
 	UPROPERTY()
 	ASaveHandler* SaveHandler;
 
 	UFUNCTION()
 	void Generate(const FWorldGenerationSettings& GenerationSettings);
 	
-	// TODO move regeneration to separate component
-	UFUNCTION()
-	void CheckNodeRegenerationConditions();
+	void GenerateResource(const TArray<FSpawnData>& SpawnData, const FWorldGenerationSettings& GenerationSettings, bool FollowSurfaceNormal = false);
 	
-	UFUNCTION()
-	void RegenerateNodesAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const FVector& Origin);
-
-	TArray<AActor*> FilterActorsByRange(const TArray<AActor*>& InList, const FVector& Origin, float Range);
-
-	void GenerateTrees(const FWorldGenerationSettings& GenerationSettings);
-	void GenerateNodes(const FWorldGenerationSettings& GenerationSettings);
-	void GenerateCollectables(const FWorldGenerationSettings& GenerationSettings);
-	void GenerateLootables(const FWorldGenerationSettings& GenerationSettings);
-
-	bool FindSpawnLocation(const FWorldGenerationSettings& GenerationSettings, FVector& OutLocation, FVector& OutSurfaceNormal);
-	bool FindSpawnTransform(const FWorldGenerationSettings& GenerationSettings, FTransform& OutTransform, bool FollowSurfaceNormal = false);
-	bool FindSpawnTransformAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const FVector& Origin, FTransform& OutTransform, bool FollowSurfaceNormal = false);
 };
