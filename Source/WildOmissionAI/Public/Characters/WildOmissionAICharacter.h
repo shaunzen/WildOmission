@@ -55,13 +55,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
 	float MaxTimeBetweenIdleSoundSeconds;
 
-private:
 	UFUNCTION()
-	void HandleDespawn();
+	virtual void HandleDespawn();
 
 	UFUNCTION()
-	void HandleDeath();
-	
+	virtual void HandleDeath();
+
+private:
 	void SetIdleSoundTimer();
 
 	UFUNCTION()

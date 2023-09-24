@@ -29,6 +29,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void Destroyed() override;
+
 	APawn* GetTargetPawn() const;
 
 	void Attack(AActor* Target);
@@ -37,6 +39,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 	
 private:
 	UPROPERTY(VisibleAnywhere)

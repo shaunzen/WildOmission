@@ -60,6 +60,7 @@ void AMonster::BeginPlay()
 	InventoryComponent->SetToolbarSelectionIndex(1);
 }
 
+
 void AMonster::SetFire()
 {
 	FireEffects->Activate();
@@ -127,6 +128,16 @@ void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AMonster::Destroyed()
+{
+	Super::Destroyed();
+
+	if (EquipComponent && EquipComponent->GetEquipedItem())
+	{
+		EquipComponent->Disarm();
+	}
 }
 
 APawn* AMonster::GetTargetPawn() const
