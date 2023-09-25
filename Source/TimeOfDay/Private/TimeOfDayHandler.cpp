@@ -78,10 +78,10 @@ void ATimeOfDayHandler::OnRep_NormalizedProgressThroughDay()
 void ATimeOfDayHandler::HandleDelegates()
 {
 	// Sunrise = 0, Noon = .25, Sunset = .5, Midnight = .75
-	const bool SunriseConditionValid = NormalizedProgressThroughDay > 0 && NormalizedProgressThroughDay < 0.25f;
-	const bool NoonConditionValid = NormalizedProgressThroughDay > 0.25f && NormalizedProgressThroughDay < 0.5f;
-	const bool SunsetConditionValid = NormalizedProgressThroughDay > 0.5f && NormalizedProgressThroughDay < 0.75f;
-	const bool MidnightConditionValid = NormalizedProgressThroughDay > 0.75f && NormalizedProgressThroughDay < 1.0f;
+	const bool SunriseConditionValid = NormalizedProgressThroughDay > 0 && NormalizedProgressThroughDay < 0.05f;
+	const bool NoonConditionValid = NormalizedProgressThroughDay > 0.25f && NormalizedProgressThroughDay < 0.3f;
+	const bool SunsetConditionValid = NormalizedProgressThroughDay > 0.5f && NormalizedProgressThroughDay < 0.55f;
+	const bool MidnightConditionValid = NormalizedProgressThroughDay > 0.75f && NormalizedProgressThroughDay < 0.8f;
 	if (!SunriseBroadcasted && OnTimeSunrise.IsBound() && SunriseConditionValid)
 	{
 		OnTimeSunrise.Broadcast();

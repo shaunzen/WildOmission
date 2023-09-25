@@ -2,6 +2,7 @@
 
 
 #include "Components/MusicPlayerComponent.h"
+#include "TimeOfDayHandler.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
@@ -34,10 +35,20 @@ void UMusicPlayerComponent::BeginPlay()
 		return;
 	}
 
-	FTimerDelegate PlayMusicTimerDelegate;
-	PlayMusicTimerDelegate.BindUObject(this, &UMusicPlayerComponent::PlayMusicTrack);
-	World->GetTimerManager().SetTimer(PlayMusicTimerHandle, PlayMusicTimerDelegate, TimeBetweenSongs, true);
-	PlayMusicTrack();
+	ATimeOfDayHandler* TimeOfDayHandler = Cast<ATimeOfDayHandler>(UGameplayStatics::GetActorOfClass(World, ATimeOfDayHandler::StaticClass()));
+	if (TimeOfDayHandler == nullptr)
+	{
+		FTimerDelegate PlayMusicTimerDelegate;
+		PlayMusicTimerDelegate.BindUObject(this, &UMusicPlayerComponent::PlayMusicTrack);
+		World->GetTimerManager().SetTimer(PlayMusicTimerHandle, PlayMusicTimerDelegate, TimeBetweenSongs, true);
+		PlayMusicTrack();
+		return;
+	}
+
+	TimeOfDayHandler->OnTimeSunrise.AddDynamic(this, &UMusicPlayerComponent::PlayMusicTrack);
+	TimeOfDayHandler->OnTimeNoon.AddDynamic(this, &UMusicPlayerComponent::PlayMusicTrack);
+	TimeOfDayHandler->OnTimeSunset.AddDynamic(this, &UMusicPlayerComponent::PlayMusicTrack);
+	TimeOfDayHandler->OnTimeMidnight.AddDynamic(this, &UMusicPlayerComponent::PlayMusicTrack);
 }
 
 void UMusicPlayerComponent::PlayMusicTrack()
