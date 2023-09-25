@@ -7,6 +7,11 @@
 #include "Interfaces/SavableTimeOfDayHandler.h"
 #include "TimeOfDayHandler.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeSunriseSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeNoonSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeSunsetSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeMidnightSignature);
+
 class ADirectionalLight;
 UCLASS()
 class TIMEOFDAY_API ATimeOfDayHandler : public AActor, public ISavableTimeOfDayHandler
@@ -29,7 +34,11 @@ public:
 	virtual void SetNormalizedProgressThroughDay(float InProgress) override;
 	virtual float GetNormalizedProgressThroughDay() const override;
 	// End ISavableTimeOfDayHandler Implementation
-
+	
+	FOnTimeSunriseSignature OnTimeSunrise;
+	FOnTimeNoonSignature OnTimeNoon;
+	FOnTimeSunsetSignature OnTimeSunset;
+	FOnTimeMidnightSignature OnTimeMidnight;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsDay() const;
@@ -53,7 +62,16 @@ private:
 
 	UFUNCTION()
 	void OnRep_DaysPlayed();
+
 	UFUNCTION()
 	void OnRep_NormalizedProgressThroughDay();
+	
+	bool SunriseBroadcasted;
+	bool NoonBroadcasted;
+	bool SunsetBroadcasted;
+	bool MidnightBroadcasted;
+
+	UFUNCTION()
+	void HandleDelegates();
 
 };

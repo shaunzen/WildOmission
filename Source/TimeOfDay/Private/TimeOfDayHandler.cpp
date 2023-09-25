@@ -27,6 +27,11 @@ ATimeOfDayHandler::ATimeOfDayHandler()
 	NormalizedProgressThroughDay = 0.0f;
 	DaysPlayed = 0;
 
+	SunriseBroadcasted = false;
+	NoonBroadcasted = false;
+	SunsetBroadcasted = false;
+	MidnightBroadcasted = false;
+
 	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> SkyCollectionBlueprint(TEXT("/Game/WildOmissionCore/Art/Environment/MPC_Sky"));
 	if (SkyCollectionBlueprint.Succeeded())
 	{
@@ -67,6 +72,52 @@ void ATimeOfDayHandler::OnRep_DaysPlayed()
 void ATimeOfDayHandler::OnRep_NormalizedProgressThroughDay()
 {
 	SetNormalizedProgressThroughDay(NormalizedProgressThroughDay);
+	HandleDelegates();
+}
+
+void ATimeOfDayHandler::HandleDelegates()
+{
+	// Sunrise = 0, Noon = .25, Sunset = .5, Midnight = .75
+	const bool SunriseConditionValid = NormalizedProgressThroughDay > 0 && NormalizedProgressThroughDay < 0.25f;
+	const bool NoonConditionValid = NormalizedProgressThroughDay > 0.25f && NormalizedProgressThroughDay < 0.5f;
+	const bool SunsetConditionValid = NormalizedProgressThroughDay > 0.5f && NormalizedProgressThroughDay < 0.75f;
+	const bool MidnightConditionValid = NormalizedProgressThroughDay > 0.75f && NormalizedProgressThroughDay < 1.0f;
+	if (!SunriseBroadcasted && OnTimeSunrise.IsBound() && SunriseConditionValid)
+	{
+		OnTimeSunrise.Broadcast();
+		
+		SunriseBroadcasted = true;
+		NoonBroadcasted = false;
+		SunsetBroadcasted = false;
+		MidnightBroadcasted = false;
+	}
+	else if (!NoonBroadcasted && OnTimeNoon.IsBound() && NoonConditionValid)
+	{
+		OnTimeNoon.Broadcast();
+
+		SunriseBroadcasted = false;
+		NoonBroadcasted = true;
+		SunsetBroadcasted = false;
+		MidnightBroadcasted = false;
+	}
+	else if (!SunsetConditionValid && OnTimeSunset.IsBound() && SunsetConditionValid)
+	{
+		OnTimeSunset.Broadcast();
+
+		SunriseBroadcasted = false;
+		NoonBroadcasted = false;
+		SunsetBroadcasted = true;
+		MidnightBroadcasted = false;
+	}
+	else if (!MidnightConditionValid && OnTimeMidnight.IsBound() && MidnightConditionValid)
+	{
+		OnTimeMidnight.Broadcast();
+
+		SunriseBroadcasted = false;
+		NoonBroadcasted = false;
+		SunsetBroadcasted = false;
+		MidnightBroadcasted = true;
+	}
 }
 
 // Called every frame
