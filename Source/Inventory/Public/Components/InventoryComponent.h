@@ -90,9 +90,9 @@ protected:
 	void BroadcastItemUpdate(const FInventoryItemUpdate& ItemUpdate);
 
 private:
-	bool AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining);
-	bool FindAndAddToPopulatedSlot(const FName& ItemName, const int32& ItemStackSize, int32& QuantityToAdd);
-	bool FindAndAddToEmptySlot(const FName& ItemName, const int32& ItemStackSize, const TArray<FItemStat>& Stats, int32& QuantityToAdd);
+	bool AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining, const int32& RowsToSkip = 0);
+	bool FindAndAddToPopulatedSlot(const FName& ItemName, const int32& ItemStackSize, int32& QuantityToAdd, const int32& RowsToSkip = 0);
+	bool FindAndAddToEmptySlot(const FName& ItemName, const int32& ItemStackSize, const TArray<FItemStat>& Stats, int32& QuantityToAdd, const int32& RowsToSkip = 0);
 	bool RemoveItemFromSlots(const FName& ItemName, const int32& Quantity, int32& Remaining);
 	
 	void DragAll(const int32& FromSlotIndex, UInventoryManipulatorComponent* Manipulator, TArray<FInventorySlot>& SlotsToModify, FInventoryContents& ContentsToModify);

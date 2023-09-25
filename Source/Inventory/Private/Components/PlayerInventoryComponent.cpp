@@ -32,7 +32,7 @@ void UPlayerInventoryComponent::BeginPlay()
 	if (!WasLoadedFromSave())
 	{
 		FInventoryItem RockItem;
-		RockItem.Name = FName("rock");
+		RockItem.Name = TEXT("rock");
 		RockItem.Quantity = 1;
 
 		AddItem(RockItem);
