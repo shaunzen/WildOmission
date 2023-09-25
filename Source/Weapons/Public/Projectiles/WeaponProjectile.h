@@ -46,7 +46,19 @@ protected:
 	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 private:
+	UPROPERTY()
+	USoundBase* HitMarkerSound;
+	
+	UPROPERTY()
+	USoundBase* HitMarkerHeadshotSound;
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_SpawnImpactEffects(const FHitResult& HitResult);
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayHitMarkerSound();
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayHitMarkerHeadshotSound();
 
 };

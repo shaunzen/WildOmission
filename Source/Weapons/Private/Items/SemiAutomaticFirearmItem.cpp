@@ -9,6 +9,11 @@ void ASemiAutomaticFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 
+	if (!CanFire)
+	{
+		return;
+	}
+
 	if (!HasAmmo())
 	{
 		if (OutOfAmmoSound == nullptr)

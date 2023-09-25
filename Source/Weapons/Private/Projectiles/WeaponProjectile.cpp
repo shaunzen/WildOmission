@@ -13,6 +13,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
 // Sets default values
@@ -54,6 +55,18 @@ AWeaponProjectile::AWeaponProjectile()
 
 	Damage = 15.0f;
 	CollectableClass = nullptr;
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> HitMarkerSoundObject(TEXT("/Game/Weapons/Audio/A_HitMarker_Body"));
+	if (HitMarkerSoundObject.Succeeded())
+	{
+		HitMarkerSound = HitMarkerSoundObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> HitMarkerHeadshotSoundObject(TEXT("/Game/Weapons/Audio/A_HitMarker_Head"));
+	if (HitMarkerHeadshotSoundObject.Succeeded())
+	{
+		HitMarkerHeadshotSound = HitMarkerHeadshotSoundObject.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -85,6 +98,14 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	APawn* HitPawn = Cast<APawn>(OtherActor);
 	if (HitPawn)
 	{
+		if (Hit.BoneName == TEXT("Head"))
+		{
+			Client_PlayHitMarkerHeadshotSound();
+		}
+		else
+		{
+			Client_PlayHitMarkerSound();
+		}
 		FPointDamageEvent HitByProjectileEvent(Damage, Hit, NormalImpulse, nullptr);
 		HitPawn->TakeDamage(Damage, HitByProjectileEvent, GetInstigatorController<AController>(), this);
 	}
@@ -103,6 +124,26 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 
 	// Destroy self
 	Destroy();
+}
+
+void AWeaponProjectile::Client_PlayHitMarkerSound_Implementation()
+{
+	if (HitMarkerSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySound2D(GetWorld(), HitMarkerSound);
+}
+
+void AWeaponProjectile::Client_PlayHitMarkerHeadshotSound_Implementation()
+{
+	if (HitMarkerHeadshotSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySound2D(GetWorld(), HitMarkerHeadshotSound);
 }
 
 void AWeaponProjectile::Multi_SpawnImpactEffects_Implementation(const FHitResult& HitResult)

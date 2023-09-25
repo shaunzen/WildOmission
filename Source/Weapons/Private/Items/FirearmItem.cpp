@@ -11,6 +11,8 @@
 AFirearmItem::AFirearmItem()
 {
 	MuzzleFlashEffect = nullptr;
+	RateOfFireRPM = 600;
+	CanFire = true;
 
 	MuzzleComponent = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleComponent"));
 	MuzzleComponent->SetupAttachment(RootComponent);
@@ -105,6 +107,11 @@ void AFirearmItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 	PlayReloadClimaxCameraShake();
 }
 
+int32 AFirearmItem::GetRateOfFire() const
+{
+	return RateOfFireRPM;
+}
+
 void AFirearmItem::PlayFireEffects()
 {
 	Super::PlayFireEffects();
@@ -126,6 +133,17 @@ void AFirearmItem::PlayMuzzleFlash()
 		: MuzzleComponent->GetComponentLocation();
 	
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleFlashEffect, MuzzleLocation, GetOwnerEquipComponent()->GetOwnerControlRotation());
+}
+
+void AFirearmItem::InvokeFireCooldownTimer()
+{
+	CanFire = false;
+	FTimerHandle ResetCanFireTimerHandle;
+	FTimerDelegate ResetCanFireTimerDelegate;
+	ResetCanFireTimerDelegate.BindUObject(this, &AFirearmItem::ResetCanFire);
+
+	const float CooldownTime = 60.0f / (float)RateOfFireRPM;
+	GetWorld()->GetTimerManager().SetTimer(ResetCanFireTimerHandle, ResetCanFireTimerDelegate, CooldownTime, false);
 }
 
 void AFirearmItem::PlayFireCameraShake()
@@ -194,8 +212,14 @@ void AFirearmItem::PlayReloadClimaxCameraShake()
 	OwnerPlayerController->ClientStartCameraShake(ReloadClimaxCameraShake);
 }
 
+void AFirearmItem::ResetCanFire()
+{
+	CanFire = true;
+}
+
 void AFirearmItem::Fire()
 {
 	PlayFireEffects();
 	DecreaseAmmoAndDurability();
+	InvokeFireCooldownTimer();
 }

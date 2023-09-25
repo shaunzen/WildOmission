@@ -23,9 +23,14 @@ public:
 	virtual void OnReloadPressed() override;
 	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance) override;
 
+	int32 GetRateOfFire() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* MuzzleComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	int32 RateOfFireRPM;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UNiagaraSystem* MuzzleFlashEffect;
@@ -41,10 +46,16 @@ protected:
 
 	virtual void PlayFireEffects() override;
 	void PlayMuzzleFlash();
+	void InvokeFireCooldownTimer();
 	
 	void PlayFireCameraShake();
 	void PlayReloadStartCameraShake();
 	void PlayReloadClimaxCameraShake();
+
+	bool CanFire;
+
+	UFUNCTION()
+	void ResetCanFire();
 
 	virtual void Fire();
 
