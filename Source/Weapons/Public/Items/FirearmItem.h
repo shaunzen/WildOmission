@@ -16,6 +16,8 @@ class WEAPONS_API AFirearmItem : public AProjectileWeaponItem
 public:
 	AFirearmItem();
 	
+	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
+
 	virtual void OnPrimaryPressed() override;
 	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
 	virtual void OnSecondaryPressed() override;

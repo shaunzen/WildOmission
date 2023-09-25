@@ -3,6 +3,7 @@
 
 #include "Items/FirearmItem.h"
 #include "Components/EquipComponent.h"
+#include "Components/InventoryComponent.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
 #include "WildOmissionGameUserSettings.h"
@@ -40,6 +41,25 @@ AFirearmItem::AFirearmItem()
 	{
 		ReloadClimaxCameraShake = ReloadClimaxCameraShakeBlueprint.Class;
 	}
+}
+
+void AFirearmItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
+{
+	Super::Equip(InOwnerPawn, InThirdPersonMeshComponent, InItemName, InFromSlotIndex, InUniqueID);
+
+	FItemData* ItemData = UInventoryComponent::GetItemData(InItemName);
+	if (ItemData == nullptr)
+	{
+		return;
+	}
+
+	float RPMData = ItemData->GetStat(TEXT("RateOfFireRPM"));
+	if (RPMData == -1)
+	{
+		return;
+	}
+
+	RateOfFireRPM = RPMData;
 }
 
 void AFirearmItem::OnPrimaryPressed()

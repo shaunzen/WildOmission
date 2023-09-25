@@ -28,9 +28,9 @@ void AConsumableItem::OnPrimaryPressed()
 		return;
 	}
 
-	int32 Health = ItemData->GetStat(FName("Health"));
-	int32 Energy = ItemData->GetStat(FName("Energy"));
-	int32 Hydration = ItemData->GetStat(FName("Hydration"));
+	int32 Health = ItemData->GetStat(TEXT("Health"));
+	int32 Energy = ItemData->GetStat(TEXT("Energy"));
+	int32 Hydration = ItemData->GetStat(TEXT("Hydration"));
 	
 	if (Health != -1 && Health != 0)
 	{
