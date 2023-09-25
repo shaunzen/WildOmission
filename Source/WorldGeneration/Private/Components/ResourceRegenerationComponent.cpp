@@ -29,7 +29,7 @@ void UResourceRegenerationComponent::BeginPlay()
 	FTimerDelegate RegenerationTimerDelegate;
 
 	RegenerationTimerDelegate.BindUObject(this, &UResourceRegenerationComponent::CheckNodeRegenerationConditions);
-	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, RegenerationTimerDelegate, 10.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, RegenerationTimerDelegate, 60.0f, true);
 }
 
 void UResourceRegenerationComponent::CheckNodeRegenerationConditions()
