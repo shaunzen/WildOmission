@@ -20,6 +20,10 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponProjectile();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void Setup(const FName& ItemID);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,14 +40,20 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* MovementComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	UPROPERTY()
 	float Damage;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Velocity)
+	float Velocity;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<ACollectableProjectile> CollectableClass;
 
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnRep_Velocity();
 
 private:
 	UPROPERTY()

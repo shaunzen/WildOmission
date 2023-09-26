@@ -113,7 +113,13 @@ void AProjectileWeaponItem::SpawnProjectile()
 	SpawnParams.Instigator = GetOwnerPawn();
 	SpawnParams.Owner = GetOwnerPawn();
 	
-	GetWorld()->SpawnActor<AWeaponProjectile>(ProjectileClass, ProjectileSpawnLocation, ProjectileSpawnRotation, SpawnParams);
+	AWeaponProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AWeaponProjectile>(ProjectileClass, ProjectileSpawnLocation, ProjectileSpawnRotation, SpawnParams);
+	if (SpawnedProjectile == nullptr)
+	{
+		return;
+	}
+
+	SpawnedProjectile->Setup(AmmoItemID);
 }
 
 void AProjectileWeaponItem::PlayFireSoundEffect()

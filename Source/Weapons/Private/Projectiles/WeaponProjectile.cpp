@@ -3,6 +3,7 @@
 
 #include "Projectiles/WeaponProjectile.h"
 #include "Components/SphereComponent.h"
+#include "Components/InventoryComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Projectiles/CollectableProjectile.h"
 #include "Engine/DamageEvents.h"
@@ -14,6 +15,7 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Net/UnrealNetwork.h"
 #include "Log.h"
 
 // Sets default values
@@ -54,18 +56,47 @@ AWeaponProjectile::AWeaponProjectile()
 	MovementComponent->bRotationFollowsVelocity = true;
 
 	Damage = 15.0f;
+	Velocity = 50000.0f;
 	CollectableClass = nullptr;
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> HitMarkerSoundObject(TEXT("/Game/Weapons/Audio/A_HitMarker_Body"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> HitMarkerSoundObject(TEXT("/Game/Weapons/Audio/A_Hitmarker_Body_02"));
 	if (HitMarkerSoundObject.Succeeded())
 	{
 		HitMarkerSound = HitMarkerSoundObject.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> HitMarkerHeadshotSoundObject(TEXT("/Game/Weapons/Audio/A_HitMarker_Head"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> HitMarkerHeadshotSoundObject(TEXT("/Game/Weapons/Audio/A_Hitmarker_Head"));
 	if (HitMarkerHeadshotSoundObject.Succeeded())
 	{
 		HitMarkerHeadshotSound = HitMarkerHeadshotSoundObject.Object;
+	}
+}
+
+void AWeaponProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeaponProjectile, Velocity);
+}
+
+void AWeaponProjectile::Setup(const FName& ItemID)
+{
+	FItemData* ItemData = UInventoryComponent::GetItemData(ItemID);
+	if (ItemData == nullptr)
+	{
+		return;
+	}
+
+	int32 DamageStat = ItemData->GetStat(TEXT("Damage"));
+	if (DamageStat != -1)
+	{
+		Damage = DamageStat;
+	}
+
+	int32 VelocityStat = ItemData->GetStat(TEXT("Velocity"));
+	if (VelocityStat != -1)
+	{
+		Velocity = VelocityStat;
 	}
 }
 
@@ -98,16 +129,16 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	APawn* HitPawn = Cast<APawn>(OtherActor);
 	if (HitPawn)
 	{
-		if (Hit.BoneName == TEXT("Head"))
-		{
-			Client_PlayHitMarkerHeadshotSound();
-		}
-		else
-		{
-			Client_PlayHitMarkerSound();
-		}
-		FPointDamageEvent HitByProjectileEvent(Damage, Hit, NormalImpulse, nullptr);
-		HitPawn->TakeDamage(Damage, HitByProjectileEvent, GetInstigatorController<AController>(), this);
+		const bool Headshot = Hit.BoneName == TEXT("Head");
+		const float HeadshotMultiplier = 10.0f * Headshot;
+		const float TotalDamage = Damage + HeadshotMultiplier;
+
+		Headshot ? Client_PlayHitMarkerHeadshotSound() : Client_PlayHitMarkerSound();
+		
+		UE_LOG(LogTemp, Warning, TEXT("Damage %f, With Headshot Multiplier %f"), Damage, TotalDamage);
+
+		FPointDamageEvent HitByProjectileEvent(TotalDamage, Hit, NormalImpulse, nullptr);
+		HitPawn->TakeDamage(TotalDamage, HitByProjectileEvent, GetInstigatorController<AController>(), this);
 	}
 
 	bool ProjectileIntact = UKismetMathLibrary::RandomBoolWithWeight(0.75f);
@@ -124,6 +155,12 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 
 	// Destroy self
 	Destroy();
+}
+
+void AWeaponProjectile::OnRep_Velocity()
+{
+	MovementComponent->InitialSpeed = Velocity;
+	MovementComponent->MaxSpeed = Velocity;
 }
 
 void AWeaponProjectile::Client_PlayHitMarkerSound_Implementation()
