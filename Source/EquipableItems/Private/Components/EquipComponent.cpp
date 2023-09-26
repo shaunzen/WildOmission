@@ -168,16 +168,12 @@ void UEquipComponent::PlayItemMontage(UAnimMontage* PlayerMontage, UAnimMontage*
 	{
 		UAnimInstance* FirstPersonAnimInstance = OwnerFirstPersonMesh->GetAnimInstance();
 		UAnimInstance* FirstPersonItemAnimInstance = FirstPersonItemComponent->GetAnimInstance();
-		if (FirstPersonAnimInstance == nullptr || FirstPersonItemAnimInstance == nullptr)
-		{
-			return;
-		}
 
-		if (PlayerMontage)
+		if (FirstPersonAnimInstance && PlayerMontage)
 		{
 			FirstPersonAnimInstance->Montage_Play(PlayerMontage);
 		}
-		if (ItemMontage)
+		if (FirstPersonItemAnimInstance && ItemMontage)
 		{
 			FirstPersonItemAnimInstance->Montage_Play(ItemMontage);
 		}
@@ -186,16 +182,12 @@ void UEquipComponent::PlayItemMontage(UAnimMontage* PlayerMontage, UAnimMontage*
 	{
 		UAnimInstance* ThirdPersonAnimInstance = OwnerThirdPersonMesh->GetAnimInstance();
 		UAnimInstance* ThirdPersonItemAnimInstance = EquipedItem->GetMeshComponent()->GetAnimInstance();
-		if (ThirdPersonAnimInstance == nullptr || ThirdPersonItemAnimInstance == nullptr)
-		{
-			return;
-		}
 
-		if (PlayerMontage)
+		if (ThirdPersonAnimInstance && PlayerMontage)
 		{
 			ThirdPersonAnimInstance->Montage_Play(PlayerMontage);
 		}
-		if (ItemMontage)
+		if (ThirdPersonItemAnimInstance && ItemMontage)
 		{
 			ThirdPersonItemAnimInstance->Montage_Play(ItemMontage);
 		}
