@@ -32,7 +32,7 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	FInventoryItem Yield;
+	TArray<FInventoryItem> Yield;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Save System")
 	FName Identifier;

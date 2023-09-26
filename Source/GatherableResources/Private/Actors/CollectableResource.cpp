@@ -43,7 +43,10 @@ void ACollectableResource::Interact(AActor* Interactor)
 	}
 
 	// Add resource to collectors inventory
-	InteractorInventoryComponent->AddItem(Yield);
+	for (const FInventoryItem& YieldItem : Yield)
+	{
+		InteractorInventoryComponent->AddItem(YieldItem);
+	}
 
 	// Play Collect sound
 	Client_PlayCollectSound();
@@ -55,11 +58,16 @@ void ACollectableResource::Interact(AActor* Interactor)
 FString ACollectableResource::PromptText()
 {
 	FString YieldedItemDisplayName;
+	
+	if (Yield.IsEmpty())
+	{
+		return TEXT("ERROR");
+	}
 
-	FItemData* ItemData = UInventoryComponent::GetItemData(Yield.Name);
+	FItemData* ItemData = UInventoryComponent::GetItemData(Yield[0].Name);
 	if (ItemData == nullptr)
 	{
-		return FString::Printf(TEXT("harvest %s"), *Yield.Name.ToString());
+		return FString::Printf(TEXT("harvest %s"), *Yield[0].Name.ToString());
 	}
 
 	YieldedItemDisplayName = ItemData->DisplayName;
