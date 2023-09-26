@@ -87,7 +87,7 @@ void AAISpawnHandler::CheckSpawnConditionsForPlayer(APawn* Player)
 		return;
 	}
 
-	SpawnAICharactersInRadiusFromLocation(Player->GetActorLocation());
+	SpawnAICharactersInRadiusFromOrigin(Player->GetActorLocation());
 }
 
 int32 AAISpawnHandler::GetNumAICharactersWithinRadiusFromLocation(const FVector& TestLocation) const
@@ -111,7 +111,7 @@ int32 AAISpawnHandler::GetNumAICharactersWithinRadiusFromLocation(const FVector&
 	return AICharactersInRange;
 }
 
-void AAISpawnHandler::SpawnAICharactersInRadiusFromLocation(const FVector& SpawnLocation)
+void AAISpawnHandler::SpawnAICharactersInRadiusFromOrigin(const FVector& Origin)
 {
 	if (AISpawnDataTable == nullptr)
 	{
@@ -128,7 +128,12 @@ void AAISpawnHandler::SpawnAICharactersInRadiusFromLocation(const FVector& Spawn
 	UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("Spawning AICharacter With An Index Of %i."), AICharacterToSpawn);
 	for (int32 i = 0; i < SpawnData[AICharacterToSpawn]->SpawnGroupSize; ++i)
 	{
-		HandleAISpawn(SpawnData[AICharacterToSpawn]->Class, GetSpawnTransform(SpawnLocation));
+		FTransform SpawnTransform;
+		if (!FindSpawnTransform(Origin, SpawnTransform))
+		{
+			continue;
+		}
+		HandleAISpawn(SpawnData[AICharacterToSpawn]->Class, SpawnTransform);
 	}
 }
 
@@ -143,7 +148,7 @@ void AAISpawnHandler::RemoveAICharacterFromList(AWildOmissionAICharacter* Charac
 	SpawnedAICharacters.RemoveAtSwap(AICharacterIndex, 1, false);
 }
 
-FTransform AAISpawnHandler::GetSpawnTransform(const FVector& SpawnOrigin) const
+bool AAISpawnHandler::FindSpawnTransform(const FVector& Origin, FTransform& OutTransform) const
 {
 	const float TraceHeight = 50000.0f;
 	const float SpawnDistance = FMath::RandRange(InnerSpawnRadiusCentimeters, OuterSpawnRadiusCentimeters);
@@ -152,7 +157,7 @@ FTransform AAISpawnHandler::GetSpawnTransform(const FVector& SpawnOrigin) const
 	FVector SpawnLocationWithinRadius = FVector::ForwardVector * SpawnDistance;
 	SpawnLocationWithinRadius = SpawnLocationWithinRadius.RotateAngleAxis(SpawnAngle, FVector::UpVector);
 
-	FVector Start = SpawnLocationWithinRadius + SpawnOrigin;
+	FVector Start = SpawnLocationWithinRadius + Origin;
 	Start.Z = TraceHeight;
 	FVector End = Start - FVector(0.0f, 0.0f, TraceHeight);
 
@@ -161,7 +166,7 @@ FTransform AAISpawnHandler::GetSpawnTransform(const FVector& SpawnOrigin) const
 	FHitResult HitResult;
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 	{
-		return SpawnTransform;
+		return false;
 	}
 
 	FRotator SpawnRotation = FRotator::ZeroRotator;
@@ -170,7 +175,7 @@ FTransform AAISpawnHandler::GetSpawnTransform(const FVector& SpawnOrigin) const
 	SpawnTransform.SetLocation(HitResult.ImpactPoint);
 	SpawnTransform.SetRotation(FQuat(SpawnRotation));
 
-	return SpawnTransform;
+	return true;
 }
 
 FAISpawnData* AAISpawnHandler::GetSpawnData(const FName& AIName)

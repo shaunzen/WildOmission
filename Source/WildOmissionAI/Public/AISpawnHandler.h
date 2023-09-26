@@ -60,11 +60,11 @@ private:
 	int32 GetNumAICharactersWithinRadiusFromLocation(const FVector& TestLocation) const;
 
 	UFUNCTION()
-	void SpawnAICharactersInRadiusFromLocation(const FVector& SpawnLocation);
+	void SpawnAICharactersInRadiusFromOrigin(const FVector& Origin);
 
 	UFUNCTION()
 	void RemoveAICharacterFromList(AWildOmissionAICharacter* CharacterToRemove);
 
-	FTransform GetSpawnTransform(const FVector& SpawnLocation) const;
+	bool FindSpawnTransform(const FVector& Origin, FTransform& OutTransform) const;
 
 };
