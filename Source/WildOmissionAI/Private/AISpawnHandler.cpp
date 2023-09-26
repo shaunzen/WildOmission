@@ -161,8 +161,6 @@ bool AAISpawnHandler::FindSpawnTransform(const FVector& Origin, FTransform& OutT
 	Start.Z = TraceHeight;
 	FVector End = Start - FVector(0.0f, 0.0f, TraceHeight);
 
-	FTransform SpawnTransform;
-
 	FHitResult HitResult;
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 	{
@@ -172,8 +170,8 @@ bool AAISpawnHandler::FindSpawnTransform(const FVector& Origin, FTransform& OutT
 	FRotator SpawnRotation = FRotator::ZeroRotator;
 	SpawnRotation.Yaw = FMath::RandRange(0.0f, 360.0f);
 
-	SpawnTransform.SetLocation(HitResult.ImpactPoint);
-	SpawnTransform.SetRotation(FQuat(SpawnRotation));
+	OutTransform.SetLocation(HitResult.ImpactPoint);
+	OutTransform.SetRotation(FQuat(SpawnRotation));
 
 	return true;
 }
