@@ -4,29 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "Deployable.h"
-#include "Sapling.generated.h"
-
-class AHarvestableResource;
+#include "Seedling.generated.h"
 
 UCLASS()
-class DEPLOYABLES_API ASapling : public ADeployable
+class DEPLOYABLES_API ASeedling : public ADeployable
 {
 	GENERATED_BODY()
 public:
-	ASapling();
+	ASeedling();
 	
 	virtual void OnSpawn() override;
 
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<AHarvestableResource>> MatureStates;
+	UPROPERTY(EditDefaultsOnly, Category = "Seedling")
+	TArray<TSubclassOf<AActor>> MatureStates;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Seedling")
 	float MinMatureTimeSeconds;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Seedling")
 	float MaxMatureTimeSeconds;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)

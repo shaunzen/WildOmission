@@ -1,10 +1,10 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Deployables/Sapling.h"
+#include "Deployables/Seedling.h"
 #include "Actors/HarvestableResource.h"
 
-ASapling::ASapling()
+ASeedling::ASeedling()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -13,14 +13,14 @@ ASapling::ASapling()
 	TimeToMatureSeconds = 0.0f;
 }
 
-void ASapling::OnSpawn()
+void ASeedling::OnSpawn()
 {
 	Super::OnSpawn();
 
 	TimeToMatureSeconds = FMath::RandRange(MinMatureTimeSeconds, MaxMatureTimeSeconds);
 }
 
-void ASapling::Tick(float DeltaTime)
+void ASeedling::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -37,7 +37,7 @@ void ASapling::Tick(float DeltaTime)
 	}
 }
 
-void ASapling::GrowUp()
+void ASeedling::GrowUp()
 {
 	// Decide which tree we will become
 	int32 MatureStateIndex = FMath::RandRange(0, MatureStates.Num() - 1);
