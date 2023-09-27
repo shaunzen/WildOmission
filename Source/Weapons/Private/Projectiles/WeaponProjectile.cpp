@@ -53,6 +53,7 @@ AWeaponProjectile::AWeaponProjectile()
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
 	MovementComponent->InitialSpeed = 50000.0f;
 	MovementComponent->MaxSpeed = 50000.0f;
+	MovementComponent->bAutoActivate = false;
 	MovementComponent->bRotationFollowsVelocity = true;
 
 	Damage = 15.0f;
@@ -97,7 +98,9 @@ void AWeaponProjectile::Setup(const FName& ItemID)
 	if (VelocityStat != -1)
 	{
 		Velocity = VelocityStat;
+		OnRep_Velocity();
 	}
+
 }
 
 // Called when the game starts or when spawned
@@ -161,6 +164,7 @@ void AWeaponProjectile::OnRep_Velocity()
 {
 	MovementComponent->InitialSpeed = Velocity;
 	MovementComponent->MaxSpeed = Velocity;
+	MovementComponent->Activate();
 }
 
 void AWeaponProjectile::Client_PlayHitMarkerSound_Implementation()
