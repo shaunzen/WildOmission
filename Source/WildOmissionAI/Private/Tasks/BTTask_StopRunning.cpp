@@ -20,13 +20,13 @@ EBTNodeResult::Type UBTTask_StopRunning::ExecuteTask(UBehaviorTreeComponent& Own
 		return EBTNodeResult::Type::Failed;
 	}
 
-	AWildOmissionAICharacter* AICharacter = Cast<AWildOmissionAICharacter>(AIOwner->GetPawn());
-	if (AICharacter == nullptr)
+	AWildOmissionAICharacter* OwnerCharacter = Cast<AWildOmissionAICharacter>(AIOwner->GetPawn());
+	if (OwnerCharacter == nullptr)
 	{
 		return EBTNodeResult::Type::Failed;
 	}
 
-	AICharacter->StopRunning();
+	OwnerCharacter->StopRunning();
 
 	return EBTNodeResult::Type::Succeeded;
 }
