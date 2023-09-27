@@ -7,8 +7,10 @@
 #include "Components/VitalsComponent.h"
 #include "Components/DistanceDespawnComponent.h"
 #include "Characters/WildOmissionAIRagdoll.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "Log.h"
 
 // Sets default values
@@ -29,6 +31,9 @@ AWildOmissionAICharacter::AWildOmissionAICharacter()
 	DespawnComponent = CreateDefaultSubobject<UDistanceDespawnComponent>(TEXT("DespawnComponent"));
 	DespawnComponent->SetupAttachment(RootComponent);
 
+	DefaultWalkSpeed = 300.0f;
+	DefaultRunSpeed = 600.0f;
+
 	MinTimeBetweenIdleSoundSeconds = 1.0f;
 	MaxTimeBetweenIdleSoundSeconds = 5.0f;
 
@@ -36,11 +41,19 @@ AWildOmissionAICharacter::AWildOmissionAICharacter()
 	RagdollClass = nullptr;
 }
 
+void AWildOmissionAICharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWildOmissionAICharacter, DesiredMovementSpeed);
+}
+
 // Called when the game starts or when spawned
 void AWildOmissionAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	StopRunning();
 	SetIdleSoundTimer();
 
 	if (!HasAuthority())
@@ -88,6 +101,16 @@ void AWildOmissionAICharacter::HandleDeath()
 	HandleDespawn();
 }
 
+void AWildOmissionAICharacter::StartRunning()
+{
+	DesiredMovementSpeed = DefaultRunSpeed;
+}
+
+void AWildOmissionAICharacter::StopRunning()
+{
+	DesiredMovementSpeed = DefaultWalkSpeed;
+}
+
 void AWildOmissionAICharacter::SetIdleSoundTimer()
 {
 	FTimerHandle IdleSoundTimerHandle;
@@ -108,6 +131,17 @@ void AWildOmissionAICharacter::PlayIdleSound()
 	}
 
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), IdleSound, GetActorLocation());
+}
+
+void AWildOmissionAICharacter::OnRep_DesiredMovementSpeed()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	CharacterMovementComponent->MaxWalkSpeed = DesiredMovementSpeed;
 }
 
 // Called every frame

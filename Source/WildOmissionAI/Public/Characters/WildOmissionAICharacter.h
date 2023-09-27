@@ -22,6 +22,8 @@ public:
 	// Sets default values for this character's properties
 	AWildOmissionAICharacter();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -50,6 +52,12 @@ protected:
 	TSubclassOf<AWildOmissionAIRagdoll> RagdollClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
+	float DefaultWalkSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
+	float DefaultRunSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
 	float MinTimeBetweenIdleSoundSeconds;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
@@ -61,10 +69,22 @@ protected:
 	UFUNCTION()
 	virtual void HandleDeath();
 
+	UFUNCTION()
+	virtual void StartRunning();
+
+	UFUNCTION()
+	virtual void StopRunning();
+
 private:
 	void SetIdleSoundTimer();
 
 	UFUNCTION()
 	void PlayIdleSound();
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_DesiredMovementSpeed)
+	float DesiredMovementSpeed;
+
+	UFUNCTION()
+	void OnRep_DesiredMovementSpeed();
 
 };
