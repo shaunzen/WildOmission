@@ -16,7 +16,7 @@ AAnimalSpawnHandler::AAnimalSpawnHandler()
 	MaxSpawnCheckTimeSeconds = 15.0f;
 	InnerSpawnRadiusCentimeters = 3000.0f;
 	OuterSpawnRadiusCentimeters = 4000.0f;
-	SpawnChance = 0.1f;
+	SpawnChance = 1.0f;//0.1f;
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> AnimalSpawnDataTableObject(TEXT("/Game/Animals/DataTables/DT_AnimalSpawnData"));
 	if (AnimalSpawnDataTableObject.Succeeded())

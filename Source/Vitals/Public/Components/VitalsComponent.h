@@ -14,6 +14,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEndStarvingSignature, const float
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHealthDepletedSignature);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTakeAnyDamageSignature);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class VITALS_API UVitalsComponent : public UActorComponent
 {
@@ -80,6 +82,7 @@ public:
 	FOnEndStarvingSignature OnEndStarving;
 
 	FOnHealthDepletedSignature OnHealthDepleted;
+	FOnTakeAnyDamageSignature OnTakeAnyDamage;
 
 protected:
 	// Called when the game starts

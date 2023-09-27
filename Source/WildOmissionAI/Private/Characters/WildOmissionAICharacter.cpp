@@ -104,11 +104,13 @@ void AWildOmissionAICharacter::HandleDeath()
 void AWildOmissionAICharacter::StartRunning()
 {
 	DesiredMovementSpeed = DefaultRunSpeed;
+	OnRep_DesiredMovementSpeed();
 }
 
 void AWildOmissionAICharacter::StopRunning()
 {
 	DesiredMovementSpeed = DefaultWalkSpeed;
+	OnRep_DesiredMovementSpeed();
 }
 
 void AWildOmissionAICharacter::SetIdleSoundTimer()

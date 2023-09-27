@@ -204,6 +204,10 @@ void UVitalsComponent::AddHealth(float Value)
 	CurrentHealth = FMath::Clamp(CurrentHealth + Value, 0.0f, MaxHealth);
 	if (Value < 0.0f)
 	{
+		if (OnTakeAnyDamage.IsBound())
+		{
+			OnTakeAnyDamage.Broadcast();
+		}
 		Client_PlayHurtSound();
 	}
 }
