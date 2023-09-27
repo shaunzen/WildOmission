@@ -34,6 +34,13 @@ AWildOmissionAICharacter::AWildOmissionAICharacter()
 	DefaultWalkSpeed = 300.0f;
 	DefaultRunSpeed = 600.0f;
 
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		this->bUseControllerRotationYaw = false;
+		CharacterMovementComponent->bOrientRotationToMovement = true;
+	}
+
 	MinTimeBetweenIdleSoundSeconds = 1.0f;
 	MaxTimeBetweenIdleSoundSeconds = 5.0f;
 
