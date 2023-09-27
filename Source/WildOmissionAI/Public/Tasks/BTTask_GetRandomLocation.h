@@ -18,4 +18,8 @@ public:
 	UBTTask_GetRandomLocation();
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+private:
+	UPROPERTY(EditAnywhere)
+	float Radius;
+
 };

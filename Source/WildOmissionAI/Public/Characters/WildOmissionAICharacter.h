@@ -32,6 +32,12 @@ public:
 
 	FOnAICharacterDespawnSignature OnDespawn;
 
+	UFUNCTION()
+	virtual void StartRunning();
+
+	UFUNCTION()
+	virtual void StopRunning();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -68,12 +74,6 @@ protected:
 
 	UFUNCTION()
 	virtual void HandleDeath();
-
-	UFUNCTION()
-	virtual void StartRunning();
-
-	UFUNCTION()
-	virtual void StopRunning();
 
 private:
 	void SetIdleSoundTimer();

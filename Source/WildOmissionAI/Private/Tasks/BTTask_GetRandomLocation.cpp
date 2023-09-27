@@ -10,6 +10,7 @@
 UBTTask_GetRandomLocation::UBTTask_GetRandomLocation()
 {
 	NodeName = TEXT("Find Random Reachable Location");
+	Radius = 5000.0f;
 }
 
 EBTNodeResult::Type UBTTask_GetRandomLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -24,7 +25,7 @@ EBTNodeResult::Type UBTTask_GetRandomLocation::ExecuteTask(UBehaviorTreeComponen
 		return EBTNodeResult::Type::Failed;
 	}
 	FNavLocation NavLocation;
-	if (!NavigationSystem->GetRandomReachablePointInRadius(CurrentLocation, 5000.0f, NavLocation))
+	if (!NavigationSystem->GetRandomReachablePointInRadius(CurrentLocation, Radius, NavLocation))
 	{
 		UE_LOG(LogWildOmissionAI, Verbose, TEXT("BTTask_GetRandomLocation, Failed to find random location."));
 		return EBTNodeResult::Type::Failed;
