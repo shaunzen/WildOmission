@@ -2,12 +2,15 @@
 
 
 #include "GraphicsSettingsWidget.h"
+#include "Components/Button.h"
 #include "OptionBoxes/MultiOptionBox.h"
 #include "WildOmissionGameUserSettings.h"
 
 void UGraphicsSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	RunHardwareBenchmarkButton->OnClicked.AddDynamic(this, &UGraphicsSettingsWidget::RunHardwareBenchmark);
 
 	// Setup Graphics Quality
 	OverallGraphicsQualityOptionBox->GiveQualityOptions();
@@ -126,4 +129,17 @@ void UGraphicsSettingsWidget::RefreshCustomGraphicsSettings(bool IsUsingCustomSe
 void UGraphicsSettingsWidget::OnOverallQualityOptionChange(const FString& NewSelection)
 {
 	RefreshCustomGraphicsSettings(NewSelection == TEXT("Custom"));
+}
+
+void UGraphicsSettingsWidget::RunHardwareBenchmark()
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr)
+	{
+		return;
+	}
+
+	UserSettings->RunHardwareBenchmark(10, 1.0f, 0.2f);
+	UserSettings->ApplyHardwareBenchmarkResults();
+	OnRefresh();
 }

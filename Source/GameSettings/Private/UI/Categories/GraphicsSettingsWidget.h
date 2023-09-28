@@ -6,6 +6,7 @@
 #include "SettingsCategoryWidget.h"
 #include "GraphicsSettingsWidget.generated.h"
 
+class UButton;
 class UMultiOptionBox;
 
 UCLASS()
@@ -19,6 +20,8 @@ public:
 	virtual void OnRefresh() override;
 
 private:
+	UPROPERTY(Meta = (BindWidget))
+	UButton* RunHardwareBenchmarkButton;
 	UPROPERTY(Meta = (BindWidget))
 	UMultiOptionBox* OverallGraphicsQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
@@ -46,5 +49,8 @@ private:
 
 	UFUNCTION()
 	void OnOverallQualityOptionChange(const FString& NewSelection);
+
+	UFUNCTION()
+	void RunHardwareBenchmark();
 
 };
