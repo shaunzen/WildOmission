@@ -110,4 +110,6 @@ private:
 
 	void GetStormRadius();
 
+	bool HasLineOfSightTo(AActor* InActor) const;
+
 };

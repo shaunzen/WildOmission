@@ -30,6 +30,6 @@ public:
 protected:
 
 	// Applied continuously, don't put too high.
-	float BaseWindDamage = 5.0f;
+	float BaseWindDamage = 10.0f;
 
 };

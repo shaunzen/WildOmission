@@ -195,7 +195,7 @@ void ATornado::HandleDamage()
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
 		IDamagedByWind* DamagedByWindActor = Cast<IDamagedByWind>(Overlap.GetActor());
-		if (DamagedByWindActor == nullptr)
+		if (DamagedByWindActor == nullptr || !HasLineOfSightTo(Overlap.GetActor()))
 		{
 			continue;
 		}
@@ -248,4 +248,35 @@ void ATornado::GetStormRadius()
 	OwnerStorm->GetActorBounds(true, Origin, BoxExtent);
 	
 	StormRadius = BoxExtent.Length() - (BoxExtent.Length() * 0.2f);
+}
+
+bool ATornado::HasLineOfSightTo(AActor* InActor) const
+{
+	if (InActor == nullptr)
+	{
+		return false;
+	}
+
+	const FVector CorrectedTornadoLocation = GetActorLocation() + FVector(0.0f, 0.0f, InActor->GetActorLocation().Z);
+	const FVector TowardComponentVector = (InActor->GetActorLocation() - CorrectedTornadoLocation).GetSafeNormal();
+	const float DistanceFromComponent = FVector::Distance(CorrectedTornadoLocation, InActor->GetActorLocation());
+
+
+	FHitResult HitResult;
+	const FVector Start = CorrectedTornadoLocation;
+	const FVector End = Start + (TowardComponentVector * DistanceFromComponent);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this->GetOwner());
+
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	{
+		return false;
+	}
+
+	if (HitResult.GetActor() == nullptr)
+	{
+		return false;
+	}
+
+	return HitResult.GetActor() == InActor;
 }
