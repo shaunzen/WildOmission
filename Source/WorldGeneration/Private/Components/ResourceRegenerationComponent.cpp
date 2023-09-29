@@ -34,7 +34,7 @@ void UResourceRegenerationComponent::BeginPlay()
 
 void UResourceRegenerationComponent::CheckNodeRegenerationConditions()
 {
-	UE_LOG(LogWorldGeneration, Display, TEXT("Checking Node Regeneration Conditions."));
+	UE_LOG(LogWorldGeneration, Verbose, TEXT("Checking Node Regeneration Conditions."));
 	FWorldGenerationSettings GenerationSettings;
 
 	TArray<AActor*> AllNodesInWorld;
@@ -59,7 +59,7 @@ void UResourceRegenerationComponent::CheckNodeRegenerationConditions()
 		TArray<AActor*> NodesWithinRange = FilterActorsByRange(AllNodesInWorld, Pawn->GetActorLocation(), MaxRange);
 		if (NodesWithinRange.Num() > GenerationSettings.MinNodeCount)
 		{
-			UE_LOG(LogWorldGeneration, Display, TEXT("Found %i Nodes Around Player, Less than %i is required to invoke regeneration."), NodesWithinRange.Num(), GenerationSettings.MinNodeCount);
+			UE_LOG(LogWorldGeneration, Verbose, TEXT("Found %i Nodes Around Player, Less than %i is required to invoke regeneration."), NodesWithinRange.Num(), GenerationSettings.MinNodeCount);
 			continue;
 		}
 

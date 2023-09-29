@@ -125,13 +125,15 @@ void ATimeOfDayHandler::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetNormalizedProgressThroughDay(NormalizedProgressThroughDay + (DAY_NIGHT_SPEED * DeltaTime / 360.0f));
-	
+	NormalizedProgressThroughDay += (DAY_NIGHT_SPEED * DeltaTime / 360.0f);
 	if (NormalizedProgressThroughDay >= 1.0f)
 	{
-		SetDaysPlayed(DaysPlayed + 1);
-		SetNormalizedProgressThroughDay(0.0f);
+		DaysPlayed += 1;
+		NormalizedProgressThroughDay = 0.0f;
 	}
+
+	OnRep_DaysPlayed();
+	OnRep_NormalizedProgressThroughDay();
 }
 
 void ATimeOfDayHandler::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
