@@ -13,9 +13,12 @@ UHoveredItemNameTag::UHoveredItemNameTag(const FObjectInitializer& ObjectInitial
 {
 	StatWidgetClass = nullptr;
 	NameTextBlock = nullptr;
+	PromptTextBlock = nullptr;
 	AdditionalInformationPanel = nullptr;
 	DescriptionTextBlock = nullptr;
 	StatsPanel = nullptr;
+
+	PromptTimer = 0.0f;
 
 	SetVisibility(ESlateVisibility::Hidden);
 
@@ -51,7 +54,6 @@ void UHoveredItemNameTag::Show(const FInventoryItem& Item)
 	TArray<FItemStat> CurrentItemStats = Item.Stats;
 	StatsPanel->ClearChildren();
 
-
 	for (int32 i = 0; i < DefaultItemStats.Num(); i++)
 	{
 		if (StatWidgetClass == nullptr)
@@ -67,14 +69,35 @@ void UHoveredItemNameTag::Show(const FInventoryItem& Item)
 		StatWidget->Setup(DefaultItemStats[i], CurrentItemStats[i]);
 		StatsPanel->AddChild(StatWidget);
 	}
+
+	PromptTextBlock->SetVisibility(ESlateVisibility::Collapsed);
+	ShowAdditionalDetails(false);
+}
+
+void UHoveredItemNameTag::ShowAdditionalDetails(bool Show)
+{
+	AdditionalInformationPanel->SetVisibility(Show ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+	PromptTextBlock->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UHoveredItemNameTag::Hide()
 {
 	SetVisibility(ESlateVisibility::Hidden);
+	PromptTimer = 0.0f;
 }
 
-// TODO make into some kind of statics class
+void UHoveredItemNameTag::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	// todo count and then show the prompt
+	PromptTimer += InDeltaTime;
+	if (PromptTimer > 3.0f && AdditionalInformationPanel->GetVisibility() != ESlateVisibility::HitTestInvisible)
+	{
+		PromptTextBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+}
+
 FString UHoveredItemNameTag::GetItemDisplayName(const FInventoryItem& Item) const
 {
 	FItemData* ItemData = UInventoryComponent::GetItemData(Item.Name);
@@ -99,11 +122,10 @@ FString UHoveredItemNameTag::GetItemDescription(const FInventoryItem& Item) cons
 
 TArray<FItemStat> UHoveredItemNameTag::GetDefaultItemStats(const FInventoryItem& Item) const
 {
-	TArray<FItemStat> Stats;
 	FItemData* ItemData = UInventoryComponent::GetItemData(Item.Name);
 	if (ItemData == nullptr)
 	{
-		Stats;
+		return TArray<FItemStat>();
 	}
 
 	return ItemData->Stats;

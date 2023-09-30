@@ -21,7 +21,11 @@ public:
 	virtual void NativeConstruct() override;
 
 	void Show(const FInventoryItem& Item);
+	void ShowAdditionalDetails(bool Show);
 	void Hide();
+
+protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -31,6 +35,9 @@ private:
 	UTextBlock* NameTextBlock;
 
 	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* PromptTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* AdditionalInformationPanel;
 	
 	UPROPERTY(Meta = (BindWidget))
@@ -38,6 +45,8 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* StatsPanel;
+
+	float PromptTimer;
 
 	FString GetItemDisplayName(const FInventoryItem& Item) const;
 	FString GetItemDescription(const FInventoryItem& Item) const;

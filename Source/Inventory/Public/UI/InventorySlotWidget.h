@@ -68,6 +68,7 @@ private:
 	bool Hovering;
 
 	void ShowHoveredItemNameTag();
+	void ShowAdditionalItemNameTagDetails();
 	void HideHoveredItemNameTag();
 
 };

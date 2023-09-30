@@ -18,9 +18,6 @@ void UItemStatWidget::Setup(const FItemStat& DefaultStat, const FItemStat& Curre
 		return;
 	}
 	
-	// TODO look into this
-	//InStat.Name.NameToDisplayString()
-	
 	FString StatNameString = FName::NameToDisplayString(DefaultStat.Name.ToString(), false);
 	FString StatValueString = FString::Printf(TEXT("%i"), DefaultStat.Value);
 
