@@ -37,7 +37,9 @@ void UHoveredItemNameTag::Show(const FInventoryItem& Item)
 {
 	SetVisibility(ESlateVisibility::HitTestInvisible);
 
-	NameTextBlock->SetText(FText::FromString(GetItemDisplayName(Item)));
+	FString NameString = FString::Printf(TEXT("%s (%i)"), *GetItemDisplayName(Item), Item.UniqueID);
+
+	NameTextBlock->SetText(FText::FromString(NameString));
 	DescriptionTextBlock->SetText(FText::FromString(GetItemDescription(Item)));
 
 	if (StatWidgetClass == nullptr)
@@ -45,10 +47,11 @@ void UHoveredItemNameTag::Show(const FInventoryItem& Item)
 		return;
 	}
 
-	TArray<FItemStat> ThisItemStats = Item.Stats;
 	TArray<FItemStat> DefaultItemStats = GetDefaultItemStats(Item);
-
+	TArray<FItemStat> CurrentItemStats = Item.Stats;
 	StatsPanel->ClearChildren();
+
+
 	for (int32 i = 0; i < DefaultItemStats.Num(); i++)
 	{
 		if (StatWidgetClass == nullptr)
@@ -56,12 +59,12 @@ void UHoveredItemNameTag::Show(const FInventoryItem& Item)
 			return;
 		}
 		UItemStatWidget* StatWidget = CreateWidget<UItemStatWidget>(this, StatWidgetClass);
-		if (StatWidget == nullptr)
+		if (StatWidget == nullptr || !DefaultItemStats.IsValidIndex(i) || !CurrentItemStats.IsValidIndex(i))
 		{
 			continue;
 		}
 
-		StatWidget->Setup(ThisItemStats[i]);
+		StatWidget->Setup(DefaultItemStats[i], CurrentItemStats[i]);
 		StatsPanel->AddChild(StatWidget);
 	}
 }

@@ -11,17 +11,25 @@ UItemStatWidget::UItemStatWidget(const FObjectInitializer& ObjectInitializer) : 
 	StatValueTextBlock = nullptr;
 }
 
-void UItemStatWidget::Setup(const FItemStat& InStat)
+void UItemStatWidget::Setup(const FItemStat& DefaultStat, const FItemStat& CurrentStat)
 {
 	if (StatNameTextBlock == nullptr || StatValueTextBlock == nullptr)
 	{
 		return;
 	}
+	
 	// TODO look into this
-	// TODO also advanced checking for ratio type things
 	//InStat.Name.NameToDisplayString()
-	FString StatNameString = InStat.Name.ToString();
-	FString StatValueString = FString::Printf(TEXT("%i"), InStat.Value);
+	
+	FString StatNameString = FName::NameToDisplayString(DefaultStat.Name.ToString(), false);
+	FString StatValueString = FString::Printf(TEXT("%i"), DefaultStat.Value);
+
+	const bool IsRatio = CurrentStat.Name == TEXT("Durability");
+	if (IsRatio)
+	{
+		StatValueString = FString::Printf(TEXT("%i/%i"), CurrentStat.Value, DefaultStat.Value);
+	}
+
 	StatNameTextBlock->SetText(FText::FromString(StatNameString));
 	StatValueTextBlock->SetText(FText::FromString(StatValueString));
 }
