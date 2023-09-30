@@ -6,7 +6,10 @@
 #include "Blueprint/UserWidget.h"
 #include "HoveredItemNameTag.generated.h"
 
+struct FInventoryItem;
+struct FItemStat;
 class UTextBlock;
+class UItemStatWidget;
 
 UCLASS()
 class INVENTORY_API UHoveredItemNameTag : public UUserWidget
@@ -17,11 +20,26 @@ public:
 
 	virtual void NativeConstruct() override;
 
-	void Show(const FString& ItemName);
+	void Show(const FInventoryItem& Item);
 	void Hide();
 
 private:
-	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* ItemNameTextBlock;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UItemStatWidget> StatWidgetClass;
 
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* NameTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* AdditionalInformationPanel;
+	
+	UPROPERTY(Meta = (BindWidget))
+	UTextBlock* DescriptionTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* StatsPanel;
+
+	FString GetItemDisplayName(const FInventoryItem& Item) const;
+	FString GetItemDescription(const FInventoryItem& Item) const;
+	TArray<FItemStat> GetDefaultItemStats(const FInventoryItem& Item) const;
 };
