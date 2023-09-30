@@ -25,7 +25,7 @@ public:
 	void Hide();
 
 protected:
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -48,7 +48,4 @@ private:
 
 	float PromptTimer;
 
-	FString GetItemDisplayName(const FInventoryItem& Item) const;
-	FString GetItemDescription(const FInventoryItem& Item) const;
-	TArray<FItemStat> GetDefaultItemStats(const FInventoryItem& Item) const;
 };

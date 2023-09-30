@@ -16,7 +16,8 @@ class INVENTORY_API UItemStatWidget : public UUserWidget
 	
 public:
 	UItemStatWidget(const FObjectInitializer& ObjectInitializer);
-	void Setup(const FItemStat& DefaultStat, const FItemStat& CurrentStat);
+	void Setup(const FItemStat& CurrentStat, const FItemStat& DefaultStat);
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* StatNameTextBlock;

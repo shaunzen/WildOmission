@@ -40,20 +40,24 @@ void UHoveredItemNameTag::Show(const FInventoryItem& Item)
 {
 	SetVisibility(ESlateVisibility::HitTestInvisible);
 
-	FString NameString = FString::Printf(TEXT("%s (%i)"), *GetItemDisplayName(Item), Item.UniqueID);
-
-	NameTextBlock->SetText(FText::FromString(NameString));
-	DescriptionTextBlock->SetText(FText::FromString(GetItemDescription(Item)));
+	FItemData* ItemData = UInventoryComponent::GetItemData(Item.Name);
+	if (ItemData == nullptr)
+	{
+		return;
+	}
+	
+	NameTextBlock->SetText(FText::FromString(ItemData->DisplayName));
+	DescriptionTextBlock->SetText(FText::FromString(ItemData->Description));
 
 	if (StatWidgetClass == nullptr)
 	{
 		return;
 	}
 
-	TArray<FItemStat> DefaultItemStats = GetDefaultItemStats(Item);
 	TArray<FItemStat> CurrentItemStats = Item.Stats;
-	StatsPanel->ClearChildren();
+	TArray<FItemStat> DefaultItemStats = ItemData->Stats;
 
+	StatsPanel->ClearChildren();
 	for (int32 i = 0; i < DefaultItemStats.Num(); i++)
 	{
 		if (StatWidgetClass == nullptr)
@@ -61,12 +65,12 @@ void UHoveredItemNameTag::Show(const FInventoryItem& Item)
 			return;
 		}
 		UItemStatWidget* StatWidget = CreateWidget<UItemStatWidget>(this, StatWidgetClass);
-		if (StatWidget == nullptr || !DefaultItemStats.IsValidIndex(i) || !CurrentItemStats.IsValidIndex(i))
+		if (StatWidget == nullptr || !CurrentItemStats.IsValidIndex(i) || !DefaultItemStats.IsValidIndex(i))
 		{
 			continue;
 		}
 
-		StatWidget->Setup(DefaultItemStats[i], CurrentItemStats[i]);
+		StatWidget->Setup(CurrentItemStats[i], DefaultItemStats[i]);
 		StatsPanel->AddChild(StatWidget);
 	}
 
@@ -89,44 +93,12 @@ void UHoveredItemNameTag::Hide()
 void UHoveredItemNameTag::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+	
+	const float TimeToShowPrompt = 2.0f;
 
-	// todo count and then show the prompt
 	PromptTimer += InDeltaTime;
-	if (PromptTimer > 3.0f && AdditionalInformationPanel->GetVisibility() != ESlateVisibility::HitTestInvisible)
+	if (PromptTimer > TimeToShowPrompt && AdditionalInformationPanel->GetVisibility() != ESlateVisibility::HitTestInvisible)
 	{
 		PromptTextBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
-}
-
-FString UHoveredItemNameTag::GetItemDisplayName(const FInventoryItem& Item) const
-{
-	FItemData* ItemData = UInventoryComponent::GetItemData(Item.Name);
-	if (ItemData == nullptr)
-	{
-		return TEXT("");
-	}
-
-	return ItemData->DisplayName;
-}
-
-FString UHoveredItemNameTag::GetItemDescription(const FInventoryItem& Item) const
-{
-	FItemData* ItemData = UInventoryComponent::GetItemData(Item.Name);
-	if (ItemData == nullptr)
-	{
-		return TEXT("");
-	}
-
-	return ItemData->Description;
-}
-
-TArray<FItemStat> UHoveredItemNameTag::GetDefaultItemStats(const FInventoryItem& Item) const
-{
-	FItemData* ItemData = UInventoryComponent::GetItemData(Item.Name);
-	if (ItemData == nullptr)
-	{
-		return TArray<FItemStat>();
-	}
-
-	return ItemData->Stats;
 }

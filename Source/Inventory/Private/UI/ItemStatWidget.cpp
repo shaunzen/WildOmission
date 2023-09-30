@@ -11,7 +11,7 @@ UItemStatWidget::UItemStatWidget(const FObjectInitializer& ObjectInitializer) : 
 	StatValueTextBlock = nullptr;
 }
 
-void UItemStatWidget::Setup(const FItemStat& DefaultStat, const FItemStat& CurrentStat)
+void UItemStatWidget::Setup(const FItemStat& CurrentStat, const FItemStat& DefaultStat)
 {
 	if (StatNameTextBlock == nullptr || StatValueTextBlock == nullptr)
 	{
