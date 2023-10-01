@@ -34,7 +34,10 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	FInventoryItem ItemYield;
+	TArray<FInventoryItem> CommonDrops;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<FInventoryItem> RareDrops;
 
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> RequiredToolType;

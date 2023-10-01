@@ -4,6 +4,7 @@
 #include "Components/HarvestableComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Log.h"
 
 UHarvestableComponent::UHarvestableComponent()
@@ -50,9 +51,18 @@ void UHarvestableComponent::OnHarvest(AActor* HarvestingActor, float GatherMulti
 
 FInventoryItem UHarvestableComponent::HandleYield(float GatherMultiplier)
 {
+	const bool GiveRareDrop = (UKismetMathLibrary::RandomBoolWithWeight(0.05f) && !RareDrops.IsEmpty());
+	TArray<FInventoryItem>& DropArray = GiveRareDrop ? RareDrops : CommonDrops;
+	const int32 Index = FMath::RandRange(0, DropArray.Num() - 1);
+	if (DropArray.IsEmpty() || !DropArray.IsValidIndex(Index))
+	{
+		UE_LOG(LogGatherableResources, Warning, TEXT("%i is an invalid index, HarvestableComponent::DropsArray"), Index);
+		return FInventoryItem();
+	}
+
 	FInventoryItem ItemToGive;
-	ItemToGive = ItemYield;
-	ItemToGive.Quantity = ItemYield.Quantity * GatherMultiplier;
+	ItemToGive = DropArray[Index];
+	ItemToGive.Quantity = ItemToGive.Quantity * GatherMultiplier;
 
 	if (ItemToGive.Quantity <= 0)
 	{
