@@ -269,6 +269,8 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 
 	WildOmissionCharacter->GetInventoryComponent()->Load(StoredPlayerSave.Inventory.ByteData);
 	WildOmissionCharacter->GetInventoryManipulatorComponent()->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSave.SelectedItemByteData);
+
+	StoredPlayerSave = FPlayerSave();
 }
 
 void AWildOmissionPlayerController::ValidateWorldState()
