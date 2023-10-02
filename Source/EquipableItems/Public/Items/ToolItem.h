@@ -32,6 +32,8 @@ public:
 	
 	float GetSwingSpeedRate() const;
 
+	bool IsQualityTool() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TEnumAsByte<EToolType> ToolType;
@@ -44,6 +46,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	float SwingSpeedRate;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	bool QualityTool;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TSubclassOf<UCameraShakeBase> SwingCameraShake;

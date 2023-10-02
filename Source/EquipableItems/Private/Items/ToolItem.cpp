@@ -28,6 +28,8 @@ AToolItem::AToolItem()
 	GatherMultiplier = 1.0f;
 	EffectiveRangeCentimeters = 150.0f;
 	SwingSpeedRate = 1.0f;
+	
+	QualityTool = false;
 
 	Durability = 100;
 
@@ -128,7 +130,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
 	if (HitHarvestable != nullptr && (HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
 	{
-		HitHarvestable->OnHarvest(GetOwner(), GatherMultiplier);
+		HitHarvestable->OnHarvest(GetOwner(), GatherMultiplier, QualityTool);
 	}
 	else if (HitHarvestableComponent != nullptr && (HitHarvestableComponent->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
 	{
@@ -158,6 +160,11 @@ float AToolItem::GetGatherMultiplier() const
 float AToolItem::GetSwingSpeedRate() const
 {
 	return SwingSpeedRate;
+}
+
+bool AToolItem::IsQualityTool() const
+{
+	return QualityTool;
 }
 
 void AToolItem::UpdateDurability()

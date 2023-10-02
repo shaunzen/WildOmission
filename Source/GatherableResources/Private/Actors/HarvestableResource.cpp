@@ -44,7 +44,7 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 		UE_LOG(LogGatherableResources, Warning, TEXT("Could not harvest resource, HarvestingActor has no InventoryComponent."));
 		return;
 	}
-
+	// TODO gather multiplier
 	// Calculate Normal Drops
 	const bool GiveQualityToolDrop = !QualityToolDrops.IsEmpty() && IsQualityTool && UKismetMathLibrary::RandomBoolWithWeight(NormalizedQualityToolDropChance);
 	TArray<FInventoryItem>& DropList = GiveQualityToolDrop ? QualityToolDrops : CommonDrops;
@@ -64,10 +64,7 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 			HarvestingInventoryComponent->AddItem(RareDrops[RareDropIndex]);
 		}
 	}
-	
-	// TODO should give rare drop, and do this on the component version of this too
-	// TODO make LeveledHarvestableResource class that handles giving special drops if using metal tools
-	// Or make it a bool and figure out how to integrate it into this class
+
 	Durability--;
 
 	if (Durability <= 0)
