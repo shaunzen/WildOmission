@@ -3,7 +3,7 @@
 
 #include "Actors/HarvestableResource.h"
 #include "Components/InventoryComponent.h"
-#include "Components/InventoryManipulatorComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "NavModifierComponent.h"
 #include "Log.h"
 
@@ -25,10 +25,12 @@ AHarvestableResource::AHarvestableResource()
 
 	NavigationModifier = CreateDefaultSubobject<UNavModifierComponent>(TEXT("NavigationModifier"));
 
+	NormalizedQualityToolDropChance = 0.05f;
+	NormalizedQualityToolDropChance = 0.25f;
 	Durability = 10;
 }
 
-void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultiplier)
+void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool)
 {
 	if (HarvestingActor == nullptr)
 	{
@@ -43,49 +45,35 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 		return;
 	}
 
-	HarvestingInventoryComponent->AddItem(HandleYield(GatherMultiplier), nullptr, true);
-
-	if (ShouldGiveSpecialItemDrop())
+	// Calculate Normal Drops
+	const bool GiveQualityToolDrop = !QualityToolDrops.IsEmpty() && IsQualityTool && UKismetMathLibrary::RandomBoolWithWeight(NormalizedQualityToolDropChance);
+	TArray<FInventoryItem>& DropList = GiveQualityToolDrop ? QualityToolDrops : CommonDrops;
+	const int32 DropIndex = FMath::RandRange(0, DropList.Num() - 1);
+	if (!DropList.IsEmpty() && DropList.IsValidIndex(DropIndex))
 	{
-		HarvestingInventoryComponent->AddItem(SpecialItemDrop, nullptr, true);
+		HarvestingInventoryComponent->AddItem(DropList[DropIndex]);
 	}
 
+	// Calculate Rare Drops
+	const bool GiveRareDrop = !RareDrops.IsEmpty() && UKismetMathLibrary::RandomBoolWithWeight(NormalizedRareDropChance);
+	if (GiveRareDrop)
+	{
+		const int32 RareDropIndex = FMath::RandRange(0, RareDrops.Num() - 1);
+		if (RareDrops.IsValidIndex(RareDropIndex))
+		{
+			HarvestingInventoryComponent->AddItem(RareDrops[RareDropIndex]);
+		}
+	}
+	
+	// TODO should give rare drop, and do this on the component version of this too
+	// TODO make LeveledHarvestableResource class that handles giving special drops if using metal tools
+	// Or make it a bool and figure out how to integrate it into this class
 	Durability--;
 
 	if (Durability <= 0)
 	{
 		Destroy();
 	}
-}
-
-FInventoryItem AHarvestableResource::HandleYield(float GatherMultiplier)
-{
-	FInventoryItem ItemToGive;
-	ItemToGive = ItemYield;
-	ItemToGive.Quantity = ItemYield.Quantity * GatherMultiplier;
-
-	if (ItemToGive.Quantity <= 0)
-	{
-		ItemToGive.Quantity = 1;
-	}
-
-	return ItemToGive;
-}
-
-bool AHarvestableResource::ShouldGiveSpecialItemDrop()
-{
-	if (SpecialItemDrop.Quantity == 0 || SpecialItemDrop.Name == FName())
-	{
-		return false;
-	}
-
-	int32 GiveSpecialItemValue = FMath::RandRange(0, 100);
-	if (GiveSpecialItemValue > 85)
-	{
-		return true;
-	}
-
-	return false;
 }
 
 TEnumAsByte<EToolType> AHarvestableResource::GetRequiredToolType() const

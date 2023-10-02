@@ -21,7 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	AHarvestableResource();
 
-	virtual void OnHarvest(AActor* HarvestingActor, float GatherMultiplier);
+	virtual void OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool);
 	
 	TEnumAsByte<EToolType> GetRequiredToolType() const;
 	
@@ -36,10 +36,19 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	FInventoryItem ItemYield;
-
+	TArray<FInventoryItem> CommonDrops;
 	UPROPERTY(EditDefaultsOnly)
-	FInventoryItem SpecialItemDrop;
+	TArray<FInventoryItem> RareDrops;
+	UPROPERTY(EditDefaultsOnly)
+	TArray<FInventoryItem> QualityToolDrops;
+
+	// 1 = 100%, 0.5 = 50%, 0 = 0%
+	UPROPERTY(EditDefaultsOnly)
+	float NormalizedRareDropChance;
+
+	// 1 = 100%, 0.5 = 50%, 0 = 0%
+	UPROPERTY(EditDefaultsOnly)
+	float NormalizedQualityToolDropChance;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> RequiredToolType;
