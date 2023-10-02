@@ -65,7 +65,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UNavModifierComponent* NavigationModifier;
 
-	FInventoryItem HandleYield(float GatherMultiplier);
-	bool ShouldGiveSpecialItemDrop();
+	FInventoryItem HandleYieldFromList(const TArray<FInventoryItem>& DropList, float GatherMultiplier);
 
 };

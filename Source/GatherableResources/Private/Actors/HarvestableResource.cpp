@@ -25,8 +25,11 @@ AHarvestableResource::AHarvestableResource()
 
 	NavigationModifier = CreateDefaultSubobject<UNavModifierComponent>(TEXT("NavigationModifier"));
 
-	NormalizedQualityToolDropChance = 0.05f;
+	NormalizedRareDropChance = 0.05f;
 	NormalizedQualityToolDropChance = 0.25f;
+
+	RequiredToolType = EToolType::WOOD;
+
 	Durability = 10;
 }
 
@@ -44,25 +47,20 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 		UE_LOG(LogGatherableResources, Warning, TEXT("Could not harvest resource, HarvestingActor has no InventoryComponent."));
 		return;
 	}
-	// TODO gather multiplier
+
 	// Calculate Normal Drops
 	const bool GiveQualityToolDrop = !QualityToolDrops.IsEmpty() && IsQualityTool && UKismetMathLibrary::RandomBoolWithWeight(NormalizedQualityToolDropChance);
 	TArray<FInventoryItem>& DropList = GiveQualityToolDrop ? QualityToolDrops : CommonDrops;
-	const int32 DropIndex = FMath::RandRange(0, DropList.Num() - 1);
-	if (!DropList.IsEmpty() && DropList.IsValidIndex(DropIndex))
-	{
-		HarvestingInventoryComponent->AddItem(DropList[DropIndex]);
-	}
+	
+	FInventoryItem Drop = HandleYieldFromList(DropList, GatherMultiplier);
+	HarvestingInventoryComponent->AddItem(Drop);
 
 	// Calculate Rare Drops
 	const bool GiveRareDrop = !RareDrops.IsEmpty() && UKismetMathLibrary::RandomBoolWithWeight(NormalizedRareDropChance);
 	if (GiveRareDrop)
 	{
-		const int32 RareDropIndex = FMath::RandRange(0, RareDrops.Num() - 1);
-		if (RareDrops.IsValidIndex(RareDropIndex))
-		{
-			HarvestingInventoryComponent->AddItem(RareDrops[RareDropIndex]);
-		}
+		FInventoryItem RareDrop = HandleYieldFromList(RareDrops, GatherMultiplier);
+		HarvestingInventoryComponent->AddItem(RareDrop);
 	}
 
 	Durability--;
@@ -71,6 +69,23 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 	{
 		Destroy();
 	}
+}
+
+FInventoryItem AHarvestableResource::HandleYieldFromList(const TArray<FInventoryItem>& DropList, float GatherMultiplier)
+{
+	FInventoryItem Item;
+	const int32 DropIndex = FMath::RandRange(0, DropList.Num() - 1);
+	if (!DropList.IsEmpty() && DropList.IsValidIndex(DropIndex))
+	{
+		Item = DropList[DropIndex];
+		Item.Quantity = Item.Quantity * GatherMultiplier;
+		if (Item.Quantity < 1)
+		{
+			Item.Quantity = 1;
+		}
+	}
+
+	return Item;
 }
 
 TEnumAsByte<EToolType> AHarvestableResource::GetRequiredToolType() const

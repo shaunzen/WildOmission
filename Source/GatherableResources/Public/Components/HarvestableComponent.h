@@ -17,9 +17,8 @@ class GATHERABLERESOURCES_API UHarvestableComponent : public UActorComponent, pu
 
 public:	
 	UHarvestableComponent();
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	virtual void OnHarvest(AActor* HarvestingActor, float GatherMultiplier);
+	
+	virtual void OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool);
 
 	TEnumAsByte<EToolType> GetRequiredToolType() const;
 	
@@ -27,17 +26,21 @@ public:
 
 	void SetDurability(const int32& InDurability);
 	
-	FName GetType() const;
-
-protected:
-	virtual void BeginPlay() override;
-
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FInventoryItem> CommonDrops;
-
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FInventoryItem> RareDrops;
+	UPROPERTY(EditDefaultsOnly)
+	TArray<FInventoryItem> QualityToolDrops;
+
+	// 1 = 100%, 0.5 = 50%, 0 = 0%
+	UPROPERTY(EditDefaultsOnly)
+	float NormalizedRareDropChance;
+
+	// 1 = 100%, 0.5 = 50%, 0 = 0%
+	UPROPERTY(EditDefaultsOnly)
+	float NormalizedQualityToolDropChance;
 
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> RequiredToolType;
@@ -45,9 +48,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, SaveGame)
 	int32 Durability;
 
-	UPROPERTY(EditDefaultsOnly)
-	FName Type;
-
-	FInventoryItem HandleYield(float GatherMultiplier);
+	FInventoryItem HandleYieldFromList(const TArray<FInventoryItem>& DropList, float GatherMultiplier);
 
 };

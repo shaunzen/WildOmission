@@ -134,7 +134,7 @@ void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	}
 	else if (HitHarvestableComponent != nullptr && (HitHarvestableComponent->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
 	{
-		HitHarvestableComponent->OnHarvest(GetOwner(), GatherMultiplier);
+		HitHarvestableComponent->OnHarvest(GetOwner(), GatherMultiplier, QualityTool);
 	}
 	else if (HitPawn)
 	{

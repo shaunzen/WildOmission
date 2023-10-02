@@ -9,23 +9,18 @@
 
 UHarvestableComponent::UHarvestableComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
-}
-
-void UHarvestableComponent::BeginPlay()
-{
-	Super::BeginPlay();
 	
+	NormalizedRareDropChance = 0.05f;
+	NormalizedQualityToolDropChance = 0.25f;
+	
+	RequiredToolType = EToolType::WOOD;
+
+	Durability = 5;
 }
 
-void UHarvestableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-}
-
-void UHarvestableComponent::OnHarvest(AActor* HarvestingActor, float GatherMultiplier)
+void UHarvestableComponent::OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool)
 {
 	if (HarvestingActor == nullptr)
 	{
@@ -40,36 +35,50 @@ void UHarvestableComponent::OnHarvest(AActor* HarvestingActor, float GatherMulti
 		return;
 	}
 
-	HarvestingInventoryComponent->AddItem(HandleYield(GatherMultiplier), nullptr, true);
+	// Calculate Normal Drops
+	const bool GiveQualityToolDrop = !QualityToolDrops.IsEmpty() && IsQualityTool && UKismetMathLibrary::RandomBoolWithWeight(NormalizedQualityToolDropChance);
+	TArray<FInventoryItem>& DropList = GiveQualityToolDrop ? QualityToolDrops : CommonDrops;
+
+	FInventoryItem Drop = HandleYieldFromList(DropList, GatherMultiplier);
+	HarvestingInventoryComponent->AddItem(Drop);
+
+	// Calculate Rare Drops
+	const bool GiveRareDrop = !RareDrops.IsEmpty() && UKismetMathLibrary::RandomBoolWithWeight(NormalizedRareDropChance);
+	if (GiveRareDrop)
+	{
+		FInventoryItem RareDrop = HandleYieldFromList(RareDrops, GatherMultiplier);
+		HarvestingInventoryComponent->AddItem(RareDrop);
+	}
+
 	Durability--;
 
 	if (Durability <= 0)
 	{
-		GetOwner()->Destroy();
+		AActor* OwnerActor = GetOwner();
+		if (OwnerActor == nullptr)
+		{
+			return;
+		}
+		
+		OwnerActor->Destroy();
 	}
 }
 
-FInventoryItem UHarvestableComponent::HandleYield(float GatherMultiplier)
+FInventoryItem UHarvestableComponent::HandleYieldFromList(const TArray<FInventoryItem>& DropList, float GatherMultiplier)
 {
-	const bool GiveRareDrop = (UKismetMathLibrary::RandomBoolWithWeight(0.05f) && !RareDrops.IsEmpty());
-	TArray<FInventoryItem>& DropArray = GiveRareDrop ? RareDrops : CommonDrops;
-	const int32 Index = FMath::RandRange(0, DropArray.Num() - 1);
-	if (DropArray.IsEmpty() || !DropArray.IsValidIndex(Index))
+	FInventoryItem Item;
+	const int32 DropIndex = FMath::RandRange(0, DropList.Num() - 1);
+	if (!DropList.IsEmpty() && DropList.IsValidIndex(DropIndex))
 	{
-		UE_LOG(LogGatherableResources, Warning, TEXT("%i is an invalid index, HarvestableComponent::DropsArray"), Index);
-		return FInventoryItem();
+		Item = DropList[DropIndex];
+		Item.Quantity = Item.Quantity * GatherMultiplier;
+		if (Item.Quantity < 1)
+		{
+			Item.Quantity = 1;
+		}
 	}
 
-	FInventoryItem ItemToGive;
-	ItemToGive = DropArray[Index];
-	ItemToGive.Quantity = ItemToGive.Quantity * GatherMultiplier;
-
-	if (ItemToGive.Quantity <= 0)
-	{
-		ItemToGive.Quantity = 1;
-	}
-
-	return ItemToGive;
+	return Item;
 }
 
 TEnumAsByte<EToolType> UHarvestableComponent::GetRequiredToolType() const
@@ -85,9 +94,4 @@ int32 UHarvestableComponent::GetDurability() const
 void UHarvestableComponent::SetDurability(const int32& InDurability)
 {
 	Durability = InDurability;
-}
-
-FName UHarvestableComponent::GetType() const
-{
-	return Type;
 }
