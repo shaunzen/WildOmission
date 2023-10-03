@@ -65,36 +65,114 @@ void AItemSmelterBase::BeginPlay()
 
 void AItemSmelterBase::SmeltingTick()
 {
-	if (GetWorld()->GetTimerManager().IsTimerActive(SmeltTimerHandle))
+	UWorld* World = GetWorld();
+	if (World == nullptr || World->GetTimerManager().IsTimerActive(SmeltTimerHandle))
+	{
+		return;
+	}
+	
+	UInventoryComponent* InventoryComponent = GetInventoryComponent();
+	if (InventoryComponent == nullptr)
 	{
 		return;
 	}
 
-	int32 AmountOfFuel = GetInventoryComponent()->GetContents()->GetItemQuantity(FuelSource.Name);
-	if (AmountOfFuel < FuelSource.Quantity)
+	FInventoryContents* InventoryContents = InventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return;
+	}
+
+	const FInventoryItem& Fuel = FuelSource.Key;
+	const int32& AmountOfFuel = InventoryContents->GetItemQuantity(Fuel.Name);
+	if (AmountOfFuel < Fuel.Quantity)
 	{
 		Server_ToggleState(false);
 		return;
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(SmeltTimerHandle, this, &AItemSmelterBase::OnSmelt, SmeltTimeSeconds, false);
+	World->GetTimerManager().SetTimer(SmeltTimerHandle, this, &AItemSmelterBase::OnSmelt, SmeltTimeSeconds, false);
 }
 
 void AItemSmelterBase::OnSmelt()
 {
-	int32 AmountOfFuel = GetInventoryComponent()->GetContents()->GetItemQuantity(FuelSource.Name);
-	
-	if (AmountOfFuel < FuelSource.Quantity)
+	if (!BurnFuel())
 	{
-		Server_ToggleState(false);
 		return;
 	}
 
-	GetInventoryComponent()->RemoveItem(FuelSource);
-
-	FindAndSmeltAllSmeltables();
+	SmeltAllSmeltables();
+	ProduceByproduct();
 
 	FlushNetDormancy();
+}
+
+bool AItemSmelterBase::BurnFuel()
+{
+	UInventoryComponent* InventoryComponent = GetInventoryComponent();
+	if (InventoryComponent == nullptr)
+	{
+		return false;
+	}
+
+	FInventoryContents* InventoryContents = InventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return false;
+	}
+
+	const int32& AmountOfFuel = InventoryContents->GetItemQuantity(FuelSource.Fuel.Name);
+	if (AmountOfFuel < FuelSource.Fuel.Quantity)
+	{
+		Server_ToggleState(false);
+		return false;
+	}
+
+	InventoryComponent->RemoveItem(FuelSource.Fuel);
+	return true;
+}
+
+void AItemSmelterBase::SmeltAllSmeltables()
+{
+	UInventoryComponent* InventoryComponent = GetInventoryComponent();
+	if (InventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	FInventoryContents* InventoryContents = InventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return;
+	}
+
+	for (const FSmeltResult& Smeltable : Smeltables)
+	{
+		int32 AmountOfSmeltable = InventoryContents->GetItemQuantity(Smeltable.RawItem.Name);
+		if (AmountOfSmeltable < Smeltable.RawItem.Quantity)
+		{
+			continue;
+		}
+
+		InventoryComponent->RemoveItem(Smeltable.RawItem);
+		InventoryComponent->AddItem(Smeltable.SmeltedItem, this);
+	}
+}
+
+void AItemSmelterBase::ProduceByproduct()
+{
+	if (FuelSource.Byproduct.IsZero())
+	{
+		return;
+	}
+
+	UInventoryComponent* InventoryComponent = GetInventoryComponent();
+	if (InventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	InventoryComponent->AddItem(FuelSource.Byproduct);
 }
 
 void AItemSmelterBase::OnTurnedOn()
@@ -113,21 +191,6 @@ void AItemSmelterBase::OnTurnedOff()
 	AudioComponent->Stop();
 }
 
-void AItemSmelterBase::FindAndSmeltAllSmeltables()
-{
-	for (const FSmeltResult& Smeltable : Smeltables)
-	{
-		int32 AmountOfSmeltable = GetInventoryComponent()->GetContents()->GetItemQuantity(Smeltable.RawItem.Name);
-		if (AmountOfSmeltable < Smeltable.RawItem.Quantity)
-		{
-			continue;
-		}
-
-		GetInventoryComponent()->RemoveItem(Smeltable.RawItem);
-		GetInventoryComponent()->AddItem(Smeltable.SmeltedItem, this);
-	}
-}
-
 void AItemSmelterBase::OnRep_TurnedOn()
 {
 	IsTurnedOn() ? OnTurnedOn() : OnTurnedOff();
@@ -142,7 +205,8 @@ void AItemSmelterBase::Server_ToggleState_Implementation(bool NewState)
 {
 	bTurnedOn = NewState;
 
-	if (bTurnedOn == false)
+	UWorld* World = GetWorld();
+	if (World && bTurnedOn == false)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(SmeltTimerHandle);
 	}

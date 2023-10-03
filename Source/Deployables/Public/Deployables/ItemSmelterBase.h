@@ -8,6 +8,19 @@
 #include "ItemSmelterBase.generated.h"
 
 USTRUCT(BlueprintType)
+struct FFuelSource
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FInventoryItem Fuel;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FInventoryItem Byproduct;
+
+};
+
+USTRUCT(BlueprintType)
 struct FSmeltResult
 {
 	GENERATED_BODY()
@@ -53,9 +66,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Smelting")
 	float SmeltTimeSeconds;
 	
+	// Key is Fuel Source (Wood), Value is Byproduct (Charcoal)
 	UPROPERTY(EditDefaultsOnly, Category = "Smelting")
-	FInventoryItem FuelSource;
-	
+	FFuelSource FuelSource;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Smelting")
 	TArray<FSmeltResult> Smeltables;
 
@@ -74,7 +88,9 @@ private:
 
 	FTimerHandle SmeltTimerHandle;
 
-	void FindAndSmeltAllSmeltables();
+	bool BurnFuel();
+	void SmeltAllSmeltables();
+	void ProduceByproduct();
 
 	UFUNCTION()
 	void OnRep_TurnedOn();
