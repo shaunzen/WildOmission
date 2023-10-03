@@ -192,27 +192,29 @@ void UInventoryComponent::SpawnWorldItem(UWorld* WorldContextObject, const FInve
 		return;
 	}
 
-	// Get the data for this item
-	FItemData* ItemData = GetItemData(ItemToSpawn.Name);
+	FVector SpawningActorOrigin;
+	FVector SpawningActorBounds;
+	SpawningActor->GetActorBounds(true, SpawningActorOrigin, SpawningActorBounds);
 
 	// Spawn a world item actor
-	AWorldItem* WorldItem = WorldContextObject->SpawnActor<AWorldItem>();
-	if (ItemData == nullptr || WorldItem == nullptr)
+	const FVector SpawnLocation = SpawningActor->GetActorLocation() + FVector(0.0f, 0.0f, SpawningActorBounds.Z * 0.5f);
+	const FRotator SpawnRotation = FRotator::ZeroRotator;
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = SpawningActor;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	AWorldItem* WorldItem = WorldContextObject->SpawnActor<AWorldItem>(SpawnLocation, SpawnRotation, SpawnParams);
+	if (WorldItem == nullptr)
 	{
 		return;
 	}
 
-	WorldItem->SetOwner(SpawningActor);
-
-	FVector SpawnLocation;
-	FVector PhysicsImpulse;
-
-	SpawnLocation = SpawningActor->GetActorLocation();
-	PhysicsImpulse = SpawningActor->GetActorForwardVector() * 5000.0f;
 
 	// Update world items properties
-	WorldItem->SetActorLocation(SpawnLocation);
 	WorldItem->SetItem(ItemToSpawn);
+
+	const FVector PhysicsImpulse = SpawningActor->GetActorForwardVector() * 5000.0f;
+	
 	WorldItem->AddImpulse(PhysicsImpulse);
 }
 
