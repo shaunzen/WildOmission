@@ -20,6 +20,7 @@ class UInventoryManipulatorComponent;
 class UEquipComponent;
 class UCraftingComponent;
 class UNameTagComponent;
+class UGameChatComponent;
 class USpecialEffectsHandlerComponent;
 class UMusicPlayerComponent;
 
@@ -125,6 +126,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UNameTagComponent* NameTag;
+
+	UPROPERTY(VisibleAnywhere)
+	UGameChatComponent* ChatComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
