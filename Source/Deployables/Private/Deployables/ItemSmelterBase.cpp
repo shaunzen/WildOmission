@@ -71,21 +71,20 @@ void AItemSmelterBase::SmeltingTick()
 		return;
 	}
 	
-	UInventoryComponent* InventoryComponent = GetInventoryComponent();
-	if (InventoryComponent == nullptr)
+	UInventoryComponent* SmelterInventoryComponent = GetInventoryComponent();
+	if (SmelterInventoryComponent == nullptr)
 	{
 		return;
 	}
 
-	FInventoryContents* InventoryContents = InventoryComponent->GetContents();
+	FInventoryContents* InventoryContents = SmelterInventoryComponent->GetContents();
 	if (InventoryContents == nullptr)
 	{
 		return;
 	}
 
-	const FInventoryItem& Fuel = FuelSource.Key;
-	const int32& AmountOfFuel = InventoryContents->GetItemQuantity(Fuel.Name);
-	if (AmountOfFuel < Fuel.Quantity)
+	const int32& AmountOfFuel = InventoryContents->GetItemQuantity(FuelSource.Fuel.Name);
+	if (AmountOfFuel < FuelSource.Fuel.Quantity)
 	{
 		Server_ToggleState(false);
 		return;
@@ -109,13 +108,13 @@ void AItemSmelterBase::OnSmelt()
 
 bool AItemSmelterBase::BurnFuel()
 {
-	UInventoryComponent* InventoryComponent = GetInventoryComponent();
-	if (InventoryComponent == nullptr)
+	UInventoryComponent* SmelterInventoryComponent = GetInventoryComponent();
+	if (SmelterInventoryComponent == nullptr)
 	{
 		return false;
 	}
 
-	FInventoryContents* InventoryContents = InventoryComponent->GetContents();
+	FInventoryContents* InventoryContents = SmelterInventoryComponent->GetContents();
 	if (InventoryContents == nullptr)
 	{
 		return false;
@@ -128,19 +127,19 @@ bool AItemSmelterBase::BurnFuel()
 		return false;
 	}
 
-	InventoryComponent->RemoveItem(FuelSource.Fuel);
+	SmelterInventoryComponent->RemoveItem(FuelSource.Fuel);
 	return true;
 }
 
 void AItemSmelterBase::SmeltAllSmeltables()
 {
-	UInventoryComponent* InventoryComponent = GetInventoryComponent();
-	if (InventoryComponent == nullptr)
+	UInventoryComponent* SmelterInventoryComponent = GetInventoryComponent();
+	if (SmelterInventoryComponent == nullptr)
 	{
 		return;
 	}
 
-	FInventoryContents* InventoryContents = InventoryComponent->GetContents();
+	FInventoryContents* InventoryContents = SmelterInventoryComponent->GetContents();
 	if (InventoryContents == nullptr)
 	{
 		return;
@@ -154,8 +153,8 @@ void AItemSmelterBase::SmeltAllSmeltables()
 			continue;
 		}
 
-		InventoryComponent->RemoveItem(Smeltable.RawItem);
-		InventoryComponent->AddItem(Smeltable.SmeltedItem, this);
+		SmelterInventoryComponent->RemoveItem(Smeltable.RawItem);
+		SmelterInventoryComponent->AddItem(Smeltable.SmeltedItem, this);
 	}
 }
 
@@ -166,13 +165,13 @@ void AItemSmelterBase::ProduceByproduct()
 		return;
 	}
 
-	UInventoryComponent* InventoryComponent = GetInventoryComponent();
-	if (InventoryComponent == nullptr)
+	UInventoryComponent* SmelterInventoryComponent = GetInventoryComponent();
+	if (SmelterInventoryComponent == nullptr)
 	{
 		return;
 	}
 
-	InventoryComponent->AddItem(FuelSource.Byproduct);
+	SmelterInventoryComponent->AddItem(FuelSource.Byproduct);
 }
 
 void AItemSmelterBase::OnTurnedOn()
