@@ -53,6 +53,8 @@ void UGameChatWidget::Setup(IGameChatParentWidget* InParentWidget, IChatMessageC
 		return;
 	}
 	MessageContainer->OnChatReplicated.AddDynamic(this, &UGameChatWidget::RefreshMessages);
+
+	RefreshMessages();
 }
 
 void UGameChatWidget::RefreshMessages()

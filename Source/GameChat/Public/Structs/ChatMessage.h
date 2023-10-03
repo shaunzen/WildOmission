@@ -15,10 +15,10 @@ struct GAMECHAT_API FChatMessage
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FString SenderName = FString("NAN");
+	FString SenderName = TEXT("NAN");
 
 	UPROPERTY()
-	FString Message = FString();
+	FString Message;
 
 	UPROPERTY()
 	double TimeSent = 0.0;
