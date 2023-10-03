@@ -9,9 +9,8 @@
 class UEditableTextBox;
 class UScrollBox;
 class UChatMessageWidget;
-class IGameChatParentWidget;
-class IChatMessageContainer;
-class IChatMessageSender;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnToggleRequestedSignature);
 
 UCLASS()
 class GAMECHAT_API UGameChatWidget : public UUserWidget
@@ -23,13 +22,15 @@ public:
 
 	virtual void NativeConstruct() override;
 
-	void Setup(IGameChatParentWidget* InParentWidget, IChatMessageContainer* MessageContainer);
+	void Setup();
 
 	// Switches to typing message state
-	void Open(IChatMessageSender* InOwnerMessageSender);
+	void Open();
 
 	// Switches back to overview state
 	void Close();
+
+	FOnToggleRequestedSignature OnToggleRequested;
 
 	bool IsOpen() const;
 
@@ -46,10 +47,6 @@ private:
 	TSubclassOf<UChatMessageWidget> ChatMessageClass;
 
 	bool Opened;
-
-	IGameChatParentWidget* ParentWidget;
-	IChatMessageContainer* MessageContainer;
-	IChatMessageSender* OwnerMessageSender;
 
 	UFUNCTION()
 	void RefreshMessages();

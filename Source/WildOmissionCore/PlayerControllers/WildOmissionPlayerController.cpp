@@ -100,11 +100,6 @@ bool AWildOmissionPlayerController::IsHost()
 	return GetLocalRole() == ENetRole::ROLE_Authority && GetRemoteRole() == ENetRole::ROLE_SimulatedProxy;
 }
 
-void AWildOmissionPlayerController::SendMessage(APlayerState* Sender, const FString& Message)
-{
-	Server_SendChatMessage(Sender, Message);
-}
-
 void AWildOmissionPlayerController::Save()
 {
 	Server_AddToPendingSaves();
@@ -147,18 +142,6 @@ void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
 	}
 
 	GameMode->GetSaveHandler()->GetPlayerHandler()->AddToPending(this);
-}
-
-void AWildOmissionPlayerController::Server_SendChatMessage_Implementation(APlayerState* Sender, const FString& Message)
-{
-	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
-	if (GameState == nullptr || Sender == nullptr)
-	{
-		UE_LOG(LogPlayerController, Warning, TEXT("Failed to send chat message, couldn't get state."));
-		return;
-	}
-
-	GameState->AddChatMessage(Sender, Message);
 }
 
 void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
@@ -227,7 +210,7 @@ void AWildOmissionPlayerController::BeginPlay()
 
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
 	GameInstance->StartLoading();
-	GameInstance->SetLoadingSubtitle(FString("Loading world state."));
+	GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
 
 	if (HasAuthority())
 	{

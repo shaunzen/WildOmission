@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Interfaces/SavablePlayer.h"
-#include "Interfaces/ChatMessageSender.h"
 #include "WildOmissionPlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFinishedLoadingSignature, AWildOmissionPlayerController*, LoadedController);
@@ -14,7 +13,7 @@ class UInventoryComponent;
 class UDeathMenuWidget;
 
 UCLASS()
-class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer, public IChatMessageSender
+class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer
 {
 	GENERATED_BODY()
 
@@ -29,10 +28,6 @@ public:
 	virtual FString GetUniqueID() override;
 	virtual bool IsHost() override;
 	// End ISavablePlayer Implementation
-
-	// Begin IChatMessageSender Implementation
-	virtual void SendMessage(APlayerState* Sender, const FString& Message) override;
-	// End IChatMessageSender Implementation
 
 	void Save();
 
@@ -84,9 +79,6 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();
-
-	UFUNCTION(Server, Reliable)
-	void Server_SendChatMessage(APlayerState* Sender, const FString& Message);
 
 	UFUNCTION(Server, Reliable)
 	void Server_KillThisPlayer();

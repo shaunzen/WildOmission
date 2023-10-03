@@ -11,8 +11,6 @@
 #include "UI/NotificationPanelWidget.h"
 #include "Components/InteractionComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
-#include "Interfaces/ChatMessageContainer.h"
-#include "Interfaces/ChatMessageSender.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "GameFramework/GameState.h"
 
@@ -33,7 +31,7 @@ void UPlayerHUDWidget::NativeConstruct()
 
 	UpdateBrandingText();
 	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("MenuBackgroundMouseButtonDown"));
-	Chat->Setup(this, Cast<IChatMessageContainer>(GetWorld()->GetGameState()));
+	Chat->OnToggleRequested.AddDynamic(this, &UPlayerHUDWidget::ToggleChatMenu);
 
 	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (PlayerInventoryManipulatorComponent == nullptr)
@@ -129,7 +127,7 @@ void UPlayerHUDWidget::ToggleChatMenu()
 	if (!IsMenuOpen())
 	{
 		OpenMenuPanel(false);
-		Chat->Open(Cast<IChatMessageSender>(GetOwningPlayer()));
+		Chat->Open();
 	}
 	else if (Chat->IsOpen())
 	{
