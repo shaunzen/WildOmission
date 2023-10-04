@@ -18,8 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	AGameChatHandler();
 	
-	UFUNCTION(Server, Reliable)
-	void Server_SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate = false);
+	void SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate = false);
 
 	static AGameChatHandler* GetInstance();
 

@@ -18,16 +18,25 @@ AGameChatHandler::AGameChatHandler()
 void AGameChatHandler::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (GetWorld()->IsEditorWorld() && IsValid(Instance))
+	
+	UWorld* World = GetWorld();
+	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
 	{
 		return;
 	}
 
 	Instance = this;
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	SetOwner(PlayerController);
 }
 
-void AGameChatHandler::Server_SendMessage_Implementation(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate)
+void AGameChatHandler::SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate)
 {
 	if (SenderPlayerState == nullptr || Message.IsEmpty())
 	{

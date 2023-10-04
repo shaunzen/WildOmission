@@ -5,6 +5,7 @@
 #include "ChatMessageWidget.h"
 #include "Components/ScrollBox.h"
 #include "Components/EditableTextBox.h"
+#include "Interfaces/PlayerControllerMessageSender.h"
 #include "GameFramework/PlayerState.h"
 #include "GameChatHandler.h"
 #include "UObject/ConstructorHelpers.h"
@@ -128,17 +129,18 @@ void UGameChatWidget::OnMessageBoxTextCommitted(const FText& MessageBoxText, ETe
 void UGameChatWidget::AttemptSendMessage()
 {
 	const bool MessageBoxEmpty = MessageBox->GetText().ToString().Len() == 0;
+
+	IPlayerControllerMessageSender* MessageSender = Cast<IPlayerControllerMessageSender>(GetOwningPlayer());
 	APlayerState* OwningPlayerState = GetOwningPlayerState();
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetInstance();
 	
 	// Return if no message was typed
-	if (MessageBoxEmpty || OwningPlayerState == nullptr || ChatHandler == nullptr)
+	if (MessageBoxEmpty || MessageSender == nullptr || OwningPlayerState == nullptr)
 	{
 		UE_LOG(LogGameChat, Display, TEXT("Cannot send nothing in game chat."));
 		return;
 	}
 
-	ChatHandler->Server_SendMessage(OwningPlayerState, MessageBox->GetText().ToString());
+	MessageSender->SendMessage(OwningPlayerState, MessageBox->GetText().ToString());
 	
 	MessageBox->SetText(FText());
 }

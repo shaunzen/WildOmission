@@ -10,6 +10,7 @@
 #include "GameFramework/PlayerState.h"
 #include "WildOmissionCore/GameModes/WildOmissionGameMode.h"
 #include "Actors/SaveHandler.h"
+#include "GameChatHandler.h"
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
@@ -98,6 +99,11 @@ FString AWildOmissionPlayerController::GetUniqueID()
 bool AWildOmissionPlayerController::IsHost()
 {
 	return GetLocalRole() == ENetRole::ROLE_Authority && GetRemoteRole() == ENetRole::ROLE_SimulatedProxy;
+}
+
+void AWildOmissionPlayerController::SendMessage(APlayerState* Sender, const FString& Message)
+{
+	Server_SendMessage(Sender, Message);
 }
 
 void AWildOmissionPlayerController::Save()
@@ -278,6 +284,17 @@ void AWildOmissionPlayerController::StopLoading()
 	Server_Spawn();
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
 	GameInstance->StopLoading();
+}
+
+void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerState* Sender, const FString& Message)
+{
+	AGameChatHandler* ChatHandler = AGameChatHandler::GetInstance();
+	if (ChatHandler == nullptr)
+	{
+		return;
+	}
+
+	ChatHandler->SendMessage(Sender, Message, false);
 }
 
 void AWildOmissionPlayerController::Server_Spawn_Implementation()

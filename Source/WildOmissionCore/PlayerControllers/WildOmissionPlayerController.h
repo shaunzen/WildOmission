@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Interfaces/SavablePlayer.h"
+#include "Interfaces/PlayerControllerMessageSender.h"
 #include "WildOmissionPlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFinishedLoadingSignature, AWildOmissionPlayerController*, LoadedController);
@@ -13,7 +14,7 @@ class UInventoryComponent;
 class UDeathMenuWidget;
 
 UCLASS()
-class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer
+class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer, public IPlayerControllerMessageSender
 {
 	GENERATED_BODY()
 
@@ -28,6 +29,10 @@ public:
 	virtual FString GetUniqueID() override;
 	virtual bool IsHost() override;
 	// End ISavablePlayer Implementation
+
+	// Begin IPlayerControllerMessageSender Implementation
+	virtual void SendMessage(APlayerState* Sender, const FString& Message) override;
+	// End IPlayerControllerMessageSender Implementation
 
 	void Save();
 
@@ -76,6 +81,9 @@ private:
 	// to load their data from the save file.
 	bool bIsStillLoading;
 	FPlayerSave StoredPlayerSave;
+
+	UFUNCTION(Server, Reliable)
+	void Server_SendMessage(APlayerState* Sender, const FString& Message);
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();
