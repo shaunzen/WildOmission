@@ -81,7 +81,7 @@ void UGameChatWidget::RefreshMessages()
 			continue;
 		}
 
-		MessageWidget->Setup(this, Message.SenderName, Message.Message, Message.TimeSent);
+		MessageWidget->Setup(this, Message.SenderName, Message.Message, Message.TimeRecieved);
 
 		MessageContainerPanel->AddChild(MessageWidget);
 	}

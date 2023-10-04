@@ -5,28 +5,29 @@
 #include "UI/GameChatWidget.h"
 #include "Components/TextBlock.h"
 
-void UChatMessageWidget::Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeSent)
+void UChatMessageWidget::Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeRecieved)
 {
 	ParentChatWidget = InParent;
 	FString PlayerNameString = FString::Printf(TEXT("%s: "), *PlayerName);
 	PlayerNameText->SetText(FText::FromString(PlayerNameString));
 	MessageText->SetText(FText::FromString(Message));
-	TimeSent = InTimeSent;
+	TimeRecieved = InTimeRecieved;
 }
 
 void UChatMessageWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	
-	if (ParentChatWidget == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || ParentChatWidget == nullptr)
 	{
 		return;
 	}
 
-	double CurrentTime = GetWorld()->GetRealTimeSeconds();
-	double SecondsSinceMessageSent = CurrentTime - TimeSent;
+	double CurrentTime = World->GetRealTimeSeconds();
+	double SecondsSinceMessageRecieved = CurrentTime - TimeRecieved;
 
-	if (ParentChatWidget->IsOpen() || SecondsSinceMessageSent <= 5.0f)
+	if (ParentChatWidget->IsOpen() || SecondsSinceMessageRecieved <= 5.0f)
 	{
 		SetVisibility(ESlateVisibility::Visible);
 		return;

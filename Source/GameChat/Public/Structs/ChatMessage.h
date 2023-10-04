@@ -21,7 +21,7 @@ struct GAMECHAT_API FChatMessage
 	FString Message;
 
 	UPROPERTY()
-	double TimeSent = 0.0;
+	double TimeRecieved = 0.0;
 
 	UPROPERTY()
 	bool ConnectionUpdate = false;

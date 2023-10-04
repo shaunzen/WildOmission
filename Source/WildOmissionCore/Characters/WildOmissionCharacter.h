@@ -128,9 +128,6 @@ private:
 	UNameTagComponent* NameTag;
 
 	UPROPERTY(VisibleAnywhere)
-	UGameChatComponent* ChatComponent;
-
-	UPROPERTY(VisibleAnywhere)
 	USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
 
 	UPROPERTY(VisibleAnywhere)

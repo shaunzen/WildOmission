@@ -20,7 +20,6 @@
 #include "Components/EquipComponent.h"
 #include "Components/CraftingComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
-#include "Components/GameChatComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
 #include "Components/MusicPlayerComponent.h"
 #include "WildOmissionGameUserSettings.h"
@@ -84,8 +83,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag = CreateDefaultSubobject<UNameTagComponent>(TEXT("NameTag"));
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
-
-	ChatComponent = CreateDefaultSubobject<UGameChatComponent>(TEXT("ChatComponent"));
 
 	SpecialEffectsHandlerComponent = nullptr;
 	MusicPlayerComponent = nullptr;
