@@ -17,11 +17,6 @@ AGameChatHandler::AGameChatHandler()
 	bAlwaysRelevant = true;
 }
 
-void AGameChatHandler::SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate)
-{
-	Server_SendMessage(SenderPlayerState, Message, ConnectionUpdate);
-}
-
 void AGameChatHandler::BeginPlay()
 {
 	Super::BeginPlay();

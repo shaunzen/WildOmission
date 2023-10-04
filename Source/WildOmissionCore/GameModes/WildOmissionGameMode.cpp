@@ -123,6 +123,11 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 	{
 		StartSpot = Controller->StartSpot.Get();
 	}
+	
+	if (StartSpot == nullptr)
+	{
+		return;
+	}
 
 	FRotator SpawnRotation = StartSpot->GetActorRotation();
 
