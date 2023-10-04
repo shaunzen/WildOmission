@@ -48,9 +48,9 @@ void UGameChatWidget::NativeConstruct()
 
 void UGameChatWidget::RefreshMessages()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Refreshing Messages Widget."));
+	AGameChatHandler* ChatHandler = AGameChatHandler::GetInstance();
 	APlayerState* OwnerPlayerState = GetOwningPlayerState();
-	if (OwnerPlayerState == nullptr)
+	if (ChatHandler == nullptr || OwnerPlayerState == nullptr)
 	{
 		return;
 	}
@@ -59,7 +59,7 @@ void UGameChatWidget::RefreshMessages()
 	const FString OurPlayerNetName = OwnerPlayerState->GetPlayerName();
 
 	TArray<FChatMessage> Messages;
-	Messages = AGameChatHandler::GetChatMessages();
+	Messages = ChatHandler->GetChatMessages();
 
 	if (Messages.IsEmpty())
 	{

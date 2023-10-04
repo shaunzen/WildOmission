@@ -2,11 +2,9 @@
 
 
 #include "GameChatHandler.h"
-#include "Structs/ChatMessage.h"
 #include "GameFramework/PlayerState.h"
 
 static AGameChatHandler* Instance;
-static TArray<FChatMessage> ChatMessages;
 
 // Sets default values
 AGameChatHandler::AGameChatHandler()

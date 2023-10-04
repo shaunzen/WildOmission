@@ -25,7 +25,7 @@ public:
 
 	static bool IsValidMessage(const FChatMessage& ChatMessage);
 	
-	static TArray<FChatMessage> GetChatMessages();
+	TArray<FChatMessage> GetChatMessages();
 
 	FOnChatMessageRecievedSignature OnMessageRecieved;
 
@@ -33,6 +33,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	TArray<FChatMessage> ChatMessages;
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PushMessageToClients(const FChatMessage& ChatMessage);
 
