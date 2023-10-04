@@ -33,6 +33,7 @@ void UPlayerHUDWidget::NativeConstruct()
 	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("MenuBackgroundMouseButtonDown"));
 	Chat->OnToggleRequested.AddDynamic(this, &UPlayerHUDWidget::ToggleChatMenu);
 
+
 	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (PlayerInventoryManipulatorComponent == nullptr)
 	{

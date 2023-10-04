@@ -3,7 +3,7 @@
 
 #include "GameChatHandler.h"
 #include "Structs/ChatMessage.h"
-#include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerState.h"
 
 static AGameChatHandler* Instance;
 static TArray<FChatMessage> ChatMessages;
@@ -17,24 +17,36 @@ AGameChatHandler::AGameChatHandler()
 	bAlwaysRelevant = true;
 }
 
+void AGameChatHandler::SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate)
+{
+	Server_SendMessage(SenderPlayerState, Message, ConnectionUpdate);
+}
+
 void AGameChatHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (Instance)
+	if (GetWorld()->IsEditorWorld() && IsValid(Instance))
 	{
-		Instance->Destroy();
+		return;
 	}
 
 	Instance = this;
 }
 
-void AGameChatHandler::Server_SendMessage_Implementation(const FChatMessage& ChatMessage)
+void AGameChatHandler::Server_SendMessage_Implementation(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate)
 {
-	if (!IsValidMessage(ChatMessage))
+	if (SenderPlayerState == nullptr || Message.IsEmpty())
 	{
 		return;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Server_SendMessage Was Called."));
+
+	FChatMessage ChatMessage;
+	ChatMessage.SenderName = SenderPlayerState->GetPlayerName();
+	ChatMessage.Message = Message;
+	ChatMessage.ConnectionUpdate = ConnectionUpdate;
 
 	Multi_PushMessageToClients(ChatMessage);
 }
@@ -46,6 +58,8 @@ void AGameChatHandler::Multi_PushMessageToClients_Implementation(const FChatMess
 	{
 		return;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Client Recieved Message."));
 
 	FChatMessage NewMessage = ChatMessage;
 	NewMessage.TimeRecieved = World->GetRealTimeSeconds();

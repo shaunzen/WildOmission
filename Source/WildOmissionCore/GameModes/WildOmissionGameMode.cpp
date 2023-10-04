@@ -10,6 +10,7 @@
 #include "Actors/WeatherHandler.h"
 #include "AnimalSpawnHandler.h"
 #include "MonsterSpawnHandler.h"
+#include "GameChatHandler.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
 #include "WildOmissionCore/WildOmissionGameState.h"
@@ -26,13 +27,14 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 
 	FString SaveFile = UGameplayStatics::ParseOption(Options, "SaveGame");
 	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
-
+	
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
 	WorldGenerationHandler = GetWorld()->SpawnActor<AWorldGenerationHandler>();
 	TimeOfDayHandler = GetWorld()->SpawnActor<ATimeOfDayHandler>();
 	WeatherHandler = GetWorld()->SpawnActor<AWeatherHandler>();
 	AnimalSpawnHandler = GetWorld()->SpawnActor<AAnimalSpawnHandler>();
 	MonsterSpawnHandler = GetWorld()->SpawnActor<AMonsterSpawnHandler>();
+	ChatHandler = GetWorld()->SpawnActor<AGameChatHandler>();
 	MonsterSpawnHandler->Setup(TimeOfDayHandler);
 	WeatherHandler->Setup(WorldGenerationHandler);
 	SaveHandler->Setup(WorldGenerationHandler, TimeOfDayHandler, WeatherHandler, Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));

@@ -22,8 +22,6 @@ public:
 
 	virtual void NativeConstruct() override;
 
-	void Setup();
-
 	// Switches to typing message state
 	void Open();
 
