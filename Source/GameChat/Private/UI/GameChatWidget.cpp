@@ -138,7 +138,7 @@ void UGameChatWidget::AttemptSendMessage()
 		return;
 	}
 
-	ChatHandler->SendMessage(OwningPlayerState, MessageBox->GetText().ToString());
+	ChatHandler->Server_SendMessage(OwningPlayerState, MessageBox->GetText().ToString());
 	
 	MessageBox->SetText(FText());
 }

@@ -18,7 +18,8 @@ public:
 	// Sets default values for this actor's properties
 	AGameChatHandler();
 	
-	void SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate = false);
+	UFUNCTION(Server, Reliable)
+	void Server_SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate = false);
 
 	static AGameChatHandler* GetInstance();
 
@@ -32,9 +33,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UFUNCTION(Server, Reliable)
-	void Server_SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate = false);
-
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PushMessageToClients(const FChatMessage& ChatMessage);
 
