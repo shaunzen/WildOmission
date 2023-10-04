@@ -83,19 +83,13 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 		return;
 	}
 
-	AWildOmissionGameState* WOGameState = GetGameState<AWildOmissionGameState>();
-	if (WOGameState == nullptr)
-	{
-		return;
-	}
-
 	APlayerState* NewPlayerState = NewPlayer->GetPlayerState<APlayerState>();
-	if (NewPlayerState == nullptr)
+	if (ChatHandler == nullptr || NewPlayerState == nullptr)
 	{
 		return;
 	}
 
-	//WOGameState->AddChatMessage(NewPlayerState, TEXT("Has Joined The Game."), true);
+	ChatHandler->Server_SendMessage(NewPlayerState, TEXT("Has Joined The Game."), true);
 }
 
 void AWildOmissionGameMode::Logout(AController* Exiting)
@@ -107,19 +101,13 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 		return;
 	}
 
-	AWildOmissionGameState* WOGameState = GetGameState<AWildOmissionGameState>();
-	if (WOGameState == nullptr)
-	{
-		return;
-	}
-
 	APlayerState* ExitingPlayerState = Exiting->GetPlayerState<APlayerState>();
-	if (ExitingPlayerState == nullptr)
+	if (ChatHandler == nullptr || ExitingPlayerState == nullptr)
 	{
 		return;
 	}
 
-	//WOGameState->AddChatMessage(ExitingPlayerState, TEXT("Has Left The Game."), true);
+	ChatHandler->Server_SendMessage(ExitingPlayerState, TEXT("Has Left The Game."), true);
 }
 
 void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controller)
