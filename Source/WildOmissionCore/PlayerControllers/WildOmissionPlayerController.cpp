@@ -10,6 +10,7 @@
 #include "GameFramework/PlayerState.h"
 #include "WildOmissionCore/GameModes/WildOmissionGameMode.h"
 #include "Actors/SaveHandler.h"
+#include "GameChatHandler.h"
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
@@ -102,7 +103,7 @@ bool AWildOmissionPlayerController::IsHost()
 
 void AWildOmissionPlayerController::SendMessage(APlayerState* Sender, const FString& Message)
 {
-	Server_SendChatMessage(Sender, Message);
+	Server_SendMessage(Sender, Message);
 }
 
 void AWildOmissionPlayerController::Save()
@@ -147,18 +148,6 @@ void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
 	}
 
 	GameMode->GetSaveHandler()->GetPlayerHandler()->AddToPending(this);
-}
-
-void AWildOmissionPlayerController::Server_SendChatMessage_Implementation(APlayerState* Sender, const FString& Message)
-{
-	AWildOmissionGameState* GameState = Cast<AWildOmissionGameState>(GetWorld()->GetGameState());
-	if (GameState == nullptr || Sender == nullptr)
-	{
-		UE_LOG(LogPlayerController, Warning, TEXT("Failed to send chat message, couldn't get state."));
-		return;
-	}
-
-	GameState->AddChatMessage(Sender, Message);
 }
 
 void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
@@ -227,7 +216,7 @@ void AWildOmissionPlayerController::BeginPlay()
 
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
 	GameInstance->StartLoading();
-	GameInstance->SetLoadingSubtitle(FString("Loading world state."));
+	GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
 
 	if (HasAuthority())
 	{
@@ -295,6 +284,17 @@ void AWildOmissionPlayerController::StopLoading()
 	Server_Spawn();
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
 	GameInstance->StopLoading();
+}
+
+void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerState* Sender, const FString& Message)
+{
+	AGameChatHandler* ChatHandler = AGameChatHandler::GetInstance();
+	if (ChatHandler == nullptr)
+	{
+		return;
+	}
+
+	ChatHandler->SendMessage(Sender, Message, false);
 }
 
 void AWildOmissionPlayerController::Server_Spawn_Implementation()

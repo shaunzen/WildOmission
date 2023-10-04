@@ -12,6 +12,7 @@ class ATimeOfDayHandler;
 class AWeatherHandler;
 class AAnimalSpawnHandler;
 class AMonsterSpawnHandler;
+class AGameChatHandler;
 class AWildOmissionCharacter;
 class AWildOmissionPlayerController;
 
@@ -78,4 +79,7 @@ private:
 	UPROPERTY()
 	AMonsterSpawnHandler* MonsterSpawnHandler;
 	
+	UPROPERTY()
+	AGameChatHandler* ChatHandler;
+
 };

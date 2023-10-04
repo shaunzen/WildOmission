@@ -10,6 +10,7 @@
 #include "Actors/WeatherHandler.h"
 #include "AnimalSpawnHandler.h"
 #include "MonsterSpawnHandler.h"
+#include "GameChatHandler.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
 #include "WildOmissionCore/WildOmissionGameState.h"
@@ -26,13 +27,14 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 
 	FString SaveFile = UGameplayStatics::ParseOption(Options, "SaveGame");
 	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
-
+	
 	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
 	WorldGenerationHandler = GetWorld()->SpawnActor<AWorldGenerationHandler>();
 	TimeOfDayHandler = GetWorld()->SpawnActor<ATimeOfDayHandler>();
 	WeatherHandler = GetWorld()->SpawnActor<AWeatherHandler>();
 	AnimalSpawnHandler = GetWorld()->SpawnActor<AAnimalSpawnHandler>();
 	MonsterSpawnHandler = GetWorld()->SpawnActor<AMonsterSpawnHandler>();
+	ChatHandler = GetWorld()->SpawnActor<AGameChatHandler>();
 	MonsterSpawnHandler->Setup(TimeOfDayHandler);
 	WeatherHandler->Setup(WorldGenerationHandler);
 	SaveHandler->Setup(WorldGenerationHandler, TimeOfDayHandler, WeatherHandler, Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));
@@ -81,19 +83,13 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 		return;
 	}
 
-	AWildOmissionGameState* WOGameState = GetGameState<AWildOmissionGameState>();
-	if (WOGameState == nullptr)
-	{
-		return;
-	}
-
 	APlayerState* NewPlayerState = NewPlayer->GetPlayerState<APlayerState>();
-	if (NewPlayerState == nullptr)
+	if (ChatHandler == nullptr || NewPlayerState == nullptr)
 	{
 		return;
 	}
 
-	WOGameState->AddChatMessage(NewPlayerState, TEXT("Has Joined The Game."), true);
+	ChatHandler->SendMessage(NewPlayerState, TEXT("Has Joined The Game."), true);
 }
 
 void AWildOmissionGameMode::Logout(AController* Exiting)
@@ -105,19 +101,13 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 		return;
 	}
 
-	AWildOmissionGameState* WOGameState = GetGameState<AWildOmissionGameState>();
-	if (WOGameState == nullptr)
-	{
-		return;
-	}
-
 	APlayerState* ExitingPlayerState = Exiting->GetPlayerState<APlayerState>();
-	if (ExitingPlayerState == nullptr)
+	if (ChatHandler == nullptr || ExitingPlayerState == nullptr)
 	{
 		return;
 	}
 
-	WOGameState->AddChatMessage(ExitingPlayerState, TEXT("Has Left The Game."), true);
+	ChatHandler->SendMessage(ExitingPlayerState, TEXT("Has Left The Game."), true);
 }
 
 void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controller)
@@ -132,6 +122,11 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 	if (StartSpot == nullptr && Controller->StartSpot != nullptr)
 	{
 		StartSpot = Controller->StartSpot.Get();
+	}
+	
+	if (StartSpot == nullptr)
+	{
+		return;
 	}
 
 	FRotator SpawnRotation = StartSpot->GetActorRotation();

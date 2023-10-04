@@ -14,7 +14,7 @@ class UChatMessageWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeSent);
+	void Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeRecieved);
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -26,7 +26,7 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UTextBlock* MessageText;
 	
-	double TimeSent;
+	double TimeRecieved;
 	
 	UPROPERTY()
 	UGameChatWidget* ParentChatWidget;
