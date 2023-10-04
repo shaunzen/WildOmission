@@ -30,9 +30,9 @@ void UPlayerHUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	UpdateBrandingText();
-	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, FName("MenuBackgroundMouseButtonDown"));
-	Chat->OnToggleRequested.AddDynamic(this, &UPlayerHUDWidget::ToggleChatMenu);
 
+	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, TEXT("MenuBackgroundMouseButtonDown"));
+	Chat->OnToggleRequested.AddDynamic(this, &UPlayerHUDWidget::ToggleChatMenu);
 
 	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (PlayerInventoryManipulatorComponent == nullptr)
