@@ -21,13 +21,19 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SendMessage(const FChatMessage& ChatMessage);
 	
+	static AGameChatHandler* GetInstance();
+
 	static bool IsValidMessage(const FChatMessage& ChatMessage);
 	
 	static TArray<FChatMessage> GetChatMessages();
 
 	FOnChatMessageRecievedSignature OnMessageRecieved;
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PushMessageToClients(const FChatMessage& ChatMessage);
+
 };

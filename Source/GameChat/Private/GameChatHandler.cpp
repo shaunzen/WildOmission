@@ -3,7 +3,9 @@
 
 #include "GameChatHandler.h"
 #include "Structs/ChatMessage.h"
+#include "Kismet/GameplayStatics.h"
 
+static AGameChatHandler* Instance;
 static TArray<FChatMessage> ChatMessages;
 
 // Sets default values
@@ -13,6 +15,18 @@ AGameChatHandler::AGameChatHandler()
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	bAlwaysRelevant = true;
+}
+
+void AGameChatHandler::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (Instance)
+	{
+		Instance->Destroy();
+	}
+
+	Instance = this;
 }
 
 void AGameChatHandler::Server_SendMessage_Implementation(const FChatMessage& ChatMessage)
@@ -42,6 +56,16 @@ void AGameChatHandler::Multi_PushMessageToClients_Implementation(const FChatMess
 	{
 		ChatMessages.RemoveAt(ChatMessages.Num() - 1);
 	}
+
+	if (OnMessageRecieved.IsBound())
+	{
+		OnMessageRecieved.Broadcast();
+	}
+}
+
+AGameChatHandler* AGameChatHandler::GetInstance()
+{
+	return Instance;
 }
 
 bool AGameChatHandler::IsValidMessage(const FChatMessage& ChatMessage)
