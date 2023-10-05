@@ -22,6 +22,7 @@ void UGameplayMenuWidget::NativeConstruct()
 	// Bind button delegates
 	ResumeButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::Teardown);
 	OptionsButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenOptionsMenu);
+	FeedbackButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenFeedbackPage);
 	HowToPlayButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenHelpGuide);
 	QuitButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
 
@@ -129,6 +130,11 @@ void UGameplayMenuWidget::Teardown()
 void UGameplayMenuWidget::OpenHelpGuide()
 {
 	UKismetSystemLibrary::LaunchURL(TEXT("https://steamcommunity.com/sharedfiles/filedetails/?id=3029189957"));
+}
+
+void UGameplayMenuWidget::OpenFeedbackPage()
+{
+	UKismetSystemLibrary::LaunchURL(TEXT("https://forms.gle/2GP8ZSTU5ARa5Pmu8"));
 }
 
 void UGameplayMenuWidget::Save()

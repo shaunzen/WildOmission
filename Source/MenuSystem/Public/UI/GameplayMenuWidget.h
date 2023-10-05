@@ -57,6 +57,9 @@ private:
 	UButton* HowToPlayButton;
 
 	UPROPERTY(Meta = (BindWidget))
+	UButton* FeedbackButton;
+
+	UPROPERTY(Meta = (BindWidget))
 	UButton* QuitButton;
 
 	UPROPERTY(Meta = (BindWidget))
@@ -77,6 +80,9 @@ private:
 
 	UFUNCTION()
 	void OpenHelpGuide();
+
+	UFUNCTION()
+	void OpenFeedbackPage();
 
 	UFUNCTION()
 	void Save();
