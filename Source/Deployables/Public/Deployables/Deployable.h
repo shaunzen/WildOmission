@@ -107,8 +107,7 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayPlacementEffects();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayDestructionEffects();
+	void PlayDestructionEffects();
 
 	void SpawnDustEffects();
 

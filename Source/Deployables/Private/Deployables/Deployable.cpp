@@ -103,12 +103,7 @@ void ADeployable::Destroyed()
 {
 	Super::Destroyed();
 	
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	Multi_PlayDestructionEffects();
+	PlayDestructionEffects();
 }
 
 void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
@@ -203,7 +198,7 @@ void ADeployable::Multi_PlayPlacementEffects_Implementation()
 	SpawnDustEffects();
 }
 
-void ADeployable::Multi_PlayDestructionEffects_Implementation()
+void ADeployable::PlayDestructionEffects()
 {
 	if (DestructionSound)
 	{
