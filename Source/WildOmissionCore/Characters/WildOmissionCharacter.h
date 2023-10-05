@@ -20,7 +20,6 @@ class UInventoryManipulatorComponent;
 class UEquipComponent;
 class UCraftingComponent;
 class UNameTagComponent;
-class UGameChatComponent;
 class USpecialEffectsHandlerComponent;
 class UMusicPlayerComponent;
 
