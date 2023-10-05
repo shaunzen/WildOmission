@@ -12,6 +12,16 @@
 UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	SetIsFocusable(true);
+	ResumeButton = nullptr;
+	OptionsButton = nullptr;
+	HowToPlayButton = nullptr;
+	FeedbackButton = nullptr;
+	QuitButton = nullptr;
+	QuitButtonText = nullptr;
+	MenuSwitcher = nullptr;
+	GameMenu = nullptr;
+	OptionsMenu = nullptr;
+	MenuInterface = nullptr;
 	bOpen = false;
 }
 

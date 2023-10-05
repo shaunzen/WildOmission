@@ -9,6 +9,7 @@
 #include "WorldMenuWidget.h"
 #include "ServerBrowserWidget.h"
 #include "UI/OptionsWidget.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Log.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -17,6 +18,7 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	MenuSwitcher = nullptr;
 	PlayButton = nullptr;
 	OptionsButton = nullptr;
+	FeedbackButton = nullptr;
 	ExitButton = nullptr;
 	MainMenu = nullptr;
 	WorldSelectionMenu = nullptr;
@@ -33,6 +35,7 @@ void UMainMenuWidget::NativeConstruct()
 
 	PlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 	OptionsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenOptionsMenu);
+	FeedbackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenFeedbackPage);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
 	WorldSelectionMenu->Setup(this);
@@ -148,6 +151,11 @@ void UMainMenuWidget::OpenOptionsMenu()
 
 	MenuSwitcher->SetActiveWidget(OptionsMenu);
 	OptionsMenu->Refresh();
+}
+
+void UMainMenuWidget::OpenFeedbackPage()
+{
+	UKismetSystemLibrary::LaunchURL(TEXT("https://forms.gle/2GP8ZSTU5ARa5Pmu8"));
 }
 
 void UMainMenuWidget::ExitGame()

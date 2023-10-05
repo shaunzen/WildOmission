@@ -41,6 +41,8 @@ public:
 	UFUNCTION()
 	void OpenOptionsMenu();
 	UFUNCTION()
+	void OpenFeedbackPage();
+	UFUNCTION()
 	void ExitGame();
 
 	void SetServerList(TArray<FServerData> InServerData);
@@ -58,6 +60,8 @@ private:
 	UButton* PlayButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* OptionsButton;
+	UPROPERTY(Meta = (BindWidget))
+	UButton* FeedbackButton;
 	UPROPERTY(Meta = (BindWidget))
 	UButton* ExitButton;
 
