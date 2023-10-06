@@ -14,6 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeMidnightSignature);
 
 class ADirectionalLight;
 UCLASS()
+// TODO use direct methods
 class TIMEOFDAY_API ATimeOfDayHandler : public AActor, public ISavableTimeOfDayHandler
 {
 	GENERATED_BODY()
@@ -21,6 +22,8 @@ class TIMEOFDAY_API ATimeOfDayHandler : public AActor, public ISavableTimeOfDayH
 public:	
 	// Sets default values for this actor's properties
 	ATimeOfDayHandler();
+
+	static ATimeOfDayHandler* GetTimeOfDayHandler();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

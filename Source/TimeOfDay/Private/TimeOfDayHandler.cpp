@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
 
+static ATimeOfDayHandler* Instance = nullptr;
 static const float DAY_NIGHT_SPEED = 0.3f;
 static UMaterialParameterCollection* MPC_Sky = nullptr;
 
@@ -39,17 +40,24 @@ ATimeOfDayHandler::ATimeOfDayHandler()
 	}
 }
 
+ATimeOfDayHandler* ATimeOfDayHandler::GetTimeOfDayHandler()
+{
+	return Instance;
+}
+
 // Called when the game starts or when spawned
 void ATimeOfDayHandler::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	DirectionalLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
-	if (DirectionalLight == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
 	{
-		UE_LOG(LogTimeOfDay, Error, TEXT("Couldn't find directional light in level."));
 		return;
 	}
+
+	Instance = this;
+	DirectionalLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
 }
 
 void ATimeOfDayHandler::CalculateMoonPhase()
