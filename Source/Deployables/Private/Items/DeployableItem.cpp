@@ -196,21 +196,26 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 
 
 	// Check ground condition
-	if (HitActor->ActorHasTag(FName("Ground")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnGround())
+	if (HitActor->ActorHasTag(TEXT("Ground")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnGround())
 	{
 		OutValidSpawn = !InvalidOverlap;
 		return GetFreehandPlacementTransform();
 	}
 
 	// Check floor condition
-	if (HitActor->ActorHasTag(FName("Floor")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnFloor())
+	const bool NormalUpsideDown = HitResult.ImpactNormal.Z < 0.5f;
+	const bool CanSpawnOnFloor = DeployableActorClass.GetDefaultObject()->CanSpawnOnFloor() && !NormalUpsideDown;
+	const bool CanSpawnOnCeiling = DeployableActorClass.GetDefaultObject()->CanSpawnOnCeiling() && NormalUpsideDown;
+	UE_LOG(LogTemp, Warning, TEXT("Impact Z %f"), HitResult.ImpactNormal.Z);
+	UE_LOG(LogTemp, Warning, TEXT("CanSpawnOnFloor %i, CanSpawnOnCeiling %i"), CanSpawnOnFloor, CanSpawnOnCeiling);
+	if (HitActor->ActorHasTag(TEXT("Floor")) && (CanSpawnOnFloor || CanSpawnOnCeiling))
 	{
 		OutValidSpawn = !InvalidOverlap;
 		return GetFreehandPlacementTransform();
 	}
 
 	// Check wall condition
-	if (HitActor->ActorHasTag(FName("Wall")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnWall())
+	if (HitActor->ActorHasTag(TEXT("Wall")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnWall())
 	{
 		OutValidSpawn = !InvalidOverlap;
 		return GetFreehandPlacementTransform();

@@ -52,6 +52,7 @@ public:
 
 	bool CanSpawnOnGround() const;
 	bool CanSpawnOnFloor() const;
+	bool CanSpawnOnCeiling() const;
 	bool CanSpawnOnWall() const;
 	TEnumAsByte<EBuildAnchorType> CanSpawnOnBuildAnchor() const;
 	bool FollowsSurfaceNormal() const;
@@ -95,6 +96,8 @@ protected:
 	bool bCanSpawnOnGround;
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Placement Settings")
 	bool bCanSpawnOnFloor;
+	UPROPERTY(EditDefaultsOnly, Category = "Deployable Placement Settings")
+	bool bCanSpawnOnCeiling;
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Placement Settings")
 	bool bCanSpawnOnWall;
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Placement Settings")

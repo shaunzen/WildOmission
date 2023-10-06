@@ -71,6 +71,7 @@ void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		|| (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround()) 
 		|| (OtherActor->ActorHasTag(TEXT("Wall")) && PreviewingDeployable->CanSpawnOnWall()) 
 		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnFloor()) 
+		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnCeiling()) 
 		|| (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && (OtherActor->ActorHasTag(TEXT("BuildingPart")) || OtherActor->ActorHasTag(TEXT("Ground")))))
 	{
 		return;
@@ -87,6 +88,7 @@ void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedCompone
 		|| (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround())
 		|| (OtherActor->ActorHasTag(TEXT("Wall")) && PreviewingDeployable->CanSpawnOnWall())
 		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnFloor())
+		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnCeiling())
 		|| (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && (OtherActor->ActorHasTag(TEXT("BuildingPart")) || OtherActor->ActorHasTag(TEXT("Ground")))))
 	{
 		return;

@@ -41,6 +41,7 @@ ADeployable::ADeployable()
 
 	bCanSpawnOnGround = true;
 	bCanSpawnOnFloor = false;
+	bCanSpawnOnCeiling = false;
 	bCanSpawnOnWall = false;
 	CanSpawnOnAnchor = EBuildAnchorType::None;
 	bFollowsSurfaceNormal = false;
@@ -166,6 +167,11 @@ bool ADeployable::CanSpawnOnGround() const
 bool ADeployable::CanSpawnOnFloor() const
 {
 	return bCanSpawnOnFloor;
+}
+
+bool ADeployable::CanSpawnOnCeiling() const
+{
+	return bCanSpawnOnCeiling;
 }
 
 bool ADeployable::CanSpawnOnWall() const
