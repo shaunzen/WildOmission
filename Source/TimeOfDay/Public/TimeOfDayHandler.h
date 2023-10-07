@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/SavableTimeOfDayHandler.h"
 #include "TimeOfDayHandler.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeSunriseSignature);
@@ -14,8 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeMidnightSignature);
 
 class ADirectionalLight;
 UCLASS()
-// TODO use direct methods
-class TIMEOFDAY_API ATimeOfDayHandler : public AActor, public ISavableTimeOfDayHandler
+class TIMEOFDAY_API ATimeOfDayHandler : public AActor
 {
 	GENERATED_BODY()
 	
@@ -30,13 +28,11 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	// Begin ISavableTimeOfDayHandler Implementation
-	virtual void SetDaysPlayed(int32 InDaysPlayed) override;
-	virtual int32 GetDaysPlayed() const override;
+	void SetDaysPlayed(int32 InDaysPlayed);
+	int32 GetDaysPlayed() const;
 
-	virtual void SetNormalizedProgressThroughDay(float InProgress) override;
-	virtual float GetNormalizedProgressThroughDay() const override;
-	// End ISavableTimeOfDayHandler Implementation
+	void SetNormalizedProgressThroughDay(float InProgress);
+	float GetNormalizedProgressThroughDay() const;
 	
 	FOnTimeSunriseSignature OnTimeSunrise;
 	FOnTimeNoonSignature OnTimeNoon;
@@ -51,7 +47,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 private:
 	UPROPERTY()
 	ADirectionalLight* DirectionalLight;

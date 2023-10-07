@@ -288,7 +288,7 @@ void AWildOmissionPlayerController::StopLoading()
 
 void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerState* Sender, const FString& Message)
 {
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetInstance();
+	AGameChatHandler* ChatHandler = AGameChatHandler::GetGameChatHandler();
 	if (ChatHandler == nullptr)
 	{
 		return;
