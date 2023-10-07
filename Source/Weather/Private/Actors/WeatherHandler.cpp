@@ -3,7 +3,6 @@
 
 #include "Actors/WeatherHandler.h"
 #include "Actors/Storm.h"
-#include "Actors/WorldGenerationHandler.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
@@ -11,6 +10,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
 
+static AWeatherHandler* Instance = nullptr;
 static UMaterialParameterCollection* MPC_WindCollection = nullptr;
 
 // Sets default values
@@ -27,8 +27,6 @@ AWeatherHandler::AWeatherHandler()
 	MaxStormSpawnTime = 3600.0f;
 	NextStormSpawnTime = -1.0f;
 
-	WorldGenerationHandler = nullptr;
-
 	static ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/Weather/Actors/BP_Storm"));
 	if (StormBlueprint.Succeeded())
 	{
@@ -41,6 +39,11 @@ AWeatherHandler::AWeatherHandler()
 	}
 }
 
+AWeatherHandler* AWeatherHandler::GetWeatherHandler()
+{
+	return Instance;
+}
+
 // Called when the game starts or when spawned
 void AWeatherHandler::BeginPlay()
 {
@@ -50,11 +53,21 @@ void AWeatherHandler::BeginPlay()
 	{
 		NextStormSpawnTime = FMath::RandRange(MinStormSpawnTime, MaxStormSpawnTime);
 	}
+
+	UWorld* World = GetWorld();
+	if (World == nullptr || World->IsEditorWorld() || IsValid(Instance))
+	{
+		return;
+	}
+
+	Instance = this;
 }
 
-void AWeatherHandler::Setup(AWorldGenerationHandler* InWorldGenerationHandler)
+void AWeatherHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	WorldGenerationHandler = InWorldGenerationHandler;
+	Super::EndPlay(EndPlayReason);
+
+	Instance = nullptr;
 }
 
 void AWeatherHandler::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -162,10 +175,10 @@ void AWeatherHandler::CalculateWindParameters()
 
 void AWeatherHandler::ApplyWindParameters(const FWindParameters& NewParameters)
 {
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindStrength"), NewParameters.GlobalWindStrength);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("GlobalWindDirection"), FLinearColor(NewParameters.GlobalWindDirection.X, NewParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoOnGround"), NewParameters.TornadoOnGround);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, FName("TornadoLocation"), FLinearColor(NewParameters.TornadoLocation.X, NewParameters.TornadoLocation.Y, 0.0f, 1.0f));
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, TEXT("GlobalWindStrength"), NewParameters.GlobalWindStrength);
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, TEXT("GlobalWindDirection"), FLinearColor(NewParameters.GlobalWindDirection.X, NewParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
+	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, TEXT("TornadoOnGround"), NewParameters.TornadoOnGround);
+	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, TEXT("TornadoLocation"), FLinearColor(NewParameters.TornadoLocation.X, NewParameters.TornadoLocation.Y, 0.0f, 1.0f));
 }
 
 AStorm* AWeatherHandler::GetCurrentStorm() const
@@ -192,9 +205,4 @@ float AWeatherHandler::GetNextStormSpawnTime() const
 void AWeatherHandler::SetNextStormSpawnTime(float NewSpawnTime)
 {
 	NextStormSpawnTime = FMath::Clamp(NewSpawnTime, 0.0f, MaxStormSpawnTime);
-}
-
-AWorldGenerationHandler* AWeatherHandler::GetWorldGenerationHandler() const
-{
-	return WorldGenerationHandler;
 }

@@ -6,7 +6,7 @@
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "Actors/WorldGenerationHandler.h"
 #include "TimeOfDayHandler.h"
-#include "Interfaces/SavableWeatherHandler.h"
+#include "Actors/WeatherHandler.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
@@ -24,9 +24,8 @@ ASaveHandler::ASaveHandler()
 	GameSaveLoadController = nullptr;
 }
 
-void ASaveHandler::Setup(ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController)
+void ASaveHandler::Setup(IGameSaveLoadController* SaveLoadController)
 {
-	WeatherHandler = InWeatherHandler;
 	GameSaveLoadController = SaveLoadController;
 
 	FTimerHandle AutoSaveTimerHandle;
@@ -50,6 +49,7 @@ void ASaveHandler::SaveGame()
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayHandler->GetNormalizedProgressThroughDay();
 	}
 
+	AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
 	if (WeatherHandler)
 	{
 		SaveFile->WeatherHandlerSave.NextStormSpawnTime = WeatherHandler->GetNextStormSpawnTime();
@@ -94,6 +94,7 @@ void ASaveHandler::LoadWorld()
 		TimeOfDayHandler->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
 	}
 
+	AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
 	if (WeatherHandler)
 	{
 		WeatherHandler->SetNextStormSpawnTime(SaveFile->WeatherHandlerSave.NextStormSpawnTime);
@@ -119,11 +120,6 @@ UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
 UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
 {
 	return PlayerSaveHandlerComponent;
-}
-
-ISavableWeatherHandler* ASaveHandler::GetWeatherHandler() const
-{
-	return WeatherHandler;
 }
 
 IGameSaveLoadController* ASaveHandler::GetSaveLoadController() const

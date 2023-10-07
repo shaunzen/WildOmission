@@ -20,6 +20,7 @@ class WEATHER_API AStorm : public AActor, public ISavableObject
 public:
 	// Sets default values for this actor's properties
 	AStorm();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void Serialize(FArchive& Ar) override;
@@ -43,10 +44,6 @@ public:
 	// Begin ISavableObject Implementation
 	virtual FName GetIdentifier() const override;
 	// End ISavableObject Implementation
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -89,9 +86,6 @@ private:
 	float TraveledDistance;
 	UPROPERTY(Replicated)
 	ATornado* SpawnedTornado;
-
-	UPROPERTY()
-	AWeatherHandler* WeatherHandler;
 
 	bool WasSpawnedFromCommand;
 
