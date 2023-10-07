@@ -20,7 +20,7 @@ public:
 	
 	void SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate = false);
 
-	static AGameChatHandler* GetInstance();
+	static AGameChatHandler* GetGameChatHandler();
 
 	static bool IsValidMessage(const FChatMessage& ChatMessage);
 	
@@ -30,6 +30,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	UPROPERTY(VisibleAnywhere)

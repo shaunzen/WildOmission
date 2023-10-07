@@ -138,7 +138,7 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 
 		Headshot ? Client_PlayHitMarkerHeadshotSound() : Client_PlayHitMarkerSound();
 		
-		UE_LOG(LogTemp, Warning, TEXT("Damage %f, With Headshot Multiplier %f"), Damage, TotalDamage);
+		UE_LOG(LogWeapons, Verbose, TEXT("Damage %f, With Headshot Multiplier %f"), Damage, TotalDamage);
 
 		FPointDamageEvent HitByProjectileEvent(TotalDamage, Hit, NormalImpulse, nullptr);
 		HitPawn->TakeDamage(TotalDamage, HitByProjectileEvent, GetInstigatorController<AController>(), this);

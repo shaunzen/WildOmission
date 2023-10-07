@@ -60,6 +60,12 @@ void ATimeOfDayHandler::BeginPlay()
 	DirectionalLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
 }
 
+void ATimeOfDayHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	Instance = nullptr;
+}
+
 void ATimeOfDayHandler::CalculateMoonPhase()
 {
 	if (MPC_Sky == nullptr)

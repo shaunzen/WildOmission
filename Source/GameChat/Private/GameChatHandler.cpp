@@ -36,14 +36,18 @@ void AGameChatHandler::BeginPlay()
 	SetOwner(PlayerController);
 }
 
+void AGameChatHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	Instance = nullptr;
+}
+
 void AGameChatHandler::SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate)
 {
 	if (SenderPlayerState == nullptr || Message.IsEmpty())
 	{
 		return;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Server_SendMessage Was Called."));
 
 	FChatMessage ChatMessage;
 	ChatMessage.SenderName = SenderPlayerState->GetPlayerName();
@@ -61,8 +65,6 @@ void AGameChatHandler::Multi_PushMessageToClients_Implementation(const FChatMess
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Client Recieved Message."));
-
 	FChatMessage NewMessage = ChatMessage;
 	NewMessage.TimeRecieved = World->GetRealTimeSeconds();
 
@@ -79,7 +81,7 @@ void AGameChatHandler::Multi_PushMessageToClients_Implementation(const FChatMess
 	}
 }
 
-AGameChatHandler* AGameChatHandler::GetInstance()
+AGameChatHandler* AGameChatHandler::GetGameChatHandler()
 {
 	return Instance;
 }

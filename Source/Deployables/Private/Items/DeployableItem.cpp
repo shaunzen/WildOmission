@@ -206,8 +206,7 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	const bool NormalUpsideDown = HitResult.ImpactNormal.Z < 0.5f;
 	const bool CanSpawnOnFloor = DeployableActorClass.GetDefaultObject()->CanSpawnOnFloor() && !NormalUpsideDown;
 	const bool CanSpawnOnCeiling = DeployableActorClass.GetDefaultObject()->CanSpawnOnCeiling() && NormalUpsideDown;
-	UE_LOG(LogTemp, Warning, TEXT("Impact Z %f"), HitResult.ImpactNormal.Z);
-	UE_LOG(LogTemp, Warning, TEXT("CanSpawnOnFloor %i, CanSpawnOnCeiling %i"), CanSpawnOnFloor, CanSpawnOnCeiling);
+	
 	if (HitActor->ActorHasTag(TEXT("Floor")) && (CanSpawnOnFloor || CanSpawnOnCeiling))
 	{
 		OutValidSpawn = !InvalidOverlap;

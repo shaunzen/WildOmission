@@ -37,10 +37,10 @@ void UGameChatWidget::NativeConstruct()
 	MessageContainerPanel->ClearChildren();	
 	Close();
 	MessageBox->OnTextCommitted.AddDynamic(this, &UGameChatWidget::OnMessageBoxTextCommitted);
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetInstance();
+	AGameChatHandler* ChatHandler = AGameChatHandler::GetGameChatHandler();
 	if (ChatHandler == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Something went wrong finding chat handler."));
+		UE_LOG(LogGameChat, Warning, TEXT("Couldn't retrieve game chat handler."));
 		return;
 	}
 
@@ -49,7 +49,7 @@ void UGameChatWidget::NativeConstruct()
 
 void UGameChatWidget::RefreshMessages()
 {
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetInstance();
+	AGameChatHandler* ChatHandler = AGameChatHandler::GetGameChatHandler();
 	APlayerState* OwnerPlayerState = GetOwningPlayerState();
 	if (ChatHandler == nullptr || OwnerPlayerState == nullptr)
 	{

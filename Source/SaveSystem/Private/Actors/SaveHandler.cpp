@@ -5,7 +5,7 @@
 #include "Components/ActorSaveHandlerComponent.h"
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "Interfaces/WorldGenerator.h"
-#include "Interfaces/SavableTimeOfDayHandler.h"
+#include "TimeOfDayHandler.h"
 #include "Interfaces/SavableWeatherHandler.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
@@ -25,10 +25,9 @@ ASaveHandler::ASaveHandler()
 	WorldGenerator = nullptr;
 }
 
-void ASaveHandler::Setup(IWorldGenerator* InWorldGenerator, ISavableTimeOfDayHandler* InTimeOfDayHandler, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController)
+void ASaveHandler::Setup(IWorldGenerator* InWorldGenerator, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController)
 {
 	WorldGenerator = InWorldGenerator;
-	TimeOfDayHandler = InTimeOfDayHandler;
 	WeatherHandler = InWeatherHandler;
 	GameSaveLoadController = SaveLoadController;
 
@@ -46,6 +45,7 @@ void ASaveHandler::SaveGame()
 	}
 	SaveFile->LastPlayedTime = FDateTime::Now();
 
+	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
 	if (TimeOfDayHandler)
 	{
 		SaveFile->DaysPlayed = TimeOfDayHandler->GetDaysPlayed();
@@ -88,6 +88,7 @@ void ASaveHandler::LoadWorld()
 		return;
 	}
 
+	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
 	if (TimeOfDayHandler)
 	{
 		TimeOfDayHandler->SetDaysPlayed(SaveFile->DaysPlayed);
@@ -124,11 +125,6 @@ UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
 IWorldGenerator* ASaveHandler::GetWorldGenerator() const
 {
 	return WorldGenerator;
-}
-
-ISavableTimeOfDayHandler* ASaveHandler::GetTimeOfDayHandler() const
-{
-	return TimeOfDayHandler;
 }
 
 ISavableWeatherHandler* ASaveHandler::GetWeatherHandler() const
