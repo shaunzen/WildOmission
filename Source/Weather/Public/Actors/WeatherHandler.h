@@ -56,7 +56,7 @@ public:
 	virtual float GetNextStormSpawnTime() const override;
 	virtual void SetNextStormSpawnTime(float NewSpawnTime) override;
 	// End ISavableWeatherHandler Implementation
-
+	
 	AWorldGenerationHandler* GetWorldGenerationHandler() const;
 
 protected:

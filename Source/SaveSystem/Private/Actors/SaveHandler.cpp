@@ -4,7 +4,7 @@
 #include "Actors/SaveHandler.h"
 #include "Components/ActorSaveHandlerComponent.h"
 #include "Components/PlayerSaveHandlerComponent.h"
-#include "Interfaces/WorldGenerator.h"
+#include "Actors/WorldGenerationHandler.h"
 #include "TimeOfDayHandler.h"
 #include "Interfaces/SavableWeatherHandler.h"
 #include "Interfaces/GameSaveLoadController.h"
@@ -22,12 +22,10 @@ ASaveHandler::ASaveHandler()
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
 
 	GameSaveLoadController = nullptr;
-	WorldGenerator = nullptr;
 }
 
-void ASaveHandler::Setup(IWorldGenerator* InWorldGenerator, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController)
+void ASaveHandler::Setup(ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController)
 {
-	WorldGenerator = InWorldGenerator;
 	WeatherHandler = InWeatherHandler;
 	GameSaveLoadController = SaveLoadController;
 
@@ -79,11 +77,12 @@ void ASaveHandler::LoadWorld()
 		return;
 	}
 
-	if (WorldGenerator && SaveFile->CreationInformation.LevelHasGenerated == false)
+	AWorldGenerationHandler* WorldGenerationHandler = AWorldGenerationHandler::GetWorldGenerationHandler();
+	if (WorldGenerationHandler && SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		GameSaveLoadController->SetLoadingSubtitle(FString("Generating level."));
-		WorldGenerator->GenerateLevel(this, SaveFile);
-
+		WorldGenerationHandler->GenerateLevel();
+		SaveFile->CreationInformation.LevelHasGenerated = true;
 		UpdateSaveFile(SaveFile);
 		return;
 	}
@@ -122,11 +121,6 @@ UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
 	return PlayerSaveHandlerComponent;
 }
 
-IWorldGenerator* ASaveHandler::GetWorldGenerator() const
-{
-	return WorldGenerator;
-}
-
 ISavableWeatherHandler* ASaveHandler::GetWeatherHandler() const
 {
 	return WeatherHandler;
@@ -145,7 +139,7 @@ void ASaveHandler::ValidateSave()
 		return;
 	}
 
-	CurrentSaveFileName = FString("PIE_Save");
+	CurrentSaveFileName = TEXT("PIE_Save");
 	GameSaveLoadController->CreateWorld(CurrentSaveFileName);
 }
 

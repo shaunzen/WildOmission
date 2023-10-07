@@ -10,7 +10,6 @@ class UWildOmissionSaveGame;
 class UActorSaveHandlerComponent;
 class UPlayerSaveHandlerComponent;
 class IGameSaveLoadController;
-class IWorldGenerator;
 class ISavableWeatherHandler;
 
 UCLASS()
@@ -22,7 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	ASaveHandler();
 
-	void Setup(IWorldGenerator* InWorldGenerator, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController);
+	void Setup(ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController);
 
 	void SaveGame();
 
@@ -30,7 +29,6 @@ public:
 
 	void LoadWorld();
 	
-	IWorldGenerator* GetWorldGenerator() const;
 	ISavableWeatherHandler* GetWeatherHandler() const;
 	IGameSaveLoadController* GetSaveLoadController() const;
 
@@ -46,7 +44,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
 
-	IWorldGenerator* WorldGenerator;
 	ISavableWeatherHandler* WeatherHandler;
 	IGameSaveLoadController* GameSaveLoadController;
 
