@@ -57,6 +57,7 @@ void AMonsterSpawnHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 bool AMonsterSpawnHandler::IsSpawnConditionValid()
 {
+	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
 	if (TimeOfDayHandler && TimeOfDayHandler->IsNight())
 	{
 		return true;

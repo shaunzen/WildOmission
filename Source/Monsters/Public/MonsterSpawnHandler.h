@@ -26,8 +26,4 @@ protected:
 
 	virtual bool IsSpawnConditionValid() override;
 
-private:
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_TimeOfDayHandler)
-	ATimeOfDayHandler* TimeOfDayHandler;
-
 };
