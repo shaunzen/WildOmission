@@ -15,11 +15,6 @@ FActorSaveData::FActorSaveData()
 	Transform = FTransform::Identity;
 }
 
-FWeatherHandlerSave::FWeatherHandlerSave()
-{
-	NextStormSpawnTime = 0.0f;
-}
-
 FWildOmissionSaveCreationInformation::FWildOmissionSaveCreationInformation()
 {
 	Name = TEXT("");

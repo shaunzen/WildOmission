@@ -48,18 +48,6 @@ struct FActorSaveData
 };
 
 USTRUCT()
-struct FWeatherHandlerSave
-{
-	GENERATED_BODY()
-
-	FWeatherHandlerSave();
-
-	UPROPERTY()
-	float NextStormSpawnTime;
-
-};
-
-USTRUCT()
 struct FWildOmissionSaveCreationInformation
 {
 	GENERATED_BODY()
@@ -102,9 +90,6 @@ public:
 
 	UPROPERTY()
 	FString LevelFile;
-
-	UPROPERTY()
-	FWeatherHandlerSave WeatherHandlerSave;
 
 	UPROPERTY()
 	FWildOmissionSaveCreationInformation CreationInformation;

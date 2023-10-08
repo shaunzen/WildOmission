@@ -6,7 +6,6 @@
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "Actors/WorldGenerationHandler.h"
 #include "TimeOfDayHandler.h"
-#include "Actors/WeatherHandler.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
@@ -49,12 +48,6 @@ void ASaveHandler::SaveGame()
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayHandler->GetNormalizedProgressThroughDay();
 	}
 
-	AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
-	if (WeatherHandler)
-	{
-		SaveFile->WeatherHandlerSave.NextStormSpawnTime = WeatherHandler->GetNextStormSpawnTime();
-	}
-
 	ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 	
@@ -92,12 +85,6 @@ void ASaveHandler::LoadWorld()
 	{
 		TimeOfDayHandler->SetDaysPlayed(SaveFile->DaysPlayed);
 		TimeOfDayHandler->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
-	}
-
-	AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
-	if (WeatherHandler)
-	{
-		WeatherHandler->SetNextStormSpawnTime(SaveFile->WeatherHandlerSave.NextStormSpawnTime);
 	}
 
 	GameSaveLoadController->SetLoadingSubtitle(FString("Loading objects."));
