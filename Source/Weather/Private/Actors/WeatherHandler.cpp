@@ -68,7 +68,6 @@ void AWeatherHandler::BeginPlay()
 	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
 	if (TimeOfDayHandler == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Time of day null."));
 		return;
 	}
 
@@ -98,15 +97,12 @@ void AWeatherHandler::AttemptSunriseStorm()
 
 void AWeatherHandler::AttemptNoonStorm()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attempt Noon Spawn."));
 	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(NoonStormSpawnChance);
 	if (ShouldSpawn == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed Noon Spawn."));
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Spawning Storm."));
 	SpawnStorm();
 }
 
