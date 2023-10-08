@@ -3,9 +3,11 @@
 
 #include "Actors/WeatherHandler.h"
 #include "Actors/Storm.h"
+#include "TimeOfDayHandler.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
@@ -23,9 +25,10 @@ AWeatherHandler::AWeatherHandler()
 	NetUpdateFrequency = 2.0f;
 	
 	CurrentStorm = nullptr;
-	MinStormSpawnTime = 300.0f;
-	MaxStormSpawnTime = 3600.0f;
-	NextStormSpawnTime = -1.0f;
+	SunriseStormSpawnChance = 0.1f;
+	NoonStormSpawnChance = 0.25f;
+	SunsetStormSpawnChance = 0.3f;
+	MidnightStormSpawnChance = 0.2f;
 
 	static ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/Weather/Actors/BP_Storm"));
 	if (StormBlueprint.Succeeded())
@@ -49,18 +52,30 @@ void AWeatherHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (NextStormSpawnTime == -1.0f)
-	{
-		NextStormSpawnTime = FMath::RandRange(MinStormSpawnTime, MaxStormSpawnTime);
-	}
-
 	UWorld* World = GetWorld();
-	if (World == nullptr || World->IsEditorWorld() || IsValid(Instance))
+	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
 	{
 		return;
 	}
 
 	Instance = this;
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
+	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
+	if (TimeOfDayHandler == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Time of day null."));
+		return;
+	}
+
+	TimeOfDayHandler->OnTimeSunrise.AddDynamic(this, &AWeatherHandler::AttemptSunriseStorm);
+	TimeOfDayHandler->OnTimeNoon.AddDynamic(this, &AWeatherHandler::AttemptNoonStorm);
+	TimeOfDayHandler->OnTimeSunset.AddDynamic(this, &AWeatherHandler::AttemptSunsetStorm);
+	TimeOfDayHandler->OnTimeMidnight.AddDynamic(this, &AWeatherHandler::AttemptMidnightStorm);
 }
 
 void AWeatherHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -68,6 +83,53 @@ void AWeatherHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	Instance = nullptr;
+}
+
+void AWeatherHandler::AttemptSunriseStorm()
+{
+	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(SunriseStormSpawnChance);
+	if (ShouldSpawn == false)
+	{
+		return;
+	}
+
+	SpawnStorm();
+}
+
+void AWeatherHandler::AttemptNoonStorm()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Attempt Noon Spawn."));
+	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(NoonStormSpawnChance);
+	if (ShouldSpawn == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed Noon Spawn."));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Spawning Storm."));
+	SpawnStorm();
+}
+
+void AWeatherHandler::AttemptSunsetStorm()
+{
+	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(SunsetStormSpawnChance);
+	if (ShouldSpawn == false)
+	{
+		return;
+	}
+
+	SpawnStorm();
+}
+
+void AWeatherHandler::AttemptMidnightStorm()
+{
+	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(MidnightStormSpawnChance);
+	if (ShouldSpawn == false)
+	{
+		return;
+	}
+
+	SpawnStorm();
 }
 
 void AWeatherHandler::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -83,19 +145,6 @@ void AWeatherHandler::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	CalculateWindParameters();
-
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	NextStormSpawnTime -= DeltaTime;
-
-	if (CanSpawnStorm())
-	{
-		NextStormSpawnTime = FMath::RandRange(MinStormSpawnTime, MaxStormSpawnTime);
-		SpawnStorm();
-	}
 }
 
 AStorm* AWeatherHandler::SpawnStorm(bool FromCommand)
@@ -124,7 +173,7 @@ void AWeatherHandler::ClearStorm()
 
 bool AWeatherHandler::CanSpawnStorm() const
 {
-	return NextStormSpawnTime < KINDA_SMALL_NUMBER && CurrentStorm == nullptr;
+	return CurrentStorm == nullptr;
 }
 
 void AWeatherHandler::CalculateWindParameters()
@@ -195,14 +244,4 @@ void AWeatherHandler::SetCurrentStorm(AStorm* NewCurrentStorm)
 	}
 
 	CurrentStorm = NewCurrentStorm;
-}
-
-float AWeatherHandler::GetNextStormSpawnTime() const
-{
-	return NextStormSpawnTime;
-}
-
-void AWeatherHandler::SetNextStormSpawnTime(float NewSpawnTime)
-{
-	NextStormSpawnTime = FMath::Clamp(NewSpawnTime, 0.0f, MaxStormSpawnTime);
 }

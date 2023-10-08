@@ -49,22 +49,33 @@ public:
 	AStorm* GetCurrentStorm() const;
 	void SetCurrentStorm(AStorm* NewCurrentStorm);
 	
-	float GetNextStormSpawnTime() const;
-	void SetNextStormSpawnTime(float NewSpawnTime);
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:	
-	UPROPERTY(EditAnywhere)
-	float NextStormSpawnTime;
+	UPROPERTY(EditDefaultsOnly)
+	float SunriseStormSpawnChance;
+	UPROPERTY(EditDefaultsOnly)
+	float NoonStormSpawnChance;
+	UPROPERTY(EditDefaultsOnly)
+	float SunsetStormSpawnChance;
+	UPROPERTY(EditDefaultsOnly)
+	float MidnightStormSpawnChance;
 
-	UPROPERTY(EditDefaultsOnly)
-	float MinStormSpawnTime;
-	UPROPERTY(EditDefaultsOnly)
-	float MaxStormSpawnTime;
+	UFUNCTION()
+	void AttemptSunriseStorm();
+
+	UFUNCTION()
+	void AttemptNoonStorm();
+
+	UFUNCTION()
+	void AttemptSunsetStorm();
+
+	UFUNCTION()
+	void AttemptMidnightStorm();
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AStorm> StormClass;
 	
