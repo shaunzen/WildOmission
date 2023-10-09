@@ -2,12 +2,12 @@
 
 
 #include "WildOmissionGameMode.h"
-#include "Actors/SaveHandler.h"
+#include "SaveHandler.h"
 #include "Components/PlayerSaveHandlerComponent.h"
-#include "Actors/WorldGenerationHandler.h"
+#include "WorldGenerationHandler.h"
 #include "TimeOfDayHandler.h"
 #include "Interfaces/RequiredForLoad.h"
-#include "Actors/WeatherHandler.h"
+#include "WeatherHandler.h"
 #include "AnimalSpawnHandler.h"
 #include "MonsterSpawnHandler.h"
 #include "GameChatHandler.h"

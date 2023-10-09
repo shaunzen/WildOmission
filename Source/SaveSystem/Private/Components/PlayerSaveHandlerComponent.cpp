@@ -4,7 +4,7 @@
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "WildOmissionSaveGame.h"
 #include "Interfaces/SavablePlayer.h"
-#include "Actors/SaveHandler.h"
+#include "SaveHandler.h"
 #include "Structs/PlayerSave.h"
 #include "Log.h"
 

@@ -2,7 +2,7 @@
 
 
 #include "Actors/Storm.h"
-#include "Actors/WeatherHandler.h"
+#include "WeatherHandler.h"
 #include "Actors/Lightning.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"

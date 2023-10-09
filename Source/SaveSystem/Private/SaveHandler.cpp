@@ -1,10 +1,10 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Actors/SaveHandler.h"
+#include "SaveHandler.h"
 #include "Components/ActorSaveHandlerComponent.h"
 #include "Components/PlayerSaveHandlerComponent.h"
-#include "Actors/WorldGenerationHandler.h"
+#include "WorldGenerationHandler.h"
 #include "TimeOfDayHandler.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"

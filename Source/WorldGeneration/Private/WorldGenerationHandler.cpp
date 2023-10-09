@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Actors/WorldGenerationHandler.h"
+#include "WorldGenerationHandler.h"
 #include "Components/ResourceRegenerationComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "UObject/ConstructorHelpers.h"
