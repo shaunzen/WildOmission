@@ -17,20 +17,13 @@ public:
 	// Sets default values for this actor's properties
 	AMonsterSpawnHandler();
 	
-	void Setup(ATimeOfDayHandler* InTimeOfDayHandler);
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+	static AMonsterSpawnHandler* GetMonsterSpawnHandler();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual bool IsSpawnConditionValid() override;
-
-private:
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_TimeOfDayHandler)
-	ATimeOfDayHandler* TimeOfDayHandler;
-
-	UFUNCTION()
-	void OnRep_TimeOfDayHandler();
 
 };

@@ -6,14 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "Structs/WorldGenerationSettings.h"
 #include "Structs/BiomeGenerationData.h"
-#include "Interfaces/WorldGenerator.h"
 #include "WorldGenerationHandler.generated.h"
 
 class UResourceRegenerationComponent;
-class ASaveHandler;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGenerationCompleteSignature);
 
 UCLASS()
-class WORLDGENERATION_API AWorldGenerationHandler : public AActor, public IWorldGenerator
+class WORLDGENERATION_API AWorldGenerationHandler : public AActor
 {
 	GENERATED_BODY()
 	
@@ -21,12 +21,13 @@ public:
 	// Sets default values for this actor's properties
 	AWorldGenerationHandler();
 
-	// Begin IWorldGenerator Implementation
-	virtual void GenerateLevel(ASaveHandler* InstigatingSaveHandler, UWildOmissionSaveGame* InSaveFile) override;
-	// End IWorldGenerator Implementation
+	void GenerateLevel();
+	FOnGenerationCompleteSignature OnGenerationComplete;
 
 	FVector2D GetWorldSizeMeters();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
+
+	static AWorldGenerationHandler* GetWorldGenerationHandler();
 
 	static bool FindSpawnTransformRandomLocation(UWorld* WorldContextObject, FTransform& OutTransform, const FWorldGenerationSettings& GenerationSettings, bool FollowSurfaceNormal = false);
 
@@ -36,13 +37,11 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	UResourceRegenerationComponent* RegenerationComponent;
-
-	UPROPERTY()
-	ASaveHandler* SaveHandler;
 
 	UFUNCTION()
 	void Generate(const FWorldGenerationSettings& GenerationSettings);

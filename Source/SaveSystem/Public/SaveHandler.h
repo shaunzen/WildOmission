@@ -10,8 +10,6 @@ class UWildOmissionSaveGame;
 class UActorSaveHandlerComponent;
 class UPlayerSaveHandlerComponent;
 class IGameSaveLoadController;
-class IWorldGenerator;
-class ISavableWeatherHandler;
 
 UCLASS()
 class SAVESYSTEM_API ASaveHandler : public AActor
@@ -22,20 +20,20 @@ public:
 	// Sets default values for this actor's properties
 	ASaveHandler();
 
-	void Setup(IWorldGenerator* InWorldGenerator, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController);
+	void SetGameSaveLoadController(IGameSaveLoadController* InGameSaveLoadController);
+
+	static ASaveHandler* GetSaveHandler();
 
 	void SaveGame();
-
 	void SetSaveFile(const FString& SaveFileName);
-
 	void LoadWorld();
-	
-	IWorldGenerator* GetWorldGenerator() const;
-	ISavableWeatherHandler* GetWeatherHandler() const;
-	IGameSaveLoadController* GetSaveLoadController() const;
 
 	UPlayerSaveHandlerComponent* GetPlayerHandler() const;
 	UWildOmissionSaveGame* GetSaveFile();
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	FString CurrentSaveFileName;
@@ -46,8 +44,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
 
-	IWorldGenerator* WorldGenerator;
-	ISavableWeatherHandler* WeatherHandler;
 	IGameSaveLoadController* GameSaveLoadController;
 
 	void ValidateSave();
@@ -55,6 +51,18 @@ private:
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 
 	UFUNCTION()
+	void StartLoading();
+
+	UFUNCTION()
 	void StopLoading();
+
+	UFUNCTION()
+	void SetLoadingTitle(const FString& NewTitle);
+
+	UFUNCTION()
+	void SetLoadingSubtitle(const FString& NewSubtitle);
+
+	UFUNCTION()
+	void CreateWorld(const FString& NewWorldName);
 
 };

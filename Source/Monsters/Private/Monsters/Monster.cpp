@@ -15,8 +15,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
 
-static ATimeOfDayHandler* TIME_OF_DAY_HANDLER = nullptr;
-
 // Sets default values
 AMonster::AMonster()
 {
@@ -36,11 +34,6 @@ AMonster::AMonster()
 	TargetPawn = nullptr;
 	
 	MaxAttackRange = 300.0f;
-}
-
-void AMonster::SetTimeOfDayHandler(ATimeOfDayHandler* InTimeOfDayHandler)
-{
-	TIME_OF_DAY_HANDLER = InTimeOfDayHandler;
 }
 
 // Called when the game starts or when spawned
@@ -100,8 +93,9 @@ void AMonster::ApplyBurnDamage()
 void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (TIME_OF_DAY_HANDLER && TIME_OF_DAY_HANDLER->IsDay() && FireEffects->IsActive() == false)
+	
+	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
+	if (TimeOfDayHandler && TimeOfDayHandler->IsDay() && FireEffects->IsActive() == false)
 	{
 		SetFire();
 	}

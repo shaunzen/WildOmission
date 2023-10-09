@@ -2,7 +2,7 @@
 
 
 #include "ResourceRegenerationComponent.h"
-#include "Actors/WorldGenerationHandler.h"
+#include "WorldGenerationHandler.h"
 #include "Structs/BiomeGenerationData.h"
 #include "Structs/WorldGenerationSettings.h"
 #include "Kismet/GameplayStatics.h"

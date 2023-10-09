@@ -1,14 +1,13 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Actors/WorldGenerationHandler.h"
+#include "WorldGenerationHandler.h"
 #include "Components/ResourceRegenerationComponent.h"
-#include "Actors/SaveHandler.h"
-#include "Interfaces/GameSaveLoadController.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
+static AWorldGenerationHandler* Instance = nullptr;
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
 // Sets default values
@@ -19,8 +18,6 @@ AWorldGenerationHandler::AWorldGenerationHandler()
 
 	RegenerationComponent = CreateDefaultSubobject<UResourceRegenerationComponent>(TEXT("RegenerationComponent"));
 
-	SaveHandler = nullptr;
-
 	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
 	if (BiomeDataTableBlueprint.Succeeded())
 	{
@@ -28,15 +25,13 @@ AWorldGenerationHandler::AWorldGenerationHandler()
 	}
 }
 
-void AWorldGenerationHandler::GenerateLevel(ASaveHandler* InstigatingSaveHandler, UWildOmissionSaveGame* InSaveFile)
+void AWorldGenerationHandler::GenerateLevel()
 {
 	FWorldGenerationSettings GenerationSettings;
 	FTimerHandle WorldGenerationTimerHandle;
 	FTimerDelegate WorldGenerationTimerDelegate;
-	WorldGenerationTimerDelegate.BindUFunction(this, TEXT("Generate"), GenerationSettings, InSaveFile);
+	WorldGenerationTimerDelegate.BindUFunction(this, TEXT("Generate"), GenerationSettings);
 	GetWorld()->GetTimerManager().SetTimer(WorldGenerationTimerHandle, WorldGenerationTimerDelegate, 1.0f, false);
-
-	InSaveFile->CreationInformation.LevelHasGenerated = true;
 }
 
 // Called when the game starts or when spawned
@@ -44,6 +39,20 @@ void AWorldGenerationHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UWorld* World = GetWorld();
+	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
+	{
+		return;
+	}
+
+	Instance = this;
+}
+
+void AWorldGenerationHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	Instance = nullptr;
 }
 
 void AWorldGenerationHandler::Generate(const FWorldGenerationSettings& GenerationSettings)
@@ -60,12 +69,10 @@ void AWorldGenerationHandler::Generate(const FWorldGenerationSettings& Generatio
 	GenerateResource(BiomeData->Collectables, GenerationSettings, true);
 	GenerateResource(BiomeData->Lootables, GenerationSettings, true);
 	
-	if (SaveHandler == nullptr || SaveHandler->GetSaveLoadController() == nullptr)
+	if (OnGenerationComplete.IsBound())
 	{
-		return;
+		OnGenerationComplete.Broadcast();
 	}
-
-	SaveHandler->GetSaveLoadController()->StopLoading();
 }
 
 FVector2D AWorldGenerationHandler::GetWorldSizeMeters()
@@ -84,6 +91,11 @@ FBiomeGenerationData* AWorldGenerationHandler::GetBiomeGenerationData(const FNam
 	static const FString ContextString(TEXT("Biome Generation Data Context"));
 
 	return BiomeGenerationDataTable->FindRow<FBiomeGenerationData>(BiomeName, ContextString, true);
+}
+
+AWorldGenerationHandler* AWorldGenerationHandler::GetWorldGenerationHandler()
+{
+	return Instance;
 }
 
 void AWorldGenerationHandler::GenerateResource(const TArray<FSpawnData>& SpawnData, const FWorldGenerationSettings& GenerationSettings, bool FollowSurfaceNormal)

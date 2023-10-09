@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/SavableWeatherHandler.h"
 #include "WeatherHandler.generated.h"
 
 class AStorm;
@@ -28,10 +27,8 @@ struct FWindParameters
 
 };
 
-class AWorldGenerationHandler;
-
 UCLASS()
-class WEATHER_API AWeatherHandler : public AActor, public ISavableWeatherHandler
+class WEATHER_API AWeatherHandler : public AActor
 {
 	GENERATED_BODY()
 	
@@ -39,8 +36,8 @@ public:
 	// Sets default values for this actor's properties
 	AWeatherHandler();
 	
-	void Setup(AWorldGenerationHandler* InWorldGenerationHandler);
-	
+	static AWeatherHandler* GetWeatherHandler();
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Called every frame
@@ -52,31 +49,36 @@ public:
 	AStorm* GetCurrentStorm() const;
 	void SetCurrentStorm(AStorm* NewCurrentStorm);
 	
-	// Begin ISavableWeatherHandler Implementation
-	virtual float GetNextStormSpawnTime() const override;
-	virtual void SetNextStormSpawnTime(float NewSpawnTime) override;
-	// End ISavableWeatherHandler Implementation
-
-	AWorldGenerationHandler* GetWorldGenerationHandler() const;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:	
-	UPROPERTY(EditAnywhere)
-	float NextStormSpawnTime;
+	UPROPERTY(EditDefaultsOnly)
+	float SunriseStormSpawnChance;
+	UPROPERTY(EditDefaultsOnly)
+	float NoonStormSpawnChance;
+	UPROPERTY(EditDefaultsOnly)
+	float SunsetStormSpawnChance;
+	UPROPERTY(EditDefaultsOnly)
+	float MidnightStormSpawnChance;
 
-	UPROPERTY(EditDefaultsOnly)
-	float MinStormSpawnTime;
-	UPROPERTY(EditDefaultsOnly)
-	float MaxStormSpawnTime;
+	UFUNCTION()
+	void AttemptSunriseStorm();
+
+	UFUNCTION()
+	void AttemptNoonStorm();
+
+	UFUNCTION()
+	void AttemptSunsetStorm();
+
+	UFUNCTION()
+	void AttemptMidnightStorm();
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AStorm> StormClass;
 	
-	UPROPERTY()
-	AWorldGenerationHandler* WorldGenerationHandler;
-
 	UPROPERTY(Replicated)
 	AStorm* CurrentStorm;
 	bool CanSpawnStorm() const;

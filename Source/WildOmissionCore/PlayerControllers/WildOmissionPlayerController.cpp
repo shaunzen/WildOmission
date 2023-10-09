@@ -9,7 +9,7 @@
 #include "Components/VitalsComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmissionCore/GameModes/WildOmissionGameMode.h"
-#include "Actors/SaveHandler.h"
+#include "SaveHandler.h"
 #include "GameChatHandler.h"
 #include "Components/PlayerSaveHandlerComponent.h"
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"

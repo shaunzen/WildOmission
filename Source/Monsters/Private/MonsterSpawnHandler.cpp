@@ -8,6 +8,8 @@
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
+static AMonsterSpawnHandler* Instance = nullptr;
+
 // Sets default values
 AMonsterSpawnHandler::AMonsterSpawnHandler()
 {
@@ -27,17 +29,9 @@ AMonsterSpawnHandler::AMonsterSpawnHandler()
 	}
 }
 
-void AMonsterSpawnHandler::Setup(ATimeOfDayHandler* InTimeOfDayHandler)
+AMonsterSpawnHandler* AMonsterSpawnHandler::GetMonsterSpawnHandler()
 {
-	TimeOfDayHandler = InTimeOfDayHandler;
-	OnRep_TimeOfDayHandler();
-}
-
-void AMonsterSpawnHandler::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME_CONDITION(AMonsterSpawnHandler, TimeOfDayHandler, COND_InitialOnly);
+	return Instance;
 }
 
 // Called when the game starts or when spawned
@@ -45,19 +39,29 @@ void AMonsterSpawnHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UWorld* World = GetWorld();
+	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
+	{
+		return;
+	}
+
+	Instance = this;
+}
+
+void AMonsterSpawnHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	Instance = nullptr;
 }
 
 bool AMonsterSpawnHandler::IsSpawnConditionValid()
 {
+	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
 	if (TimeOfDayHandler && TimeOfDayHandler->IsNight())
 	{
 		return true;
 	}
 
 	return false;
-}
-
-void AMonsterSpawnHandler::OnRep_TimeOfDayHandler()
-{
-	AMonster::SetTimeOfDayHandler(TimeOfDayHandler);
 }

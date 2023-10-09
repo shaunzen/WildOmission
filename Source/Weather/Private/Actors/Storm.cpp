@@ -2,8 +2,7 @@
 
 
 #include "Actors/Storm.h"
-#include "Actors/WeatherHandler.h"
-#include "Actors/WorldGenerationHandler.h"
+#include "WeatherHandler.h"
 #include "Actors/Lightning.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
@@ -45,7 +44,6 @@ AStorm::AStorm()
 	SpawnedTornado = nullptr;
 	HasSpawnedTornado = false;
 
-	WeatherHandler = nullptr;
 	WasSpawnedFromCommand = false;
 	LocalPlayerUnder = false;
 	NextLightningStrikeTime = 0.0f;
@@ -74,19 +72,6 @@ AStorm::AStorm()
 	}
 }
 
-// Called when the game starts or when spawned
-void AStorm::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	WeatherHandler = Cast<AWeatherHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), AWeatherHandler::StaticClass()));
-}
-
 void AStorm::HandleSpawn(bool SpawnedFromCommand)
 {
 	WasSpawnedFromCommand = SpawnedFromCommand;
@@ -104,7 +89,7 @@ void AStorm::HandleSpawn(bool SpawnedFromCommand)
 	MovementSpeed = FMath::RandRange(300.0f, 1000.0f);
 	SeverityMultiplier = (FMath::RandRange(0.0f, 100.0f) / 1000.0f);
 
-	UE_LOG(LogWeather, Display, TEXT("Spawned Storm with MovementSpeed: %f, and SeverityMultiplier: %f"), MovementSpeed, SeverityMultiplier);
+	UE_LOG(LogWeather, Verbose, TEXT("Spawned Storm with MovementSpeed: %f, and SeverityMultiplier: %f"), MovementSpeed, SeverityMultiplier);
 }
 
 // Called every frame
@@ -159,6 +144,12 @@ void AStorm::HandleMovement()
 
 	if (TraveledDistance >= TravelDistance)
 	{
+		AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
+		if (WeatherHandler == nullptr)
+		{
+			return;
+		}
+
 		WeatherHandler->ClearStorm();
 	}
 }
@@ -225,8 +216,7 @@ void AStorm::SpawnTornado(bool bFromSave)
 
 void AStorm::GetSpawnLocation()
 {
-	FVector2D WorldSize = WeatherHandler->GetWorldGenerationHandler()->GetWorldSizeMeters();
-	// TODO get world size from world generation handler
+	FVector2D WorldSize = FVector2D(2000.0f, 2000.0f);
 	WorldSize = WorldSize * 100.0f;
 
 	int32 WorldSide = FMath::RandRange(0, 3);
@@ -283,6 +273,7 @@ void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 
 void AStorm::OnLoadComplete_Implementation()
 {
+	AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
 	if (WeatherHandler == nullptr)
 	{
 		return;

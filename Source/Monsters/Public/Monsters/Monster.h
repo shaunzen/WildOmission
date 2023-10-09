@@ -21,8 +21,6 @@ public:
 	// Sets default values for this character's properties
 	AMonster();
 
-	static void SetTimeOfDayHandler(ATimeOfDayHandler* InTimeOfDayHandler);
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

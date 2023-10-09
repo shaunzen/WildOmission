@@ -2,12 +2,12 @@
 
 
 #include "WildOmissionGameMode.h"
-#include "Actors/SaveHandler.h"
+#include "SaveHandler.h"
 #include "Components/PlayerSaveHandlerComponent.h"
-#include "Actors/WorldGenerationHandler.h"
+#include "WorldGenerationHandler.h"
 #include "TimeOfDayHandler.h"
 #include "Interfaces/RequiredForLoad.h"
-#include "Actors/WeatherHandler.h"
+#include "WeatherHandler.h"
 #include "AnimalSpawnHandler.h"
 #include "MonsterSpawnHandler.h"
 #include "GameChatHandler.h"
@@ -35,15 +35,13 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	AnimalSpawnHandler = GetWorld()->SpawnActor<AAnimalSpawnHandler>();
 	MonsterSpawnHandler = GetWorld()->SpawnActor<AMonsterSpawnHandler>();
 	ChatHandler = GetWorld()->SpawnActor<AGameChatHandler>();
-	MonsterSpawnHandler->Setup(TimeOfDayHandler);
-	WeatherHandler->Setup(WorldGenerationHandler);
-	SaveHandler->Setup(WorldGenerationHandler, WeatherHandler, Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));
-
+	
 	if (SaveHandler == nullptr)
 	{
 		return;
 	}
 
+	SaveHandler->SetGameSaveLoadController(Cast<IGameSaveLoadController>(GetGameInstance()));
 	SaveHandler->SetSaveFile(SaveFile);
 }
 

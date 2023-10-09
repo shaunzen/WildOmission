@@ -2,11 +2,11 @@
 
 using UnrealBuildTool;
 
-public class Weather: ModuleRules
+public class Weather : ModuleRules
 {
     public Weather(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "SaveSystem" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Niagara", "WorldGeneration" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Niagara", "TimeOfDay" });
     }
 }

@@ -1,16 +1,17 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Actors/SaveHandler.h"
+#include "SaveHandler.h"
 #include "Components/ActorSaveHandlerComponent.h"
 #include "Components/PlayerSaveHandlerComponent.h"
-#include "Interfaces/WorldGenerator.h"
+#include "WorldGenerationHandler.h"
 #include "TimeOfDayHandler.h"
-#include "Interfaces/SavableWeatherHandler.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Log.h"
+
+static ASaveHandler* Instance = nullptr;
 
 // Sets default values
 ASaveHandler::ASaveHandler()
@@ -18,21 +19,20 @@ ASaveHandler::ASaveHandler()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(FName("ActorSaveHandlerComponent"));
-	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(FName("PlayerSaveHandlerComponent"));
-
 	GameSaveLoadController = nullptr;
-	WorldGenerator = nullptr;
+
+	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(TEXT("ActorSaveHandlerComponent"));
+	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(TEXT("PlayerSaveHandlerComponent"));
 }
 
-void ASaveHandler::Setup(IWorldGenerator* InWorldGenerator, ISavableWeatherHandler* InWeatherHandler, IGameSaveLoadController* SaveLoadController)
+void ASaveHandler::SetGameSaveLoadController(IGameSaveLoadController* InGameSaveLoadController)
 {
-	WorldGenerator = InWorldGenerator;
-	WeatherHandler = InWeatherHandler;
-	GameSaveLoadController = SaveLoadController;
+	GameSaveLoadController = InGameSaveLoadController;
+}
 
-	FTimerHandle AutoSaveTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
+ASaveHandler* ASaveHandler::GetSaveHandler()
+{
+	return Instance;
 }
 
 void ASaveHandler::SaveGame()
@@ -50,11 +50,6 @@ void ASaveHandler::SaveGame()
 	{
 		SaveFile->DaysPlayed = TimeOfDayHandler->GetDaysPlayed();
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayHandler->GetNormalizedProgressThroughDay();
-	}
-
-	if (WeatherHandler)
-	{
-		SaveFile->WeatherHandlerSave.NextStormSpawnTime = WeatherHandler->GetNextStormSpawnTime();
 	}
 
 	ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
@@ -79,11 +74,12 @@ void ASaveHandler::LoadWorld()
 		return;
 	}
 
-	if (WorldGenerator && SaveFile->CreationInformation.LevelHasGenerated == false)
+	AWorldGenerationHandler* WorldGenerationHandler = AWorldGenerationHandler::GetWorldGenerationHandler();
+	if (WorldGenerationHandler && SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
-		GameSaveLoadController->SetLoadingSubtitle(FString("Generating level."));
-		WorldGenerator->GenerateLevel(this, SaveFile);
-
+		SetLoadingSubtitle(TEXT("Generating level."));
+		WorldGenerationHandler->GenerateLevel();
+		SaveFile->CreationInformation.LevelHasGenerated = true;
 		UpdateSaveFile(SaveFile);
 		return;
 	}
@@ -95,12 +91,7 @@ void ASaveHandler::LoadWorld()
 		TimeOfDayHandler->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
 	}
 
-	if (WeatherHandler)
-	{
-		WeatherHandler->SetNextStormSpawnTime(SaveFile->WeatherHandlerSave.NextStormSpawnTime);
-	}
-
-	GameSaveLoadController->SetLoadingSubtitle(FString("Loading objects."));
+	SetLoadingSubtitle(TEXT("Loading objects."));
 	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves, SaveFile->Version);
 
 	FTimerHandle ActorLoadedTimerHandle;
@@ -117,36 +108,45 @@ UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
 	return SaveFile;
 }
 
+void ASaveHandler::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UWorld* World = GetWorld();
+	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
+	{
+		return;
+	}
+
+	Instance = this;
+
+	FTimerHandle AutoSaveTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
+}
+
+void ASaveHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	Instance = nullptr;
+}
+
 UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
 {
 	return PlayerSaveHandlerComponent;
 }
 
-IWorldGenerator* ASaveHandler::GetWorldGenerator() const
-{
-	return WorldGenerator;
-}
-
-ISavableWeatherHandler* ASaveHandler::GetWeatherHandler() const
-{
-	return WeatherHandler;
-}
-
-IGameSaveLoadController* ASaveHandler::GetSaveLoadController() const
-{
-	return GameSaveLoadController;
-}
 
 void ASaveHandler::ValidateSave()
 {
-	if (CurrentSaveFileName.Len() > 0 || GameSaveLoadController == nullptr)
+	if (CurrentSaveFileName.Len() > 0)
 	{
 		UE_LOG(LogSaveSystem, Warning, TEXT("Failed to validate save file, can't find GameSaveLoadController."));
 		return;
 	}
 
-	CurrentSaveFileName = FString("PIE_Save");
-	GameSaveLoadController->CreateWorld(CurrentSaveFileName);
+	CurrentSaveFileName = TEXT("PIE_Save");
+	CreateWorld(CurrentSaveFileName);
 }
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
@@ -160,7 +160,52 @@ void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
 	UGameplayStatics::SaveGameToSlot(UpdatedSaveFile, CurrentSaveFileName, 0);
 }
 
+void ASaveHandler::StartLoading()
+{
+	if (GameSaveLoadController == nullptr)
+	{
+		return;
+	}
+
+	GameSaveLoadController->StartLoading();
+}
+
 void ASaveHandler::StopLoading()
 {
+	if (GameSaveLoadController == nullptr)
+	{
+		return;
+	}
+
 	GameSaveLoadController->StopLoading();
+}
+
+void ASaveHandler::SetLoadingTitle(const FString& NewTitle)
+{
+	if (GameSaveLoadController == nullptr)
+	{
+		return;
+	}
+
+	GameSaveLoadController->SetLoadingTitle(NewTitle);
+}
+
+void ASaveHandler::SetLoadingSubtitle(const FString& NewSubtitle)
+{
+	if (GameSaveLoadController == nullptr)
+	{
+		return;
+	}
+
+	GameSaveLoadController->SetLoadingSubtitle(NewSubtitle);
+}
+
+void ASaveHandler::CreateWorld(const FString& NewWorldName)
+{
+	if (GameSaveLoadController == nullptr)
+	{
+		return;
+	}
+
+	GameSaveLoadController->CreateWorld(NewWorldName);
 }
