@@ -14,8 +14,7 @@ UAmbientSoundProducerComponent::UAmbientSoundProducerComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	DayCue = nullptr;
 	NightCue = nullptr;
-	TimeOfDayHandler = nullptr;
-
+	
 	static ConstructorHelpers::FObjectFinder<USoundBase> DaySoundObject(TEXT("/Game/GatherableResources/Sounds/Birds/BirdCall_Cue"));
 	if (DaySoundObject.Succeeded())
 	{
@@ -35,8 +34,7 @@ void UAmbientSoundProducerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TimeOfDayHandler = Cast<ATimeOfDayHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeOfDayHandler::StaticClass()));
-
+	
 	FTimerHandle TimerHandle;
 	float Rate = FMath::RandRange(1.0f, 5.0f);
 
@@ -50,6 +48,7 @@ void UAmbientSoundProducerComponent::PlaySoundCue()
 		return;
 	}
 
+	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
 	if (TimeOfDayHandler && TimeOfDayHandler->IsNight())
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), NightCue, GetComponentLocation());

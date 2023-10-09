@@ -6,8 +6,6 @@
 #include "Components/SceneComponent.h"
 #include "AmbientSoundProducerComponent.generated.h"
 
-class ATimeOfDayHandler;
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSIONCORE_API UAmbientSoundProducerComponent : public USceneComponent
 {
@@ -22,9 +20,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY()
-	ATimeOfDayHandler* TimeOfDayHandler;
-
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* DayCue;
 	UPROPERTY(EditDefaultsOnly)
