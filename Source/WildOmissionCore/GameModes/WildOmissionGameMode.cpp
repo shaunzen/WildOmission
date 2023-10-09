@@ -35,13 +35,13 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	AnimalSpawnHandler = GetWorld()->SpawnActor<AAnimalSpawnHandler>();
 	MonsterSpawnHandler = GetWorld()->SpawnActor<AMonsterSpawnHandler>();
 	ChatHandler = GetWorld()->SpawnActor<AGameChatHandler>();
-	SaveHandler->Setup(Cast<IGameSaveLoadController>(GetWorld()->GetGameInstance()));
-
+	
 	if (SaveHandler == nullptr)
 	{
 		return;
 	}
 
+	SaveHandler->SetGameSaveLoadController(Cast<IGameSaveLoadController>(GetGameInstance()));
 	SaveHandler->SetSaveFile(SaveFile);
 }
 

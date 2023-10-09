@@ -20,18 +20,20 @@ public:
 	// Sets default values for this actor's properties
 	ASaveHandler();
 
-	void Setup(IGameSaveLoadController* SaveLoadController);
+	void SetGameSaveLoadController(IGameSaveLoadController* InGameSaveLoadController);
+
+	static ASaveHandler* GetSaveHandler();
 
 	void SaveGame();
-
 	void SetSaveFile(const FString& SaveFileName);
-
 	void LoadWorld();
-	
-	IGameSaveLoadController* GetSaveLoadController() const;
 
 	UPlayerSaveHandlerComponent* GetPlayerHandler() const;
 	UWildOmissionSaveGame* GetSaveFile();
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	FString CurrentSaveFileName;
@@ -49,6 +51,18 @@ private:
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 
 	UFUNCTION()
+	void StartLoading();
+
+	UFUNCTION()
 	void StopLoading();
+
+	UFUNCTION()
+	void SetLoadingTitle(const FString& NewTitle);
+
+	UFUNCTION()
+	void SetLoadingSubtitle(const FString& NewSubtitle);
+
+	UFUNCTION()
+	void CreateWorld(const FString& NewWorldName);
 
 };
