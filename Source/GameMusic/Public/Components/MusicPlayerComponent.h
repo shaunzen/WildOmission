@@ -21,14 +21,11 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Music")
+	UPROPERTY(VisibleAnywhere)
+	UAudioComponent* AudioComponent;
+
+	UPROPERTY(EditDefaultsOnly)
 	float TimeBetweenSongs;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Music")
-	USoundBase* MusicCue;
-
-	UPROPERTY()
-	FTimerHandle PlayMusicTimerHandle;
 
 	UFUNCTION()
 	void PlayMusicTrack();

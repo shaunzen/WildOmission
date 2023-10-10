@@ -3,7 +3,7 @@
 
 #include "Components/MusicPlayerComponent.h"
 #include "TimeOfDayHandler.h"
-#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -14,13 +14,15 @@ UMusicPlayerComponent::UMusicPlayerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	TimeBetweenSongs = 300.0f;
-	MusicCue = nullptr;
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 
+	TimeBetweenSongs = 300.0f;
+	
 	static ConstructorHelpers::FObjectFinder<USoundBase> MusicCueObject(TEXT("/Game/GameMusic/Audio/Music_Cue"));
-	if (MusicCueObject.Succeeded())
+	if (AudioComponent && MusicCueObject.Succeeded())
 	{
-		MusicCue = MusicCueObject.Object;
+		AudioComponent->SetSound(MusicCueObject.Object);
+		AudioComponent->bIsMusic = true;
 	}
 }
 
@@ -35,9 +37,10 @@ void UMusicPlayerComponent::BeginPlay()
 		return;
 	}
 
-	ATimeOfDayHandler* TimeOfDayHandler = Cast<ATimeOfDayHandler>(UGameplayStatics::GetActorOfClass(World, ATimeOfDayHandler::StaticClass()));
+	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
 	if (TimeOfDayHandler == nullptr)
 	{
+		FTimerHandle PlayMusicTimerHandle;
 		FTimerDelegate PlayMusicTimerDelegate;
 		PlayMusicTimerDelegate.BindUObject(this, &UMusicPlayerComponent::PlayMusicTrack);
 		World->GetTimerManager().SetTimer(PlayMusicTimerHandle, PlayMusicTimerDelegate, TimeBetweenSongs, true);
@@ -54,11 +57,11 @@ void UMusicPlayerComponent::BeginPlay()
 void UMusicPlayerComponent::PlayMusicTrack()
 {
 	UWorld* World = GetWorld();
-	bool ShouldPlay = UKismetMathLibrary::RandomBoolWithWeight(0.5f);
+	bool ShouldPlay = UKismetMathLibrary::RandomBoolWithWeight(0.5f) && !AudioComponent->IsPlaying();
 	if (!ShouldPlay || World == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySound2D(World, MusicCue);
+	AudioComponent->Play();
 }
