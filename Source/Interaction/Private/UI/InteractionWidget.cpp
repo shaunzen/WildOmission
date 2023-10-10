@@ -5,6 +5,18 @@
 #include "Components/TextBlock.h"
 #include "Components/InteractionComponent.h"
 
+void UInteractionWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	
+	if (InteractionPromptTextBlock == nullptr)
+	{
+		return;
+	}
+
+	InteractionPromptTextBlock->SetText(FText());
+}
+
 void UInteractionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
