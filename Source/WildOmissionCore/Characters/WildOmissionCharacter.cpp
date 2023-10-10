@@ -21,7 +21,6 @@
 #include "Components/CraftingComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
-#include "Components/MusicPlayerComponent.h"
 #include "WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "UI/InventoryMenuWidget.h"
@@ -85,8 +84,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 
 	SpecialEffectsHandlerComponent = nullptr;
-	MusicPlayerComponent = nullptr;
-
+	
 	bAiming = false;
 	bSprinting = false;
 	bUnderwater = false;
@@ -513,16 +511,6 @@ void AWildOmissionCharacter::SetupLocalComponents()
 			SpecialEffectsHandlerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		}
 	}
-
-	if (MusicPlayerComponent == nullptr)
-	{
-		MusicPlayerComponent = NewObject<UMusicPlayerComponent>(this, UMusicPlayerComponent::StaticClass(), TEXT("MusicPlayerComponent"));
-		if (MusicPlayerComponent)
-		{
-			MusicPlayerComponent->RegisterComponent();
-		}
-	}
-
 }
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)

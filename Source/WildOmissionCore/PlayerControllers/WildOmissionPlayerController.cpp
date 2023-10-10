@@ -15,6 +15,7 @@
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
 #include "UI/GameplayMenuWidget.h"
+#include "Components/MusicPlayerComponent.h"
 #include "WildOmissionCore/WildOmissionStatics.h"
 #include "WildOmissionCore/WildOmissionGameState.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
@@ -24,6 +25,8 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 {
 	bIsStillLoading = true;
 	NumRequiredActorsForLoad = 0;
+
+	MusicPlayerComponent = nullptr;
 
 	static ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmissionCore/UI/Player/WBP_DeathMenu"));
 	if (DeathMenuWidgetBlueprint.Succeeded())
@@ -213,10 +216,22 @@ void AWildOmissionPlayerController::BeginPlay()
 	{
 		return;
 	}
-
+	
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->StartLoading();
-	GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
+	if (GameInstance)
+	{
+		GameInstance->StartLoading();
+		GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
+	}
+
+	if (MusicPlayerComponent == nullptr)
+	{
+		MusicPlayerComponent = NewObject<UMusicPlayerComponent>(this, UMusicPlayerComponent::StaticClass(), TEXT("MusicPlayerComponent"));
+		if (MusicPlayerComponent)
+		{
+			MusicPlayerComponent->RegisterComponent();
+		}
+	}
 
 	if (HasAuthority())
 	{

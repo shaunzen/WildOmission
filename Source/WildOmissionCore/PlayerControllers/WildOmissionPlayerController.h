@@ -10,7 +10,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFinishedLoadingSignature, AWildOmissionPlayerController*, LoadedController);
 
-class UInventoryComponent;
+class UMusicPlayerComponent;
 class UDeathMenuWidget;
 
 UCLASS()
@@ -63,6 +63,9 @@ protected:
 	virtual void OnPossess(APawn* aPawn) override;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	UMusicPlayerComponent* MusicPlayerComponent;
+
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
 
