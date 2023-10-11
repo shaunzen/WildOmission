@@ -68,7 +68,7 @@ void ABuildingHammerItem::OnSecondaryPressed()
 		return;
 	}
 	Widget->OnTeardown.AddDynamic(this, &ABuildingHammerItem::ClearWidget);
-	Widget->Setup(this, HitDeployable);
+	Widget->Show(this, HitDeployable);
 }
 
 void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)

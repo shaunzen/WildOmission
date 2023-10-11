@@ -19,13 +19,14 @@ class DEPLOYABLES_API UBuildingHammerWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void Setup(ABuildingHammerItem* BuildingHammer, ADeployable* InDeployable);
+	void Show(ABuildingHammerItem* BuildingHammer, ADeployable* InDeployable);
 	void Teardown();
 	
 	FOnBuildingHammerWidgetTeardownSignature OnTeardown;
 
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
 	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 private:

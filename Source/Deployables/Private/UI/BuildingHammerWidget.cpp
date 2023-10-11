@@ -10,7 +10,7 @@
 #include "Components/Border.h"
 #include "Log.h"
 
-void UBuildingHammerWidget::Setup(ABuildingHammerItem* BuildingHammer, ADeployable* InDeployable)
+void UBuildingHammerWidget::Show(ABuildingHammerItem* BuildingHammer, ADeployable* InDeployable)
 {
 	OwnerBuildingHammer = BuildingHammer;
 	Deployable = InDeployable;
@@ -102,6 +102,13 @@ void UBuildingHammerWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 	{
 		PlaySound(ButtonSound);
 	}
+}
+
+void UBuildingHammerWidget::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
+{
+	Super::NativeOnFocusLost(InFocusEvent);
+
+	Teardown();
 }
 
 FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
