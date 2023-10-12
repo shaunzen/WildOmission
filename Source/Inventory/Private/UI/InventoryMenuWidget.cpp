@@ -62,6 +62,8 @@ void UInventoryMenuWidget::Close(bool ShouldCloseContainer)
 		{
 			OpenedContainer->UnOccupy();
 		}
+
+		DestroyOpenContainerWidget();
 	}
 }
 
