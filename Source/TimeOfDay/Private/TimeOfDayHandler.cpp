@@ -50,6 +50,8 @@ void ATimeOfDayHandler::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	DirectionalLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
+
 	UWorld* World = GetWorld();
 	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
 	{
@@ -57,7 +59,6 @@ void ATimeOfDayHandler::BeginPlay()
 	}
 
 	Instance = this;
-	DirectionalLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
 }
 
 void ATimeOfDayHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
