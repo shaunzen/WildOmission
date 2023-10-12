@@ -25,6 +25,9 @@ public:
 	float GetRadius() const;
 	float GetForceStrength() const;
 
+	void SetDamagesPawn(bool InShouldDamagePawns);
+	bool GetDamagesPawn() const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -36,6 +39,7 @@ private:
 	float Radius;
 	float ForceStrength;
 	TEnumAsByte<enum ERadialImpulseFalloff> Falloff;	
+	bool DealsDamageToPawns;
 
 	void AddObjectTypeToAffect(TEnumAsByte<enum EObjectTypeQuery> ObjectType);
 	void RemoveObjectTypeToAffect(TEnumAsByte<enum EObjectTypeQuery> ObjectType);

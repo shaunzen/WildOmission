@@ -28,21 +28,25 @@ ATornado::ATornado()
 	CloseSuctionComponent1 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent1"));
 	CloseSuctionComponent1->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent1->SetRelativeLocation(FVector(2000.0f, 0.0f, 0.0f));
+	CloseSuctionComponent1->SetDamagesPawn(true);
 	
 	CloseSuctionComponent2 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent2"));
 	CloseSuctionComponent2->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent2->SetRelativeLocation(FVector(-2000.0f, 0.0f, 0.0f));
+	CloseSuctionComponent2->SetDamagesPawn(true);
 
 	CloseSuctionComponent3 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent3"));
 	CloseSuctionComponent3->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent3->SetRelativeLocation(FVector(0.0f, 2000.0f, 0.0f));
+	CloseSuctionComponent3->SetDamagesPawn(true);
 
 	CloseSuctionComponent4 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent4"));
 	CloseSuctionComponent4->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent4->SetRelativeLocation(FVector(0.0f, -2000.0f, 0.0f));
+	CloseSuctionComponent4->SetDamagesPawn(true);
 
 	FarSuctionComponent= CreateDefaultSubobject<UWindSuckerComponent>(TEXT("FarSuctionComponent"));
-	FarSuctionComponent->SetRadius(20000.0f);
+	FarSuctionComponent->SetRadius(40000.0f);
 	FarSuctionComponent->SetForceStrength(-99999.0f);
 	FarSuctionComponent->SetupAttachment(SuctionAnchor);
 	FarSuctionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
@@ -139,13 +143,10 @@ void ATornado::Tick(float DeltaTime)
 
 void ATornado::OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	IInteractsWithTornado* InteractsWithActor = Cast<IInteractsWithTornado>(OtherActor);
-	if (InteractsWithActor == nullptr)
+	if (IInteractsWithTornado* InteractsWithActor = Cast<IInteractsWithTornado>(OtherActor))
 	{
-		return;
+		InteractsWithActor->OnContactWithTornado();
 	}
-
-	InteractsWithActor->OnContactWithTornado();
 }
 
 void ATornado::HandleMovement()

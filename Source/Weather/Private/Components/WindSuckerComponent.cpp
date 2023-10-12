@@ -3,6 +3,7 @@
 
 #include "WindSuckerComponent.h"
 #include "GameFramework/MovementComponent.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values for this component's properties
 UWindSuckerComponent::UWindSuckerComponent()
@@ -11,9 +12,10 @@ UWindSuckerComponent::UWindSuckerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.TickGroup = TG_PrePhysics;
-	Radius = 3000.0f;
+	Radius = 8000.0f;
 	Falloff = RIF_Linear;
 	ForceStrength = -999999.0f;
+	DealsDamageToPawns = false;
 	bAutoActivate = false;
 
 	// by default we affect all 'dynamic' objects that can currently be affected by forces
@@ -89,6 +91,14 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 						break;
 					}
 				}
+				APawn* ComponentOwnerPawn = Cast<APawn>(ComponentOwner);
+				if (DealsDamageToPawns && ComponentOwnerPawn)
+				{
+					const float Damage = 2.0f * GetWorld()->GetDeltaSeconds();
+
+					FDamageEvent DamageEvent;
+					ComponentOwnerPawn->TakeDamage(Damage, DamageEvent, nullptr, GetOwner());
+				}
 			}
 		}
 	}
@@ -112,6 +122,16 @@ float UWindSuckerComponent::GetRadius() const
 float UWindSuckerComponent::GetForceStrength() const
 {
 	return ForceStrength;
+}
+
+void UWindSuckerComponent::SetDamagesPawn(bool InShouldDamagePawns)
+{
+	DealsDamageToPawns = InShouldDamagePawns;
+}
+
+bool UWindSuckerComponent::GetDamagesPawn() const
+{
+	return DealsDamageToPawns;
 }
 
 void UWindSuckerComponent::AddCollisionChannelToAffect(enum ECollisionChannel CollisionChannel)
