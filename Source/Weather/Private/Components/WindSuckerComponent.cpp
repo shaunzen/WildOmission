@@ -138,7 +138,7 @@ bool UWindSuckerComponent::GetDamagesPawn() const
 	return DealsDamageToPawns;
 }
 
-void UWindSuckerComponent::AddCollisionChannelToAffect(enum ECollisionChannel CollisionChannel)
+void UWindSuckerComponent::AddCollisionChannelToAffect(ECollisionChannel CollisionChannel)
 {
 	EObjectTypeQuery ObjectType = UEngineTypes::ConvertToObjectType(CollisionChannel);
 	if (ObjectType != ObjectTypeQuery_MAX)
@@ -147,13 +147,13 @@ void UWindSuckerComponent::AddCollisionChannelToAffect(enum ECollisionChannel Co
 	}
 }
 
-void UWindSuckerComponent::AddObjectTypeToAffect(TEnumAsByte<enum EObjectTypeQuery> ObjectType)
+void UWindSuckerComponent::AddObjectTypeToAffect(TEnumAsByte<EObjectTypeQuery> ObjectType)
 {
 	ObjectTypesToAffect.AddUnique(ObjectType);
 	UpdateCollisionObjectQueryParams();
 }
 
-void UWindSuckerComponent::RemoveObjectTypeToAffect(TEnumAsByte<enum EObjectTypeQuery> ObjectType)
+void UWindSuckerComponent::RemoveObjectTypeToAffect(TEnumAsByte<EObjectTypeQuery> ObjectType)
 {
 	ObjectTypesToAffect.Remove(ObjectType);
 	UpdateCollisionObjectQueryParams();

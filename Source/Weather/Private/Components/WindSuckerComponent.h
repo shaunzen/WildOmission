@@ -6,6 +6,9 @@
 #include "Components/SceneComponent.h"
 #include "WindSuckerComponent.generated.h"
 
+enum EObjectTypeQuery;
+enum ERadialImpulseFalloff;
+enum ECollisionChannel;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UWindSuckerComponent : public USceneComponent
@@ -32,20 +35,29 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
-	TArray<TEnumAsByte<enum EObjectTypeQuery> > ObjectTypesToAffect;
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesToAffect;
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
 
 private:	
+	UPROPERTY(EditDefaultsOnly, Category = "Wind")
 	float Radius;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Wind")
 	float ForceStrength;
-	TEnumAsByte<enum ERadialImpulseFalloff> Falloff;	
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Wind")
 	bool DealsDamageToPawns;
 
-	void AddObjectTypeToAffect(TEnumAsByte<enum EObjectTypeQuery> ObjectType);
-	void RemoveObjectTypeToAffect(TEnumAsByte<enum EObjectTypeQuery> ObjectType);
-	void AddCollisionChannelToAffect(enum ECollisionChannel CollisionChannel);
-	void UpdateCollisionObjectQueryParams();
+	UPROPERTY(EditDefaultsOnly, Category = "Wind")
+	TEnumAsByte<ERadialImpulseFalloff> Falloff;	
 
 	bool HasLineOfSightToActor(AActor* InActor) const;
+
+	// Begin Helper Functions
+	void AddObjectTypeToAffect(TEnumAsByte<EObjectTypeQuery> ObjectType);
+	void RemoveObjectTypeToAffect(TEnumAsByte<EObjectTypeQuery> ObjectType);
+	void AddCollisionChannelToAffect(ECollisionChannel CollisionChannel);
+	void UpdateCollisionObjectQueryParams();
+	// End Helper Functions
 
 };
