@@ -10,12 +10,12 @@ UWindSuckerComponent::UWindSuckerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.TickGroup = TG_PrePhysics;
+	PrimaryComponentTick.bCanEverTick = false;
 	Radius = 8000.0f;
-	Falloff = RIF_Linear;
+	Falloff = ERadialImpulseFalloff::RIF_Linear;
 	ForceStrength = -999999.0f;
 	DealsDamageToPawns = false;
+	UpdateFreqencySeconds = 0.1f;
 	bAutoActivate = true;
 
 	// by default we affect all 'dynamic' objects that can currently be affected by forces
@@ -33,15 +33,35 @@ void UWindSuckerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UWorld* World = GetWorld();
+	AActor* Owner = GetOwner();
+	if (World == nullptr || Owner == nullptr || !Owner->HasAuthority())
+	{
+		return;
+	}
+
 	UpdateCollisionObjectQueryParams();
+
+	FTimerDelegate UpdateTimerDelegate;
+	UpdateTimerDelegate.BindUObject(this, &UWindSuckerComponent::Update);
+	World->GetTimerManager().SetTimer(UpdateTimerHandle, UpdateTimerDelegate, UpdateFreqencySeconds, true);
 }
 
-
-// Called every frame
-void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UWindSuckerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::EndPlay(EndPlayReason);
 
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+	
+	World->GetTimerManager().ClearTimer(UpdateTimerHandle);
+}
+
+void UWindSuckerComponent::Update()
+{
 	AActor* Owner = GetOwner();
 
 	if (!IsActive() || Owner == nullptr || !Owner->HasAuthority())

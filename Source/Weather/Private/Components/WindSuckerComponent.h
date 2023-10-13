@@ -19,9 +19,6 @@ public:
 	// Sets default values for this component's properties
 	UWindSuckerComponent();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	void SetRadius(float InRadius);
 	void SetForceStrength(float InForceStrength);
 
@@ -34,6 +31,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesToAffect;
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
@@ -49,7 +47,14 @@ private:
 	bool DealsDamageToPawns;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Wind")
-	TEnumAsByte<ERadialImpulseFalloff> Falloff;	
+	float UpdateFreqencySeconds;
+
+	TEnumAsByte<ERadialImpulseFalloff> Falloff;
+
+	FTimerHandle UpdateTimerHandle;
+
+	UFUNCTION()
+	void Update();
 
 	bool HasLineOfSightToActor(AActor* InActor) const;
 
