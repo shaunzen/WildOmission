@@ -33,17 +33,14 @@ ATornado::ATornado()
 	CloseSuctionComponent2 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent2"));
 	CloseSuctionComponent2->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent2->SetRelativeLocation(FVector(-2000.0f, 0.0f, 0.0f));
-	CloseSuctionComponent2->SetDamagesPawn(true);
 
 	CloseSuctionComponent3 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent3"));
 	CloseSuctionComponent3->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent3->SetRelativeLocation(FVector(0.0f, 2000.0f, 0.0f));
-	CloseSuctionComponent3->SetDamagesPawn(true);
 
 	CloseSuctionComponent4 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent4"));
 	CloseSuctionComponent4->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent4->SetRelativeLocation(FVector(0.0f, -2000.0f, 0.0f));
-	CloseSuctionComponent4->SetDamagesPawn(true);
 
 	FarSuctionComponent= CreateDefaultSubobject<UWindSuckerComponent>(TEXT("FarSuctionComponent"));
 	FarSuctionComponent->SetRadius(40000.0f);

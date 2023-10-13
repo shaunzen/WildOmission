@@ -10,7 +10,9 @@ UWindSuckerComponent::UWindSuckerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickGroup = ETickingGroup::TG_PrePhysics;
+
 	Radius = 8000.0f;
 	Falloff = ERadialImpulseFalloff::RIF_Linear;
 	ForceStrength = -999999.0f;
@@ -42,9 +44,9 @@ void UWindSuckerComponent::BeginPlay()
 
 	UpdateCollisionObjectQueryParams();
 
-	FTimerDelegate UpdateTimerDelegate;
+	/*FTimerDelegate UpdateTimerDelegate;
 	UpdateTimerDelegate.BindUObject(this, &UWindSuckerComponent::Update);
-	World->GetTimerManager().SetTimer(UpdateTimerHandle, UpdateTimerDelegate, UpdateFreqencySeconds, true);
+	World->GetTimerManager().SetTimer(UpdateTimerHandle, UpdateTimerDelegate, UpdateFreqencySeconds, true);*/
 }
 
 void UWindSuckerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -57,13 +59,14 @@ void UWindSuckerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		return;
 	}
 	
-	World->GetTimerManager().ClearTimer(UpdateTimerHandle);
+	//World->GetTimerManager().ClearTimer(UpdateTimerHandle);
 }
 
-void UWindSuckerComponent::Update()
+void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	AActor* Owner = GetOwner();
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	AActor* Owner = GetOwner();
 	if (!IsActive() || Owner == nullptr || !Owner->HasAuthority())
 	{
 		return;
@@ -73,57 +76,41 @@ void UWindSuckerComponent::Update()
 
 	// Find objects within the sphere
 	TArray<FOverlapResult> Overlaps;
-
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(AddForceOverlap), false);
 	Params.AddIgnoredActor(GetOwner());
 
 	GetWorld()->OverlapMultiByObjectType(Overlaps, Origin, FQuat::Identity, CollisionObjectQueryParams, FCollisionShape::MakeSphere(Radius), Params);
 
-	// A component can have multiple physics presences (e.g. destructible mesh components).
-	// The component should handle the radial force for all of the physics objects it contains
-	// so here we grab all of the unique components to avoid applying impulses more than once.
-	TArray<UPrimitiveComponent*, TInlineAllocator<1>> AffectedComponents;
-	AffectedComponents.Reserve(Overlaps.Num());
-
-	for (FOverlapResult& OverlapResult : Overlaps)
+	for (const FOverlapResult& Overlap : Overlaps)
 	{
-		if (UPrimitiveComponent* PrimitiveComponent = OverlapResult.Component.Get())
+		UPrimitiveComponent* PrimitiveComponent = Overlap.Component.Get();
+		if (PrimitiveComponent == nullptr)
 		{
-			AffectedComponents.AddUnique(PrimitiveComponent);
+			continue;
 		}
-	}
 
-	for (UPrimitiveComponent* PrimitiveComponent : AffectedComponents)
-	{
 		PrimitiveComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
 
 		// see if this is a target for a movement component
 		AActor* ComponentOwner = PrimitiveComponent->GetOwner();
-		if (ComponentOwner)
+		if (ComponentOwner == nullptr || !HasLineOfSightToActor(ComponentOwner))
 		{
-			if (!HasLineOfSightToActor(ComponentOwner))
-			{
-				continue;
-			}
+			continue;
+		}
 
-			TInlineComponentArray<UMovementComponent*> MovementComponents;
-			ComponentOwner->GetComponents(MovementComponents);
-			for (const auto& MovementComponent : MovementComponents)
-			{
-				if (MovementComponent->UpdatedComponent == PrimitiveComponent)
-				{
-					MovementComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
-					break;
-				}
-			}
-			APawn* ComponentOwnerPawn = Cast<APawn>(ComponentOwner);
-			if (DealsDamageToPawns && ComponentOwnerPawn)
-			{
-				const float Damage = 2.0f * GetWorld()->GetDeltaSeconds();
+		UMovementComponent* OwnerMovementComponent = ComponentOwner->FindComponentByClass<UMovementComponent>();
+		if (OwnerMovementComponent && OwnerMovementComponent->UpdatedComponent == PrimitiveComponent)
+		{
+			OwnerMovementComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
+		}
 
-				FDamageEvent DamageEvent;
-				ComponentOwnerPawn->TakeDamage(Damage, DamageEvent, nullptr, GetOwner());
-			}
+		APawn* ComponentOwnerPawn = Cast<APawn>(ComponentOwner);
+		if (DealsDamageToPawns && ComponentOwnerPawn)
+		{
+			const float Damage = 5.0f;
+
+			FDamageEvent DamageEvent;
+			ComponentOwnerPawn->TakeDamage(Damage, DamageEvent, nullptr, GetOwner());
 		}
 	}
 }
