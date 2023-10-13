@@ -60,12 +60,6 @@ void ATornado::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CloseSuctionComponent1->Deactivate();
-	CloseSuctionComponent2->Deactivate();
-	CloseSuctionComponent3->Deactivate();
-	CloseSuctionComponent4->Deactivate();
-	FarSuctionComponent->Deactivate();
-
 	if (HasAuthority())
 	{
 		MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ATornado::OnActorOverlapVortex);
@@ -89,11 +83,6 @@ void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnAtWorldOrigin)
 	TotalLifetime = FMath::RandRange(120.0f, 300.0f);
 	RemainingLifetime = TotalLifetime;
 
-	CloseSuctionComponent1->Activate();
-	CloseSuctionComponent2->Activate();
-	CloseSuctionComponent3->Activate();
-	CloseSuctionComponent4->Activate();
-	FarSuctionComponent->Activate();
 }
 
 FTornadoSaveInformation ATornado::GetSaveInformation()
@@ -258,18 +247,15 @@ bool ATornado::HasLineOfSightTo(AActor* InActor) const
 		return false;
 	}
 
-	const FVector CorrectedTornadoLocation = GetActorLocation() + FVector(0.0f, 0.0f, InActor->GetActorLocation().Z);
-	const FVector TowardComponentVector = (InActor->GetActorLocation() - CorrectedTornadoLocation).GetSafeNormal();
-	const float DistanceFromComponent = FVector::Distance(CorrectedTornadoLocation, InActor->GetActorLocation());
-
-
 	FHitResult HitResult;
-	const FVector Start = CorrectedTornadoLocation;
-	const FVector End = Start + (TowardComponentVector * DistanceFromComponent);
+	const FVector TraceStart = GetActorLocation() + FVector(0.0f, 0.0f, InActor->GetActorLocation().Z);
+	const FVector TowardComponentVector = (InActor->GetActorLocation() - TraceStart).GetSafeNormal();
+	const float DistanceFromComponent = FVector::Distance(TraceStart, InActor->GetActorLocation());
+	const FVector TraceEnd = TraceStart + (TowardComponentVector * DistanceFromComponent);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this->GetOwner());
 
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, Params))
 	{
 		return false;
 	}

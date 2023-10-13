@@ -16,7 +16,7 @@ UWindSuckerComponent::UWindSuckerComponent()
 	Falloff = RIF_Linear;
 	ForceStrength = -999999.0f;
 	DealsDamageToPawns = false;
-	bAutoActivate = false;
+	bAutoActivate = true;
 
 	// by default we affect all 'dynamic' objects that can currently be affected by forces
 	AddCollisionChannelToAffect(ECC_Pawn);
@@ -42,63 +42,67 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (IsActive())
+	AActor* Owner = GetOwner();
+
+	if (!IsActive() || Owner == nullptr || !Owner->HasAuthority())
 	{
-		const FVector Origin = GetComponentLocation();
+		return;
+	}
 
-		// Find objects within the sphere
-		TArray<FOverlapResult> Overlaps;
+	const FVector Origin = GetComponentLocation();
 
-		FCollisionQueryParams Params(SCENE_QUERY_STAT(AddForceOverlap), false);
-		Params.AddIgnoredActor(GetOwner());
+	// Find objects within the sphere
+	TArray<FOverlapResult> Overlaps;
 
-		GetWorld()->OverlapMultiByObjectType(Overlaps, Origin, FQuat::Identity, CollisionObjectQueryParams, FCollisionShape::MakeSphere(Radius), Params);
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(AddForceOverlap), false);
+	Params.AddIgnoredActor(GetOwner());
 
-		// A component can have multiple physics presences (e.g. destructible mesh components).
-		// The component should handle the radial force for all of the physics objects it contains
-		// so here we grab all of the unique components to avoid applying impulses more than once.
-		TArray<UPrimitiveComponent*, TInlineAllocator<1>> AffectedComponents;
-		AffectedComponents.Reserve(Overlaps.Num());
+	GetWorld()->OverlapMultiByObjectType(Overlaps, Origin, FQuat::Identity, CollisionObjectQueryParams, FCollisionShape::MakeSphere(Radius), Params);
 
-		for (FOverlapResult& OverlapResult : Overlaps)
+	// A component can have multiple physics presences (e.g. destructible mesh components).
+	// The component should handle the radial force for all of the physics objects it contains
+	// so here we grab all of the unique components to avoid applying impulses more than once.
+	TArray<UPrimitiveComponent*, TInlineAllocator<1>> AffectedComponents;
+	AffectedComponents.Reserve(Overlaps.Num());
+
+	for (FOverlapResult& OverlapResult : Overlaps)
+	{
+		if (UPrimitiveComponent* PrimitiveComponent = OverlapResult.Component.Get())
 		{
-			if (UPrimitiveComponent* PrimitiveComponent = OverlapResult.Component.Get())
-			{
-				AffectedComponents.AddUnique(PrimitiveComponent);
-			}
+			AffectedComponents.AddUnique(PrimitiveComponent);
 		}
+	}
 
-		for (UPrimitiveComponent* PrimitiveComponent : AffectedComponents)
+	for (UPrimitiveComponent* PrimitiveComponent : AffectedComponents)
+	{
+		PrimitiveComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
+
+		// see if this is a target for a movement component
+		AActor* ComponentOwner = PrimitiveComponent->GetOwner();
+		if (ComponentOwner)
 		{
-			PrimitiveComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
-
-			// see if this is a target for a movement component
-			AActor* ComponentOwner = PrimitiveComponent->GetOwner();
-			if (ComponentOwner)
+			if (!HasLineOfSightToActor(ComponentOwner))
 			{
-				if (!HasLineOfSightToActor(ComponentOwner))
-				{
-					continue;
-				}
+				continue;
+			}
 
-				TInlineComponentArray<UMovementComponent*> MovementComponents;
-				ComponentOwner->GetComponents(MovementComponents);
-				for (const auto& MovementComponent : MovementComponents)
+			TInlineComponentArray<UMovementComponent*> MovementComponents;
+			ComponentOwner->GetComponents(MovementComponents);
+			for (const auto& MovementComponent : MovementComponents)
+			{
+				if (MovementComponent->UpdatedComponent == PrimitiveComponent)
 				{
-					if (MovementComponent->UpdatedComponent == PrimitiveComponent)
-					{
-						MovementComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
-						break;
-					}
+					MovementComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
+					break;
 				}
-				APawn* ComponentOwnerPawn = Cast<APawn>(ComponentOwner);
-				if (DealsDamageToPawns && ComponentOwnerPawn)
-				{
-					const float Damage = 2.0f * GetWorld()->GetDeltaSeconds();
+			}
+			APawn* ComponentOwnerPawn = Cast<APawn>(ComponentOwner);
+			if (DealsDamageToPawns && ComponentOwnerPawn)
+			{
+				const float Damage = 2.0f * GetWorld()->GetDeltaSeconds();
 
-					FDamageEvent DamageEvent;
-					ComponentOwnerPawn->TakeDamage(Damage, DamageEvent, nullptr, GetOwner());
-				}
+				FDamageEvent DamageEvent;
+				ComponentOwnerPawn->TakeDamage(Damage, DamageEvent, nullptr, GetOwner());
 			}
 		}
 	}
