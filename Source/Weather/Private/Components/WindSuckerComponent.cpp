@@ -108,6 +108,31 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
+bool UWindSuckerComponent::HasLineOfSightToActor(AActor* InActor) const
+{
+	FVector TowardComponentVector = (InActor->GetActorLocation() - GetComponentLocation()).GetSafeNormal();
+	float DistanceFromComponent = FVector::Distance(GetComponentLocation(), InActor->GetActorLocation());
+
+
+	FHitResult HitResult;
+	FVector Start = GetComponentLocation();
+	FVector End = Start + (TowardComponentVector * DistanceFromComponent);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this->GetOwner());
+
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	{
+		return false;
+	}
+
+	if (HitResult.GetActor() == nullptr || InActor == nullptr)
+	{
+		return false;
+	}
+
+	return HitResult.GetActor() == InActor;
+}
+
 void UWindSuckerComponent::SetRadius(float InRadius)
 {
 	Radius = InRadius;
@@ -162,29 +187,4 @@ void UWindSuckerComponent::RemoveObjectTypeToAffect(TEnumAsByte<EObjectTypeQuery
 void UWindSuckerComponent::UpdateCollisionObjectQueryParams()
 {
 	CollisionObjectQueryParams = FCollisionObjectQueryParams(ObjectTypesToAffect);
-}
-
-bool UWindSuckerComponent::HasLineOfSightToActor(AActor* InActor) const
-{
-	FVector TowardComponentVector = (InActor->GetActorLocation() - GetComponentLocation()).GetSafeNormal();
-	float DistanceFromComponent = FVector::Distance(GetComponentLocation(), InActor->GetActorLocation());
-
-
-	FHitResult HitResult;
-	FVector Start = GetComponentLocation();
-	FVector End = Start + (TowardComponentVector * DistanceFromComponent);
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this->GetOwner());
-
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
-	{
-		return false;
-	}
-
-	if (HitResult.GetActor() == nullptr || InActor == nullptr)
-	{
-		return false;
-	}
-
-	return HitResult.GetActor() == InActor;
 }
