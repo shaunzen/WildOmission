@@ -39,24 +39,10 @@ protected:
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
 
 private:	
-	UPROPERTY(EditDefaultsOnly, Category = "Wind")
-	float Radius;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Wind")
+	float Radius;	
 	float ForceStrength;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Wind")
 	bool DealsDamageToPawns;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Wind")
-	float UpdateFreqencySeconds;
-
 	TEnumAsByte<ERadialImpulseFalloff> Falloff;
-
-	FTimerHandle UpdateTimerHandle;
-
-	UFUNCTION()
-	void Update();
 
 	bool HasLineOfSightToActor(AActor* InActor) const;
 

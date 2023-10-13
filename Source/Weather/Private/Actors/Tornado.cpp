@@ -28,7 +28,6 @@ ATornado::ATornado()
 	CloseSuctionComponent1 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent1"));
 	CloseSuctionComponent1->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent1->SetRelativeLocation(FVector(2000.0f, 0.0f, 0.0f));
-	CloseSuctionComponent1->SetDamagesPawn(true);
 	
 	CloseSuctionComponent2 = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("CloseSuctionComponent2"));
 	CloseSuctionComponent2->SetupAttachment(SuctionAnchor);
@@ -42,11 +41,12 @@ ATornado::ATornado()
 	CloseSuctionComponent4->SetupAttachment(SuctionAnchor);
 	CloseSuctionComponent4->SetRelativeLocation(FVector(0.0f, -2000.0f, 0.0f));
 
-	FarSuctionComponent= CreateDefaultSubobject<UWindSuckerComponent>(TEXT("FarSuctionComponent"));
+	FarSuctionComponent = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("FarSuctionComponent"));
 	FarSuctionComponent->SetRadius(40000.0f);
 	FarSuctionComponent->SetForceStrength(-99999.0f);
 	FarSuctionComponent->SetupAttachment(SuctionAnchor);
 	FarSuctionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));
+	FarSuctionComponent->SetDamagesPawn(true);
 
 	RotationSpeed = 30.0f;
 	MovementSpeed = 1000.0f;
@@ -188,8 +188,7 @@ void ATornado::HandleDamage()
 		}
 
 		float DistanceFromOrigin = FVector::Distance(Overlap.GetActor()->GetActorLocation(), WindOrigin);
-		float DamageMultiplier = FMath::Clamp((WindRadius / DistanceFromOrigin) - 1.0f, 0.0f, 1.0f);
-		
+		float DamageMultiplier = FMath::Clamp(((DistanceFromOrigin - WindRadius) / WindRadius) * -1, 0.0f, 1.0f);
 		DamagedByWindActor->ApplyWindDamage(this, DamageMultiplier);
 	}
 }
@@ -243,14 +242,16 @@ bool ATornado::HasLineOfSightTo(AActor* InActor) const
 	{
 		return false;
 	}
+	const FVector InActorLocation = InActor->GetActorLocation();
+	const FVector CurrentLocation = GetActorLocation();
 
 	FHitResult HitResult;
-	const FVector TraceStart = GetActorLocation() + FVector(0.0f, 0.0f, InActor->GetActorLocation().Z);
-	const FVector TowardComponentVector = (InActor->GetActorLocation() - TraceStart).GetSafeNormal();
-	const float DistanceFromComponent = FVector::Distance(TraceStart, InActor->GetActorLocation());
+	const FVector TraceStart = FVector(CurrentLocation.X, CurrentLocation.Y, InActorLocation.Z);
+	const FVector TowardComponentVector = (InActorLocation - TraceStart).GetSafeNormal();
+	const float DistanceFromComponent = FVector::Distance(TraceStart, InActorLocation);
 	const FVector TraceEnd = TraceStart + (TowardComponentVector * DistanceFromComponent);
 	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this->GetOwner());
+	Params.AddIgnoredActor(this);
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, Params))
 	{

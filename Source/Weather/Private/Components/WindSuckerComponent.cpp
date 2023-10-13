@@ -17,7 +17,6 @@ UWindSuckerComponent::UWindSuckerComponent()
 	Falloff = ERadialImpulseFalloff::RIF_Linear;
 	ForceStrength = -999999.0f;
 	DealsDamageToPawns = false;
-	UpdateFreqencySeconds = 0.1f;
 	bAutoActivate = true;
 
 	// by default we affect all 'dynamic' objects that can currently be affected by forces
@@ -107,7 +106,14 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		APawn* ComponentOwnerPawn = Cast<APawn>(ComponentOwner);
 		if (DealsDamageToPawns && ComponentOwnerPawn)
 		{
-			const float Damage = 5.0f;
+			const FVector CompOrigin = GetComponentLocation();
+			const FVector PawnPosition = ComponentOwnerPawn->GetActorLocation();
+
+			const float PawnDistance = FVector::Distance(ComponentOwnerPawn->GetActorLocation(), GetComponentLocation());
+			const float Multiplier = FMath::Clamp(((PawnDistance - Radius) / Radius) * -1, 0.0f, 1.0f);
+			const float Damage = 5.0f * Multiplier * GetWorld()->GetDeltaSeconds();
+
+			UE_LOG(LogTemp, Warning, TEXT("Multiplier: % f"), Multiplier);
 
 			FDamageEvent DamageEvent;
 			ComponentOwnerPawn->TakeDamage(Damage, DamageEvent, nullptr, GetOwner());
@@ -117,13 +123,17 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 bool UWindSuckerComponent::HasLineOfSightToActor(AActor* InActor) const
 {
-	FVector TowardComponentVector = (InActor->GetActorLocation() - GetComponentLocation()).GetSafeNormal();
-	float DistanceFromComponent = FVector::Distance(GetComponentLocation(), InActor->GetActorLocation());
-
-
+	if (InActor == nullptr)
+	{
+		return false;
+	}
+	const FVector InActorLocation = InActor->GetActorLocation();
+	
 	FHitResult HitResult;
-	FVector Start = GetComponentLocation();
-	FVector End = Start + (TowardComponentVector * DistanceFromComponent);
+	const FVector Start = GetComponentLocation();
+	const FVector TowardComponentVector = (InActorLocation - Start).GetSafeNormal();
+	const float DistanceFromComponent = FVector::Distance(Start, InActorLocation);
+	const FVector End = Start + (TowardComponentVector * DistanceFromComponent);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this->GetOwner());
 
@@ -132,7 +142,7 @@ bool UWindSuckerComponent::HasLineOfSightToActor(AActor* InActor) const
 		return false;
 	}
 
-	if (HitResult.GetActor() == nullptr || InActor == nullptr)
+	if (HitResult.GetActor() == nullptr)
 	{
 		return false;
 	}
