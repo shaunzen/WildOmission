@@ -17,6 +17,8 @@ UWindSuckerComponent::UWindSuckerComponent()
 	Falloff = ERadialImpulseFalloff::RIF_Linear;
 	ForceStrength = -999999.0f;
 	DealsDamageToPawns = false;
+	UpdateFrequencySeconds = 0.1f;
+	UpdateCounter = 0.0f;
 	bAutoActivate = true;
 
 	// by default we affect all 'dynamic' objects that can currently be affected by forces
@@ -42,10 +44,6 @@ void UWindSuckerComponent::BeginPlay()
 	}
 
 	UpdateCollisionObjectQueryParams();
-
-	/*FTimerDelegate UpdateTimerDelegate;
-	UpdateTimerDelegate.BindUObject(this, &UWindSuckerComponent::Update);
-	World->GetTimerManager().SetTimer(UpdateTimerHandle, UpdateTimerDelegate, UpdateFreqencySeconds, true);*/
 }
 
 void UWindSuckerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -57,20 +55,30 @@ void UWindSuckerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		return;
 	}
-	
-	//World->GetTimerManager().ClearTimer(UpdateTimerHandle);
 }
 
 void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
 	AActor* Owner = GetOwner();
 	if (!IsActive() || Owner == nullptr || !Owner->HasAuthority())
 	{
 		return;
 	}
 
+	UpdateCounter += DeltaTime;
+	if (UpdateCounter < UpdateFrequencySeconds)
+	{
+		return;
+	}
+
+	Update();
+	UpdateCounter = 0.0f;
+}
+
+void UWindSuckerComponent::Update()
+{
 	const FVector Origin = GetComponentLocation();
 
 	// Find objects within the sphere
@@ -79,7 +87,7 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Params.AddIgnoredActor(GetOwner());
 
 	GetWorld()->OverlapMultiByObjectType(Overlaps, Origin, FQuat::Identity, CollisionObjectQueryParams, FCollisionShape::MakeSphere(Radius), Params);
-
+	const float EffectiveForceStrength = ForceStrength * 10.0f;
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
 		UPrimitiveComponent* PrimitiveComponent = Overlap.Component.Get();
@@ -88,7 +96,7 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			continue;
 		}
 
-		PrimitiveComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
+		PrimitiveComponent->AddRadialForce(Origin, Radius, EffectiveForceStrength, Falloff);
 
 		// see if this is a target for a movement component
 		AActor* ComponentOwner = PrimitiveComponent->GetOwner();
@@ -100,7 +108,7 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		UMovementComponent* OwnerMovementComponent = ComponentOwner->FindComponentByClass<UMovementComponent>();
 		if (OwnerMovementComponent && OwnerMovementComponent->UpdatedComponent == PrimitiveComponent)
 		{
-			OwnerMovementComponent->AddRadialForce(Origin, Radius, ForceStrength, Falloff);
+			OwnerMovementComponent->AddRadialForce(Origin, Radius, EffectiveForceStrength, Falloff);
 		}
 
 		APawn* ComponentOwnerPawn = Cast<APawn>(ComponentOwner);
@@ -110,10 +118,9 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			const FVector PawnPosition = ComponentOwnerPawn->GetActorLocation();
 
 			const float PawnDistance = FVector::Distance(ComponentOwnerPawn->GetActorLocation(), GetComponentLocation());
-			const float Multiplier = FMath::Clamp(((PawnDistance - Radius) / Radius) * -1, 0.0f, 1.0f);
-			const float Damage = 5.0f * Multiplier * GetWorld()->GetDeltaSeconds();
-
-			UE_LOG(LogTemp, Warning, TEXT("Multiplier: % f"), Multiplier);
+			const float EffectiveDamageRadius = Radius * 0.25f;
+			const float Multiplier = FMath::Clamp(((PawnDistance - EffectiveDamageRadius) / EffectiveDamageRadius) * -1, 0.0f, 1.0f);
+			const float Damage = 10.0f * Multiplier;
 
 			FDamageEvent DamageEvent;
 			ComponentOwnerPawn->TakeDamage(Damage, DamageEvent, nullptr, GetOwner());
@@ -127,6 +134,7 @@ bool UWindSuckerComponent::HasLineOfSightToActor(AActor* InActor) const
 	{
 		return false;
 	}
+
 	const FVector InActorLocation = InActor->GetActorLocation();
 	
 	FHitResult HitResult;

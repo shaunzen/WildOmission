@@ -42,7 +42,7 @@ ATornado::ATornado()
 	CloseSuctionComponent4->SetRelativeLocation(FVector(0.0f, -2000.0f, 0.0f));
 
 	FarSuctionComponent = CreateDefaultSubobject<UWindSuckerComponent>(TEXT("FarSuctionComponent"));
-	FarSuctionComponent->SetRadius(40000.0f);
+	FarSuctionComponent->SetRadius(30000.0f);
 	FarSuctionComponent->SetForceStrength(-99999.0f);
 	FarSuctionComponent->SetupAttachment(SuctionAnchor);
 	FarSuctionComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));

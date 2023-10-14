@@ -43,7 +43,10 @@ private:
 	float ForceStrength;
 	bool DealsDamageToPawns;
 	TEnumAsByte<ERadialImpulseFalloff> Falloff;
+	float UpdateFrequencySeconds;
 
+	float UpdateCounter;
+	void Update();
 	bool HasLineOfSightToActor(AActor* InActor) const;
 
 	// Begin Helper Functions
