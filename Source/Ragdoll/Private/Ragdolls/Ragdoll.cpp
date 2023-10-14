@@ -1,15 +1,14 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Characters/WildOmissionAIRagdoll.h"
+#include "Ragdolls/Ragdoll.h"
 #include "Components/TimerDespawnComponent.h"
 #include "Components/HarvestableComponent.h"
 #include "Net/UnrealNetwork.h"
 
-AWildOmissionAIRagdoll::AWildOmissionAIRagdoll()
+ARagdoll::ARagdoll()
 {
 	bReplicates = true;
-	SetReplicateMovement(true);
 	NetUpdateFrequency = 2.0f;
 	
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
