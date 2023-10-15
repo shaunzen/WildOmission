@@ -11,6 +11,7 @@
 #include "NavModifierComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/DamageEvents.h"
+#include "UObject/ConstructorHelpers.h"
 
 static UNiagaraSystem* DustSystem = nullptr;
 
@@ -32,6 +33,12 @@ ADeployable::ADeployable()
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Overlap);
 
 	NavigationModifier = CreateDefaultSubobject<UNavModifierComponent>(TEXT("NavigationModifier"));
+
+	static ConstructorHelpers::FClassFinder<UNavArea> DefaultNavArea(TEXT("/Script/CoreUObject.Class'/Script/NavigationSystem.NavArea_Default'"));
+	if (DefaultNavArea.Succeeded())
+	{
+		NavigationModifier->SetAreaClass(DefaultNavArea.Class);
+	}
 
 	MaxDurability = 100.0f;
 
