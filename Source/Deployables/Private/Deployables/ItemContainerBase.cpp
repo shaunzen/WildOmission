@@ -4,15 +4,13 @@
 #include "Deployables/ItemContainerBase.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
-#include "Interfaces/ContainerOpener.h"
 #include "Net/UnrealNetwork.h"
 
 AItemContainerBase::AItemContainerBase()
 {
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 
 	bOccupied = false;
-
 	ContainerName = TEXT("Container");
 }
 

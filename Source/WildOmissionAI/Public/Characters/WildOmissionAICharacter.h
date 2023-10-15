@@ -9,7 +9,7 @@
 class UNavigationInvokerComponent;
 class UVitalsComponent;
 class UDistanceDespawnComponent;
-class AWildOmissionAIRagdoll;
+class ARagdoll;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAICharacterDespawnSignature, AWildOmissionAICharacter*, DespawningAICharacter);
 
@@ -55,7 +55,7 @@ protected:
 	USoundBase* IdleSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
-	TSubclassOf<AWildOmissionAIRagdoll> RagdollClass;
+	TSubclassOf<ARagdoll> RagdollClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
 	float DefaultWalkSpeed;

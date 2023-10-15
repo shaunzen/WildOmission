@@ -6,7 +6,7 @@
 #include "NavigationInvokerComponent.h"
 #include "Components/VitalsComponent.h"
 #include "Components/DistanceDespawnComponent.h"
-#include "Characters/WildOmissionAIRagdoll.h"
+#include "Ragdolls/Ragdoll.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Kismet/GameplayStatics.h"
@@ -88,7 +88,7 @@ void AWildOmissionAICharacter::HandleDeath()
 	{
 		TArray<AActor*> AttachedActors;
 		GetAttachedActors(AttachedActors);
-		AWildOmissionAIRagdoll* SpawnedRagdoll = GetWorld()->SpawnActor<AWildOmissionAIRagdoll>(RagdollClass, GetActorLocation(), GetActorRotation());
+		ARagdoll* SpawnedRagdoll = GetWorld()->SpawnActor<ARagdoll>(RagdollClass, GetActorLocation(), GetActorRotation());
 		if (SpawnedRagdoll == nullptr)
 		{
 			return;
