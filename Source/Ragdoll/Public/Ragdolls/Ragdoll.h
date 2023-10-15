@@ -6,18 +6,18 @@
 #include "GameFramework/Actor.h"
 #include "Interfaces/SavableObject.h"
 #include "Interfaces/DurabilityInterface.h"
-#include "WildOmissionAIRagdoll.generated.h"
+#include "Ragdoll.generated.h"
 
 class UTimerDespawnComponent;
 class UHarvestableComponent;
 
 UCLASS()
-class WILDOMISSIONAI_API AWildOmissionAIRagdoll : public AActor, public ISavableObject
+class RAGDOLL_API ARagdoll : public AActor, public ISavableObject
 {
 	GENERATED_BODY()
 
 public:
-	AWildOmissionAIRagdoll();
+	ARagdoll();
 	
 	// Begin ISavableObject Implementation
 	virtual FName GetIdentifier() const override;

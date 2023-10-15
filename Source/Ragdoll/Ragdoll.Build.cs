@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class Ragdolls : ModuleRules
+public class Ragdoll : ModuleRules
 {
-    public Ragdolls(ReadOnlyTargetRules Target) : base(Target)
+    public Ragdoll(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "NavigationSystem", "Despawner", "Durability", "GatherableResources", "Inventory", "SaveSystem" });

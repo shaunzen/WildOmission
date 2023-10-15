@@ -30,12 +30,12 @@ ARagdoll::ARagdoll()
 	HarvestableComponent = CreateDefaultSubobject<UHarvestableComponent>(TEXT("HarvestableComponent"));
 }
 
-FName AWildOmissionAIRagdoll::GetIdentifier() const
+FName ARagdoll::GetIdentifier() const
 {
 	return Identifier;
 }
 
-USkeletalMeshComponent* AWildOmissionAIRagdoll::GetMeshComponent() const
+USkeletalMeshComponent* ARagdoll::GetMeshComponent() const
 {
 	return MeshComponent;
 }

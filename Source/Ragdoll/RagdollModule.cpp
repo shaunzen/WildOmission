@@ -1,6 +1,6 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-#include "WildOmissionAIModule.h"
+#include "RagdollModule.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_MODULE(FDefaultModuleImpl, WildOmissionAI);
+IMPLEMENT_MODULE(FDefaultModuleImpl, Ragdoll);
