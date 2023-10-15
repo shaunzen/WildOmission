@@ -33,7 +33,6 @@ void UGameChatWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	RefreshMessages();
 	MessageContainerPanel->ClearChildren();	
 	Close();
 	MessageBox->OnTextCommitted.AddDynamic(this, &UGameChatWidget::OnMessageBoxTextCommitted);
@@ -45,6 +44,7 @@ void UGameChatWidget::NativeConstruct()
 	}
 
 	ChatHandler->OnMessageRecieved.AddDynamic(this, &UGameChatWidget::RefreshMessages);
+	RefreshMessages();
 }
 
 void UGameChatWidget::RefreshMessages()
