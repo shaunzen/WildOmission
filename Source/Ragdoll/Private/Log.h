@@ -2,4 +2,4 @@
 
 #pragma once
 
-DECLARE_LOG_CATEGORY_EXTERN(LogWildOmissionAI, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogRagdoll, Log, All);

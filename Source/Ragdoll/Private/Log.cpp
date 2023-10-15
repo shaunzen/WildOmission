@@ -2,4 +2,4 @@
 
 #include "Log.h"
 
-DEFINE_LOG_CATEGORY(LogWildOmissionAI);
+DEFINE_LOG_CATEGORY(LogRagdoll);

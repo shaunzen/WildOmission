@@ -18,7 +18,7 @@ UWindSuckerComponent::UWindSuckerComponent()
 	ForceStrength = -999999.0f;
 	DealsDamageToPawns = false;
 	UpdateFrequencySeconds = 0.1f;
-	UpdateCounter = 0.0f;
+	UpdateTime = 0.0f;
 	bAutoActivate = true;
 
 	// by default we affect all 'dynamic' objects that can currently be affected by forces
@@ -36,25 +36,7 @@ void UWindSuckerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* World = GetWorld();
-	AActor* Owner = GetOwner();
-	if (World == nullptr || Owner == nullptr || !Owner->HasAuthority())
-	{
-		return;
-	}
-
 	UpdateCollisionObjectQueryParams();
-}
-
-void UWindSuckerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
 }
 
 void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -67,14 +49,14 @@ void UWindSuckerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		return;
 	}
 
-	UpdateCounter += DeltaTime;
-	if (UpdateCounter < UpdateFrequencySeconds)
+	UpdateTime += DeltaTime;
+	if (UpdateTime < UpdateFrequencySeconds)
 	{
 		return;
 	}
 
 	Update();
-	UpdateCounter = 0.0f;
+	UpdateTime = 0.0f;
 }
 
 void UWindSuckerComponent::Update()
@@ -87,7 +69,7 @@ void UWindSuckerComponent::Update()
 	Params.AddIgnoredActor(GetOwner());
 
 	GetWorld()->OverlapMultiByObjectType(Overlaps, Origin, FQuat::Identity, CollisionObjectQueryParams, FCollisionShape::MakeSphere(Radius), Params);
-	const float EffectiveForceStrength = ForceStrength * 10.0f;
+	const float EffectiveForceStrength = ForceStrength * (UpdateTime + 10.0f);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
 		UPrimitiveComponent* PrimitiveComponent = Overlap.Component.Get();
@@ -120,7 +102,7 @@ void UWindSuckerComponent::Update()
 			const float PawnDistance = FVector::Distance(ComponentOwnerPawn->GetActorLocation(), GetComponentLocation());
 			const float EffectiveDamageRadius = Radius * 0.25f;
 			const float Multiplier = FMath::Clamp(((PawnDistance - EffectiveDamageRadius) / EffectiveDamageRadius) * -1, 0.0f, 1.0f);
-			const float Damage = 10.0f * Multiplier;
+			const float Damage = 10.0f * Multiplier * (UpdateTime + 10.0f);
 
 			FDamageEvent DamageEvent;
 			ComponentOwnerPawn->TakeDamage(Damage, DamageEvent, nullptr, GetOwner());

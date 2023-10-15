@@ -33,7 +33,6 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesToAffect;
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
@@ -45,7 +44,7 @@ private:
 	TEnumAsByte<ERadialImpulseFalloff> Falloff;
 	float UpdateFrequencySeconds;
 
-	float UpdateCounter;
+	float UpdateTime;
 	void Update();
 	bool HasLineOfSightToActor(AActor* InActor) const;
 
