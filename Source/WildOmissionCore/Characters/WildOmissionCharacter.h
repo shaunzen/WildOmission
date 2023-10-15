@@ -22,7 +22,7 @@ class UCraftingComponent;
 class UNameTagComponent;
 class USpecialEffectsHandlerComponent;
 
-class AItemContainerBase;
+class ALootableRagdoll;
 class UPlayerHUDWidget;
 
 UCLASS()
@@ -136,7 +136,7 @@ private:
 	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	UPROPERTY()
-	TSubclassOf<AItemContainerBase> RagdollClass;
+	TSubclassOf<ALootableRagdoll> RagdollClass;
 
 	UPROPERTY(Replicated)
 	FRotator ReplicatedControlRotation;

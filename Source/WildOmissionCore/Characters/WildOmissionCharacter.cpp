@@ -25,6 +25,7 @@
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "UI/InventoryMenuWidget.h"
 #include "Deployables/ItemContainerBase.h"
+#include "Ragdolls/LootableRagdoll.h"
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "Engine/DamageEvents.h"
 
@@ -143,7 +144,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		GetMesh()->SetAnimClass(PlayerThirdPersonAnimBlueprintClass.Class);
 	}
 	
-	static ConstructorHelpers::FClassFinder<AItemContainerBase> PlayerRagdollBlueprint(TEXT("/Game/WildOmissionCore/Characters/Human/BP_Human_Ragdoll"));
+	static ConstructorHelpers::FClassFinder<ALootableRagdoll> PlayerRagdollBlueprint(TEXT("/Game/WildOmissionCore/Characters/Human/BP_Human_Ragdoll"));
 	if (PlayerRagdollBlueprint.Succeeded())
 	{
 		RagdollClass = PlayerRagdollBlueprint.Class;
@@ -551,13 +552,13 @@ void AWildOmissionCharacter::HandleDeath()
 
 	// Create lootable container with inventory
 	// Is Spawning kinda in the air, might want to fix that
-	AItemContainerBase* SpawnedRagdoll = GetWorld()->SpawnActor<AItemContainerBase>(RagdollClass, GetActorTransform());
+	ALootableRagdoll* SpawnedRagdoll = GetWorld()->SpawnActor<ALootableRagdoll>(RagdollClass, GetActorTransform());
 	if (SpawnedRagdoll == nullptr)
 	{
 		return;
 	}
 
-	USkeletalMeshComponent* RagdollSkeletalMeshComponent = SpawnedRagdoll->FindComponentByClass<USkeletalMeshComponent>();
+	USkeletalMeshComponent* RagdollSkeletalMeshComponent = SpawnedRagdoll->GetMeshComponent();
 	if (RagdollSkeletalMeshComponent)
 	{
 		for (AActor* AttachedActor : AttachedActors)
@@ -575,7 +576,7 @@ void AWildOmissionCharacter::HandleDeath()
 	// Set Items to be this players items
 	SpawnedRagdoll->GetInventoryComponent()->Load(InventoryComponent->Save());
 	
-	Destroy();
+	this->Destroy();
 }
 
 void AWildOmissionCharacter::SetAiming(bool Aim)

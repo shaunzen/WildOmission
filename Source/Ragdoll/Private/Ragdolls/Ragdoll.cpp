@@ -9,6 +9,7 @@
 ARagdoll::ARagdoll()
 {
 	bReplicates = true;
+	SetReplicateMovement(true);
 	NetUpdateFrequency = 2.0f;
 	
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));

@@ -18,7 +18,7 @@ class RAGDOLL_API ARagdoll : public AActor, public ISavableObject
 
 public:
 	ARagdoll();
-	
+
 	// Begin ISavableObject Implementation
 	virtual FName GetIdentifier() const override;
 	// End ISavableObject Implementation

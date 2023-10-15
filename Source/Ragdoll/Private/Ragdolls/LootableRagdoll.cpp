@@ -1,32 +1,36 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Deployables/ItemContainerBase.h"
+#include "Ragdolls/LootableRagdoll.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "Net/UnrealNetwork.h"
 
-AItemContainerBase::AItemContainerBase()
+ALootableRagdoll::ALootableRagdoll()
 {
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	InventoryComponent->SetSlotCount(30);
+	InventoryComponent->SetDisplayName(TEXT("Inventory"));
 
 	bOccupied = false;
-	ContainerName = TEXT("Container");
+
+	// TODO set to PlayerName's Inventory
+	ContainerName = TEXT("Inventory");
 }
 
-void AItemContainerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void ALootableRagdoll::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AItemContainerBase, bOccupied);
+	DOREPLIFETIME(ALootableRagdoll, bOccupied);
 }
 
-void AItemContainerBase::UnOccupy()
+void ALootableRagdoll::UnOccupy()
 {
 	Server_UnOccupy();
 }
 
-void AItemContainerBase::Interact(AActor* Interactor)
+void ALootableRagdoll::Interact(AActor* Interactor)
 {
 	if (bOccupied == true)
 	{
@@ -47,7 +51,7 @@ void AItemContainerBase::Interact(AActor* Interactor)
 	bOccupied = true;
 }
 
-FString AItemContainerBase::PromptText()
+FString ALootableRagdoll::PromptText()
 {
 	if (bOccupied == false)
 	{
@@ -57,23 +61,18 @@ FString AItemContainerBase::PromptText()
 	return TEXT("NOPRESSPROMPT_Occupied");
 }
 
-void AItemContainerBase::Server_UnOccupy_Implementation()
-{
-	OnContainerClosed();
-	SetNetDormancy(ENetDormancy::DORM_DormantAll);
-}
-
-FString AItemContainerBase::GetContainerName() const
+FString ALootableRagdoll::GetContainerName() const
 {
 	return ContainerName;
 }
 
-UInventoryComponent* AItemContainerBase::GetInventoryComponent() const
+UInventoryComponent* ALootableRagdoll::GetInventoryComponent() const
 {
 	return InventoryComponent;
 }
 
-void AItemContainerBase::OnContainerClosed()
+// TODO hmm this could be done better i think
+void ALootableRagdoll::OnContainerClosed()
 {
 	UInventoryManipulatorComponent* OwnerInventoryManipulator = GetOwner()->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (OwnerInventoryManipulator == nullptr)
@@ -83,4 +82,10 @@ void AItemContainerBase::OnContainerClosed()
 
 	OwnerInventoryManipulator->SetOpenContainer(nullptr);
 	bOccupied = false;
+}
+
+void ALootableRagdoll::Server_UnOccupy_Implementation()
+{
+	OnContainerClosed();
+	SetNetDormancy(ENetDormancy::DORM_DormantAll);
 }
