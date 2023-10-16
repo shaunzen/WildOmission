@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Deployables/Deployable.h"
+#include "Interfaces/Interactable.h"
 #include "Bed.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DEPLOYABLES_API ABed : public ADeployable
+class DEPLOYABLES_API ABed : public ADeployable, public IInteractable
 {
 	GENERATED_BODY()
 	
@@ -19,10 +20,20 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	// Begin IInteractable Implementation
+	virtual void Interact(AActor* Interactor) override;
+	virtual FString PromptText() override;
+	// End IInteractable Implementation
+
+	USceneComponent* GetSpawnPointComponent() const;
+
 	int32 GetUniqueID() const;
 
 private:
-	UPROPERTY(VisibleAnywhere, SaveGame, Replicated)
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* SpawnPointComponent;
+	
+	UPROPERTY(VisibleInstanceOnly, SaveGame, Replicated)
 	int32 UniqueID;
 
 };
