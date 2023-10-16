@@ -337,7 +337,7 @@ void AWildOmissionGameMode::SpawnHumanAtBed(AController* Controller)
 		return;
 	}
 
-	const FVector SpawnLocation = SpawnBed->GetSpawnPointComponent()->GetComponentLocation();
+	const FVector SpawnLocation = SpawnBed->GetSpawnPointComponent()->GetComponentLocation() + FVector(0.0f, 0.0f, 100.0f);
 	const FRotator SpawnRotation = SpawnBed->GetSpawnPointComponent()->GetComponentRotation();
 
 	if (HumanCharacterClass != nullptr)
@@ -353,5 +353,9 @@ void AWildOmissionGameMode::SpawnHumanAtBed(AController* Controller)
 	if (!IsValid(Controller->GetPawn()))
 	{
 		FailedToRestartPlayer(Controller);
+	}
+	else
+	{
+		FinishRestartPlayer(Controller, SpawnRotation);
 	}
 }

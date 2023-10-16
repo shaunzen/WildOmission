@@ -24,6 +24,8 @@ public:
 
 	virtual void PlayerTick(float DeltaTime) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Begin ISavablePlayer Implementation
 	virtual FPlayerSave SavePlayer() override;
 	virtual void LoadPlayerSave(const FPlayerSave& PlayerSave) override;
@@ -75,7 +77,7 @@ private:
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int32 BedUniqueID;
 
 	int32 NumRequiredActorsForLoad;

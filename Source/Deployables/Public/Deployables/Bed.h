@@ -18,6 +18,8 @@ class DEPLOYABLES_API ABed : public ADeployable, public IInteractable
 public:
 	ABed();
 
+	virtual void OnSpawn() override;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Begin IInteractable Implementation

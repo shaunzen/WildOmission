@@ -20,11 +20,14 @@
 #include "WildOmissionCore/WildOmissionGameState.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Net/UnrealNetwork.h"
 
 AWildOmissionPlayerController::AWildOmissionPlayerController()
 {
 	bIsStillLoading = true;
 	NumRequiredActorsForLoad = 0;
+
+	BedUniqueID = -1;
 
 	MusicPlayerComponent = nullptr;
 
@@ -39,6 +42,13 @@ void AWildOmissionPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
+}
+
+void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
 }
 
 FPlayerSave AWildOmissionPlayerController::SavePlayer()
@@ -57,6 +67,7 @@ FPlayerSave AWildOmissionPlayerController::SavePlayer()
 	}
 
 	PlayerSave.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
+	PlayerSave.BedUniqueID = BedUniqueID;
 	PlayerSave.NewPlayer = false;
 	
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
@@ -68,9 +79,11 @@ FPlayerSave AWildOmissionPlayerController::SavePlayer()
 
 
 	PlayerSave.WorldLocation = WildOmissionCharacter->GetActorLocation();
+	PlayerSave.ControlRotation = WildOmissionCharacter->GetControlRotation();
+
 	PlayerSave.IsAlive = true;
 	PlayerSave.IsHost = IsHost();
-	
+
 	PlayerSave.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
 	PlayerSave.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
 	PlayerSave.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
@@ -84,6 +97,8 @@ FPlayerSave AWildOmissionPlayerController::SavePlayer()
 
 void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& PlayerSave)
 {
+	BedUniqueID = PlayerSave.BedUniqueID;
+
 	StoredPlayerSave = PlayerSave;
 }
 

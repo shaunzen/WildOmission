@@ -26,7 +26,13 @@ struct SAVESYSTEM_API FPlayerSave
 	FString UniqueID = TEXT("");
 
 	UPROPERTY()
+	int32 BedUniqueID = -1;
+
+	UPROPERTY()
 	FVector WorldLocation = FVector::ZeroVector;
+
+	UPROPERTY()
+	FRotator ControlRotation = FRotator::ZeroRotator;
 
 	UPROPERTY()
 	FVitalsSave Vitals;

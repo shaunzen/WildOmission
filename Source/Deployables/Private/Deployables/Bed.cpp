@@ -13,6 +13,13 @@ ABed::ABed()
 	UniqueID = -1;
 }
 
+void ABed::OnSpawn()
+{
+	Super::OnSpawn();
+
+	UniqueID = FMath::RandRange(0, 999999);
+}
+
 void ABed::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
