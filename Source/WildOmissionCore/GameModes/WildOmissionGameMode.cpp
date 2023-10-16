@@ -4,6 +4,7 @@
 #include "WildOmissionGameMode.h"
 #include "SaveHandler.h"
 #include "Components/PlayerSaveHandlerComponent.h"
+#include "Deployables/Bed.h"
 #include "WorldGenerationHandler.h"
 #include "TimeOfDayHandler.h"
 #include "Interfaces/RequiredForLoad.h"
@@ -116,47 +117,14 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 		return;
 	}
 
-	AActor* StartSpot = FindPlayerStart(Controller);
-	if (StartSpot == nullptr && Controller->StartSpot != nullptr)
+	AWildOmissionPlayerController* WOPlayerController = Cast<AWildOmissionPlayerController>(Controller);
+	if (WOPlayerController && WOPlayerController->GetBedUniqueID() != -1)
 	{
-		StartSpot = Controller->StartSpot.Get();
-	}
-	
-	if (StartSpot == nullptr)
-	{
-		return;
-	}
-
-	FRotator SpawnRotation = StartSpot->GetActorRotation();
-
-	UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart %s"), (Controller && Controller->PlayerState) ? *Controller->PlayerState->GetPlayerName() : TEXT("Unknown"));
-
-	if (MustSpectate(Cast<APlayerController>(Controller)))
-	{
-		UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart: Tried to restart a spectator-only player!"));
-		return;
-	}
-
-	if (HumanCharacterClass != nullptr)
-	{
-		// Try to create a pawn to use of the default class for this player
-		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, StartSpot->GetActorLocation(), SpawnRotation);
-		if (IsValid(NewPawn))
-		{
-			Controller->SetPawn(NewPawn);
-		}
-	}
-
-	if (!IsValid(Controller->GetPawn()))
-	{
-		FailedToRestartPlayer(Controller);
+		SpawnHumanAtBed(Controller);
 	}
 	else
 	{
-		// Tell the start spot it was used
-		InitStartSpot(StartSpot, Controller);
-
-		FinishRestartPlayer(Controller, SpawnRotation);
+		SpawnHumanAtStartSpot(Controller);
 	}
 }
 
@@ -286,5 +254,104 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Index: %i, Item: %s, Quantity: %i"), Slot.Index, *Slot.Item.Name.ToString(), Slot.Item.Quantity));
 		}
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: "), *Character->GetActorNameOrLabel()));
+	}
+}
+
+void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
+{
+	AActor* StartSpot = FindPlayerStart(Controller);
+	if (StartSpot == nullptr && Controller->StartSpot != nullptr)
+	{
+		StartSpot = Controller->StartSpot.Get();
+	}
+
+	if (StartSpot == nullptr)
+	{
+		return;
+	}
+
+	FRotator SpawnRotation = StartSpot->GetActorRotation();
+
+	UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart %s"), (Controller && Controller->PlayerState) ? *Controller->PlayerState->GetPlayerName() : TEXT("Unknown"));
+
+	if (MustSpectate(Cast<APlayerController>(Controller)))
+	{
+		UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart: Tried to restart a spectator-only player!"));
+		return;
+	}
+
+	if (HumanCharacterClass != nullptr)
+	{
+		// Try to create a pawn to use of the default class for this player
+		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, StartSpot->GetActorLocation(), SpawnRotation);
+		if (IsValid(NewPawn))
+		{
+			Controller->SetPawn(NewPawn);
+		}
+	}
+
+	if (!IsValid(Controller->GetPawn()))
+	{
+		FailedToRestartPlayer(Controller);
+	}
+	else
+	{
+		// Tell the start spot it was used
+		InitStartSpot(StartSpot, Controller);
+
+		FinishRestartPlayer(Controller, SpawnRotation);
+	}
+}
+
+void AWildOmissionGameMode::SpawnHumanAtBed(AController* Controller)
+{
+	AWildOmissionPlayerController* WOPlayerController = Cast<AWildOmissionPlayerController>(Controller);
+	if (WOPlayerController == nullptr)
+	{
+		SpawnHumanAtStartSpot(Controller);
+		return;
+	}
+	
+	TArray<AActor*> BedActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABed::StaticClass(), BedActors);
+
+	ABed* SpawnBed = nullptr;
+	for (AActor* BedActor : BedActors)
+	{
+		ABed* Bed = Cast<ABed>(BedActor);
+		if (Bed == nullptr)
+		{
+			continue;
+		}
+
+		if (Bed->GetUniqueID() == WOPlayerController->GetBedUniqueID())
+		{
+			SpawnBed = Bed;
+			break;
+		}
+	}
+
+	if (SpawnBed == nullptr)
+	{
+		SpawnHumanAtStartSpot(Controller);
+		return;
+	}
+
+	const FVector SpawnLocation = SpawnBed->GetSpawnPointComponent()->GetComponentLocation();
+	const FRotator SpawnRotation = SpawnBed->GetSpawnPointComponent()->GetComponentRotation();
+
+	if (HumanCharacterClass != nullptr)
+	{
+		// Try to create a pawn to use of the default class for this player
+		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, SpawnLocation, SpawnRotation);
+		if (IsValid(NewPawn))
+		{
+			Controller->SetPawn(NewPawn);
+		}
+	}
+
+	if (!IsValid(Controller->GetPawn()))
+	{
+		FailedToRestartPlayer(Controller);
 	}
 }

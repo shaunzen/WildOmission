@@ -82,4 +82,7 @@ private:
 	UPROPERTY()
 	AGameChatHandler* ChatHandler;
 
+	void SpawnHumanAtStartSpot(AController* Controller);
+	void SpawnHumanAtBed(AController* Controller);
+
 };

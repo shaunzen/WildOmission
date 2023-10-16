@@ -109,6 +109,16 @@ void AWildOmissionPlayerController::SendMessage(APlayerState* Sender, const FStr
 	Server_SendMessage(Sender, Message);
 }
 
+void AWildOmissionPlayerController::SetBedUniqueID(const int32& InUniqueID)
+{
+	BedUniqueID = InUniqueID;
+}
+
+int32 AWildOmissionPlayerController::GetBedUniqueID() const
+{
+	return BedUniqueID;
+}
+
 void AWildOmissionPlayerController::Save()
 {
 	Server_AddToPendingSaves();

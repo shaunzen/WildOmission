@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Interfaces/SavablePlayer.h"
 #include "Interfaces/PlayerControllerMessageSender.h"
+#include "Interfaces/BedController.h"
 #include "WildOmissionPlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFinishedLoadingSignature, AWildOmissionPlayerController*, LoadedController);
@@ -14,7 +15,7 @@ class UMusicPlayerComponent;
 class UDeathMenuWidget;
 
 UCLASS()
-class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer, public IPlayerControllerMessageSender
+class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer, public IPlayerControllerMessageSender, public IBedController
 {
 	GENERATED_BODY()
 
@@ -33,6 +34,11 @@ public:
 	// Begin IPlayerControllerMessageSender Implementation
 	virtual void SendMessage(APlayerState* Sender, const FString& Message) override;
 	// End IPlayerControllerMessageSender Implementation
+
+	// Begin IBedController Implementation
+	virtual void SetBedUniqueID(const int32& InUniqueID) override;
+	virtual int32 GetBedUniqueID() const override;
+	// End IBedController Implementation
 
 	void Save();
 
@@ -68,6 +74,9 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
+
+	UPROPERTY()
+	int32 BedUniqueID;
 
 	int32 NumRequiredActorsForLoad;
 	FTimerHandle ValidateWorldStateTimerHandle;
