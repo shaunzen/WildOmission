@@ -36,6 +36,12 @@ void UPlayerInventoryComponent::BeginPlay()
 		RockItem.Quantity = 1;
 
 		AddItem(RockItem);
+
+		FInventoryItem TorchItem;
+		TorchItem.Name = TEXT("torch");
+		TorchItem.Quantity = 1;
+
+		AddItem(TorchItem);
 	}
 }
 
