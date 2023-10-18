@@ -16,6 +16,10 @@ class EQUIPABLEITEMS_API ATorch : public AEquipableItem
 	
 public:
 	ATorch();
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void OnSecondaryPressed() override;
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -23,7 +27,17 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_IsBurning)
 	bool IsBurning;
+
+	UFUNCTION()
+	void OnRep_IsBurning();
+
+	FTimerHandle DecrementDurabilityTimerHandle;
+	UFUNCTION()
+	void DecrementDurability();
+
+	void StartFireEffects();
+	void StopFireEffects();
 
 };
