@@ -32,7 +32,7 @@ void UMusicPlayerComponent::BeginPlay()
 	Super::BeginPlay();
 
 	UWorld* World = GetWorld();
-	if (World == nullptr)
+	if (World == nullptr || World->IsEditorWorld())
 	{
 		return;
 	}
