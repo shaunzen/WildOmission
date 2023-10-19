@@ -5,6 +5,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Components/AudioComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Components/EquipComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -16,8 +17,13 @@ ATorchItem::ATorchItem()
 	FireParticleSystem = nullptr;
 	BurningSound = nullptr;
 
+	LightBrightness = 5000.0f;
+	LightRadius = 10000.0f;
+	LightColor = FLinearColor::White;
+
 	SpawnedFireParticles = nullptr;
 	SpawnedBurningSound = nullptr;
+	SpawnedLightComponent = nullptr;
 
 	IsBurning = false;
 }
@@ -40,6 +46,13 @@ void ATorchItem::OnSecondaryPressed()
 
 	IsBurning = !IsBurning;
 	OnRep_IsBurning();
+}
+
+void ATorchItem::OnUnequip()
+{
+	Super::OnUnequip();
+
+	StopFireEffects();
 }
 
 void ATorchItem::OnRep_IsBurning()
@@ -82,6 +95,17 @@ void ATorchItem::StartFireEffects()
 		SpawnedBurningSound = UGameplayStatics::SpawnSoundAttached(BurningSound, MeshComponentToAttachTo, TEXT("FireSocket"), FVector::ZeroVector, EAttachLocation::Type::SnapToTarget, true);
 	}
 
+	SpawnedLightComponent = NewObject<UPointLightComponent>(this, UPointLightComponent::StaticClass(), TEXT("PointLightComponent"));
+	if (SpawnedLightComponent)
+	{
+		SpawnedLightComponent->RegisterComponent();
+		SpawnedLightComponent->AttachToComponent(MeshComponentToAttachTo, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("FireSocket"));
+		
+		SpawnedLightComponent->SetLightBrightness(LightBrightness);
+		SpawnedLightComponent->SetSourceRadius(LightRadius);
+		SpawnedLightComponent->SetLightColor(LightColor);
+	}
+
 }
 
 void ATorchItem::StopFireEffects()
@@ -96,5 +120,11 @@ void ATorchItem::StopFireEffects()
 	{
 		SpawnedBurningSound->DestroyComponent();
 		SpawnedBurningSound = nullptr;
+	}
+
+	if (SpawnedLightComponent)
+	{
+		SpawnedLightComponent->DestroyComponent();
+		SpawnedLightComponent = nullptr;
 	}
 }

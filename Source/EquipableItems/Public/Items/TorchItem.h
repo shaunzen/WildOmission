@@ -9,6 +9,7 @@
 class UNiagaraSystem;
 class UNiagaraComponent;
 class UAudioComponent;
+class UPointLightComponent;
 
 UCLASS()
 class EQUIPABLEITEMS_API ATorchItem : public AEquipableItem
@@ -22,6 +23,8 @@ public:
 
 	virtual void OnSecondaryPressed() override;
 
+	virtual void OnUnequip() override;
+
 private:
 	UPROPERTY(VisibleInstanceOnly, Replicated, ReplicatedUsing = OnRep_IsBurning)
 	bool IsBurning;
@@ -32,11 +35,23 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* BurningSound;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
+	float LightBrightness;
+
+	UPROPERTY(EditDefaultsOnly)
+	float LightRadius;
+
+	UPROPERTY(EditDefaultsOnly)
+	FLinearColor LightColor;
+
+	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* SpawnedFireParticles;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* SpawnedBurningSound;
+
+	UPROPERTY(VisibleAnywhere)
+	UPointLightComponent* SpawnedLightComponent;
 
 	UFUNCTION()
 	void OnRep_IsBurning();
