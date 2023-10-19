@@ -50,7 +50,7 @@ void AMonster::BeginPlay()
 	ZombieArmsItem.Name = TEXT("zombie.arms");
 	ZombieArmsItem.Quantity = 1;
 	InventoryComponent->AddItem(ZombieArmsItem);
-	InventoryComponent->SetToolbarSelectionIndex(1);
+	InventoryComponent->SetToolbarSelectionIndex(2);
 }
 
 

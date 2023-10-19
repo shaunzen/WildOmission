@@ -6,6 +6,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Components/AudioComponent.h"
 #include "Components/PointLightComponent.h"
+#include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -78,7 +79,25 @@ void ATorchItem::OnRep_IsBurning()
 
 void ATorchItem::DecrementDurability()
 {
-	// TODO handle damage stuff here
+	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
+	if (OwnerInventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	FInventorySlot* FromSlot = OwnerInventoryComponent->GetSlot(GetFromSlotIndex());
+	if (FromSlot == nullptr)
+	{
+		return;
+	}
+
+	int32 CurrentDurability = FromSlot->Item.GetStat(TEXT("Durability"));
+	FromSlot->Item.SetStat(TEXT("Durability"), CurrentDurability - 1);
+
+	if (FromSlot->Item.GetStat(TEXT("Durability")) <= 0)
+	{
+		OwnerInventoryComponent->RemoveHeldItem();
+	}
 }
 
 USkeletalMeshComponent* ATorchItem::GetMeshComponentToAttachTo() const
@@ -118,10 +137,18 @@ void ATorchItem::StartFireEffects()
 		SpawnedLightComponent->AttachToComponent(MeshComponentToAttachTo, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("FireSocket"));
 		
 		SpawnedLightComponent->SetCastShadows(true);
-		SpawnedLightComponent->SetLightBrightness(10000.0f);
+		SpawnedLightComponent->SetIntensity(1000.0f);
 		SpawnedLightComponent->SetSourceRadius(8.0f);
 		SpawnedLightComponent->SetAttenuationRadius(4000.0f);
 		SpawnedLightComponent->SetLightColor(FLinearColor(1.0f, 0.35f, 0.0f, 1.0f));
+		SpawnedLightComponent->SetRelativeLocation(FVector(20.0f, -10.0f, 0.0f));
+	}
+
+	if (HasAuthority())
+	{
+		FTimerDelegate DecrementDurabilityTimerDelegate;
+		DecrementDurabilityTimerDelegate.BindUObject(this, &ATorchItem::DecrementDurability);
+		GetWorld()->GetTimerManager().SetTimer(DecrementDurabilityTimerHandle, DecrementDurabilityTimerDelegate, 1.0f, true);
 	}
 
 	EquipPose = OnPose;
@@ -145,6 +172,11 @@ void ATorchItem::StopFireEffects()
 	{
 		SpawnedLightComponent->DestroyComponent();
 		SpawnedLightComponent = nullptr;
+	}
+
+	if (HasAuthority())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DecrementDurabilityTimerHandle);
 	}
 
 	EquipPose = OffPose;

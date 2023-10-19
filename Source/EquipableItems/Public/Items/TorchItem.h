@@ -60,9 +60,11 @@ private:
 	UFUNCTION()
 	void OnRep_IsBurning();
 
-	FTimerHandle DecrementDurabilityTimerHandle;
 	UFUNCTION()
 	void DecrementDurability();
+
+	UPROPERTY()
+	FTimerHandle DecrementDurabilityTimerHandle;
 
 	USkeletalMeshComponent* GetMeshComponentToAttachTo() const;
 
