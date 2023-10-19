@@ -17,10 +17,6 @@ ATorchItem::ATorchItem()
 	FireParticleSystem = nullptr;
 	BurningSound = nullptr;
 
-	LightBrightness = 5000.0f;
-	LightRadius = 10000.0f;
-	LightColor = FLinearColor::White;
-
 	SpawnedFireParticles = nullptr;
 	SpawnedBurningSound = nullptr;
 	SpawnedLightComponent = nullptr;
@@ -101,9 +97,11 @@ void ATorchItem::StartFireEffects()
 		SpawnedLightComponent->RegisterComponent();
 		SpawnedLightComponent->AttachToComponent(MeshComponentToAttachTo, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("FireSocket"));
 		
-		SpawnedLightComponent->SetLightBrightness(LightBrightness);
-		SpawnedLightComponent->SetSourceRadius(LightRadius);
-		SpawnedLightComponent->SetLightColor(LightColor);
+		SpawnedLightComponent->SetCastShadows(true);
+		SpawnedLightComponent->SetLightBrightness(10000.0f);
+		SpawnedLightComponent->SetSourceRadius(8.0f);
+		SpawnedLightComponent->SetAttenuationRadius(4000.0f);
+		SpawnedLightComponent->SetLightColor(FLinearColor(1.0f, 0.35f, 0.0f, 1.0f));
 	}
 
 }
