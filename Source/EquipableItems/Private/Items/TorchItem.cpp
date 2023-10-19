@@ -17,6 +17,12 @@ ATorchItem::ATorchItem()
 	FireParticleSystem = nullptr;
 	BurningSound = nullptr;
 
+	LightMontage = nullptr;
+	PutOutMontage = nullptr;
+
+	OnPose = nullptr;
+	OffPose = nullptr;
+
 	SpawnedFireParticles = nullptr;
 	SpawnedBurningSound = nullptr;
 	SpawnedLightComponent = nullptr;
@@ -34,6 +40,20 @@ void ATorchItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 void ATorchItem::OnSecondaryPressed()
 {
 	Super::OnSecondaryPressed();
+	
+	UAnimMontage* MontageToPlay = IsBurning ? PutOutMontage : LightMontage;
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (MontageToPlay == nullptr || OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerEquipComponent->PlayItemMontage(MontageToPlay);
+}
+
+void ATorchItem::OnSecondaryAnimationClimax(bool FromFirstPersonInstance)
+{
+	Super::OnSecondaryAnimationClimax(FromFirstPersonInstance);
 
 	if (!HasAuthority())
 	{
@@ -104,6 +124,7 @@ void ATorchItem::StartFireEffects()
 		SpawnedLightComponent->SetLightColor(FLinearColor(1.0f, 0.35f, 0.0f, 1.0f));
 	}
 
+	EquipPose = OnPose;
 }
 
 void ATorchItem::StopFireEffects()
@@ -125,4 +146,6 @@ void ATorchItem::StopFireEffects()
 		SpawnedLightComponent->DestroyComponent();
 		SpawnedLightComponent = nullptr;
 	}
+
+	EquipPose = OffPose;
 }

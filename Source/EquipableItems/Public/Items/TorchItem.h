@@ -22,6 +22,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void OnSecondaryPressed() override;
+	virtual void OnSecondaryAnimationClimax(bool FromFirstPersonInstance) override;
 
 	virtual void OnUnequip() override;
 
@@ -36,22 +37,25 @@ private:
 	USoundBase* BurningSound;
 
 	UPROPERTY(EditDefaultsOnly)
-	float LightBrightness;
+	UAnimMontage* LightMontage;
 
 	UPROPERTY(EditDefaultsOnly)
-	float LightRadius;
+	UAnimMontage* PutOutMontage;
 
 	UPROPERTY(EditDefaultsOnly)
-	FLinearColor LightColor;
+	UAnimSequence* OnPose;
 
+	UPROPERTY(EditDefaultsOnly)
+	UAnimSequence* OffPose;
+
+	//********Spawned Stuff********
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* SpawnedFireParticles;
-
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* SpawnedBurningSound;
-
 	UPROPERTY(VisibleAnywhere)
 	UPointLightComponent* SpawnedLightComponent;
+	//********End Spawned Stuff****
 
 	UFUNCTION()
 	void OnRep_IsBurning();
