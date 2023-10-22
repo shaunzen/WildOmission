@@ -3,6 +3,7 @@
 
 #include "Deployables/Seedling.h"
 #include "Actors/HarvestableResource.h"
+#include "UObject/ConstructorHelpers.h"
 
 ASeedling::ASeedling()
 {
@@ -11,6 +12,12 @@ ASeedling::ASeedling()
 	MinMatureTimeSeconds = 15.0f;
 	MaxMatureTimeSeconds = 1200.0f;
 	TimeToMatureSeconds = 0.0f;
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> SeedlingGrowUpSound(TEXT("/Game/Deployables/Audio/A_Thud"));
+	if (SeedlingGrowUpSound.Succeeded())
+	{
+		DestructionSound = SeedlingGrowUpSound.Object;
+	}
 }
 
 void ASeedling::OnSpawn()
