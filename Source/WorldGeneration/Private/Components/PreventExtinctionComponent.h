@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "PreventExtinctionComponent.generated.h"
 
+struct FBiomeGenerationData;
+struct FSpawnData;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UPreventExtinctionComponent : public UActorComponent
@@ -20,5 +22,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+private:
+	void RunChecksForBiome(FBiomeGenerationData* Biome);
+	void SpawnCollectables(const FSpawnData& CollectableData);
 		
 };

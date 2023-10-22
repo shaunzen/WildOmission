@@ -3,6 +3,7 @@
 
 #include "Components/PreventExtinctionComponent.h"
 #include "WorldGenerationHandler.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UPreventExtinctionComponent::UPreventExtinctionComponent()
@@ -32,5 +33,40 @@ void UPreventExtinctionComponent::BeginPlay()
 		return;
 	}
 
+	for (FBiomeGenerationData* Biome : Biomes)
+	{
+		RunChecksForBiome(Biome);
+	}
+}
 
+void UPreventExtinctionComponent::RunChecksForBiome(FBiomeGenerationData* Biome)
+{
+	if (Biome == nullptr)
+	{
+		return;
+	}
+
+	for (const FSpawnData& Collectable : Biome->Collectables)
+	{
+		TArray<AActor*> CollectableActorsInWorld;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), Collectable.BlueprintClass, CollectableActorsInWorld);
+		if (CollectableActorsInWorld.Num() > 0)
+		{
+			continue;
+		}
+
+		SpawnCollectables(Collectable);
+	}
+}
+
+void UPreventExtinctionComponent::SpawnCollectables(const FSpawnData& CollectableData)
+{
+	const int32 SpawnCount = 10;
+	FTransform SpawnTransform;
+	if (!AWorldGenerationHandler::FindSpawnTransformRandomLocation(GetWorld(), SpawnTransform, FWorldGenerationSettings(), true))
+	{
+		return;
+	}
+
+	GetWorld()->SpawnActor<AActor>(CollectableData.BlueprintClass, SpawnTransform);
 }
