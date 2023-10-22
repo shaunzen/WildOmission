@@ -8,6 +8,7 @@
 #include "Structs/BiomeGenerationData.h"
 #include "WorldGenerationHandler.generated.h"
 
+class UPreventExtinctionComponent;
 class UResourceRegenerationComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGenerationCompleteSignature);
@@ -25,6 +26,7 @@ public:
 	FOnGenerationCompleteSignature OnGenerationComplete;
 
 	FVector2D GetWorldSizeMeters();
+	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
 
 	static AWorldGenerationHandler* GetWorldGenerationHandler();
@@ -40,6 +42,9 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	UPreventExtinctionComponent* PreventExtinctionComponent;
+
 	UPROPERTY(VisibleAnywhere)
 	UResourceRegenerationComponent* RegenerationComponent;
 

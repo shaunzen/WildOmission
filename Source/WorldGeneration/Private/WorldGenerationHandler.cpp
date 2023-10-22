@@ -2,6 +2,7 @@
 
 
 #include "WorldGenerationHandler.h"
+#include "Components/PreventExtinctionComponent.h"
 #include "Components/ResourceRegenerationComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "UObject/ConstructorHelpers.h"
@@ -16,6 +17,7 @@ AWorldGenerationHandler::AWorldGenerationHandler()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	PreventExtinctionComponent = CreateDefaultSubobject<UPreventExtinctionComponent>(TEXT("PreventExtinctionComponent"));
 	RegenerationComponent = CreateDefaultSubobject<UResourceRegenerationComponent>(TEXT("RegenerationComponent"));
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
@@ -79,6 +81,21 @@ FVector2D AWorldGenerationHandler::GetWorldSizeMeters()
 {
 	FWorldGenerationSettings Settings;
 	return FVector2D(Settings.WorldSizeMetersX, Settings.WorldSizeMetersY);
+}
+
+TArray<FBiomeGenerationData*> AWorldGenerationHandler::GetAllPossibleBiomes()
+{
+	TArray<FBiomeGenerationData*> Biomes;
+	if (BiomeGenerationDataTable == nullptr)
+	{
+		return Biomes;
+	}
+
+	static const FString ContextString(TEXT("All Biomes Data Context"));
+	
+	BiomeGenerationDataTable->GetAllRows<FBiomeGenerationData>(ContextString, Biomes);
+
+	return Biomes;
 }
 
 FBiomeGenerationData* AWorldGenerationHandler::GetBiomeGenerationData(const FName& BiomeName)
