@@ -111,21 +111,20 @@ void UBuildingHammerWidget::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
 	Teardown();
 }
 
+FReply UBuildingHammerWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	HandleSelection();
+
+	return FReply::Handled();
+}
+
 FReply UBuildingHammerWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
 
-	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
-	if (BuildingBlock && OwnerBuildingHammer && UpgradeSelected && CanPlayerAffordUpgrade())
-	{
-		OwnerBuildingHammer->Server_UpgradeCurrentDeployable();
-	}
-	else if (OwnerBuildingHammer && DestroySelected)
-	{
-		OwnerBuildingHammer->Server_DestroyCurrentDeployable();
-	}
-
-	this->Teardown();
+	HandleSelection();
 
 	return FReply::Handled();
 }
@@ -138,6 +137,21 @@ void UBuildingHammerWidget::ScaleWidgetByBool(UWidget* WidgetToScale, bool Incre
 	FVector2D NewRenderScale = FVector2D(FMath::Clamp(OldRenderScale.X + ScaleAmount * GetWorld()->GetDeltaSeconds(), 1.0f, 1.1f),
 		FMath::Clamp(OldRenderScale.Y + ScaleAmount * GetWorld()->GetDeltaSeconds(), 1.0f, 1.1f));
 	WidgetToScale->SetRenderScale(NewRenderScale);
+}
+
+void UBuildingHammerWidget::HandleSelection()
+{
+	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
+	if (BuildingBlock && OwnerBuildingHammer && UpgradeSelected && CanPlayerAffordUpgrade())
+	{
+		OwnerBuildingHammer->Server_UpgradeCurrentDeployable();
+	}
+	else if (OwnerBuildingHammer && DestroySelected)
+	{
+		OwnerBuildingHammer->Server_DestroyCurrentDeployable();
+	}
+
+	this->Teardown();
 }
 
 bool UBuildingHammerWidget::CanPlayerAffordUpgrade() const

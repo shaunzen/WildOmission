@@ -27,6 +27,7 @@ public:
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 private:
@@ -58,6 +59,8 @@ private:
 
 	bool UpgradeSelected;
 	bool DestroySelected;
+
+	void HandleSelection();
 
 	bool CanPlayerAffordUpgrade() const;
 
