@@ -137,6 +137,4 @@ void UHumanAnimInstance::HandleArmOffset()
 
 	RightArmOffset = OwnerEquipComponent->GetEquipedItemRightArmOffset() * NormalizedPawnVelocity;
 	LeftArmOffset = OwnerEquipComponent->GetEquipedItemLeftArmOffset() * NormalizedPawnVelocity;
-
-	UE_LOG(LogTemp, Warning, TEXT("Right Arm: %s, Left Arm: %s"), *RightArmOffset.ToString(), *LeftArmOffset.ToString());
 }
