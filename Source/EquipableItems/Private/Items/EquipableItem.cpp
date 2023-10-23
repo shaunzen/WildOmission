@@ -21,6 +21,10 @@ AEquipableItem::AEquipableItem()
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	SocketOffset = FTransform::Identity;
+
+	RightArmVelocityOffset = FRotator::ZeroRotator;
+	LeftArmVelocityOffset = FRotator::ZeroRotator;
+
 	UseLeftHandMount = false;
 
 	RootComponent = MeshComponent;
@@ -195,9 +199,19 @@ UAnimSequence* AEquipableItem::GetEquipPose() const
 	return EquipPose;
 }
 
-FTransform AEquipableItem::GetSocketOffset()
+FTransform AEquipableItem::GetSocketOffset() const
 {
 	return SocketOffset;
+}
+
+FRotator AEquipableItem::GetRightArmVelocityOffset() const
+{
+	return RightArmVelocityOffset;
+}
+
+FRotator AEquipableItem::GetLeftArmVelocityOffset() const
+{
+	return LeftArmVelocityOffset;
 }
 
 bool AEquipableItem::IsLeftHandMounted() const

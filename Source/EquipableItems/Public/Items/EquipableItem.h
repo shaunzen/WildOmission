@@ -58,7 +58,10 @@ public:
 
 	UAnimSequence* GetEquipPose() const;
 
-	FTransform GetSocketOffset();
+	FTransform GetSocketOffset() const;
+	FRotator GetRightArmVelocityOffset() const;
+	FRotator GetLeftArmVelocityOffset() const;
+	
 	bool IsLeftHandMounted() const;
 
 	bool PrimaryEnabled() const;
@@ -73,6 +76,12 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	FTransform SocketOffset;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	FRotator RightArmVelocityOffset;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	FRotator LeftArmVelocityOffset;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	bool UseLeftHandMount;

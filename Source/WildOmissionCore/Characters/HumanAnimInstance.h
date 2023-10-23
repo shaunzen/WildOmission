@@ -29,6 +29,12 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	UAnimSequence* EquipedItemPose;
 
+	UPROPERTY(BlueprintReadOnly)
+	FRotator RightArmOffset;
+
+	UPROPERTY(BlueprintReadOnly)
+	FRotator LeftArmOffset;
+
 protected:
 	virtual void CalculateSpeedAndAngle() override;
 
@@ -41,5 +47,8 @@ private:
 
 	UFUNCTION()
 	void HandleEquipedItemPose();
+
+	UFUNCTION()
+	void HandleArmOffset();
 
 };

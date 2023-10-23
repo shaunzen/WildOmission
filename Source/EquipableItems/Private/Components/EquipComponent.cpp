@@ -303,8 +303,10 @@ UAnimSequence* UEquipComponent::GetEquipedItemPose() const
 	{
 		return nullptr;
 	}
-
-	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController())
+	AController* OwnerPawnController = OwnerPawn->GetController();
+	if (OwnerPawnController &&
+		OwnerPawn->IsLocallyControlled() &&
+		OwnerPawnController->IsPlayerController())
 	{
 		if (EquipedItem)
 		{
@@ -321,6 +323,64 @@ UAnimSequence* UEquipComponent::GetEquipedItemPose() const
 	}
 
 	return nullptr;
+}
+
+FRotator UEquipComponent::GetEquipedItemRightArmOffset() const
+{
+	if (OwnerPawn == nullptr)
+	{
+		return FRotator::ZeroRotator;
+	}
+
+	AController* OwnerPawnController = OwnerPawn->GetController();
+	if (OwnerPawnController &&
+		OwnerPawn->IsLocallyControlled() &&
+		OwnerPawnController->IsPlayerController())
+	{
+		if (EquipedItem)
+		{
+			return EquipedItem->GetRightArmVelocityOffset();
+		}
+		else if (LocalEquipedItemDefaultClass)
+		{
+			return LocalEquipedItemDefaultClass->GetRightArmVelocityOffset();
+		}
+	}
+	else if (EquipedItem)
+	{
+		return EquipedItem->GetRightArmVelocityOffset();
+	}
+
+	return FRotator::ZeroRotator;
+}
+
+FRotator UEquipComponent::GetEquipedItemLeftArmOffset() const
+{
+	if (OwnerPawn == nullptr)
+	{
+		return FRotator::ZeroRotator;
+	}
+
+	AController* OwnerPawnController = OwnerPawn->GetController();
+	if (OwnerPawnController &&
+		OwnerPawn->IsLocallyControlled() &&
+		OwnerPawnController->IsPlayerController())
+	{
+		if (EquipedItem)
+		{
+			return EquipedItem->GetRightArmVelocityOffset();
+		}
+		else if (LocalEquipedItemDefaultClass)
+		{
+			return LocalEquipedItemDefaultClass->GetRightArmVelocityOffset();
+		}
+	}
+	else if (EquipedItem)
+	{
+		return EquipedItem->GetRightArmVelocityOffset();
+	}
+
+	return FRotator::ZeroRotator;
 }
 
 bool UEquipComponent::IsItemEquiped() const

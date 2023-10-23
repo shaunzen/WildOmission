@@ -61,6 +61,12 @@ public:
 	UAnimSequence* GetEquipedItemPose() const;
 
 	UFUNCTION(BlueprintCallable)
+	FRotator GetEquipedItemRightArmOffset() const;
+
+	UFUNCTION(BlueprintCallable)
+	FRotator GetEquipedItemLeftArmOffset() const;
+
+	UFUNCTION(BlueprintCallable)
 	bool IsItemEquiped() const;
 
 	bool PrimaryEnabled() const;

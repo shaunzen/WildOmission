@@ -11,6 +11,10 @@ UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializ
 {
 	HeadAngle = 0.0f;
 	EquipedItemPose = nullptr;
+	
+	RightArmOffset = FRotator::ZeroRotator;
+	LeftArmOffset = FRotator::ZeroRotator;
+
 	FirstPersonInstance = false;
 }
 
@@ -20,6 +24,7 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	CalculateHeadAngle();
 	HandleEquipedItemPose();
+	HandleArmOffset();
 }
 
 void UHumanAnimInstance::OnPrimaryAnimationClimax()
@@ -97,16 +102,39 @@ void UHumanAnimInstance::CalculateHeadAngle()
 
 void UHumanAnimInstance::HandleEquipedItemPose()
 {
-	if (TryGetPawnOwner() == nullptr)
+	APawn* PawnOwner = TryGetPawnOwner();
+	if (PawnOwner == nullptr)
 	{
 		return;
 	}
 
-	UEquipComponent* OwnerEquipComponent = TryGetPawnOwner()->FindComponentByClass<UEquipComponent>();
+	UEquipComponent* OwnerEquipComponent = PawnOwner->FindComponentByClass<UEquipComponent>();
 	if (OwnerEquipComponent == nullptr)
 	{
 		return;
 	}
 
 	EquipedItemPose = OwnerEquipComponent->GetEquipedItemPose();
+}
+
+void UHumanAnimInstance::HandleArmOffset()
+{
+	APawn* PawnOwner = TryGetPawnOwner();
+	if (PawnOwner == nullptr)
+	{
+		return;
+	}
+
+	UEquipComponent* OwnerEquipComponent = PawnOwner->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent)
+	{
+		return;
+	}
+
+	const float PawnVelocity = FVector(PawnOwner->GetVelocity().X, PawnOwner->GetVelocity().Y, 0.0f).Length();
+	const float MaxPawnVelocity = 600.0f;
+	const float NormalizedPawnVelocity = PawnVelocity / MaxPawnVelocity;
+
+	RightArmOffset = OwnerEquipComponent->GetEquipedItemRightArmOffset() * NormalizedPawnVelocity;
+	LeftArmOffset = OwnerEquipComponent->GetEquipedItemLeftArmOffset() * NormalizedPawnVelocity;
 }
