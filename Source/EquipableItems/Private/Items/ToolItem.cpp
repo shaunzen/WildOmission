@@ -33,10 +33,13 @@ AToolItem::AToolItem()
 
 	Durability = 100;
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> PrimaryMontageObject(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Swing_01_Montage"));
-	if (PrimaryMontageObject.Succeeded())
+	SwingMontage = nullptr;
+	SwingItemMontage = nullptr;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SwingMontageObject(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Swing_01_Montage"));
+	if (SwingMontageObject.Succeeded())
 	{
-		PrimaryMontage = PrimaryMontageObject.Object;
+		SwingMontage = SwingMontageObject.Object;
 	}
 
 	static ConstructorHelpers::FClassFinder<UCameraShakeBase> DefaultSwingCameraShakeBlueprint(TEXT("/Game/EquipableItems/Effects/CS_ToolSwing"));
@@ -75,12 +78,12 @@ void AToolItem::OnPrimaryHeld()
 {
 	Super::OnPrimaryHeld();
 
-	if (GetOwner() == nullptr || GetOwnerEquipComponent() == nullptr || GetOwnerEquipComponent()->IsMontagePlaying(PrimaryMontage))
+	if (GetOwner() == nullptr || GetOwnerEquipComponent() == nullptr || GetOwnerEquipComponent()->IsMontagePlaying(SwingMontage))
 	{
 		return;
 	}
 
-	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
+	GetOwnerEquipComponent()->PlayItemMontage(SwingMontage, SwingItemMontage);
 }
 
 void AToolItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)

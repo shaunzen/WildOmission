@@ -36,6 +36,12 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* SwingMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* SwingItemMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TEnumAsByte<EToolType> ToolType;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")

@@ -30,13 +30,9 @@ AEquipableItem::AEquipableItem()
 	RootComponent = MeshComponent;
 
 	EquipMontage = nullptr;
+
+	// TODO move these to child classes
 	EquipItemMontage = nullptr;
-	PrimaryMontage = nullptr;
-	PrimaryItemMontage = nullptr;
-	SecondaryMontage = nullptr;
-	SecondaryItemMontage = nullptr;
-	ReloadMontage = nullptr;
-	ReloadItemMontage = nullptr;
 	EquipPose = nullptr;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Equip_01_Montage"));

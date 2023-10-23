@@ -32,6 +32,16 @@ protected:
 	USceneComponent* MuzzleComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* FireMontage;
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* FireItemMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* ReloadMontage;
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* ReloadItemMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	int32 RateOfFireRPM;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")

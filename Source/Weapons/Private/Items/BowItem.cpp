@@ -48,6 +48,7 @@ void ABowItem::OnSecondaryPressed()
 	}
 
 	Reload();
+	// Draw Montage
 	GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage, SecondaryItemMontage);
 	GetOwnerEquipComponent()->StartAim();
 }
@@ -72,6 +73,7 @@ void ABowItem::OnSecondaryReleased()
 		return;
 	}
 	
+	// Release Montage
 	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
 
 	Drawn = false;

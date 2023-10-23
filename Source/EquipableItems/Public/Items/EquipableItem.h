@@ -85,30 +85,14 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	bool UseLeftHandMount;
-	
+
+	// We use ActionMontage for the montage that the arms will play
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* EquipMontage;
 
+	// We use ActionItemMontage for the montage that the actual item will play
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* EquipItemMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* PrimaryMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* PrimaryItemMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* SecondaryMontage;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* SecondaryItemMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* ReloadMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* ReloadItemMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimSequence* EquipPose;
