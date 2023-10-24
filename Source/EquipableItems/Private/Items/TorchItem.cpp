@@ -72,6 +72,11 @@ void ATorchItem::OnUnequip()
 	StopFireEffects();
 }
 
+FRotator ATorchItem::GetRightArmVelocityOffset() const
+{
+	return IsBurning ? RightArmVelocityOffset : FRotator::ZeroRotator;
+}
+
 void ATorchItem::OnRep_IsBurning()
 {
 	IsBurning ? StartFireEffects() : StopFireEffects();

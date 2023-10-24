@@ -49,31 +49,6 @@ AToolItem::AToolItem()
 	}
 }
 
-void AToolItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
-{
-	Super::Equip(InOwnerPawn, InThirdPersonMeshComponent, InItemName, InFromSlotIndex, InUniqueID);
-
-	UPlayerInventoryComponent* OwnerInventory = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
-	if (OwnerInventory == nullptr)
-	{
-		return;
-	}
-
-	FInventorySlot* FromSlot = OwnerInventory->GetSlot(InFromSlotIndex);
-	if (FromSlot == nullptr)
-	{
-		return;
-	}
-
-	Durability = FromSlot->Item.GetStat(TEXT("Durability"));
-}
-
-void AToolItem::OnUnequip()
-{
-	Super::OnUnequip();
-
-}
-
 void AToolItem::OnPrimaryHeld()
 {
 	Super::OnPrimaryHeld();
@@ -160,40 +135,11 @@ float AToolItem::GetGatherMultiplier() const
 	return GatherMultiplier;
 }
 
-float AToolItem::GetSwingSpeedRate() const
-{
-	return SwingSpeedRate;
-}
-
 bool AToolItem::IsQualityTool() const
 {
 	return QualityTool;
 }
 
-void AToolItem::UpdateDurability()
-{
-	--Durability;
-
-	UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
-	if (OwnerInventory == nullptr)
-	{
-		return;
-	}
-
-	FInventorySlot* FromSlot = OwnerInventory->GetSlot(GetFromSlotIndex());
-	if (FromSlot == nullptr)
-	{
-		return;
-	}
-
-	FromSlot->Item.SetStat(TEXT("Durability"), Durability);
-	OwnerInventory->RequestInventoryRefresh();
-	
-	if (Durability <= 0)
-	{
-		OwnerInventory->RemoveHeldItem();
-	}
-}
 
 FInventoryItem* AToolItem::FindInInventory()
 {
@@ -274,22 +220,5 @@ void AToolItem::SpawnImpactDecal(const FHitResult& HitResult)
 
 void AToolItem::PlayCameraShake()
 {
-	if (SwingCameraShake == nullptr || GetOwnerPawn() == nullptr || !GetOwnerPawn()->IsLocallyControlled())
-	{
-		return;
-	}
-	
-	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	if (UserSettings == nullptr || UserSettings->GetCameraShakeEnabled() == false)
-	{
-		return;
-	}
-	
-	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwnerPawn()->GetController());
-	if (OwnerPlayerController == nullptr)
-	{
-		return;
-	}
-	
-	OwnerPlayerController->ClientStartCameraShake(SwingCameraShake);
+
 }

@@ -30,47 +30,16 @@ public:
 
 	float GetGatherMultiplier() const;
 	
-	float GetSwingSpeedRate() const;
-
 	bool IsQualityTool() const;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* SwingMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* SwingItemMontage;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TEnumAsByte<EToolType> ToolType;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	float GatherMultiplier;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	float EffectiveRangeCentimeters;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	float SwingSpeedRate;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	bool QualityTool;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	TSubclassOf<UCameraShakeBase> SwingCameraShake;
-
-	UPROPERTY()
-	int32 Durability;
-
-	UFUNCTION()
-	void UpdateDurability();
-	
-	void PlayImpactSound(const FHitResult& HitResult);
-	void SpawnImpactParticles(const FHitResult& HitResult, const FVector& ImpactorForwardVector);
-	void SpawnImpactDecal(const FHitResult& HitResult);
-
-	void PlayCameraShake();
-
-	FInventoryItem* FindInInventory();
 
 };

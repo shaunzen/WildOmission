@@ -13,6 +13,12 @@ ABowItem::ABowItem()
 	DefaultEquipPose = nullptr;
 	DrawnEquipPose = nullptr;
 	EquipPose = nullptr;
+
+	DrawMontage = nullptr;
+	DrawItemMontage = nullptr;
+
+	ReleaseMontage = nullptr;
+	ReleaseItemMontage = nullptr;
 }
 
 void ABowItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -48,8 +54,8 @@ void ABowItem::OnSecondaryPressed()
 	}
 
 	Reload();
-	// Draw Montage
-	GetOwnerEquipComponent()->PlayItemMontage(SecondaryMontage, SecondaryItemMontage);
+
+	GetOwnerEquipComponent()->PlayItemMontage(DrawMontage, DrawItemMontage);
 	GetOwnerEquipComponent()->StartAim();
 }
 
@@ -74,7 +80,7 @@ void ABowItem::OnSecondaryReleased()
 	}
 	
 	// Release Montage
-	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
+	GetOwnerEquipComponent()->PlayItemMontage(ReleaseMontage, ReleaseItemMontage);
 
 	Drawn = false;
 	OnRep_Drawn();

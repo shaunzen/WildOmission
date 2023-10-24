@@ -26,6 +26,8 @@ public:
 
 	virtual void OnUnequip() override;
 
+	virtual FRotator GetRightArmVelocityOffset() const override;
+
 private:
 	UPROPERTY(VisibleInstanceOnly, Replicated, ReplicatedUsing = OnRep_IsBurning)
 	bool IsBurning;

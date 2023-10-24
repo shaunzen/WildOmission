@@ -8,6 +8,7 @@
 #include "EquipableItem.generated.h"
 
 class UEquipComponent;
+struct FInventoryItem;
 
 UCLASS()
 class EQUIPABLEITEMS_API AEquipableItem : public AInventoryEquipableActor
@@ -59,8 +60,8 @@ public:
 	UAnimSequence* GetEquipPose() const;
 
 	FTransform GetSocketOffset() const;
-	FRotator GetRightArmVelocityOffset() const;
-	FRotator GetLeftArmVelocityOffset() const;
+	virtual FRotator GetRightArmVelocityOffset() const;
+	virtual FRotator GetLeftArmVelocityOffset() const;
 	
 	bool IsLeftHandMounted() const;
 
@@ -111,5 +112,6 @@ protected:
 
 	APawn* GetOwnerPawn() const;
 	UEquipComponent* GetOwnerEquipComponent() const;
+	FInventoryItem* FindInInventory() const;
 
 };

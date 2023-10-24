@@ -3,6 +3,8 @@
 
 #include "Items/EquipableItem.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Components/InventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -76,6 +78,29 @@ UEquipComponent* AEquipableItem::GetOwnerEquipComponent() const
 	}
 
 	return GetOwner()->FindComponentByClass<UEquipComponent>();
+}
+
+FInventoryItem* AEquipableItem::FindInInventory() const
+{
+	UInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UInventoryComponent>();
+	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = Owner->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventory == nullptr || OwnerInventoryManipulatorComponent == nullptr)
+	{
+		return nullptr;
+	}
+
+	FInventoryItem* InventoryItem = OwnerInventory->FindItemWithUniqueID(UniqueID);
+	if (InventoryItem == nullptr)
+	{
+		if (!OwnerInventoryManipulatorComponent->SelectedItemHasUniqueID(UniqueID))
+		{
+			return nullptr;
+		}
+
+		InventoryItem = OwnerInventoryManipulatorComponent->GetSelectedItemAddress();
+	}
+
+	return InventoryItem;
 }
 
 // Called every frame
