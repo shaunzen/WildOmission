@@ -3,26 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EquipableItem.h"
+#include "SwingableItem.h"
 #include "Enums/ToolType.h"
-#include "Structs/InventoryItem.h"
 #include "ToolItem.generated.h"
 
-class UNiagaraSystem;
-
 UCLASS()
-class EQUIPABLEITEMS_API AToolItem : public AEquipableItem
+class EQUIPABLEITEMS_API AToolItem : public ASwingableItem
 {
 	GENERATED_BODY()
 
 public:
 	AToolItem();
-
-	// Called when the item is equiped into the players hands
-	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
-
-	// Called before the item is unequiped
-	virtual void OnUnequip() override;
 
 	virtual void OnPrimaryHeld() override;
 

@@ -17,12 +17,19 @@ class EQUIPABLEITEMS_API ASwingableItem : public AEquipableItem
 public:
 	ASwingableItem();
 	
+	void Swing();
+
+	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* SwingMontage;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* SwingItemMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	float DamageMultiplier;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	float EffectiveRangeCentimeters;

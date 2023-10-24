@@ -2,14 +2,108 @@
 
 
 #include "Items/SwingableItem.h"
+#include "Components/EquipComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "NiagaraFunctionLibrary.h"
+#include "SurfaceHelpers.h"
+#include "Engine/DamageEvents.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "WildOmissionGameUserSettings.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
 ASwingableItem::ASwingableItem()
 {
+	SwingMontage = nullptr;
+	SwingItemMontage = nullptr;
+	DamageMultiplier = 1.0f;
+	EffectiveRangeCentimeters = 150.0f;
+	SwingSpeedRate = 1.0f;
+	SwingCameraShake = nullptr;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SwingMontageObject(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Swing_01_Montage"));
+	if (SwingMontageObject.Succeeded())
+	{
+		SwingMontage = SwingMontageObject.Object;
+	}
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> DefaultSwingCameraShakeBlueprint(TEXT("/Game/EquipableItems/Effects/CS_ToolSwing"));
+	if (DefaultSwingCameraShakeBlueprint.Succeeded())
+	{
+		SwingCameraShake = DefaultSwingCameraShakeBlueprint.Class;
+	}
+
+}
+
+void ASwingableItem::Swing()
+{
+	// TODO Swinging
+}
+
+void ASwingableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
+{
+	Super::OnPrimaryAnimationClimax(FromFirstPersonInstance);
+
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	PlayCameraShake();
+
+	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(OwnerEquipComponent->GetOwnerControlRotation());
+
+	FHitResult HitResult;
+
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(GetOwner());
+	CollisionParams.bTraceComplex = true;
+	CollisionParams.bReturnPhysicalMaterial = true;
+
+	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
+	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
+
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
+	{
+		UE_LOG(LogEquipableItems, Verbose, TEXT("Nothing was hit by tool."));
+		return;
+	}
+
+	if (FromFirstPersonInstance || !GetOwnerPawn()->IsLocallyControlled())
+	{
+		PlayImpactSound(HitResult);
+		SpawnImpactParticles(HitResult, OwnerCharacterLookVector);
+		SpawnImpactDecal(HitResult);
+	}
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
+	if (HitPawn)
+	{
+		FPointDamageEvent HitByToolEvent(20.0f * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
+		HitPawn->TakeDamage(20.0f * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+	}
+	else
+	{
+		float DamageAmount = 5.0f;
+
+		FPointDamageEvent HitByToolEvent(DamageAmount * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
+		HitResult.GetActor()->TakeDamage(DamageAmount * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+	}
+
+	DecrementDurability();
 }
 
 void ASwingableItem::DecrementDurability()
 {
+	// TODO this
 }
 
 void ASwingableItem::PlayImpactSound(const FHitResult& HitResult)
