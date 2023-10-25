@@ -4,6 +4,7 @@
 #include "Projectiles/WeaponProjectile.h"
 #include "Components/SphereComponent.h"
 #include "Components/InventoryComponent.h"
+#include "Components/EquipComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Projectiles/CollectableProjectile.h"
 #include "Engine/DamageEvents.h"
@@ -59,18 +60,6 @@ AWeaponProjectile::AWeaponProjectile()
 	Damage = 15.0f;
 	Velocity = 50000.0f;
 	CollectableClass = nullptr;
-
-	static ConstructorHelpers::FObjectFinder<USoundBase> HitMarkerSoundObject(TEXT("/Game/Weapons/Audio/A_Hitmarker_Body_02"));
-	if (HitMarkerSoundObject.Succeeded())
-	{
-		HitMarkerSound = HitMarkerSoundObject.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<USoundBase> HitMarkerHeadshotSoundObject(TEXT("/Game/Weapons/Audio/A_Hitmarker_Head"));
-	if (HitMarkerHeadshotSoundObject.Succeeded())
-	{
-		HitMarkerHeadshotSound = HitMarkerHeadshotSoundObject.Object;
-	}
 }
 
 void AWeaponProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -136,7 +125,7 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 		const float HeadshotMultiplier = 10.0f * Headshot;
 		const float TotalDamage = Damage + HeadshotMultiplier;
 
-		Headshot ? Client_PlayHitMarkerHeadshotSound() : Client_PlayHitMarkerSound();
+		PlayHitmarkerSound(Headshot);
 		
 		UE_LOG(LogWeapons, Verbose, TEXT("Damage %f, With Headshot Multiplier %f"), Damage, TotalDamage);
 
@@ -167,24 +156,22 @@ void AWeaponProjectile::OnRep_Velocity()
 	MovementComponent->Activate();
 }
 
-void AWeaponProjectile::Client_PlayHitMarkerSound_Implementation()
+void AWeaponProjectile::PlayHitmarkerSound(bool Headshot)
 {
-	if (HitMarkerSound == nullptr)
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySound2D(GetWorld(), HitMarkerSound);
-}
-
-void AWeaponProjectile::Client_PlayHitMarkerHeadshotSound_Implementation()
-{
-	if (HitMarkerHeadshotSound == nullptr)
+	UEquipComponent* OwnerEquipComponent = OwnerActor->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr)
 	{
 		return;
 	}
-
-	UGameplayStatics::PlaySound2D(GetWorld(), HitMarkerHeadshotSound);
+	
+	Headshot ? OwnerEquipComponent->Client_PlayHeadshotHitmarkerSound()
+		: OwnerEquipComponent->Client_PlayHitmarkerSound();
 }
 
 void AWeaponProjectile::Multi_SpawnImpactEffects_Implementation(const FHitResult& HitResult)

@@ -101,8 +101,19 @@ void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& O
 		APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
 		if (HitPawn)
 		{
-			FPointDamageEvent HitByToolEvent(100.0f * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
-			HitPawn->TakeDamage(100.0f * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+			float HeadshotDamage = 0.0f;
+			if (HitResult.BoneName == TEXT("Head"))
+			{
+				HeadshotDamage = 25.0f;
+				GetOwnerEquipComponent()->Client_PlayHeadshotHitmarkerSound();
+			}
+			else
+			{
+				GetOwnerEquipComponent()->Client_PlayHitmarkerSound();
+			}
+
+			FPointDamageEvent HitByToolEvent((100.0f + HeadshotDamage) * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
+			HitPawn->TakeDamage((100.0f + HeadshotDamage) * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
 		}
 		else
 		{

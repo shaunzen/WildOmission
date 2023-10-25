@@ -83,6 +83,12 @@ public:
 	void StartAim();
 	void StopAim();
 
+	UFUNCTION(Client, Reliable)
+	void Client_PlayHitmarkerSound();
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayHeadshotHitmarkerSound();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -107,6 +113,12 @@ private:
 
 	UPROPERTY()
 	FRotator OwnerReplicatedControlRotation;
+
+	UPROPERTY()
+	USoundBase* HitmarkerSound;
+
+	UPROPERTY()
+	USoundBase* HeadshotHitmarkerSound;
 
 	UFUNCTION()
 	void OnRep_EquipedItem();

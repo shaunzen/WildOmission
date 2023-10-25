@@ -33,7 +33,6 @@ AEquipableItem::AEquipableItem()
 
 	EquipMontage = nullptr;
 
-	// TODO move these to child classes
 	EquipItemMontage = nullptr;
 	EquipPose = nullptr;
 

@@ -62,13 +62,9 @@ private:
 	UPROPERTY()
 	USoundBase* HitMarkerHeadshotSound;
 
+	void PlayHitmarkerSound(bool Headshot);
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_SpawnImpactEffects(const FHitResult& HitResult);
-
-	UFUNCTION(Client, Reliable)
-	void Client_PlayHitMarkerSound();
-
-	UFUNCTION(Client, Reliable)
-	void Client_PlayHitMarkerHeadshotSound();
-
+	
 };

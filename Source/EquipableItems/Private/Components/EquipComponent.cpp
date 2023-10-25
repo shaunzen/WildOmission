@@ -5,6 +5,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Items/EquipableItem.h"
 #include "Items/ToolItem.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
 
@@ -29,6 +30,21 @@ UEquipComponent::UEquipComponent()
 	OwnerPawn = nullptr;
 	OwnerFirstPersonMesh = nullptr;
 	OwnerThirdPersonMesh = nullptr;
+
+	HitmarkerSound = nullptr;
+	HeadshotHitmarkerSound = nullptr;
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> HitmarkerSoundObject(TEXT("/Game/Weapons/Audio/A_Hitmarker_Body_02"));
+	if (HitmarkerSoundObject.Succeeded())
+	{
+		HitmarkerSound = HitmarkerSoundObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> HeadshotHitmarkerSoundObject(TEXT("/Game/Weapons/Audio/A_Hitmarker_Head"));
+	if (HeadshotHitmarkerSoundObject.Succeeded())
+	{
+		HeadshotHitmarkerSound = HeadshotHitmarkerSoundObject.Object;
+	}
 }
 
 void UEquipComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -511,6 +527,28 @@ void UEquipComponent::StopAim()
 	OnAim.Broadcast(false);
 }
 
+void UEquipComponent::Client_PlayHitmarkerSound_Implementation()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || HitmarkerSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySound2D(World, HitmarkerSound);
+}
+
+void UEquipComponent::Client_PlayHeadshotHitmarkerSound_Implementation()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || HeadshotHitmarkerSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySound2D(World, HeadshotHitmarkerSound);
+}
+
 void UEquipComponent::OnRep_EquipedItem()
 {
 	if (OwnerPawn == nullptr)
@@ -703,7 +741,6 @@ bool UEquipComponent::MulticastMontageConditionsValid() const
 
 	return true;
 }
-
 
 void UEquipComponent::Multi_PlayItemMontage_Implementation(UAnimMontage* PlayerMontage, UAnimMontage* ItemMontage)
 {
