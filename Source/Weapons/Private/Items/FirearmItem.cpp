@@ -11,6 +11,12 @@
 
 AFirearmItem::AFirearmItem()
 {
+	FireMontage = nullptr;
+	FireItemMontage = nullptr;
+
+	ReloadMontage = nullptr;
+	ReloadItemMontage = nullptr;
+
 	MuzzleFlashEffect = nullptr;
 	RateOfFireRPM = 600;
 	CanFire = true;

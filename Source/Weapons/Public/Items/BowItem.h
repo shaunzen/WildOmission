@@ -34,6 +34,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimSequence* DrawnEquipPose;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* DrawMontage;
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* DrawItemMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* ReleaseMontage;
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	UAnimMontage* ReleaseItemMontage;
+
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Drawn)
 	bool Drawn;
 

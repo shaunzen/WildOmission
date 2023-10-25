@@ -8,6 +8,7 @@
 #include "EquipableItem.generated.h"
 
 class UEquipComponent;
+struct FInventoryItem;
 
 UCLASS()
 class EQUIPABLEITEMS_API AEquipableItem : public AInventoryEquipableActor
@@ -59,9 +60,11 @@ public:
 	UAnimSequence* GetEquipPose() const;
 
 	FTransform GetSocketOffset() const;
-	FRotator GetRightArmVelocityOffset() const;
-	FRotator GetLeftArmVelocityOffset() const;
+	virtual FRotator GetRightArmVelocityOffset() const;
+	virtual FRotator GetLeftArmVelocityOffset() const;
 	
+	bool IsOwnerOurPlayer() const;
+
 	bool IsLeftHandMounted() const;
 
 	bool PrimaryEnabled() const;
@@ -85,30 +88,14 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	bool UseLeftHandMount;
-	
+
+	// We use ActionMontage for the montage that the arms will play
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* EquipMontage;
 
+	// We use ActionItemMontage for the montage that the actual item will play
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* EquipItemMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* PrimaryMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* PrimaryItemMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* SecondaryMontage;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* SecondaryItemMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* ReloadMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Item")
-	UAnimMontage* ReloadItemMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimSequence* EquipPose;
@@ -127,5 +114,6 @@ protected:
 
 	APawn* GetOwnerPawn() const;
 	UEquipComponent* GetOwnerEquipComponent() const;
+	FInventoryItem* FindInInventory() const;
 
 };

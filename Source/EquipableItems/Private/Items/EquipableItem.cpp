@@ -3,6 +3,8 @@
 
 #include "Items/EquipableItem.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Components/InventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -30,13 +32,9 @@ AEquipableItem::AEquipableItem()
 	RootComponent = MeshComponent;
 
 	EquipMontage = nullptr;
+
+	// TODO move these to child classes
 	EquipItemMontage = nullptr;
-	PrimaryMontage = nullptr;
-	PrimaryItemMontage = nullptr;
-	SecondaryMontage = nullptr;
-	SecondaryItemMontage = nullptr;
-	ReloadMontage = nullptr;
-	ReloadItemMontage = nullptr;
 	EquipPose = nullptr;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipMontageAsset(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Equip_01_Montage"));
@@ -80,6 +78,29 @@ UEquipComponent* AEquipableItem::GetOwnerEquipComponent() const
 	}
 
 	return GetOwner()->FindComponentByClass<UEquipComponent>();
+}
+
+FInventoryItem* AEquipableItem::FindInInventory() const
+{
+	UInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UInventoryComponent>();
+	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = Owner->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventory == nullptr || OwnerInventoryManipulatorComponent == nullptr)
+	{
+		return nullptr;
+	}
+
+	FInventoryItem* InventoryItem = OwnerInventory->FindItemWithUniqueID(UniqueID);
+	if (InventoryItem == nullptr)
+	{
+		if (!OwnerInventoryManipulatorComponent->SelectedItemHasUniqueID(UniqueID))
+		{
+			return nullptr;
+		}
+
+		InventoryItem = OwnerInventoryManipulatorComponent->GetSelectedItemAddress();
+	}
+
+	return InventoryItem;
 }
 
 // Called every frame
@@ -212,6 +233,23 @@ FRotator AEquipableItem::GetRightArmVelocityOffset() const
 FRotator AEquipableItem::GetLeftArmVelocityOffset() const
 {
 	return LeftArmVelocityOffset;
+}
+
+bool AEquipableItem::IsOwnerOurPlayer() const
+{
+	APawn* OwnerPawn = GetOwnerPawn();
+	if (OwnerPawn == nullptr)
+	{
+		return false;
+	}
+
+	AController* OwnerPawnController = OwnerPawn->GetController();
+	if (OwnerPawnController == nullptr)
+	{
+		return false;
+	}
+
+	return OwnerPawn->IsLocallyControlled() && OwnerPawnController->IsPlayerController();
 }
 
 bool AEquipableItem::IsLeftHandMounted() const

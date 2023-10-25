@@ -17,6 +17,8 @@ static TSubclassOf<UBuildingHammerWidget> WidgetClass = nullptr;
 
 ABuildingHammerItem::ABuildingHammerItem()
 {
+	DealDamageToActors = false;
+
 	ToolType = BUILD;
 	EffectiveRangeCentimeters = 300.0f;
 	MaxRepairAmount = 15.0f;
@@ -28,6 +30,13 @@ ABuildingHammerItem::ABuildingHammerItem()
 	{
 		WidgetClass = BuildingHammerWidgetBlueprint.Class;
 	}
+}
+
+void ABuildingHammerItem::OnPrimaryHeld()
+{
+	Super::OnPrimaryHeld();
+
+	Swing();
 }
 
 void ABuildingHammerItem::OnSecondaryPressed()
@@ -71,38 +80,6 @@ void ABuildingHammerItem::OnSecondaryPressed()
 	Widget->Show(this, HitDeployable);
 }
 
-void ABuildingHammerItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
-{
-	PlayCameraShake();
-
-	FHitResult HitResult;
-	if (!LineTraceOnVisibility(HitResult) || GetOwnerEquipComponent() == nullptr)
-	{
-		return;
-	}
-
-	const FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(GetOwnerEquipComponent()->GetOwnerControlRotation());
-
-	if (FromFirstPersonInstance || !GetOwnerPawn()->IsLocallyControlled())
-	{
-		PlayImpactSound(HitResult);
-		SpawnImpactParticles(HitResult, OwnerCharacterLookVector);
-		//SpawnImpactDecal(HitResult);
-	}
-
-	if (!HasAuthority())
-	{
-		return;
-	}
-	
-	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
-	if (HitDeployable)
-	{
-		AttemptDeployableRepair(HitDeployable, HitResult, OwnerCharacterLookVector);
-		UpdateDurability();
-	}
-
-}
 
 void ABuildingHammerItem::OnUnequip()
 {
@@ -142,7 +119,7 @@ void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 	OwnerInventoryComponent->RemoveItem(UpgradeCost);
 
 	HitBuildingBlock->Upgrade();
-	UpdateDurability();
+	DecrementDurability();
 }
 
 void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
@@ -169,7 +146,7 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 	OwnerInventoryComponent->AddItem(Refund);
 
 	HitDeployable->Destroy();
-	UpdateDurability();
+	DecrementDurability();
 }
 
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const
@@ -246,6 +223,24 @@ FInventoryItem ABuildingHammerItem::GetDestructionRefundForDeployable(ADeployabl
 	RefundItem.Name = GetResourceIDFromMaterialType(Deployable->GetMaterialType());
 	RefundItem.Quantity = FMath::Clamp(Deployable->GetCurrentDurability() * 0.25f, 1, 100);
 	return RefundItem;
+}
+
+void ABuildingHammerItem::OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance)
+{
+	Super::OnSwingImpact(HitResult, OwnerCharacterLookVector, FromFirstPersonInstance);
+	
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
+	if (HitDeployable == nullptr)
+	{
+		return;
+	}
+	
+	AttemptDeployableRepair(HitDeployable, HitResult, OwnerCharacterLookVector);
 }
 
 void ABuildingHammerItem::ClearWidget()

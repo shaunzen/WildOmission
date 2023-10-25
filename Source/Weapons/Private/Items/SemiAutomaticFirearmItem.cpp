@@ -25,5 +25,5 @@ void ASemiAutomaticFirearmItem::OnPrimaryPressed()
 		return;
 	}
 
-	GetOwnerEquipComponent()->PlayItemMontage(PrimaryMontage, PrimaryItemMontage);
+	GetOwnerEquipComponent()->PlayItemMontage(FireMontage, FireItemMontage);
 }

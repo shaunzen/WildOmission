@@ -18,9 +18,8 @@ class DEPLOYABLES_API ABuildingHammerItem : public AToolItem
 public:
 	ABuildingHammerItem();
 
+	virtual void OnPrimaryHeld() override;
 	virtual void OnSecondaryPressed() override;
-
-	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
 
 	virtual void OnUnequip() override;
 
@@ -33,6 +32,9 @@ public:
 	static FName GetResourceIDFromMaterialType(TEnumAsByte<EToolType> MaterialType);
 	static FInventoryItem GetUpgradeCostForBuildingBlock(ABuildingBlock* BuildingBlock);
 	static FInventoryItem GetDestructionRefundForDeployable(ADeployable* Deployable);
+
+protected:
+	virtual void OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance) override;
 
 private:
 	UPROPERTY(EditDefaultsOnly)

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Items/EquipableItem.h"
+#include "Items/SwingableItem.h"
 #include "TorchItem.generated.h"
 
 class UNiagaraSystem;
@@ -12,7 +12,7 @@ class UAudioComponent;
 class UPointLightComponent;
 
 UCLASS()
-class EQUIPABLEITEMS_API ATorchItem : public AEquipableItem
+class EQUIPABLEITEMS_API ATorchItem : public ASwingableItem
 {
 	GENERATED_BODY()
 	
@@ -21,10 +21,14 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void OnPrimaryPressed() override;
+
 	virtual void OnSecondaryPressed() override;
 	virtual void OnSecondaryAnimationClimax(bool FromFirstPersonInstance) override;
 
 	virtual void OnUnequip() override;
+
+	virtual FRotator GetRightArmVelocityOffset() const override;
 
 private:
 	UPROPERTY(VisibleInstanceOnly, Replicated, ReplicatedUsing = OnRep_IsBurning)
@@ -59,9 +63,6 @@ private:
 
 	UFUNCTION()
 	void OnRep_IsBurning();
-
-	UFUNCTION()
-	void DecrementDurability();
 
 	UPROPERTY()
 	FTimerHandle DecrementDurabilityTimerHandle;
