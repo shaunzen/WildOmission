@@ -153,6 +153,11 @@ void UEquipComponent::UpdateControlRotation(const FRotator& NewControlRotation)
 
 FRotator UEquipComponent::GetOwnerControlRotation() const
 {
+	if (OwnerReplicatedControlRotation == FRotator::ZeroRotator)
+	{
+		return GetOwner()->GetActorRotation();
+	}
+
 	return OwnerReplicatedControlRotation;
 }
 

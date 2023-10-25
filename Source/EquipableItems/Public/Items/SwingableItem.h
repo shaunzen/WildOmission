@@ -54,4 +54,9 @@ protected:
 	
 	void PlayCameraShake();
 
+private:
+	void PlayHitmarkerSound(bool Headshot);
+	
+	FVector GetTraceStart() const;
+	
 };

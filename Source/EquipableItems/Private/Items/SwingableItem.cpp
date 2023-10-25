@@ -53,7 +53,7 @@ void ASwingableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
 	Super::OnPrimaryAnimationClimax(FromFirstPersonInstance);
 
-	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	const UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr)
 	{
 		return;
@@ -61,7 +61,7 @@ void ASwingableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 	PlayCameraShake();
 
-	FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(OwnerEquipComponent->GetOwnerControlRotation());
+	const FVector OwnerCharacterLookVector = UKismetMathLibrary::GetForwardVector(OwnerEquipComponent->GetOwnerControlRotation());
 
 	FHitResult HitResult;
 
@@ -70,8 +70,8 @@ void ASwingableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	CollisionParams.bTraceComplex = true;
 	CollisionParams.bReturnPhysicalMaterial = true;
 
-	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
-	FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
+	const FVector Start = GetTraceStart();
+	const FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
 	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
@@ -105,11 +105,12 @@ void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& O
 			if (HitResult.BoneName == TEXT("Head"))
 			{
 				HeadshotDamage = 25.0f;
-				GetOwnerEquipComponent()->Client_PlayHeadshotHitmarkerSound();
+
+				PlayHitmarkerSound(true);
 			}
 			else
 			{
-				GetOwnerEquipComponent()->Client_PlayHitmarkerSound();
+				PlayHitmarkerSound(false);
 			}
 
 			FPointDamageEvent HitByToolEvent((100.0f + HeadshotDamage) * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
@@ -230,4 +231,38 @@ void ASwingableItem::PlayCameraShake()
 	}
 
 	OwnerPlayerController->ClientStartCameraShake(SwingCameraShake);
+}
+
+void ASwingableItem::PlayHitmarkerSound(bool Headshot)
+{
+	if (!IsOwnerOurPlayer())
+	{
+		return;
+	}
+
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	Headshot ? OwnerEquipComponent->Client_PlayHeadshotHitmarkerSound()
+		: OwnerEquipComponent->Client_PlayHitmarkerSound();
+}
+
+FVector ASwingableItem::GetTraceStart() const
+{
+	APawn* OwnerPawn = GetOwnerPawn();
+	if (OwnerPawn == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+	
+	UCameraComponent* OwnerCameraComponent = OwnerPawn->FindComponentByClass<UCameraComponent>();
+	if (OwnerCameraComponent)
+	{
+		return OwnerCameraComponent->GetComponentLocation();
+	}
+
+	return OwnerPawn->GetActorLocation();
 }

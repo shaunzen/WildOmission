@@ -8,30 +8,12 @@
 
 AMonsterArmsItem::AMonsterArmsItem()
 {
+	DamageMultiplier = 0.3f;
 }
 
-void AMonsterArmsItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
+void AMonsterArmsItem::OnPrimaryHeld()
 {
-	if (!HasAuthority() || GetOwnerPawn() == nullptr)
-	{
-		return;
-	}
+	Super::OnPrimaryHeld();
 
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(GetOwner());
-	const FVector Start = GetOwner()->GetActorLocation();
-	const FVector ForwardVector = GetOwner()->GetActorForwardVector();
-	const FVector End = Start + (ForwardVector * EffectiveRangeCentimeters);
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
-	{
-		return;
-	}
-	
-	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
-	if (HitPawn)
-	{
-		FPointDamageEvent HitByMonsterEvent(30.0f, HitResult, GetOwner()->GetActorForwardVector(), nullptr);
-		HitPawn->TakeDamage(30.0f, HitByMonsterEvent, GetOwnerPawn()->GetController(), this);
-	}
+	Swing();
 }
