@@ -22,6 +22,7 @@ ASwingableItem::ASwingableItem()
 	DamageMultiplier = 1.0f;
 	EffectiveRangeCentimeters = 150.0f;
 	SwingSpeedRate = 1.0f;
+	DealDamageToActors = true;
 	SwingCameraShake = nullptr;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> SwingMontageObject(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/Items/A_Human_Tool_Swing_01_Montage"));
@@ -40,7 +41,7 @@ ASwingableItem::ASwingableItem()
 void ASwingableItem::Swing()
 {
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
-	if (OwnerEquipComponent == nullptr)
+	if (OwnerEquipComponent == nullptr || OwnerEquipComponent->IsMontagePlaying(SwingMontage))
 	{
 		return;
 	}
@@ -95,18 +96,21 @@ void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& O
 		return;
 	}
 
-	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
-	if (HitPawn)
+	if (DealDamageToActors)
 	{
-		FPointDamageEvent HitByToolEvent(20.0f * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
-		HitPawn->TakeDamage(20.0f * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
-	}
-	else
-	{
-		float DamageAmount = 5.0f;
+		APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
+		if (HitPawn)
+		{
+			FPointDamageEvent HitByToolEvent(100.0f * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
+			HitPawn->TakeDamage(100.0f * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+		}
+		else
+		{
+			float DamageAmount = 20.0f;
 
-		FPointDamageEvent HitByToolEvent(DamageAmount * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
-		HitResult.GetActor()->TakeDamage(DamageAmount * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+			FPointDamageEvent HitByToolEvent(DamageAmount * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
+			HitResult.GetActor()->TakeDamage(DamageAmount * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+		}
 	}
 
 	DecrementDurability();
@@ -114,13 +118,13 @@ void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& O
 
 void ASwingableItem::DecrementDurability()
 {
-	AActor* Owner = GetOwner();
-	if (Owner == nullptr)
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
 	{
 		return;
 	}
 
-	UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
+	UPlayerInventoryComponent* OwnerInventory = OwnerActor->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventory == nullptr)
 	{
 		return;

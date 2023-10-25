@@ -28,6 +28,8 @@ ATorchItem::ATorchItem()
 	SpawnedBurningSound = nullptr;
 	SpawnedLightComponent = nullptr;
 
+	DamageMultiplier = 0.1f;
+
 	IsBurning = false;
 }
 
@@ -36,6 +38,13 @@ void ATorchItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ATorchItem, IsBurning);
+}
+
+void ATorchItem::OnPrimaryPressed()
+{
+	Super::OnPrimaryPressed();
+
+	Swing();
 }
 
 void ATorchItem::OnSecondaryPressed()
@@ -80,29 +89,6 @@ FRotator ATorchItem::GetRightArmVelocityOffset() const
 void ATorchItem::OnRep_IsBurning()
 {
 	IsBurning ? StartFireEffects() : StopFireEffects();
-}
-
-void ATorchItem::DecrementDurability()
-{
-	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
-	if (OwnerInventoryComponent == nullptr)
-	{
-		return;
-	}
-
-	FInventorySlot* FromSlot = OwnerInventoryComponent->GetSlot(GetFromSlotIndex());
-	if (FromSlot == nullptr)
-	{
-		return;
-	}
-
-	int32 CurrentDurability = FromSlot->Item.GetStat(TEXT("Durability"));
-	FromSlot->Item.SetStat(TEXT("Durability"), CurrentDurability - 1);
-
-	if (FromSlot->Item.GetStat(TEXT("Durability")) <= 0)
-	{
-		OwnerInventoryComponent->RemoveHeldItem();
-	}
 }
 
 USkeletalMeshComponent* ATorchItem::GetMeshComponentToAttachTo() const

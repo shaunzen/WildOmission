@@ -38,6 +38,9 @@ protected:
 	float SwingSpeedRate;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	bool DealDamageToActors;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TSubclassOf<UCameraShakeBase> SwingCameraShake;
 
 	virtual void OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance);
