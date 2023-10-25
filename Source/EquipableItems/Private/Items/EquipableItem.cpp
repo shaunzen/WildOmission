@@ -235,6 +235,23 @@ FRotator AEquipableItem::GetLeftArmVelocityOffset() const
 	return LeftArmVelocityOffset;
 }
 
+bool AEquipableItem::IsOwnerOurPlayer() const
+{
+	APawn* OwnerPawn = GetOwnerPawn();
+	if (OwnerPawn == nullptr)
+	{
+		return false;
+	}
+
+	AController* OwnerPawnController = OwnerPawn->GetController();
+	if (OwnerPawnController == nullptr)
+	{
+		return false;
+	}
+
+	return OwnerPawn->IsLocallyControlled() && OwnerPawnController->IsPlayerController();
+}
+
 bool AEquipableItem::IsLeftHandMounted() const
 {
 	return UseLeftHandMount;

@@ -40,6 +40,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TSubclassOf<UCameraShakeBase> SwingCameraShake;
 
+	virtual void OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance);
+
 	UFUNCTION()
 	void DecrementDurability();
 

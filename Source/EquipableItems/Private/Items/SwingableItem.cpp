@@ -2,6 +2,7 @@
 
 
 #include "Items/SwingableItem.h"
+#include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -34,12 +35,17 @@ ASwingableItem::ASwingableItem()
 	{
 		SwingCameraShake = DefaultSwingCameraShakeBlueprint.Class;
 	}
-
 }
 
 void ASwingableItem::Swing()
 {
-	// TODO Swinging
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerEquipComponent->PlayItemMontage(SwingMontage, SwingItemMontage);
 }
 
 void ASwingableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
@@ -72,7 +78,12 @@ void ASwingableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 		return;
 	}
 
-	if (FromFirstPersonInstance || !GetOwnerPawn()->IsLocallyControlled())
+	OnSwingImpact(HitResult, OwnerCharacterLookVector, FromFirstPersonInstance);
+}
+
+void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance)
+{
+	if (FromFirstPersonInstance || !IsOwnerOurPlayer())
 	{
 		PlayImpactSound(HitResult);
 		SpawnImpactParticles(HitResult, OwnerCharacterLookVector);
@@ -103,7 +114,30 @@ void ASwingableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 
 void ASwingableItem::DecrementDurability()
 {
-	// TODO this
+	AActor* Owner = GetOwner();
+	if (Owner == nullptr)
+	{
+		return;
+	}
+
+	UPlayerInventoryComponent* OwnerInventory = Owner->FindComponentByClass<UPlayerInventoryComponent>();
+	if (OwnerInventory == nullptr)
+	{
+		return;
+	}
+
+	FInventorySlot* FromSlot = OwnerInventory->GetSlot(GetFromSlotIndex());
+	if (FromSlot == nullptr)
+	{
+		return;
+	}
+
+	const int32 CurrentDurability = FromSlot->Item.GetStat(TEXT("Durability"));
+	const int32 NewDurability = CurrentDurability - 1;
+
+	FromSlot->Item.SetStat(TEXT("Durability"), NewDurability);
+
+	OwnerInventory->RequestInventoryRefresh();
 }
 
 void ASwingableItem::PlayImpactSound(const FHitResult& HitResult)

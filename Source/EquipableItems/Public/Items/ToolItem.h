@@ -17,8 +17,7 @@ public:
 
 	virtual void OnPrimaryHeld() override;
 
-	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
-
+	
 	float GetGatherMultiplier() const;
 	
 	bool IsQualityTool() const;
@@ -32,5 +31,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	bool QualityTool;
+
+	virtual void OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance) override;
 
 };

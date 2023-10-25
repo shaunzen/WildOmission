@@ -63,6 +63,8 @@ public:
 	virtual FRotator GetRightArmVelocityOffset() const;
 	virtual FRotator GetLeftArmVelocityOffset() const;
 	
+	bool IsOwnerOurPlayer() const;
+
 	bool IsLeftHandMounted() const;
 
 	bool PrimaryEnabled() const;
