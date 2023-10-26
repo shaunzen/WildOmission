@@ -94,6 +94,9 @@ void ASaveHandler::LoadWorld()
 	SetLoadingSubtitle(TEXT("Loading objects."));
 	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves, SaveFile->Version);
 
+	// Make sure there is at least 20 of all collectables
+	WorldGenerationHandler->PreventExtinction();
+
 	FTimerHandle ActorLoadedTimerHandle;
 	FTimerDelegate ActorLoadedDelegate;
 	ActorLoadedDelegate.BindUObject(this, &ASaveHandler::StopLoading);

@@ -15,12 +15,8 @@ UPreventExtinctionComponent::UPreventExtinctionComponent()
 	// ...
 }
 
-
-// Called when the game starts
-void UPreventExtinctionComponent::BeginPlay()
+void UPreventExtinctionComponent::PreventExtinction()
 {
-	Super::BeginPlay();
-
 	AWorldGenerationHandler* OwnerWorldGenerationHandler = Cast<AWorldGenerationHandler>(GetOwner());
 	if (OwnerWorldGenerationHandler == nullptr)
 	{
@@ -50,7 +46,7 @@ void UPreventExtinctionComponent::RunChecksForBiome(FBiomeGenerationData* Biome)
 	{
 		TArray<AActor*> CollectableActorsInWorld;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), Collectable.BlueprintClass, CollectableActorsInWorld);
-		if (CollectableActorsInWorld.Num() > 0)
+		if (CollectableActorsInWorld.Num() > FWorldGenerationSettings().MinCollectableCount)
 		{
 			continue;
 		}
@@ -61,7 +57,7 @@ void UPreventExtinctionComponent::RunChecksForBiome(FBiomeGenerationData* Biome)
 
 void UPreventExtinctionComponent::SpawnCollectables(const FSpawnData& CollectableData)
 {
-	const int32 SpawnCount = 10;
+	const int32 SpawnCount = 20;
 	FTransform SpawnTransform;
 	if (!AWorldGenerationHandler::FindSpawnTransformRandomLocation(GetWorld(), SpawnTransform, FWorldGenerationSettings(), true))
 	{

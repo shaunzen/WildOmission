@@ -77,6 +77,16 @@ void AWorldGenerationHandler::Generate(const FWorldGenerationSettings& Generatio
 	}
 }
 
+void AWorldGenerationHandler::PreventExtinction()
+{
+	if (PreventExtinctionComponent == nullptr)
+	{
+		return;
+	}
+
+	PreventExtinctionComponent->PreventExtinction();
+}
+
 FVector2D AWorldGenerationHandler::GetWorldSizeMeters()
 {
 	FWorldGenerationSettings Settings;

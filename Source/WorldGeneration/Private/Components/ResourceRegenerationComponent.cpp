@@ -25,11 +25,11 @@ void UResourceRegenerationComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FTimerHandle RegenerationTimerHandle;
-	FTimerDelegate RegenerationTimerDelegate;
-
-	RegenerationTimerDelegate.BindUObject(this, &UResourceRegenerationComponent::CheckNodeRegenerationConditions);
-	GetWorld()->GetTimerManager().SetTimer(RegenerationTimerHandle, RegenerationTimerDelegate, 60.0f, true);
+	FTimerHandle NodeRegenerationTimerHandle;
+	FTimerDelegate NodeRegenerationTimerDelegate;
+	
+	NodeRegenerationTimerDelegate.BindUObject(this, &UResourceRegenerationComponent::CheckNodeRegenerationConditions);
+	GetWorld()->GetTimerManager().SetTimer(NodeRegenerationTimerHandle, NodeRegenerationTimerDelegate, 60.0f, true);
 }
 
 void UResourceRegenerationComponent::CheckNodeRegenerationConditions()

@@ -25,6 +25,8 @@ public:
 	void GenerateLevel();
 	FOnGenerationCompleteSignature OnGenerationComplete;
 
+	void PreventExtinction();
+
 	FVector2D GetWorldSizeMeters();
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);

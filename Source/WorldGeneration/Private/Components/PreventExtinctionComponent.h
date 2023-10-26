@@ -17,10 +17,8 @@ class UPreventExtinctionComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UPreventExtinctionComponent();
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	
+	void PreventExtinction();
 
 private:
 	void RunChecksForBiome(FBiomeGenerationData* Biome);
