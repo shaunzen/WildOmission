@@ -41,9 +41,14 @@ void AToolItem::OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerC
 		return;
 	}
 	
-	AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitResult.GetActor());
-	UHarvestableComponent* HitHarvestableComponent = HitResult.GetActor()->FindComponentByClass<UHarvestableComponent>();
-	APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
+	AActor* HitActor = HitResult.GetActor();
+	if (HitActor == nullptr)
+	{
+		return;
+	}
+
+	AHarvestableResource* HitHarvestable = Cast<AHarvestableResource>(HitActor);
+	UHarvestableComponent* HitHarvestableComponent = HitActor->FindComponentByClass<UHarvestableComponent>();
 	if (HitHarvestable != nullptr && (HitHarvestable->GetRequiredToolType() == ToolType || ToolType == EToolType::MULTI))
 	{
 		HitHarvestable->OnHarvest(GetOwner(), GatherMultiplier, QualityTool);

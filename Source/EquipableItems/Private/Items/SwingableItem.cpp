@@ -98,7 +98,8 @@ void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& O
 
 	if (DealDamageToActors)
 	{
-		APawn* HitPawn = Cast<APawn>(HitResult.GetActor());
+		AActor* HitActor = HitResult.GetActor();
+		APawn* HitPawn = Cast<APawn>(HitActor);
 		if (HitPawn)
 		{
 			float HeadshotDamage = 0.0f;
@@ -116,12 +117,12 @@ void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& O
 			FPointDamageEvent HitByToolEvent((100.0f + HeadshotDamage) * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
 			HitPawn->TakeDamage((100.0f + HeadshotDamage) * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
 		}
-		else
+		else if (HitActor)
 		{
 			float DamageAmount = 20.0f;
 
 			FPointDamageEvent HitByToolEvent(DamageAmount * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
-			HitResult.GetActor()->TakeDamage(DamageAmount * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+			HitActor->TakeDamage(DamageAmount * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
 		}
 	}
 
