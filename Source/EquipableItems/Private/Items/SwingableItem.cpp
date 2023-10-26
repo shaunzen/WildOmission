@@ -153,7 +153,7 @@ void ASwingableItem::DecrementDurability()
 
 	FromSlot->Item.SetStat(TEXT("Durability"), NewDurability);
 
-	if (NewDurability >= 0)
+	if (NewDurability <= 0)
 	{
 		OwnerInventory->RemoveHeldItem();
 	}
