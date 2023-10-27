@@ -417,7 +417,7 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = false;
-	SessionSettings.NumPublicConnections = 5;
+	SessionSettings.NumPublicConnections = 16;
 	SessionSettings.bShouldAdvertise = true;
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.bUseLobbiesIfAvailable = true;
@@ -531,7 +531,11 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		FServerData Data;
 		Data.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
 		Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
+
+
+
 		Data.HostUsername = SearchResult.Session.OwningUserName;
+		
 		FString ServerName;
 		if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
 		{
@@ -542,6 +546,14 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 			Data.Name = "Invalid Name";
 		}
 		ServerNames.Add(Data);
+
+		// TODO these mother fuckers won't help me validate this
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(
+			TEXT("Session: %s, Connected Public Players: %i, Connected Private Players: %i"),
+			*ServerName,
+			Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections,
+			Data.MaxPlayers - SearchResult.Session.NumOpenPrivateConnections
+		));
 	}
 
 	MainMenuWidget->SetServerList(ServerNames);
