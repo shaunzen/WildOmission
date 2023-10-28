@@ -17,8 +17,17 @@ class DEPLOYABLES_API ATornadoSiren : public ADeployable
 public:
 	ATornadoSiren();
 
+	void SoundAlarm();
+	void StopAlarm();
+
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;
+
+	UFUNCTION()
+	void CheckForTornado();
 
 };
