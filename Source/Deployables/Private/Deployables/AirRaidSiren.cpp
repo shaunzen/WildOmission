@@ -39,26 +39,46 @@ void AAirRaidSiren::SoundAlarm()
 		return;
 	}
 
-	AudioComponent->Activate();
-	AudioComponent->Play();
+	if (AudioComponent)
+	{
+		AudioComponent->Activate();
+		AudioComponent->Play();
+	}
+
+	if (MeshComponent)
+	{
+		MeshComponent->SetCustomPrimitiveDataFloat(0, 1.0f);
+	}
 
 	FTimerHandle StopAlarmTimerHandle;
-	World->GetTimerManager().SetTimer(StopAlarmTimerHandle, 15.0f, false);
+	World->GetTimerManager().SetTimer(StopAlarmTimerHandle, 60.0f, false);
+	
+	CurrentlyActive = true;
 }
 
 void AAirRaidSiren::StopAlarm()
 {
-	if (AudioComponent == nullptr)
+	if (AudioComponent)
 	{
-		return;
+		AudioComponent->Stop();
+		AudioComponent->Deactivate();
 	}
 
-	AudioComponent->Stop();
-	AudioComponent->Deactivate();
+	if (MeshComponent)
+	{
+		MeshComponent->SetCustomPrimitiveDataFloat(0, 0.0f);
+	}
+
+	CurrentlyActive = false;
 }
 
 void AAirRaidSiren::CheckForTornado()
 {
+	if (CurrentlyActive)
+	{
+		return;
+	}
+	
 	// Get The Weather Handler
 	AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
 	if (WeatherHandler == nullptr)

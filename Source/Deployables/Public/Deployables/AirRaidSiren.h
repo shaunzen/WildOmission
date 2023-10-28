@@ -27,6 +27,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;
 
+	bool CurrentlyActive;
+
 	UFUNCTION()
 	void CheckForTornado();
 
