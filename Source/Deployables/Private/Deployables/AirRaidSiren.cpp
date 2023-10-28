@@ -1,20 +1,20 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Deployables/TornadoSiren.h"
+#include "Deployables/AirRaidSiren.h"
 #include "WeatherHandler.h"
 #include "Actors/Storm.h"
 #include "Actors/Tornado.h"
 #include "Components/AudioComponent.h"
 
-ATornadoSiren::ATornadoSiren()
+AAirRaidSiren::AAirRaidSiren()
 {
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	AudioComponent->SetAutoActivate(false);
 	AudioComponent->SetupAttachment(RootComponent);
 }
 
-void ATornadoSiren::BeginPlay()
+void AAirRaidSiren::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -26,12 +26,12 @@ void ATornadoSiren::BeginPlay()
 
 	FTimerHandle CheckForTornadoTimerHandle;
 	FTimerDelegate CheckForTornadoTimerDelegate;
-	CheckForTornadoTimerDelegate.BindUObject(this, &ATornadoSiren::CheckForTornado);
+	CheckForTornadoTimerDelegate.BindUObject(this, &AAirRaidSiren::CheckForTornado);
 
 	World->GetTimerManager().SetTimer(CheckForTornadoTimerHandle, CheckForTornadoTimerDelegate, 10.0f, true);
 }
 
-void ATornadoSiren::SoundAlarm()
+void AAirRaidSiren::SoundAlarm()
 {
 	UWorld* World = GetWorld();
 	if (World == nullptr || AudioComponent == nullptr)
@@ -46,7 +46,7 @@ void ATornadoSiren::SoundAlarm()
 	World->GetTimerManager().SetTimer(StopAlarmTimerHandle, 15.0f, false);
 }
 
-void ATornadoSiren::StopAlarm()
+void AAirRaidSiren::StopAlarm()
 {
 	if (AudioComponent == nullptr)
 	{
@@ -57,7 +57,7 @@ void ATornadoSiren::StopAlarm()
 	AudioComponent->Deactivate();
 }
 
-void ATornadoSiren::CheckForTornado()
+void AAirRaidSiren::CheckForTornado()
 {
 	// Get The Weather Handler
 	AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();

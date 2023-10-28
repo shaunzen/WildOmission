@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Deployables/Deployable.h"
-#include "TornadoSiren.generated.h"
+#include "AirRaidSiren.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DEPLOYABLES_API ATornadoSiren : public ADeployable
+class DEPLOYABLES_API AAirRaidSiren : public ADeployable
 {
 	GENERATED_BODY()
 
 public:
-	ATornadoSiren();
+	AAirRaidSiren();
 
 	void SoundAlarm();
 	void StopAlarm();
