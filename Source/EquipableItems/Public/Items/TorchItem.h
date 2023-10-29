@@ -20,6 +20,8 @@ public:
 	ATorchItem();
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	virtual void Destroyed() override;
 
 	virtual void OnPrimaryPressed() override;
 
@@ -27,7 +29,7 @@ public:
 	virtual void OnSecondaryAnimationClimax(bool FromFirstPersonInstance) override;
 
 	virtual void OnUnequip() override;
-
+	
 	virtual FRotator GetRightArmVelocityOffset() const override;
 
 private:

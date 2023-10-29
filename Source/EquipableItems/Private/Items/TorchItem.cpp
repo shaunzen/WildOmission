@@ -40,6 +40,13 @@ void ATorchItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	DOREPLIFETIME(ATorchItem, IsBurning);
 }
 
+void ATorchItem::Destroyed()
+{
+	Super::Destroyed();
+
+	StopFireEffects();
+}
+
 void ATorchItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
