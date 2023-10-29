@@ -23,6 +23,7 @@ void UPlayerSaveHandlerComponent::BeginPlay()
 	
 	FTimerHandle UpdatePendingTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveHandlerComponent::AddAllToPending, 60.0f, true);
+
 }
 
 void UPlayerSaveHandlerComponent::AddToPending(APlayerController* PlayerController)
@@ -82,6 +83,12 @@ void UPlayerSaveHandlerComponent::AddAllToPending()
 {
 	for (APlayerController* PlayerController : GetAllPlayerControllers())
 	{
+		ISavablePlayer* SavablePlayer = Cast<ISavablePlayer>(PlayerController);
+		if (SavablePlayer == nullptr || SavablePlayer->IsStillLoading())
+		{
+			continue;
+		}
+
 		AddToPending(PlayerController);
 	}
 }

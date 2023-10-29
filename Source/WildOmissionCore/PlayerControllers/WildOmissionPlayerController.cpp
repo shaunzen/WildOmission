@@ -102,7 +102,12 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& PlayerSave
 	StoredPlayerSave = PlayerSave;
 }
 
-FString AWildOmissionPlayerController::GetUniqueID()
+bool AWildOmissionPlayerController::IsStillLoading() const
+{
+	return bIsStillLoading;
+}
+
+FString AWildOmissionPlayerController::GetUniqueID() const
 {
 	FString ID = TEXT("");
 
@@ -114,7 +119,7 @@ FString AWildOmissionPlayerController::GetUniqueID()
 	return ID;
 }
 
-bool AWildOmissionPlayerController::IsHost()
+bool AWildOmissionPlayerController::IsHost() const
 {
 	return GetLocalRole() == ENetRole::ROLE_Authority && GetRemoteRole() == ENetRole::ROLE_SimulatedProxy;
 }

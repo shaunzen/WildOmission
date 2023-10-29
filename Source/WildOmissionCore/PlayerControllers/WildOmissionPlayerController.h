@@ -29,8 +29,9 @@ public:
 	// Begin ISavablePlayer Implementation
 	virtual FPlayerSave SavePlayer() override;
 	virtual void LoadPlayerSave(const FPlayerSave& PlayerSave) override;
-	virtual FString GetUniqueID() override;
-	virtual bool IsHost() override;
+	virtual bool IsStillLoading() const override;
+	virtual FString GetUniqueID() const override;
+	virtual bool IsHost() const override;
 	// End ISavablePlayer Implementation
 
 	// Begin IPlayerControllerMessageSender Implementation

@@ -25,11 +25,13 @@ class SAVESYSTEM_API ISavablePlayer
 public:
 	virtual FPlayerSave SavePlayer() = 0;
 	virtual void LoadPlayerSave(const FPlayerSave& Save) = 0;
+	
+	virtual bool IsStillLoading() const = 0;
 
 	virtual void Save() = 0;
 
 	UFUNCTION(BlueprintCallable)
-	virtual FString GetUniqueID() = 0;
-	virtual bool IsHost() = 0;
+	virtual FString GetUniqueID() const = 0;
+	virtual bool IsHost() const = 0;
 
 };
