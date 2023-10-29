@@ -8,7 +8,7 @@ public class WildOmissionTarget : TargetRules
 	public WildOmissionTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		bUsesSteam = true;
 
