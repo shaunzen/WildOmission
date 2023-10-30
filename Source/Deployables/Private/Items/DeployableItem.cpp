@@ -70,18 +70,25 @@ void ADeployableItem::OnPrimaryPressed()
 		return;
 	}
 	
-	if (GetOwner() == nullptr)
+	UWorld* World = GetWorld();
+	AActor* OwnerActor = GetOwner();
+	if (World == nullptr || OwnerActor == nullptr)
 	{
 		return;
 	}
 
-	UPlayerInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
+	UPlayerInventoryComponent* OwnerInventoryComponent = OwnerActor->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)
 	{
 		return;
 	}
 
-	ADeployable* SpawnedDeployable = GetWorld()->SpawnActor<ADeployable>(DeployableActorClass);
+	ADeployable* SpawnedDeployable = World->SpawnActor<ADeployable>(DeployableActorClass);
+	if (SpawnedDeployable == nullptr)
+	{
+		return;
+	}
+
 	bool SpawnValid = false;
 	SpawnedDeployable->SetActorTransform(GetPlacementTransform(SpawnValid));
 	SpawnedDeployable->OnSpawn();
@@ -134,6 +141,7 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	switch (DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor())
 	{
 	case None:
+		
 		break;
 	case FoundationAnchor:
 		HitAnchor = LineTraceOnChannel(ECC_GameTraceChannel4, AnchorHitResult);
@@ -295,6 +303,7 @@ FRotator ADeployableItem::GetFacePlayerRotation(const FVector& PlacementLocation
 
 float ADeployableItem::GetOffsetFromNearestSnapDegree(const float& InAxis) const
 {
+	// Add to this?
 	float SnapTicks = InAxis / 90.0f;
 	float WholeTicksFromNearestSnapDegree= FMath::Floor(SnapTicks);
 	float OffsetPercentFromNearestSnapDegree = SnapTicks - WholeTicksFromNearestSnapDegree;
