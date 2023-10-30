@@ -67,7 +67,7 @@ void UDeathMenuWidget::QuitButtonClicked()
 		return;
 	}
 
-	GameInstance->ReturnToMainMenu();
+	GameInstance->QuitToMenu();
 
 	Teardown();
 }

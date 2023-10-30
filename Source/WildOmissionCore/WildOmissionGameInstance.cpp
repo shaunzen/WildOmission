@@ -402,6 +402,9 @@ void UWildOmissionGameInstance::Join(const uint32& Index)
 	{
 		return;
 	}
+
+	EndExistingSession();
+
 	MainMenuWidget->Teardown();
 
 	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
@@ -428,6 +431,7 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 	SessionSettings.Set(FRIENDS_ONLY_SETTINGS_KEY, FriendsOnlySession, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(LEVEL_FILE_SETTINGS_KEY, WorldToLoad, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
 
@@ -517,7 +521,7 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		bool IsThisFriendsOnlySession;
 		if (SearchResult.Session.SessionSettings.Get(FRIENDS_ONLY_SETTINGS_KEY, IsThisFriendsOnlySession))
 		{
-			bool IsHostFriend = FriendsInterface->IsFriend(0, *SearchResult.Session.OwningUserId, FString());
+			const bool IsHostFriend = FriendsInterface->IsFriend(0, *SearchResult.Session.OwningUserId, FString());
 			if (IsThisFriendsOnlySession == true && IsHostFriend == false)
 			{
 				continue;
@@ -532,8 +536,6 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		Data.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
 		Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
 
-
-
 		Data.HostUsername = SearchResult.Session.OwningUserName;
 		
 		FString ServerName;
@@ -545,15 +547,8 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		{
 			Data.Name = "Invalid Name";
 		}
-		ServerNames.Add(Data);
 
-		// TODO these mother fuckers won't help me validate this
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(
-			TEXT("Session: %s, Connected Public Players: %i, Connected Private Players: %i"),
-			*ServerName,
-			Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections,
-			Data.MaxPlayers - SearchResult.Session.NumOpenPrivateConnections
-		));
+		ServerNames.Add(Data);
 	}
 
 	MainMenuWidget->SetServerList(ServerNames);
@@ -569,11 +564,14 @@ void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 	if (!SessionInterface->GetResolvedConnectString(SessionName, Address))
 	{
 		UE_LOG(LogOnline, Error, TEXT("Could not resolve connect string"));
+		QuitToMenu();
 		return;
 	}
+
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	if (PlayerController == nullptr)
 	{
+		QuitToMenu();
 		return;
 	}
 
@@ -586,6 +584,11 @@ void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 
 void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString)
 {
+
+	QuitToMenu();
+
+	// TODO prompt explaining that server went down or something
+
 	//TODO goto main menu
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 20.0f, FColor::Red, FString::Printf(TEXT("Error String %s"), *ErrorString));
 	UE_LOG(LogOnline, Error, TEXT("Network failure disconnecting..."));

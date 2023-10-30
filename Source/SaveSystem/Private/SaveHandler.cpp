@@ -144,7 +144,7 @@ void ASaveHandler::ValidateSave()
 {
 	if (CurrentSaveFileName.Len() > 0)
 	{
-		UE_LOG(LogSaveSystem, Warning, TEXT("Failed to validate save file, can't find GameSaveLoadController."));
+		UE_LOG(LogSaveSystem, Display, TEXT("Loading into valid save file: %s."), *CurrentSaveFileName);
 		return;
 	}
 

@@ -328,6 +328,11 @@ void AWildOmissionPlayerController::StopLoading()
 {
 	Server_Spawn();
 	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	if (GameInstance == nullptr)
+	{
+		UE_LOG(LogPlayerController, Warning, TEXT("Couldnt Stop Loading, GameInstance returned a nullptr."));
+		return;
+	}
 	GameInstance->StopLoading();
 }
 
