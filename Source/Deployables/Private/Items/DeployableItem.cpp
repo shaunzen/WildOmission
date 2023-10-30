@@ -303,7 +303,6 @@ FRotator ADeployableItem::GetFacePlayerRotation(const FVector& PlacementLocation
 
 float ADeployableItem::GetOffsetFromNearestSnapDegree(const float& InAxis) const
 {
-	// Add to this?
 	float SnapTicks = InAxis / 90.0f;
 	float WholeTicksFromNearestSnapDegree= FMath::RoundToFloat(SnapTicks);
 	float OffsetPercentFromNearestSnapDegree = SnapTicks - WholeTicksFromNearestSnapDegree;
