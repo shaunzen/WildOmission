@@ -49,7 +49,14 @@ void UWorldCreationWidget::HideInvalidWarning()
 
 bool UWorldCreationWidget::WorldOfSameNameAlreadyExists(const FString& WorldName)
 {
-	return IMenuInterface::WorldAlreadyExists(WorldName);
+	const bool AlreadyExists = IMenuInterface::WorldAlreadyExists(WorldName);
+	
+	if (AlreadyExists)
+	{
+		ShowInvalidWarning(TEXT("World of same name already exists!"));
+	}
+
+	return AlreadyExists;
 }
 
 bool UWorldCreationWidget::WorldContainsInvalidCharacter(const FString& WorldName)
@@ -66,6 +73,7 @@ bool UWorldCreationWidget::WorldContainsInvalidCharacter(const FString& WorldNam
 		WorldName.Contains(TEXT("/")) || WorldName.Contains(TEXT("\\")) ||
 		WorldName.Contains(TEXT("?")) || WorldName.Contains(TEXT("*")))
 	{
+		ShowInvalidWarning(TEXT("World name contains an invalid character!"));
 		return true;
 	}
 
@@ -78,9 +86,9 @@ void UWorldCreationWidget::CreateWorld()
 	FString NewWorldName;
 	NewWorldName = WorldNameInputBox->GetText().ToString();
 
-	if (NewWorldName == TEXT(""))
+	if (NewWorldName.IsEmpty() || WorldOfSameNameAlreadyExists(NewWorldName) || WorldContainsInvalidCharacter(NewWorldName))
 	{
-		UE_LOG(LogMenuSystem, Warning, TEXT("Cannot create a world without a name."));
+		UE_LOG(LogMenuSystem, Warning, TEXT("World name error."));
 		return;
 	}
 
@@ -103,7 +111,7 @@ void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)
 
 	WorldNameInputBox->SetText(FText::FromString(TextString));
 
-	if (TextString.Len() >= 0)
+	if (TextString.IsEmpty())
 	{
 		CreateWorldButton->SetIsEnabled(false);
 	}
