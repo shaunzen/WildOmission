@@ -49,14 +49,7 @@ void UWorldCreationWidget::HideInvalidWarning()
 
 bool UWorldCreationWidget::WorldOfSameNameAlreadyExists(const FString& WorldName)
 {
-	const bool AlreadyExists = IMenuInterface::WorldAlreadyExists(WorldName);
-	
-	if (AlreadyExists)
-	{
-		ShowInvalidWarning(TEXT("World of same name already exists!"));
-	}
-
-	return AlreadyExists;
+	return IMenuInterface::WorldAlreadyExists(WorldName);
 }
 
 bool UWorldCreationWidget::WorldContainsInvalidCharacter(const FString& WorldName)
@@ -73,7 +66,6 @@ bool UWorldCreationWidget::WorldContainsInvalidCharacter(const FString& WorldNam
 		WorldName.Contains(TEXT("/")) || WorldName.Contains(TEXT("\\")) ||
 		WorldName.Contains(TEXT("?")) || WorldName.Contains(TEXT("*")))
 	{
-		ShowInvalidWarning(TEXT("World name contains an invalid character!"));
 		return true;
 	}
 
@@ -116,9 +108,15 @@ void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)
 		CreateWorldButton->SetIsEnabled(false);
 	}
 
-	if (WorldOfSameNameAlreadyExists(TextString) || WorldContainsInvalidCharacter(TextString))
+	if (WorldOfSameNameAlreadyExists(TextString))
 	{
 		CreateWorldButton->SetIsEnabled(false);
+		ShowInvalidWarning(TEXT("World of same name already exists!"));
+	}
+	else if (WorldContainsInvalidCharacter(TextString))
+	{
+		CreateWorldButton->SetIsEnabled(false);
+		ShowInvalidWarning(TEXT("World name contains an invalid character!"));
 	}
 	else
 	{
