@@ -41,3 +41,20 @@ TArray<FString> IMenuInterface::GetAllWorldNames()
 
 	return Saves;
 }
+
+bool IMenuInterface::WorldAlreadyExists(const FString& WorldNameToTest)
+{
+	const FString CorrectedWorldNameToTest = WorldNameToTest.Replace(TEXT(" "), TEXT("_")).ToLower();
+
+	TArray<FString> WorldNames = GetAllWorldNames();
+
+	for (const FString& WorldName : WorldNames)
+	{
+		if (CorrectedWorldNameToTest == WorldName.ToLower())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}

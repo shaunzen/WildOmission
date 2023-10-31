@@ -49,13 +49,26 @@ void UWorldCreationWidget::HideInvalidWarning()
 
 bool UWorldCreationWidget::WorldOfSameNameAlreadyExists(const FString& WorldName)
 {
-	// TODO logic here
-	return false;
+	return IMenuInterface::WorldAlreadyExists(WorldName);
 }
 
 bool UWorldCreationWidget::WorldContainsInvalidCharacter(const FString& WorldName)
 {
-	// TODO logic here
+	if (WorldName.Contains(TEXT("CON")) || WorldName.Contains(TEXT("PRN")) ||
+		WorldName.Contains(TEXT("AUX")) || WorldName.Contains(TEXT("NUL")) ||
+		WorldName.Contains(TEXT("COM1")) || WorldName.Contains(TEXT("COM2")) ||
+		WorldName.Contains(TEXT("COM3")) || WorldName.Contains(TEXT("COM4")) ||
+		WorldName.Contains(TEXT("COM5")) || WorldName.Contains(TEXT("COM6")) ||
+		WorldName.Contains(TEXT("COM7")) || WorldName.Contains(TEXT("COM8")) ||
+		WorldName.Contains(TEXT("COM9")) || WorldName.Contains(TEXT("COM0")) ||
+		WorldName.Contains(TEXT("<")) || WorldName.Contains(TEXT(">")) ||
+		WorldName.Contains(TEXT(":")) || WorldName.Contains(TEXT("\"")) ||
+		WorldName.Contains(TEXT("/")) || WorldName.Contains(TEXT("\\")) ||
+		WorldName.Contains(TEXT("?")) || WorldName.Contains(TEXT("*")))
+	{
+		return true;
+	}
+
 	return false;
 }
 
