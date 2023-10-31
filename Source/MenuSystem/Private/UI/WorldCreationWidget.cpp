@@ -5,17 +5,58 @@
 #include "UI/MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
+#include "Components/TextBlock.h"
+#include "Components/Widget.h"
 #include "WorldSelectionWidget.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "Log.h"
+
+UWorldCreationWidget::UWorldCreationWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	CreateWorldButton = nullptr;
+	BackButton = nullptr;
+	WorldNameInputBox = nullptr;
+	
+	InvalidWarningBorder = nullptr;
+	InvalidWarningTextBlock = nullptr;
+	
+	ParentMenu = nullptr;
+}
 
 void UWorldCreationWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
 	ParentMenu = InMainMenuParent;
 
+	HideInvalidWarning();
+
 	CreateWorldButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::CreateWorld);
+	CreateWorldButton->SetIsEnabled(false);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
 	WorldNameInputBox->OnTextChanged.AddDynamic(this, &UWorldCreationWidget::WorldNameOnTextChanged);
+}
+
+void UWorldCreationWidget::ShowInvalidWarning(const FString& Warning)
+{
+	InvalidWarningTextBlock->SetText(FText::FromString(Warning));
+
+	InvalidWarningBorder->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UWorldCreationWidget::HideInvalidWarning()
+{
+	InvalidWarningBorder->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+bool UWorldCreationWidget::WorldOfSameNameAlreadyExists(const FString& WorldName)
+{
+	// TODO logic here
+	return false;
+}
+
+bool UWorldCreationWidget::WorldContainsInvalidCharacter(const FString& WorldName)
+{
+	// TODO logic here
+	return false;
 }
 
 void UWorldCreationWidget::CreateWorld()
@@ -48,4 +89,21 @@ void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)
 	}
 
 	WorldNameInputBox->SetText(FText::FromString(TextString));
+
+	if (TextString.Len() >= 0)
+	{
+		CreateWorldButton->SetIsEnabled(false);
+	}
+
+	if (WorldOfSameNameAlreadyExists(TextString) || WorldContainsInvalidCharacter(TextString))
+	{
+		CreateWorldButton->SetIsEnabled(false);
+	}
+	else
+	{
+		CreateWorldButton->SetIsEnabled(true);
+		HideInvalidWarning();
+	}
+	
+	
 }
