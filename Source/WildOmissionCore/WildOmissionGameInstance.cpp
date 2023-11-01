@@ -584,15 +584,15 @@ void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 
 void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString)
 {
-
 	QuitToMenu();
 
-	// TODO prompt explaining that server went down or something
+	if (MainMenuWidget == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UWildOmissionGameInstance::OnNetworkFailure, MainMenuWidget nullptr, unable to show error message."));
+		return;
+	}
 
-	//TODO goto main menu
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 20.0f, FColor::Red, FString::Printf(TEXT("Error String %s"), *ErrorString));
-	UE_LOG(LogOnline, Error, TEXT("Network failure disconnecting..."));
-	UE_LOG(LogOnline, Error, TEXT("Damnit larch you forgot to add disconnecting"));
+	MainMenuWidget->OpenErrorPrompt(TEXT("Network Failure"), ErrorString);
 }
 
 IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const
