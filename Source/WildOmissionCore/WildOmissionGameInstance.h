@@ -26,6 +26,7 @@ struct FGameError
 	FString Message;
 
 	FGameError();
+	void Set(const FString& ErrorTitle, const FString& ErrorMessage);
 	void Clear();
 
 };

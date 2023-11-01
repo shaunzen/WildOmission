@@ -444,16 +444,9 @@ void UWildOmissionGameInstance::LoadedNewMap(UWorld* InWorld)
 
 	if (MainMenuWidget && !LastError.Acknowlaged)
 	{
-		if ()
-		{
-			UE_LOG(LogTemp, Warning, TEXT("UWildOmissionGameInstance::LoadedNewMap, MainMenuWidget nullptr, unable to show error message."));
-			return;
-		}
-
 		MainMenuWidget->OpenErrorPrompt(LastError.Title, LastError.Message);
 		LastError.Clear();
 	}
-
 }
 
 void UWildOmissionGameInstance::EndExistingSession()
@@ -595,9 +588,8 @@ void UWildOmissionGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoin
 
 void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString)
 {
+	LastError.Set(TEXT("Network Failure"), ErrorString);
 	QuitToMenu();
-
-	// TODO populate last error
 }
 
 IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const
@@ -623,13 +615,20 @@ UGameplayMenuWidget* UWildOmissionGameInstance::GetGameplayMenuWidget() const
 FGameError::FGameError()
 {
 	Acknowlaged = true;
-	ErrorTitle = TEXT("");
-	ErrorMessage = TEXT("");
+	Title = TEXT("");
+	Message = TEXT("");
+}
+
+void FGameError::Set(const FString& ErrorTitle, const FString& ErrorMessage)
+{
+	Acknowlaged = false;
+	Title = ErrorTitle;
+	Message = ErrorMessage;
 }
 
 void FGameError::Clear()
 {
 	Acknowlaged = true;
-	ErrorTitle = TEXT("");
-	ErrorMessage = TEXT("");
+	Title = TEXT("");
+	Message = TEXT("");
 }
