@@ -21,6 +21,7 @@ const static FName SESSION_NAME = TEXT("Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
+const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
 const static FString GameVersion = TEXT("Pre Alpha 0.10.0");
 
@@ -42,19 +43,19 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	Loading = false;
 	FriendsOnlySession = false;
 	OnMainMenu = false;
-	
+
 	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_MainMenu"));
 	if (MainMenuBlueprint.Succeeded())
 	{
 		MainMenuWidgetBlueprintClass = MainMenuBlueprint.Class;
 	}
-	
+
 	static ConstructorHelpers::FClassFinder<UGameplayMenuWidget> GameplayMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_GameplayMenu"));
 	if (GameplayMenuBlueprint.Succeeded())
 	{
 		GameplayMenuWidgetBlueprintClass = GameplayMenuBlueprint.Class;
 	}
-	
+
 	static ConstructorHelpers::FClassFinder<ULoadingMenuWidget> LoadingMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_LoadingMenu"));
 	if (LoadingMenuBlueprint.Succeeded())
 	{
@@ -130,7 +131,7 @@ void UWildOmissionGameInstance::Init()
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
 
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
-	
+
 	if (Subsystem == nullptr)
 	{
 		return;
@@ -160,12 +161,12 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the main menu widget, blueprint class was nullptr"));
 		return;
 	}
-	
+
 	MainMenuWidget = CreateWidget<UMainMenuWidget>(this, MainMenuWidgetBlueprintClass);
 	if (MainMenuWidget == nullptr)
 	{
 		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the main menu widget"))
-		return;
+			return;
 	}
 
 	MainMenuWidget->Setup(this);
@@ -179,9 +180,9 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the gameplay menu widget, blueprint class was nullptr"));
 		return;
 	}
-	
+
 	GameplayMenuWidget = CreateWidget<UGameplayMenuWidget>(this, GameplayMenuWidgetBlueprintClass);
-	
+
 	if (GameplayMenuWidget == nullptr)
 	{
 		UE_LOG(LogPlayerController, Error, TEXT("Failed to create gameplay menu widget"));
@@ -308,7 +309,7 @@ void UWildOmissionGameInstance::QuitToMenu()
 void UWildOmissionGameInstance::RefreshServerList()
 {
 	UE_LOG(LogOnlineSession, Display, TEXT("Refreshing server list."));
-	
+
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid() == false)
 	{
@@ -318,7 +319,7 @@ void UWildOmissionGameInstance::RefreshServerList()
 	// Uncomment for lan results using null
 	//SessionSearch->bIsLanQuery = true;
 	SessionSearch->MaxSearchResults = 100;
-	
+
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
@@ -379,11 +380,11 @@ void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& W
 	{
 		return;
 	}
-	
+
 	DesiredServerName = ServerName;
 	WorldToLoad = WorldName;
 	FriendsOnlySession = FriendsOnly;
-	
+
 	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
 	{
@@ -431,6 +432,7 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 	SessionSettings.Set(FRIENDS_ONLY_SETTINGS_KEY, FriendsOnlySession, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(LEVEL_FILE_SETTINGS_KEY, WorldToLoad, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(GAME_VERSION_SETTINGS_KEY, GameVersion, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
@@ -461,7 +463,7 @@ void UWildOmissionGameInstance::EndExistingSession()
 	{
 		return;
 	}
-	
+
 	SessionInterface->DestroySession(SESSION_NAME);
 }
 
@@ -480,7 +482,7 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 
 	// Remove the menu from viewport
 	MainMenuWidget->Teardown();
-	
+
 	// Show the loading menu
 	StartLoading();
 	SetLoadingTitle(TEXT("Loading Game"));
@@ -522,11 +524,24 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 	TArray<FServerData> ServerNames;
 	for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
 	{
-		bool IsThisFriendsOnlySession;
+		bool IsThisFriendsOnlySession = false;
 		if (SearchResult.Session.SessionSettings.Get(FRIENDS_ONLY_SETTINGS_KEY, IsThisFriendsOnlySession))
 		{
-			const bool IsHostFriend = FriendsInterface->IsFriend(0, *SearchResult.Session.OwningUserId, FString());
+			const bool IsHostFriend = FriendsInterface->IsFriend(0, *SearchResult.Session.OwningUserId, TEXT("FriendsList"));
 			if (IsThisFriendsOnlySession == true && IsHostFriend == false)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			continue;
+		}
+
+		FString HostGameVersion = TEXT("");
+		if (SearchResult.Session.SessionSettings.Get(GAME_VERSION_SETTINGS_KEY, HostGameVersion))
+		{
+			if (GameVersion != HostGameVersion)
 			{
 				continue;
 			}
@@ -541,7 +556,7 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
 
 		Data.HostUsername = SearchResult.Session.OwningUserName;
-		
+
 		FString ServerName;
 		if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
 		{
