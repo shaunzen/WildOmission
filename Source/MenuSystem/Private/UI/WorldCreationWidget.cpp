@@ -54,18 +54,50 @@ bool UWorldCreationWidget::WorldOfSameNameAlreadyExists(const FString& WorldName
 
 bool UWorldCreationWidget::WorldContainsInvalidCharacter(const FString& WorldName)
 {
-	if (WorldName.Contains(TEXT("CON")) || WorldName.Contains(TEXT("PRN")) ||
-		WorldName.Contains(TEXT("AUX")) || WorldName.Contains(TEXT("NUL")) ||
-		WorldName.Contains(TEXT("COM1")) || WorldName.Contains(TEXT("COM2")) ||
-		WorldName.Contains(TEXT("COM3")) || WorldName.Contains(TEXT("COM4")) ||
-		WorldName.Contains(TEXT("COM5")) || WorldName.Contains(TEXT("COM6")) ||
-		WorldName.Contains(TEXT("COM7")) || WorldName.Contains(TEXT("COM8")) ||
-		WorldName.Contains(TEXT("COM9")) || WorldName.Contains(TEXT("COM0")) ||
-		WorldName.Contains(TEXT("<")) || WorldName.Contains(TEXT(">")) ||
-		WorldName.Contains(TEXT(":")) || WorldName.Contains(TEXT("\"")) ||
-		WorldName.Contains(TEXT("/")) || WorldName.Contains(TEXT("\\")) ||
-		WorldName.Contains(TEXT("?")) || WorldName.Contains(TEXT("*")))
+	TArray<FString> InvalidCharacters;
+	InvalidCharacters.Add(TEXT("<"));
+	InvalidCharacters.Add(TEXT(">"));
+	InvalidCharacters.Add(TEXT(":"));
+	InvalidCharacters.Add(TEXT("\""));
+	InvalidCharacters.Add(TEXT("/"));
+	InvalidCharacters.Add(TEXT("\\"));
+	InvalidCharacters.Add(TEXT("|"));
+	InvalidCharacters.Add(TEXT("?"));
+	InvalidCharacters.Add(TEXT("*"));
+
+	for (const FString& InvalidCharacter : InvalidCharacters)
 	{
+		if (!WorldName.Contains(InvalidCharacter))
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	TArray<FString> InvalidNames;
+	InvalidNames.Add(TEXT("CON"));
+	InvalidNames.Add(TEXT("PRN"));
+	InvalidNames.Add(TEXT("AUX"));
+	InvalidNames.Add(TEXT("NUL"));
+	InvalidNames.Add(TEXT("COM0"));
+	InvalidNames.Add(TEXT("COM1"));
+	InvalidNames.Add(TEXT("COM2"));
+	InvalidNames.Add(TEXT("COM3"));
+	InvalidNames.Add(TEXT("COM4"));
+	InvalidNames.Add(TEXT("COM5"));
+	InvalidNames.Add(TEXT("COM6"));
+	InvalidNames.Add(TEXT("COM7"));
+	InvalidNames.Add(TEXT("COM8"));
+	InvalidNames.Add(TEXT("COM9"));
+
+	for (const FString& InvalidName : InvalidNames)
+	{
+		if (WorldName.ToLower() != InvalidName.ToLower())
+		{
+			continue;
+		}
+
 		return true;
 	}
 
