@@ -437,12 +437,23 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 
 void UWildOmissionGameInstance::LoadedNewMap(UWorld* InWorld)
 {
-	if (Loading == false)
+	if (Loading)
 	{
-		return;
+		StartLoading();
 	}
 
-	StartLoading();
+	if (MainMenuWidget && !LastError.Acknowlaged)
+	{
+		if ()
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UWildOmissionGameInstance::LoadedNewMap, MainMenuWidget nullptr, unable to show error message."));
+			return;
+		}
+
+		MainMenuWidget->OpenErrorPrompt(LastError.Title, LastError.Message);
+		LastError.Clear();
+	}
+
 }
 
 void UWildOmissionGameInstance::EndExistingSession()
@@ -586,13 +597,7 @@ void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetD
 {
 	QuitToMenu();
 
-	if (MainMenuWidget == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UWildOmissionGameInstance::OnNetworkFailure, MainMenuWidget nullptr, unable to show error message."));
-		return;
-	}
-
-	MainMenuWidget->OpenErrorPrompt(TEXT("Network Failure"), ErrorString);
+	// TODO populate last error
 }
 
 IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const
@@ -613,4 +618,18 @@ UMainMenuWidget* UWildOmissionGameInstance::GetMainMenuWidget() const
 UGameplayMenuWidget* UWildOmissionGameInstance::GetGameplayMenuWidget() const
 {
 	return GameplayMenuWidget;
+}
+
+FGameError::FGameError()
+{
+	Acknowlaged = true;
+	ErrorTitle = TEXT("");
+	ErrorMessage = TEXT("");
+}
+
+void FGameError::Clear()
+{
+	Acknowlaged = true;
+	ErrorTitle = TEXT("");
+	ErrorMessage = TEXT("");
 }
