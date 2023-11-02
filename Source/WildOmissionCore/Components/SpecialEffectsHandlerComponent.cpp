@@ -61,11 +61,12 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 	}
 }
 
-
 // Called when the game starts
 void USpecialEffectsHandlerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetOwner()->OnDestroyed.AddDynamic(this, &USpecialEffectsHandlerComponent::OnOwnerDestroyed);
 
 	OwnerCamera = GetOwner()->FindComponentByClass<UCameraComponent>();
 
@@ -195,7 +196,7 @@ void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)
 		RainSoundCutoff = FMath::Clamp(FMath::Lerp(RainSoundCutoff, 20000.0f, 5.0f * GetWorld()->GetDeltaSeconds()), 500.0f, 20000.0f);
 	}
 
-	SpawnedRainAudioComponent->SetFloatParameter(FName("Cutoff"), RainSoundCutoff);
+	SpawnedRainAudioComponent->SetFloatParameter(TEXT("Cutoff"), RainSoundCutoff);
 
 	if (PreviouslyHitStorm != nullptr)
 	{
@@ -242,4 +243,22 @@ bool USpecialEffectsHandlerComponent::LineTraceIntoSkyOnChannel(ECollisionChanne
 	Params.AddIgnoredActor(GetOwner());
 
 	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ChannelToTrace, Params);
+}
+
+void USpecialEffectsHandlerComponent::OnOwnerDestroyed(AActor* DestroyedActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("BeginDestroy"));
+
+	if (SpawnedRainComponent)
+	{
+		SpawnedRainComponent->DestroyComponent();
+		SpawnedRainComponent = nullptr;
+	}
+
+	if (SpawnedRainAudioComponent)
+	{
+		SpawnedRainAudioComponent->Stop();
+		SpawnedRainAudioComponent->DestroyComponent();
+		SpawnedRainAudioComponent = nullptr;
+	}
 }

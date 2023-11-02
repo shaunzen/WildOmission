@@ -9,12 +9,14 @@
 #include "WorldMenuWidget.h"
 #include "ServerBrowserWidget.h"
 #include "UI/OptionsWidget.h"
+#include "ErrorMessagePrompt.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Log.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	SetIsFocusable(true);
+
 	MenuSwitcher = nullptr;
 	PlayButton = nullptr;
 	OptionsButton = nullptr;
@@ -26,6 +28,7 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	WorldMenu = nullptr;
 	ServerBrowserMenu = nullptr;
 	OptionsMenu = nullptr;
+	ErrorMessagePrompt = nullptr;
 	MenuInterface = nullptr;
 }
 
@@ -43,6 +46,7 @@ void UMainMenuWidget::NativeConstruct()
 	WorldMenu->Setup(this);
 	ServerBrowserMenu->Setup(this);
 	OptionsMenu->OnBackButtonPressed.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+	ErrorMessagePrompt->OnCloseButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 }
 
 void UMainMenuWidget::SetServerList(TArray<FServerData> InServerData)
@@ -166,5 +170,17 @@ void UMainMenuWidget::ExitGame()
 		return;
 	}
 
-	PlayerController->ConsoleCommand(FString("quit"));
+	PlayerController->ConsoleCommand(TEXT("quit"));
+}
+
+void UMainMenuWidget::OpenErrorPrompt(const FString& Title, const FString& Error)
+{
+	if (ErrorMessagePrompt == nullptr || MenuSwitcher == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MainMenuWidget::OpenErrorPrompt, ErrorMessagePrompt or MenuSwitcher was nullptr."));
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(ErrorMessagePrompt);
+	ErrorMessagePrompt->SetMessage(Title, Error);
 }

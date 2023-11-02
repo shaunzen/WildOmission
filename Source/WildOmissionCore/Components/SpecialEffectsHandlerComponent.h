@@ -21,9 +21,9 @@ class WILDOMISSIONCORE_API USpecialEffectsHandlerComponent : public USceneCompon
 public:	
 	// Sets default values for this component's properties
 	USpecialEffectsHandlerComponent();
+	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 
 protected:
 	// Called when the game starts
@@ -70,5 +70,8 @@ private:
 
 	AStorm* CastToStorm(AActor* InActor);
 	bool LineTraceIntoSkyOnChannel(ECollisionChannel ChannelToTrace, FHitResult& OutHitResult) const;
+
+	UFUNCTION()
+	void OnOwnerDestroyed(AActor* DestroyedActor);
 
 };

@@ -5,17 +5,103 @@
 #include "UI/MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
+#include "Components/TextBlock.h"
+#include "Components/Widget.h"
 #include "WorldSelectionWidget.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "Log.h"
+
+UWorldCreationWidget::UWorldCreationWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	CreateWorldButton = nullptr;
+	BackButton = nullptr;
+	WorldNameInputBox = nullptr;
+	
+	InvalidWarningBorder = nullptr;
+	InvalidWarningTextBlock = nullptr;
+	
+	ParentMenu = nullptr;
+}
 
 void UWorldCreationWidget::Setup(UMainMenuWidget* InMainMenuParent)
 {
 	ParentMenu = InMainMenuParent;
 
+	HideInvalidWarning();
+
 	CreateWorldButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::CreateWorld);
+	CreateWorldButton->SetIsEnabled(false);
 	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
 	WorldNameInputBox->OnTextChanged.AddDynamic(this, &UWorldCreationWidget::WorldNameOnTextChanged);
+}
+
+void UWorldCreationWidget::ShowInvalidWarning(const FString& Warning)
+{
+	InvalidWarningTextBlock->SetText(FText::FromString(Warning));
+
+	InvalidWarningBorder->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UWorldCreationWidget::HideInvalidWarning()
+{
+	InvalidWarningBorder->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+bool UWorldCreationWidget::WorldOfSameNameAlreadyExists(const FString& WorldName)
+{
+	return IMenuInterface::WorldAlreadyExists(WorldName);
+}
+
+bool UWorldCreationWidget::WorldContainsInvalidCharacter(const FString& WorldName)
+{
+	TArray<FString> InvalidCharacters;
+	InvalidCharacters.Add(TEXT("<"));
+	InvalidCharacters.Add(TEXT(">"));
+	InvalidCharacters.Add(TEXT(":"));
+	InvalidCharacters.Add(TEXT("\""));
+	InvalidCharacters.Add(TEXT("/"));
+	InvalidCharacters.Add(TEXT("\\"));
+	InvalidCharacters.Add(TEXT("|"));
+	InvalidCharacters.Add(TEXT("?"));
+	InvalidCharacters.Add(TEXT("*"));
+
+	for (const FString& InvalidCharacter : InvalidCharacters)
+	{
+		if (!WorldName.Contains(InvalidCharacter))
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	TArray<FString> InvalidNames;
+	InvalidNames.Add(TEXT("CON"));
+	InvalidNames.Add(TEXT("PRN"));
+	InvalidNames.Add(TEXT("AUX"));
+	InvalidNames.Add(TEXT("NUL"));
+	InvalidNames.Add(TEXT("COM0"));
+	InvalidNames.Add(TEXT("COM1"));
+	InvalidNames.Add(TEXT("COM2"));
+	InvalidNames.Add(TEXT("COM3"));
+	InvalidNames.Add(TEXT("COM4"));
+	InvalidNames.Add(TEXT("COM5"));
+	InvalidNames.Add(TEXT("COM6"));
+	InvalidNames.Add(TEXT("COM7"));
+	InvalidNames.Add(TEXT("COM8"));
+	InvalidNames.Add(TEXT("COM9"));
+
+	for (const FString& InvalidName : InvalidNames)
+	{
+		if (WorldName.ToLower() != InvalidName.ToLower())
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 void UWorldCreationWidget::CreateWorld()
@@ -24,9 +110,9 @@ void UWorldCreationWidget::CreateWorld()
 	FString NewWorldName;
 	NewWorldName = WorldNameInputBox->GetText().ToString();
 
-	if (NewWorldName == TEXT(""))
+	if (NewWorldName.IsEmpty() || WorldOfSameNameAlreadyExists(NewWorldName) || WorldContainsInvalidCharacter(NewWorldName))
 	{
-		UE_LOG(LogMenuSystem, Warning, TEXT("Cannot create a world without a name."));
+		UE_LOG(LogMenuSystem, Warning, TEXT("World name error."));
 		return;
 	}
 
@@ -48,4 +134,27 @@ void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)
 	}
 
 	WorldNameInputBox->SetText(FText::FromString(TextString));
+
+	if (TextString.IsEmpty())
+	{
+		CreateWorldButton->SetIsEnabled(false);
+	}
+
+	if (WorldOfSameNameAlreadyExists(TextString))
+	{
+		CreateWorldButton->SetIsEnabled(false);
+		ShowInvalidWarning(TEXT("World of same name already exists!"));
+	}
+	else if (WorldContainsInvalidCharacter(TextString))
+	{
+		CreateWorldButton->SetIsEnabled(false);
+		ShowInvalidWarning(TEXT("World name contains an invalid character!"));
+	}
+	else
+	{
+		CreateWorldButton->SetIsEnabled(true);
+		HideInvalidWarning();
+	}
+	
+	
 }

@@ -48,7 +48,13 @@ private:
 
 	void ValidateSave();
 
+	UFUNCTION()
+	void MarkSaveGenerated();
+
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
+
+	UPROPERTY()
+	UWildOmissionSaveGame* CurrentSaveFile;
 
 	UFUNCTION()
 	void StartLoading();

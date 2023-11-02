@@ -32,9 +32,6 @@ struct SAVESYSTEM_API FPlayerSave
 	FVector WorldLocation = FVector::ZeroVector;
 
 	UPROPERTY()
-	FRotator ControlRotation = FRotator::ZeroRotator;
-
-	UPROPERTY()
 	FVitalsSave Vitals;
 
 	UPROPERTY()

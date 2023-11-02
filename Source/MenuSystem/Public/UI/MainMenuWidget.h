@@ -15,6 +15,7 @@ class UWorldCreationWidget;
 class UWorldMenuWidget;
 class UServerBrowserWidget;
 class UOptionsWidget;
+class UErrorMessagePrompt;
 
 UCLASS()
 class MENUSYSTEM_API UMainMenuWidget : public UUserWidget
@@ -44,6 +45,8 @@ public:
 	void OpenFeedbackPage();
 	UFUNCTION()
 	void ExitGame();
+	UFUNCTION()
+	void OpenErrorPrompt(const FString& Title, const FString& Error);
 
 	void SetServerList(TArray<FServerData> InServerData);
 
@@ -77,6 +80,8 @@ private:
 	UServerBrowserWidget* ServerBrowserMenu;
 	UPROPERTY(Meta = (BindWidget))
 	UOptionsWidget* OptionsMenu;
+	UPROPERTY(Meta = (BindWidget))
+	UErrorMessagePrompt* ErrorMessagePrompt;
 
 	IMenuInterface* MenuInterface;
 

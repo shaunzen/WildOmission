@@ -16,10 +16,26 @@ class UGameplayMenuWidget;
 class ULoadingMenuWidget;
 class FOnlineSessionSearch;
 
+USTRUCT()
+struct FGameError
+{
+	GENERATED_BODY()
+
+	bool Acknowlaged;
+	FString Title;
+	FString Message;
+
+	FGameError();
+	void Set(const FString& ErrorTitle, const FString& ErrorMessage);
+	void Clear();
+
+};
+
 UCLASS()
 class WILDOMISSIONCORE_API UWildOmissionGameInstance : public UGameInstance, public IMenuInterface, public IGameSettingsInterface, public IGameSaveLoadController
 {
 	GENERATED_BODY()
+
 public:
 	UWildOmissionGameInstance(const FObjectInitializer& ObjectInitializer);
 	static UWildOmissionGameInstance* GetWildOmissionGameInstance(UWorld* WorldContextObject);
@@ -78,6 +94,8 @@ private:
 	// Will try to auto-configure graphics settings if first launch of game
 	UFUNCTION(Exec)
 	void RunAutoConfigQualitySettings(bool Override = false);
+
+	FGameError LastError;
 
 	UPROPERTY()
 	TSubclassOf<ULoadingMenuWidget> LoadingMenuWidgetBlueprintClass;

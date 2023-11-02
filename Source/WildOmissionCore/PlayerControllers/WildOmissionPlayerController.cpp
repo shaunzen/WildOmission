@@ -77,10 +77,8 @@ FPlayerSave AWildOmissionPlayerController::SavePlayer()
 		return PlayerSave;
 	}
 
-
 	PlayerSave.WorldLocation = WildOmissionCharacter->GetActorLocation();
-	PlayerSave.ControlRotation = WildOmissionCharacter->GetControlRotation();
-
+	
 	PlayerSave.IsAlive = true;
 	PlayerSave.IsHost = IsHost();
 
@@ -296,7 +294,7 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 	}
 
 	WildOmissionCharacter->SetActorLocation(StoredPlayerSave.WorldLocation);
-
+	
 	WildOmissionCharacter->GetVitalsComponent()->SetHealth(StoredPlayerSave.Vitals.Health);
 	WildOmissionCharacter->GetVitalsComponent()->SetHunger(StoredPlayerSave.Vitals.Hunger);
 	WildOmissionCharacter->GetVitalsComponent()->SetThirst(StoredPlayerSave.Vitals.Thirst);
