@@ -20,6 +20,7 @@ ASaveHandler::ASaveHandler()
 	PrimaryActorTick.bCanEverTick = false;
 
 	GameSaveLoadController = nullptr;
+	CurrentSaveFile = nullptr;
 
 	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(TEXT("ActorSaveHandlerComponent"));
 	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(TEXT("PlayerSaveHandlerComponent"));
@@ -79,8 +80,7 @@ void ASaveHandler::LoadWorld()
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
 		WorldGenerationHandler->GenerateLevel();
-		SaveFile->CreationInformation.LevelHasGenerated = true;
-		UpdateSaveFile(SaveFile);
+		WorldGenerationHandler->OnGenerationComplete.AddDynamic(this, &ASaveHandler::MarkSaveGenerated);
 		return;
 	}
 
@@ -105,10 +105,13 @@ void ASaveHandler::LoadWorld()
 
 UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
 {
-	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
-	SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveFileName, 0));
+	if (CurrentSaveFile == nullptr)
+	{
+		CurrentSaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+		CurrentSaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveFileName, 0));
+	}
 
-	return SaveFile;
+	return CurrentSaveFile;
 }
 
 void ASaveHandler::BeginPlay()
@@ -150,6 +153,18 @@ void ASaveHandler::ValidateSave()
 
 	CurrentSaveFileName = TEXT("PIE_Save");
 	CreateWorld(CurrentSaveFileName);
+}
+
+void ASaveHandler::MarkSaveGenerated()
+{
+	UWildOmissionSaveGame* SaveFile = GetSaveFile();
+	if (SaveFile == nullptr)
+	{
+		return;
+	}
+
+	SaveFile->CreationInformation.LevelHasGenerated = true;
+	UpdateSaveFile(SaveFile);
 }
 
 void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
