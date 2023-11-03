@@ -207,7 +207,7 @@ void UBuildAnchorComponent::OnLoadComplete_Implementation()
 void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ADeployable* DeployableInPlace = Cast<ADeployable>(OtherActor);
-	if (DeployableInPlace == nullptr || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
+	if (DeployableInPlace == nullptr || DeployableInPlace == GetOwner() || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
 	{
 		return;
 	}
@@ -219,7 +219,7 @@ void UBuildAnchorComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 void UBuildAnchorComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
 	ADeployable* DeployableInPlace = Cast<ADeployable>(OtherActor);
-	if (DeployableInPlace == nullptr || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
+	if (DeployableInPlace == nullptr || DeployableInPlace == GetOwner() || DeployableInPlace->CanSpawnOnBuildAnchor() != this->Type)
 	{
 		return;
 	}
