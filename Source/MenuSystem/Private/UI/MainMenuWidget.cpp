@@ -45,7 +45,7 @@ void UMainMenuWidget::NativeConstruct()
 	WorldCreationMenu->Setup(this);
 	WorldMenu->Setup(this);
 	ServerBrowserMenu->Setup(this);
-	OptionsMenu->OnBackButtonPressed.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 	ErrorMessagePrompt->OnCloseButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 }
 

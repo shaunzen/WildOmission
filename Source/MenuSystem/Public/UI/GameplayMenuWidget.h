@@ -11,6 +11,7 @@ class UTextBlock;
 class UButton;
 class UWidgetSwitcher;
 class UOptionsWidget;
+class UConnectedPlayersWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameplayMenuClosedSignature);
 
@@ -40,6 +41,9 @@ public:
 
 	UFUNCTION()
 	void OpenOptionsMenu();
+
+	UFUNCTION()
+	void OpenConnectedPlayersMenu();
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsOpen() const;
@@ -73,6 +77,9 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	UOptionsWidget* OptionsMenu;
+
+	UPROPERTY(Meta = (BindWidget))
+	UConnectedPlayersWidget* ConnectedPlayersMenu;
 
 	IMenuInterface* MenuInterface;
 

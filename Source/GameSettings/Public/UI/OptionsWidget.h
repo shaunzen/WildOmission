@@ -12,7 +12,7 @@ class USliderOptionBox;
 class UWidgetSwitcher;
 class USettingsCategoryWidget;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOptionsOnBackButtonPressedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOptionsOnBackButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFieldOfViewChangedSignature);
 
 UCLASS()
@@ -24,7 +24,7 @@ public:
 	virtual void NativeConstruct() override;
 	void Refresh();
 
-	FOptionsOnBackButtonPressedSignature OnBackButtonPressed;
+	FOptionsOnBackButtonClickedSignature OnBackButtonClicked;
 	FOnFieldOfViewChangedSignature OnFieldOfViewChanged;
 
 private:

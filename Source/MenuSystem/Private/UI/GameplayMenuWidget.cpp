@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "UI/OptionsWidget.h"
+#include "ConnectedPlayersWidget.h"
 #include "Interfaces/SavablePlayer.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -21,6 +22,7 @@ UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitial
 	MenuSwitcher = nullptr;
 	GameMenu = nullptr;
 	OptionsMenu = nullptr;
+	ConnectedPlayersMenu = nullptr;
 	MenuInterface = nullptr;
 	bOpen = false;
 }
@@ -36,7 +38,8 @@ void UGameplayMenuWidget::NativeConstruct()
 	HowToPlayButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenHelpGuide);
 	QuitButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
 
-	OptionsMenu->OnBackButtonPressed.AddDynamic(this, &UGameplayMenuWidget::OpenGameMenu);
+	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UGameplayMenuWidget::OpenGameMenu);
+	ConnectedPlayersMenu->OnBackButtonClicked.AddDynamic(this, &UGameplayMenuWidget::OpenGameMenu);
 }
 
 FReply UGameplayMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -103,6 +106,11 @@ void UGameplayMenuWidget::OpenOptionsMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(OptionsMenu);
+}
+
+void UGameplayMenuWidget::OpenConnectedPlayersMenu()
+{
+	// TODO
 }
 
 bool UGameplayMenuWidget::IsOpen() const
