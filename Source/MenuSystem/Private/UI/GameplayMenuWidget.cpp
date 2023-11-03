@@ -15,6 +15,7 @@ UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitial
 	SetIsFocusable(true);
 	ResumeButton = nullptr;
 	OptionsButton = nullptr;
+	ConnectedPlayersButton = nullptr;
 	HowToPlayButton = nullptr;
 	FeedbackButton = nullptr;
 	QuitButton = nullptr;
@@ -34,6 +35,7 @@ void UGameplayMenuWidget::NativeConstruct()
 	// Bind button delegates
 	ResumeButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::Teardown);
 	OptionsButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenOptionsMenu);
+	ConnectedPlayersButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenConnectedPlayersMenu);
 	FeedbackButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenFeedbackPage);
 	HowToPlayButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenHelpGuide);
 	QuitButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
@@ -110,7 +112,12 @@ void UGameplayMenuWidget::OpenOptionsMenu()
 
 void UGameplayMenuWidget::OpenConnectedPlayersMenu()
 {
-	// TODO
+	if (MenuSwitcher == nullptr || ConnectedPlayersMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(ConnectedPlayersMenu);
 }
 
 bool UGameplayMenuWidget::IsOpen() const

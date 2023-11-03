@@ -29,7 +29,7 @@ private:
 	UWidget* ConnectedPlayersPanel;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* CloseButton;
+	UButton* BackButton;
 
 	UFUNCTION()
 	void Back();

@@ -58,6 +58,9 @@ private:
 	UButton* OptionsButton;
 
 	UPROPERTY(Meta = (BindWidget))
+	UButton* ConnectedPlayersButton;
+
+	UPROPERTY(Meta = (BindWidget))
 	UButton* HowToPlayButton;
 
 	UPROPERTY(Meta = (BindWidget))

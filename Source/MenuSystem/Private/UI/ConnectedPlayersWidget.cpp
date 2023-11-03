@@ -6,7 +6,7 @@
 
 UConnectedPlayersWidget::UConnectedPlayersWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	CloseButton = nullptr;
+	BackButton = nullptr;
 	ConnectedPlayersPanel = nullptr;
 }
 
@@ -14,9 +14,9 @@ void UConnectedPlayersWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (CloseButton)
+	if (BackButton)
 	{
-		CloseButton->OnClicked.AddDynamic(this, &UConnectedPlayersWidget::Back);
+		BackButton->OnClicked.AddDynamic(this, &UConnectedPlayersWidget::Back);
 	}
 }
 
