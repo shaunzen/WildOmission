@@ -244,6 +244,7 @@ void ADeployableItem::Client_SpawnPreview_Implementation()
 		PreviewActor->Destroy();
 	}
 
+	// TODO what the fuck am i using = for???
 	PreviewActor = GetWorld()->SpawnActor<ADeployablePreview>(GetOwner()->GetActorLocation() = FVector(0.0f, 0.0f, 500.0f), GetOwner()->GetActorRotation());
 	PreviewActor->Setup(DeployableActorClass.GetDefaultObject());
 }
