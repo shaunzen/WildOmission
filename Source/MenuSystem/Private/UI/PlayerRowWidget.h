@@ -40,4 +40,5 @@ private:
 	UFUNCTION()
 	void Kick();
 
+	APlayerController* GetPlayerControllerForThis() const;
 };
