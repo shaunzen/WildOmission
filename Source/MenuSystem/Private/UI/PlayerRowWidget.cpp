@@ -37,6 +37,19 @@ void UPlayerRowWidget::Setup(const FString& Name, const FString& InUniqueID)
 {
 	NameTextBlock->SetText(FText::FromString(Name));
 	UniqueID = InUniqueID;
+
+	APlayerState* OwningPlayerState = GetOwningPlayerState();
+	APlayerController* OwningPlayerController = GetOwningPlayer();
+	if (OwningPlayerState == nullptr || OwningPlayerController == nullptr)
+	{
+		return;
+	}
+
+	if (OwningPlayerState->GetUniqueId().ToString() == InUniqueID || !OwningPlayerController->HasAuthority())
+	{
+		KickButton->SetIsEnabled(false);
+		KickButton->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void UPlayerRowWidget::ViewProfile()
@@ -74,6 +87,11 @@ void UPlayerRowWidget::Kick()
 	}
 
 	GameSession->KickPlayer(PlayerControllerToKick, FText::FromString(TEXT("Kicked by Host.")));
+	
+	if (OnRequestRefresh.IsBound())
+	{
+		OnRequestRefresh.Broadcast();
+	}
 }
 
 APlayerController* UPlayerRowWidget::GetPlayerControllerForThis() const

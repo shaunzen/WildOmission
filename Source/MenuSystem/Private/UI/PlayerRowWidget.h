@@ -9,6 +9,8 @@
 class UTextBlock;
 class UButton;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerRowOnRequestRefreshSignature);
+
 UCLASS()
 class UPlayerRowWidget : public UUserWidget
 {
@@ -20,6 +22,8 @@ public:
 	virtual void NativeConstruct() override;
 
 	void Setup(const FString& Name, const FString& InUniqueID);
+
+	FPlayerRowOnRequestRefreshSignature OnRequestRefresh;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
