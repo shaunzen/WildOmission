@@ -37,7 +37,7 @@ void UPlayerRowWidget::Setup(const FString& Name, const FString& InUniqueID)
 
 void UPlayerRowWidget::ViewProfile()
 {
-	const FString ProfileURL = FString::Printf(TEXT("https://steamcommunity.com/id/%s/"), *UniqueID);
+	const FString ProfileURL = FString::Printf(TEXT("https://steamcommunity.com/profiles/%s/"), *UniqueID);
 	UKismetSystemLibrary::LaunchURL(ProfileURL);
 }
 

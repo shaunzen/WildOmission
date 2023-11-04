@@ -118,6 +118,7 @@ void UGameplayMenuWidget::OpenConnectedPlayersMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(ConnectedPlayersMenu);
+	ConnectedPlayersMenu->Refresh();
 }
 
 bool UGameplayMenuWidget::IsOpen() const

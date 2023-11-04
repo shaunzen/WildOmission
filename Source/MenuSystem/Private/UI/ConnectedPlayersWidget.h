@@ -7,6 +7,7 @@
 #include "ConnectedPlayersWidget.generated.h"
 
 class UButton;
+class UPlayerRowWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FConnectedPlayersOnBackButtonClickedSignature);
 
@@ -26,10 +27,13 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UWidget* ConnectedPlayersPanel;
+	UPanelWidget* ConnectedPlayersPanel;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UButton* BackButton;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UPlayerRowWidget> PlayerRowWidgetClass;
 
 	UFUNCTION()
 	void Back();
