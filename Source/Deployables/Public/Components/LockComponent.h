@@ -9,13 +9,15 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class LOCKS_API ULockComponent : public USceneComponent
+class DEPLOYABLES_API ULockComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
 	ULockComponent();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -36,13 +38,21 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(SaveGame)
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMesh* LockMesh;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_HasLock, SaveGame)
 	bool HasLock;
 
 	UPROPERTY(SaveGame)
 	TArray<FString> AuthorizedPlayers;
 
 	UPROPERTY(SaveGame)
-	TOptional<FString> Code;
+	FString Code;
+
+	// TODO SpawnedLock
+
+	UFUNCTION()
+	void OnRep_HasLock();
 
 };
