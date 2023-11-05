@@ -2,34 +2,66 @@
 
 
 #include "Interfaces/LockableActor.h"
+#include "Components/CodeLockComponent.h"
 
 // Add default functionality here for any ILockableActor functions that are not pure virtual.
 
 void ILockableActor::ApplyLock()
 {
-	// Create New Component
+	// Get This Actor
+	AActor* ThisActor = Cast<AActor>(this);
+	if (ThisActor)
+	{
+		return;
+	}
 
-	// Attach to us
+	// Create New Component
+	UCodeLockComponent* NewCodeLock = NewObject<UCodeLockComponent>();
+	if (NewCodeLock == nullptr)
+	{
+		return;
+	}
+	
+	NewCodeLock->RegisterComponent();
+
+	
+	// Attach To Root
+	NewCodeLock->AttachToComponent(ThisActor->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
 	// Set Relative Location
+	NewCodeLock->SetRelativeLocation(LockMountLocation);
 
+	// Set HasLock True
 	HasLock = true;
 }
 
 void ILockableActor::RemoveLock()
 {
-	// Get existing component
+	// Get This Actor
+	AActor* ThisActor = Cast<AActor>(this);
+	if (ThisActor == nullptr)
+	{
+		return;
+	}
 
-	// destroy it
+	// Get Existing Lock Component
+	UCodeLockComponent* ExistingCodeLock = ThisActor->FindComponentByClass<UCodeLockComponent>();
+	if (ExistingCodeLock == nullptr)
+	{
+		return;
+	}
 
-	// Set has lock false
+	// Destroy It
+	ExistingCodeLock->DestroyComponent();
 
+	// Set HasLock False
 	HasLock = false;
 }
 
 void ILockableActor::SetCode(const FString& NewCode)
 {
 	Code = NewCode;
+	AuthorizedPlayers.Empty();
 }
 
 void ILockableActor::ClearCode()
