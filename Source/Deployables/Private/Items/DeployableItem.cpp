@@ -7,11 +7,8 @@
 
 void ADeployableItem::OnPlace()
 {
-	Super::OnPlace();
-
 	UWorld* World = GetWorld();
-	AActor* OwnerActor = GetOwner();
-	if (World == nullptr || OwnerActor == nullptr)
+	if (World == nullptr)
 	{
 		return;
 	}
@@ -30,6 +27,8 @@ void ADeployableItem::OnPlace()
 	{
 		SpawnedDeployable->Destroy();
 	}
+
+	Super::OnPlace();
 }
 
 FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
