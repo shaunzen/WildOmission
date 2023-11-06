@@ -16,10 +16,10 @@ ULockComponent::ULockComponent()
 	HasLock = false;
 	SpawnedLock = nullptr;
 
-	static ConstructorHelpers::FClassFinder<ALockDeployable> LockBlueprint(TEXT("/Game/Deployables/BP_CodeLock"));
-	if (LockBlueprint.Succeeded())
+	static ConstructorHelpers::FClassFinder<ALockDeployable> CodeLockBlueprint(TEXT("/Game/Deployables/BP_CodeLock"));
+	if (CodeLockBlueprint.Succeeded())
 	{
-		LockClass = LockBlueprint.Class;
+		CodeLockClass = CodeLockBlueprint.Class;
 	}
 }
 
@@ -42,12 +42,13 @@ void ULockComponent::OnRep_HasLock()
 	// Spawn Lock
 	if (HasLock && SpawnedLock == nullptr)
 	{
-		SpawnedLock = GetWorld()->SpawnActor<ALockDeployable>(LockClass);
+		SpawnedLock = GetWorld()->SpawnActor<ALockDeployable>(CodeLockClass);
 		if (SpawnedLock == nullptr)
 		{
 			return;
 		}
 		SpawnedLock->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		SpawnedLock->OnSpawn();
 	}
 	// Remove Lock
 	else if (!HasLock && SpawnedLock)
@@ -57,6 +58,10 @@ void ULockComponent::OnRep_HasLock()
 	}
 }
 
+void ULockComponent::OnLoadComplete_Implementation()
+{
+	OnRep_HasLock();
+}
 
 // Called every frame
 void ULockComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

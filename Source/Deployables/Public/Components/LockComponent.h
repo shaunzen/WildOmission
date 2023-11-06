@@ -10,7 +10,7 @@
 class ALockDeployable;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class DEPLOYABLES_API ULockComponent : public USceneComponent
+class DEPLOYABLES_API ULockComponent : public USceneComponent, public ISavableObject
 {
 	GENERATED_BODY()
 
@@ -51,12 +51,15 @@ private:
 	FString Code;
 
 	UPROPERTY()
-	TSubclassOf<ALockDeployable> LockClass;
+	TSubclassOf<ALockDeployable> CodeLockClass;
 
 	UPROPERTY()
 	ALockDeployable* SpawnedLock;
 
 	UFUNCTION()
 	void OnRep_HasLock();
+
+	UFUNCTION()
+	virtual void OnLoadComplete_Implementation() override;
 
 };
