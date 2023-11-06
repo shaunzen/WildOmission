@@ -53,6 +53,11 @@ void ULockComponent::RemoveLock()
 	// TODO Remove Lock
 }
 
+bool ULockComponent::IsLockPlaced() const
+{
+	return HasLock;
+}
+
 void ULockComponent::SetCode(const FString& NewCode)
 {
 	Code = NewCode;

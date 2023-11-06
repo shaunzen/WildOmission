@@ -34,8 +34,14 @@ protected:
 
 	bool LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelToTrace, FHitResult& OutHitResult) const;
 
-	FTransform GetPlacementTransform(bool& OutValidSpawn);
+	virtual FTransform GetPlacementTransform(bool& OutValidSpawn);
 	
+	FTransform GetFreehandPlacementTransform();
+
+	FRotator GetFacePlayerRotation(const FVector& PlacementLocation = FVector::ZeroVector, const FVector& Up = FVector::UpVector) const;
+	
+	float GetOffsetFromNearestSnapDegree(const float& InAxis) const;
+
 private:
 	UFUNCTION(Client, Reliable)
 	void Client_SpawnPreview();
@@ -45,10 +51,5 @@ private:
 	UPROPERTY()
 	ADeployablePreview* PreviewActor;
 
-	FTransform GetFreehandPlacementTransform();
-
-	FRotator GetFacePlayerRotation(const FVector& PlacementLocation = FVector::ZeroVector, const FVector& Up = FVector::UpVector) const;
-	
-	float GetOffsetFromNearestSnapDegree(const float& InAxis) const;
 
 };

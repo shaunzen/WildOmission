@@ -25,6 +25,8 @@ public:
 	void ApplyLock();
 	void RemoveLock();
 
+	bool IsLockPlaced() const;
+
 	void SetCode(const FString& NewCode);
 	void ClearCode();
 	FString GetCode() const;
