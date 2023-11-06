@@ -33,11 +33,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float DeployableRange;
 
+	// Handle placement logic here, calls to Super should be placed at the end, 
+	// as Super will remove the item from inventory, rendering all further logic invalid.
 	virtual void OnPlace();
 
 	bool LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelToTrace, FHitResult& OutHitResult) const;
 
-	virtual FTransform GetPlacementTransform(bool& OutValidSpawn);
+	// By default OutPlacementTransform will be freehand, returns true if valid placement, false if invalid.
+	virtual bool GetPlacementTransform(FTransform& OutPlacementTransform);
 
 	FTransform GetFreehandPlacementTransform();
 

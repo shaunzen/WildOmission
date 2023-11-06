@@ -6,44 +6,40 @@
 
 void ALockDeployableItem::OnPlace()
 {
-	Super::OnPlace();
 
 	// TODO get the thing we are looking at
 	// TODO set has lock to true
+
+	Super::OnPlace();
 }
 
-// TODO I feel like it should be the other way around, returns bool, and out parameter is transform
-FTransform ALockDeployableItem::GetPlacementTransform(bool& OutValidSpawn)
+bool ALockDeployableItem::GetPlacementTransform(FTransform& OutPlacementTransform)
 {
-	Super::GetPlacementTransform(OutValidSpawn);
+	Super::GetPlacementTransform(OutPlacementTransform);
 
 	FHitResult HitResult;
 	if (!LineTraceOnChannel(ECollisionChannel::ECC_Visibility, HitResult))
 	{
-		OutValidSpawn = false;
-		return GetFreehandPlacementTransform();
+		return false;
 	}
 
 	AActor* HitActor = HitResult.GetActor();
 	if (HitActor == nullptr)
 	{
-		OutValidSpawn = false;
-		return GetFreehandPlacementTransform();
+		return false;
 	}
 
 	ULockComponent* HitLockComponent = HitActor->FindComponentByClass<ULockComponent>();
 	if (HitLockComponent == nullptr)
 	{
-		OutValidSpawn = false;
-		return GetFreehandPlacementTransform();
+		return false;
 	}
 
 	if (HitLockComponent->IsLockPlaced())
 	{
-		OutValidSpawn = false;
-		return GetFreehandPlacementTransform();
+		return false;
 	}
 
-	OutValidSpawn = true;
-	return HitLockComponent->GetComponentTransform();
+	OutPlacementTransform = HitLockComponent->GetComponentTransform();
+	return true;
 }

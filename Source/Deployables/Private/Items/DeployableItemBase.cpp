@@ -115,9 +115,10 @@ bool ADeployableItemBase::LineTraceOnChannel(TEnumAsByte<ECollisionChannel> Chan
 	return false;
 }
 
-FTransform ADeployableItemBase::GetPlacementTransform(bool& OutValidSpawn)
+bool ADeployableItemBase::GetPlacementTransform(FTransform& OutPlacementTransform)
 {
-	return FTransform();
+	OutPlacementTransform = GetFreehandPlacementTransform();
+	return false;
 }
 
 FTransform ADeployableItemBase::GetFreehandPlacementTransform()

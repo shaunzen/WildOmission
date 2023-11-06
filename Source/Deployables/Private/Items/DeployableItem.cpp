@@ -31,9 +31,9 @@ void ADeployableItem::OnPlace()
 	Super::OnPlace();
 }
 
-FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
+bool ADeployableItem::GetPlacementTransform(FTransform& OutPlacementTransform)
 {
-	Super::GetPlacementTransform(OutValidSpawn);
+	Super::GetPlacementTransform(OutPlacementTransform);
 
 	bool InvalidOverlap = false;
 	if (PreviewActor)
@@ -71,11 +71,10 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 		UBuildAnchorComponent* HitBuildAnchor = Cast<UBuildAnchorComponent>(AnchorHitResult.GetComponent());
 		if (HitBuildAnchor == nullptr)
 		{
-			OutValidSpawn = false;
-			return GetFreehandPlacementTransform();
+			return false;
 		}
 
-		OutValidSpawn = HitBuildAnchor->GetType() == DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor() && !InvalidOverlap;
+		const bool ValidSpawn = HitBuildAnchor->GetType() == DeployableActorClass.GetDefaultObject()->CanSpawnOnBuildAnchor() && !InvalidOverlap;
 		
 		if (DeployableActorClass.GetDefaultObject()->CanRotate())
 		{
@@ -87,33 +86,32 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 			FTransform BuildAnchorThatFacesPlayer = HitBuildAnchor->GetCorrectedTransform();
 			BuildAnchorThatFacesPlayer.SetRotation(FQuat(FRotator(0.0f, FacePlayerYaw + AnchorOffsetFromNearestSnap, 0.0f)));
 			
-			return BuildAnchorThatFacesPlayer;
+			OutPlacementTransform = BuildAnchorThatFacesPlayer;
+			return true;
 		}
 
-		return HitBuildAnchor->GetCorrectedTransform();
+		OutPlacementTransform = HitBuildAnchor->GetCorrectedTransform();
+		return true;
 	}
 
 	FHitResult HitResult;
 	if (!LineTraceOnChannel(ECC_Visibility, HitResult))
 	{
-		OutValidSpawn = false;
-		return GetFreehandPlacementTransform();
+		return false;
 	}
 
 	AActor* HitActor = HitResult.GetActor();
 	
 	if (HitActor == nullptr)
 	{
-		OutValidSpawn = false;
-		return GetFreehandPlacementTransform();
+		return false;
 	}
 
 
 	// Check ground condition
 	if (HitActor->ActorHasTag(TEXT("Ground")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnGround())
 	{
-		OutValidSpawn = !InvalidOverlap;
-		return GetFreehandPlacementTransform();
+		return !InvalidOverlap;
 	}
 
 	// Check floor condition
@@ -123,19 +121,16 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	
 	if (HitActor->ActorHasTag(TEXT("Floor")) && (CanSpawnOnFloor || CanSpawnOnCeiling))
 	{
-		OutValidSpawn = !InvalidOverlap;
-		return GetFreehandPlacementTransform();
+		return !InvalidOverlap;
 	}
 
 	// Check wall condition
 	if (HitActor->ActorHasTag(TEXT("Wall")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnWall())
 	{
-		OutValidSpawn = !InvalidOverlap;
-		return GetFreehandPlacementTransform();
+		return !InvalidOverlap;
 	}
 
-	OutValidSpawn = false;
-	return GetFreehandPlacementTransform();
+	return false;
 }
 
 float ADeployableItem::GetOffsetFromNearestSnapDegree(const float& InAxis) const

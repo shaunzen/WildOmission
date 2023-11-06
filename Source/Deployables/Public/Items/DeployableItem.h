@@ -14,7 +14,7 @@ class DEPLOYABLES_API ADeployableItem : public ADeployableItemBase
 protected:
 	virtual void OnPlace() override;
 
-	virtual FTransform GetPlacementTransform(bool& OutValidSpawn) override;
+	virtual bool GetPlacementTransform(FTransform& OutPlacementTransform) override;
 	float GetOffsetFromNearestSnapDegree(const float& InAxis) const;
 
 };
