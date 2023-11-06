@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Items/DeployableItem.h"
+#include "Items/DeployableItemBase.h"
 #include "LockDeployableItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ALockDeployableItem : public ADeployableItem
+class ALockDeployableItem : public ADeployableItemBase
 {
 	GENERATED_BODY()
 
