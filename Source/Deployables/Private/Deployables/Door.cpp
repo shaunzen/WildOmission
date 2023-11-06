@@ -3,6 +3,7 @@
 
 #include "Deployables/Door.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/LockComponent.h"
 #include "Net/UnrealNetwork.h"
 
 ADoor::ADoor()
@@ -14,6 +15,9 @@ ADoor::ADoor()
 	InteractionMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	InteractionMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	InteractionMesh->SetVisibility(false);
+
+	LockComponent = CreateDefaultSubobject<ULockComponent>(TEXT("LockComponent"));
+	LockComponent->SetupAttachment(MeshComponent);
 
 	OpenSound = nullptr;
 	CloseSound = nullptr;

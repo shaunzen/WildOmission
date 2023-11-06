@@ -7,6 +7,8 @@
 #include "Interfaces/Interactable.h"
 #include "Door.generated.h"
 
+class ULockComponent;
+
 UCLASS()
 class DEPLOYABLES_API ADoor : public ADeployable, public IInteractable
 {
@@ -27,6 +29,9 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* InteractionMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	ULockComponent* LockComponent;
 
 	UPROPERTY(Replicated, SaveGame)
 	bool bIsOpen;
