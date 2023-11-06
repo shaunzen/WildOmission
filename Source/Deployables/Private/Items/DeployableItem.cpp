@@ -19,8 +19,9 @@ void ADeployableItem::OnPlace()
 		return;
 	}
 
-	bool SpawnValid = false;
-	SpawnedDeployable->SetActorTransform(GetPlacementTransform(SpawnValid));
+	FTransform PlacementTransform;
+	bool SpawnValid = GetPlacementTransform(PlacementTransform);
+	SpawnedDeployable->SetActorTransform(PlacementTransform);
 	SpawnedDeployable->OnSpawn();
 
 	if (SpawnValid == false)

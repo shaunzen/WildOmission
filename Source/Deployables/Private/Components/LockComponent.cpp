@@ -2,6 +2,8 @@
 
 
 #include "Components/LockComponent.h"
+#include "Deployables/LockDeployable.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -11,9 +13,14 @@ ULockComponent::ULockComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	LockMesh = nullptr;
 	HasLock = false;
+	SpawnedLock = nullptr;
 
+	static ConstructorHelpers::FClassFinder<ALockDeployable> LockBlueprint(TEXT("/Game/Deployables/BP_CodeLock"));
+	if (LockBlueprint.Succeeded())
+	{
+		LockClass = LockBlueprint.Class;
+	}
 }
 
 void ULockComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -32,6 +39,22 @@ void ULockComponent::BeginPlay()
 
 void ULockComponent::OnRep_HasLock()
 {
+	// Spawn Lock
+	if (HasLock && SpawnedLock == nullptr)
+	{
+		SpawnedLock = GetWorld()->SpawnActor<ALockDeployable>(LockClass);
+		if (SpawnedLock == nullptr)
+		{
+			return;
+		}
+		SpawnedLock->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	}
+	// Remove Lock
+	else if (!HasLock && SpawnedLock)
+	{
+		SpawnedLock->Destroy();
+		SpawnedLock = nullptr;
+	}
 }
 
 
@@ -45,12 +68,14 @@ void ULockComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void ULockComponent::ApplyLock()
 {
-	// TODO Apply Lock
+	HasLock = true;
+	OnRep_HasLock();
 }
 
 void ULockComponent::RemoveLock()
 {
-	// TODO Remove Lock
+	HasLock = false;
+	OnRep_HasLock();
 }
 
 bool ULockComponent::IsLockPlaced() const

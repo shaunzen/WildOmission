@@ -7,6 +7,7 @@
 #include "Interfaces/SavableObject.h"
 #include "LockComponent.generated.h"
 
+class ALockDeployable;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DEPLOYABLES_API ULockComponent : public USceneComponent
@@ -40,9 +41,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditDefaultsOnly)
-	UStaticMesh* LockMesh;
-
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_HasLock, SaveGame)
 	bool HasLock;
 
@@ -52,7 +50,11 @@ private:
 	UPROPERTY(SaveGame)
 	FString Code;
 
-	// TODO SpawnedLock
+	UPROPERTY()
+	TSubclassOf<ALockDeployable> LockClass;
+
+	UPROPERTY()
+	ALockDeployable* SpawnedLock;
 
 	UFUNCTION()
 	void OnRep_HasLock();

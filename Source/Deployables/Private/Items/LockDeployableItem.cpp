@@ -6,9 +6,25 @@
 
 void ALockDeployableItem::OnPlace()
 {
+	FHitResult HitResult;
+	if (!LineTraceOnChannel(ECollisionChannel::ECC_Visibility, HitResult))
+	{
+		return;
+	}
 
-	// TODO get the thing we are looking at
-	// TODO set has lock to true
+	AActor* HitActor = HitResult.GetActor();
+	if (HitActor == nullptr)
+	{
+		return;
+	}
+
+	ULockComponent* HitLockComponent = HitActor->FindComponentByClass<ULockComponent>();
+	if (HitLockComponent == nullptr)
+	{
+		return;
+	}
+
+	HitLockComponent->ApplyLock();
 
 	Super::OnPlace();
 }

@@ -29,8 +29,9 @@ void ADeployableItemBase::Tick(float DeltaTime)
 
 	if (PreviewActor)
 	{
-		bool SpawnValid = false;
-		PreviewActor->SetActorTransform(GetPlacementTransform(SpawnValid));
+		FTransform PlacementTransform;
+		bool SpawnValid = GetPlacementTransform(PlacementTransform);
+		PreviewActor->SetActorTransform(PlacementTransform);
 		PreviewActor->Update(SpawnValid);
 		bPrimaryEnabled = SpawnValid;
 	}
