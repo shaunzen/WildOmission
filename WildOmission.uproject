@@ -51,7 +51,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"UMG"
+				"UMG",
+				"EquipableItems"
 			]
 		},
 		{

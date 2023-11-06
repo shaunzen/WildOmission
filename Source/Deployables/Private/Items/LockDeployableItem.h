@@ -15,6 +15,7 @@ class ALockDeployableItem : public ADeployableItem
 	GENERATED_BODY()
 
 protected:
+	virtual void OnPlace() override;
 	virtual FTransform GetPlacementTransform(bool& OutValidSpawn) override;
 
 };

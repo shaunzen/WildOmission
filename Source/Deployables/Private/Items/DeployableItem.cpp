@@ -3,82 +3,15 @@
 
 #include "Items/DeployableItem.h"
 #include "Deployables/Deployable.h"
-#include "Components/PlayerInventoryComponent.h"
 #include "Actors/DeployablePreview.h"
-#include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Camera/CameraComponent.h"
-#include "UObject/ConstructorHelpers.h"
 
-ADeployableItem::ADeployableItem()
+void ADeployableItem::OnPlace()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	Super::OnPlace();
 
-	DeployableActorClass = nullptr;
-	DeployableRange = 500.0f;
-
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> HammerMesh(TEXT("/Game/Deployables/Art/SK_Hammer"));
-	if (HammerMesh.Succeeded())
-	{
-		MeshComponent->SetSkeletalMeshAsset(HammerMesh.Object);
-	}
-}
-
-void ADeployableItem::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	if (PreviewActor)
-	{
-		bool SpawnValid = false;
-		PreviewActor->SetActorTransform(GetPlacementTransform(SpawnValid));
-		PreviewActor->Update(SpawnValid);
-		bPrimaryEnabled = SpawnValid;
-	}
-}
-
-void ADeployableItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
-{
-	Super::Equip(InOwnerPawn, InThirdPersonMeshComponent, InItemName, InFromSlotIndex, InUniqueID);
-
-	Client_SpawnPreview();
-}
-
-void ADeployableItem::OnUnequip()
-{
-	Super::OnUnequip();
-
-	Client_DestroyPreview();
-}
-
-void ADeployableItem::Destroyed()
-{
-	Super::Destroyed();
-
-	if (PreviewActor)
-	{
-		PreviewActor->Destroy();
-	}
-}
-
-void ADeployableItem::OnPrimaryPressed()
-{
-	Super::OnPrimaryPressed();
-
-	if (!HasAuthority())
-	{
-		return;
-	}
-	
 	UWorld* World = GetWorld();
 	AActor* OwnerActor = GetOwner();
 	if (World == nullptr || OwnerActor == nullptr)
-	{
-		return;
-	}
-
-	UPlayerInventoryComponent* OwnerInventoryComponent = OwnerActor->FindComponentByClass<UPlayerInventoryComponent>();
-	if (OwnerInventoryComponent == nullptr)
 	{
 		return;
 	}
@@ -97,38 +30,12 @@ void ADeployableItem::OnPrimaryPressed()
 	{
 		SpawnedDeployable->Destroy();
 	}
-
-	OwnerInventoryComponent->RemoveHeldItem();
-}
-
-bool ADeployableItem::LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelToTrace, FHitResult& OutHitResult) const
-{
-	if (GetOwnerPawn() == nullptr)
-	{
-		return false;
-	}
-
-	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
-	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation()) * DeployableRange);	// In this case the replicated rotation isnt needed,
-	FCollisionQueryParams Params;																							// this is because the autonomys proxy and the authority are the only ones
-																															// who will be reading this data, both are well aware of the control rotatation
-	Params.AddIgnoredActor(GetOwner());
-	Params.AddIgnoredActor(this);
-	if (PreviewActor)
-	{
-		Params.AddIgnoredActor(PreviewActor);
-	}
-	
-	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ChannelToTrace, Params))
-	{
-		return true;
-	}
-
-	return false;
 }
 
 FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 {
+	Super::GetPlacementTransform(OutValidSpawn);
+
 	bool InvalidOverlap = false;
 	if (PreviewActor)
 	{
@@ -230,76 +137,6 @@ FTransform ADeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 
 	OutValidSpawn = false;
 	return GetFreehandPlacementTransform();
-}
-
-void ADeployableItem::Client_SpawnPreview_Implementation()
-{
-	if (DeployableActorClass == nullptr)
-	{
-		return;
-	}
-	
-	if (PreviewActor)
-	{
-		PreviewActor->Destroy();
-	}
-
-	// TODO what the fuck am i using = for???
-	PreviewActor = GetWorld()->SpawnActor<ADeployablePreview>(GetOwner()->GetActorLocation() = FVector(0.0f, 0.0f, 500.0f), GetOwner()->GetActorRotation());
-	PreviewActor->Setup(DeployableActorClass.GetDefaultObject());
-}
-
-void ADeployableItem::Client_DestroyPreview_Implementation()
-{
-	if (PreviewActor == nullptr)
-	{
-		return;
-	}
-
-	PreviewActor->Destroy();
-}
-
-FTransform ADeployableItem::GetFreehandPlacementTransform()
-{
-	FVector PlacementLocation = FVector::ZeroVector;
-	FRotator PlacementRotation = FRotator::ZeroRotator;
-	FVector PlacementUp = FVector::UpVector;
-
-	FHitResult HitResult;
-	if (LineTraceOnChannel(ECC_Visibility, HitResult))
-	{
-		PlacementLocation = HitResult.ImpactPoint;
-		if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
-		{
-			PlacementUp = HitResult.ImpactNormal;
-		}
-	}
-	else
-	{
-		PlacementLocation = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation()) * DeployableRange);
-	}
-
-	PlacementRotation = GetFacePlayerRotation(PlacementLocation, PlacementUp);
-
-	FTransform PlacementTransform;
-	PlacementTransform.SetLocation(PlacementLocation);
-	PlacementTransform.SetRotation(PlacementRotation.Quaternion());
-
-	return PlacementTransform;
-}
-
-FRotator ADeployableItem::GetFacePlayerRotation(const FVector& PlacementLocation, const FVector& Up) const
-{
-	FVector PlacementUp = Up;
-	
-	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetOwnerPawn()->GetActorLocation(), PlacementLocation);
-	
-	FRotator PlacementUpRotationOffset = FRotator(PlacementUp.Rotation().Pitch - 90.0f, 0.0f, PlacementUp.Rotation().Roll - 90.0f);
-	FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(0.0f, LookAtRotation.Yaw, 0.0f) - PlacementUpRotationOffset);
-	FVector PlacementRight = -UKismetMathLibrary::GetRightVector(FRotator(0.0f, LookAtRotation.Yaw, 0.0f));
-
-	
-	return UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, PlacementUp);
 }
 
 float ADeployableItem::GetOffsetFromNearestSnapDegree(const float& InAxis) const
