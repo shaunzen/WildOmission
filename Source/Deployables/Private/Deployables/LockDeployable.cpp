@@ -6,6 +6,9 @@
 void ALockDeployable::Interact(AActor* Interactor)
 {
 	// TODO bring up menu
+	// Cast to LockInterface
+	// LockInterface->BringUpLockMenu(this);
+	// some method for getting the client to open the widget
 }
 
 FString ALockDeployable::PromptText()
