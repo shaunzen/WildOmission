@@ -536,6 +536,11 @@ void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	PlayerHUDWidget = nullptr;
 }
 
+void AWildOmissionCharacter::OpenLockMenu(ALockDeployable* Lock)
+{
+	Client_OpenLockMenu(Lock);
+}
+
 void AWildOmissionCharacter::HandleDeath()
 {
 	AWildOmissionPlayerController* OurController = Cast<AWildOmissionPlayerController>(Controller);
@@ -940,6 +945,11 @@ void AWildOmissionCharacter::SelectToolbarSlot6()
 	}
 
 	InventoryComponent->SetToolbarSelectionIndex(5);
+}
+
+void AWildOmissionCharacter::Client_OpenLockMenu_Implementation(ALockDeployable* Lock)
+{
+	// TODO create widget and stuff
 }
 
 //********************************

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/CharacterSettingsInterface.h"
+#include "Interfaces/LockModifier.h"
 #include "WildOmissionCharacter.generated.h"
 
 class UInputAction;
@@ -26,7 +27,7 @@ class ALootableRagdoll;
 class UPlayerHUDWidget;
 
 UCLASS()
-class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public ICharacterSettingsInterface
+class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public ICharacterSettingsInterface, public ILockModifier
 {
 	GENERATED_BODY()
 
@@ -52,6 +53,10 @@ public:
 	virtual void ApplyGameplaySettings() override;
 	virtual void ApplyPostProcessingSettings() override;
 	// End ICharacterSettingsInterface Implementation
+
+	// Begin ILockModifier Implementation
+	virtual void OpenLockMenu(ALockDeployable* Lock) override;
+	// End ILockModifier Implementation
 
 	UFUNCTION()
 	void HandleDeath();
@@ -312,6 +317,9 @@ private:
 	void SelectToolbarSlot5();
 	UFUNCTION()
 	void SelectToolbarSlot6();
+
+	UFUNCTION(Client, Reliable)
+	void Client_OpenLockMenu(ALockDeployable* Lock);
 
 	//********************************	
 	// Setup Member functions
