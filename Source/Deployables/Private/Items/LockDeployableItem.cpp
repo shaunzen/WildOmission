@@ -35,5 +35,5 @@ FTransform ALockDeployableItem::GetPlacementTransform(bool& OutValidSpawn)
 	}
 
 	OutValidSpawn = true;
-	return HitLockComponent->GetRelativeTransform();
+	return HitLockComponent->GetComponentTransform();
 }
