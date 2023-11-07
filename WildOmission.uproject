@@ -124,6 +124,16 @@
 			]
 		},
 		{
+			"Name": "Locks",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"UMG",
+				"CoreUObject"
+			]
+		},
+		{
 			"Name": "MenuSystem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",

@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class DEPLOYABLES_API ALockDeployable : public ADeployable, public IInteractable
+class LOCKS_API ALockDeployable : public ADeployable, public IInteractable
 {
 	GENERATED_BODY()
 	
