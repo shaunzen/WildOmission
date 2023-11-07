@@ -4,6 +4,13 @@
 #include "Locks/Lock.h"
 #include "Components/LockModifierComponent.h"
 
+ALock::ALock()
+{
+	PrimaryActorTick.bCanEverTick = false;
+
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+}
+
 void ALock::Interact(AActor* Interactor)
 {
 	if (Interactor == nullptr)
@@ -27,5 +34,5 @@ FString ALock::PromptText()
 
 UStaticMesh* ALock::GetStaticMesh() const
 {
-	return nullptr;
+	return MeshComponent->GetStaticMesh();
 }

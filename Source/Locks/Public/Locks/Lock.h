@@ -16,6 +16,8 @@ class LOCKS_API ALock : public AActor, public IInteractable
 	GENERATED_BODY()
 	
 public:
+	ALock();
+	
 	// Begin IInteractable Implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
@@ -24,6 +26,7 @@ public:
 	UStaticMesh* GetStaticMesh() const;
 
 private:
-	// TODO mesh for lock
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* MeshComponent;
 
 };

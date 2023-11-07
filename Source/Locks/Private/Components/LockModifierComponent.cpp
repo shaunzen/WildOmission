@@ -24,13 +24,14 @@ void ULockModifierComponent::OpenKeypadMenu(ALock* Lock)
 	Client_OpenKeypadMenu(Lock);
 }
 
-void ULockModifierComponent::Client_OpenKeypadMenu(ALock* Lock)
+void ULockModifierComponent::Client_OpenKeypadMenu_Implementation(ALock* Lock)
 {
-	if (KeypadWidget || Lock == nullptr || KeypadWidgetClass == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || KeypadWidget || Lock == nullptr || KeypadWidgetClass == nullptr)
 	{
 		return;
 	}
 
-	KeypadWidget = CreateWidget<UKeypadWidget>(this, KeypadWidgetClass);
+	KeypadWidget = CreateWidget<UKeypadWidget>(World, KeypadWidgetClass);
 	KeypadWidget->Setup(Lock);
 }

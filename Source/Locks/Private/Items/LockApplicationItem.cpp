@@ -12,6 +12,8 @@
 
 ALockApplicationItem::ALockApplicationItem()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	LockActorClass = nullptr;
 	PlacementRange = 500.0f;
 
@@ -20,13 +22,33 @@ ALockApplicationItem::ALockApplicationItem()
 	{
 		MeshComponent->SetSkeletalMeshAsset(HammerMesh.Object);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/Deployables/Art/M_DeployablePreview_Inst"));
+	if (PreviewMaterialInstanceBlueprint.Succeeded())
+	{
+		PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;
+	}
 }
 
 void ALockApplicationItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// TODO update preview
+	if (PreviewActor)
+	{
+		FTransform PlacementTransform;
+		bool SpawnValid = GetPlacementTransform(PlacementTransform);
+		PreviewActor->SetActorTransform(PlacementTransform);
+		bPrimaryEnabled = SpawnValid;
+
+		UStaticMeshComponent* PreviewMeshComponent = PreviewActor->GetStaticMeshComponent();
+		if (PreviewMeshComponent == nullptr)
+		{
+			return;
+		}
+
+		PreviewMeshComponent->SetScalarParameterValueOnMaterials(TEXT("Valid"), SpawnValid);
+	}
 }
 
 void ALockApplicationItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
@@ -103,7 +125,7 @@ bool ALockApplicationItem::LineTraceOnChannel(TEnumAsByte<ECollisionChannel> Cha
 bool ALockApplicationItem::GetPlacementTransform(FTransform& OutPlacementTransform)
 {
 	OutPlacementTransform = GetFreehandPlacementTransform();
-
+	return false;
 	// TODO handle transform logic
 }
 
@@ -144,7 +166,7 @@ FRotator ALockApplicationItem::GetFacePlayerRotation(const FVector& PlacementLoc
 	return UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, Up);
 }
 
-void ALockApplicationItem::Client_SpawnPreview()
+void ALockApplicationItem::Client_SpawnPreview_Implementation()
 {
 	UWorld* World = GetWorld();
 	if (World == nullptr || LockActorClass == nullptr)
@@ -159,11 +181,29 @@ void ALockApplicationItem::Client_SpawnPreview()
 	}
 
 	PreviewActor = World->SpawnActor<AStaticMeshActor>();
-	// TODO make this crash proof
-	PreviewActor->GetStaticMeshComponent()->SetStaticMesh(LockActorClass.GetDefaultObject()->GetStaticMesh());
+	if (PreviewActor == nullptr)
+	{
+		return;
+	}
+
+	UStaticMeshComponent* PreviewMesh = PreviewActor->GetStaticMeshComponent();
+	if (PreviewMesh == nullptr)
+	{
+		return;
+	}
+
+	PreviewActor->SetMobility(EComponentMobility::Movable);
+	PreviewMesh->SetCollisionProfileName(TEXT("NoCollision"));
+	PreviewMesh->SetStaticMesh(LockActorClass.GetDefaultObject()->GetStaticMesh());
+
+	// Set all materials on the mesh to use the preview material
+	for (int32 i = 0; i < PreviewMesh->GetNumMaterials(); i++)
+	{
+		PreviewMesh->SetMaterial(i, PreviewMaterial);
+	}
 }
 
-void ALockApplicationItem::Client_DestroyPreview()
+void ALockApplicationItem::Client_DestroyPreview_Implementation()
 {
 	if (PreviewActor == nullptr)
 	{

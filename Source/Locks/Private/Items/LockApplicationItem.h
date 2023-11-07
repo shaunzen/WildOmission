@@ -49,6 +49,9 @@ protected:
 	UPROPERTY()
 	class AStaticMeshActor* PreviewActor;
 
+	UPROPERTY()
+	UMaterialInterface* PreviewMaterial;
+
 private:
 
 };
