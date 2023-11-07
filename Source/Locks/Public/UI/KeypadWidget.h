@@ -10,7 +10,7 @@ class UTextBlock;
 class UButton;
 
 UCLASS()
-class DEPLOYABLES_API UKeypadWidget : public UUserWidget
+class LOCKS_API UKeypadWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	

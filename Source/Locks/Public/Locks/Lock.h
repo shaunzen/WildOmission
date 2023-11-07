@@ -3,15 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Deployables/Deployable.h"
+#include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
-#include "LockDeployable.generated.h"
+#include "Lock.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LOCKS_API ALockDeployable : public ADeployable, public IInteractable
+class LOCKS_API ALock : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 	
