@@ -7,7 +7,7 @@
 #include "Interfaces/SavableObject.h"
 #include "LockComponent.generated.h"
 
-class ALockDeployable;
+class ALock;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LOCKS_API ULockComponent : public USceneComponent, public ISavableObject
@@ -51,10 +51,10 @@ private:
 	FString Code;
 
 	UPROPERTY()
-	TSubclassOf<ALockDeployable> CodeLockClass;
+	TSubclassOf<ALock> CodeLockClass;
 
 	UPROPERTY()
-	ALockDeployable* SpawnedLock;
+	ALock* SpawnedLock;
 
 	UFUNCTION()
 	void OnRep_HasLock();

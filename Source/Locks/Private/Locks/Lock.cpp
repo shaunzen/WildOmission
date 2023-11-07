@@ -1,21 +1,26 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Deployables/LockDeployable.h"
-#include "Interfaces/LockModifier.h"
+#include "Locks/Lock.h"
+#include "Components/LockModifierComponent.h"
 
-void ALockDeployable::Interact(AActor* Interactor)
+void ALock::Interact(AActor* Interactor)
 {
-	ILockModifier* LockModifierInteractor = Cast<ILockModifier>(Interactor);
-	if (LockModifierInteractor == nullptr)
+	if (Interactor == nullptr)
 	{
 		return;
 	}
 
-	LockModifierInteractor->OpenLockMenu(this);
+	ULockModifierComponent* InteractorLockModifierComponent = Interactor->FindComponentByClass<ULockModifierComponent>();
+	if (InteractorLockModifierComponent == nullptr)
+	{
+		return;
+	}
+
+	InteractorLockModifierComponent->OpenKeypadMenu(this);
 }
 
-FString ALockDeployable::PromptText()
+FString ALock::PromptText()
 {
 	return TEXT("open keypad");
 }

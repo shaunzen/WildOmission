@@ -7,6 +7,6 @@ public class Locks : ModuleRules
     public Locks(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "SaveSystem" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Interaction" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "EquipableItems", "Interaction" });
     }
 }

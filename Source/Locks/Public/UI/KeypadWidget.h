@@ -6,9 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "KeypadWidget.generated.h"
 
-class UTextBlock;
-class UButton;
-
 UCLASS()
 class LOCKS_API UKeypadWidget : public UUserWidget
 {
@@ -17,34 +14,39 @@ class LOCKS_API UKeypadWidget : public UUserWidget
 public:
 	UKeypadWidget(const FObjectInitializer& ObjectInitializer);
 
+	void Setup(class ALock* InLock);
+
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* CodeTextBlock;
+	class UTextBlock* CodeTextBlock;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* OneKeyButton;
+	class UButton* OneKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* TwoKeyButton;
+	class UButton* TwoKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* ThreeKeyButton;
+	class UButton* ThreeKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* FourKeyButton;
+	class UButton* FourKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* FiveKeyButton;
+	class UButton* FiveKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* SixKeyButton;
+	class UButton* SixKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* SevenKeyButton;
+	class UButton* SevenKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* EightKeyButton;
+	class UButton* EightKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* NineKeyButton;
+	class UButton* NineKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* ZeroKeyButton;
+	class UButton* ZeroKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* ToggleLockButton;
+	class UButton* ToggleLockButton;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* ToggleLockTextBlock;
+	class UTextBlock* ToggleLockTextBlock;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* CloseButton;
+	class UButton* CloseButton;
+
+	UPROPERTY()
+	class ALock* LockToModify;
 
 };

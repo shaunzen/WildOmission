@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/CharacterSettingsInterface.h"
-#include "Interfaces/LockModifier.h"
 #include "WildOmissionCharacter.generated.h"
 
 class UInputAction;
@@ -22,13 +21,13 @@ class UEquipComponent;
 class UCraftingComponent;
 class UNameTagComponent;
 class USpecialEffectsHandlerComponent;
+class ULockModifierComponent;
 
 class ALootableRagdoll;
 class UPlayerHUDWidget;
-class UKeypadWidget;
 
 UCLASS()
-class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public ICharacterSettingsInterface, public ILockModifier
+class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public ICharacterSettingsInterface
 {
 	GENERATED_BODY()
 
@@ -54,10 +53,6 @@ public:
 	virtual void ApplyGameplaySettings() override;
 	virtual void ApplyPostProcessingSettings() override;
 	// End ICharacterSettingsInterface Implementation
-
-	// Begin ILockModifier Implementation
-	virtual void OpenLockMenu(ALockDeployable* Lock) override;
-	// End ILockModifier Implementation
 
 	UFUNCTION()
 	void HandleDeath();
@@ -134,6 +129,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	ULockModifierComponent* LockModifierComponent;
+
 	UPROPERTY()
 	TSubclassOf<UCameraShakeBase> JumpCameraShake;
 
@@ -142,12 +140,6 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
-
-	UPROPERTY()
-	UKeypadWidget* KeypadWidget;
-
-	UPROPERTY()
-	TSubclassOf<UKeypadWidget> KeypadWidgetClass;
 
 	UPROPERTY()
 	TSubclassOf<ALootableRagdoll> RagdollClass;
@@ -326,9 +318,6 @@ private:
 	void SelectToolbarSlot5();
 	UFUNCTION()
 	void SelectToolbarSlot6();
-
-	UFUNCTION(Client, Reliable)
-	void Client_OpenLockMenu(ALockDeployable* Lock);
 
 	//********************************	
 	// Setup Member functions

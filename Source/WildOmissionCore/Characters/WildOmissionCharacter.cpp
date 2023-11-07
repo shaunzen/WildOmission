@@ -21,13 +21,13 @@
 #include "Components/CraftingComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
+#include "Components/LockModifierComponent.h"
 #include "WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "UI/InventoryMenuWidget.h"
 #include "Deployables/ItemContainerBase.h"
 #include "Ragdolls/LootableRagdoll.h"
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
-#include "UI/KeypadWidget.h"
 #include "Engine/DamageEvents.h"
 
 //********************************
@@ -87,6 +87,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	SpecialEffectsHandlerComponent = nullptr;
 	
+	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
+
 	bAiming = false;
 	bSprinting = false;
 	bUnderwater = false;
@@ -119,12 +121,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	if (PlayerHUDWidgetBlueprintClass.Succeeded())
 	{
 		PlayerHUDWidgetClass = PlayerHUDWidgetBlueprintClass.Class;
-	}
-
-	static ConstructorHelpers::FClassFinder<UKeypadWidget> KeypadWidgetBlueprint(TEXT("/Game/Deployables/UI/WBP_KeypadMenu"));
-	if (KeypadWidgetBlueprint.Succeeded())
-	{
-		KeypadWidgetClass = KeypadWidgetBlueprint.Class;
 	}
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerArmsMeshObject(TEXT("/Game/WildOmissionCore/Art/Characters/SK_HumanFirstPersonArms"));
@@ -548,11 +544,6 @@ void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	PlayerHUDWidget = nullptr;
 }
 
-void AWildOmissionCharacter::OpenLockMenu(ALockDeployable* Lock)
-{
-	Client_OpenLockMenu(Lock);
-}
-
 void AWildOmissionCharacter::HandleDeath()
 {
 	AWildOmissionPlayerController* OurController = Cast<AWildOmissionPlayerController>(Controller);
@@ -959,28 +950,9 @@ void AWildOmissionCharacter::SelectToolbarSlot6()
 	InventoryComponent->SetToolbarSelectionIndex(5);
 }
 
-void AWildOmissionCharacter::Client_OpenLockMenu_Implementation(ALockDeployable* Lock)
-{
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController == nullptr || KeypadWidget != nullptr || KeypadWidgetClass == nullptr)
-	{
-		return;
-	}
-
-	KeypadWidget = CreateWidget<UKeypadWidget>(PlayerController, KeypadWidgetClass);
-	if (KeypadWidget == nullptr)
-	{
-		return;
-	}
-
-	KeypadWidget->AddToViewport();
-
-}
-
 //********************************
 // Getters
 //********************************
-
 
 USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 {

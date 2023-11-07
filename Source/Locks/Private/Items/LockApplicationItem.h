@@ -3,19 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Items/DeployableItemBase.h"
-#include "LockDeployableItem.generated.h"
+#include "Items/EquipableItem.h"
+#include "LockApplicationItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ALockDeployableItem : public ADeployableItemBase
+class ALockApplicationItem : public AEquipableItem
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void OnPlace() override;
-	virtual bool GetPlacementTransform(FTransform& OutPlacementTransform) override;
-
+	// TODO
 };

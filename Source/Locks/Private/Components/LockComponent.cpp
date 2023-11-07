@@ -2,7 +2,7 @@
 
 
 #include "Components/LockComponent.h"
-#include "Deployables/LockDeployable.h"
+#include "Locks/Lock.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -16,7 +16,7 @@ ULockComponent::ULockComponent()
 	HasLock = false;
 	SpawnedLock = nullptr;
 
-	static ConstructorHelpers::FClassFinder<ALockDeployable> CodeLockBlueprint(TEXT("/Game/Deployables/BP_CodeLock"));
+	static ConstructorHelpers::FClassFinder<ALock> CodeLockBlueprint(TEXT("/Game/Deployables/BP_CodeLock"));
 	if (CodeLockBlueprint.Succeeded())
 	{
 		CodeLockClass = CodeLockBlueprint.Class;
@@ -42,13 +42,13 @@ void ULockComponent::OnRep_HasLock()
 	// Spawn Lock
 	if (HasLock && SpawnedLock == nullptr)
 	{
-		SpawnedLock = GetWorld()->SpawnActor<ALockDeployable>(CodeLockClass);
+		SpawnedLock = GetWorld()->SpawnActor<ALock>(CodeLockClass);
 		if (SpawnedLock == nullptr)
 		{
 			return;
 		}
 		SpawnedLock->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		SpawnedLock->OnSpawn();
+		//SpawnedLock->OnSpawn();
 	}
 	// Remove Lock
 	else if (!HasLock && SpawnedLock)

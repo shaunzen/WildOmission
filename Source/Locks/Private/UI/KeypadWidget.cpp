@@ -2,6 +2,7 @@
 
 
 #include "UI/KeypadWidget.h"
+#include "Locks/Lock.h"
 
 UKeypadWidget::UKeypadWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -19,4 +20,14 @@ UKeypadWidget::UKeypadWidget(const FObjectInitializer& ObjectInitializer) : UUse
 	ToggleLockButton = nullptr;
 	ToggleLockTextBlock = nullptr;
 	CloseButton = nullptr;
+
+	LockToModify = nullptr;
+}
+
+void UKeypadWidget::Setup(ALock* InLock)
+{
+	LockToModify = InLock;
+
+	// TODO add to viewport
+	// TODO set input mode UI
 }

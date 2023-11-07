@@ -3,63 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
-#include "Interfaces/SavableObject.h"
-#include "LockComponent.generated.h"
-
-class ALockDeployable;
+#include "Components/ActorComponent.h"
+#include "LockModifierComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class LOCKS_API ULockComponent : public USceneComponent, public ISavableObject
+class LOCKS_API ULockModifierComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	ULockComponent();
+	ULockModifierComponent();
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void ApplyLock();
-	void RemoveLock();
-
-	bool IsLockPlaced() const;
-
-	void SetCode(const FString& NewCode);
-	void ClearCode();
-	FString GetCode() const;
-
-	void AddAuthorizedPlayer(const FString& PlayerToAuthorize);
-
-	bool IsPlayerAuthorized(const FString& PlayerUniqueID) const;
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	void OpenKeypadMenu(class ALock* Lock);
 
 private:
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_HasLock, SaveGame)
-	bool HasLock;
-
-	UPROPERTY(SaveGame)
-	TArray<FString> AuthorizedPlayers;
-
-	UPROPERTY(SaveGame)
-	FString Code;
+	UPROPERTY()
+	class UKeypadWidget* KeypadWidget;
 
 	UPROPERTY()
-	TSubclassOf<ALockDeployable> CodeLockClass;
+	TSubclassOf<class UKeypadWidget> KeypadWidgetClass;
 
-	UPROPERTY()
-	ALockDeployable* SpawnedLock;
-
-	UFUNCTION()
-	void OnRep_HasLock();
-
-	UFUNCTION()
-	virtual void OnLoadComplete_Implementation() override;
+	UFUNCTION(Client, Reliable)
+	void Client_OpenKeypadMenu(class ALock* Lock);
 
 };
