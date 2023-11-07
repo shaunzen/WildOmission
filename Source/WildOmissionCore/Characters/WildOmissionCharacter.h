@@ -25,6 +25,7 @@ class USpecialEffectsHandlerComponent;
 
 class ALootableRagdoll;
 class UPlayerHUDWidget;
+class UKeypadWidget;
 
 UCLASS()
 class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public ICharacterSettingsInterface, public ILockModifier
@@ -138,7 +139,15 @@ private:
 
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;
+
+	UPROPERTY()
 	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
+
+	UPROPERTY()
+	UKeypadWidget* KeypadWidget;
+
+	UPROPERTY()
+	TSubclassOf<UKeypadWidget> KeypadWidgetClass;
 
 	UPROPERTY()
 	TSubclassOf<ALootableRagdoll> RagdollClass;

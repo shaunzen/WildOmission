@@ -27,6 +27,7 @@
 #include "Deployables/ItemContainerBase.h"
 #include "Ragdolls/LootableRagdoll.h"
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
+#include "UI/KeypadWidget.h"
 #include "Engine/DamageEvents.h"
 
 //********************************
@@ -118,6 +119,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	if (PlayerHUDWidgetBlueprintClass.Succeeded())
 	{
 		PlayerHUDWidgetClass = PlayerHUDWidgetBlueprintClass.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UKeypadWidget> KeypadWidgetBlueprint(TEXT("/Game/Deployables/UI/WBP_KeypadMenu"));
+	if (KeypadWidgetBlueprint.Succeeded())
+	{
+		KeypadWidgetClass = KeypadWidgetBlueprint.Class;
 	}
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerArmsMeshObject(TEXT("/Game/WildOmissionCore/Art/Characters/SK_HumanFirstPersonArms"));
@@ -493,6 +500,11 @@ void AWildOmissionCharacter::SetupPlayerHUD()
 	}
 
 	PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
+	if (PlayerHUDWidget == nullptr)
+	{
+		return;
+	}
+
 	PlayerHUDWidget->AddToViewport();
 }
 
@@ -949,7 +961,20 @@ void AWildOmissionCharacter::SelectToolbarSlot6()
 
 void AWildOmissionCharacter::Client_OpenLockMenu_Implementation(ALockDeployable* Lock)
 {
-	// TODO create widget and stuff
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController == nullptr || KeypadWidget != nullptr || KeypadWidgetClass == nullptr)
+	{
+		return;
+	}
+
+	KeypadWidget = CreateWidget<UKeypadWidget>(PlayerController, KeypadWidgetClass);
+	if (KeypadWidget == nullptr)
+	{
+		return;
+	}
+
+	KeypadWidget->AddToViewport();
+
 }
 
 //********************************

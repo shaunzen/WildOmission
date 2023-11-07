@@ -12,7 +12,7 @@ void ALockDeployable::Interact(AActor* Interactor)
 		return;
 	}
 
-	LockModifierInteractor->OpenLockMenu();
+	LockModifierInteractor->OpenLockMenu(this);
 }
 
 FString ALockDeployable::PromptText()
