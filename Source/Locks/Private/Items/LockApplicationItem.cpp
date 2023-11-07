@@ -79,7 +79,25 @@ void ALockApplicationItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 	
-	// TODO handle placement logic
+	FHitResult HitResult;
+	if (!LineTraceOnChannel(ECollisionChannel::ECC_Visibility, HitResult))
+	{
+		return;
+	}
+
+	AActor* HitActor = HitResult.GetActor();
+	if (HitActor == nullptr)
+	{
+		return;
+	}
+
+	ULockComponent* HitLockComponent = HitActor->FindComponentByClass<ULockComponent>();
+	if (HitLockComponent == nullptr)
+	{
+		return;
+	}
+
+	HitLockComponent->ApplyLock();
 
 	AActor* OwnerActor = GetOwner();
 	if (OwnerActor == nullptr)
@@ -125,8 +143,27 @@ bool ALockApplicationItem::LineTraceOnChannel(TEnumAsByte<ECollisionChannel> Cha
 bool ALockApplicationItem::GetPlacementTransform(FTransform& OutPlacementTransform)
 {
 	OutPlacementTransform = GetFreehandPlacementTransform();
-	return false;
-	// TODO handle transform logic
+	
+	FHitResult HitResult;
+	if (!LineTraceOnChannel(ECollisionChannel::ECC_Visibility, HitResult))
+	{
+		return false;
+	}
+
+	AActor* HitActor = HitResult.GetActor();
+	if (HitActor == nullptr)
+	{
+		return false;
+	}
+
+	ULockComponent* HitLockComponent = HitActor->FindComponentByClass<ULockComponent>();
+	if (HitLockComponent == nullptr)
+	{
+		return false;
+	}
+
+	OutPlacementTransform = HitLockComponent->GetComponentTransform();
+	return true;
 }
 
 FTransform ALockApplicationItem::GetFreehandPlacementTransform()

@@ -16,7 +16,7 @@ ULockComponent::ULockComponent()
 	HasLock = false;
 	SpawnedLock = nullptr;
 
-	static ConstructorHelpers::FClassFinder<ALock> CodeLockBlueprint(TEXT("/Game/Deployables/BP_CodeLock"));
+	static ConstructorHelpers::FClassFinder<ALock> CodeLockBlueprint(TEXT("/Game/Locks/Locks/BP_CodeLock"));
 	if (CodeLockBlueprint.Succeeded())
 	{
 		CodeLockClass = CodeLockBlueprint.Class;
