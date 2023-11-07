@@ -24,10 +24,45 @@ UKeypadWidget::UKeypadWidget(const FObjectInitializer& ObjectInitializer) : UUse
 	LockToModify = nullptr;
 }
 
+void UKeypadWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
+
 void UKeypadWidget::Setup(ALock* InLock)
 {
 	LockToModify = InLock;
 
-	// TODO add to viewport
-	// TODO set input mode UI
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(this->TakeWidget());
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->SetShowMouseCursor(true);
+
+	this->AddToViewport();
+}
+
+void UKeypadWidget::Teardown()
+{
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	FInputModeGameOnly InputMode;
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->SetShowMouseCursor(false);
+
+	if (OnTeardown.IsBound())
+	{
+		OnTeardown.Broadcast();
+	}
+
+	this->RemoveFromParent();
 }

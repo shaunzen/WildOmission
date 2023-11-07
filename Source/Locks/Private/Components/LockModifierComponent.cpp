@@ -12,7 +12,7 @@ ULockModifierComponent::ULockModifierComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	static ConstructorHelpers::FClassFinder<UKeypadWidget> KeypadWidgetBlueprint(TEXT("/Game/Deployables/UI/WBP_KeypadMenu"));
+	static ConstructorHelpers::FClassFinder<UKeypadWidget> KeypadWidgetBlueprint(TEXT("/Game/Locks/UI/WBP_KeypadMenu"));
 	if (KeypadWidgetBlueprint.Succeeded())
 	{
 		KeypadWidgetClass = KeypadWidgetBlueprint.Class;
@@ -33,5 +33,11 @@ void ULockModifierComponent::Client_OpenKeypadMenu_Implementation(ALock* Lock)
 	}
 
 	KeypadWidget = CreateWidget<UKeypadWidget>(World, KeypadWidgetClass);
+	KeypadWidget->OnTeardown.AddDynamic(this, &ULockModifierComponent::OnKeypadTeardown);
 	KeypadWidget->Setup(Lock);
+}
+
+void ULockModifierComponent::OnKeypadTeardown()
+{
+	KeypadWidget = nullptr;
 }

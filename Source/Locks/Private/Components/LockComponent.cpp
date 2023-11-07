@@ -35,6 +35,18 @@ void ULockComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	OwnerActor->OnDestroyed.AddDynamic(this, &ULockComponent::OnOwnerDestroyed);
+}
+
+void ULockComponent::OnOwnerDestroyed(AActor* DestroyedActor)
+{
+	RemoveLock();
 }
 
 void ULockComponent::OnRep_HasLock()

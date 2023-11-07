@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "KeypadWidget.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnKeypadTeardownSignature);
+
 UCLASS()
 class LOCKS_API UKeypadWidget : public UUserWidget
 {
@@ -14,7 +16,13 @@ class LOCKS_API UKeypadWidget : public UUserWidget
 public:
 	UKeypadWidget(const FObjectInitializer& ObjectInitializer);
 
+	virtual void NativeConstruct() override;
+
 	void Setup(class ALock* InLock);
+
+	void Teardown();
+
+	FOnKeypadTeardownSignature OnTeardown;
 
 private:
 	UPROPERTY(Meta = (BindWidget))

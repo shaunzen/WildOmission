@@ -57,6 +57,9 @@ private:
 	ALock* SpawnedLock;
 
 	UFUNCTION()
+	void OnOwnerDestroyed(AActor* DestroyedActor);
+
+	UFUNCTION()
 	void OnRep_HasLock();
 
 	UFUNCTION()

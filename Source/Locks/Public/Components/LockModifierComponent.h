@@ -27,4 +27,7 @@ private:
 	UFUNCTION(Client, Reliable)
 	void Client_OpenKeypadMenu(class ALock* Lock);
 
+	UFUNCTION()
+	void OnKeypadTeardown();
+
 };
