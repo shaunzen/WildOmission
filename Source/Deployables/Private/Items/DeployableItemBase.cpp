@@ -189,4 +189,5 @@ void ADeployableItemBase::Client_DestroyPreview_Implementation()
 	}
 
 	PreviewActor->Destroy();
+	PreviewActor = nullptr;
 }

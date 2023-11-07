@@ -24,3 +24,8 @@ FString ALock::PromptText()
 {
 	return TEXT("open keypad");
 }
+
+UStaticMesh* ALock::GetStaticMesh() const
+{
+	return nullptr;
+}

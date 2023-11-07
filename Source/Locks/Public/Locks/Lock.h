@@ -21,4 +21,9 @@ public:
 	virtual FString PromptText() override;
 	// End IInteractable Implementation
 
+	UStaticMesh* GetStaticMesh() const;
+
+private:
+	// TODO mesh for lock
+
 };
