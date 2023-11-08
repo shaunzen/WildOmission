@@ -49,7 +49,7 @@ void UKeypadWidget::NativeConstruct()
 	RefreshCodeTextBlock();
 }
 
-void UKeypadWidget::Setup(ALock* InLock)
+void UKeypadWidget::Setup(ALock* InLock, TEnumAsByte<ELockOperation> Operation)
 {
 	LockToModify = InLock;
 
@@ -139,11 +139,12 @@ void UKeypadWidget::OnZeroPressed()
 
 void UKeypadWidget::AddCharacterToCode(const FString& CharacterToAdd)
 {
-	PendingCode.Append(CharacterToAdd);
-	if (PendingCode.Len() > 4)
+	if (PendingCode.Len() >= 4)
 	{
-		PendingCode = PendingCode.RightChop(1);
+		return;
 	}
+
+	PendingCode.Append(CharacterToAdd);
 
 	RefreshCodeTextBlock();
 }

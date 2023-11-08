@@ -2,6 +2,7 @@
 
 
 #include "Locks/Lock.h"
+#include "Components/LockComponent.h"
 #include "Components/LockModifierComponent.h"
 
 ALock::ALock()
@@ -12,6 +13,11 @@ ALock::ALock()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
+}
+
+void ALock::Setup(ULockComponent* InOwnerLockComponent)
+{
+	OwnerLockComponent = InOwnerLockComponent;
 }
 
 void ALock::Interact(AActor* Interactor)
@@ -33,6 +39,36 @@ void ALock::Interact(AActor* Interactor)
 FString ALock::PromptText()
 {
 	return TEXT("open keypad");
+}
+
+FString ALock::GetCode() const
+{
+	if (OwnerLockComponent == nullptr)
+	{
+		return TEXT("");
+	}
+
+	return OwnerLockComponent->GetCode();
+}
+
+bool ALock::IsLocked() const
+{
+	if (OwnerLockComponent == nullptr)
+	{
+		return true;
+	}
+
+	return OwnerLockComponent->GetCode() == TEXT("");
+}
+
+bool ALock::IsPlayerAuthorized(const FString& PlayerUniqueID) const
+{
+	if (OwnerLockComponent == nullptr)
+	{
+		return false;
+	}
+
+	return OwnerLockComponent->IsPlayerAuthorized(PlayerUniqueID);
 }
 
 UStaticMesh* ALock::GetStaticMesh() const

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Enums/LockOperation.h"
 #include "KeypadWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnKeypadTeardownSignature);
@@ -18,7 +19,7 @@ public:
 
 	virtual void NativeConstruct() override;
 
-	void Setup(class ALock* InLock);
+	void Setup(class ALock* InLock, TEnumAsByte<ELockOperation> Operation);
 
 	UFUNCTION()
 	void Teardown();
@@ -77,6 +78,9 @@ private:
 	void OnNinePressed();
 	UFUNCTION()
 	void OnZeroPressed();
+
+	UFUNCTION()
+	void OnLockActionPressed();
 
 	void AddCharacterToCode(const FString& CharacterToAdd);
 

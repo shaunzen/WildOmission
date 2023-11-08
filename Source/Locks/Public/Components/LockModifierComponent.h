@@ -17,6 +17,8 @@ public:
 
 	void OpenKeypadMenu(class ALock* Lock);
 
+	FString GetOwnerUniqueID() const;
+
 private:
 	UPROPERTY()
 	class UKeypadWidget* KeypadWidget;
@@ -25,7 +27,7 @@ private:
 	TSubclassOf<class UKeypadWidget> KeypadWidgetClass;
 
 	UFUNCTION(Client, Reliable)
-	void Client_OpenKeypadMenu(class ALock* Lock);
+	void Client_OpenKeypadMenu(class ALock* Lock, TEnumAsByte<ELockOperation> LockOperation);
 
 	UFUNCTION()
 	void OnKeypadTeardown();

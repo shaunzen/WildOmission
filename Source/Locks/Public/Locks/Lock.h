@@ -7,9 +7,6 @@
 #include "Interfaces/Interactable.h"
 #include "Lock.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class LOCKS_API ALock : public AActor, public IInteractable
 {
@@ -18,15 +15,24 @@ class LOCKS_API ALock : public AActor, public IInteractable
 public:
 	ALock();
 	
+	void Setup(class ULockComponent* InOwnerLockComponent);
+
 	// Begin IInteractable Implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
 	// End IInteractable Implementation
+
+	FString GetCode() const;
+	bool IsLocked() const;
+	bool IsPlayerAuthorized(const FString& PlayerUniqueID) const;
 
 	UStaticMesh* GetStaticMesh() const;
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
+
+	UPROPERTY()
+	class ULockComponent* OwnerLockComponent;
 
 };

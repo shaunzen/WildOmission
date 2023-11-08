@@ -21,10 +21,34 @@ ULockModifierComponent::ULockModifierComponent()
 
 void ULockModifierComponent::OpenKeypadMenu(ALock* Lock)
 {
-	Client_OpenKeypadMenu(Lock);
+	TEnumAsByte<ELockOperation> LockOperation;
+
+	if (Lock->IsPlayerAuthorized(GetOwnerUniqueID()) && Lock->IsLocked())
+	{
+		LockOperation = ELockOperation::ELO_ModifyCode;
+	}
+	else if (!Lock->IsPlayerAuthorized(GetOwnerUniqueID()) && Lock->IsLocked())
+	{
+		LockOperation = ELockOperation::ELO_Authorize;
+	}
+	else if (!Lock->IsLocked())
+	{
+		LockOperation = ELockOperation::ELO_SetCode;
+	}
+
+	Client_OpenKeypadMenu(Lock, LockOperation);
 }
 
-void ULockModifierComponent::Client_OpenKeypadMenu_Implementation(ALock* Lock)
+FString ULockModifierComponent::GetOwnerUniqueID() const
+{
+	// get player state
+	// get unique id
+	// convert to string
+
+	return FString();
+}
+
+void ULockModifierComponent::Client_OpenKeypadMenu_Implementation(ALock* Lock, TEnumAsByte<ELockOperation> LockOperation)
 {
 	UWorld* World = GetWorld();
 	if (World == nullptr || KeypadWidget || Lock == nullptr || KeypadWidgetClass == nullptr)
@@ -34,7 +58,7 @@ void ULockModifierComponent::Client_OpenKeypadMenu_Implementation(ALock* Lock)
 
 	KeypadWidget = CreateWidget<UKeypadWidget>(World, KeypadWidgetClass);
 	KeypadWidget->OnTeardown.AddDynamic(this, &ULockModifierComponent::OnKeypadTeardown);
-	KeypadWidget->Setup(Lock);
+	KeypadWidget->Setup(Lock, LockOperation);
 }
 
 void ULockModifierComponent::OnKeypadTeardown()
