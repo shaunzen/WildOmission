@@ -10,6 +10,6 @@ UENUM()
 enum ELockOperation
 {
 	ELO_SetCode,
-	ELO_ModifyCode,
-	ELO_Authorize
+	ELO_Authorize,
+	ELO_ModifyCode
 };

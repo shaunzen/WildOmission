@@ -3,6 +3,7 @@
 
 #include "UI/KeypadWidget.h"
 #include "Locks/Lock.h"
+#include "Components/LockModifierComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 
@@ -21,13 +22,19 @@ UKeypadWidget::UKeypadWidget(const FObjectInitializer& ObjectInitializer) : UUse
 	EightKeyButton = nullptr;
 	NineKeyButton = nullptr;
 	ZeroKeyButton = nullptr;
+	BackspaceButton = nullptr;
 	LockActionButton = nullptr;
 	LockActionTextBlock = nullptr;
+	UnlockSizeBox = nullptr;
+	UnlockButton = nullptr;
+	RemoveLockSizeBox = nullptr;
+	RemoveLockButton = nullptr;
 	CloseButton = nullptr;
 
 	PendingCode = TEXT("");
 
 	LockToModify = nullptr;
+	ModifyingComponent = nullptr;
 }
 
 void UKeypadWidget::NativeConstruct()
@@ -49,9 +56,11 @@ void UKeypadWidget::NativeConstruct()
 	RefreshCodeTextBlock();
 }
 
-void UKeypadWidget::Setup(ALock* InLock, TEnumAsByte<ELockOperation> Operation)
+void UKeypadWidget::Setup(ALock* InLock, ULockModifierComponent* InModifyingComponent, TEnumAsByte<ELockOperation> Operation)
 {
 	LockToModify = InLock;
+	ModifyingComponent = InModifyingComponent;
+	LockOperation = Operation;
 
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
@@ -135,6 +144,45 @@ void UKeypadWidget::OnNinePressed()
 void UKeypadWidget::OnZeroPressed()
 {
 	AddCharacterToCode(TEXT("0"));
+}
+
+void UKeypadWidget::SetupStranger()
+{
+	UnlockSizeBox->SetVisibility(ESlateVisibility::Collapsed);
+	UnlockButton->SetIsEnabled(false);
+
+	RemoveLockSizeBox->SetVisibility(ESlateVisibility::Collapsed);
+	RemoveLockButton->SetIsEnabled(false);
+
+	LockActionTextBlock->SetText(FText::FromString(TEXT("Authorize")));
+}
+
+void UKeypadWidget::SetupAuthorized()
+{
+	UnlockSizeBox->SetVisibility(ESlateVisibility::Visible);
+	UnlockButton->SetIsEnabled(true);
+
+	RemoveLockSizeBox->SetVisibility(ESlateVisibility::Visible);
+	RemoveLockButton->SetIsEnabled(true);
+
+	FString ActionString(TEXT(""));
+	if (LockOperation == ELockOperation::ELO_SetCode)
+	{
+		ActionString = TEXT("Set Code");
+	}
+	else if (LockOperation == ELockOperation::ELO_ModifyCode)
+	{
+		ActionString = TEXT("Change Code");
+	}
+}
+
+void UKeypadWidget::OnLockActionPressed()
+{
+	if (PendingCode.Len() < 4)
+	{
+		return;
+	}
+	// TODO one of the server RPC things
 }
 
 void UKeypadWidget::AddCharacterToCode(const FString& CharacterToAdd)

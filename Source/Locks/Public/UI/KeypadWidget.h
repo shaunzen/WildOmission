@@ -19,7 +19,7 @@ public:
 
 	virtual void NativeConstruct() override;
 
-	void Setup(class ALock* InLock, TEnumAsByte<ELockOperation> Operation);
+	void Setup(class ALock* InLock, class ULockModifierComponent* InModifyingComponent, TEnumAsByte<ELockOperation> Operation);
 
 	UFUNCTION()
 	void Teardown();
@@ -50,9 +50,19 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* ZeroKeyButton;
 	UPROPERTY(Meta = (BindWidget))
+	class UButton* BackspaceButton;
+	UPROPERTY(Meta = (BindWidget))
 	class UButton* LockActionButton;
 	UPROPERTY(Meta = (BindWidget))
 	class UTextBlock* LockActionTextBlock;
+	UPROPERTY(Meta = (BindWidget))
+	class UWidget* UnlockSizeBox;
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* UnlockButton;
+	UPROPERTY(Meta = (BindWidget))
+	class UWidget* RemoveLockSizeBox;
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* RemoveLockButton;
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CloseButton;
 
@@ -79,6 +89,9 @@ private:
 	UFUNCTION()
 	void OnZeroPressed();
 
+	void SetupStranger();
+	void SetupAuthorized();
+
 	UFUNCTION()
 	void OnLockActionPressed();
 
@@ -88,5 +101,11 @@ private:
 
 	UPROPERTY()
 	class ALock* LockToModify;
+
+	UPROPERTY()
+	class ULockModifierComponent* ModifyingComponent;
+
+	UPROPERTY()
+	TEnumAsByte<ELockOperation> LockOperation;
 
 };
