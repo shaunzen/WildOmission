@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "LockModifierComponent.generated.h"
 
+enum ELockOperation;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LOCKS_API ULockModifierComponent : public UActorComponent
 {
@@ -25,9 +27,6 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<class UKeypadWidget> KeypadWidgetClass;
-
-	UFUNCTION(Client, Reliable)
-	void Client_OpenKeypadMenu(class ALock* Lock, TEnumAsByte<ELockOperation> LockOperation);
 
 	UFUNCTION()
 	void OnKeypadTeardown();

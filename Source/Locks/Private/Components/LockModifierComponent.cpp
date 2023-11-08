@@ -3,6 +3,8 @@
 
 #include "Components/LockModifierComponent.h"
 #include "Locks/Lock.h"
+#include "GameFramework/PlayerState.h"
+#include "Enums/LockOperation.h"
 #include "UI/KeypadWidget.h"
 
 // Sets default values for this component's properties
@@ -41,11 +43,25 @@ void ULockModifierComponent::OpenKeypadMenu(ALock* Lock)
 
 FString ULockModifierComponent::GetOwnerUniqueID() const
 {
-	// get player state
-	// get unique id
-	// convert to string
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn == nullptr)
+	{
+		return TEXT("");
+	}
 
-	return FString();
+	AController* OwnerController = OwnerPawn->GetController();
+	if (OwnerController == nullptr)
+	{
+		return TEXT("");
+	}
+
+	APlayerState* OwnerPlayerState = OwnerController->GetPlayerState<APlayerState>();
+	if (OwnerPlayerState == nullptr)
+	{
+		return TEXT("");
+	}
+
+	return OwnerPlayerState->GetUniqueId().ToString();
 }
 
 void ULockModifierComponent::Client_OpenKeypadMenu_Implementation(ALock* Lock, TEnumAsByte<ELockOperation> LockOperation)
