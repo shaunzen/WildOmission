@@ -49,9 +49,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* ZeroKeyButton;
 	UPROPERTY(Meta = (BindWidget))
-	class UButton* ToggleLockButton;
+	class UButton* LockActionButton;
 	UPROPERTY(Meta = (BindWidget))
-	class UTextBlock* ToggleLockTextBlock;
+	class UTextBlock* LockActionTextBlock;
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CloseButton;
 

@@ -21,11 +21,11 @@ UKeypadWidget::UKeypadWidget(const FObjectInitializer& ObjectInitializer) : UUse
 	EightKeyButton = nullptr;
 	NineKeyButton = nullptr;
 	ZeroKeyButton = nullptr;
-	ToggleLockButton = nullptr;
-	ToggleLockTextBlock = nullptr;
+	LockActionButton = nullptr;
+	LockActionTextBlock = nullptr;
 	CloseButton = nullptr;
 
-	PendingCode = TEXT("0000");
+	PendingCode = TEXT("");
 
 	LockToModify = nullptr;
 }
@@ -150,5 +150,11 @@ void UKeypadWidget::AddCharacterToCode(const FString& CharacterToAdd)
 
 void UKeypadWidget::RefreshCodeTextBlock()
 {
-	CodeTextBlock->SetText(FText::FromString(PendingCode));
+	FString DisplayCode = TEXT("");
+	for (int32 i = 0; i < PendingCode.Len(); i++)
+	{
+		DisplayCode.Append(TEXT("*"));
+	}
+
+	CodeTextBlock->SetText(FText::FromString(DisplayCode));
 }
