@@ -20,6 +20,7 @@ public:
 
 	void Setup(class ALock* InLock);
 
+	UFUNCTION()
 	void Teardown();
 
 	FOnKeypadTeardownSignature OnTeardown;
@@ -53,6 +54,33 @@ private:
 	class UTextBlock* ToggleLockTextBlock;
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CloseButton;
+
+	FString PendingCode;
+
+	UFUNCTION()
+	void OnOnePressed();
+	UFUNCTION()
+	void OnTwoPressed();
+	UFUNCTION()
+	void OnThreePressed();
+	UFUNCTION()
+	void OnFourPressed();
+	UFUNCTION()
+	void OnFivePressed();
+	UFUNCTION()
+	void OnSixPressed();
+	UFUNCTION()
+	void OnSevenPressed();
+	UFUNCTION()
+	void OnEightPressed();
+	UFUNCTION()
+	void OnNinePressed();
+	UFUNCTION()
+	void OnZeroPressed();
+
+	void AddCharacterToCode(const FString& CharacterToAdd);
+
+	void RefreshCodeTextBlock();
 
 	UPROPERTY()
 	class ALock* LockToModify;

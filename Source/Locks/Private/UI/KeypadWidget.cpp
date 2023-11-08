@@ -3,9 +3,13 @@
 
 #include "UI/KeypadWidget.h"
 #include "Locks/Lock.h"
+#include "Components/TextBlock.h"
+#include "Components/Button.h"
 
 UKeypadWidget::UKeypadWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	SetIsFocusable(true);
+
 	CodeTextBlock = nullptr;
 	OneKeyButton = nullptr;
 	TwoKeyButton = nullptr;
@@ -21,12 +25,28 @@ UKeypadWidget::UKeypadWidget(const FObjectInitializer& ObjectInitializer) : UUse
 	ToggleLockTextBlock = nullptr;
 	CloseButton = nullptr;
 
+	PendingCode = TEXT("0000");
+
 	LockToModify = nullptr;
 }
 
 void UKeypadWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	OneKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnOnePressed);
+	TwoKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnTwoPressed);
+	ThreeKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnThreePressed);
+	FourKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnFourPressed);
+	FiveKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnFivePressed);
+	SixKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnSixPressed);
+	SevenKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnSevenPressed);
+	EightKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnEightPressed);
+	NineKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnNinePressed);
+	ZeroKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnZeroPressed);
+	CloseButton->OnClicked.AddDynamic(this, &UKeypadWidget::Teardown);
+
+	RefreshCodeTextBlock();
 }
 
 void UKeypadWidget::Setup(ALock* InLock)
@@ -65,4 +85,70 @@ void UKeypadWidget::Teardown()
 	}
 
 	this->RemoveFromParent();
+}
+
+void UKeypadWidget::OnOnePressed()
+{
+	AddCharacterToCode(TEXT("1"));
+}
+
+void UKeypadWidget::OnTwoPressed()
+{
+	AddCharacterToCode(TEXT("2"));
+}
+
+void UKeypadWidget::OnThreePressed()
+{
+	AddCharacterToCode(TEXT("3"));
+}
+
+void UKeypadWidget::OnFourPressed()
+{
+	AddCharacterToCode(TEXT("4"));
+}
+
+void UKeypadWidget::OnFivePressed()
+{
+	AddCharacterToCode(TEXT("5"));
+}
+
+void UKeypadWidget::OnSixPressed()
+{
+	AddCharacterToCode(TEXT("6"));
+}
+
+void UKeypadWidget::OnSevenPressed()
+{
+	AddCharacterToCode(TEXT("7"));
+}
+
+void UKeypadWidget::OnEightPressed()
+{
+	AddCharacterToCode(TEXT("8"));
+}
+
+void UKeypadWidget::OnNinePressed()
+{
+	AddCharacterToCode(TEXT("9"));
+}
+
+void UKeypadWidget::OnZeroPressed()
+{
+	AddCharacterToCode(TEXT("0"));
+}
+
+void UKeypadWidget::AddCharacterToCode(const FString& CharacterToAdd)
+{
+	PendingCode.Append(CharacterToAdd);
+	if (PendingCode.Len() > 4)
+	{
+		PendingCode = PendingCode.RightChop(1);
+	}
+
+	RefreshCodeTextBlock();
+}
+
+void UKeypadWidget::RefreshCodeTextBlock()
+{
+	CodeTextBlock->SetText(FText::FromString(PendingCode));
 }
