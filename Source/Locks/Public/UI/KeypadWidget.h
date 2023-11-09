@@ -88,6 +88,14 @@ private:
 	void OnNinePressed();
 	UFUNCTION()
 	void OnZeroPressed();
+	UFUNCTION()
+	void OnBackspacePressed();
+
+	UFUNCTION()
+	void OnUnlockPressed();
+
+	UFUNCTION()
+	void OnRemoveLockPressed();
 
 	void SetupStranger();
 	void SetupAuthorized();

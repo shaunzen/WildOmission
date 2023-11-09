@@ -51,6 +51,7 @@ void UKeypadWidget::NativeConstruct()
 	EightKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnEightPressed);
 	NineKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnNinePressed);
 	ZeroKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnZeroPressed);
+	BackspaceButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnBackspacePressed);
 	LockActionButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnLockActionPressed);
 	CloseButton->OnClicked.AddDynamic(this, &UKeypadWidget::Teardown);
 
@@ -157,6 +158,26 @@ void UKeypadWidget::OnZeroPressed()
 	AddCharacterToCode(TEXT("0"));
 }
 
+void UKeypadWidget::OnBackspacePressed()
+{
+	if (PendingCode.Len() <= 0)
+	{
+		return;
+	}
+
+	PendingCode = PendingCode.LeftChop(1);
+
+	RefreshCodeTextBlock();
+}
+
+void UKeypadWidget::OnUnlockPressed()
+{
+}
+
+void UKeypadWidget::OnRemoveLockPressed()
+{
+}
+
 void UKeypadWidget::SetupStranger()
 {
 	UnlockSizeBox->SetVisibility(ESlateVisibility::Collapsed);
@@ -228,11 +249,11 @@ void UKeypadWidget::AddCharacterToCode(const FString& CharacterToAdd)
 
 void UKeypadWidget::RefreshCodeTextBlock()
 {
-	FString DisplayCode = TEXT("");
-	for (int32 i = 0; i < PendingCode.Len(); i++)
+	FString DisplayCode = PendingCode;
+	/*for (int32 i = 0; i < PendingCode.Len(); i++)
 	{
 		DisplayCode.Append(TEXT("*"));
-	}
+	}*/
 
 	CodeTextBlock->SetText(FText::FromString(DisplayCode));
 }
