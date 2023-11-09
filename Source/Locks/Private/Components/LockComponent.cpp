@@ -60,7 +60,7 @@ void ULockComponent::OnRep_HasLock()
 			return;
 		}
 		SpawnedLock->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		//SpawnedLock->OnSpawn();
+		SpawnedLock->Setup(this);
 	}
 	// Remove Lock
 	else if (!HasLock && SpawnedLock)

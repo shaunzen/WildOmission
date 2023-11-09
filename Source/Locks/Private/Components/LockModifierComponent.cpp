@@ -41,6 +41,8 @@ void ULockModifierComponent::OpenKeypadMenu(ALock* Lock)
 		LockOperation = ELockOperation::ELO_SetCode;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("IsLocked: %i, IsAuthorized: %i"), Lock->IsLocked(), Lock->IsAuthorized(GetOwnerUniqueID()));
+
 	Client_OpenKeypadMenu(Lock, LockOperation.GetIntValue());
 }
 

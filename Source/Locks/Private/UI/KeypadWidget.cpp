@@ -63,6 +63,16 @@ void UKeypadWidget::Setup(ALock* InLock, ULockModifierComponent* InModifyingComp
 	ModifyingComponent = InModifyingComponent;
 	LockOperation = Operation;
 	UE_LOG(LogTemp, Warning, TEXT("Setup, LockOperation: %i"), LockOperation.GetIntValue());
+
+	if (LockOperation == ELockOperation::ELO_SetCode || LockOperation == ELockOperation::ELO_ModifyCode)
+	{
+		SetupAuthorized();
+	}
+	else
+	{
+		SetupStranger();
+	}
+
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
 	{
@@ -175,6 +185,8 @@ void UKeypadWidget::SetupAuthorized()
 	{
 		ActionString = TEXT("Change Code");
 	}
+
+	LockActionTextBlock->SetText(FText::FromString(ActionString));
 }
 
 void UKeypadWidget::OnLockActionPressed()
