@@ -9,6 +9,22 @@
 
 class ALock;
 
+USTRUCT()
+struct FCodeLockSave
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool HasLock = false;
+
+	UPROPERTY()
+	TArray<FString> AuthorizedPlayers;
+
+	UPROPERTY()
+	FString Code;
+
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LOCKS_API ULockComponent : public USceneComponent, public ISavableObject
 {
@@ -23,19 +39,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	virtual void Serialize(FArchive& Ar) override;
+
 	void ApplyLock();
 	void RemoveLock();
 
 	bool IsLockPlaced() const;
-
-	void SetCode(const FString& NewCode);
-	void ClearCode();
-	FString GetCode() const;
-	bool IsLocked() const;
-	void AddAuthorizedPlayer(const FString& PlayerToAuthorize);
-
-	bool IsPlayerAuthorized(const FString& PlayerUniqueID) const;
-	bool IsPawnAuthorized(APawn* PlayerPawn) const;
+	ALock* GetLock() const;
 
 protected:
 	// Called when the game starts
@@ -44,12 +54,9 @@ protected:
 private:
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_HasLock, SaveGame)
 	bool HasLock;
-	// TODO remove the visible
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	TArray<FString> AuthorizedPlayers;
 
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	FString Code;
+	UPROPERTY(SaveGame)
+	FCodeLockSave CodeLockSave;
 
 	UPROPERTY()
 	TSubclassOf<ALock> CodeLockClass;

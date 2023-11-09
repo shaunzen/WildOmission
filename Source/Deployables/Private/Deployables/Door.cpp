@@ -4,6 +4,7 @@
 #include "Deployables/Door.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/LockComponent.h"
+#include "Locks/Lock.h"
 #include "Net/UnrealNetwork.h"
 
 ADoor::ADoor()
@@ -62,7 +63,7 @@ void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 
 void ADoor::Interact(AActor* Interactor)
 {
-	if (!LockComp->IsPawnAuthorized(Cast<APawn>(Interactor)) && LockComp->IsLocked())
+	if (IsValid(LockComp->GetLock()) && !LockComp->GetLock()->IsAuthorized(Cast<APawn>(Interactor)) && LockComp->GetLock()->IsLocked())
 	{
 		return;
 	}

@@ -44,62 +44,62 @@ FString ALock::PromptText()
 
 void ALock::SetCode(const FString& NewCode, const FString& CodeSetterUniqueID)
 {
-	if (OwnerLockComponent == nullptr)
+	if (Code.Len() < 4)
 	{
 		return;
 	}
-	OwnerLockComponent->SetCode(NewCode);
-	OwnerLockComponent->AddAuthorizedPlayer(CodeSetterUniqueID);
+
+	AuthorizedPlayers.Empty();
+	Code = NewCode;
+	if (!CodeSetterUniqueID.IsEmpty())
+	{
+		AuthorizedPlayers.Add(CodeSetterUniqueID);
+	}
 }
 
 void ALock::ClearCode()
 {
-	if (OwnerLockComponent == nullptr)
-	{
-		return;
-	}
-
-	OwnerLockComponent->ClearCode();
+	Code.Empty();
 }
 
 FString ALock::GetCode() const
 {
-	if (OwnerLockComponent == nullptr)
-	{
-		return TEXT("");
-	}
+	return Code;
+}
 
-	return OwnerLockComponent->GetCode();
+TArray<FString> ALock::GetAuthorizedPlayers() const
+{
+	return AuthorizedPlayers;
+}
+
+void ALock::SetAuthorizedPlayers(const TArray<FString>& InAuthorizedPlayers)
+{
+	AuthorizedPlayers = InAuthorizedPlayers;
 }
 
 bool ALock::IsLocked() const
 {
-	if (OwnerLockComponent == nullptr)
-	{
-		return true;
-	}
-
-	return OwnerLockComponent->GetCode().Len() > 0;
+	return Code.Len() > 0;
 }
 
 void ALock::AuthorizePlayer(const FString& PlayerUniqueID)
 {
-	if (OwnerLockComponent == nullptr)
-	{
-		return;
-	}
-
-	OwnerLockComponent->AddAuthorizedPlayer(PlayerUniqueID);
+	AuthorizedPlayers.Add(PlayerUniqueID);
 }
 
 bool ALock::IsAuthorized(const FString& PlayerUniqueID) const
 {
-	if (OwnerLockComponent == nullptr)
+	for (const FString& AuthorizedPlayer : AuthorizedPlayers)
 	{
-		return false;
+		if (AuthorizedPlayer != PlayerUniqueID)
+		{
+			continue;
+		}
+
+		return true;
 	}
 
-	return OwnerLockComponent->IsPlayerAuthorized(PlayerUniqueID);
+	return false;
 }
 
 bool ALock::IsAuthorized(ULockModifierComponent* LockModifier) const
@@ -115,13 +115,7 @@ bool ALock::IsAuthorized(ULockModifierComponent* LockModifier) const
 		return false;
 	}
 
-	APlayerState* PlayerState = PlayerPawn->GetPlayerState();
-	if (PlayerState == nullptr)
-	{
-		return false;
-	}
-
-	return OwnerLockComponent->IsPlayerAuthorized(PlayerState->GetUniqueId().ToString());
+	return IsAuthorized(PlayerPawn);
 }
 
 bool ALock::IsAuthorized(APawn* PlayerPawn) const
@@ -137,7 +131,7 @@ bool ALock::IsAuthorized(APawn* PlayerPawn) const
 		return false;
 	}
 
-	return OwnerLockComponent->IsPlayerAuthorized(OwnerPlayerState->GetUniqueId().ToString());
+	return IsAuthorized(OwnerPlayerState->GetUniqueId().ToString());
 }
 
 ULockComponent* ALock::GetOwnerLockComponent() const

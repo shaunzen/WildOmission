@@ -22,16 +22,22 @@ public:
 	virtual FString PromptText() override;
 	// End IInteractable Implementation
 
-	void SetCode(const FString& NewCode, const FString& CodeSetterUniqueID);
+	void SetCode(const FString& NewCode, const FString& CodeSetterUniqueID = TEXT(""));
 	void ClearCode();
-	FString GetCode() const;
+
 	bool IsLocked() const;
+	
 	void AuthorizePlayer(const FString& PlayerUniqueID);
+	
 	bool IsAuthorized(const FString& PlayerUniqueID) const;
 	bool IsAuthorized(class ULockModifierComponent* LockModifier) const;
 	bool IsAuthorized(APawn* PlayerPawn) const;
 
 	class ULockComponent* GetOwnerLockComponent() const;
+	
+	TArray<FString> GetAuthorizedPlayers() const;
+	void SetAuthorizedPlayers(const TArray<FString>& InAuthorizedPlayers);
+	FString GetCode() const;
 
 	UStaticMesh* GetStaticMesh() const;
 
@@ -41,5 +47,11 @@ private:
 
 	UPROPERTY()
 	class ULockComponent* OwnerLockComponent;
+
+	UPROPERTY()
+	TArray<FString> AuthorizedPlayers;
+
+	UPROPERTY()
+	FString Code;
 
 };

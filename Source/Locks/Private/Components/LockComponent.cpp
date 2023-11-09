@@ -62,6 +62,8 @@ void ULockComponent::OnRep_HasLock()
 		}
 		SpawnedLock->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		SpawnedLock->Setup(this);
+		SpawnedLock->SetAuthorizedPlayers(CodeLockSave.AuthorizedPlayers);
+		SpawnedLock->SetCode(CodeLockSave.Code);
 	}
 	// Remove Lock
 	else if (!HasLock && SpawnedLock)
@@ -84,6 +86,23 @@ void ULockComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	// ...
 }
 
+void ULockComponent::Serialize(FArchive& Ar)
+{
+	CodeLockSave.HasLock = HasLock;
+	if (IsValid(SpawnedLock))
+	{
+		CodeLockSave.Code = SpawnedLock->GetCode();
+		CodeLockSave.AuthorizedPlayers = SpawnedLock->GetAuthorizedPlayers();
+	}
+	else
+	{
+		CodeLockSave.Code.Empty();
+		CodeLockSave.AuthorizedPlayers.Empty();
+	}
+
+	Super::Serialize(Ar);
+}
+
 void ULockComponent::ApplyLock()
 {
 	HasLock = true;
@@ -101,62 +120,7 @@ bool ULockComponent::IsLockPlaced() const
 	return HasLock;
 }
 
-void ULockComponent::SetCode(const FString& NewCode)
+ALock* ULockComponent::GetLock() const
 {
-	Code = NewCode;
-	AuthorizedPlayers.Empty();
-}
-
-void ULockComponent::ClearCode()
-{
-	Code.Reset();
-	AuthorizedPlayers.Empty();
-}
-
-FString ULockComponent::GetCode() const
-{
-	return Code;
-}
-
-bool ULockComponent::IsLocked() const
-{
-	return Code.Len() > 0;
-}
-
-void ULockComponent::AddAuthorizedPlayer(const FString& PlayerToAuthorize)
-{
-	AuthorizedPlayers.Add(PlayerToAuthorize);
-}
-
-bool ULockComponent::IsPlayerAuthorized(const FString& PlayerUniqueID) const
-{
-	for (const FString& AuthorizedPlayer : AuthorizedPlayers)
-	{
-		if (AuthorizedPlayer != PlayerUniqueID)
-		{
-			continue;
-		}
-
-		return true;
-	}
-
-	return false;
-}
-
-bool ULockComponent::IsPawnAuthorized(APawn* PlayerPawn) const
-{
-	if (PlayerPawn == nullptr)
-	{
-		return false;
-	}
-
-	APlayerState* PlayerState = PlayerPawn->GetPlayerState();
-	if (PlayerState == nullptr)
-	{
-		return false;
-	}
-
-	const FString PlayerUniqueID = PlayerState->GetUniqueId().ToString();
-
-	return IsPlayerAuthorized(PlayerUniqueID);
+	return SpawnedLock;
 }
