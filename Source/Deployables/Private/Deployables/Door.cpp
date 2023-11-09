@@ -62,6 +62,11 @@ void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 
 void ADoor::Interact(AActor* Interactor)
 {
+	if (!LockComp->IsPawnAuthorized(Cast<APawn>(Interactor)) && LockComp->IsLocked())
+	{
+		return;
+	}
+
 	bIsOpen = !bIsOpen;
 
 	if (bIsOpen)

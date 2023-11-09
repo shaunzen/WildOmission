@@ -23,8 +23,10 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	// Begin IInteractable Implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
+	// End IInteractable Implementation
 
 private:
 	UPROPERTY(VisibleAnywhere)

@@ -3,8 +3,10 @@
 
 #include "Components/LockModifierComponent.h"
 #include "Locks/Lock.h"
+#include "Components/LockComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "UI/KeypadWidget.h"
+#include "Components/InventoryComponent.h"
 #include "Log.h"
 
 // Sets default values for this component's properties
@@ -26,6 +28,11 @@ ULockModifierComponent::ULockModifierComponent()
 
 void ULockModifierComponent::OpenKeypadMenu(ALock* Lock)
 {
+	if (!IsValid(Lock))
+	{
+		return;
+	}
+
 	TEnumAsByte<ELockOperation> LockOperation;
 
 	if (Lock->IsAuthorized(GetOwnerUniqueID()) && Lock->IsLocked())
@@ -46,16 +53,18 @@ void ULockModifierComponent::OpenKeypadMenu(ALock* Lock)
 	Client_OpenKeypadMenu(Lock, LockOperation.GetIntValue());
 }
 
-// TODO these
-
 bool ULockModifierComponent::Server_SetLockCode_Validate(ALock* Lock, const FString& Code)
 {
+	if (!IsValid(Lock) || !Lock->IsAuthorized(GetOwnerUniqueID()))
+	{
+		return false;
+	}
 	return true;
 }
 
 void ULockModifierComponent::Server_SetLockCode_Implementation(ALock* Lock, const FString& Code)
 {
-	if (Lock == nullptr || Code.Len() < 4)
+	if (!IsValid(Lock) || Code.Len() < 4)
 	{
 		UE_LOG(LogLocks, Warning, TEXT("Code is too short, %i characters long"), Code.Len());
 		return;
@@ -67,12 +76,16 @@ void ULockModifierComponent::Server_SetLockCode_Implementation(ALock* Lock, cons
 
 bool ULockModifierComponent::Server_ClearLockCode_Validate(ALock* Lock)
 {
+	if (!IsValid(Lock) || !Lock->IsAuthorized(GetOwnerUniqueID()))
+	{
+		return false;
+	}
 	return true;
 }
 
 void ULockModifierComponent::Server_ClearLockCode_Implementation(ALock* Lock)
 {
-	if (Lock == nullptr)
+	if (!IsValid(Lock))
 	{
 		return;
 	}
@@ -82,7 +95,7 @@ void ULockModifierComponent::Server_ClearLockCode_Implementation(ALock* Lock)
 
 void ULockModifierComponent::Server_AuthorizeLock_Implementation(ALock* Lock, const FString& Code)
 {
-	if (Lock == nullptr || Lock->GetCode() != Code)
+	if (!IsValid(Lock) || Lock->GetCode() != Code)
 	{
 		// TODO play some kind of invalid sound effect
 		return;
@@ -93,12 +106,47 @@ void ULockModifierComponent::Server_AuthorizeLock_Implementation(ALock* Lock, co
 
 bool ULockModifierComponent::Server_RemoveLock_Validate(ALock* Lock)
 {
+	if (!IsValid(Lock) || !Lock->IsAuthorized(GetOwnerUniqueID()))
+	{
+		return false;
+	}
+
 	return true;
 }
 
 void ULockModifierComponent::Server_RemoveLock_Implementation(ALock* Lock)
 {
-	// TODO give it to the inventory remove this ect
+	if (!IsValid(Lock))
+	{
+		return;
+	}
+	
+	ULockComponent* OwnerLockComponent = Lock->GetOwnerLockComponent();
+	if (OwnerLockComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerLockComponent->RemoveLock();
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UInventoryComponent* OwnerInventoryComponent = OwnerActor->FindComponentByClass<UInventoryComponent>();
+	if (OwnerInventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	FInventoryItem CodeLockItem;
+	CodeLockItem.Name = TEXT("codelock");
+	CodeLockItem.Quantity = 1;
+
+	OwnerInventoryComponent->AddItem(CodeLockItem);
+
 }
 
 FString ULockModifierComponent::GetOwnerUniqueID() const

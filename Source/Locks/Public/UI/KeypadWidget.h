@@ -69,39 +69,39 @@ private:
 	FString PendingCode;
 
 	UFUNCTION()
-	void OnOnePressed();
+	void OnOneClicked();
 	UFUNCTION()
-	void OnTwoPressed();
+	void OnTwoClicked();
 	UFUNCTION()
-	void OnThreePressed();
+	void OnThreeClicked();
 	UFUNCTION()
-	void OnFourPressed();
+	void OnFourClicked();
 	UFUNCTION()
-	void OnFivePressed();
+	void OnFiveClicked();
 	UFUNCTION()
-	void OnSixPressed();
+	void OnSixClicked();
 	UFUNCTION()
-	void OnSevenPressed();
+	void OnSevenClicked();
 	UFUNCTION()
-	void OnEightPressed();
+	void OnEightClicked();
 	UFUNCTION()
-	void OnNinePressed();
+	void OnNineClicked();
 	UFUNCTION()
-	void OnZeroPressed();
+	void OnZeroClicked();
 	UFUNCTION()
-	void OnBackspacePressed();
+	void OnBackspaceClicked();
 
 	UFUNCTION()
-	void OnUnlockPressed();
+	void OnUnlockClicked();
 
 	UFUNCTION()
-	void OnRemoveLockPressed();
+	void OnRemoveLockClicked();
 
 	void SetupStranger();
 	void SetupAuthorized();
 
 	UFUNCTION()
-	void OnLockActionPressed();
+	void OnLockActionClicked();
 
 	void AddCharacterToCode(const FString& CharacterToAdd);
 

@@ -31,6 +31,8 @@ public:
 	bool IsAuthorized(class ULockModifierComponent* LockModifier) const;
 	bool IsAuthorized(APawn* PlayerPawn) const;
 
+	class ULockComponent* GetOwnerLockComponent() const;
+
 	UStaticMesh* GetStaticMesh() const;
 
 private:

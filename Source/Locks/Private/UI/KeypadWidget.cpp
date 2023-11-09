@@ -41,18 +41,20 @@ void UKeypadWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	OneKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnOnePressed);
-	TwoKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnTwoPressed);
-	ThreeKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnThreePressed);
-	FourKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnFourPressed);
-	FiveKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnFivePressed);
-	SixKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnSixPressed);
-	SevenKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnSevenPressed);
-	EightKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnEightPressed);
-	NineKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnNinePressed);
-	ZeroKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnZeroPressed);
-	BackspaceButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnBackspacePressed);
-	LockActionButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnLockActionPressed);
+	OneKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnOneClicked);
+	TwoKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnTwoClicked);
+	ThreeKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnThreeClicked);
+	FourKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnFourClicked);
+	FiveKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnFiveClicked);
+	SixKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnSixClicked);
+	SevenKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnSevenClicked);
+	EightKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnEightClicked);
+	NineKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnNineClicked);
+	ZeroKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnZeroClicked);
+	BackspaceButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnBackspaceClicked);
+	LockActionButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnLockActionClicked);
+	UnlockButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnUnlockClicked);
+	RemoveLockButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnRemoveLockClicked);
 	CloseButton->OnClicked.AddDynamic(this, &UKeypadWidget::Teardown);
 
 	RefreshCodeTextBlock();
@@ -108,57 +110,57 @@ void UKeypadWidget::Teardown()
 	this->RemoveFromParent();
 }
 
-void UKeypadWidget::OnOnePressed()
+void UKeypadWidget::OnOneClicked()
 {
 	AddCharacterToCode(TEXT("1"));
 }
 
-void UKeypadWidget::OnTwoPressed()
+void UKeypadWidget::OnTwoClicked()
 {
 	AddCharacterToCode(TEXT("2"));
 }
 
-void UKeypadWidget::OnThreePressed()
+void UKeypadWidget::OnThreeClicked()
 {
 	AddCharacterToCode(TEXT("3"));
 }
 
-void UKeypadWidget::OnFourPressed()
+void UKeypadWidget::OnFourClicked()
 {
 	AddCharacterToCode(TEXT("4"));
 }
 
-void UKeypadWidget::OnFivePressed()
+void UKeypadWidget::OnFiveClicked()
 {
 	AddCharacterToCode(TEXT("5"));
 }
 
-void UKeypadWidget::OnSixPressed()
+void UKeypadWidget::OnSixClicked()
 {
 	AddCharacterToCode(TEXT("6"));
 }
 
-void UKeypadWidget::OnSevenPressed()
+void UKeypadWidget::OnSevenClicked()
 {
 	AddCharacterToCode(TEXT("7"));
 }
 
-void UKeypadWidget::OnEightPressed()
+void UKeypadWidget::OnEightClicked()
 {
 	AddCharacterToCode(TEXT("8"));
 }
 
-void UKeypadWidget::OnNinePressed()
+void UKeypadWidget::OnNineClicked()
 {
 	AddCharacterToCode(TEXT("9"));
 }
 
-void UKeypadWidget::OnZeroPressed()
+void UKeypadWidget::OnZeroClicked()
 {
 	AddCharacterToCode(TEXT("0"));
 }
 
-void UKeypadWidget::OnBackspacePressed()
+void UKeypadWidget::OnBackspaceClicked()
 {
 	if (PendingCode.Len() <= 0)
 	{
@@ -170,12 +172,24 @@ void UKeypadWidget::OnBackspacePressed()
 	RefreshCodeTextBlock();
 }
 
-void UKeypadWidget::OnUnlockPressed()
+void UKeypadWidget::OnUnlockClicked()
 {
+	if (ModifyingComponent == nullptr)
+	{
+		return;
+	}
+
+	ModifyingComponent->Server_ClearLockCode(LockToModify);
 }
 
-void UKeypadWidget::OnRemoveLockPressed()
+void UKeypadWidget::OnRemoveLockClicked()
 {
+	if (ModifyingComponent == nullptr)
+	{
+		return;
+	}
+
+	ModifyingComponent->Server_RemoveLock(LockToModify);
 }
 
 void UKeypadWidget::SetupStranger()
@@ -210,9 +224,9 @@ void UKeypadWidget::SetupAuthorized()
 	LockActionTextBlock->SetText(FText::FromString(ActionString));
 }
 
-void UKeypadWidget::OnLockActionPressed()
+void UKeypadWidget::OnLockActionClicked()
 {
-	UE_LOG(LogTemp, Warning, TEXT("LockActionPressed."));
+	UE_LOG(LogTemp, Warning, TEXT("LockActionClicked."));
 	if (PendingCode.Len() < 4)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Code was %i characters, thats too short."), PendingCode.Len());

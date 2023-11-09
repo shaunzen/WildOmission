@@ -140,6 +140,11 @@ bool ALock::IsAuthorized(APawn* PlayerPawn) const
 	return OwnerLockComponent->IsPlayerAuthorized(OwnerPlayerState->GetUniqueId().ToString());
 }
 
+ULockComponent* ALock::GetOwnerLockComponent() const
+{
+	return OwnerLockComponent;
+}
+
 UStaticMesh* ALock::GetStaticMesh() const
 {
 	return MeshComponent->GetStaticMesh();

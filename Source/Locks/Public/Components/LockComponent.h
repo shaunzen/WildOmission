@@ -31,10 +31,11 @@ public:
 	void SetCode(const FString& NewCode);
 	void ClearCode();
 	FString GetCode() const;
-
+	bool IsLocked() const;
 	void AddAuthorizedPlayer(const FString& PlayerToAuthorize);
 
 	bool IsPlayerAuthorized(const FString& PlayerUniqueID) const;
+	bool IsPawnAuthorized(APawn* PlayerPawn) const;
 
 protected:
 	// Called when the game starts

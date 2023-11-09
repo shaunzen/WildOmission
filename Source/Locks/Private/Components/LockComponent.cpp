@@ -3,6 +3,7 @@
 
 #include "Components/LockComponent.h"
 #include "Locks/Lock.h"
+#include "GameFramework/PlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
@@ -117,6 +118,11 @@ FString ULockComponent::GetCode() const
 	return Code;
 }
 
+bool ULockComponent::IsLocked() const
+{
+	return Code.Len() > 0;
+}
+
 void ULockComponent::AddAuthorizedPlayer(const FString& PlayerToAuthorize)
 {
 	AuthorizedPlayers.Add(PlayerToAuthorize);
@@ -130,9 +136,27 @@ bool ULockComponent::IsPlayerAuthorized(const FString& PlayerUniqueID) const
 		{
 			continue;
 		}
-	
+
 		return true;
 	}
 
 	return false;
+}
+
+bool ULockComponent::IsPawnAuthorized(APawn* PlayerPawn) const
+{
+	if (PlayerPawn == nullptr)
+	{
+		return false;
+	}
+
+	APlayerState* PlayerState = PlayerPawn->GetPlayerState();
+	if (PlayerState == nullptr)
+	{
+		return false;
+	}
+
+	const FString PlayerUniqueID = PlayerState->GetUniqueId().ToString();
+
+	return IsPlayerAuthorized(PlayerUniqueID);
 }
