@@ -5,6 +5,7 @@
 #include "Components/LockComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Components/LockModifierComponent.h"
+#include "Net/UnrealNetwork.h"
 
 ALock::ALock()
 {
@@ -19,6 +20,13 @@ ALock::ALock()
 void ALock::Setup(ULockComponent* InOwnerLockComponent)
 {
 	OwnerLockComponent = InOwnerLockComponent;
+}
+
+void ALock::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ALock, Locked);
 }
 
 void ALock::Interact(AActor* Interactor)
@@ -51,7 +59,8 @@ void ALock::SetCode(const FString& NewCode, const FString& CodeSetterUniqueID)
 
 	AuthorizedPlayers.Empty();
 	Code = NewCode;
-	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, 1.0f);
+	Locked = true;
+	OnRep_Locked();
 	if (!CodeSetterUniqueID.IsEmpty())
 	{
 		AuthorizedPlayers.Add(CodeSetterUniqueID);
@@ -61,7 +70,8 @@ void ALock::SetCode(const FString& NewCode, const FString& CodeSetterUniqueID)
 void ALock::ClearCode()
 {
 	Code.Empty();
-	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, 0.0f);
+	Locked = false;
+	OnRep_Locked();
 }
 
 FString ALock::GetCode() const
@@ -81,7 +91,7 @@ void ALock::SetAuthorizedPlayers(const TArray<FString>& InAuthorizedPlayers)
 
 bool ALock::IsLocked() const
 {
-	return !Code.IsEmpty();
+	return Locked;
 }
 
 void ALock::AuthorizePlayer(const FString& PlayerUniqueID)
@@ -144,4 +154,9 @@ ULockComponent* ALock::GetOwnerLockComponent() const
 UStaticMesh* ALock::GetStaticMesh() const
 {
 	return MeshComponent->GetStaticMesh();
+}
+
+void ALock::OnRep_Locked()
+{
+	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, static_cast<float>(Locked));
 }

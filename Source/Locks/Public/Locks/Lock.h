@@ -17,6 +17,8 @@ public:
 	
 	void Setup(class ULockComponent* InOwnerLockComponent);
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Begin IInteractable Implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
@@ -53,5 +55,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	FString Code;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Locked)
+	bool Locked;
+
+	UFUNCTION()
+	void OnRep_Locked();
 
 };
