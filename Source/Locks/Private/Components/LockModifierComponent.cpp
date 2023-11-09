@@ -5,6 +5,7 @@
 #include "Locks/Lock.h"
 #include "GameFramework/PlayerState.h"
 #include "UI/KeypadWidget.h"
+#include "Log.h"
 
 // Sets default values for this component's properties
 ULockModifierComponent::ULockModifierComponent()
@@ -27,11 +28,11 @@ void ULockModifierComponent::OpenKeypadMenu(ALock* Lock)
 {
 	TEnumAsByte<ELockOperation> LockOperation;
 
-	if (Lock->IsPlayerAuthorized(GetOwnerUniqueID()) && Lock->IsLocked())
+	if (Lock->IsAuthorized(GetOwnerUniqueID()) && Lock->IsLocked())
 	{
 		LockOperation = ELockOperation::ELO_ModifyCode;
 	}
-	else if (!Lock->IsPlayerAuthorized(GetOwnerUniqueID()) && Lock->IsLocked())
+	else if (!Lock->IsAuthorized(GetOwnerUniqueID()) && Lock->IsLocked())
 	{
 		LockOperation = ELockOperation::ELO_Authorize;
 	}
@@ -52,6 +53,14 @@ bool ULockModifierComponent::Server_SetLockCode_Validate(ALock* Lock, const FStr
 
 void ULockModifierComponent::Server_SetLockCode_Implementation(ALock* Lock, const FString& Code)
 {
+	if (Lock == nullptr || Code.Len() < 4)
+	{
+		UE_LOG(LogLocks, Warning, TEXT("Code is too short, %i characters long"), Code.Len());
+		return;
+	}
+
+	Lock->SetCode(Code, GetOwnerUniqueID());
+	UE_LOG(LogLocks, Warning, TEXT("SetCode to %s"), *Code);
 }
 
 bool ULockModifierComponent::Server_ClearLockCode_Validate(ALock* Lock)
@@ -61,10 +70,23 @@ bool ULockModifierComponent::Server_ClearLockCode_Validate(ALock* Lock)
 
 void ULockModifierComponent::Server_ClearLockCode_Implementation(ALock* Lock)
 {
+	if (Lock == nullptr)
+	{
+		return;
+	}
+
+	Lock->ClearCode();
 }
 
 void ULockModifierComponent::Server_AuthorizeLock_Implementation(ALock* Lock, const FString& Code)
 {
+	if (Lock == nullptr || Lock->GetCode() != Code)
+	{
+		// TODO play some kind of invalid sound effect
+		return;
+	}
+
+	Lock->AuthorizePlayer(GetOwnerUniqueID());
 }
 
 bool ULockModifierComponent::Server_RemoveLock_Validate(ALock* Lock)
@@ -74,6 +96,7 @@ bool ULockModifierComponent::Server_RemoveLock_Validate(ALock* Lock)
 
 void ULockModifierComponent::Server_RemoveLock_Implementation(ALock* Lock)
 {
+	// TODO give it to the inventory remove this ect
 }
 
 FString ULockModifierComponent::GetOwnerUniqueID() const

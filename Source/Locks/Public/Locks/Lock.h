@@ -22,9 +22,14 @@ public:
 	virtual FString PromptText() override;
 	// End IInteractable Implementation
 
+	void SetCode(const FString& NewCode, const FString& CodeSetterUniqueID);
+	void ClearCode();
 	FString GetCode() const;
 	bool IsLocked() const;
-	bool IsPlayerAuthorized(const FString& PlayerUniqueID) const;
+	void AuthorizePlayer(const FString& PlayerUniqueID);
+	bool IsAuthorized(const FString& PlayerUniqueID) const;
+	bool IsAuthorized(class ULockModifierComponent* LockModifier) const;
+	bool IsAuthorized(APawn* PlayerPawn) const;
 
 	UStaticMesh* GetStaticMesh() const;
 

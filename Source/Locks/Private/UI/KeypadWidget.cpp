@@ -51,6 +51,7 @@ void UKeypadWidget::NativeConstruct()
 	EightKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnEightPressed);
 	NineKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnNinePressed);
 	ZeroKeyButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnZeroPressed);
+	LockActionButton->OnClicked.AddDynamic(this, &UKeypadWidget::OnLockActionPressed);
 	CloseButton->OnClicked.AddDynamic(this, &UKeypadWidget::Teardown);
 
 	RefreshCodeTextBlock();
@@ -61,7 +62,7 @@ void UKeypadWidget::Setup(ALock* InLock, ULockModifierComponent* InModifyingComp
 	LockToModify = InLock;
 	ModifyingComponent = InModifyingComponent;
 	LockOperation = Operation;
-
+	UE_LOG(LogTemp, Warning, TEXT("Setup, LockOperation: %i"), LockOperation.GetIntValue());
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
 	{
@@ -178,11 +179,27 @@ void UKeypadWidget::SetupAuthorized()
 
 void UKeypadWidget::OnLockActionPressed()
 {
+	UE_LOG(LogTemp, Warning, TEXT("LockActionPressed."));
 	if (PendingCode.Len() < 4)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Code was %i characters, thats too short."), PendingCode.Len());
 		return;
 	}
-	// TODO one of the server RPC things
+
+	switch (LockOperation)
+	{
+	case ELockOperation::ELO_Authorize:
+		ModifyingComponent->Server_AuthorizeLock(LockToModify, PendingCode);
+		break;
+	case ELockOperation::ELO_ModifyCode:
+		ModifyingComponent->Server_SetLockCode(LockToModify, PendingCode);
+		break;
+	case ELockOperation::ELO_SetCode:
+		ModifyingComponent->Server_SetLockCode(LockToModify, PendingCode);
+		break;
+	}
+
+	this->Teardown();
 }
 
 void UKeypadWidget::AddCharacterToCode(const FString& CharacterToAdd)

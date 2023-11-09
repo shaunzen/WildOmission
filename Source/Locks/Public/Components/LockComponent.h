@@ -43,11 +43,11 @@ protected:
 private:
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_HasLock, SaveGame)
 	bool HasLock;
-
-	UPROPERTY(SaveGame)
+	// TODO remove the visible
+	UPROPERTY(VisibleAnywhere, SaveGame)
 	TArray<FString> AuthorizedPlayers;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(VisibleAnywhere, SaveGame)
 	FString Code;
 
 	UPROPERTY()

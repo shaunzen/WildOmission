@@ -109,6 +109,7 @@ void ULockComponent::SetCode(const FString& NewCode)
 void ULockComponent::ClearCode()
 {
 	Code.Reset();
+	AuthorizedPlayers.Empty();
 }
 
 FString ULockComponent::GetCode() const
@@ -135,4 +136,3 @@ bool ULockComponent::IsPlayerAuthorized(const FString& PlayerUniqueID) const
 
 	return false;
 }
-

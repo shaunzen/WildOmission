@@ -16,8 +16,8 @@ ADoor::ADoor()
 	InteractionMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	InteractionMesh->SetVisibility(false);
 
-	LockComponent = CreateDefaultSubobject<ULockComponent>(TEXT("LockComponent"));
-	LockComponent->SetupAttachment(MeshComponent);
+	LockComp = CreateDefaultSubobject<ULockComponent>(TEXT("LockComp"));
+	LockComp->SetupAttachment(MeshComponent);
 
 	OpenSound = nullptr;
 	CloseSound = nullptr;
