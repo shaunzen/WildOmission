@@ -44,13 +44,14 @@ FString ALock::PromptText()
 
 void ALock::SetCode(const FString& NewCode, const FString& CodeSetterUniqueID)
 {
-	if (Code.Len() < 4)
+	if (NewCode.Len() < 4)
 	{
 		return;
 	}
 
 	AuthorizedPlayers.Empty();
 	Code = NewCode;
+	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, 1.0f);
 	if (!CodeSetterUniqueID.IsEmpty())
 	{
 		AuthorizedPlayers.Add(CodeSetterUniqueID);
@@ -60,6 +61,7 @@ void ALock::SetCode(const FString& NewCode, const FString& CodeSetterUniqueID)
 void ALock::ClearCode()
 {
 	Code.Empty();
+	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, 0.0f);
 }
 
 FString ALock::GetCode() const
@@ -79,7 +81,7 @@ void ALock::SetAuthorizedPlayers(const TArray<FString>& InAuthorizedPlayers)
 
 bool ALock::IsLocked() const
 {
-	return Code.Len() > 0;
+	return !Code.IsEmpty();
 }
 
 void ALock::AuthorizePlayer(const FString& PlayerUniqueID)

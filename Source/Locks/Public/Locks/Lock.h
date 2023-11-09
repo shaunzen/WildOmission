@@ -48,10 +48,10 @@ private:
 	UPROPERTY()
 	class ULockComponent* OwnerLockComponent;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TArray<FString> AuthorizedPlayers;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FString Code;
 
 };

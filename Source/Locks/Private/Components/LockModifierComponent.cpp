@@ -48,14 +48,12 @@ void ULockModifierComponent::OpenKeypadMenu(ALock* Lock)
 		LockOperation = ELockOperation::ELO_SetCode;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("IsLocked: %i, IsAuthorized: %i"), Lock->IsLocked(), Lock->IsAuthorized(GetOwnerUniqueID()));
-
 	Client_OpenKeypadMenu(Lock, LockOperation.GetIntValue());
 }
 
 bool ULockModifierComponent::Server_SetLockCode_Validate(ALock* Lock, const FString& Code)
 {
-	if (!IsValid(Lock) || !Lock->IsAuthorized(GetOwnerUniqueID()))
+	if (!IsValid(Lock) || (Lock->IsLocked() && !Lock->IsAuthorized(GetOwnerUniqueID())))
 	{
 		return false;
 	}
@@ -146,7 +144,6 @@ void ULockModifierComponent::Server_RemoveLock_Implementation(ALock* Lock)
 	CodeLockItem.Quantity = 1;
 
 	OwnerInventoryComponent->AddItem(CodeLockItem);
-
 }
 
 FString ULockModifierComponent::GetOwnerUniqueID() const

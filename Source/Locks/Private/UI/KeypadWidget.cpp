@@ -6,6 +6,7 @@
 #include "Components/LockModifierComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "Log.h"
 
 UKeypadWidget::UKeypadWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -65,7 +66,6 @@ void UKeypadWidget::Setup(ALock* InLock, ULockModifierComponent* InModifyingComp
 	LockToModify = InLock;
 	ModifyingComponent = InModifyingComponent;
 	LockOperation = Operation;
-	UE_LOG(LogTemp, Warning, TEXT("Setup, LockOperation: %i"), LockOperation.GetIntValue());
 
 	if (LockOperation == ELockOperation::ELO_SetCode || LockOperation == ELockOperation::ELO_ModifyCode)
 	{
@@ -205,19 +205,20 @@ void UKeypadWidget::SetupStranger()
 
 void UKeypadWidget::SetupAuthorized()
 {
-	UnlockSizeBox->SetVisibility(ESlateVisibility::Visible);
-	UnlockButton->SetIsEnabled(true);
-
 	RemoveLockSizeBox->SetVisibility(ESlateVisibility::Visible);
 	RemoveLockButton->SetIsEnabled(true);
 
 	FString ActionString(TEXT(""));
 	if (LockOperation == ELockOperation::ELO_SetCode)
 	{
+		UnlockSizeBox->SetVisibility(ESlateVisibility::Collapsed);
+		UnlockButton->SetIsEnabled(false);
 		ActionString = TEXT("Set Code");
 	}
 	else if (LockOperation == ELockOperation::ELO_ModifyCode)
 	{
+		UnlockSizeBox->SetVisibility(ESlateVisibility::Visible);
+		UnlockButton->SetIsEnabled(true);
 		ActionString = TEXT("Change Code");
 	}
 
@@ -226,10 +227,9 @@ void UKeypadWidget::SetupAuthorized()
 
 void UKeypadWidget::OnLockActionClicked()
 {
-	UE_LOG(LogTemp, Warning, TEXT("LockActionClicked."));
 	if (PendingCode.Len() < 4)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Code was %i characters, thats too short."), PendingCode.Len());
+		UE_LOG(LogLocks, Display, TEXT("Code was %i characters, thats too short."), PendingCode.Len());
 		return;
 	}
 

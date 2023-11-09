@@ -247,8 +247,6 @@ bool USpecialEffectsHandlerComponent::LineTraceIntoSkyOnChannel(ECollisionChanne
 
 void USpecialEffectsHandlerComponent::OnOwnerDestroyed(AActor* DestroyedActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("BeginDestroy"));
-
 	if (SpawnedRainComponent)
 	{
 		SpawnedRainComponent->DestroyComponent();
