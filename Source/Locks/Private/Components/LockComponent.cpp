@@ -51,32 +51,12 @@ void ULockComponent::OnOwnerDestroyed(AActor* DestroyedActor)
 	RemoveLock();
 }
 
-void ULockComponent::OnRep_HasLock()
-{
-	// Spawn Lock
-	if (HasLock && SpawnedLock == nullptr)
-	{
-		SpawnedLock = GetWorld()->SpawnActor<ALock>(CodeLockClass);
-		if (SpawnedLock == nullptr)
-		{
-			return;
-		}
-		SpawnedLock->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		SpawnedLock->OnPlacement(this);
-		SpawnedLock->SetAuthorizedPlayers(CodeLockSave.AuthorizedPlayers);
-		SpawnedLock->SetCode(CodeLockSave.Code);
-	}
-	// Remove Lock
-	else if (!HasLock && SpawnedLock)
-	{
-		SpawnedLock->Destroy();
-		SpawnedLock = nullptr;
-	}
-}
-
 void ULockComponent::OnLoadComplete_Implementation()
 {
-	OnRep_HasLock();
+	if (HasLock)
+	{
+		ApplyLock();
+	}
 }
 
 // Called every frame
@@ -109,21 +89,41 @@ void ULockComponent::Serialize(FArchive& Ar)
 void ULockComponent::ApplyLock()
 {
 	HasLock = true;
-	OnRep_HasLock();
 	AActor* OwnerActor = GetOwner();
 	if (OwnerActor)
 	{
+		if (OwnerActor->HasAuthority() && !IsValid(SpawnedLock))
+		{
+			if (HasLock && !IsValid(SpawnedLock))
+			{
+				SpawnedLock = GetWorld()->SpawnActor<ALock>(CodeLockClass);
+				if (SpawnedLock == nullptr)
+				{
+					return;
+				}
+				SpawnedLock->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+				SpawnedLock->OnPlacement(this);
+				SpawnedLock->SetAuthorizedPlayers(CodeLockSave.AuthorizedPlayers);
+				SpawnedLock->SetCode(CodeLockSave.Code);
+			}
+		}
 		OwnerActor->FlushNetDormancy();
 	}
+
 }
 
 void ULockComponent::RemoveLock()
 {
 	HasLock = false;
-	OnRep_HasLock();
+	CodeLockSave = FCodeLockSave();
 	AActor* OwnerActor = GetOwner();
 	if (OwnerActor)
 	{
+		if (OwnerActor->HasAuthority() && IsValid(SpawnedLock))
+		{
+			SpawnedLock->Destroy();
+			SpawnedLock = nullptr;
+		}
 		OwnerActor->FlushNetDormancy();
 	}
 }

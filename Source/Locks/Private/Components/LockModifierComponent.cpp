@@ -109,7 +109,7 @@ void ULockModifierComponent::Server_AuthorizeLock_Implementation(ALock* Lock, co
 
 bool ULockModifierComponent::Server_RemoveLock_Validate(ALock* Lock)
 {
-	if (!IsValid(Lock) || !Lock->IsAuthorized(GetOwnerUniqueID()))
+	if (!IsValid(Lock) || (Lock->IsLocked() && !Lock->IsAuthorized(GetOwnerUniqueID())))
 	{
 		return false;
 	}

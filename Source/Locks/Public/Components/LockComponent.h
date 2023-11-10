@@ -52,7 +52,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_HasLock, SaveGame)
+	UPROPERTY(VisibleAnywhere, Replicated, SaveGame)
 	bool HasLock;
 
 	UPROPERTY(SaveGame)
@@ -66,9 +66,6 @@ private:
 
 	UFUNCTION()
 	void OnOwnerDestroyed(AActor* DestroyedActor);
-
-	UFUNCTION()
-	void OnRep_HasLock();
 
 	UFUNCTION()
 	virtual void OnLoadComplete_Implementation() override;
