@@ -28,7 +28,7 @@ void AItemContainerBase::UnOccupy()
 
 void AItemContainerBase::Interact(AActor* Interactor)
 {
-	if (bOccupied == true)
+	if (bOccupied == true || !CanOpen(Interactor))
 	{
 		return;
 	}
@@ -71,6 +71,11 @@ FString AItemContainerBase::GetContainerName() const
 UInventoryComponent* AItemContainerBase::GetInventoryComponent() const
 {
 	return InventoryComponent;
+}
+
+bool AItemContainerBase::CanOpen(AActor* Interactor) const
+{
+	return true;
 }
 
 void AItemContainerBase::OnContainerClosed()

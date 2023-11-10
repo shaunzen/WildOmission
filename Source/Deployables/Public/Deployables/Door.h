@@ -33,7 +33,7 @@ private:
 	UStaticMeshComponent* InteractionMesh;
 
 	UPROPERTY(VisibleAnywhere)
-	ULockComponent* LockComp;
+	ULockComponent* LockComponent;
 
 	UPROPERTY(Replicated, SaveGame)
 	bool bIsOpen;

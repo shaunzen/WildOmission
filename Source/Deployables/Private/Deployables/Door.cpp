@@ -17,8 +17,8 @@ ADoor::ADoor()
 	InteractionMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	InteractionMesh->SetVisibility(false);
 
-	LockComp = CreateDefaultSubobject<ULockComponent>(TEXT("LockComp"));
-	LockComp->SetupAttachment(MeshComponent);
+	LockComponent = CreateDefaultSubobject<ULockComponent>(TEXT("LockComponent"));
+	LockComponent->SetupAttachment(MeshComponent);
 
 	OpenSound = nullptr;
 	CloseSound = nullptr;
@@ -63,7 +63,7 @@ void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 
 void ADoor::Interact(AActor* Interactor)
 {
-	if (IsValid(LockComp->GetLock()) && !LockComp->GetLock()->IsAuthorized(Cast<APawn>(Interactor)) && LockComp->GetLock()->IsLocked())
+	if (IsValid(LockComponent->GetLock()) && !LockComponent->GetLock()->IsAuthorized(Cast<APawn>(Interactor)) && LockComponent->GetLock()->IsLocked())
 	{
 		return;
 	}
