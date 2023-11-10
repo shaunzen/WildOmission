@@ -13,6 +13,7 @@ ULockComponent::ULockComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicatedByDefault(true);
 
 	HasLock = false;
 	SpawnedLock = nullptr;
@@ -109,12 +110,22 @@ void ULockComponent::ApplyLock()
 {
 	HasLock = true;
 	OnRep_HasLock();
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor)
+	{
+		OwnerActor->FlushNetDormancy();
+	}
 }
 
 void ULockComponent::RemoveLock()
 {
 	HasLock = false;
 	OnRep_HasLock();
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor)
+	{
+		OwnerActor->FlushNetDormancy();
+	}
 }
 
 bool ULockComponent::IsLockPlaced() const
