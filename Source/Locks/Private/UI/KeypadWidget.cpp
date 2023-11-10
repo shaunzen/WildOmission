@@ -265,11 +265,11 @@ void UKeypadWidget::AddCharacterToCode(const FString& CharacterToAdd)
 
 void UKeypadWidget::RefreshCodeTextBlock()
 {
-	FString DisplayCode = PendingCode;
-	/*for (int32 i = 0; i < PendingCode.Len(); i++)
+	FString DisplayCode = TEXT("");
+	for (int32 i = 0; i < PendingCode.Len(); i++)
 	{
 		DisplayCode.Append(TEXT("*"));
-	}*/
+	}
 
 	CodeTextBlock->SetText(FText::FromString(DisplayCode));
 }
