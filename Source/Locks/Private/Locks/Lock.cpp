@@ -2,8 +2,8 @@
 
 
 #include "Locks/Lock.h"
-#include "Components/LockComponent.h"
 #include "GameFramework/PlayerState.h"
+#include "Components/LockComponent.h"
 #include "Components/LockModifierComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -12,8 +12,18 @@
 ALock::ALock()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
 	bReplicates = true;
+
+	MeshComponent = nullptr;
+	SuccessSound = nullptr;
+	FailureSound = nullptr;
+	PlacementSound = nullptr;
+
+	OwnerLockComponent = nullptr;
+
+	Code = TEXT("");
+	AuthorizedPlayers = TArray<FString>();
+	Locked = false;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
@@ -29,11 +39,12 @@ ALock::ALock()
 	{
 		FailureSound = FailureSoundObject.Object;
 	}
-}
 
-void ALock::Setup(ULockComponent* InOwnerLockComponent)
-{
-	OwnerLockComponent = InOwnerLockComponent;
+	static ConstructorHelpers::FObjectFinder<USoundBase> PlacementSoundObject(TEXT("/Game/Deployables/Audio/Deployable_Placement_Cue"));
+	if (PlacementSoundObject.Succeeded())
+	{
+		PlacementSound = PlacementSoundObject.Object;
+	}
 }
 
 void ALock::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -41,6 +52,12 @@ void ALock::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(ALock, Locked);
+}
+
+void ALock::OnPlacement(ULockComponent* InOwnerLockComponent)
+{
+	OwnerLockComponent = InOwnerLockComponent;
+	Multi_PlayPlacementSound();
 }
 
 void ALock::Interact(AActor* Interactor)
@@ -71,12 +88,12 @@ void ALock::SetCode(const FString& NewCode, const FString& CodeSetterUniqueID)
 		return;
 	}
 
-	AuthorizedPlayers.Empty();
 	Code = NewCode;
 	Locked = true;
 	OnRep_Locked();
 	if (!CodeSetterUniqueID.IsEmpty())
 	{
+		AuthorizedPlayers.Empty();
 		AuthorizedPlayers.Add(CodeSetterUniqueID);
 	}
 }
@@ -130,7 +147,7 @@ bool ALock::IsAuthorized(const FString& PlayerUniqueID) const
 
 bool ALock::IsAuthorized(ULockModifierComponent* LockModifier) const
 {
-	if (OwnerLockComponent == nullptr || LockModifier == nullptr)
+	if (LockModifier == nullptr)
 	{
 		return false;
 	}
@@ -160,15 +177,16 @@ bool ALock::IsAuthorized(APawn* PlayerPawn) const
 	return IsAuthorized(OwnerPlayerState->GetUniqueId().ToString());
 }
 
+UStaticMesh* ALock::GetStaticMesh() const
+{
+	return MeshComponent->GetStaticMesh();
+}
+
 ULockComponent* ALock::GetOwnerLockComponent() const
 {
 	return OwnerLockComponent;
 }
 
-UStaticMesh* ALock::GetStaticMesh() const
-{
-	return MeshComponent->GetStaticMesh();
-}
 
 void ALock::OnRep_Locked()
 {
@@ -195,4 +213,15 @@ void ALock::Multi_PlayFailureSound_Implementation()
 	}
 
 	UGameplayStatics::PlaySoundAtLocation(World, FailureSound, this->GetActorLocation());
+}
+
+void ALock::Multi_PlayPlacementSound_Implementation()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || PlacementSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(World, PlacementSound, this->GetActorLocation());
 }

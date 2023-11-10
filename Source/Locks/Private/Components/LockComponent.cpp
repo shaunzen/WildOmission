@@ -61,9 +61,13 @@ void ULockComponent::OnRep_HasLock()
 			return;
 		}
 		SpawnedLock->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		SpawnedLock->Setup(this);
+		SpawnedLock->OnPlacement(this);
 		SpawnedLock->SetAuthorizedPlayers(CodeLockSave.AuthorizedPlayers);
 		SpawnedLock->SetCode(CodeLockSave.Code);
+		if (GEngine != 0)
+		{
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Load, HasLock %i, Code %s, AuthPlayerCount %i"), CodeLockSave.HasLock, *CodeLockSave.Code, CodeLockSave.AuthorizedPlayers.Num()));
+		}
 	}
 	// Remove Lock
 	else if (!HasLock && SpawnedLock)
@@ -88,18 +92,24 @@ void ULockComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void ULockComponent::Serialize(FArchive& Ar)
 {
-	CodeLockSave.HasLock = HasLock;
-	if (IsValid(SpawnedLock))
+	if (Ar.IsSaving())
 	{
-		CodeLockSave.Code = SpawnedLock->GetCode();
-		CodeLockSave.AuthorizedPlayers = SpawnedLock->GetAuthorizedPlayers();
+		CodeLockSave.HasLock = HasLock;
+		if (IsValid(SpawnedLock))
+		{
+			CodeLockSave.Code = SpawnedLock->GetCode();
+			CodeLockSave.AuthorizedPlayers = SpawnedLock->GetAuthorizedPlayers();
+		}
+		else
+		{
+			CodeLockSave.Code.Empty();
+			CodeLockSave.AuthorizedPlayers.Empty();
+		}
+		if (GEngine != 0)
+		{
+			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Save, HasLock %i, Code %s, AuthPlayerCount %i"), CodeLockSave.HasLock, *CodeLockSave.Code, CodeLockSave.AuthorizedPlayers.Num()));
+		}
 	}
-	else
-	{
-		CodeLockSave.Code.Empty();
-		CodeLockSave.AuthorizedPlayers.Empty();
-	}
-
 	Super::Serialize(Ar);
 }
 
@@ -111,8 +121,11 @@ void ULockComponent::ApplyLock()
 
 void ULockComponent::RemoveLock()
 {
-	HasLock = false;
-	OnRep_HasLock();
+	if (IsValid(SpawnedLock))
+	{
+		HasLock = false;
+		OnRep_HasLock();
+	}
 }
 
 bool ULockComponent::IsLockPlaced() const

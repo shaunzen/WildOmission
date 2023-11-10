@@ -15,9 +15,9 @@ class LOCKS_API ALock : public AActor, public IInteractable
 public:
 	ALock();
 	
-	void Setup(class ULockComponent* InOwnerLockComponent);
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void OnPlacement(class ULockComponent* InOwnerLockComponent);
 
 	// Begin IInteractable Implementation
 	virtual void Interact(AActor* Interactor) override;
@@ -35,19 +35,22 @@ public:
 	bool IsAuthorized(class ULockModifierComponent* LockModifier) const;
 	bool IsAuthorized(APawn* PlayerPawn) const;
 
-	class ULockComponent* GetOwnerLockComponent() const;
-	
 	TArray<FString> GetAuthorizedPlayers() const;
 	void SetAuthorizedPlayers(const TArray<FString>& InAuthorizedPlayers);
 	FString GetCode() const;
 
 	UStaticMesh* GetStaticMesh() const;
 
+	class ULockComponent* GetOwnerLockComponent() const;
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlaySuccessSound();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayFailureSound();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayPlacementSound();
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -58,6 +61,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* FailureSound;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* PlacementSound;
 
 	UPROPERTY()
 	class ULockComponent* OwnerLockComponent;
