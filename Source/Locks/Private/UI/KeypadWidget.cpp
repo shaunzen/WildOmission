@@ -180,6 +180,7 @@ void UKeypadWidget::OnUnlockClicked()
 	}
 
 	ModifyingComponent->Server_ClearLockCode(LockToModify);
+	this->Teardown();
 }
 
 void UKeypadWidget::OnRemoveLockClicked()
@@ -190,6 +191,7 @@ void UKeypadWidget::OnRemoveLockClicked()
 	}
 
 	ModifyingComponent->Server_RemoveLock(LockToModify);
+	this->Teardown();
 }
 
 void UKeypadWidget::SetupStranger()
