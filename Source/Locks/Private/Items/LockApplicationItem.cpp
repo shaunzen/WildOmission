@@ -79,6 +79,11 @@ void ALockApplicationItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 	
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	FHitResult HitResult;
 	if (!LineTraceOnChannel(ECollisionChannel::ECC_Visibility, HitResult))
 	{
@@ -92,7 +97,7 @@ void ALockApplicationItem::OnPrimaryPressed()
 	}
 
 	ULockComponent* HitLockComponent = HitActor->FindComponentByClass<ULockComponent>();
-	if (HitLockComponent == nullptr)
+	if (HitLockComponent == nullptr || HitLockComponent->IsLockPlaced())
 	{
 		return;
 	}
@@ -157,11 +162,11 @@ bool ALockApplicationItem::GetPlacementTransform(FTransform& OutPlacementTransfo
 	}
 
 	ULockComponent* HitLockComponent = HitActor->FindComponentByClass<ULockComponent>();
-	if (HitLockComponent == nullptr)
+	if (HitLockComponent == nullptr || HitLockComponent->IsLockPlaced())
 	{
 		return false;
 	}
-
+	UE_LOG(LogTemp, Warning, TEXT("Lock Placed %i"), HitLockComponent->IsLockPlaced())
 	OutPlacementTransform = HitLockComponent->GetComponentTransform();
 	return true;
 }

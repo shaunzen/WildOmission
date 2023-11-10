@@ -113,16 +113,13 @@ void ULockComponent::ApplyLock()
 
 void ULockComponent::RemoveLock()
 {
-	if (IsValid(SpawnedLock))
-	{
-		HasLock = false;
-		OnRep_HasLock();
-	}
+	HasLock = false;
+	OnRep_HasLock();
 }
 
 bool ULockComponent::IsLockPlaced() const
 {
-	return HasLock;
+	return HasLock && IsValid(GetLock());
 }
 
 ALock* ULockComponent::GetLock() const

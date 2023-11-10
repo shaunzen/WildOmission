@@ -52,7 +52,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_HasLock, SaveGame)
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRep_HasLock, SaveGame)
 	bool HasLock;
 
 	UPROPERTY(SaveGame)
