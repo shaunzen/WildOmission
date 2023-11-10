@@ -64,12 +64,11 @@ void ULockModifierComponent::Server_SetLockCode_Implementation(ALock* Lock, cons
 {
 	if (!IsValid(Lock) || Code.Len() < 4)
 	{
-		UE_LOG(LogLocks, Warning, TEXT("Code is too short, %i characters long"), Code.Len());
 		return;
 	}
 
 	Lock->SetCode(Code, GetOwnerUniqueID());
-	UE_LOG(LogLocks, Warning, TEXT("SetCode to %s"), *Code);
+	Lock->Multi_PlaySuccessSound();
 }
 
 bool ULockModifierComponent::Server_ClearLockCode_Validate(ALock* Lock)
@@ -93,13 +92,19 @@ void ULockModifierComponent::Server_ClearLockCode_Implementation(ALock* Lock)
 
 void ULockModifierComponent::Server_AuthorizeLock_Implementation(ALock* Lock, const FString& Code)
 {
-	if (!IsValid(Lock) || Lock->GetCode() != Code)
+	if (!IsValid(Lock))
 	{
-		// TODO play some kind of invalid sound effect
+		return;
+	}
+
+	if (Lock->GetCode() != Code)
+	{
+		Lock->Multi_PlayFailureSound();
 		return;
 	}
 
 	Lock->AuthorizePlayer(GetOwnerUniqueID());
+	Lock->Multi_PlaySuccessSound();
 }
 
 bool ULockModifierComponent::Server_RemoveLock_Validate(ALock* Lock)
@@ -140,7 +145,7 @@ void ULockModifierComponent::Server_RemoveLock_Implementation(ALock* Lock)
 	}
 
 	FInventoryItem CodeLockItem;
-	CodeLockItem.Name = TEXT("codelock");
+	CodeLockItem.Name = TEXT("lock.code");
 	CodeLockItem.Quantity = 1;
 
 	OwnerInventoryComponent->AddItem(CodeLockItem);

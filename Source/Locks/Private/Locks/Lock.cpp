@@ -5,7 +5,9 @@
 #include "Components/LockComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Components/LockModifierComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "UObject/ConstructorHelpers.h"
 
 ALock::ALock()
 {
@@ -15,6 +17,18 @@ ALock::ALock()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> SuccessSoundObject(TEXT("/Game/Locks/Audio/A_CodeLock_Success"));
+	if (SuccessSoundObject.Succeeded())
+	{
+		SuccessSound = SuccessSoundObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> FailureSoundObject(TEXT("/Game/Locks/Audio/A_CodeLock_Failure"));
+	if (FailureSoundObject.Succeeded())
+	{
+		FailureSound = FailureSoundObject.Object;
+	}
 }
 
 void ALock::Setup(ULockComponent* InOwnerLockComponent)
@@ -25,7 +39,7 @@ void ALock::Setup(ULockComponent* InOwnerLockComponent)
 void ALock::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	
 	DOREPLIFETIME(ALock, Locked);
 }
 
@@ -159,4 +173,26 @@ UStaticMesh* ALock::GetStaticMesh() const
 void ALock::OnRep_Locked()
 {
 	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, static_cast<float>(Locked));
+}
+
+void ALock::Multi_PlaySuccessSound_Implementation()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || SuccessSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(World, SuccessSound, this->GetActorLocation());
+}
+
+void ALock::Multi_PlayFailureSound_Implementation()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || FailureSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(World, FailureSound, this->GetActorLocation());
 }

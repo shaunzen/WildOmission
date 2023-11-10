@@ -43,17 +43,29 @@ public:
 
 	UStaticMesh* GetStaticMesh() const;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlaySuccessSound();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayFailureSound();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* SuccessSound;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* FailureSound;
+
 	UPROPERTY()
 	class ULockComponent* OwnerLockComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	TArray<FString> AuthorizedPlayers;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	FString Code;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Locked)
