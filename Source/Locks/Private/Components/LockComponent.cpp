@@ -64,10 +64,6 @@ void ULockComponent::OnRep_HasLock()
 		SpawnedLock->OnPlacement(this);
 		SpawnedLock->SetAuthorizedPlayers(CodeLockSave.AuthorizedPlayers);
 		SpawnedLock->SetCode(CodeLockSave.Code);
-		if (GEngine != 0)
-		{
-			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Load, HasLock %i, Code %s, AuthPlayerCount %i"), CodeLockSave.HasLock, *CodeLockSave.Code, CodeLockSave.AuthorizedPlayers.Num()));
-		}
 	}
 	// Remove Lock
 	else if (!HasLock && SpawnedLock)
@@ -104,10 +100,6 @@ void ULockComponent::Serialize(FArchive& Ar)
 		{
 			CodeLockSave.Code.Empty();
 			CodeLockSave.AuthorizedPlayers.Empty();
-		}
-		if (GEngine != 0)
-		{
-			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Save, HasLock %i, Code %s, AuthPlayerCount %i"), CodeLockSave.HasLock, *CodeLockSave.Code, CodeLockSave.AuthorizedPlayers.Num()));
 		}
 	}
 	Super::Serialize(Ar);
