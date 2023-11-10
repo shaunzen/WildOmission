@@ -176,10 +176,10 @@ void UOptionsWidget::Reset()
 
 void UOptionsWidget::Back()
 {
-	if (!OnBackButtonPressed.IsBound())
+	if (!OnBackButtonClicked.IsBound())
 	{
 		return;
 	}
 
-	OnBackButtonPressed.Broadcast();
+	OnBackButtonClicked.Broadcast();
 }

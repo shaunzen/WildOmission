@@ -21,6 +21,7 @@ class UEquipComponent;
 class UCraftingComponent;
 class UNameTagComponent;
 class USpecialEffectsHandlerComponent;
+class ULockModifierComponent;
 
 class ALootableRagdoll;
 class UPlayerHUDWidget;
@@ -128,11 +129,16 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	ULockModifierComponent* LockModifierComponent;
+
 	UPROPERTY()
 	TSubclassOf<UCameraShakeBase> JumpCameraShake;
 
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;
+
+	UPROPERTY()
 	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	UPROPERTY()

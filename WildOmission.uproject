@@ -51,7 +51,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"UMG"
+				"UMG",
+				"EquipableItems"
 			]
 		},
 		{
@@ -114,6 +115,16 @@
 		},
 		{
 			"Name": "Inventory",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"UMG",
+				"CoreUObject"
+			]
+		},
+		{
+			"Name": "Locks",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [

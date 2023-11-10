@@ -3,52 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Items/EquipableItem.h"
+#include "Items/DeployableItemBase.h"
 #include "DeployableItem.generated.h"
 
-class ADeployablePreview;
-class ADeployable;
-
 UCLASS()
-class DEPLOYABLES_API ADeployableItem : public AEquipableItem
+class DEPLOYABLES_API ADeployableItem : public ADeployableItemBase
 {
 	GENERATED_BODY()
 	
-public:
-	ADeployableItem();
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID) override;
-	virtual void OnUnequip() override;
-
-	virtual void Destroyed() override;
-
-	virtual void OnPrimaryPressed() override;
-
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ADeployable> DeployableActorClass;
+	virtual void OnPlace() override;
 
-	UPROPERTY(EditDefaultsOnly)
-	float DeployableRange;
-
-	bool LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelToTrace, FHitResult& OutHitResult) const;
-
-	FTransform GetPlacementTransform(bool& OutValidSpawn);
-	
-private:
-	UFUNCTION(Client, Reliable)
-	void Client_SpawnPreview();
-	UFUNCTION(Client, Reliable)
-	void Client_DestroyPreview();
-
-	UPROPERTY()
-	ADeployablePreview* PreviewActor;
-
-	FTransform GetFreehandPlacementTransform();
-
-	FRotator GetFacePlayerRotation(const FVector& PlacementLocation = FVector::ZeroVector, const FVector& Up = FVector::UpVector) const;
-	
+	virtual bool GetPlacementTransform(FTransform& OutPlacementTransform) override;
 	float GetOffsetFromNearestSnapDegree(const float& InAxis) const;
 
 };

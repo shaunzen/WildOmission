@@ -21,6 +21,7 @@
 #include "Components/CraftingComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
+#include "Components/LockModifierComponent.h"
 #include "WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "UI/InventoryMenuWidget.h"
@@ -86,6 +87,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	SpecialEffectsHandlerComponent = nullptr;
 	
+	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
+
 	bAiming = false;
 	bSprinting = false;
 	bUnderwater = false;
@@ -493,6 +496,11 @@ void AWildOmissionCharacter::SetupPlayerHUD()
 	}
 
 	PlayerHUDWidget = CreateWidget<UPlayerHUDWidget>(PlayerController, PlayerHUDWidgetClass);
+	if (PlayerHUDWidget == nullptr)
+	{
+		return;
+	}
+
 	PlayerHUDWidget->AddToViewport();
 }
 
@@ -945,7 +953,6 @@ void AWildOmissionCharacter::SelectToolbarSlot6()
 //********************************
 // Getters
 //********************************
-
 
 USkeletalMeshComponent* AWildOmissionCharacter::GetArmsMesh() const
 {

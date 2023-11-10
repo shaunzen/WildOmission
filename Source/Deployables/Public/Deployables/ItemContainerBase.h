@@ -36,6 +36,8 @@ public:
 	UInventoryComponent* GetInventoryComponent() const;
 
 protected:
+	virtual bool CanOpen(AActor* Interactor) const;
+	
 	UPROPERTY(Replicated)
 	bool bOccupied;
 

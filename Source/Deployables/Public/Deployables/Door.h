@@ -7,6 +7,8 @@
 #include "Interfaces/Interactable.h"
 #include "Door.generated.h"
 
+class ULockComponent;
+
 UCLASS()
 class DEPLOYABLES_API ADoor : public ADeployable, public IInteractable
 {
@@ -21,12 +23,17 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	// Begin IInteractable Implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
+	// End IInteractable Implementation
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* InteractionMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	ULockComponent* LockComponent;
 
 	UPROPERTY(Replicated, SaveGame)
 	bool bIsOpen;

@@ -23,7 +23,7 @@ const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
-const static FString GameVersion = TEXT("Pre Alpha 0.10.0");
+const static FString GameVersion = TEXT("Pre Alpha 0.10.1");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -541,7 +541,7 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		FString HostGameVersion = TEXT("");
 		if (SearchResult.Session.SessionSettings.Get(GAME_VERSION_SETTINGS_KEY, HostGameVersion))
 		{
-			if (GameVersion != HostGameVersion)
+			if (!GetWorld()->IsPlayInEditor() && GameVersion != HostGameVersion)
 			{
 				continue;
 			}

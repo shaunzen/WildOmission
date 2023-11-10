@@ -3,6 +3,8 @@
 
 #include "Deployables/Door.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/LockComponent.h"
+#include "Locks/Lock.h"
 #include "Net/UnrealNetwork.h"
 
 ADoor::ADoor()
@@ -14,6 +16,9 @@ ADoor::ADoor()
 	InteractionMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	InteractionMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	InteractionMesh->SetVisibility(false);
+
+	LockComponent = CreateDefaultSubobject<ULockComponent>(TEXT("LockComponent"));
+	LockComponent->SetupAttachment(MeshComponent);
 
 	OpenSound = nullptr;
 	CloseSound = nullptr;
@@ -58,6 +63,11 @@ void ADoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 
 void ADoor::Interact(AActor* Interactor)
 {
+	if (IsValid(LockComponent->GetLock()) && !LockComponent->GetLock()->IsAuthorized(Cast<APawn>(Interactor)) && LockComponent->GetLock()->IsLocked())
+	{
+		return;
+	}
+
 	bIsOpen = !bIsOpen;
 
 	if (bIsOpen)

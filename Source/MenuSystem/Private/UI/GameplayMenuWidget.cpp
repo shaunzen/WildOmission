@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "UI/OptionsWidget.h"
+#include "ConnectedPlayersWidget.h"
 #include "Interfaces/SavablePlayer.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -14,6 +15,7 @@ UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitial
 	SetIsFocusable(true);
 	ResumeButton = nullptr;
 	OptionsButton = nullptr;
+	ConnectedPlayersButton = nullptr;
 	HowToPlayButton = nullptr;
 	FeedbackButton = nullptr;
 	QuitButton = nullptr;
@@ -21,6 +23,7 @@ UGameplayMenuWidget::UGameplayMenuWidget(const FObjectInitializer& ObjectInitial
 	MenuSwitcher = nullptr;
 	GameMenu = nullptr;
 	OptionsMenu = nullptr;
+	ConnectedPlayersMenu = nullptr;
 	MenuInterface = nullptr;
 	bOpen = false;
 }
@@ -32,11 +35,13 @@ void UGameplayMenuWidget::NativeConstruct()
 	// Bind button delegates
 	ResumeButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::Teardown);
 	OptionsButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenOptionsMenu);
+	ConnectedPlayersButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenConnectedPlayersMenu);
 	FeedbackButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenFeedbackPage);
 	HowToPlayButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::OpenHelpGuide);
 	QuitButton->OnClicked.AddDynamic(this, &UGameplayMenuWidget::QuitToMenu);
 
-	OptionsMenu->OnBackButtonPressed.AddDynamic(this, &UGameplayMenuWidget::OpenGameMenu);
+	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UGameplayMenuWidget::OpenGameMenu);
+	ConnectedPlayersMenu->OnBackButtonClicked.AddDynamic(this, &UGameplayMenuWidget::OpenGameMenu);
 }
 
 FReply UGameplayMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -103,6 +108,17 @@ void UGameplayMenuWidget::OpenOptionsMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(OptionsMenu);
+}
+
+void UGameplayMenuWidget::OpenConnectedPlayersMenu()
+{
+	if (MenuSwitcher == nullptr || ConnectedPlayersMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(ConnectedPlayersMenu);
+	ConnectedPlayersMenu->Refresh();
 }
 
 bool UGameplayMenuWidget::IsOpen() const

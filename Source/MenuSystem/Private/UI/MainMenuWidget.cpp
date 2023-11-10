@@ -45,7 +45,7 @@ void UMainMenuWidget::NativeConstruct()
 	WorldCreationMenu->Setup(this);
 	WorldMenu->Setup(this);
 	ServerBrowserMenu->Setup(this);
-	OptionsMenu->OnBackButtonPressed.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 	ErrorMessagePrompt->OnCloseButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 }
 
@@ -177,7 +177,7 @@ void UMainMenuWidget::OpenErrorPrompt(const FString& Title, const FString& Error
 {
 	if (ErrorMessagePrompt == nullptr || MenuSwitcher == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("MainMenuWidget::OpenErrorPrompt, ErrorMessagePrompt or MenuSwitcher was nullptr."));
+		UE_LOG(LogMenuSystem, Warning, TEXT("MainMenuWidget::OpenErrorPrompt, ErrorMessagePrompt or MenuSwitcher was nullptr."));
 		return;
 	}
 
