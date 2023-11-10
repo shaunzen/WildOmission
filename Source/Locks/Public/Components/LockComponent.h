@@ -14,13 +14,13 @@ struct FCodeLockSave
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	bool HasLock = false;
 
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	TArray<FString> AuthorizedPlayers;
 
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	FString Code;
 
 };
