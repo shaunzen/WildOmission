@@ -16,13 +16,20 @@ public:
 	// Sets default values for this component's properties
 	UBuilderComponent();
 
+	void OpenToolCupboardMenu(class AToolCupboard* ToolCupboard);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 		
+private:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UToolCupboardWidget> ToolCupboardWidgetClass;
+
+	UPROPERTY()
+	class UToolCupboardWidget* ToolCupboardWidget;
+
+	UFUNCTION(Client, Reliable)
+	void Client_OpenToolCupboardMenu(class AToolCupboard* ToolCupboard);
+
 };
