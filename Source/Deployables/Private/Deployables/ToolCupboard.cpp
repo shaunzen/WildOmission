@@ -2,6 +2,7 @@
 
 
 #include "Deployables/ToolCupboard.h"
+#include "Components/BuilderComponent.h"
 
 static TArray<AToolCupboard*> AllToolCupboards;
 
@@ -18,7 +19,13 @@ void AToolCupboard::Interact(AActor* Interactor)
 		return;
 	}
 
-	// TODO open menu
+	UBuilderComponent* InteractorBuilderComponent = Interactor->FindComponentByClass<UBuilderComponent>();
+	if (InteractorBuilderComponent == nullptr)
+	{
+		return;
+	}
+
+	InteractorBuilderComponent->OpenToolCupboardMenu(this);
 }
 
 FString AToolCupboard::PromptText()

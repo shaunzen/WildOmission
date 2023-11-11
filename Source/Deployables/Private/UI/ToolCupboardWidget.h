@@ -7,7 +7,7 @@
 #include "ToolCupboardWidget.generated.h"
 
 /**
- * 
+ *  TODO on teardown delegate
  */
 UCLASS()
 class UToolCupboardWidget : public UUserWidget
@@ -19,7 +19,10 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
 	void Setup(class AToolCupboard* InToolCupboard);
+
+	UFUNCTION()
 	void Teardown();
 
 private:
