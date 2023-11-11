@@ -14,4 +14,21 @@ class DEPLOYABLES_API AToolCupboard : public ADeployable
 {
 	GENERATED_BODY()
 	
+public:
+	AToolCupboard();
+
+	void AuthorizePlayer(const FString& PlayerUniqueID);
+	bool IsPlayerAuthorized(const FString& PlayerUniqueID) const;
+	void ClearAuthorizedPlayers();
+
+	static TArray<AToolCupboard*> GetAllToolCupboards();
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+private:
+	UPROPERTY(SaveGame)
+	TArray<FString> AuthorizedPlayers;
+
 };
