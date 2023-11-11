@@ -7,6 +7,7 @@ static TArray<AToolCupboard*> AllToolCupboards;
 
 AToolCupboard::AToolCupboard()
 {
+	Range = 50000.0f;
 	AuthorizedPlayers = TArray<FString>();
 }
 
@@ -33,6 +34,17 @@ bool AToolCupboard::IsPlayerAuthorized(const FString& PlayerUniqueID) const
 void AToolCupboard::ClearAuthorizedPlayers()
 {
 	AuthorizedPlayers.Empty();
+}
+
+bool AToolCupboard::IsWithinRange(const FVector& LocationToTest) const
+{
+	const float Distance = FVector::Distance(this->GetActorLocation(), LocationToTest);
+	if (Distance <= Range)
+	{
+		return true;
+	}
+	
+	return false;
 }
 
 TArray<AToolCupboard*> AToolCupboard::GetAllToolCupboards()

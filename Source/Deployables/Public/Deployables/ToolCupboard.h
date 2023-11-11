@@ -21,6 +21,8 @@ public:
 	bool IsPlayerAuthorized(const FString& PlayerUniqueID) const;
 	void ClearAuthorizedPlayers();
 
+	bool IsWithinRange(const FVector& LocationToTest) const;
+
 	static TArray<AToolCupboard*> GetAllToolCupboards();
 
 protected:
@@ -28,6 +30,9 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly)
+	float Range;
+	
 	UPROPERTY(SaveGame)
 	TArray<FString> AuthorizedPlayers;
 
