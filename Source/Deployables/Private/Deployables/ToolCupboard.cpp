@@ -11,6 +11,21 @@ AToolCupboard::AToolCupboard()
 	AuthorizedPlayers = TArray<FString>();
 }
 
+void AToolCupboard::Interact(AActor* Interactor)
+{
+	if (Interactor == nullptr)
+	{
+		return;
+	}
+
+	// TODO open menu
+}
+
+FString AToolCupboard::PromptText()
+{
+	return TEXT("OPEN AUTHORIZATION MENU");
+}
+
 void AToolCupboard::AuthorizePlayer(const FString& PlayerUniqueID)
 {
 	AuthorizedPlayers.Add(PlayerUniqueID);

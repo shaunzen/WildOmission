@@ -4,18 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Deployables/Deployable.h"
+#include "Interfaces/Interactable.h"
 #include "ToolCupboard.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DEPLOYABLES_API AToolCupboard : public ADeployable
+class DEPLOYABLES_API AToolCupboard : public ADeployable, public IInteractable
 {
 	GENERATED_BODY()
 	
 public:
 	AToolCupboard();
+
+	// Begin IInteractable Interface
+	virtual void Interact(AActor* Interactor) override;
+	virtual FString PromptText() override;
+	// End IInteractable Interface
 
 	void AuthorizePlayer(const FString& PlayerUniqueID);
 	bool IsPlayerAuthorized(const FString& PlayerUniqueID) const;
