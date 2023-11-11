@@ -23,7 +23,7 @@ void AToolCupboard::Interact(AActor* Interactor)
 
 FString AToolCupboard::PromptText()
 {
-	return TEXT("OPEN AUTHORIZATION MENU");
+	return TEXT("open authorization menu");
 }
 
 void AToolCupboard::AuthorizePlayer(const FString& PlayerUniqueID)
