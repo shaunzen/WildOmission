@@ -3,6 +3,8 @@
 
 #include "Components/BuilderComponent.h"
 #include "UI/ToolCupboardWidget.h"
+#include "Deployables/ToolCupboard.h"
+#include "GameFramework/PlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values for this component's properties
@@ -35,7 +37,12 @@ bool UBuilderComponent::Server_Authorize_Validate(AToolCupboard* ToolCupboard)
 
 void UBuilderComponent::Server_Authorize_Implementation(AToolCupboard* ToolCupboard)
 {
+	if (ToolCupboard == nullptr)
+	{
+		return;
+	}
 
+	ToolCupboard->AuthorizePlayer(GetOwnerUniqueID());
 }
 
 bool UBuilderComponent::Server_ClearAllAuthorized_Validate(AToolCupboard* ToolCupboard)
@@ -56,6 +63,23 @@ void UBuilderComponent::BeginPlay()
 
 	// ...
 	
+}
+
+FString UBuilderComponent::GetOwnerUniqueID() const
+{
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn == nullptr)
+	{
+		return TEXT("");
+	}
+
+	APlayerState* OwnerPlayerState = OwnerPawn->GetPlayerState();
+	if (OwnerPlayerState == nullptr)
+	{
+		return TEXT("");
+	}
+
+	return OwnerPlayerState->GetUniqueId().ToString();
 }
 
 void UBuilderComponent::OnToolCupboardWidgetTeardown()
