@@ -20,6 +20,8 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void OnSpawn();
+
 	// Begin IInteractable Interface
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
@@ -39,10 +41,15 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	class ULockComponent* LockComponent;
+
 	UPROPERTY(EditDefaultsOnly)
 	float Range;
 	
 	UPROPERTY(VisibleAnywhere, Replicated, SaveGame)
 	TArray<FString> AuthorizedPlayers;
+
+	void OnLoadComplete_Implementation();
 
 };

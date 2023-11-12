@@ -2,6 +2,8 @@
 
 
 #include "Deployables/ToolCupboard.h"
+#include "Components/LockComponent.h"
+#include "Locks/Lock.h"
 #include "Components/BuilderComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -10,6 +12,9 @@ static TArray<AToolCupboard*> AllToolCupboards;
 AToolCupboard::AToolCupboard()
 {
 	SetNetDormancy(ENetDormancy::DORM_DormantAll);
+
+	LockComponent = CreateDefaultSubobject<ULockComponent>(TEXT("LockComponent"));
+	LockComponent->SetupAttachment(MeshComponent);
 
 	Range = 5000.0f;
 	AuthorizedPlayers = TArray<FString>();
@@ -22,9 +27,20 @@ void AToolCupboard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(AToolCupboard, AuthorizedPlayers);
 }
 
+void AToolCupboard::OnSpawn()
+{
+	Super::OnSpawn();
+	AllToolCupboards.Add(this);
+}
+
 void AToolCupboard::Interact(AActor* Interactor)
 {
 	if (Interactor == nullptr)
+	{
+		return;
+	}
+
+	if (LockComponent && LockComponent->GetLock() && LockComponent->GetLock()->IsLocked() && !LockComponent->GetLock()->IsAuthorized(Cast<APawn>(Interactor)))
 	{
 		return;
 	}
@@ -96,7 +112,10 @@ void AToolCupboard::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AllToolCupboards.Add(this);
+	if (!HasAuthority())
+	{
+		AllToolCupboards.Add(this);
+	}
 }
 
 void AToolCupboard::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -104,4 +123,9 @@ void AToolCupboard::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	AllToolCupboards.Remove(this);
+}
+
+void AToolCupboard::OnLoadComplete_Implementation()
+{
+	AllToolCupboards.Add(this);
 }
