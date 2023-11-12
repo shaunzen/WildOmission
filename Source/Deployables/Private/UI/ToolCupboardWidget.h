@@ -42,6 +42,11 @@ private:
 	UPROPERTY()
 	class AToolCupboard* ToolCupboard;
 
+	bool AreWeAuthorized() const;
+
+	UFUNCTION()
+	void RefreshUI();
+
 	UFUNCTION()
 	void OnAuthorizeButtonClicked();
 

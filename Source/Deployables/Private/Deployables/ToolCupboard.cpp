@@ -3,13 +3,23 @@
 
 #include "Deployables/ToolCupboard.h"
 #include "Components/BuilderComponent.h"
+#include "Net/UnrealNetwork.h"
 
 static TArray<AToolCupboard*> AllToolCupboards;
 
 AToolCupboard::AToolCupboard()
 {
+	SetNetDormancy(ENetDormancy::DORM_DormantAll);
+
 	Range = 50000.0f;
 	AuthorizedPlayers = TArray<FString>();
+}
+
+void AToolCupboard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AToolCupboard, AuthorizedPlayers);
 }
 
 void AToolCupboard::Interact(AActor* Interactor)
@@ -36,11 +46,13 @@ FString AToolCupboard::PromptText()
 void AToolCupboard::AuthorizePlayer(const FString& PlayerUniqueID)
 {
 	AuthorizedPlayers.Add(PlayerUniqueID);
+	FlushNetDormancy();
 }
 
 void AToolCupboard::DeauthorizePlayer(const FString& PlayerUniqueID)
 {
 	AuthorizedPlayers.Remove(PlayerUniqueID);
+	FlushNetDormancy();
 }
 
 bool AToolCupboard::IsPlayerAuthorized(const FString& PlayerUniqueID) const
@@ -61,6 +73,7 @@ bool AToolCupboard::IsPlayerAuthorized(const FString& PlayerUniqueID) const
 void AToolCupboard::ClearAuthorizedPlayers()
 {
 	AuthorizedPlayers.Empty();
+	FlushNetDormancy();
 }
 
 bool AToolCupboard::IsWithinRange(const FVector& LocationToTest) const

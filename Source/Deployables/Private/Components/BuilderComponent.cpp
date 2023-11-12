@@ -35,12 +35,23 @@ void UBuilderComponent::Server_Deauthorize_Implementation(AToolCupboard* ToolCup
 	{
 		return;
 	}
+
 	ToolCupboard->DeauthorizePlayer(GetOwnerUniqueID());
 }
 
 bool UBuilderComponent::Server_Authorize_Validate(AToolCupboard* ToolCupboard)
 {
-	// return false if we are outside of effective range
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr || ToolCupboard == nullptr)
+	{
+		return false;
+	}
+
+	if (!ToolCupboard->IsWithinRange(OwnerActor->GetActorLocation()))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -56,7 +67,17 @@ void UBuilderComponent::Server_Authorize_Implementation(AToolCupboard* ToolCupbo
 
 bool UBuilderComponent::Server_ClearAllAuthorized_Validate(AToolCupboard* ToolCupboard)
 {
-	// return false if outside effective range, or if we lack authorization
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr || ToolCupboard == nullptr)
+	{
+		return false;
+	}
+
+	if (!ToolCupboard->IsPlayerAuthorized(GetOwnerUniqueID()) || !ToolCupboard->IsWithinRange(OwnerActor->GetActorLocation()))
+	{
+		return false;
+	}
+
 	return true;
 }
 

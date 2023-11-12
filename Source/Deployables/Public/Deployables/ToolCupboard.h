@@ -18,6 +18,8 @@ class DEPLOYABLES_API AToolCupboard : public ADeployable, public IInteractable
 public:
 	AToolCupboard();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Begin IInteractable Interface
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
@@ -40,7 +42,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float Range;
 	
-	UPROPERTY(SaveGame)
+	UPROPERTY(VisibleAnywhere, Replicated, SaveGame)
 	TArray<FString> AuthorizedPlayers;
 
 };
