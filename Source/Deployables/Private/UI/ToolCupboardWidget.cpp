@@ -60,6 +60,11 @@ void UToolCupboardWidget::Teardown()
 	PlayerController->SetInputMode(InputMode);
 	PlayerController->SetShowMouseCursor(false);
 
+	if (OnTeardown.IsBound())
+	{
+		OnTeardown.Broadcast();
+	}
+
 	this->RemoveFromParent();
 }
 

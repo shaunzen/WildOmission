@@ -29,6 +29,9 @@ private:
 	UPROPERTY()
 	class UToolCupboardWidget* ToolCupboardWidget;
 
+	UFUNCTION()
+	void OnToolCupboardWidgetTeardown();
+
 	UFUNCTION(Client, Reliable)
 	void Client_OpenToolCupboardMenu(class AToolCupboard* ToolCupboard);
 

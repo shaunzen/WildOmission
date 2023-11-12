@@ -6,9 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "ToolCupboardWidget.generated.h"
 
-/**
- *  TODO on teardown delegate
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnToolCupboardWidgetTeardownSignature);
+
 UCLASS()
 class UToolCupboardWidget : public UUserWidget
 {
@@ -18,6 +17,8 @@ public:
 	UToolCupboardWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeConstruct() override;
+
+	FOnToolCupboardWidgetTeardownSignature OnTeardown;
 
 	UFUNCTION()
 	void Setup(class AToolCupboard* InToolCupboard);

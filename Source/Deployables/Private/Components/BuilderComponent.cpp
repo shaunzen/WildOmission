@@ -37,6 +37,11 @@ void UBuilderComponent::BeginPlay()
 	
 }
 
+void UBuilderComponent::OnToolCupboardWidgetTeardown()
+{
+	ToolCupboardWidget = nullptr;
+}
+
 void UBuilderComponent::Client_OpenToolCupboardMenu_Implementation(AToolCupboard* ToolCupboard)
 {
 	UWorld* World = GetWorld();
@@ -52,4 +57,5 @@ void UBuilderComponent::Client_OpenToolCupboardMenu_Implementation(AToolCupboard
 	}
 
 	ToolCupboardWidget->Setup(ToolCupboard);
+	ToolCupboardWidget->OnTeardown.AddDynamic(this, &UBuilderComponent::OnToolCupboardWidgetTeardown);
 }
