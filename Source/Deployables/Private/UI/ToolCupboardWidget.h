@@ -26,6 +26,9 @@ public:
 	UFUNCTION()
 	void Teardown();
 
+protected:
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* AuthorizeButton;

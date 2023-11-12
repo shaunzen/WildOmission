@@ -72,6 +72,18 @@ void UToolCupboardWidget::Teardown()
 	this->RemoveFromParent();
 }
 
+FReply UToolCupboardWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+
+	if (InKeyEvent.GetKey() == EKeys::Escape)
+	{
+		this->Teardown();
+	}
+
+	return FReply::Handled();
+}
+
 bool UToolCupboardWidget::AreWeAuthorized() const
 {
 	APlayerState* OwnerPlayerState = GetOwningPlayerState();
