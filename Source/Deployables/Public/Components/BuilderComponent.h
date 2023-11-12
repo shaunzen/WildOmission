@@ -27,11 +27,11 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_ClearAllAuthorized(class AToolCupboard* ToolCupboard);
 
+	FString GetOwnerUniqueID() const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	
-	FString GetOwnerUniqueID() const;
 
 private:
 	UPROPERTY(EditDefaultsOnly)

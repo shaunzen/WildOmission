@@ -5,6 +5,8 @@
 #include "Deployables/Deployable.h"
 #include "Actors/DeployablePreview.h"
 #include "Components/PlayerInventoryComponent.h"
+#include "Deployables/ToolCupboard.h"
+#include "Components/BuilderComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
@@ -190,4 +192,34 @@ void ADeployableItemBase::Client_DestroyPreview_Implementation()
 
 	PreviewActor->Destroy();
 	PreviewActor = nullptr;
+}
+
+bool ADeployableItemBase::HasAuthorizationToBuild(const FVector& LocationToTest) const
+{
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return false;
+	}
+
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr)
+	{
+		return false;
+	}
+
+	const FString& OwnerID = OwnerBuilderComponent->GetOwnerUniqueID();
+
+	TArray<AToolCupboard*> AllToolCupboards = AToolCupboard::GetAllToolCupboards();
+	for (AToolCupboard* ToolCupboard : AllToolCupboards)
+	{
+		if (ToolCupboard == nullptr || !ToolCupboard->IsWithinRange(LocationToTest) || ToolCupboard->IsPlayerAuthorized(OwnerID))
+		{
+			continue;
+		}
+
+		return false;
+	}
+
+	return true;
 }

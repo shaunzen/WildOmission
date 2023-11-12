@@ -11,7 +11,7 @@ AToolCupboard::AToolCupboard()
 {
 	SetNetDormancy(ENetDormancy::DORM_DormantAll);
 
-	Range = 50000.0f;
+	Range = 5000.0f;
 	AuthorizedPlayers = TArray<FString>();
 }
 
