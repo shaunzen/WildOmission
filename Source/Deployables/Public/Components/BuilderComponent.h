@@ -21,13 +21,18 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_Authorize(class AToolCupboard* ToolCupboard);
 
+	UFUNCTION(Server, Reliable)
+	void Server_Deauthorize(class AToolCupboard* ToolCupboard);
+
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_ClearAllAuthorized(class AToolCupboard* ToolCupboard);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-		
+	
+	FString GetOwnerUniqueID() const;
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UToolCupboardWidget> ToolCupboardWidgetClass;

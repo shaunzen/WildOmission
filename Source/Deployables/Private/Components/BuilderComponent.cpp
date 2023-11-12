@@ -29,6 +29,15 @@ void UBuilderComponent::OpenToolCupboardMenu(AToolCupboard* ToolCupboard)
 	Client_OpenToolCupboardMenu(ToolCupboard);
 }
 
+void UBuilderComponent::Server_Deauthorize_Implementation(AToolCupboard* ToolCupboard)
+{
+	if (ToolCupboard == nullptr)
+	{
+		return;
+	}
+	ToolCupboard->DeauthorizePlayer(GetOwnerUniqueID());
+}
+
 bool UBuilderComponent::Server_Authorize_Validate(AToolCupboard* ToolCupboard)
 {
 	// return false if we are outside of effective range
@@ -53,7 +62,12 @@ bool UBuilderComponent::Server_ClearAllAuthorized_Validate(AToolCupboard* ToolCu
 
 void UBuilderComponent::Server_ClearAllAuthorized_Implementation(AToolCupboard* ToolCupboard)
 {
+	if (ToolCupboard == nullptr)
+	{
+		return;
+	}
 
+	ToolCupboard->ClearAuthorizedPlayers();
 }
 
 // Called when the game starts

@@ -24,6 +24,7 @@ public:
 	// End IInteractable Interface
 
 	void AuthorizePlayer(const FString& PlayerUniqueID);
+	void DeauthorizePlayer(const FString& PlayerUniqueID);
 	bool IsPlayerAuthorized(const FString& PlayerUniqueID) const;
 	void ClearAuthorizedPlayers();
 

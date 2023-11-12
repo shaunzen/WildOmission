@@ -38,6 +38,11 @@ void AToolCupboard::AuthorizePlayer(const FString& PlayerUniqueID)
 	AuthorizedPlayers.Add(PlayerUniqueID);
 }
 
+void AToolCupboard::DeauthorizePlayer(const FString& PlayerUniqueID)
+{
+	AuthorizedPlayers.Remove(PlayerUniqueID);
+}
+
 bool AToolCupboard::IsPlayerAuthorized(const FString& PlayerUniqueID) const
 {
 	for (const FString& AuthorizedPlayer : AuthorizedPlayers)
