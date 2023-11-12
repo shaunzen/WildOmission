@@ -48,6 +48,7 @@ protected:
 
 	FRotator GetFacePlayerRotation(const FVector& PlacementLocation = FVector::ZeroVector, const FVector& Up = FVector::UpVector) const;
 
+	virtual UStaticMesh* GetPreviewMesh();
 
 	UFUNCTION(Client, Reliable)
 	void Client_SpawnPreview();

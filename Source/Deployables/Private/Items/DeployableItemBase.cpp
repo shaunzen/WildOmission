@@ -134,7 +134,7 @@ FTransform ADeployableItemBase::GetFreehandPlacementTransform()
 	if (LineTraceOnChannel(ECC_Visibility, HitResult))
 	{
 		PlacementLocation = HitResult.ImpactPoint;
-		if (DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
+		if (DeployableActorClass && DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
 		{
 			PlacementUp = HitResult.ImpactNormal;
 		}
@@ -165,10 +165,15 @@ FRotator ADeployableItemBase::GetFacePlayerRotation(const FVector& PlacementLoca
 	return UKismetMathLibrary::MakeRotationFromAxes(PlacementForward, PlacementRight, Up);
 }
 
+UStaticMesh* ADeployableItemBase::GetPreviewMesh()
+{
+	return nullptr;
+}
+
 void ADeployableItemBase::Client_SpawnPreview_Implementation()
 {
 	UWorld* World = GetWorld();
-	if (World == nullptr || DeployableActorClass == nullptr)
+	if (World == nullptr)
 	{
 		return;
 	}
@@ -180,7 +185,14 @@ void ADeployableItemBase::Client_SpawnPreview_Implementation()
 	}
 
 	PreviewActor = World->SpawnActor<ADeployablePreview>();
-	PreviewActor->Setup(DeployableActorClass.GetDefaultObject());
+	if (DeployableActorClass.GetDefaultObject() != nullptr)
+	{
+		PreviewActor->Setup(DeployableActorClass.GetDefaultObject());
+	}
+	else if (GetPreviewMesh() != nullptr)
+	{
+		PreviewActor->Setup(GetPreviewMesh());
+	}
 }
 
 void ADeployableItemBase::Client_DestroyPreview_Implementation()

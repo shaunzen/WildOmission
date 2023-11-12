@@ -9,18 +9,12 @@ static UMaterialInstance* PreviewMaterial = nullptr;
 
 ADeployablePreview::ADeployablePreview()
 {
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/Deployables/Art/M_DeployablePreview_Inst"));
-	if (PreviewMaterialInstanceBlueprint.Succeeded())
-	{
-		PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;
-	}
-
 	SetMobility(EComponentMobility::Movable);
-	GetStaticMeshComponent()->SetCollisionProfileName(FName("NoCollision"));
-	CollisionCheckMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("Collision Mesh Component"));
+	GetStaticMeshComponent()->SetCollisionProfileName(TEXT("NoCollision"));
+	CollisionCheckMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CollisionMeshComponent"));
 	CollisionCheckMeshComponent->SetupAttachment(GetStaticMeshComponent());
 	CollisionCheckMeshComponent->SetHiddenInGame(true);
-	CollisionCheckMeshComponent->SetCollisionProfileName(FName("OverlapAll"));
+	CollisionCheckMeshComponent->SetCollisionProfileName(TEXT("OverlapAll"));
 	CollisionCheckMeshComponent->SetGenerateOverlapEvents(true);
 	CollisionCheckMeshComponent->SetRelativeScale3D(FVector(0.9f));
 
@@ -28,6 +22,13 @@ ADeployablePreview::ADeployablePreview()
 	OverlapCount = 0;
 
 	PreviewingDeployable = nullptr;
+	PreviewMaterial = nullptr;
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PreviewMaterialInstanceBlueprint(TEXT("/Game/Deployables/Art/M_DeployablePreview_Inst"));
+	if (PreviewMaterialInstanceBlueprint.Succeeded())
+	{
+		PreviewMaterial = PreviewMaterialInstanceBlueprint.Object;
+	}
 }
 
 void ADeployablePreview::Setup(ADeployable* DeployableToPreview)
@@ -55,6 +56,25 @@ void ADeployablePreview::Setup(ADeployable* DeployableToPreview)
 	CollisionCheckMeshComponent->OnComponentEndOverlap.AddDynamic(this, &ADeployablePreview::OnMeshEndOverlap);
 }
 
+void ADeployablePreview::Setup(UStaticMesh* PreviewMesh)
+{
+	PreviewingDeployable = nullptr;
+
+	GetStaticMeshComponent()->SetStaticMesh(PreviewMesh);
+	GetStaticMeshComponent()->SetRelativeTransform(FTransform());
+
+	// Set all materials on the mesh to use the preview material
+	for (int32 i = 0; i < GetStaticMeshComponent()->GetNumMaterials(); i++)
+	{
+		GetStaticMeshComponent()->SetMaterial(i, PreviewMaterial);
+	}
+
+	CollisionCheckMeshComponent->SetStaticMesh(PreviewMesh);
+
+	CollisionCheckMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ADeployablePreview::OnMeshBeginOverlap);
+	CollisionCheckMeshComponent->OnComponentEndOverlap.AddDynamic(this, &ADeployablePreview::OnMeshEndOverlap);
+}
+
 void ADeployablePreview::Update(bool IsSpawnValid)
 {
 	GetStaticMeshComponent()->SetScalarParameterValueOnMaterials(TEXT("Valid"), IsSpawnValid);
@@ -68,6 +88,7 @@ bool ADeployablePreview::IsOverlappingInvalidObject() const
 void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->ActorHasTag(TEXT("Water")) 
+		|| PreviewingDeployable == nullptr
 		|| (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround()) 
 		|| (OtherActor->ActorHasTag(TEXT("Wall")) && PreviewingDeployable->CanSpawnOnWall()) 
 		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnFloor()) 
@@ -85,6 +106,7 @@ void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedCompo
 void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
 	if (OtherActor->ActorHasTag(TEXT("Water"))
+		|| PreviewingDeployable == nullptr
 		|| (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround())
 		|| (OtherActor->ActorHasTag(TEXT("Wall")) && PreviewingDeployable->CanSpawnOnWall())
 		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnFloor())
