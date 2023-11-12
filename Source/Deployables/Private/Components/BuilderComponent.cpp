@@ -27,6 +27,27 @@ void UBuilderComponent::OpenToolCupboardMenu(AToolCupboard* ToolCupboard)
 	Client_OpenToolCupboardMenu(ToolCupboard);
 }
 
+bool UBuilderComponent::Server_Authorize_Validate(AToolCupboard* ToolCupboard)
+{
+	// return false if we are outside of effective range
+	return true;
+}
+
+void UBuilderComponent::Server_Authorize_Implementation(AToolCupboard* ToolCupboard)
+{
+
+}
+
+bool UBuilderComponent::Server_ClearAllAuthorized_Validate(AToolCupboard* ToolCupboard)
+{
+	// return false if outside effective range, or if we lack authorization
+	return true;
+}
+
+void UBuilderComponent::Server_ClearAllAuthorized_Implementation(AToolCupboard* ToolCupboard)
+{
+
+}
 
 // Called when the game starts
 void UBuilderComponent::BeginPlay()

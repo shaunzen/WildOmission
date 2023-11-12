@@ -18,6 +18,12 @@ public:
 
 	void OpenToolCupboardMenu(class AToolCupboard* ToolCupboard);
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_Authorize(class AToolCupboard* ToolCupboard);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_ClearAllAuthorized(class AToolCupboard* ToolCupboard);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
