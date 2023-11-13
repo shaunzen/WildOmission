@@ -40,7 +40,7 @@ void AToolCupboard::Interact(AActor* Interactor)
 		return;
 	}
 
-	if (LockComponent && LockComponent->GetLock() && LockComponent->GetLock()->IsLocked() && !LockComponent->GetLock()->IsAuthorized(Cast<APawn>(Interactor)))
+	if (IsValid(LockComponent->GetLock()) && !LockComponent->GetLock()->IsAuthorized(Cast<APawn>(Interactor)) && LockComponent->GetLock()->IsLocked())
 	{
 		return;
 	}
