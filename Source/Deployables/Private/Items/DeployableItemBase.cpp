@@ -222,8 +222,8 @@ bool ADeployableItemBase::HasAuthorizationToBuild(const FVector& LocationToTest)
 
 	const FString& OwnerID = OwnerBuilderComponent->GetOwnerUniqueID();
 
-	TArray<AToolCupboard*> AllToolCupboards = AToolCupboard::GetAllToolCupboards();
-	for (AToolCupboard* ToolCupboard : AllToolCupboards)
+	TArray<AToolCupboard*> SpawnedToolCupboards = AToolCupboard::GetAllToolCupboards();
+	for (AToolCupboard* ToolCupboard : SpawnedToolCupboards)
 	{
 		if (ToolCupboard == nullptr || !ToolCupboard->IsWithinRange(LocationToTest) || ToolCupboard->IsPlayerAuthorized(OwnerID))
 		{
