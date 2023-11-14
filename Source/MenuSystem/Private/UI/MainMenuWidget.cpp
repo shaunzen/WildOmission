@@ -46,9 +46,12 @@ void UMainMenuWidget::NativeConstruct()
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
 	WorldSelectionMenu->OnPlaySelectedWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
-	// TODO finish binding delegates
+	WorldSelectionMenu->OnRenameWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenRenameWorldMenu);
+	WorldSelectionMenu->OnDeleteWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenDeleteWorldMenu);
+	WorldSelectionMenu->OnCreateNewWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
+	WorldSelectionMenu->OnMultiplayerButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenServerBrowserMenu);
+	WorldSelectionMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 
-	WorldCreationMenu->Setup(this);
 	WorldMenu->Setup(this);
 	ServerBrowserMenu->Setup(this);
 	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
@@ -139,6 +142,28 @@ void UMainMenuWidget::OpenWorldMenuForWorld(const FString& WorldName)
 {
 	MenuSwitcher->SetActiveWidget(WorldMenu);
 	WorldMenu->Open(WorldName);
+}
+
+void UMainMenuWidget::OpenRenameWorldMenu()
+{
+	if (MenuSwitcher == nullptr || RenameWorldMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(RenameWorldMenu);
+	// TODO set world
+}
+
+void UMainMenuWidget::OpenDeleteWorldMenu()
+{
+	if (MenuSwitcher == nullptr || DeleteWorldMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(DeleteWorldMenu);
+	// TODO set world
 }
 
 void UMainMenuWidget::OpenServerBrowserMenu()

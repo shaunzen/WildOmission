@@ -30,8 +30,8 @@ public:
 	TOptional<FString> SelectedWorldName;
 
 	FOnPlaySelectedWorldButtonClickedSignature OnPlaySelectedWorldButtonClicked;
-	FOnRenameButtonClickedSignature OnRenameWorldButtonClicked;
-	FOnDeleteButtonClickedSignature OnDeleteWorldButtonClicked;
+	FOnRenameWorldButtonClickedSignature OnRenameWorldButtonClicked;
+	FOnDeleteWorldButtonClickedSignature OnDeleteWorldButtonClicked;
 	FOnCreateNewWorldButtonClickedSignature OnCreateNewWorldButtonClicked;
 	FOnMultiplayerButtonClickedSignature OnMultiplayerButtonClicked;
 	FOnCancelButtonClickedSignature OnCancelButtonClicked;
