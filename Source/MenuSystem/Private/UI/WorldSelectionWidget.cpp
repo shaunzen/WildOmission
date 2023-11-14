@@ -13,6 +13,16 @@
 
 UWorldSelectionWidget::UWorldSelectionWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	WorldListBox = nullptr;
+	PlaySelectedWorldButton = nullptr;
+	RenameWorldButton = nullptr;
+	DeleteWorldButton = nullptr;
+	CreateNewWorldButton = nullptr;
+	MultiplayerButton = nullptr;
+	CancelButton = nullptr;
+
+	WorldRowWidgetClass = nullptr;
+
 	static ConstructorHelpers::FClassFinder<UWorldRowWidget> WorldRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/WBP_WorldRow"));
 	if (WorldRowWidgetBPClass.Succeeded())
 	{
@@ -24,6 +34,12 @@ void UWorldSelectionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	PlaySelectedWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnPlaySelectedWorldClicked);
+	RenameWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnRenameWorldClicked);
+	DeleteWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnDeleteWorldClicked);
+	CreateNewWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnCreateNewWorldClicked);
+	MultiplayerButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnMultiplayerButtonClicked);
+	CancelButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnCancelButtonClicked);
 }
 
 void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
@@ -35,16 +51,6 @@ void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 	}
 
 	WorldListBox->ClearChildren();
-
-	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
-	if (CreateWorldButton == nullptr)
-	{
-		return;
-	}
-
-	CreateWorldButton->GetButton()->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldCreationMenu);
-
-	WorldListBox->AddChild(CreateWorldButton);
 
 	TArray<UWildOmissionSaveGame*> SortedWorlds = GetWorldsSortedByLastPlayed(WorldNames);
 

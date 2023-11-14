@@ -34,7 +34,7 @@ private:
 	UPanelWidget* WorldListBox;
 
 	UPROPERTY(Meta = (BindWidget))
-	class UButton* PlaySelectedButton;
+	class UButton* PlaySelectedWorldButton;
 	
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* RenameWorldButton;
