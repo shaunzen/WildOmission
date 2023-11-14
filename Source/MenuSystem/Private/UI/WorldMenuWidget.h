@@ -6,11 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "WorldMenuWidget.generated.h"
 
-class UTextBlock;
-class UButton;
-class UCheckOptionBox;
-class UEditableTextBox;
-class UMainMenuWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FWorldMenuOnPlayButtonClickedSignature, const FString&, WorldName, const FString&, ServerName, const bool, IsMultiplayer, const bool, IsFriendsOnly);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnBackButtonClickedSignature);
 
 UCLASS()
 class UWorldMenuWidget : public UUserWidget
@@ -24,30 +21,30 @@ public:
 
 	void Open(const FString& InWorldName);
 
+	FWorldMenuOnPlayButtonClickedSignature OnPlayButtonClicked;
+	FWorldMenuOnBackButtonClickedSignature OnBackButtonClicked;
+
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* Title;
+	class UTextBlock* Title;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* PlayButton;
+	class UButton* PlayButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* BackButton;
+	class UButton* BackButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* MultiplayerCheckOptionBox;
+	class UCheckOptionBox* MultiplayerCheckOptionBox;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* FriendsOnlyCheckOptionBox;
+	class UCheckOptionBox* FriendsOnlyCheckOptionBox;
 	
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* HostSettingsMenu;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UEditableTextBox* ServerNameInputBox;
-
-	UPROPERTY()
-	UMainMenuWidget* ParentMenu;
+	class UEditableTextBox* ServerNameInputBox;
 
 	FString WorldName;
 
@@ -58,6 +55,9 @@ private:
 	void MultiplayerCheckboxChanged(bool bIsChecked);
 
 	UFUNCTION()
-	void PlayButtonClicked();
+	void BroadcastPlayButtonClicked();
+
+	UFUNCTION()
+	void BroadcastBackButtonClicked();
 
 };

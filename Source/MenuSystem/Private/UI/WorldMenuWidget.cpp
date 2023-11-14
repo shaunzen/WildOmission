@@ -2,32 +2,34 @@
 
 
 #include "WorldMenuWidget.h"
-#include "UI/MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "OptionBoxes/CheckOptionBox.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
 
-void UWorldMenuWidget::Setup(UMainMenuWidget* InMainMenuParent)
-{
-	ParentMenu = InMainMenuParent;
-
-	PlayButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::PlayButtonClicked);
-	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
-	MultiplayerCheckOptionBox->OnCheckStateChanged.AddDynamic(this, &UWorldMenuWidget::MultiplayerCheckboxChanged);
-	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UWorldMenuWidget::ServerNameOnTextChanged);
-}
 
 UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	Title = nullptr;
+	PlayButton = nullptr;
+	BackButton = nullptr;
+	MultiplayerCheckOptionBox = nullptr;
+	FriendsOnlyCheckOptionBox = nullptr;
+	HostSettingsMenu = nullptr;
+	ServerNameInputBox = nullptr;
 
+	WorldName = TEXT("");
 }
 
 void UWorldMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	PlayButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastPlayButtonClicked);
+	BackButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastBackButtonClicked);
+	MultiplayerCheckOptionBox->OnCheckStateChanged.AddDynamic(this, &UWorldMenuWidget::MultiplayerCheckboxChanged);
+	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UWorldMenuWidget::ServerNameOnTextChanged);
 }
 
 void UWorldMenuWidget::Open(const FString& InWorldName)
@@ -64,26 +66,27 @@ void UWorldMenuWidget::MultiplayerCheckboxChanged(bool bIsChecked)
 	HostSettingsMenu->SetIsEnabled(bIsChecked);
 }
 
-void UWorldMenuWidget::PlayButtonClicked()
+void UWorldMenuWidget::BroadcastPlayButtonClicked()
 {
-	IMenuInterface* MenuInterface = ParentMenu->GetMenuInterface();
-	if (MenuInterface == nullptr || WorldName == FString())
+	if (!OnPlayButtonClicked.IsBound() 
+		|| WorldName == TEXT(""))
+	{
+		return;
+	}
+	
+	const FString ServerName = ServerNameInputBox->GetText().ToString();
+	const bool IsMultiplayer = MultiplayerCheckOptionBox->IsChecked();
+	const bool IsFriendsOnly = FriendsOnlyCheckOptionBox->IsChecked();
+
+	OnPlayButtonClicked.Broadcast(WorldName, ServerName, IsMultiplayer, IsFriendsOnly);
+}
+
+void UWorldMenuWidget::BroadcastBackButtonClicked()
+{
+	if (!OnBackButtonClicked.IsBound())
 	{
 		return;
 	}
 
-	if (MultiplayerCheckOptionBox->IsChecked())
-	{
-		FString ServerName = ServerNameInputBox->GetText().ToString();
-		if (ServerName == FString(""))
-		{
-			return;
-		}
-
-		MenuInterface->Host(ServerName, WorldName, FriendsOnlyCheckOptionBox->IsChecked());
-	}
-	else
-	{
-		MenuInterface->StartSingleplayer(WorldName);
-	}
+	OnBackButtonClicked.Broadcast();
 }

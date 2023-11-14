@@ -38,6 +38,8 @@ public:
 	UFUNCTION()
 	void OpenWorldMenuForWorld(const FString& WorldName);
 	UFUNCTION()
+	void HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly);
+	UFUNCTION()
 	void OpenRenameWorldMenu();
 	UFUNCTION()
 	void OpenDeleteWorldMenu();

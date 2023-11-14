@@ -2,6 +2,7 @@
 
 
 #include "WorldCreationWidget.h"
+#include "Interfaces/MenuInterface.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
@@ -12,7 +13,7 @@
 UWorldCreationWidget::UWorldCreationWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	CreateWorldButton = nullptr;
-	CancelButton = nullptr;
+	BackButton = nullptr;
 	WorldNameInputBox = nullptr;
 	
 	InvalidWarningBorder = nullptr;
@@ -27,7 +28,7 @@ void UWorldCreationWidget::NativeConstruct()
 
 	CreateWorldButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::CreateWorld);
 	CreateWorldButton->SetIsEnabled(false);
-	CancelButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::BroadcastOnCancelClicked);
+	BackButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::BroadcastOnBackClicked);
 	WorldNameInputBox->OnTextChanged.AddDynamic(this, &UWorldCreationWidget::WorldNameOnTextChanged);
 }
 
@@ -125,14 +126,14 @@ void UWorldCreationWidget::CreateWorld()
 	OnOpenWorldMenuRequested.Broadcast(NewWorldName);
 }
 
-void UWorldCreationWidget::BroadcastOnCancelClicked()
+void UWorldCreationWidget::BroadcastOnBackClicked()
 {
-	if (!OnCancelClicked.IsBound())
+	if (!OnBackClicked.IsBound())
 	{
 		return;
 	}
 
-	OnCancelClicked.Broadcast();
+	OnBackClicked.Broadcast();
 }
 
 void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)
