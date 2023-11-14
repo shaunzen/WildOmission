@@ -7,8 +7,8 @@
 #include "WorldSelectionWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlaySelectedWorldButtonClickedSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRenameButtonClickedSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRenameWorldButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteWorldButtonClickedSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCreateNewWorldButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMultiplayerButtonClickedSignature);
@@ -28,6 +28,13 @@ public:
 	void SetSelectedWorld(const FString& WorldName);
 
 	TOptional<FString> SelectedWorldName;
+
+	FOnPlaySelectedWorldButtonClickedSignature OnPlaySelectedWorldButtonClicked;
+	FOnRenameButtonClickedSignature OnRenameWorldButtonClicked;
+	FOnDeleteButtonClickedSignature OnDeleteWorldButtonClicked;
+	FOnCreateNewWorldButtonClickedSignature OnCreateNewWorldButtonClicked;
+	FOnMultiplayerButtonClickedSignature OnMultiplayerButtonClicked;
+	FOnCancelButtonClickedSignature OnCancelButtonClicked;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -59,21 +66,21 @@ private:
 	static bool IsSaveMoreRecentlyPlayed(class UWildOmissionSaveGame* SaveA, class UWildOmissionSaveGame* SaveB);
 
 	UFUNCTION()
-	void OnPlaySelectedWorldClicked();
+	void BroadcastPlaySelectedWorldClicked();
 
 	UFUNCTION()
-	void OnRenameWorldClicked();
+	void BroadcastRenameWorldButtonClicked();
 
 	UFUNCTION()
-	void OnDeleteWorldClicked();
+	void BroadcastDeleteWorldButtonClicked();
 
 	UFUNCTION()
-	void OnCreateNewWorldClicked();
+	void BroadcastCreateNewWorldClicked();
 
 	UFUNCTION()
-	void OnMultiplayerButtonClicked();
+	void BroadcastMultiplayerButtonClicked();
 
 	UFUNCTION()
-	void OnCancelButtonClicked();
+	void BroadcastCancelButtonClicked();
 
 };

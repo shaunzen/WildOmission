@@ -34,12 +34,12 @@ void UWorldSelectionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	PlaySelectedWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnPlaySelectedWorldClicked);
-	RenameWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnRenameWorldClicked);
-	DeleteWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnDeleteWorldClicked);
-	CreateNewWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnCreateNewWorldClicked);
-	MultiplayerButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnMultiplayerButtonClicked);
-	CancelButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::OnCancelButtonClicked);
+	PlaySelectedWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastPlaySelectedWorldClicked);
+	RenameWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastRenameWorldButtonClicked);
+	DeleteWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastDeleteWorldButtonClicked);
+	CreateNewWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCreateNewWorldClicked);
+	MultiplayerButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastMultiplayerButtonClicked);
+	CancelButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCancelButtonClicked);
 }
 
 void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
@@ -133,26 +133,62 @@ bool UWorldSelectionWidget::IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* Save
 	return SaveA->LastPlayedTime > SaveB->LastPlayedTime;
 }
 
-void UWorldSelectionWidget::OnPlaySelectedWorldClicked()
+void UWorldSelectionWidget::BroadcastPlaySelectedWorldClicked()
 {
+	if (!OnPlaySelectedWorldButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnPlaySelectedWorldButtonClicked.Broadcast();
 }
 
-void UWorldSelectionWidget::OnRenameWorldClicked()
+void UWorldSelectionWidget::BroadcastRenameWorldButtonClicked()
 {
+	if (!OnRenameWorldButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnRenameWorldButtonClicked.Broadcast();
 }
 
-void UWorldSelectionWidget::OnDeleteWorldClicked()
+void UWorldSelectionWidget::BroadcastDeleteWorldButtonClicked()
 {
+	if (!OnDeleteWorldButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnDeleteWorldButtonClicked.Broadcast();
 }
 
-void UWorldSelectionWidget::OnCreateNewWorldClicked()
+void UWorldSelectionWidget::BroadcastCreateNewWorldClicked()
 {
+	if (!OnCreateNewWorldButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnCreateNewWorldButtonClicked.Broadcast();
 }
 
-void UWorldSelectionWidget::OnMultiplayerButtonClicked()
+void UWorldSelectionWidget::BroadcastMultiplayerButtonClicked()
 {
+	if (!OnMultiplayerButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnMultiplayerButtonClicked.Broadcast();
 }
 
-void UWorldSelectionWidget::OnCancelButtonClicked()
+void UWorldSelectionWidget::BroadcastCancelButtonClicked()
 {
+	if (!OnCancelButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnMultiplayerButtonClicked.Broadcast();
 }

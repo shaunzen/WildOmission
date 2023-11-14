@@ -45,7 +45,9 @@ void UMainMenuWidget::NativeConstruct()
 	FeedbackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenFeedbackPage);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
-	WorldSelectionMenu->Setup(this);
+	WorldSelectionMenu->OnPlaySelectedWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
+	// TODO finish binding delegates
+
 	WorldCreationMenu->Setup(this);
 	WorldMenu->Setup(this);
 	ServerBrowserMenu->Setup(this);
