@@ -13,26 +13,17 @@
 
 UWorldSelectionWidget::UWorldSelectionWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UWorldRowWidget> WorldRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/WBP_WorldRow"));
+	static ConstructorHelpers::FClassFinder<UWorldRowWidget> WorldRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/WBP_WorldRow"));
 	if (WorldRowWidgetBPClass.Succeeded())
 	{
 		WorldRowWidgetClass = WorldRowWidgetBPClass.Class;
 	}
-
-	ConstructorHelpers::FClassFinder<UCreateWorldButtonWidget> CreateNewWorldBPClass(TEXT("/Game/MenuSystem/UI/WBP_CreateWorldButton"));
-	if (CreateNewWorldBPClass.Succeeded())
-	{
-		CreateNewWorldButtonClass = CreateNewWorldBPClass.Class;
-	}
 }
 
-void UWorldSelectionWidget::Setup(UMainMenuWidget* InMainMenuParent)
+void UWorldSelectionWidget::NativeConstruct()
 {
-	ParentMenu = InMainMenuParent;
+	Super::NativeConstruct();
 
-	SelectButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldMenu);
-	BrowseServersButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenServerBrowserMenu);
-	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenMainMenu);
 }
 
 void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
@@ -134,4 +125,28 @@ TArray<UWildOmissionSaveGame*> UWorldSelectionWidget::GetWorldsSortedByLastPlaye
 bool UWorldSelectionWidget::IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB)
 {
 	return SaveA->LastPlayedTime > SaveB->LastPlayedTime;
+}
+
+void UWorldSelectionWidget::OnPlaySelectedWorldClicked()
+{
+}
+
+void UWorldSelectionWidget::OnRenameWorldClicked()
+{
+}
+
+void UWorldSelectionWidget::OnDeleteWorldClicked()
+{
+}
+
+void UWorldSelectionWidget::OnCreateNewWorldClicked()
+{
+}
+
+void UWorldSelectionWidget::OnMultiplayerButtonClicked()
+{
+}
+
+void UWorldSelectionWidget::OnCancelButtonClicked()
+{
 }

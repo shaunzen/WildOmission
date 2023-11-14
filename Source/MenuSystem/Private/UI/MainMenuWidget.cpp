@@ -7,6 +7,8 @@
 #include "WorldSelectionWidget.h"
 #include "WorldCreationWidget.h"
 #include "WorldMenuWidget.h"
+#include "RenameWorldWidget.h"
+#include "DeleteWorldWidget.h"
 #include "ServerBrowserWidget.h"
 #include "UI/OptionsWidget.h"
 #include "ErrorMessagePrompt.h"
@@ -26,6 +28,8 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	WorldSelectionMenu = nullptr;
 	WorldCreationMenu = nullptr;
 	WorldMenu = nullptr;
+	RenameWorldMenu = nullptr;
+	DeleteWorldMenu = nullptr;
 	ServerBrowserMenu = nullptr;
 	OptionsMenu = nullptr;
 	ErrorMessagePrompt = nullptr;

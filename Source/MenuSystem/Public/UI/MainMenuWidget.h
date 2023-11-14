@@ -38,6 +38,10 @@ public:
 	UFUNCTION()
 	void OpenWorldMenuForWorld(const FString& WorldName);
 	UFUNCTION()
+	void OpenRenameWorldMenu();
+	UFUNCTION()
+	void OpenDeleteWorldMenu();
+	UFUNCTION()
 	void OpenServerBrowserMenu();
 	UFUNCTION()
 	void OpenOptionsMenu();
@@ -76,6 +80,10 @@ private:
 	UWorldCreationWidget* WorldCreationMenu;
 	UPROPERTY(Meta = (BindWidget))
 	UWorldMenuWidget* WorldMenu;
+	UPROPERTY(Meta = (BindWidget))
+	class URenameWorldWidget* RenameWorldMenu;
+	UPROPERTY(Meta = (BindWidget))
+	class UDeleteWorldWidget* DeleteWorldMenu;
 	UPROPERTY(Meta = (BindWidget))
 	UServerBrowserWidget* ServerBrowserMenu;
 	UPROPERTY(Meta = (BindWidget))

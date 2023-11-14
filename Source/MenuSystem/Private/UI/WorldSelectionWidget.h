@@ -6,11 +6,13 @@
 #include "Blueprint/UserWidget.h"
 #include "WorldSelectionWidget.generated.h"
 
-class UButton;
-class UWorldRowWidget;
-class UCreateWorldButtonWidget;
-class UWildOmissionSaveGame;
-class UMainMenuWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlaySelectedWorldButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRenameButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteButtonClickedSignature);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCreateNewWorldButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMultiplayerButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelButtonClickedSignature);
 
 UCLASS()
 class UWorldSelectionWidget : public UUserWidget
@@ -20,7 +22,7 @@ class UWorldSelectionWidget : public UUserWidget
 public:
 	UWorldSelectionWidget(const FObjectInitializer& ObjectInitializer);
 
-	void Setup(UMainMenuWidget* InMainMenuParent);
+	virtual void NativeConstruct() override;
 
 	void SetWorldList(const TArray<FString>& WorldNames);
 	void SetSelectedWorld(const FString& WorldName);
@@ -32,23 +34,46 @@ private:
 	UPanelWidget* WorldListBox;
 
 	UPROPERTY(Meta = (BindWidget))
-	UButton* SelectButton;
+	class UButton* PlaySelectedButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* BrowseServersButton;
+	class UButton* RenameWorldButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* DeleteWorldButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* CreateNewWorldButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* MultiplayerButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* BackButton;
+	class UButton* CancelButton;
 
-	UPROPERTY()
-	UMainMenuWidget* ParentMenu;
-
-	TSubclassOf<UWorldRowWidget> WorldRowWidgetClass;
-	TSubclassOf<UCreateWorldButtonWidget> CreateNewWorldButtonClass;
-
+	TSubclassOf<class UWorldRowWidget> WorldRowWidgetClass;
+	
 	void UpdateListChildren();
 
-	TArray<UWildOmissionSaveGame*> GetWorldsSortedByLastPlayed(const TArray<FString>& NameList);
-	static bool IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB);
-	
+	TArray<class UWildOmissionSaveGame*> GetWorldsSortedByLastPlayed(const TArray<FString>& NameList);
+	static bool IsSaveMoreRecentlyPlayed(class UWildOmissionSaveGame* SaveA, class UWildOmissionSaveGame* SaveB);
+
+	UFUNCTION()
+	void OnPlaySelectedWorldClicked();
+
+	UFUNCTION()
+	void OnRenameWorldClicked();
+
+	UFUNCTION()
+	void OnDeleteWorldClicked();
+
+	UFUNCTION()
+	void OnCreateNewWorldClicked();
+
+	UFUNCTION()
+	void OnMultiplayerButtonClicked();
+
+	UFUNCTION()
+	void OnCancelButtonClicked();
+
 };
