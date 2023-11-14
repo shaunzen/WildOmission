@@ -19,6 +19,17 @@ void UWorldMenuWidget::Setup(UMainMenuWidget* InMainMenuParent)
 	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UWorldMenuWidget::ServerNameOnTextChanged);
 }
 
+UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+
+}
+
+void UWorldMenuWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+}
+
 void UWorldMenuWidget::Open(const FString& InWorldName)
 {
 	WorldName = InWorldName;

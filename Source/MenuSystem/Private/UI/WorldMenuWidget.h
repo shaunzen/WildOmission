@@ -18,7 +18,9 @@ class UWorldMenuWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void Setup(UMainMenuWidget* InMainMenuParent);
+	UWorldMenuWidget(const FObjectInitializer& ObjectInitializer);
+
+	virtual void NativeConstruct() override;
 
 	void Open(const FString& InWorldName);
 
