@@ -165,5 +165,5 @@ void UWorldSelectionWidget::BroadcastCancelButtonClicked()
 		return;
 	}
 
-	OnMultiplayerButtonClicked.Broadcast();
+	OnCancelButtonClicked.Broadcast();
 }
