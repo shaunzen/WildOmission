@@ -288,12 +288,18 @@ void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
 
 void UWildOmissionGameInstance::RenameWorld(const FString& OldWorldName, const FString& NewWorldName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Renaming %s to %s"), *OldWorldName, *NewWorldName);
+	UWildOmissionSaveGame* RenamingSave = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+	RenamingSave = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(OldWorldName, 0));
+
+	RenamingSave->CreationInformation.Name = NewWorldName;
+
+	UGameplayStatics::SaveGameToSlot(RenamingSave, NewWorldName, 0);
+	UGameplayStatics::DeleteGameInSlot(OldWorldName, 0);
 }
 
 void UWildOmissionGameInstance::DeleteWorld(const FString& WorldName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Deleting World %s"), *WorldName);
+	UGameplayStatics::DeleteGameInSlot(WorldName, 0);
 }
 
 void UWildOmissionGameInstance::StartSession()
