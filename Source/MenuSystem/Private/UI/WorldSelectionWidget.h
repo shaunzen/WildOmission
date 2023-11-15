@@ -33,6 +33,8 @@ public:
 	FOnCreateNewWorldButtonClickedSignature OnCreateNewWorldButtonClicked;
 	FOnMultiplayerButtonClickedSignature OnMultiplayerButtonClicked;
 	FOnCancelButtonClickedSignature OnCancelButtonClicked;
+protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
 
 private:
 	UPROPERTY(Meta = (BindWidget))

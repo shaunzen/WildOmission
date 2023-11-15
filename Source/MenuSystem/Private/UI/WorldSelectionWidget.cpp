@@ -31,6 +31,7 @@ void UWorldSelectionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	SelectButton->SetIsEnabled(false);
 	SelectButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastSelectButtonClicked);
 	CreateNewWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCreateNewWorldButtonClicked);
 	MultiplayerButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastMultiplayerButtonClicked);
@@ -39,6 +40,8 @@ void UWorldSelectionWidget::NativeConstruct()
 
 void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 {
+	SelectedWorldName.Reset();
+
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -78,6 +81,12 @@ void UWorldSelectionWidget::SetSelectedWorld(const FString& WorldName)
 {
 	SelectedWorldName = WorldName;
 	UpdateListChildren();
+}
+
+void UWorldSelectionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	SelectButton->SetIsEnabled(SelectedWorldName.IsSet());
 }
 
 void UWorldSelectionWidget::UpdateListChildren()
