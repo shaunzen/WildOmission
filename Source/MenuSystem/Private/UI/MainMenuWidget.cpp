@@ -58,10 +58,10 @@ void UMainMenuWidget::NativeConstruct()
 	WorldMenu->OnDeleteButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenDeleteWorldMenu);
 	WorldMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 
-	RenameWorldMenu->OnRenameButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
+	RenameWorldMenu->OnRenameButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenuForWorld);
 	RenameWorldMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
 
-	DeleteWorldMenu->OnDeleteButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
+	DeleteWorldMenu->OnDeleteButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 	DeleteWorldMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
 
 	ServerBrowserMenu->Setup(this);
@@ -173,7 +173,7 @@ void UMainMenuWidget::OpenRenameWorldMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(RenameWorldMenu);
-	// TODO set world
+	RenameWorldMenu->Open(WorldSelectionMenu->SelectedWorldName.GetValue());
 }
 
 void UMainMenuWidget::OpenDeleteWorldMenu()

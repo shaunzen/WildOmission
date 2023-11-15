@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RenameWorldWidget.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRenameWorldOnRenameButtonClickedSignature, const FString& NewWorldName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRenameWorldOnRenameButtonClickedSignature, const FString&, NewWorldName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRenameWorldOnCancelButtonClickedSignature);
 
 UCLASS()
@@ -18,12 +18,14 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	void Open(const FString& InWorld);
+
 	FRenameWorldOnRenameButtonClickedSignature OnRenameButtonClicked;
 	FRenameWorldOnCancelButtonClickedSignature OnCancelButtonClicked;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	class UEditableTextBox* NameInputBox;
+	class UEditableTextBox* WorldNameInputBox;
 	
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* RenameButton;
@@ -31,12 +33,33 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CancelButton;
 
+	UPROPERTY(Meta = (BindWidget))
+	UWidget* InvalidWarningBorder;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* InvalidWarningTextBlock;
+
+	UPROPERTY()
+	FString World;
+
 	UFUNCTION()
 	void RenameWorld();
+
+	UFUNCTION()
+	void ShowInvalidWarning(const FString& Warning);
+
+	UFUNCTION()
+	void HideInvalidWarning();
+
+	bool WorldOfSameNameAlreadyExists(const FString& WorldName);
+	bool WorldContainsInvalidCharacter(const FString& WorldName);
 
 	void BroadcastRenameButtonClicked(const FString& NewWorldName);
 
 	UFUNCTION()
 	void BroadcastCancelButtonClicked();
+
+	UFUNCTION()
+	void WorldNameOnTextChanged(const FText& Text);
 
 };

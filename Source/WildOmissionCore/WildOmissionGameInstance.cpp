@@ -286,6 +286,16 @@ void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
 	UGameplayStatics::SaveGameToSlot(NewSaveGame, WorldName, 0);
 }
 
+void UWildOmissionGameInstance::RenameWorld(const FString& OldWorldName, const FString& NewWorldName)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Renaming %s to %s"), *OldWorldName, *NewWorldName);
+}
+
+void UWildOmissionGameInstance::DeleteWorld(const FString& WorldName)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Deleting World %s"), *WorldName);
+}
+
 void UWildOmissionGameInstance::StartSession()
 {
 	if (SessionInterface.IsValid() == false)
