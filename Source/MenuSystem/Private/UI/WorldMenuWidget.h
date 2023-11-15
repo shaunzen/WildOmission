@@ -7,6 +7,8 @@
 #include "WorldMenuWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FWorldMenuOnPlayButtonClickedSignature, const FString&, WorldName, const FString&, ServerName, const bool, IsMultiplayer, const bool, IsFriendsOnly);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnRenameButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnDeleteButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnCancelButtonClickedSignature);
 
 UCLASS()
@@ -22,6 +24,8 @@ public:
 	void Open(const FString& InWorldName);
 
 	FWorldMenuOnPlayButtonClickedSignature OnPlayButtonClicked;
+	FWorldMenuOnRenameButtonClickedSignature OnRenameButtonClicked;
+	FWorldMenuOnDeleteButtonClickedSignature OnDeleteButtonClicked;
 	FWorldMenuOnCancelButtonClickedSignature OnCancelButtonClicked;
 
 private:
@@ -31,6 +35,12 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* PlayButton;
 	
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* RenameButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* DeleteButton;
+
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CancelButton;
 	
@@ -56,6 +66,12 @@ private:
 
 	UFUNCTION()
 	void BroadcastPlayButtonClicked();
+
+	UFUNCTION()
+	void BroadcastRenameButtonClicked();
+
+	UFUNCTION()
+	void BroadcastDeleteButtonClicked();
 
 	UFUNCTION()
 	void BroadcastCancelButtonClicked();

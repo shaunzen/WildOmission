@@ -8,11 +8,12 @@
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
 
-
 UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	Title = nullptr;
 	PlayButton = nullptr;
+	RenameButton = nullptr;
+	DeleteButton = nullptr;
 	CancelButton = nullptr;
 	MultiplayerCheckOptionBox = nullptr;
 	FriendsOnlyCheckOptionBox = nullptr;
@@ -27,6 +28,8 @@ void UWorldMenuWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	PlayButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastPlayButtonClicked);
+	RenameButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastRenameButtonClicked);
+	DeleteButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastDeleteButtonClicked);
 	CancelButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastCancelButtonClicked);
 	MultiplayerCheckOptionBox->OnCheckStateChanged.AddDynamic(this, &UWorldMenuWidget::MultiplayerCheckboxChanged);
 	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UWorldMenuWidget::ServerNameOnTextChanged);
@@ -69,7 +72,7 @@ void UWorldMenuWidget::MultiplayerCheckboxChanged(bool bIsChecked)
 void UWorldMenuWidget::BroadcastPlayButtonClicked()
 {
 	if (!OnPlayButtonClicked.IsBound() 
-		|| WorldName == TEXT(""))
+		|| WorldName.IsEmpty())
 	{
 		return;
 	}
@@ -79,6 +82,26 @@ void UWorldMenuWidget::BroadcastPlayButtonClicked()
 	const bool IsFriendsOnly = FriendsOnlyCheckOptionBox->IsChecked();
 
 	OnPlayButtonClicked.Broadcast(WorldName, ServerName, IsMultiplayer, IsFriendsOnly);
+}
+
+void UWorldMenuWidget::BroadcastRenameButtonClicked()
+{
+	if (!OnRenameButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnRenameButtonClicked.Broadcast();
+}
+
+void UWorldMenuWidget::BroadcastDeleteButtonClicked()
+{
+	if (!OnDeleteButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnDeleteButtonClicked.Broadcast();
 }
 
 void UWorldMenuWidget::BroadcastCancelButtonClicked()
