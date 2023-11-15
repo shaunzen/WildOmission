@@ -114,6 +114,11 @@ void UWorldCreationWidget::CreateWorld()
 	}
 
 	IGameSaveLoadController* GameSaveLoadController = Cast<IGameSaveLoadController>(GetGameInstance());
+	if (GameSaveLoadController == nullptr)
+	{
+		return;
+	}
+
 	// Create a new world with that name
 	GameSaveLoadController->CreateWorld(NewWorldName);
 

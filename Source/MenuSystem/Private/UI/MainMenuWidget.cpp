@@ -184,7 +184,7 @@ void UMainMenuWidget::OpenDeleteWorldMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(DeleteWorldMenu);
-	// TODO set world
+	DeleteWorldMenu->Open(WorldSelectionMenu->SelectedWorldName.GetValue());
 }
 
 void UMainMenuWidget::OpenServerBrowserMenu()

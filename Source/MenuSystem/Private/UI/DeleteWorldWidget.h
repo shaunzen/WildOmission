@@ -19,17 +19,30 @@ public:
 
 	virtual void NativeConstruct() override;
 	
+	void Open(const FString& InWorldName);
+
 	FDeleteWorldOnDeleteButtonClickedSignature OnDeleteButtonClicked;
 	FDeleteWorldOnCancelButtonClickedSignature OnCancelButtonClicked;
 
 private:
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* TitleTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* WarningTextBlock;
+
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* DeleteButton;
 
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CancelButton;
 
+	UPROPERTY()
+	FString WorldName;
+
 	UFUNCTION()
+	void DeleteWorld();
+
 	void BroadcastDeleteButtonClicked();
 
 	UFUNCTION()
