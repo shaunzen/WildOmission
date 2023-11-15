@@ -7,7 +7,7 @@
 #include "WorldCreationWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpenWorldMenuRequestedSignature, const FString&, WorldName);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldCreationOnBackClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldCreationOnCancelButtonClickedSignature);
 
 UCLASS()
 class UWorldCreationWidget : public UUserWidget
@@ -20,13 +20,13 @@ public:
 	virtual void NativeConstruct() override;
 
 	FOnOpenWorldMenuRequestedSignature OnOpenWorldMenuRequested;
-	FWorldCreationOnBackClickedSignature OnBackClicked;
+	FWorldCreationOnCancelButtonClickedSignature OnCancelButtonClicked;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CreateWorldButton;
 	UPROPERTY(Meta = (BindWidget))
-	class UButton* BackButton;
+	class UButton* CancelButton;
 	UPROPERTY(Meta = (BindWidget))
 	class UEditableTextBox* WorldNameInputBox;
 
@@ -48,7 +48,7 @@ private:
 	void CreateWorld();
 
 	UFUNCTION()
-	void BroadcastOnBackClicked();
+	void BroadcastOnCancelButtonClicked();
 
 	UFUNCTION()
 	void WorldNameOnTextChanged(const FText& Text);

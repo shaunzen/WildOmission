@@ -13,7 +13,7 @@
 UWorldCreationWidget::UWorldCreationWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	CreateWorldButton = nullptr;
-	BackButton = nullptr;
+	CancelButton = nullptr;
 	WorldNameInputBox = nullptr;
 	
 	InvalidWarningBorder = nullptr;
@@ -28,7 +28,7 @@ void UWorldCreationWidget::NativeConstruct()
 
 	CreateWorldButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::CreateWorld);
 	CreateWorldButton->SetIsEnabled(false);
-	BackButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::BroadcastOnBackClicked);
+	CancelButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::BroadcastOnCancelButtonClicked);
 	WorldNameInputBox->OnTextChanged.AddDynamic(this, &UWorldCreationWidget::WorldNameOnTextChanged);
 }
 
@@ -126,14 +126,14 @@ void UWorldCreationWidget::CreateWorld()
 	OnOpenWorldMenuRequested.Broadcast(NewWorldName);
 }
 
-void UWorldCreationWidget::BroadcastOnBackClicked()
+void UWorldCreationWidget::BroadcastOnCancelButtonClicked()
 {
-	if (!OnBackClicked.IsBound())
+	if (!OnCancelButtonClicked.IsBound())
 	{
 		return;
 	}
 
-	OnBackClicked.Broadcast();
+	OnCancelButtonClicked.Broadcast();
 }
 
 void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)

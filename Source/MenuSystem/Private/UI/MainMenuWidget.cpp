@@ -50,13 +50,13 @@ void UMainMenuWidget::NativeConstruct()
 	WorldSelectionMenu->OnDeleteWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenDeleteWorldMenu);
 	WorldSelectionMenu->OnCreateNewWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
 	WorldSelectionMenu->OnMultiplayerButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenServerBrowserMenu);
-	WorldSelectionMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+	WorldSelectionMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 
 	WorldCreationMenu->OnOpenWorldMenuRequested.AddDynamic(this, &UMainMenuWidget::OpenWorldMenuForWorld);
-	WorldCreationMenu->OnBackClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+	WorldCreationMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 
 	WorldMenu->OnPlayButtonClicked.AddDynamic(this, &UMainMenuWidget::HostGame);
-	WorldMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+	WorldMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 
 	ServerBrowserMenu->Setup(this);
 	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);

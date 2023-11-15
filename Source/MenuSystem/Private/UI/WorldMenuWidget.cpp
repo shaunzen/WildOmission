@@ -13,7 +13,7 @@ UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) 
 {
 	Title = nullptr;
 	PlayButton = nullptr;
-	BackButton = nullptr;
+	CancelButton = nullptr;
 	MultiplayerCheckOptionBox = nullptr;
 	FriendsOnlyCheckOptionBox = nullptr;
 	HostSettingsMenu = nullptr;
@@ -27,7 +27,7 @@ void UWorldMenuWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	PlayButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastPlayButtonClicked);
-	BackButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastBackButtonClicked);
+	CancelButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastCancelButtonClicked);
 	MultiplayerCheckOptionBox->OnCheckStateChanged.AddDynamic(this, &UWorldMenuWidget::MultiplayerCheckboxChanged);
 	ServerNameInputBox->OnTextChanged.AddDynamic(this, &UWorldMenuWidget::ServerNameOnTextChanged);
 }
@@ -81,12 +81,12 @@ void UWorldMenuWidget::BroadcastPlayButtonClicked()
 	OnPlayButtonClicked.Broadcast(WorldName, ServerName, IsMultiplayer, IsFriendsOnly);
 }
 
-void UWorldMenuWidget::BroadcastBackButtonClicked()
+void UWorldMenuWidget::BroadcastCancelButtonClicked()
 {
-	if (!OnBackButtonClicked.IsBound())
+	if (!OnCancelButtonClicked.IsBound())
 	{
 		return;
 	}
 
-	OnBackButtonClicked.Broadcast();
+	OnCancelButtonClicked.Broadcast();
 }

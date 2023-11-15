@@ -7,7 +7,7 @@
 #include "WorldMenuWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FWorldMenuOnPlayButtonClickedSignature, const FString&, WorldName, const FString&, ServerName, const bool, IsMultiplayer, const bool, IsFriendsOnly);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnBackButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnCancelButtonClickedSignature);
 
 UCLASS()
 class UWorldMenuWidget : public UUserWidget
@@ -22,7 +22,7 @@ public:
 	void Open(const FString& InWorldName);
 
 	FWorldMenuOnPlayButtonClickedSignature OnPlayButtonClicked;
-	FWorldMenuOnBackButtonClickedSignature OnBackButtonClicked;
+	FWorldMenuOnCancelButtonClickedSignature OnCancelButtonClicked;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -32,7 +32,7 @@ private:
 	class UButton* PlayButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	class UButton* BackButton;
+	class UButton* CancelButton;
 	
 	UPROPERTY(Meta = (BindWidget))
 	class UCheckOptionBox* MultiplayerCheckOptionBox;
@@ -58,6 +58,6 @@ private:
 	void BroadcastPlayButtonClicked();
 
 	UFUNCTION()
-	void BroadcastBackButtonClicked();
+	void BroadcastCancelButtonClicked();
 
 };

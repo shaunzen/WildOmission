@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteWorldButtonClickedSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCreateNewWorldButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMultiplayerButtonClickedSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBackButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelButtonClickedSignature);
 
 UCLASS()
 class UWorldSelectionWidget : public UUserWidget
@@ -34,7 +34,7 @@ public:
 	FOnDeleteWorldButtonClickedSignature OnDeleteWorldButtonClicked;
 	FOnCreateNewWorldButtonClickedSignature OnCreateNewWorldButtonClicked;
 	FOnMultiplayerButtonClickedSignature OnMultiplayerButtonClicked;
-	FOnBackButtonClickedSignature OnBackButtonClicked;
+	FOnCancelButtonClickedSignature OnCancelButtonClicked;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
@@ -56,7 +56,7 @@ private:
 	class UButton* MultiplayerButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	class UButton* BackButton;
+	class UButton* CancelButton;
 
 	TSubclassOf<class UWorldRowWidget> WorldRowWidgetClass;
 	
@@ -81,6 +81,6 @@ private:
 	void BroadcastMultiplayerButtonClicked();
 
 	UFUNCTION()
-	void BroadcastBackButtonClicked();
+	void BroadcastCancelButtonClicked();
 
 };

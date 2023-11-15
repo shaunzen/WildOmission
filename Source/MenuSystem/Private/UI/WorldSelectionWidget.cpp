@@ -19,7 +19,7 @@ UWorldSelectionWidget::UWorldSelectionWidget(const FObjectInitializer& ObjectIni
 	DeleteWorldButton = nullptr;
 	CreateNewWorldButton = nullptr;
 	MultiplayerButton = nullptr;
-	BackButton = nullptr;
+	CancelButton = nullptr;
 
 	WorldRowWidgetClass = nullptr;
 
@@ -39,7 +39,7 @@ void UWorldSelectionWidget::NativeConstruct()
 	DeleteWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastDeleteWorldButtonClicked);
 	CreateNewWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCreateNewWorldClicked);
 	MultiplayerButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastMultiplayerButtonClicked);
-	BackButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastBackButtonClicked);
+	CancelButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCancelButtonClicked);
 }
 
 void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
@@ -183,9 +183,9 @@ void UWorldSelectionWidget::BroadcastMultiplayerButtonClicked()
 	OnMultiplayerButtonClicked.Broadcast();
 }
 
-void UWorldSelectionWidget::BroadcastBackButtonClicked()
+void UWorldSelectionWidget::BroadcastCancelButtonClicked()
 {
-	if (!OnBackButtonClicked.IsBound())
+	if (!OnCancelButtonClicked.IsBound())
 	{
 		return;
 	}
