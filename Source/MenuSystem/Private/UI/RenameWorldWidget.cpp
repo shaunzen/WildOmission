@@ -22,8 +22,11 @@ void URenameWorldWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	HideInvalidWarning();
+
 	WorldNameInputBox->OnTextChanged.AddDynamic(this, &URenameWorldWidget::WorldNameOnTextChanged);
 	RenameButton->OnClicked.AddDynamic(this, &URenameWorldWidget::RenameWorld);
+	RenameButton->SetIsEnabled(false);
 	CancelButton->OnClicked.AddDynamic(this, &URenameWorldWidget::BroadcastCancelButtonClicked);
 }
 
