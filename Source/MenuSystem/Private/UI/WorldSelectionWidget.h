@@ -6,9 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "WorldSelectionWidget.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlaySelectedWorldButtonClickedSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRenameWorldButtonClickedSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteWorldButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectButtonClickedSignature);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRenameWorldButtonClickedSignature);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteWorldButtonClickedSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCreateNewWorldButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMultiplayerButtonClickedSignature);
@@ -29,9 +29,7 @@ public:
 
 	TOptional<FString> SelectedWorldName;
 
-	FOnPlaySelectedWorldButtonClickedSignature OnPlaySelectedWorldButtonClicked;
-	FOnRenameWorldButtonClickedSignature OnRenameWorldButtonClicked;
-	FOnDeleteWorldButtonClickedSignature OnDeleteWorldButtonClicked;
+	FOnSelectButtonClickedSignature OnSelectButtonClicked;
 	FOnCreateNewWorldButtonClickedSignature OnCreateNewWorldButtonClicked;
 	FOnMultiplayerButtonClickedSignature OnMultiplayerButtonClicked;
 	FOnCancelButtonClickedSignature OnCancelButtonClicked;
@@ -41,14 +39,8 @@ private:
 	UPanelWidget* WorldListBox;
 
 	UPROPERTY(Meta = (BindWidget))
-	class UButton* PlaySelectedWorldButton;
+	class UButton* SelectButton;
 	
-	UPROPERTY(Meta = (BindWidget))
-	class UButton* RenameWorldButton;
-
-	UPROPERTY(Meta = (BindWidget))
-	class UButton* DeleteWorldButton;
-
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CreateNewWorldButton;
 
@@ -66,16 +58,10 @@ private:
 	static bool IsSaveMoreRecentlyPlayed(class UWildOmissionSaveGame* SaveA, class UWildOmissionSaveGame* SaveB);
 
 	UFUNCTION()
-	void BroadcastPlaySelectedWorldClicked();
+	void BroadcastSelectButtonClicked();
 
 	UFUNCTION()
-	void BroadcastRenameWorldButtonClicked();
-
-	UFUNCTION()
-	void BroadcastDeleteWorldButtonClicked();
-
-	UFUNCTION()
-	void BroadcastCreateNewWorldClicked();
+	void BroadcastCreateNewWorldButtonClicked();
 
 	UFUNCTION()
 	void BroadcastMultiplayerButtonClicked();

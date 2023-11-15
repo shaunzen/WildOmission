@@ -45,9 +45,7 @@ void UMainMenuWidget::NativeConstruct()
 	FeedbackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenFeedbackPage);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
-	WorldSelectionMenu->OnPlaySelectedWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
-	WorldSelectionMenu->OnRenameWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenRenameWorldMenu);
-	WorldSelectionMenu->OnDeleteWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenDeleteWorldMenu);
+	WorldSelectionMenu->OnSelectButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
 	WorldSelectionMenu->OnCreateNewWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
 	WorldSelectionMenu->OnMultiplayerButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenServerBrowserMenu);
 	WorldSelectionMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);

@@ -2,7 +2,6 @@
 
 
 #include "WorldSelectionWidget.h"
-#include "UI/MainMenuWidget.h"
 #include "WorldRowWidget.h"
 #include "CreateWorldButtonWidget.h"
 #include "Components/PanelWidget.h"
@@ -14,9 +13,7 @@
 UWorldSelectionWidget::UWorldSelectionWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	WorldListBox = nullptr;
-	PlaySelectedWorldButton = nullptr;
-	RenameWorldButton = nullptr;
-	DeleteWorldButton = nullptr;
+	SelectButton = nullptr;
 	CreateNewWorldButton = nullptr;
 	MultiplayerButton = nullptr;
 	CancelButton = nullptr;
@@ -34,10 +31,8 @@ void UWorldSelectionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	PlaySelectedWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastPlaySelectedWorldClicked);
-	RenameWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastRenameWorldButtonClicked);
-	DeleteWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastDeleteWorldButtonClicked);
-	CreateNewWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCreateNewWorldClicked);
+	SelectButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastSelectButtonClicked);
+	CreateNewWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCreateNewWorldButtonClicked);
 	MultiplayerButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastMultiplayerButtonClicked);
 	CancelButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCancelButtonClicked);
 }
@@ -133,37 +128,17 @@ bool UWorldSelectionWidget::IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* Save
 	return SaveA->LastPlayedTime > SaveB->LastPlayedTime;
 }
 
-void UWorldSelectionWidget::BroadcastPlaySelectedWorldClicked()
+void UWorldSelectionWidget::BroadcastSelectButtonClicked()
 {
-	if (!OnPlaySelectedWorldButtonClicked.IsBound())
+	if (!OnSelectButtonClicked.IsBound())
 	{
 		return;
 	}
 
-	OnPlaySelectedWorldButtonClicked.Broadcast();
+	OnSelectButtonClicked.Broadcast();
 }
 
-void UWorldSelectionWidget::BroadcastRenameWorldButtonClicked()
-{
-	if (!OnRenameWorldButtonClicked.IsBound())
-	{
-		return;
-	}
-
-	OnRenameWorldButtonClicked.Broadcast();
-}
-
-void UWorldSelectionWidget::BroadcastDeleteWorldButtonClicked()
-{
-	if (!OnDeleteWorldButtonClicked.IsBound())
-	{
-		return;
-	}
-
-	OnDeleteWorldButtonClicked.Broadcast();
-}
-
-void UWorldSelectionWidget::BroadcastCreateNewWorldClicked()
+void UWorldSelectionWidget::BroadcastCreateNewWorldButtonClicked()
 {
 	if (!OnCreateNewWorldButtonClicked.IsBound())
 	{
