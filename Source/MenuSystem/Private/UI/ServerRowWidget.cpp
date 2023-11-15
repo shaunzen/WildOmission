@@ -20,28 +20,28 @@ void UServerRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	if (Selected)
 	{
-		FUIColor* Blue = UUIColors::GetBaseColor(FName("Blue"));
+		FUIColor* Blue = UUIColors::GetBaseColor(TEXT("Blue"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(Blue));
+			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(Blue) * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 		}
 		else
 		{
-			RowBorder->SetBrushColor(Blue->Default);
+			RowBorder->SetBrushColor(Blue->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 		}
 	}
 	else
 	{
-		FUIColor* DarkGray = UUIColors::GetBaseColor(FName("DarkGray"));
+		FUIColor* DarkGray = UUIColors::GetBaseColor(TEXT("DarkGray"));
 
 		if (Hovering)
 		{
-			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(DarkGray));
+			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(DarkGray) * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 		}
 		else
 		{
-			RowBorder->SetBrushColor(DarkGray->Default);
+			RowBorder->SetBrushColor(DarkGray->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 		}
 	}
 }
