@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "RenameWorldWidget.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRenameWorldOnRenameButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRenameWorldOnRenameButtonClickedSignature, const FString& NewWorldName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRenameWorldOnCancelButtonClickedSignature);
 
 UCLASS()
@@ -23,13 +23,18 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
+	class UEditableTextBox* NameInputBox;
+	
+	UPROPERTY(Meta = (BindWidget))
 	class UButton* RenameButton;
 
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CancelButton;
 
 	UFUNCTION()
-	void BroadcastRenameButtonClicked();
+	void RenameWorld();
+
+	void BroadcastRenameButtonClicked(const FString& NewWorldName);
 
 	UFUNCTION()
 	void BroadcastCancelButtonClicked();
