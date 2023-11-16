@@ -14,7 +14,7 @@ UConnectedPlayersWidget::UConnectedPlayersWidget(const FObjectInitializer& Objec
 	ConnectedPlayersPanel = nullptr;
 	PlayerRowWidgetClass = nullptr;
 
-	static ConstructorHelpers::FClassFinder<UPlayerRowWidget> PlayerRowWidgetBlueprint(TEXT("/Game/MenuSystem/UI/WBP_PlayerRow"));
+	static ConstructorHelpers::FClassFinder<UPlayerRowWidget> PlayerRowWidgetBlueprint(TEXT("/Game/MenuSystem/UI/Players/WBP_PlayerRow"));
 	if (PlayerRowWidgetBlueprint.Succeeded())
 	{
 		PlayerRowWidgetClass = PlayerRowWidgetBlueprint.Class;
