@@ -2,36 +2,33 @@
 
 
 #include "WorldCreationWidget.h"
-#include "UI/MainMenuWidget.h"
+#include "Interfaces/MenuInterface.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Widget.h"
-#include "WorldSelectionWidget.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "Log.h"
 
 UWorldCreationWidget::UWorldCreationWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	CreateWorldButton = nullptr;
-	BackButton = nullptr;
+	CancelButton = nullptr;
 	WorldNameInputBox = nullptr;
 	
 	InvalidWarningBorder = nullptr;
-	InvalidWarningTextBlock = nullptr;
-	
-	ParentMenu = nullptr;
+	InvalidWarningTextBlock = nullptr;	
 }
 
-void UWorldCreationWidget::Setup(UMainMenuWidget* InMainMenuParent)
+void UWorldCreationWidget::NativeConstruct()
 {
-	ParentMenu = InMainMenuParent;
+	Super::NativeConstruct();
 
 	HideInvalidWarning();
 
 	CreateWorldButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::CreateWorld);
 	CreateWorldButton->SetIsEnabled(false);
-	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
+	CancelButton->OnClicked.AddDynamic(this, &UWorldCreationWidget::BroadcastOnCancelButtonClicked);
 	WorldNameInputBox->OnTextChanged.AddDynamic(this, &UWorldCreationWidget::WorldNameOnTextChanged);
 }
 
@@ -117,11 +114,31 @@ void UWorldCreationWidget::CreateWorld()
 	}
 
 	IGameSaveLoadController* GameSaveLoadController = Cast<IGameSaveLoadController>(GetGameInstance());
+	if (GameSaveLoadController == nullptr)
+	{
+		return;
+	}
+
 	// Create a new world with that name
 	GameSaveLoadController->CreateWorld(NewWorldName);
 
 	// To World Menu
-	ParentMenu->OpenWorldMenuForWorld(NewWorldName);
+	if (!OnOpenWorldMenuRequested.IsBound())
+	{
+		return;
+	}
+
+	OnOpenWorldMenuRequested.Broadcast(NewWorldName);
+}
+
+void UWorldCreationWidget::BroadcastOnCancelButtonClicked()
+{
+	if (!OnCancelButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnCancelButtonClicked.Broadcast();
 }
 
 void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)
@@ -155,6 +172,4 @@ void UWorldCreationWidget::WorldNameOnTextChanged(const FText& Text)
 		CreateWorldButton->SetIsEnabled(true);
 		HideInvalidWarning();
 	}
-	
-	
 }

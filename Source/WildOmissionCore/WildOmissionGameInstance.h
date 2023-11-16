@@ -53,7 +53,9 @@ public:
 	virtual void StopLoading() override;
 	virtual void SetLoadingTitle(const FString& InLoadingTitle) override;
 	virtual void SetLoadingSubtitle(const FString& InLoadingSubtitle) override;
-	virtual void CreateWorld(const FString& NewWorldName) override;
+	virtual void CreateWorld(const FString& WorldName) override;
+	virtual void RenameWorld(const FString& OldWorldName, const FString& NewWorldName) override;
+	virtual void DeleteWorld(const FString& WorldName) override;
 	// End IGameSaveLoadController Implementation
 
 	// Begin IMenuInterface Implementation

@@ -7,6 +7,8 @@
 #include "WorldSelectionWidget.h"
 #include "WorldCreationWidget.h"
 #include "WorldMenuWidget.h"
+#include "RenameWorldWidget.h"
+#include "DeleteWorldWidget.h"
 #include "ServerBrowserWidget.h"
 #include "UI/OptionsWidget.h"
 #include "ErrorMessagePrompt.h"
@@ -26,6 +28,8 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	WorldSelectionMenu = nullptr;
 	WorldCreationMenu = nullptr;
 	WorldMenu = nullptr;
+	RenameWorldMenu = nullptr;
+	DeleteWorldMenu = nullptr;
 	ServerBrowserMenu = nullptr;
 	OptionsMenu = nullptr;
 	ErrorMessagePrompt = nullptr;
@@ -41,9 +45,25 @@ void UMainMenuWidget::NativeConstruct()
 	FeedbackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenFeedbackPage);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
-	WorldSelectionMenu->Setup(this);
-	WorldCreationMenu->Setup(this);
-	WorldMenu->Setup(this);
+	WorldSelectionMenu->OnSelectButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
+	WorldSelectionMenu->OnCreateNewWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
+	WorldSelectionMenu->OnMultiplayerButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenServerBrowserMenu);
+	WorldSelectionMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+
+	WorldCreationMenu->OnOpenWorldMenuRequested.AddDynamic(this, &UMainMenuWidget::OpenWorldMenuForWorld);
+	WorldCreationMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+
+	WorldMenu->OnPlayButtonClicked.AddDynamic(this, &UMainMenuWidget::HostGame);
+	WorldMenu->OnRenameButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenRenameWorldMenu);
+	WorldMenu->OnDeleteButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenDeleteWorldMenu);
+	WorldMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+
+	RenameWorldMenu->OnRenameButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenuForWorld);
+	RenameWorldMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
+
+	DeleteWorldMenu->OnDeleteButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+	DeleteWorldMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
+
 	ServerBrowserMenu->Setup(this);
 	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 	ErrorMessagePrompt->OnCloseButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
@@ -133,6 +153,38 @@ void UMainMenuWidget::OpenWorldMenuForWorld(const FString& WorldName)
 {
 	MenuSwitcher->SetActiveWidget(WorldMenu);
 	WorldMenu->Open(WorldName);
+}
+
+void UMainMenuWidget::HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly)
+{
+	if (MenuInterface == nullptr || WorldName.IsEmpty())
+	{
+		return;
+	}
+
+	IsMultiplayer ? MenuInterface->Host(ServerName, WorldName, IsFriendsOnly) : MenuInterface->StartSingleplayer(WorldName);
+}
+
+void UMainMenuWidget::OpenRenameWorldMenu()
+{
+	if (MenuSwitcher == nullptr || RenameWorldMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(RenameWorldMenu);
+	RenameWorldMenu->Open(WorldSelectionMenu->SelectedWorldName.GetValue());
+}
+
+void UMainMenuWidget::OpenDeleteWorldMenu()
+{
+	if (MenuSwitcher == nullptr || DeleteWorldMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(DeleteWorldMenu);
+	DeleteWorldMenu->Open(WorldSelectionMenu->SelectedWorldName.GetValue());
 }
 
 void UMainMenuWidget::OpenServerBrowserMenu()

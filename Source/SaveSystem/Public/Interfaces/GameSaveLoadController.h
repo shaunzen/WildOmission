@@ -27,4 +27,7 @@ public:
 	virtual void SetLoadingTitle(const FString& InLoadingTitle) = 0;
 	virtual void SetLoadingSubtitle(const FString& InLoadingSubtitle) = 0;
 	virtual void CreateWorld(const FString& WorldName) = 0;
+	virtual void RenameWorld(const FString& OldWorldName, const FString& NewWorldName) = 0;
+	virtual void DeleteWorld(const FString& WorldName) = 0;
+
 };

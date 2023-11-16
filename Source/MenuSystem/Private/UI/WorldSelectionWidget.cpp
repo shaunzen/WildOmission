@@ -2,9 +2,7 @@
 
 
 #include "WorldSelectionWidget.h"
-#include "UI/MainMenuWidget.h"
 #include "WorldRowWidget.h"
-#include "CreateWorldButtonWidget.h"
 #include "Components/PanelWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -13,30 +11,36 @@
 
 UWorldSelectionWidget::UWorldSelectionWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UWorldRowWidget> WorldRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/WBP_WorldRow"));
+	WorldListBox = nullptr;
+	SelectButton = nullptr;
+	CreateNewWorldButton = nullptr;
+	MultiplayerButton = nullptr;
+	CancelButton = nullptr;
+
+	WorldRowWidgetClass = nullptr;
+
+	static ConstructorHelpers::FClassFinder<UWorldRowWidget> WorldRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/World/WBP_WorldRow"));
 	if (WorldRowWidgetBPClass.Succeeded())
 	{
 		WorldRowWidgetClass = WorldRowWidgetBPClass.Class;
 	}
-
-	ConstructorHelpers::FClassFinder<UCreateWorldButtonWidget> CreateNewWorldBPClass(TEXT("/Game/MenuSystem/UI/WBP_CreateWorldButton"));
-	if (CreateNewWorldBPClass.Succeeded())
-	{
-		CreateNewWorldButtonClass = CreateNewWorldBPClass.Class;
-	}
 }
 
-void UWorldSelectionWidget::Setup(UMainMenuWidget* InMainMenuParent)
+void UWorldSelectionWidget::NativeConstruct()
 {
-	ParentMenu = InMainMenuParent;
+	Super::NativeConstruct();
 
-	SelectButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldMenu);
-	BrowseServersButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenServerBrowserMenu);
-	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenMainMenu);
+	SelectButton->SetIsEnabled(false);
+	SelectButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastSelectButtonClicked);
+	CreateNewWorldButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCreateNewWorldButtonClicked);
+	MultiplayerButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastMultiplayerButtonClicked);
+	CancelButton->OnClicked.AddDynamic(this, &UWorldSelectionWidget::BroadcastCancelButtonClicked);
 }
 
 void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 {
+	SelectedWorldName.Reset();
+
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -44,16 +48,6 @@ void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 	}
 
 	WorldListBox->ClearChildren();
-
-	UCreateWorldButtonWidget* CreateWorldButton = CreateWidget<UCreateWorldButtonWidget>(World, CreateNewWorldButtonClass);
-	if (CreateWorldButton == nullptr)
-	{
-		return;
-	}
-
-	CreateWorldButton->GetButton()->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldCreationMenu);
-
-	WorldListBox->AddChild(CreateWorldButton);
 
 	TArray<UWildOmissionSaveGame*> SortedWorlds = GetWorldsSortedByLastPlayed(WorldNames);
 
@@ -86,6 +80,12 @@ void UWorldSelectionWidget::SetSelectedWorld(const FString& WorldName)
 {
 	SelectedWorldName = WorldName;
 	UpdateListChildren();
+}
+
+void UWorldSelectionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	SelectButton->SetIsEnabled(SelectedWorldName.IsSet());
 }
 
 void UWorldSelectionWidget::UpdateListChildren()
@@ -134,4 +134,44 @@ TArray<UWildOmissionSaveGame*> UWorldSelectionWidget::GetWorldsSortedByLastPlaye
 bool UWorldSelectionWidget::IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB)
 {
 	return SaveA->LastPlayedTime > SaveB->LastPlayedTime;
+}
+
+void UWorldSelectionWidget::BroadcastSelectButtonClicked()
+{
+	if (!OnSelectButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnSelectButtonClicked.Broadcast();
+}
+
+void UWorldSelectionWidget::BroadcastCreateNewWorldButtonClicked()
+{
+	if (!OnCreateNewWorldButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnCreateNewWorldButtonClicked.Broadcast();
+}
+
+void UWorldSelectionWidget::BroadcastMultiplayerButtonClicked()
+{
+	if (!OnMultiplayerButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnMultiplayerButtonClicked.Broadcast();
+}
+
+void UWorldSelectionWidget::BroadcastCancelButtonClicked()
+{
+	if (!OnCancelButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnCancelButtonClicked.Broadcast();
 }

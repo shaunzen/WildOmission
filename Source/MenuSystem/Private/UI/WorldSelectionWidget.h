@@ -6,11 +6,13 @@
 #include "Blueprint/UserWidget.h"
 #include "WorldSelectionWidget.generated.h"
 
-class UButton;
-class UWorldRowWidget;
-class UCreateWorldButtonWidget;
-class UWildOmissionSaveGame;
-class UMainMenuWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectButtonClickedSignature);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRenameWorldButtonClickedSignature);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteWorldButtonClickedSignature);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCreateNewWorldButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMultiplayerButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelButtonClickedSignature);
 
 UCLASS()
 class UWorldSelectionWidget : public UUserWidget
@@ -20,35 +22,53 @@ class UWorldSelectionWidget : public UUserWidget
 public:
 	UWorldSelectionWidget(const FObjectInitializer& ObjectInitializer);
 
-	void Setup(UMainMenuWidget* InMainMenuParent);
+	virtual void NativeConstruct() override;
 
 	void SetWorldList(const TArray<FString>& WorldNames);
 	void SetSelectedWorld(const FString& WorldName);
 
 	TOptional<FString> SelectedWorldName;
 
+	FOnSelectButtonClickedSignature OnSelectButtonClicked;
+	FOnCreateNewWorldButtonClickedSignature OnCreateNewWorldButtonClicked;
+	FOnMultiplayerButtonClickedSignature OnMultiplayerButtonClicked;
+	FOnCancelButtonClickedSignature OnCancelButtonClicked;
+protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* WorldListBox;
 
 	UPROPERTY(Meta = (BindWidget))
-	UButton* SelectButton;
+	class UButton* SelectButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* BrowseServersButton;
+	class UButton* CreateNewWorldButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* MultiplayerButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* BackButton;
+	class UButton* CancelButton;
 
-	UPROPERTY()
-	UMainMenuWidget* ParentMenu;
-
-	TSubclassOf<UWorldRowWidget> WorldRowWidgetClass;
-	TSubclassOf<UCreateWorldButtonWidget> CreateNewWorldButtonClass;
-
+	TSubclassOf<class UWorldRowWidget> WorldRowWidgetClass;
+	
 	void UpdateListChildren();
 
-	TArray<UWildOmissionSaveGame*> GetWorldsSortedByLastPlayed(const TArray<FString>& NameList);
-	static bool IsSaveMoreRecentlyPlayed(UWildOmissionSaveGame* SaveA, UWildOmissionSaveGame* SaveB);
-	
+	TArray<class UWildOmissionSaveGame*> GetWorldsSortedByLastPlayed(const TArray<FString>& NameList);
+	static bool IsSaveMoreRecentlyPlayed(class UWildOmissionSaveGame* SaveA, class UWildOmissionSaveGame* SaveB);
+
+	UFUNCTION()
+	void BroadcastSelectButtonClicked();
+
+	UFUNCTION()
+	void BroadcastCreateNewWorldButtonClicked();
+
+	UFUNCTION()
+	void BroadcastMultiplayerButtonClicked();
+
+	UFUNCTION()
+	void BroadcastCancelButtonClicked();
+
 };

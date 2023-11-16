@@ -16,6 +16,8 @@ public:
 	ADeployablePreview();
 	
 	void Setup(ADeployable* DeployableToPreview);
+	void Setup(UStaticMesh* PreviewMesh);
+
 	void Update(bool IsSpawnValid);
 
 	bool IsOverlappingInvalidObject() const;

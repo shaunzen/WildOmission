@@ -18,7 +18,7 @@ UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectIniti
 	ParentMenu = nullptr;
 	ServerRowWidgetClass = nullptr;
 
-	ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/WBP_ServerRow"));
+	static ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/Server/WBP_ServerRow"));
 	if (ServerRowWidgetBPClass.Succeeded())
 	{
 		ServerRowWidgetClass = ServerRowWidgetBPClass.Class;

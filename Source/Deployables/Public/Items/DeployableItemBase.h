@@ -39,6 +39,8 @@ protected:
 
 	bool LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelToTrace, FHitResult& OutHitResult) const;
 
+	bool HasAuthorizationToBuild(const FVector& LocationToTest) const;
+
 	// By default OutPlacementTransform will be freehand, returns true if valid placement, false if invalid.
 	virtual bool GetPlacementTransform(FTransform& OutPlacementTransform);
 
@@ -46,6 +48,7 @@ protected:
 
 	FRotator GetFacePlayerRotation(const FVector& PlacementLocation = FVector::ZeroVector, const FVector& Up = FVector::UpVector) const;
 
+	virtual UStaticMesh* GetPreviewMesh();
 
 	UFUNCTION(Client, Reliable)
 	void Client_SpawnPreview();

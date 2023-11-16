@@ -6,11 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "WorldCreationWidget.generated.h"
 
-class UButton;
-class UEditableTextBox;
-class UTextBlock;
-class UWidget;
-class UMainMenuWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOpenWorldMenuRequestedSignature, const FString&, WorldName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldCreationOnCancelButtonClickedSignature);
 
 UCLASS()
 class UWorldCreationWidget : public UUserWidget
@@ -19,24 +16,24 @@ class UWorldCreationWidget : public UUserWidget
 
 public:
 	UWorldCreationWidget(const FObjectInitializer& ObjectInitializer);
+	
+	virtual void NativeConstruct() override;
 
-	void Setup(UMainMenuWidget* InMainMenuParent);
+	FOnOpenWorldMenuRequestedSignature OnOpenWorldMenuRequested;
+	FWorldCreationOnCancelButtonClickedSignature OnCancelButtonClicked;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UButton* CreateWorldButton;
+	class UButton* CreateWorldButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* BackButton;
+	class UButton* CancelButton;
 	UPROPERTY(Meta = (BindWidget))
-	UEditableTextBox* WorldNameInputBox;
+	class UEditableTextBox* WorldNameInputBox;
 
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* InvalidWarningBorder;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* InvalidWarningTextBlock;
-
-	UPROPERTY()
-	UMainMenuWidget* ParentMenu;
+	class UTextBlock* InvalidWarningTextBlock;
 
 	UFUNCTION()
 	void ShowInvalidWarning(const FString& Warning);
@@ -49,6 +46,9 @@ private:
 
 	UFUNCTION()
 	void CreateWorld();
+
+	UFUNCTION()
+	void BroadcastOnCancelButtonClicked();
 
 	UFUNCTION()
 	void WorldNameOnTextChanged(const FText& Text);

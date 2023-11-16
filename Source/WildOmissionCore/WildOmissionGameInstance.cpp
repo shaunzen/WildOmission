@@ -23,7 +23,7 @@ const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
-const static FString GameVersion = TEXT("Pre Alpha 0.10.1");
+const static FString GameVersion = TEXT("Pre Alpha 0.10.2");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -192,11 +192,21 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	GameplayMenuWidget->Show();
 	GameplayMenuWidget->SetMenuInterface(this);
 	GameplayMenuWidget->OnClosed.AddDynamic(this, &UWildOmissionGameInstance::ClearGameplayMenuWidget);
+
+	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+	}
 }
 
 void UWildOmissionGameInstance::ClearGameplayMenuWidget()
 {
 	GameplayMenuWidget = nullptr;
+
+	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+	}
 }
 
 void UWildOmissionGameInstance::RunAutoConfigQualitySettings(bool Override)
@@ -284,6 +294,22 @@ void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
 	NewSaveGame->CreationInformation.Year = Time.GetYear();
 
 	UGameplayStatics::SaveGameToSlot(NewSaveGame, WorldName, 0);
+}
+
+void UWildOmissionGameInstance::RenameWorld(const FString& OldWorldName, const FString& NewWorldName)
+{
+	UWildOmissionSaveGame* RenamingSave = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+	RenamingSave = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(OldWorldName, 0));
+
+	RenamingSave->CreationInformation.Name = NewWorldName;
+
+	UGameplayStatics::SaveGameToSlot(RenamingSave, NewWorldName, 0);
+	UGameplayStatics::DeleteGameInSlot(OldWorldName, 0);
+}
+
+void UWildOmissionGameInstance::DeleteWorld(const FString& WorldName)
+{
+	UGameplayStatics::DeleteGameInSlot(WorldName, 0);
 }
 
 void UWildOmissionGameInstance::StartSession()

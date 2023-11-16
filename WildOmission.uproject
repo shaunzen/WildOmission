@@ -52,7 +52,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"UMG",
-				"EquipableItems"
+				"EquipableItems",
+				"Engine"
 			]
 		},
 		{

@@ -124,6 +124,9 @@ private:
 	UCraftingComponent* CraftingComponent;
 
 	UPROPERTY(VisibleAnywhere)
+	class UBuilderComponent* BuilderComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	UNameTagComponent* NameTag;
 
 	UPROPERTY(VisibleAnywhere)

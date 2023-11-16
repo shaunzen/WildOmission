@@ -119,7 +119,7 @@ void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& O
 		}
 		else if (HitActor)
 		{
-			float DamageAmount = 20.0f;
+			float DamageAmount = 10.0f;
 
 			FPointDamageEvent HitByToolEvent(DamageAmount * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
 			HitActor->TakeDamage(DamageAmount * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);

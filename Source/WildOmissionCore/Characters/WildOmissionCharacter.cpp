@@ -19,6 +19,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Components/CraftingComponent.h"
+#include "Components/BuilderComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
 #include "Components/LockModifierComponent.h"
@@ -77,6 +78,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(TEXT("InventoryComponent"));
 
 	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(TEXT("CraftingComponent"));
+
+	BuilderComponent = CreateDefaultSubobject<UBuilderComponent>(TEXT("BuilderComponent"));
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComponent"));
 	InteractionComponent->SetupAttachment(FirstPersonCameraComponent);
