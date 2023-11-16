@@ -192,11 +192,21 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	GameplayMenuWidget->Show();
 	GameplayMenuWidget->SetMenuInterface(this);
 	GameplayMenuWidget->OnClosed.AddDynamic(this, &UWildOmissionGameInstance::ClearGameplayMenuWidget);
+
+	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+	}
 }
 
 void UWildOmissionGameInstance::ClearGameplayMenuWidget()
 {
 	GameplayMenuWidget = nullptr;
+
+	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+	}
 }
 
 void UWildOmissionGameInstance::RunAutoConfigQualitySettings(bool Override)
