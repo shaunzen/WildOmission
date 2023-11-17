@@ -25,8 +25,7 @@ public:
 	void Open();
 
 	void SetServerList(TArray<FServerData> ServerNames);
-	void SelectServerIndex(uint32 Index);
-
+	
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UPanelWidget* ServerList;
@@ -46,13 +45,16 @@ private:
 	UPROPERTY()
 	UMainMenuWidget* ParentMenu;
 
-	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
+	TSubclassOf<class UServerRowWidget> ServerRowWidgetClass;
 
 	TOptional<uint32> SelectedServerIndex;
 	
 	UFUNCTION()
 	void UpdateServerListChildren();
 	
+	UFUNCTION()
+	void SelectServerIndex(const uint32& SelectedIndex);
+
 	UFUNCTION()
 	void JoinServer();
 

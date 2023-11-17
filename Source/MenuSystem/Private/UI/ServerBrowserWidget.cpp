@@ -58,26 +58,15 @@ void UServerBrowserWidget::SetServerList(TArray<FServerData> ServerNames)
 		{
 			return;
 		}
-
-		Row->ServerName->SetText(FText::FromString(ServerData.Name));
-		FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
-		Row->HostUser->SetText(FText::FromString(HostString));
-		FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
-		Row->ConnectionFraction->SetText(FText::FromString(FractionString));
-		Row->Setup(this, i);
+		Row->Setup(i, ServerData);
+		Row->OnSelected.AddDynamic(this, &UServerBrowserWidget::SelectServerIndex);
 		++i;
 
 		ServerList->AddChild(Row);
 	}
 
-	FString RefreshString = FString("Refresh");
+	FString RefreshString = TEXT("Refresh");
 	RefreshListButtonText->SetText(FText::FromString(RefreshString));
-}
-
-void UServerBrowserWidget::SelectServerIndex(uint32 Index)
-{
-	SelectedServerIndex = Index;
-	UpdateServerListChildren();
 }
 
 void UServerBrowserWidget::UpdateServerListChildren()
@@ -89,8 +78,14 @@ void UServerBrowserWidget::UpdateServerListChildren()
 		{
 			return;
 		}
-		Row->Selected = (SelectedServerIndex.IsSet() && SelectedServerIndex.GetValue() == i);
+		Row->SetSelected(SelectedServerIndex.IsSet() && SelectedServerIndex.GetValue() == i);
 	}
+}
+
+void UServerBrowserWidget::SelectServerIndex(const uint32& SelectedIndex)
+{
+	SelectedServerIndex = SelectedIndex;
+	UpdateServerListChildren();
 }
 
 void UServerBrowserWidget::RefreshList()

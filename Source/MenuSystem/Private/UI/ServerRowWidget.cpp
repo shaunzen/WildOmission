@@ -4,14 +4,47 @@
 #include "ServerRowWidget.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
-#include "ServerBrowserWidget.h"
+#include "Components/TextBlock.h"
+#include "Structs/ServerData.h"
 #include "Color/UIColors.h"
 
-void UServerRowWidget::Setup(UServerBrowserWidget* InParent, uint32 InIndex)
+UServerRowWidget::UServerRowWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	Parent = InParent;
-	Index = InIndex;
+	RowButton = nullptr;
+	RowBorder = nullptr;
+	ServerNameTextBlock = nullptr;
+	HostNameTextBlock = nullptr;
+	ConnectionFractionTextBlock = nullptr;
+
+	Index = INDEX_NONE;
+
+	Selected = false;
+	Hovering = false;
+}
+
+void UServerRowWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
 	RowButton->OnClicked.AddDynamic(this, &UServerRowWidget::OnClicked);
+}
+
+void UServerRowWidget::Setup(const uint32& InIndex, const FServerData& ServerData)
+{
+	Index = InIndex;
+
+	ServerNameTextBlock->SetText(FText::FromString(ServerData.Name));
+	FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
+	HostNameTextBlock->SetText(FText::FromString(HostString));
+	FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
+	ConnectionFractionTextBlock->SetText(FText::FromString(FractionString));
+
+	// TODO ping
+}
+
+void UServerRowWidget::SetSelected(bool NewSelected)
+{
+	Selected = NewSelected;
 }
 
 void UServerRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -62,5 +95,5 @@ void UServerRowWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 
 void UServerRowWidget::OnClicked()
 {
-	Parent->SelectServerIndex(Index);
+	
 }
