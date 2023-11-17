@@ -70,8 +70,8 @@ void UCraftingRecipeCategoryButton::NativeTick(const FGeometry& MyGeometry, floa
 	}
 	else
 	{
-		FUIColor* DarkGray = UUIColors::GetBaseColor(TEXT("DarkGray"));
-		Button->SetBackgroundColor(DarkGray->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
+		FUIColor* LightGray = UUIColors::GetBaseColor(TEXT("LightGray"));
+		Button->SetBackgroundColor(LightGray->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 	}
 }
 

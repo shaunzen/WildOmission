@@ -26,16 +26,11 @@ public:
 
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-
+	
 private:
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* RowButton;
 
-	UPROPERTY(Meta = (BindWidget))
-	class UBorder* RowBorder;
-	
 	UPROPERTY(Meta = (BindWidget))
 	class UTextBlock* ServerNameTextBlock;
 
@@ -44,9 +39,6 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	class UTextBlock* ConnectionFractionTextBlock;
-
-	UPROPERTY(Meta = (BindWidget))
-	class UTextBlock* PingTextBlock;
 
 	UPROPERTY()
 	uint32 Index;

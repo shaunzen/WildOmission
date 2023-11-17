@@ -35,23 +35,15 @@ public:
 
 protected:	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-
+	
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UButton* RowButton;
-
-	UPROPERTY(Meta = (BindWidget))
-	UBorder* RowBorder;
 
 	UPROPERTY()
 	UWorldSelectionWidget* Parent;
 
 	FString WorldName;
-
-	UPROPERTY()
-	bool Hovering = false;
 
 	UFUNCTION()
 	void OnClicked();
