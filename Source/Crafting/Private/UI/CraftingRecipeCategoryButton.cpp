@@ -66,12 +66,12 @@ void UCraftingRecipeCategoryButton::NativeTick(const FGeometry& MyGeometry, floa
 	if (ParentCraftingMenu && ParentCraftingMenu->GetCategoryFilter() == Category)
 	{
 		FUIColor* Blue = UUIColors::GetBaseColor(TEXT("Blue"));
-		Button->SetBackgroundColor(Blue->Default * FLinearColor(0.0f, 0.0f, 0.0f, 0.5f));
+		Button->SetBackgroundColor(Blue->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 	}
 	else
 	{
 		FUIColor* DarkGray = UUIColors::GetBaseColor(TEXT("DarkGray"));
-		Button->SetBackgroundColor(DarkGray->Default * FLinearColor(0.0f, 0.0f, 0.0f, 0.5f));
+		Button->SetBackgroundColor(DarkGray->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 	}
 }
 
