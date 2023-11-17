@@ -570,7 +570,7 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		FString HostGameVersion = TEXT("");
 		if (SearchResult.Session.SessionSettings.Get(GAME_VERSION_SETTINGS_KEY, HostGameVersion))
 		{
-			if (!GetWorld()->IsPlayInEditor() && GameVersion != HostGameVersion)
+			if (!GetWorld()->IsEditorWorld() && GameVersion != HostGameVersion)
 			{
 				continue;
 			}
