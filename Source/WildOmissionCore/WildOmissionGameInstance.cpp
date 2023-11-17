@@ -6,6 +6,9 @@
 #include "UObject/ConstructorHelpers.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
+#include "SocketSubsystem.h"
+#include "Sockets.h"
+#include "Serialization/ArrayWriter.h"
 #include "UI/MainMenuWidget.h"
 #include "UI/GameplayMenuWidget.h"
 #include "UI/LoadingMenuWidget.h"
@@ -23,7 +26,7 @@ const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
-const static FString GameVersion = TEXT("Pre Alpha 0.10.2");
+const static FString GameVersion = TEXT("Alpha 1.0.0");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -580,9 +583,9 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		FServerData Data;
 		Data.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
 		Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
-
+		Data.PingMS = SearchResult.PingInMs;
 		Data.HostUsername = SearchResult.Session.OwningUserName;
-
+		
 		FString ServerName;
 		if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
 		{

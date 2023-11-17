@@ -15,6 +15,7 @@ UServerRowWidget::UServerRowWidget(const FObjectInitializer& ObjectInitializer) 
 	ServerNameTextBlock = nullptr;
 	HostNameTextBlock = nullptr;
 	ConnectionFractionTextBlock = nullptr;
+	PingTextBlock = nullptr;
 
 	Index = INDEX_NONE;
 
@@ -33,13 +34,14 @@ void UServerRowWidget::Setup(const uint32& InIndex, const FServerData& ServerDat
 {
 	Index = InIndex;
 
-	ServerNameTextBlock->SetText(FText::FromString(ServerData.Name));
-	FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
-	HostNameTextBlock->SetText(FText::FromString(HostString));
-	FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
-	ConnectionFractionTextBlock->SetText(FText::FromString(FractionString));
+	const FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
+	const FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
+	const FString PingString = FString::Printf(TEXT("Ping: %ims"), ServerData.PingMS);
 
-	// TODO ping
+	ServerNameTextBlock->SetText(FText::FromString(ServerData.Name));
+	HostNameTextBlock->SetText(FText::FromString(HostString));
+	ConnectionFractionTextBlock->SetText(FText::FromString(FractionString));
+	PingTextBlock->SetText(FText::FromString(PingString));
 }
 
 void UServerRowWidget::SetSelected(bool NewSelected)

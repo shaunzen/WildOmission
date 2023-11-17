@@ -45,6 +45,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UTextBlock* ConnectionFractionTextBlock;
 
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* PingTextBlock;
+
 	UPROPERTY()
 	uint32 Index;
 
