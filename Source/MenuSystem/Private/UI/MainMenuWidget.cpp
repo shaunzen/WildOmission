@@ -64,8 +64,12 @@ void UMainMenuWidget::NativeConstruct()
 	DeleteWorldMenu->OnDeleteButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 	DeleteWorldMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
 
-	ServerBrowserMenu->Setup(this);
+	ServerBrowserMenu->OnJoinButtonClicked.AddDynamic(this, &UMainMenuWidget::JoinServer);
+	ServerBrowserMenu->OnRefreshButtonClicked.AddDynamic(this, &UMainMenuWidget::RefreshServerList);
+	ServerBrowserMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+
 	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+
 	ErrorMessagePrompt->OnCloseButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 }
 
@@ -105,6 +109,26 @@ void UMainMenuWidget::Teardown()
 IMenuInterface* UMainMenuWidget::GetMenuInterface() const
 {
 	return MenuInterface;
+}
+
+void UMainMenuWidget::JoinServer(const uint32& ServerIndex)
+{
+	if (MenuInterface == nullptr)
+	{
+		return;
+	}
+
+	MenuInterface->JoinServer(ServerIndex);
+}
+
+void UMainMenuWidget::RefreshServerList()
+{
+	if (MenuInterface == nullptr)
+	{
+		return;
+	}
+
+	MenuInterface->RefreshServerList();
 }
 
 void UMainMenuWidget::OpenMainMenu()
@@ -162,7 +186,7 @@ void UMainMenuWidget::HostGame(const FString& WorldName, const FString& ServerNa
 		return;
 	}
 
-	IsMultiplayer ? MenuInterface->Host(ServerName, WorldName, IsFriendsOnly) : MenuInterface->StartSingleplayer(WorldName);
+	IsMultiplayer ? MenuInterface->HostServer(ServerName, WorldName, IsFriendsOnly) : MenuInterface->StartSingleplayer(WorldName);
 }
 
 void UMainMenuWidget::OpenRenameWorldMenu()
@@ -195,7 +219,7 @@ void UMainMenuWidget::OpenServerBrowserMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(ServerBrowserMenu);
-	ServerBrowserMenu->Open();
+	ServerBrowserMenu->OnOpen();
 }
 
 void UMainMenuWidget::OpenOptionsMenu()

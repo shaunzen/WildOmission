@@ -7,10 +7,9 @@
 #include "Structs/ServerData.h"
 #include "ServerBrowserWidget.generated.h"
 
-class UButton;
-class UTextBlock;
-class UServerRowWidget;
-class UMainMenuWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerBrowserOnJoinButtonClickedSignature, const uint32&, SelectedIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FServerBrowserOnRefreshButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FServerBrowserOnCancelButtonClickedSignature);
 
 UCLASS()
 class UServerBrowserWidget : public UUserWidget
@@ -20,30 +19,31 @@ class UServerBrowserWidget : public UUserWidget
 public:
 	UServerBrowserWidget(const FObjectInitializer& ObjectInitializer);
 
-	void Setup(UMainMenuWidget* InMainMenuParent);
+	virtual void NativeConstruct() override;
 
-	void Open();
+	FServerBrowserOnJoinButtonClickedSignature OnJoinButtonClicked;
+	FServerBrowserOnRefreshButtonClickedSignature OnRefreshButtonClicked;
+	FServerBrowserOnCancelButtonClickedSignature OnCancelButtonClicked;
 
-	void SetServerList(TArray<FServerData> ServerNames);
+	void OnOpen();
+
+	void SetServerList(TArray<struct FServerData> ServerNames);
 	
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* ServerList;
+	class UPanelWidget* ServerList;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* JoinButton;
+	class UButton* JoinButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* BackButton;
+	class UButton* CancelButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* RefreshListButton;
+	class UButton* RefreshListButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* RefreshListButtonText;
-
-	UPROPERTY()
-	UMainMenuWidget* ParentMenu;
+	class UTextBlock* RefreshListButtonText;
 
 	TSubclassOf<class UServerRowWidget> ServerRowWidgetClass;
 
@@ -56,8 +56,12 @@ private:
 	void SelectServerIndex(const uint32& SelectedIndex);
 
 	UFUNCTION()
-	void JoinServer();
+	void BroadcastRefreshButtonClicked();
 
 	UFUNCTION()
-	void RefreshList();
+	void BroadcastJoinButtonClicked();
+
+	UFUNCTION()
+	void BroadcastCancelButtonClicked();
+
 }; 

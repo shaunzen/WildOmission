@@ -94,5 +94,11 @@ private:
 	UErrorMessagePrompt* ErrorMessagePrompt;
 
 	IMenuInterface* MenuInterface;
+	
+	UFUNCTION()
+	void JoinServer(const uint32& ServerIndex);
+
+	UFUNCTION()
+	void RefreshServerList();
 
 };
