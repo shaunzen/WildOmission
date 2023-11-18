@@ -7,25 +7,6 @@
 #include "Interfaces/CharacterSettingsInterface.h"
 #include "WildOmissionCharacter.generated.h"
 
-class UInputAction;
-struct FInputActionValue;
-class UInputComponent;
-class UInputMappingContext;
-class UCameraComponent;
-class USpringArmComponent;
-class UVitalsComponent;
-class UInteractionComponent;
-class UPlayerInventoryComponent;
-class UInventoryManipulatorComponent;
-class UEquipComponent;
-class UCraftingComponent;
-class UNameTagComponent;
-class USpecialEffectsHandlerComponent;
-class ULockModifierComponent;
-
-class ALootableRagdoll;
-class UPlayerHUDWidget;
-
 UCLASS()
 class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public ICharacterSettingsInterface
 {
@@ -76,19 +57,19 @@ public:
 	UCameraComponent* GetFirstPersonCameraComponent();
 
 	UFUNCTION(BlueprintCallable)
-	UPlayerHUDWidget* GetHUDWidget() const;
+	class UPlayerHUDWidget* GetHUDWidget() const;
 
 	UFUNCTION(BlueprintCallable)
-	UVitalsComponent* GetVitalsComponent() const;
+	class UVitalsComponent* GetVitalsComponent() const;
 
 	UFUNCTION(BlueprintCallable)
-	UInventoryManipulatorComponent* GetInventoryManipulatorComponent() const;
+	class UInventoryManipulatorComponent* GetInventoryManipulatorComponent() const;
 
 	UFUNCTION(BlueprintCallable)
-	UPlayerInventoryComponent* GetInventoryComponent() const;
+	class UPlayerInventoryComponent* GetInventoryComponent() const;
 
 	UFUNCTION(BlueprintCallable)
-	UCraftingComponent* GetCraftingComponent() const;
+	class UCraftingComponent* GetCraftingComponent() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -103,49 +84,49 @@ private:
 	UCameraComponent* FirstPersonCameraComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* FirstPersonSpringArmComponent;
+	class USpringArmComponent* FirstPersonSpringArmComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UVitalsComponent* VitalsComponent;
+	class UVitalsComponent* VitalsComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UInteractionComponent* InteractionComponent;
+	class UInteractionComponent* InteractionComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UPlayerInventoryComponent* InventoryComponent;
+	class UPlayerInventoryComponent* InventoryComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	UInventoryManipulatorComponent* InventoryManipulatorComponent;
+	class UInventoryManipulatorComponent* InventoryManipulatorComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UEquipComponent* EquipComponent;
+	class UEquipComponent* EquipComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	UCraftingComponent* CraftingComponent;
+	class UCraftingComponent* CraftingComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	class UBuilderComponent* BuilderComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UNameTagComponent* NameTag;
+	class UNameTagComponent* NameTag;
 
 	UPROPERTY(VisibleAnywhere)
-	USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
+	class USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	ULockModifierComponent* LockModifierComponent;
+	class ULockModifierComponent* LockModifierComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> JumpCameraShake;
 
 	UPROPERTY()
-	UPlayerHUDWidget* PlayerHUDWidget;
+	class UPlayerHUDWidget* PlayerHUDWidget;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
+	TSubclassOf<class UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ALootableRagdoll> RagdollClass;
+	TSubclassOf<class ALootableRagdoll> RagdollClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* FallCrunchSound;
@@ -172,73 +153,73 @@ private:
 	// Input
 	//*****************************
 	UPROPERTY()
-	UInputMappingContext* DefaultMappingContext;
+	class UInputMappingContext* DefaultMappingContext;
 
 	UPROPERTY()
-	UInputAction* MoveForwardAction;
+	class UInputAction* MoveForwardAction;
 
 	UPROPERTY()
-	UInputAction* MoveBackwardAction;
+	class UInputAction* MoveBackwardAction;
 
 	UPROPERTY()
-	UInputAction* MoveLeftAction;
+	class UInputAction* MoveLeftAction;
 
 	UPROPERTY()
-	UInputAction* MoveRightAction;
+	class UInputAction* MoveRightAction;
 
 	UPROPERTY()
-	UInputAction* LookAction;
+	class UInputAction* LookAction;
 	
 	UPROPERTY()
-	UInputAction* SprintAction;
+	class UInputAction* SprintAction;
 
 	UPROPERTY()
-	UInputAction* JumpAction;
+	class UInputAction* JumpAction;
 		
 	UPROPERTY()
-	UInputAction* PrimaryAction;
+	class UInputAction* PrimaryAction;
 	
 	UPROPERTY()
-	UInputAction* SecondaryAction;
+	class UInputAction* SecondaryAction;
 
 	UPROPERTY()
-	UInputAction* InteractAction;
+	class UInputAction* InteractAction;
 
 	UPROPERTY()
-	UInputAction* ReloadAction;
+	class UInputAction* ReloadAction;
 	
 	UPROPERTY()
-	UInputAction* ToolbarSelectionIncrementAction;
+	class UInputAction* ToolbarSelectionIncrementAction;
 	
 	UPROPERTY()
-	UInputAction* ToolbarSelectionDecrementAction;
+	class UInputAction* ToolbarSelectionDecrementAction;
 
 	UPROPERTY()
-	UInputAction* ToolbarSelection1Action;
+	class UInputAction* ToolbarSelection1Action;
 	
 	UPROPERTY()
-	UInputAction* ToolbarSelection2Action;
+	class UInputAction* ToolbarSelection2Action;
 	
 	UPROPERTY()
-	UInputAction* ToolbarSelection3Action;
+	class UInputAction* ToolbarSelection3Action;
 	
 	UPROPERTY()
-	UInputAction* ToolbarSelection4Action;
+	class UInputAction* ToolbarSelection4Action;
 	
 	UPROPERTY()
-	UInputAction* ToolbarSelection5Action;
+	class UInputAction* ToolbarSelection5Action;
 	
 	UPROPERTY()
-	UInputAction* ToolbarSelection6Action;
+	class UInputAction* ToolbarSelection6Action;
 	
 	UPROPERTY()
-	UInputAction* ToggleInventoryMenuAction;
+	class UInputAction* ToggleInventoryMenuAction;
 
 	UPROPERTY()
-	UInputAction* ToggleCraftingMenuAction;
+	class UInputAction* ToggleCraftingMenuAction;
 
 	UPROPERTY()
-	UInputAction* ToggleChatAction;
+	class UInputAction* ToggleChatAction;
 
 	bool LookUpInverted;
 	float LookSensitivity;
@@ -256,7 +237,7 @@ private:
 	void MoveRight();
 
 	UFUNCTION()
-	void Look(const FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
 
 	UFUNCTION()
 	void StartSprint();
