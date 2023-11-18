@@ -6,10 +6,31 @@
 #include "Blueprint/UserWidget.h"
 #include "WorldRowWidget.generated.h"
 
-class UTextBlock;
-class UButton;
-class UBorder;
-class UWorldSelectionWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWorldRowWidgetClickedSignature, const FString&, SelectedWorldName);
+
+USTRUCT()
+struct FWorldRowInformation
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	uint32 DaysPlayed;
+
+	UPROPERTY()
+	uint8 CreationMonth;
+
+	UPROPERTY()
+	uint8 CreationDay;
+
+	UPROPERTY()
+	uint16 CreationYear;
+
+	UPROPERTY()
+	FString Name;
+
+	FWorldRowInformation();
+	FWorldRowInformation(const uint32& InDaysPlayed, const uint8& InCreationMonth, const uint8& InCreationDay, const uint16& InCreationYear, const FString& InName);
+};
 
 UCLASS()
 class UWorldRowWidget : public UUserWidget
@@ -17,35 +38,40 @@ class UWorldRowWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* WorldNameTextBlock;
+	UWorldRowWidget(const FObjectInitializer& ObjectIntializer);
 
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* DateCreated;
+	virtual void NativeConstruct() override;
 
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* DaysPlayed;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool Selected = false;
-
-	void Setup(UWorldSelectionWidget* InParent, const FString& InWorldName);
+	void Setup(const FWorldRowInformation& InInformation);
 	
-	FString GetWorldName();
+	void SetSelected(bool InSelected);
+	FString GetWorldName() const;
+
+	FOnWorldRowWidgetClickedSignature OnClicked;
 
 protected:	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UButton* RowButton;
+	class UButton* RowButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* WorldNameTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* DateCreatedTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* DaysPlayedTextBlock;
 
 	UPROPERTY()
-	UWorldSelectionWidget* Parent;
-
 	FString WorldName;
 
+	UPROPERTY()
+	bool Selected;
+
 	UFUNCTION()
-	void OnClicked();
+	void BroadcastOnClicked();
 
 };
