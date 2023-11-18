@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "HumanAnimInstance.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
@@ -154,6 +155,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	if (PlayerRagdollBlueprint.Succeeded())
 	{
 		RagdollClass = PlayerRagdollBlueprint.Class;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> FallCrunchSoundObject(TEXT("/Game/WildOmissionCore/Characters/Human/Audio/Damage/A_Human_Fall_Crunch"));
+	if (FallCrunchSoundObject.Succeeded())
+	{
+		FallCrunchSound = FallCrunchSoundObject.Object;
 	}
 	
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmissionCore/Input/MC_DefaultMappingContext"));
@@ -386,7 +393,11 @@ void AWildOmissionCharacter::Jump()
 void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 {
 	Super::Landed(HitResult);
-	
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	float FallVelocity = GetCharacterMovement()->GetLastUpdateVelocity().GetAbs().Z;
 
 	if (FallVelocity > 1000.0f)
@@ -394,7 +405,7 @@ void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 		float DamageToApply = FMath::Lerp(0.0f, 100.0f, (FallVelocity - 1000.0f) / 1000.0f);
 		FPointDamageEvent FallDamageEvent(DamageToApply, HitResult, -FVector::UpVector, nullptr);
 		TakeDamage(DamageToApply, FallDamageEvent, GetController(), this);
-		// TODO crunch sound
+		Multi_PlayFallCrunchSound();
 	}
 }
 
@@ -797,6 +808,17 @@ void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
 {
 	bSprinting = bShouldSprint;
 	RefreshDesiredMovementSpeed();
+}
+
+void AWildOmissionCharacter::Multi_PlayFallCrunchSound_Implementation()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || FallCrunchSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(World, FallCrunchSound, this->GetActorLocation());
 }
 
 void AWildOmissionCharacter::PrimaryPressed()

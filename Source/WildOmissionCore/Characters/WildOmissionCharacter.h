@@ -135,17 +135,20 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	ULockModifierComponent* LockModifierComponent;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> JumpCameraShake;
 
 	UPROPERTY()
 	UPlayerHUDWidget* PlayerHUDWidget;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ALootableRagdoll> RagdollClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* FallCrunchSound;
 
 	UPROPERTY(Replicated)
 	FRotator ReplicatedControlRotation;
@@ -280,6 +283,9 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void Server_Sprint(bool bShouldSprint);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayFallCrunchSound();
 
 	UFUNCTION()
 	void PrimaryPressed();
