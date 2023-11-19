@@ -11,6 +11,7 @@
 #include "DeleteWorldWidget.h"
 #include "ServerBrowserWidget.h"
 #include "UI/OptionsWidget.h"
+#include "CreditsWidget.h"
 #include "ErrorMessagePrompt.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Log.h"
@@ -23,6 +24,7 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	PlayButton = nullptr;
 	OptionsButton = nullptr;
 	FeedbackButton = nullptr;
+	CreditsButton = nullptr;
 	ExitButton = nullptr;
 	MainMenu = nullptr;
 	WorldSelectionMenu = nullptr;
@@ -32,6 +34,7 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	DeleteWorldMenu = nullptr;
 	ServerBrowserMenu = nullptr;
 	OptionsMenu = nullptr;
+	CreditsMenu = nullptr;
 	ErrorMessagePrompt = nullptr;
 	MenuInterface = nullptr;
 }
@@ -43,6 +46,7 @@ void UMainMenuWidget::NativeConstruct()
 	PlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 	OptionsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenOptionsMenu);
 	FeedbackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenFeedbackPage);
+	CreditsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenCreditsMenu);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
 	WorldSelectionMenu->OnSelectButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
@@ -69,6 +73,8 @@ void UMainMenuWidget::NativeConstruct()
 	ServerBrowserMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 
 	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+
+	CreditsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 
 	ErrorMessagePrompt->OnCloseButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 }
@@ -236,6 +242,16 @@ void UMainMenuWidget::OpenOptionsMenu()
 void UMainMenuWidget::OpenFeedbackPage()
 {
 	UKismetSystemLibrary::LaunchURL(TEXT("https://forms.gle/2GP8ZSTU5ARa5Pmu8"));
+}
+
+void UMainMenuWidget::OpenCreditsMenu()
+{
+	if (MenuSwitcher == nullptr || CreditsMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(CreditsMenu);
 }
 
 void UMainMenuWidget::ExitGame()
