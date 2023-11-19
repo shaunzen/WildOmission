@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "WorldMenuWidget.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FWorldMenuOnPlayButtonClickedSignature, const FString&, WorldName, const FString&, ServerName, const bool, IsMultiplayer, const bool, IsFriendsOnly);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FWorldMenuOnPlayButtonClickedSignature, const FString&, WorldName, const FString&, ServerName, const bool, IsMultiplayer, const bool, IsFriendsOnly, const int32&, MaxPlayerCount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnRenameButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnDeleteButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnCancelButtonClickedSignature);
@@ -50,6 +50,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UCheckOptionBox* FriendsOnlyCheckOptionBox;
 	
+	UPROPERTY(Meta = (BindWidget))
+	class USliderOptionBox* MaxPlayersSliderOptionBox;
+
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* HostSettingsMenu;
 	

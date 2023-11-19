@@ -45,6 +45,7 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	GameplayMenuWidget = nullptr;
 	Loading = false;
 	FriendsOnlySession = false;
+	DesiredMaxPlayerCount = 8;
 	OnMainMenu = false;
 
 	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_MainMenu"));
@@ -403,7 +404,7 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 	World->ServerTravel(LoadString);
 }
 
-void UWildOmissionGameInstance::HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly)
+void UWildOmissionGameInstance::HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly, const int32& MaxPlayerCount)
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -413,6 +414,7 @@ void UWildOmissionGameInstance::HostServer(const FString& ServerName, const FStr
 	DesiredServerName = ServerName;
 	WorldToLoad = WorldName;
 	FriendsOnlySession = FriendsOnly;
+	DesiredMaxPlayerCount = MaxPlayerCount;
 
 	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
@@ -450,7 +452,7 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = false;
-	SessionSettings.NumPublicConnections = 16;
+	SessionSettings.NumPublicConnections = DesiredMaxPlayerCount;
 	SessionSettings.bShouldAdvertise = true;
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.bUseLobbiesIfAvailable = true;

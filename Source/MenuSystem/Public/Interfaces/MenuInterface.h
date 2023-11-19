@@ -26,7 +26,7 @@ public:
 	virtual void StartSingleplayer(const FString& WorldName) = 0;
 
 	UFUNCTION()
-	virtual void HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false) = 0;
+	virtual void HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false, const int32& MaxPlayerCount = 8) = 0;
 	
 	UFUNCTION()
 	virtual void JoinServer(const uint32& Index) = 0;

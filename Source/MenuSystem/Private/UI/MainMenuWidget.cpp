@@ -185,7 +185,7 @@ void UMainMenuWidget::OpenWorldMenuForWorld(const FString& WorldName)
 	WorldMenu->Open(WorldName);
 }
 
-void UMainMenuWidget::HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly)
+void UMainMenuWidget::HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly, const int32& MaxPlayerCount)
 {
 	if (MenuInterface == nullptr || WorldName.IsEmpty())
 	{
