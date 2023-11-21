@@ -18,38 +18,38 @@ void UCraftingRecipeCategoryButton::Setup(UCraftingMenuWidget* InParent, TEnumAs
 {
 	Button->OnClicked.AddDynamic(this, &UCraftingRecipeCategoryButton::OnClicked);
 	
-	FString ButtonTextString = FString();
+	FString ButtonTextString = TEXT("");
 	switch (InCategory)
 	{
 	case All:
-		ButtonTextString = FString("All");
+		ButtonTextString = TEXT("All");
 		break;
 	case Item:
-		ButtonTextString = FString("Items");
+		ButtonTextString = TEXT("Items");
 		break;
 	case Resource:
-		ButtonTextString = FString("Resource");
+		ButtonTextString = TEXT("Resource");
 		break;
 	case Tool:
-		ButtonTextString = FString("Tools");
+		ButtonTextString = TEXT("Tools");
 		break;
 	case Building:
-		ButtonTextString = FString("Building");
+		ButtonTextString = TEXT("Building");
 		break;
 	case Weapon:
-		ButtonTextString = FString("Weapons");
+		ButtonTextString = TEXT("Weapons");
 		break;
 	case Ammo:
-		ButtonTextString = FString("Ammo");
+		ButtonTextString = TEXT("Ammo");
 		break;
 	case Medical:
-		ButtonTextString = FString("Medical");
+		ButtonTextString = TEXT("Medical");
 		break;
 	case Clothing:
-		ButtonTextString = FString("Clothing");
+		ButtonTextString = TEXT("Clothing");
 		break;
 	default:
-		ButtonTextString = FString("Default");
+		ButtonTextString = TEXT("Default");
 		break;
 	}
 	
@@ -65,13 +65,13 @@ void UCraftingRecipeCategoryButton::NativeTick(const FGeometry& MyGeometry, floa
 
 	if (ParentCraftingMenu && ParentCraftingMenu->GetCategoryFilter() == Category)
 	{
-		FUIColor* Blue = UUIColors::GetBaseColor(FName("Blue"));
-		Button->SetBackgroundColor(Blue->Default);
+		FUIColor* Blue = UUIColors::GetBaseColor(TEXT("Blue"));
+		Button->SetBackgroundColor(Blue->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 	}
 	else
 	{
-		FUIColor* DarkGray = UUIColors::GetBaseColor(FName("DarkGray"));
-		Button->SetBackgroundColor(DarkGray->Default);
+		FUIColor* LightGray = UUIColors::GetBaseColor(TEXT("LightGray"));
+		Button->SetBackgroundColor(LightGray->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 	}
 }
 

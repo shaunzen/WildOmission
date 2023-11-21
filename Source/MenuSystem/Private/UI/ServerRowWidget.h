@@ -6,10 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ServerRowWidget.generated.h"
 
-class UTextBlock;
-class UButton;
-class UBorder;
-class UServerBrowserWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnServerRowSelectedSignature, const uint32&, SelectedIndex);
 
 UCLASS()
 class UServerRowWidget : public UUserWidget
@@ -17,38 +14,40 @@ class UServerRowWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* ServerName;
+	UServerRowWidget(const FObjectInitializer& ObjectInitializer);
 	
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* HostUser;
+	virtual void NativeConstruct() override;
+
+	void Setup(const uint32& InIndex, const struct FServerData& ServerData);
 	
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* ConnectionFraction;
+	void SetSelected(bool NewSelected);
 
-	UPROPERTY(BlueprintReadOnly)
-	bool Selected = false;
+	FOnServerRowSelectedSignature OnSelected;
 
-	void Setup(UServerBrowserWidget* InParent, uint32 InIndex);
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-
+	
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UButton* RowButton;
+	class UButton* RowButton;
 
 	UPROPERTY(Meta = (BindWidget))
-	UBorder* RowBorder;
-	
-	UPROPERTY()
-	UServerBrowserWidget* Parent;
+	class UTextBlock* ServerNameTextBlock;
 
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* HostNameTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* ConnectionFractionTextBlock;
+
+	UPROPERTY()
 	uint32 Index;
 
 	UPROPERTY()
-	bool Hovering = false;
+	bool Selected;
+
+	UPROPERTY()
+	bool Hovering;
 
 	UFUNCTION()
 	void OnClicked();

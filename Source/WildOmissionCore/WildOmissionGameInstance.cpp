@@ -6,6 +6,9 @@
 #include "UObject/ConstructorHelpers.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
+#include "SocketSubsystem.h"
+#include "Sockets.h"
+#include "Serialization/ArrayWriter.h"
 #include "UI/MainMenuWidget.h"
 #include "UI/GameplayMenuWidget.h"
 #include "UI/LoadingMenuWidget.h"
@@ -23,7 +26,7 @@ const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
-const static FString GameVersion = TEXT("Pre Alpha 0.10.2");
+const static FString GameVersion = TEXT("Alpha 1.0.0");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -42,6 +45,7 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	GameplayMenuWidget = nullptr;
 	Loading = false;
 	FriendsOnlySession = false;
+	DesiredMaxPlayerCount = 8;
 	OnMainMenu = false;
 
 	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_MainMenu"));
@@ -400,7 +404,7 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 	World->ServerTravel(LoadString);
 }
 
-void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly)
+void UWildOmissionGameInstance::HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly, const int32& MaxPlayerCount)
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -410,6 +414,7 @@ void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& W
 	DesiredServerName = ServerName;
 	WorldToLoad = WorldName;
 	FriendsOnlySession = FriendsOnly;
+	DesiredMaxPlayerCount = MaxPlayerCount;
 
 	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
@@ -423,7 +428,7 @@ void UWildOmissionGameInstance::Host(const FString& ServerName, const FString& W
 	CreateSession();
 }
 
-void UWildOmissionGameInstance::Join(const uint32& Index)
+void UWildOmissionGameInstance::JoinServer(const uint32& Index)
 {
 	if (!SessionInterface.IsValid() || !SessionSearch.IsValid() || MainMenuWidget == nullptr)
 	{
@@ -447,7 +452,7 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = false;
-	SessionSettings.NumPublicConnections = 16;
+	SessionSettings.NumPublicConnections = DesiredMaxPlayerCount;
 	SessionSettings.bShouldAdvertise = true;
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.bUseLobbiesIfAvailable = true;
@@ -567,7 +572,7 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		FString HostGameVersion = TEXT("");
 		if (SearchResult.Session.SessionSettings.Get(GAME_VERSION_SETTINGS_KEY, HostGameVersion))
 		{
-			if (!GetWorld()->IsPlayInEditor() && GameVersion != HostGameVersion)
+			if (!GetWorld()->IsEditorWorld() && GameVersion != HostGameVersion)
 			{
 				continue;
 			}
@@ -580,9 +585,8 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		FServerData Data;
 		Data.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
 		Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
-
 		Data.HostUsername = SearchResult.Session.OwningUserName;
-
+		
 		FString ServerName;
 		if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
 		{

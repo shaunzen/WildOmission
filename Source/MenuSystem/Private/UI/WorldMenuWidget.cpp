@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "OptionBoxes/CheckOptionBox.h"
+#include "OptionBoxes/SliderOptionBox.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
 
@@ -17,6 +18,7 @@ UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) 
 	CancelButton = nullptr;
 	MultiplayerCheckOptionBox = nullptr;
 	FriendsOnlyCheckOptionBox = nullptr;
+	MaxPlayersSliderOptionBox = nullptr;
 	HostSettingsMenu = nullptr;
 	ServerNameInputBox = nullptr;
 
@@ -26,6 +28,10 @@ UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) 
 void UWorldMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	MaxPlayersSliderOptionBox->SetMaxValue(16);
+	MaxPlayersSliderOptionBox->SetMinValue(2);
+	MaxPlayersSliderOptionBox->SetValue(8);
 
 	PlayButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastPlayButtonClicked);
 	RenameButton->OnClicked.AddDynamic(this, &UWorldMenuWidget::BroadcastRenameButtonClicked);
@@ -81,7 +87,7 @@ void UWorldMenuWidget::BroadcastPlayButtonClicked()
 	const bool IsMultiplayer = MultiplayerCheckOptionBox->IsChecked();
 	const bool IsFriendsOnly = FriendsOnlyCheckOptionBox->IsChecked();
 
-	OnPlayButtonClicked.Broadcast(WorldName, ServerName, IsMultiplayer, IsFriendsOnly);
+	OnPlayButtonClicked.Broadcast(WorldName, ServerName, IsMultiplayer, IsFriendsOnly, FMath::RoundToInt32(MaxPlayersSliderOptionBox->GetValue()));
 }
 
 void UWorldMenuWidget::BroadcastRenameButtonClicked()

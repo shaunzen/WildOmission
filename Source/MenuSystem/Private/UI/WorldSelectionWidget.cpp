@@ -64,14 +64,15 @@ void UWorldSelectionWidget::SetWorldList(const TArray<FString>& WorldNames)
 			return;
 		}
 
-		FString DaysPlayedString = FString::Printf(TEXT("%i Days"), SaveGame->DaysPlayed);
-		FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), SaveGame->CreationInformation.Month, SaveGame->CreationInformation.Day, SaveGame->CreationInformation.Year);
-
-		Row->WorldNameTextBlock->SetText(FText::FromString(SaveGame->CreationInformation.Name));
-		Row->DaysPlayed->SetText(FText::FromString(DaysPlayedString));
-		Row->DateCreated->SetText(FText::FromString(CreationString));
-		Row->Setup(this, SaveGame->CreationInformation.Name);
-
+		const FWorldRowInformation Information(
+			SaveGame->DaysPlayed, 
+			SaveGame->CreationInformation.Month, 
+			SaveGame->CreationInformation.Day, 
+			SaveGame->CreationInformation.Year, 
+			SaveGame->CreationInformation.Name
+		);
+		Row->Setup(Information);
+		Row->OnClicked.AddDynamic(this, &UWorldSelectionWidget::SetSelectedWorld);
 		WorldListBox->AddChild(Row);
 	}
 }
@@ -99,9 +100,8 @@ void UWorldSelectionWidget::UpdateListChildren()
 			continue;
 		}
 
-		bool RowSelected = (SelectedWorldName.IsSet() && SelectedWorldName.GetValue() == Row->GetWorldName());
-		
-		Row->Selected = RowSelected;
+		const bool RowSelected = (SelectedWorldName.IsSet() && SelectedWorldName.GetValue() == Row->GetWorldName());
+		Row->SetSelected(RowSelected);
 	}
 }
 

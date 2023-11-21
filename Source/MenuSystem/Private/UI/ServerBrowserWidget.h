@@ -7,10 +7,9 @@
 #include "Structs/ServerData.h"
 #include "ServerBrowserWidget.generated.h"
 
-class UButton;
-class UTextBlock;
-class UServerRowWidget;
-class UMainMenuWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerBrowserOnJoinButtonClickedSignature, const uint32&, SelectedIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FServerBrowserOnRefreshButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FServerBrowserOnCancelButtonClickedSignature);
 
 UCLASS()
 class UServerBrowserWidget : public UUserWidget
@@ -20,33 +19,33 @@ class UServerBrowserWidget : public UUserWidget
 public:
 	UServerBrowserWidget(const FObjectInitializer& ObjectInitializer);
 
-	void Setup(UMainMenuWidget* InMainMenuParent);
+	virtual void NativeConstruct() override;
 
-	void Open();
+	FServerBrowserOnJoinButtonClickedSignature OnJoinButtonClicked;
+	FServerBrowserOnRefreshButtonClickedSignature OnRefreshButtonClicked;
+	FServerBrowserOnCancelButtonClickedSignature OnCancelButtonClicked;
 
-	void SetServerList(TArray<FServerData> ServerNames);
-	void SelectServerIndex(uint32 Index);
+	void OnOpen();
 
+	void SetServerList(TArray<struct FServerData> ServerNames);
+	
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* ServerList;
+	class UPanelWidget* ServerList;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* JoinButton;
+	class UButton* JoinButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* BackButton;
+	class UButton* CancelButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UButton* RefreshListButton;
+	class UButton* RefreshListButton;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* RefreshListButtonText;
+	class UTextBlock* RefreshListButtonText;
 
-	UPROPERTY()
-	UMainMenuWidget* ParentMenu;
-
-	TSubclassOf<UServerRowWidget> ServerRowWidgetClass;
+	TSubclassOf<class UServerRowWidget> ServerRowWidgetClass;
 
 	TOptional<uint32> SelectedServerIndex;
 	
@@ -54,8 +53,15 @@ private:
 	void UpdateServerListChildren();
 	
 	UFUNCTION()
-	void JoinServer();
+	void SelectServerIndex(const uint32& SelectedIndex);
 
 	UFUNCTION()
-	void RefreshList();
+	void BroadcastRefreshButtonClicked();
+
+	UFUNCTION()
+	void BroadcastJoinButtonClicked();
+
+	UFUNCTION()
+	void BroadcastCancelButtonClicked();
+
 }; 

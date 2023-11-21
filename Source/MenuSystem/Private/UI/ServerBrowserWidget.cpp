@@ -6,16 +6,14 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/PanelWidget.h"
-#include "UI/MainMenuWidget.h"
 
 UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	ServerList = nullptr;
 	JoinButton = nullptr;
-	BackButton = nullptr;
+	CancelButton = nullptr;
 	RefreshListButton = nullptr;
 	RefreshListButtonText = nullptr;
-	ParentMenu = nullptr;
 	ServerRowWidgetClass = nullptr;
 
 	static ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/Server/WBP_ServerRow"));
@@ -25,18 +23,15 @@ UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectIniti
 	}
 }
 
-void UServerBrowserWidget::Setup(UMainMenuWidget* InMainMenuParent)
+void UServerBrowserWidget::NativeConstruct()
 {
-	ParentMenu = InMainMenuParent;
+	Super::NativeConstruct();
 
-	JoinButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::JoinServer);
-	RefreshListButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::RefreshList);
-	BackButton->OnClicked.AddDynamic(ParentMenu, &UMainMenuWidget::OpenWorldSelectionMenu);
-}
+	JoinButton->SetIsEnabled(false);
 
-void UServerBrowserWidget::Open()
-{
-	RefreshList();
+	JoinButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::BroadcastJoinButtonClicked);
+	RefreshListButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::BroadcastRefreshButtonClicked);
+	CancelButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::BroadcastCancelButtonClicked);
 }
 
 void UServerBrowserWidget::SetServerList(TArray<FServerData> ServerNames)
@@ -58,26 +53,15 @@ void UServerBrowserWidget::SetServerList(TArray<FServerData> ServerNames)
 		{
 			return;
 		}
-
-		Row->ServerName->SetText(FText::FromString(ServerData.Name));
-		FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
-		Row->HostUser->SetText(FText::FromString(HostString));
-		FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
-		Row->ConnectionFraction->SetText(FText::FromString(FractionString));
-		Row->Setup(this, i);
+		Row->Setup(i, ServerData);
+		Row->OnSelected.AddDynamic(this, &UServerBrowserWidget::SelectServerIndex);
 		++i;
 
 		ServerList->AddChild(Row);
 	}
 
-	FString RefreshString = FString("Refresh");
+	FString RefreshString = TEXT("Refresh");
 	RefreshListButtonText->SetText(FText::FromString(RefreshString));
-}
-
-void UServerBrowserWidget::SelectServerIndex(uint32 Index)
-{
-	SelectedServerIndex = Index;
-	UpdateServerListChildren();
 }
 
 void UServerBrowserWidget::UpdateServerListChildren()
@@ -89,31 +73,54 @@ void UServerBrowserWidget::UpdateServerListChildren()
 		{
 			return;
 		}
-		Row->Selected = (SelectedServerIndex.IsSet() && SelectedServerIndex.GetValue() == i);
+		Row->SetSelected(SelectedServerIndex.IsSet() && SelectedServerIndex.GetValue() == i);
 	}
 }
 
-void UServerBrowserWidget::RefreshList()
+void UServerBrowserWidget::SelectServerIndex(const uint32& SelectedIndex)
 {
-	IMenuInterface* MenuInterface = ParentMenu->GetMenuInterface();
-	if (MenuInterface == nullptr)
+	SelectedServerIndex = SelectedIndex;
+	JoinButton->SetIsEnabled(true);
+	UpdateServerListChildren();
+}
+
+void UServerBrowserWidget::BroadcastRefreshButtonClicked()
+{
+	if (!OnRefreshButtonClicked.IsBound())
 	{
 		return;
 	}
 
-	FString WaitingString = FString("...");
+	const FString WaitingString = FString("...");
 	RefreshListButtonText->SetText(FText::FromString(WaitingString));
+	
+	SelectedServerIndex.Reset();
+	JoinButton->SetIsEnabled(false);
 
-	MenuInterface->RefreshServerList();
+	OnRefreshButtonClicked.Broadcast();
 }
 
-void UServerBrowserWidget::JoinServer()
+void UServerBrowserWidget::OnOpen()
 {
-	IMenuInterface* MenuInterface = ParentMenu->GetMenuInterface();
-	if (MenuInterface == nullptr || SelectedServerIndex.IsSet() == false)
+	BroadcastRefreshButtonClicked();
+}
+
+void UServerBrowserWidget::BroadcastJoinButtonClicked()
+{
+	if (!OnJoinButtonClicked.IsBound() || !SelectedServerIndex.IsSet())
 	{
 		return;
 	}
 
-	MenuInterface->Join(SelectedServerIndex.GetValue());
+	OnJoinButtonClicked.Broadcast(SelectedServerIndex.GetValue());
+}
+
+void UServerBrowserWidget::BroadcastCancelButtonClicked()
+{
+	if (!OnCancelButtonClicked.IsBound())
+	{
+		return;
+	}
+
+	OnCancelButtonClicked.Broadcast();
 }

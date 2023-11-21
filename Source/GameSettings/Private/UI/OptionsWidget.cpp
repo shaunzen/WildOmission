@@ -140,7 +140,7 @@ void UOptionsWidget::RefreshCategoryButtonColor(UButton* ButtonToRefresh)
 	}
 
 	const FLinearColor& ColorToSet = CategoryButtonsVerticalBox->GetChildIndex(ButtonToRefresh) == CategorySwitcher->GetActiveWidgetIndex() ? Blue->Default : LightGray->Default;
-	ButtonToRefresh->SetBackgroundColor(ColorToSet);
+	ButtonToRefresh->SetBackgroundColor(ColorToSet * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
 }
 
 void UOptionsWidget::Apply()

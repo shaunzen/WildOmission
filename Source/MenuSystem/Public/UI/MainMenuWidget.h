@@ -8,15 +8,6 @@
 #include "Interfaces/MenuInterface.h"
 #include "MainMenuWidget.generated.h"
 
-class UWidgetSwitcher;
-class UButton;
-class UWorldSelectionWidget;
-class UWorldCreationWidget;
-class UWorldMenuWidget;
-class UServerBrowserWidget;
-class UOptionsWidget;
-class UErrorMessagePrompt;
-
 UCLASS()
 class MENUSYSTEM_API UMainMenuWidget : public UUserWidget
 {
@@ -38,7 +29,7 @@ public:
 	UFUNCTION()
 	void OpenWorldMenuForWorld(const FString& WorldName);
 	UFUNCTION()
-	void HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly);
+	void HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly, const int32& MaxPlayerCount);
 	UFUNCTION()
 	void OpenRenameWorldMenu();
 	UFUNCTION()
@@ -49,6 +40,8 @@ public:
 	void OpenOptionsMenu();
 	UFUNCTION()
 	void OpenFeedbackPage();
+	UFUNCTION()
+	void OpenCreditsMenu();
 	UFUNCTION()
 	void ExitGame();
 	UFUNCTION()
@@ -63,36 +56,46 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UWidgetSwitcher* MenuSwitcher;
+	class UWidgetSwitcher* MenuSwitcher;
 
 	UPROPERTY(Meta = (BindWidget))
-	UButton* PlayButton;
+	class UButton* PlayButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* OptionsButton;
+	class UButton* OptionsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* FeedbackButton;
+	class UButton* FeedbackButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* ExitButton;
+	class UButton* CreditsButton;
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* ExitButton;
 
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* MainMenu;
 	UPROPERTY(Meta = (BindWidget))
-	UWorldSelectionWidget* WorldSelectionMenu;
+	class UWorldSelectionWidget* WorldSelectionMenu;
 	UPROPERTY(Meta = (BindWidget))
-	UWorldCreationWidget* WorldCreationMenu;
+	class UWorldCreationWidget* WorldCreationMenu;
 	UPROPERTY(Meta = (BindWidget))
-	UWorldMenuWidget* WorldMenu;
+	class UWorldMenuWidget* WorldMenu;
 	UPROPERTY(Meta = (BindWidget))
 	class URenameWorldWidget* RenameWorldMenu;
 	UPROPERTY(Meta = (BindWidget))
 	class UDeleteWorldWidget* DeleteWorldMenu;
 	UPROPERTY(Meta = (BindWidget))
-	UServerBrowserWidget* ServerBrowserMenu;
+	class UServerBrowserWidget* ServerBrowserMenu;
 	UPROPERTY(Meta = (BindWidget))
-	UOptionsWidget* OptionsMenu;
+	class UOptionsWidget* OptionsMenu;
 	UPROPERTY(Meta = (BindWidget))
-	UErrorMessagePrompt* ErrorMessagePrompt;
+	class UCreditsWidget* CreditsMenu;
+	UPROPERTY(Meta = (BindWidget))
+	class UErrorMessagePrompt* ErrorMessagePrompt;
 
-	IMenuInterface* MenuInterface;
+	class IMenuInterface* MenuInterface;
+	
+	UFUNCTION()
+	void JoinServer(const uint32& ServerIndex);
+
+	UFUNCTION()
+	void RefreshServerList();
 
 };

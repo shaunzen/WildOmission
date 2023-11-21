@@ -11,6 +11,7 @@
 #include "DeleteWorldWidget.h"
 #include "ServerBrowserWidget.h"
 #include "UI/OptionsWidget.h"
+#include "CreditsWidget.h"
 #include "ErrorMessagePrompt.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Log.h"
@@ -23,6 +24,7 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	PlayButton = nullptr;
 	OptionsButton = nullptr;
 	FeedbackButton = nullptr;
+	CreditsButton = nullptr;
 	ExitButton = nullptr;
 	MainMenu = nullptr;
 	WorldSelectionMenu = nullptr;
@@ -32,6 +34,7 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	DeleteWorldMenu = nullptr;
 	ServerBrowserMenu = nullptr;
 	OptionsMenu = nullptr;
+	CreditsMenu = nullptr;
 	ErrorMessagePrompt = nullptr;
 	MenuInterface = nullptr;
 }
@@ -43,6 +46,7 @@ void UMainMenuWidget::NativeConstruct()
 	PlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 	OptionsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenOptionsMenu);
 	FeedbackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenFeedbackPage);
+	CreditsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenCreditsMenu);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
 
 	WorldSelectionMenu->OnSelectButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
@@ -64,8 +68,14 @@ void UMainMenuWidget::NativeConstruct()
 	DeleteWorldMenu->OnDeleteButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
 	DeleteWorldMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
 
-	ServerBrowserMenu->Setup(this);
+	ServerBrowserMenu->OnJoinButtonClicked.AddDynamic(this, &UMainMenuWidget::JoinServer);
+	ServerBrowserMenu->OnRefreshButtonClicked.AddDynamic(this, &UMainMenuWidget::RefreshServerList);
+	ServerBrowserMenu->OnCancelButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldSelectionMenu);
+
 	OptionsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+
+	CreditsMenu->OnBackButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
+
 	ErrorMessagePrompt->OnCloseButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenMainMenu);
 }
 
@@ -105,6 +115,26 @@ void UMainMenuWidget::Teardown()
 IMenuInterface* UMainMenuWidget::GetMenuInterface() const
 {
 	return MenuInterface;
+}
+
+void UMainMenuWidget::JoinServer(const uint32& ServerIndex)
+{
+	if (MenuInterface == nullptr)
+	{
+		return;
+	}
+
+	MenuInterface->JoinServer(ServerIndex);
+}
+
+void UMainMenuWidget::RefreshServerList()
+{
+	if (MenuInterface == nullptr)
+	{
+		return;
+	}
+
+	MenuInterface->RefreshServerList();
 }
 
 void UMainMenuWidget::OpenMainMenu()
@@ -155,14 +185,14 @@ void UMainMenuWidget::OpenWorldMenuForWorld(const FString& WorldName)
 	WorldMenu->Open(WorldName);
 }
 
-void UMainMenuWidget::HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly)
+void UMainMenuWidget::HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly, const int32& MaxPlayerCount)
 {
 	if (MenuInterface == nullptr || WorldName.IsEmpty())
 	{
 		return;
 	}
 
-	IsMultiplayer ? MenuInterface->Host(ServerName, WorldName, IsFriendsOnly) : MenuInterface->StartSingleplayer(WorldName);
+	IsMultiplayer ? MenuInterface->HostServer(ServerName, WorldName, IsFriendsOnly) : MenuInterface->StartSingleplayer(WorldName);
 }
 
 void UMainMenuWidget::OpenRenameWorldMenu()
@@ -195,7 +225,7 @@ void UMainMenuWidget::OpenServerBrowserMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(ServerBrowserMenu);
-	ServerBrowserMenu->Open();
+	ServerBrowserMenu->OnOpen();
 }
 
 void UMainMenuWidget::OpenOptionsMenu()
@@ -212,6 +242,16 @@ void UMainMenuWidget::OpenOptionsMenu()
 void UMainMenuWidget::OpenFeedbackPage()
 {
 	UKismetSystemLibrary::LaunchURL(TEXT("https://forms.gle/2GP8ZSTU5ARa5Pmu8"));
+}
+
+void UMainMenuWidget::OpenCreditsMenu()
+{
+	if (MenuSwitcher == nullptr || CreditsMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(CreditsMenu);
 }
 
 void UMainMenuWidget::ExitGame()

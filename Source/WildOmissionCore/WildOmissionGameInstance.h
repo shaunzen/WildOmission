@@ -60,8 +60,8 @@ public:
 
 	// Begin IMenuInterface Implementation
 	virtual void StartSingleplayer(const FString& WorldName) override;
-	virtual void Host(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false) override;
-	virtual void Join(const uint32& Index) override;
+	virtual void HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false, const int32& MaxPlayerCount = 8) override;
+	virtual void JoinServer(const uint32& Index) override;
 	virtual void RefreshServerList() override;
 	virtual void QuitToMenu() override;
 	// End IMenuInterface Implementation
@@ -118,6 +118,7 @@ private:
 	FString DesiredServerName;
 	FString WorldToLoad;
 	bool FriendsOnlySession;
+	int32 DesiredMaxPlayerCount;
 
 	UFUNCTION()
 	void CreateSession(FName SessionName = FName(""), bool Success = true);

@@ -3,19 +3,44 @@
 
 #include "WorldRowWidget.h"
 #include "Components/Button.h"
-#include "Components/Border.h"
-#include "WorldSelectionWidget.h"
+#include "Components/TextBlock.h"
 #include "Color/UIColors.h"
 
-void UWorldRowWidget::Setup(UWorldSelectionWidget* InParent, const FString& InWorldName)
+UWorldRowWidget::UWorldRowWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	Parent = InParent;
-	WorldName = InWorldName;
-
-	RowButton->OnClicked.AddDynamic(this, &UWorldRowWidget::OnClicked);
+	RowButton = nullptr;
+	WorldNameTextBlock = nullptr;
+	DateCreatedTextBlock = nullptr;
+	DaysPlayedTextBlock = nullptr;
+	WorldName = TEXT("");
+	Selected = false;
 }
 
-FString UWorldRowWidget::GetWorldName()
+void UWorldRowWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	RowButton->OnClicked.AddDynamic(this, &UWorldRowWidget::BroadcastOnClicked);
+}
+
+void UWorldRowWidget::Setup(const FWorldRowInformation& InInformation)
+{
+	WorldName = InInformation.Name;
+
+	FString DaysPlayedString = FString::Printf(TEXT("%i Days"), InInformation.DaysPlayed);
+	FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), InInformation.CreationMonth, InInformation.CreationDay, InInformation.CreationYear);
+
+	WorldNameTextBlock->SetText(FText::FromString(InInformation.Name));
+	DateCreatedTextBlock->SetText(FText::FromString(CreationString));
+	DaysPlayedTextBlock->SetText(FText::FromString(DaysPlayedString));
+}
+
+void UWorldRowWidget::SetSelected(bool InSelected)
+{
+	Selected = InSelected;
+}
+
+FString UWorldRowWidget::GetWorldName() const
 {
 	return WorldName;
 }
@@ -24,49 +49,41 @@ void UWorldRowWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (Selected)
+	FUIColor* Blue = UUIColors::GetBaseColor(TEXT("Blue"));
+	FUIColor* LightGray = UUIColors::GetBaseColor(TEXT("LightGray"));
+	if (Blue == nullptr || LightGray == nullptr)
 	{
-		FUIColor* Blue = UUIColors::GetBaseColor(TEXT("Blue"));
-
-		if (Hovering)
-		{
-			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(Blue) * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
-		}
-		else
-		{
-			RowBorder->SetBrushColor(Blue->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
-		}
+		return;
 	}
-	else
+
+	FLinearColor ButtonColor = Selected ? Blue->Default : LightGray->Default;
+	RowButton->SetBackgroundColor(ButtonColor * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
+}
+
+void UWorldRowWidget::BroadcastOnClicked()
+{
+	if (!OnClicked.IsBound())
 	{
-		FUIColor* DarkGray = UUIColors::GetBaseColor(TEXT("DarkGray"));
-
-		if (Hovering)
-		{
-			RowBorder->SetBrushColor(UUIColors::GetHighlightedColor(DarkGray) * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
-		}
-		else
-		{
-			RowBorder->SetBrushColor(DarkGray->Default * FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
-		}
+		return;
 	}
+
+	OnClicked.Broadcast(WorldName);
 }
 
-void UWorldRowWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+FWorldRowInformation::FWorldRowInformation()
 {
-	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
-
-	Hovering = true;
+	DaysPlayed = 0;
+	CreationMonth = 0;
+	CreationDay = 0;
+	CreationYear = 0;
+	Name = TEXT("");
 }
 
-void UWorldRowWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+FWorldRowInformation::FWorldRowInformation(const uint32& InDaysPlayed, const uint8& InCreationMonth, const uint8& InCreationDay, const uint16& InCreationYear, const FString& InName)
 {
-	Super::NativeOnMouseLeave(InMouseEvent);
-
-	Hovering = false;
-}
-
-void UWorldRowWidget::OnClicked()
-{
-	Parent->SetSelectedWorld(WorldName);
+	DaysPlayed = InDaysPlayed;
+	CreationMonth = InCreationMonth;
+	CreationDay = InCreationDay;
+	CreationYear = InCreationYear;
+	Name = InName;
 }

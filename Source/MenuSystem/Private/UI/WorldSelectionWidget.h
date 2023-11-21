@@ -25,8 +25,6 @@ public:
 	virtual void NativeConstruct() override;
 
 	void SetWorldList(const TArray<FString>& WorldNames);
-	void SetSelectedWorld(const FString& WorldName);
-
 	TOptional<FString> SelectedWorldName;
 
 	FOnSelectButtonClickedSignature OnSelectButtonClicked;
@@ -58,6 +56,9 @@ private:
 
 	TArray<class UWildOmissionSaveGame*> GetWorldsSortedByLastPlayed(const TArray<FString>& NameList);
 	static bool IsSaveMoreRecentlyPlayed(class UWildOmissionSaveGame* SaveA, class UWildOmissionSaveGame* SaveB);
+
+	UFUNCTION()
+	void SetSelectedWorld(const FString& WorldName);
 
 	UFUNCTION()
 	void BroadcastSelectButtonClicked();

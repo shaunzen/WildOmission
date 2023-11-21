@@ -15,4 +15,5 @@ struct MENUSYSTEM_API FServerData
 	uint16 CurrentPlayers;
 	uint16 MaxPlayers;
 	FString HostUsername;
+	int32 PingMS;
 };
