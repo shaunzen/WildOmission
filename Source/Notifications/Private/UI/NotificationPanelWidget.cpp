@@ -14,6 +14,7 @@
 static UMaterialInterface* HealthIcon = nullptr;
 static UMaterialInterface* ThirstIcon = nullptr;
 static UMaterialInterface* HungerIcon = nullptr;
+static UMaterialInterface* BuildingIcon = nullptr;
 
 UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -43,29 +44,39 @@ UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& Obj
 	{
 		HungerIcon = HungerIconObject.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> BuildingIconObject(TEXT("/Game/WildOmissionCore/UI/Icons/Vitals/M_Building_Icon_Inst"));
+	if (BuildingIconObject.Succeeded())
+	{
+		BuildingIcon = BuildingIconObject.Object;
+	}
 }
 
 void UNotificationPanelWidget::NativeConstruct()
-{	
-	// We want to add notif if we add an item to our inventory, or remove
-	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
-	if (OwnerInventoryComponent == nullptr)
+{
+	APawn* OwnerPawn = GetOwningPlayerPawn();
+	if (OwnerPawn == nullptr)
 	{
 		return;
 	}
 
-	OwnerInventoryComponent->OnItemUpdate.AddDynamic(this, &UNotificationPanelWidget::CreateItemNotification);
-
-	UVitalsComponent* OwnerVitalsComponent = GetOwningPlayerPawn()->FindComponentByClass<UVitalsComponent>();
-	if (OwnerVitalsComponent == nullptr)
+	// Bind inventory updates to create notifications
+	if (UInventoryComponent* OwnerInventoryComponent = OwnerPawn->FindComponentByClass<UInventoryComponent>())
 	{
-		return;
+		OwnerInventoryComponent->OnItemUpdate.AddDynamic(this, &UNotificationPanelWidget::CreateItemNotification);
+	}
+	
+	// Bind vitals updates to create nofifications
+	if (UVitalsComponent* OwnerVitalsComponent = OwnerPawn->FindComponentByClass<UVitalsComponent>())
+	{
+		OwnerVitalsComponent->OnBeginThirst.AddDynamic(this, &UNotificationPanelWidget::AddThirstyNotification);
+		OwnerVitalsComponent->OnEndThirst.AddDynamic(this, &UNotificationPanelWidget::RemoveThirstyNotification);
+		OwnerVitalsComponent->OnBeginStarving.AddDynamic(this, &UNotificationPanelWidget::AddStarvingNotification);
+		OwnerVitalsComponent->OnEndStarving.AddDynamic(this, &UNotificationPanelWidget::RemoveStarvingNotification);
 	}
 
-	OwnerVitalsComponent->OnBeginThirst.AddDynamic(this, &UNotificationPanelWidget::AddThirstyNotification);
-	OwnerVitalsComponent->OnEndThirst.AddDynamic(this, &UNotificationPanelWidget::RemoveThirstyNotification);
-	OwnerVitalsComponent->OnBeginStarving.AddDynamic(this, &UNotificationPanelWidget::AddStarvingNotification);
-	OwnerVitalsComponent->OnEndStarving.AddDynamic(this, &UNotificationPanelWidget::RemoveStarvingNotification);
+	// Bind builder updates to create notifications
+	// TODO!
 }
 
 void UNotificationPanelWidget::CreateItemNotification(const FInventoryItemUpdate& ItemUpdate)
@@ -100,8 +111,8 @@ void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
 	ThirstyNotification.Negative = true;
 	ThirstyNotification.Time = Time;
 	ThirstyNotification.Duration = 0.0f;
-	ThirstyNotification.Identifier = FName("Thirsty");
-	ThirstyNotification.Message = FString("Thirsty");
+	ThirstyNotification.Identifier = TEXT("Thirsty");
+	ThirstyNotification.Message = TEXT("Thirsty");
 	ThirstyNotification.Icon = ThirstIcon;
 
 	AddNotification(ThirstyNotification);
@@ -109,7 +120,7 @@ void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
 
 void UNotificationPanelWidget::RemoveThirstyNotification(const float& Time)
 {
-	RemoveNotification(FName("Thirsty"));
+	RemoveNotification(TEXT("Thirsty"));
 }
 
 void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
@@ -118,8 +129,8 @@ void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
 	StarvingNotification.Negative = true;
 	StarvingNotification.Time = Time;
 	StarvingNotification.Duration = 0.0f;
-	StarvingNotification.Identifier = FName("Starving");
-	StarvingNotification.Message = FString("Starving");
+	StarvingNotification.Identifier = TEXT("Starving");
+	StarvingNotification.Message = TEXT("Starving");
 	StarvingNotification.Icon = HungerIcon;
 
 	AddNotification(StarvingNotification);
@@ -127,7 +138,7 @@ void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
 
 void UNotificationPanelWidget::RemoveStarvingNotification(const float& Time)
 {
-	RemoveNotification(FName("Starving"));
+	RemoveNotification(TEXT("Starving"));
 }
 
 void UNotificationPanelWidget::AddNotification(const FNotification& Notification)

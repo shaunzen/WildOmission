@@ -218,18 +218,6 @@ bool ADeployableItemBase::HasAuthorizationToBuild(const FVector& LocationToTest)
 		return false;
 	}
 
-	const FString& OwnerID = OwnerBuilderComponent->GetOwnerUniqueID();
 
-	TArray<AToolCupboard*> SpawnedToolCupboards = AToolCupboard::GetAllToolCupboards();
-	for (AToolCupboard* ToolCupboard : SpawnedToolCupboards)
-	{
-		if (ToolCupboard == nullptr || !ToolCupboard->IsWithinRange(LocationToTest) || ToolCupboard->IsPlayerAuthorized(OwnerID))
-		{
-			continue;
-		}
-
-		return false;
-	}
-
-	return true;
+	return OwnerBuilderComponent->HasAuthorizationAtLocation(LocationToTest);
 }

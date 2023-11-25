@@ -100,6 +100,41 @@ void UBuilderComponent::BeginPlay()
 	
 }
 
+bool UBuilderComponent::HasAuthorization() const
+{
+	const AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return false;
+	}
+
+	return HasAuthorizationAtLocation(OwnerActor->GetActorLocation());
+}
+
+bool UBuilderComponent::HasAuthorizationAtLocation(const FVector& LocationToTest) const
+{
+	const AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return false;
+	}
+
+	const FString& OwnerID = GetOwnerUniqueID();
+
+	const TArray<AToolCupboard*> SpawnedToolCupboards = AToolCupboard::GetAllToolCupboards();
+	for (const AToolCupboard* ToolCupboard : SpawnedToolCupboards)
+	{
+		if (ToolCupboard == nullptr || !ToolCupboard->IsWithinRange(LocationToTest) || ToolCupboard->IsPlayerAuthorized(OwnerID))
+		{
+			continue;
+		}
+
+		return false;
+	}
+
+	return true;
+}
+
 FString UBuilderComponent::GetOwnerUniqueID() const
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());

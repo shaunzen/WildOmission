@@ -27,6 +27,12 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_ClearAllAuthorized(class AToolCupboard* ToolCupboard);
 
+	// Will return if the current owner has authorization at it's current location
+	bool HasAuthorization() const;
+
+	// Will return if the current owner has authorization at the test location
+	bool HasAuthorizationAtLocation(const FVector& LocationToTest) const;
+	
 	FString GetOwnerUniqueID() const;
 
 protected:
