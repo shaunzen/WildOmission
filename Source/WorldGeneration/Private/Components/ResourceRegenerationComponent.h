@@ -32,7 +32,10 @@ private:
 	float OuterRegenerationRadius;
 
 	UFUNCTION()
-	void RegenerateNodesAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const FVector& Origin);
+	void CheckNodeRegenerationConditionsAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const TArray<AActor*> AllNodesInWorld, const FVector& Origin);
+
+	UFUNCTION()
+	void RegenerateNodeAroundOrigin(const FWorldGenerationSettings& GenerationSettings, UClass* NodeClass, const FVector& Origin);
 
 	bool IsTransformWithinInnerRangeOfAnyPlayer(const FTransform& TransformToCheck) const;
 	

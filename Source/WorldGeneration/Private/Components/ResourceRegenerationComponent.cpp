@@ -3,6 +3,7 @@
 
 #include "ResourceRegenerationComponent.h"
 #include "WorldGenerationHandler.h"
+#include "Actors/HarvestableResource.h"
 #include "Structs/BiomeGenerationData.h"
 #include "Structs/WorldGenerationSettings.h"
 #include "Kismet/GameplayStatics.h"
@@ -55,27 +56,57 @@ void UResourceRegenerationComponent::CheckNodeRegenerationConditions()
 			continue;
 		}
 
-		const float MaxRange = 10000.0f;
-		TArray<AActor*> NodesWithinRange = FilterActorsByRange(AllNodesInWorld, Pawn->GetActorLocation(), MaxRange);
-		if (NodesWithinRange.Num() > GenerationSettings.MinNodeCount)
-		{
-			UE_LOG(LogWorldGeneration, Verbose, TEXT("Found %i Nodes Around Player, Less than %i is required to invoke regeneration."), NodesWithinRange.Num(), GenerationSettings.MinNodeCount);
-			continue;
-		}
-
-		RegenerateNodesAroundOrigin(GenerationSettings, Pawn->GetActorLocation());
+		CheckNodeRegenerationConditionsAroundOrigin(GenerationSettings, AllNodesInWorld, Pawn->GetActorLocation());
 	}
 }
 
-void UResourceRegenerationComponent::RegenerateNodesAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const FVector& Origin)
+void UResourceRegenerationComponent::CheckNodeRegenerationConditionsAroundOrigin(const FWorldGenerationSettings& GenerationSettings, const TArray<AActor*> AllNodesInWorld, const FVector& Origin)
 {
-	const int32 AmountOfNodesToSpawn = FMath::RandRange(1, 10);
-
 	FBiomeGenerationData* BiomeData = AWorldGenerationHandler::GetBiomeGenerationData(TEXT("Plains"));
+	if (BiomeData == nullptr)
+	{
+		return;
+	}
+
+	const float MaxRange = 10000.0f;
+	TArray<AActor*> NodesWithinRange = FilterActorsByRange(AllNodesInWorld, Origin, MaxRange);
+	
+	// Count Each Node That Can Spawn
+	for (const FSpawnData& NodeSpawnData : BiomeData->Nodes)
+	{
+		int32 NodeCount = 0;
+		for (AActor* Node : NodesWithinRange)
+		{
+			if (Node->StaticClass() != NodeSpawnData.BlueprintClass)
+			{
+				continue;
+			}
+
+			++NodeCount;
+		}
+		
+		if (NodeCount > 2)
+		{
+			UE_LOG(LogWorldGeneration, Verbose, TEXT("Found %i Nodes Around Player, Less than 2 is required to invoke regeneration."), NodeCount);
+			continue;
+		}
+
+		RegenerateNodeAroundOrigin(GenerationSettings, NodeSpawnData.BlueprintClass, Origin);
+	}
+}
+
+void UResourceRegenerationComponent::RegenerateNodeAroundOrigin(const FWorldGenerationSettings& GenerationSettings, UClass* NodeClass, const FVector& Origin)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	const int32 AmountOfNodesToSpawn = FMath::RandRange(1, 10);
 
 	for (int32 i = 0; i < AmountOfNodesToSpawn; i++)
 	{
-		const int32 NodeIndexToSpawn = FMath::RandRange(0, BiomeData->Nodes.Num() - 1);
 		FTransform SpawnTransform;
 		if (!AWorldGenerationHandler::FindSpawnTransformRadiusFromOrigin(GetWorld(), SpawnTransform, Origin, 
 			InnerRegenerationRadius, OuterRegenerationRadius, GenerationSettings, true))
@@ -88,8 +119,13 @@ void UResourceRegenerationComponent::RegenerateNodesAroundOrigin(const FWorldGen
 			continue;
 		}
 
-		GetWorld()->SpawnActor<AActor>(BiomeData->Nodes[NodeIndexToSpawn].BlueprintClass, SpawnTransform);
-		UE_LOG(LogWorldGeneration, VeryVerbose, TEXT("Spawned Node Index: %i, At Location: %s"), NodeIndexToSpawn, *SpawnTransform.GetLocation().ToString());
+		AActor* SpawnedNode = World->SpawnActor<AActor>(NodeClass, SpawnTransform);
+		if (SpawnedNode == nullptr)
+		{
+			continue;
+		}
+
+		UE_LOG(LogWorldGeneration, VeryVerbose, TEXT("Spawned Node: %s, At Location: %s"), *SpawnedNode->GetActorNameOrLabel(), *SpawnTransform.GetLocation().ToString());
 	}
 }
 
