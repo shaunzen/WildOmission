@@ -46,6 +46,8 @@ private:
 	UFUNCTION()
 	void ClearWidget();
 
+	bool HasAuthorization(const FVector& LocationToTest) const;
+
 	void AttemptDeployableRepair(ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector);
 	bool CanRepairDeployable(ADeployable* DeployableToRepair, FInventoryItem& RepairCost) const;
 	bool LineTraceOnVisibility(FHitResult& OutHitResult) const;

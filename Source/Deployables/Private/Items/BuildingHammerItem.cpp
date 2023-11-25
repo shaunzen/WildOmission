@@ -3,6 +3,7 @@
 
 #include "Items/BuildingHammerItem.h"
 #include "Components/EquipComponent.h"
+#include "Components/BuilderComponent.h"
 #include "Interfaces/DurabilityInterface.h"
 #include "Components/InventoryComponent.h"
 #include "UI/BuildingHammerWidget.h"
@@ -61,7 +62,7 @@ void ABuildingHammerItem::OnSecondaryPressed()
 	}
 
 	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
-	if (HitDeployable == nullptr)
+	if (HitDeployable == nullptr || !HasAuthorization(HitDeployable->GetActorLocation()))
 	{
 		return;
 	}
@@ -100,7 +101,7 @@ void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 	}
 
 	ABuildingBlock* HitBuildingBlock = Cast<ABuildingBlock>(HitResult.GetActor());
-	if (HitBuildingBlock == nullptr || !HitBuildingBlock->IsUpgradable())
+	if (HitBuildingBlock == nullptr || !HitBuildingBlock->IsUpgradable() || !HasAuthorization(HitBuildingBlock->GetActorLocation()))
 	{
 		return;
 	}
@@ -131,7 +132,7 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 	}
 
 	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
-	if (HitDeployable == nullptr)
+	if (HitDeployable == nullptr || !HasAuthorization(HitDeployable->GetActorLocation()))
 	{
 		return;
 	}
@@ -246,6 +247,23 @@ void ABuildingHammerItem::OnSwingImpact(const FHitResult& HitResult, const FVect
 void ABuildingHammerItem::ClearWidget()
 {
 	Widget = nullptr;
+}
+
+bool ABuildingHammerItem::HasAuthorization(const FVector& LocationToTest) const
+{
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return false;
+	}
+
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr)
+	{
+		return false;
+	}
+
+	return OwnerBuilderComponent->HasAuthorizationAtLocation(LocationToTest);
 }
 
 void ABuildingHammerItem::AttemptDeployableRepair(ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector)
