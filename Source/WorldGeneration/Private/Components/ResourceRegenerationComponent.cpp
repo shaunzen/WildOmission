@@ -3,7 +3,6 @@
 
 #include "ResourceRegenerationComponent.h"
 #include "WorldGenerationHandler.h"
-#include "Actors/HarvestableResource.h"
 #include "Structs/BiomeGenerationData.h"
 #include "Structs/WorldGenerationSettings.h"
 #include "Kismet/GameplayStatics.h"
