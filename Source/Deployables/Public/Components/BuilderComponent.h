@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "BuilderComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAddAuthorizedNotificationSignature, bool, HasBuildAuthorization);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemoveAuthorizedNotificationSignature);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DEPLOYABLES_API UBuilderComponent : public UActorComponent
@@ -27,11 +29,17 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_ClearAllAuthorized(class AToolCupboard* ToolCupboard);
 
+	FOnAddAuthorizedNotificationSignature OnAddAuthorizedNotification;
+	FOnRemoveAuthorizedNotificationSignature OnRemoveAuthorizedNotification;
+
 	// Will return if the current owner has authorization at it's current location
 	bool HasAuthorization() const;
 
 	// Will return if the current owner has authorization at the test location
 	bool HasAuthorizationAtLocation(const FVector& LocationToTest) const;
+
+	// TODO so that we arent showing notifications when there are no tool cupboards
+	//bool InRangeOfToolCupboard() const;
 	
 	FString GetOwnerUniqueID() const;
 

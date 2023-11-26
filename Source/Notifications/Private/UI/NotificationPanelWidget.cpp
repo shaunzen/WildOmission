@@ -9,6 +9,7 @@
 #include "Structs/Notification.h"
 #include "Components/InventoryComponent.h"
 #include "Components/VitalsComponent.h"
+#include "Components/BuilderComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 static UMaterialInterface* HealthIcon = nullptr;
@@ -76,7 +77,12 @@ void UNotificationPanelWidget::NativeConstruct()
 	}
 
 	// Bind builder updates to create notifications
-	// TODO!
+	if (UBuilderComponent* OwnerBuilderComponent = OwnerPawn->FindComponentByClass<UBuilderComponent>())
+	{
+		// TODO bind delegates
+		OwnerBuilderComponent->OnAddAuthorizedNotification.AddDynamic(this, &UNotificationPanelWidget::AddAuthorizedNotification);
+		OwnerBuilderComponent->OnRemoveAuthorizedNotification.AddDynamic(this, &UNotificationPanelWidget::RemoveAuthorizedNotification);
+	}
 }
 
 void UNotificationPanelWidget::CreateItemNotification(const FInventoryItemUpdate& ItemUpdate)
@@ -141,6 +147,39 @@ void UNotificationPanelWidget::RemoveStarvingNotification(const float& Time)
 	RemoveNotification(TEXT("Starving"));
 }
 
+void UNotificationPanelWidget::AddAuthorizedNotification(bool HasBuildAuthorization)
+{
+	const FName Identifier = HasBuildAuthorization ? TEXT("BuildingPriviledge") : TEXT("BuildingBlocked");
+	const FName OtherIdentifier = HasBuildAuthorization ? TEXT("BuildingBlocked") : TEXT("BuildingPriviledge");
+
+	// TODO check if already exists before doing anything
+	if (HasNotification(Identifier))
+	{
+		return;
+	}
+
+	if (HasNotification(OtherIdentifier))
+	{
+		RemoveNotification(OtherIdentifier);
+	}
+
+	FNotification BuildingNotification;
+	BuildingNotification.Negative = !HasBuildAuthorization;
+	BuildingNotification.Time = GetWorld()->GetRealTimeSeconds();
+	BuildingNotification.Duration = 0.0f;
+	BuildingNotification.Identifier = Identifier;
+	BuildingNotification.Message = HasBuildAuthorization ? TEXT("Building Priviledge") : TEXT("Building Blocked");
+	BuildingNotification.Icon = BuildingIcon;
+
+	AddNotification(BuildingNotification);
+}
+
+void UNotificationPanelWidget::RemoveAuthorizedNotification()
+{
+	RemoveNotification(TEXT("BuildingPriviledge"));
+	RemoveNotification(TEXT("BuildingBlocked"));
+}
+
 void UNotificationPanelWidget::AddNotification(const FNotification& Notification)
 {
 	UNotificationWidget* NotificationWidget = CreateWidget<UNotificationWidget>(this, NotificationWidgetBlueprint);
@@ -164,6 +203,33 @@ void UNotificationPanelWidget::AddNotification(const FNotification& Notification
 	}
 
 	NotificationContainer->AddChild(NotificationWidget);
+}
+
+bool UNotificationPanelWidget::HasNotification(const FName& NotificationIdentifier)
+{
+	for (UWidget* ChildWidget : StatusNotificationContainer->GetAllChildren())
+	{
+		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
+		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier)
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	for (UWidget* ChildWidget : NotificationContainer->GetAllChildren())
+	{
+		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
+		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier)
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 void UNotificationPanelWidget::RemoveNotification(const FName& NotificationIdentifier)

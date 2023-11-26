@@ -14,6 +14,8 @@ class DEPLOYABLES_API ABuildingHammerItem : public AToolItem
 public:
 	ABuildingHammerItem();
 
+	virtual void Tick(float DeltaTime) override;
+
 	virtual void OnPrimaryHeld() override;
 	virtual void OnSecondaryPressed() override;
 

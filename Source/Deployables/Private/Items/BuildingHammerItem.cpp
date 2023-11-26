@@ -33,6 +33,26 @@ ABuildingHammerItem::ABuildingHammerItem()
 	}
 }
 
+void ABuildingHammerItem::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// TODO check authorization
+
+	UBuilderComponent* OwnerBuilderComponent = GetOwner()->FindComponentByClass<UBuilderComponent>();
+	
+	if (OwnerBuilderComponent == nullptr)
+	{
+		return;
+	}
+
+	const bool HasAuthToBuild = OwnerBuilderComponent->HasAuthorization();
+	if (OwnerBuilderComponent->OnAddAuthorizedNotification.IsBound())
+	{
+		OwnerBuilderComponent->OnAddAuthorizedNotification.Broadcast(HasAuthToBuild);
+	}
+}
+
 void ABuildingHammerItem::OnPrimaryHeld()
 {
 	Super::OnPrimaryHeld();
