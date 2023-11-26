@@ -100,7 +100,7 @@ void UBuilderComponent::BeginPlay()
 	
 }
 
-bool UBuilderComponent::HasAuthorization() const
+bool UBuilderComponent::HasBuildingPrivilege() const
 {
 	const AActor* OwnerActor = GetOwner();
 	if (OwnerActor == nullptr)
@@ -108,10 +108,10 @@ bool UBuilderComponent::HasAuthorization() const
 		return false;
 	}
 
-	return HasAuthorizationAtLocation(OwnerActor->GetActorLocation());
+	return HasBuildingPrivilege(OwnerActor->GetActorLocation());
 }
 
-bool UBuilderComponent::HasAuthorizationAtLocation(const FVector& LocationToTest) const
+bool UBuilderComponent::HasBuildingPrivilege(const FVector& LocationToTest) const
 {
 	const AActor* OwnerActor = GetOwner();
 	if (OwnerActor == nullptr)

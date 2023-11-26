@@ -65,7 +65,7 @@ bool ALockApplicationItem::GetPlacementTransform(FTransform& OutPlacementTransfo
 	}
 	
 	OutPlacementTransform = HitLockComponent->GetComponentTransform();
-	if (!HasAuthorizationToBuild(HitLockComponent->GetComponentLocation()))
+	if (!HasBuildingPrivilege(HitLockComponent->GetComponentLocation()))
 	{
 		return false;
 	}

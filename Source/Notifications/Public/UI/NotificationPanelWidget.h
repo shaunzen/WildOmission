@@ -43,10 +43,10 @@ private:
 	void RemoveStarvingNotification(const float& Time);
 
 	UFUNCTION()
-	void AddAuthorizedNotification(bool HasBuildAuthorization);
+	void AddBuildingPrivilegeNotification(bool HasBuildingPrivilege);
 
 	UFUNCTION()
-	void RemoveAuthorizedNotification();
+	void ClearBuildingPrivilegeNotification();
 
 	void AddNotification(const FNotification& Notification);
 	bool HasNotification(const FName& NotificationIdentifier);

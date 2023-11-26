@@ -44,7 +44,10 @@ private:
 	UFUNCTION()
 	void ClearWidget();
 
-	bool HasAuthorization(const FVector& LocationToTest) const;
+	void UpdateBuildingPrivilegeNotifications();
+
+	bool IsBuildRestrictedZone(const FVector& LocationToTest) const;
+	bool HasBuildingPrivilege(const FVector& LocationToTest) const;
 
 	void AttemptDeployableRepair(class ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector);
 	bool CanRepairDeployable(class ADeployable* DeployableToRepair, FInventoryItem& RepairCost) const;

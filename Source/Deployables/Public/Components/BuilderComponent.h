@@ -6,8 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "BuilderComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAddAuthorizedNotificationSignature, bool, HasBuildAuthorization);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemoveAuthorizedNotificationSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAddBuildingPrivilegeNotificationSignature, bool, HasBuildingPrivilege);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClearBuildingPrivilegeNotificationSignature);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DEPLOYABLES_API UBuilderComponent : public UActorComponent
@@ -29,14 +29,14 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_ClearAllAuthorized(class AToolCupboard* ToolCupboard);
 
-	FOnAddAuthorizedNotificationSignature OnAddAuthorizedNotification;
-	FOnRemoveAuthorizedNotificationSignature OnRemoveAuthorizedNotification;
+	FOnAddBuildingPrivilegeNotificationSignature OnAddBuildingPrivilegeNotification;
+	FOnClearBuildingPrivilegeNotificationSignature OnClearBuildingPrivilegeNotification;
 
 	// Will return if the current owner has authorization at it's current location
-	bool HasAuthorization() const;
+	bool HasBuildingPrivilege() const;
 
 	// Will return if the current owner has authorization at the test location
-	bool HasAuthorizationAtLocation(const FVector& LocationToTest) const;
+	bool HasBuildingPrivilege(const FVector& LocationToTest) const;
 
 	// Will return true if the current owner is in the range of any tool cupboard
 	bool IsBuildRestrictedZone() const;

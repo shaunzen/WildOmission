@@ -39,7 +39,7 @@ protected:
 
 	bool LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelToTrace, FHitResult& OutHitResult) const;
 
-	bool HasAuthorizationToBuild(const FVector& LocationToTest) const;
+	bool HasBuildingPrivilege(const FVector& LocationToTest) const;
 
 	// By default OutPlacementTransform will be freehand, returns true if valid placement, false if invalid.
 	virtual bool GetPlacementTransform(FTransform& OutPlacementTransform);

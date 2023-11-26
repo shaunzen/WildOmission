@@ -204,7 +204,7 @@ void ADeployableItemBase::Client_DestroyPreview_Implementation()
 	PreviewActor = nullptr;
 }
 
-bool ADeployableItemBase::HasAuthorizationToBuild(const FVector& LocationToTest) const
+bool ADeployableItemBase::HasBuildingPrivilege(const FVector& LocationToTest) const
 {
 	AActor* OwnerActor = GetOwner();
 	if (OwnerActor == nullptr)
@@ -219,5 +219,5 @@ bool ADeployableItemBase::HasAuthorizationToBuild(const FVector& LocationToTest)
 	}
 
 
-	return OwnerBuilderComponent->HasAuthorizationAtLocation(LocationToTest);
+	return OwnerBuilderComponent->HasBuildingPrivilege(LocationToTest);
 }

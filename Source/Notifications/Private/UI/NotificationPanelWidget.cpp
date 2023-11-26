@@ -85,8 +85,8 @@ void UNotificationPanelWidget::NativeConstruct()
 	if (UBuilderComponent* OwnerBuilderComponent = OwnerPawn->FindComponentByClass<UBuilderComponent>())
 	{
 		// TODO bind delegates
-		OwnerBuilderComponent->OnAddAuthorizedNotification.AddDynamic(this, &UNotificationPanelWidget::AddAuthorizedNotification);
-		OwnerBuilderComponent->OnRemoveAuthorizedNotification.AddDynamic(this, &UNotificationPanelWidget::RemoveAuthorizedNotification);
+		OwnerBuilderComponent->OnAddBuildingPrivilegeNotification.AddDynamic(this, &UNotificationPanelWidget::AddBuildingPrivilegeNotification);
+		OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.AddDynamic(this, &UNotificationPanelWidget::ClearBuildingPrivilegeNotification);
 	}
 }
 
@@ -152,12 +152,11 @@ void UNotificationPanelWidget::RemoveStarvingNotification(const float& Time)
 	RemoveNotification(STARVING_IDENTIFIER);
 }
 
-void UNotificationPanelWidget::AddAuthorizedNotification(bool HasBuildAuthorization)
+void UNotificationPanelWidget::AddBuildingPrivilegeNotification(bool HasBuildingPrivilege)
 {
-	const FName Identifier = HasBuildAuthorization ? BUILDING_PRIVILEGE_IDENTIFIER : BUILDING_BLOCKED_IDENTIFIER;
-	const FName OtherIdentifier = HasBuildAuthorization ? BUILDING_BLOCKED_IDENTIFIER : BUILDING_PRIVILEGE_IDENTIFIER;
+	const FName Identifier = HasBuildingPrivilege ? BUILDING_PRIVILEGE_IDENTIFIER : BUILDING_BLOCKED_IDENTIFIER;
+	const FName OtherIdentifier = HasBuildingPrivilege ? BUILDING_BLOCKED_IDENTIFIER : BUILDING_PRIVILEGE_IDENTIFIER;
 
-	// TODO check if already exists before doing anything
 	if (HasNotification(Identifier))
 	{
 		return;
@@ -169,17 +168,18 @@ void UNotificationPanelWidget::AddAuthorizedNotification(bool HasBuildAuthorizat
 	}
 
 	FNotification BuildingNotification;
-	BuildingNotification.Negative = !HasBuildAuthorization;
+	BuildingNotification.Negative = !HasBuildingPrivilege;
+	// TODO Positive Notifications
 	BuildingNotification.Time = GetWorld()->GetRealTimeSeconds();
 	BuildingNotification.Duration = 0.0f;
 	BuildingNotification.Identifier = Identifier;
-	BuildingNotification.Message = HasBuildAuthorization ? TEXT("Building Privilege") : TEXT("Building Blocked");
+	BuildingNotification.Message = HasBuildingPrivilege ? TEXT("Building Privilege") : TEXT("Building Blocked");
 	BuildingNotification.Icon = BuildingIcon;
 
 	AddNotification(BuildingNotification);
 }
 
-void UNotificationPanelWidget::RemoveAuthorizedNotification()
+void UNotificationPanelWidget::ClearBuildingPrivilegeNotification()
 {
 	RemoveNotification(BUILDING_PRIVILEGE_IDENTIFIER);
 	RemoveNotification(BUILDING_BLOCKED_IDENTIFIER);
