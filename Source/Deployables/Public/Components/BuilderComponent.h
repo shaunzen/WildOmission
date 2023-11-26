@@ -38,9 +38,12 @@ public:
 	// Will return if the current owner has authorization at the test location
 	bool HasAuthorizationAtLocation(const FVector& LocationToTest) const;
 
-	// TODO so that we arent showing notifications when there are no tool cupboards
-	//bool InRangeOfToolCupboard() const;
+	// Will return true if the current owner is in the range of any tool cupboard
+	bool IsBuildRestrictedZone() const;
 	
+	// Will return true if the test location is in the range of any tool cupboard
+	bool IsBuildRestrictedZone(const FVector& LocationToTest) const;
+
 	FString GetOwnerUniqueID() const;
 
 protected:

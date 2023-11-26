@@ -64,6 +64,11 @@ bool UNotificationWidget::IsInfinite() const
 	return Notification.Duration == 0.0f;
 }
 
+bool UNotificationWidget::IsSlidingOut() const
+{
+	return ShouldSlideOut;
+}
+
 FNotification UNotificationWidget::GetNotification() const
 {
 	return Notification;

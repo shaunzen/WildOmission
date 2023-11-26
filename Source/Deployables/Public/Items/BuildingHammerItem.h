@@ -51,6 +51,6 @@ private:
 	bool LineTraceOnVisibility(FHitResult& OutHitResult) const;
 
 	UFUNCTION(Client, Reliable)
-	void Client_TeardownWidget();
+	void Client_OnUnequip();
 
 };

@@ -17,6 +17,11 @@ static UMaterialInterface* ThirstIcon = nullptr;
 static UMaterialInterface* HungerIcon = nullptr;
 static UMaterialInterface* BuildingIcon = nullptr;
 
+const static FName THIRSTY_IDENTIFIER = TEXT("Thirsty");
+const static FName STARVING_IDENTIFIER = TEXT("Starving");
+const static FName BUILDING_PRIVILEGE_IDENTIFIER = TEXT("BuildingPrivilege");
+const static FName BUILDING_BLOCKED_IDENTIFIER = TEXT("BuildingBlocked");
+
 UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	StatusNotificationContainer = nullptr;
@@ -117,7 +122,7 @@ void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
 	ThirstyNotification.Negative = true;
 	ThirstyNotification.Time = Time;
 	ThirstyNotification.Duration = 0.0f;
-	ThirstyNotification.Identifier = TEXT("Thirsty");
+	ThirstyNotification.Identifier = THIRSTY_IDENTIFIER;
 	ThirstyNotification.Message = TEXT("Thirsty");
 	ThirstyNotification.Icon = ThirstIcon;
 
@@ -126,7 +131,7 @@ void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
 
 void UNotificationPanelWidget::RemoveThirstyNotification(const float& Time)
 {
-	RemoveNotification(TEXT("Thirsty"));
+	RemoveNotification(THIRSTY_IDENTIFIER);
 }
 
 void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
@@ -135,7 +140,7 @@ void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
 	StarvingNotification.Negative = true;
 	StarvingNotification.Time = Time;
 	StarvingNotification.Duration = 0.0f;
-	StarvingNotification.Identifier = TEXT("Starving");
+	StarvingNotification.Identifier = STARVING_IDENTIFIER;
 	StarvingNotification.Message = TEXT("Starving");
 	StarvingNotification.Icon = HungerIcon;
 
@@ -144,13 +149,13 @@ void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
 
 void UNotificationPanelWidget::RemoveStarvingNotification(const float& Time)
 {
-	RemoveNotification(TEXT("Starving"));
+	RemoveNotification(STARVING_IDENTIFIER);
 }
 
 void UNotificationPanelWidget::AddAuthorizedNotification(bool HasBuildAuthorization)
 {
-	const FName Identifier = HasBuildAuthorization ? TEXT("BuildingPrivilege") : TEXT("BuildingBlocked");
-	const FName OtherIdentifier = HasBuildAuthorization ? TEXT("BuildingBlocked") : TEXT("BuildingPrivilege");
+	const FName Identifier = HasBuildAuthorization ? BUILDING_PRIVILEGE_IDENTIFIER : BUILDING_BLOCKED_IDENTIFIER;
+	const FName OtherIdentifier = HasBuildAuthorization ? BUILDING_BLOCKED_IDENTIFIER : BUILDING_PRIVILEGE_IDENTIFIER;
 
 	// TODO check if already exists before doing anything
 	if (HasNotification(Identifier))
@@ -176,8 +181,8 @@ void UNotificationPanelWidget::AddAuthorizedNotification(bool HasBuildAuthorizat
 
 void UNotificationPanelWidget::RemoveAuthorizedNotification()
 {
-	RemoveNotification(TEXT("BuildingPrivilege"));
-	RemoveNotification(TEXT("BuildingBlocked"));
+	RemoveNotification(BUILDING_PRIVILEGE_IDENTIFIER);
+	RemoveNotification(BUILDING_BLOCKED_IDENTIFIER);
 }
 
 void UNotificationPanelWidget::AddNotification(const FNotification& Notification)
@@ -237,7 +242,7 @@ void UNotificationPanelWidget::RemoveNotification(const FName& NotificationIdent
 	for (UWidget* ChildWidget : StatusNotificationContainer->GetAllChildren())
 	{
 		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
-		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier)
+		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier || ChildNotificationWidget->IsSlidingOut())
 		{
 			continue;
 		}
@@ -249,7 +254,7 @@ void UNotificationPanelWidget::RemoveNotification(const FName& NotificationIdent
 	for (UWidget* ChildWidget : NotificationContainer->GetAllChildren())
 	{
 		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
-		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier)
+		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier || ChildNotificationWidget->IsSlidingOut())
 		{
 			continue;
 		}

@@ -46,10 +46,15 @@ void ABuildingHammerItem::Tick(float DeltaTime)
 		return;
 	}
 
-	const bool HasAuthToBuild = OwnerBuilderComponent->HasAuthorization();
-	if (OwnerBuilderComponent->OnAddAuthorizedNotification.IsBound())
+	const bool InBuildRestrictedZone = OwnerBuilderComponent->IsBuildRestrictedZone();
+	if (InBuildRestrictedZone && OwnerBuilderComponent->OnAddAuthorizedNotification.IsBound())
 	{
+		const bool HasAuthToBuild = OwnerBuilderComponent->HasAuthorization();
 		OwnerBuilderComponent->OnAddAuthorizedNotification.Broadcast(HasAuthToBuild);
+	}
+	else if (!InBuildRestrictedZone && OwnerBuilderComponent->OnRemoveAuthorizedNotification.IsBound())
+	{
+		OwnerBuilderComponent->OnRemoveAuthorizedNotification.Broadcast();
 	}
 }
 
@@ -106,7 +111,7 @@ void ABuildingHammerItem::OnUnequip()
 {
 	Super::OnUnequip();
 
-	Client_TeardownWidget();
+	Client_OnUnequip();
 }
 
 void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
@@ -364,10 +369,25 @@ bool ABuildingHammerItem::LineTraceOnVisibility(FHitResult& OutHitResult) const
 	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
 }
 
-void ABuildingHammerItem::Client_TeardownWidget_Implementation()
+void ABuildingHammerItem::Client_OnUnequip_Implementation()
 {
 	if (Widget)
 	{
 		Widget->Teardown();
 	}
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr || !OwnerBuilderComponent->OnRemoveAuthorizedNotification.IsBound())
+	{
+		return;
+	}
+	
+	OwnerBuilderComponent->OnRemoveAuthorizedNotification.Broadcast();
+
 }

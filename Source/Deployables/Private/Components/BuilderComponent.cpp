@@ -135,6 +135,33 @@ bool UBuilderComponent::HasAuthorizationAtLocation(const FVector& LocationToTest
 	return true;
 }
 
+bool UBuilderComponent::IsBuildRestrictedZone() const
+{
+	const AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return false;
+	}
+
+	return IsBuildRestrictedZone(OwnerActor->GetActorLocation());
+}
+
+bool UBuilderComponent::IsBuildRestrictedZone(const FVector& LocationToTest) const
+{
+	const TArray<AToolCupboard*> SpawnedToolCupboards = AToolCupboard::GetAllToolCupboards();
+	for (const AToolCupboard* ToolCupboard : SpawnedToolCupboards)
+	{
+		if (ToolCupboard == nullptr || !ToolCupboard->IsWithinRange(LocationToTest))
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 FString UBuilderComponent::GetOwnerUniqueID() const
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
