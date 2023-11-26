@@ -86,10 +86,7 @@ void ABuildingHammerItem::OnUnequip()
 {
 	Super::OnUnequip();
 
-	if (Widget)
-	{
-		Widget->Teardown();
-	}
+	Client_TeardownWidget();
 }
 
 void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
@@ -345,4 +342,12 @@ bool ABuildingHammerItem::LineTraceOnVisibility(FHitResult& OutHitResult) const
 	CollisionParams.bReturnPhysicalMaterial = true;
 	
 	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
+}
+
+void ABuildingHammerItem::Client_TeardownWidget_Implementation()
+{
+	if (Widget)
+	{
+		Widget->Teardown();
+	}
 }
