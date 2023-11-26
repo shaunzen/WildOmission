@@ -149,8 +149,8 @@ void UNotificationPanelWidget::RemoveStarvingNotification(const float& Time)
 
 void UNotificationPanelWidget::AddAuthorizedNotification(bool HasBuildAuthorization)
 {
-	const FName Identifier = HasBuildAuthorization ? TEXT("BuildingPriviledge") : TEXT("BuildingBlocked");
-	const FName OtherIdentifier = HasBuildAuthorization ? TEXT("BuildingBlocked") : TEXT("BuildingPriviledge");
+	const FName Identifier = HasBuildAuthorization ? TEXT("BuildingPrivilege") : TEXT("BuildingBlocked");
+	const FName OtherIdentifier = HasBuildAuthorization ? TEXT("BuildingBlocked") : TEXT("BuildingPrivilege");
 
 	// TODO check if already exists before doing anything
 	if (HasNotification(Identifier))
@@ -168,7 +168,7 @@ void UNotificationPanelWidget::AddAuthorizedNotification(bool HasBuildAuthorizat
 	BuildingNotification.Time = GetWorld()->GetRealTimeSeconds();
 	BuildingNotification.Duration = 0.0f;
 	BuildingNotification.Identifier = Identifier;
-	BuildingNotification.Message = HasBuildAuthorization ? TEXT("Building Priviledge") : TEXT("Building Blocked");
+	BuildingNotification.Message = HasBuildAuthorization ? TEXT("Building Privilege") : TEXT("Building Blocked");
 	BuildingNotification.Icon = BuildingIcon;
 
 	AddNotification(BuildingNotification);
@@ -176,7 +176,7 @@ void UNotificationPanelWidget::AddAuthorizedNotification(bool HasBuildAuthorizat
 
 void UNotificationPanelWidget::RemoveAuthorizedNotification()
 {
-	RemoveNotification(TEXT("BuildingPriviledge"));
+	RemoveNotification(TEXT("BuildingPrivilege"));
 	RemoveNotification(TEXT("BuildingBlocked"));
 }
 
