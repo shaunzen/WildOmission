@@ -93,7 +93,30 @@ void ABuildingHammerItem::OnUnequip()
 {
 	Super::OnUnequip();
 
-	Client_OnUnequip();
+}
+
+void ABuildingHammerItem::Destroyed()
+{
+	Super::Destroyed();
+	
+	if (Widget)
+	{
+		Widget->Teardown();
+	}
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr || !OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.IsBound())
+	{
+		return;
+	}
+
+	OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.Broadcast();
 }
 
 void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
@@ -276,7 +299,7 @@ void ABuildingHammerItem::UpdateBuildingPrivilegeNotifications()
 	}
 
 	const bool RestrictedZone = OwnerBuilderComponent->IsBuildRestrictedZone(TestLocation);
-	const bool BuildingPrivilege= OwnerBuilderComponent->HasBuildingPrivilege(TestLocation);
+	const bool BuildingPrivilege = OwnerBuilderComponent->HasBuildingPrivilege(TestLocation);
 
 	if (RestrictedZone && OwnerBuilderComponent->OnAddBuildingPrivilegeNotification.IsBound())
 	{
@@ -401,27 +424,4 @@ bool ABuildingHammerItem::LineTraceOnVisibility(FHitResult& OutHitResult) const
 	CollisionParams.bReturnPhysicalMaterial = true;
 	
 	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
-}
-
-void ABuildingHammerItem::Client_OnUnequip_Implementation()
-{
-	if (Widget)
-	{
-		Widget->Teardown();
-	}
-
-	AActor* OwnerActor = GetOwner();
-	if (OwnerActor == nullptr)
-	{
-		return;
-	}
-
-	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
-	if (OwnerBuilderComponent == nullptr || !OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.IsBound())
-	{
-		return;
-	}
-	
-	OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.Broadcast();
-
 }

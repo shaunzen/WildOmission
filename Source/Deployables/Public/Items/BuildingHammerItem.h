@@ -20,6 +20,7 @@ public:
 	virtual void OnSecondaryPressed() override;
 
 	virtual void OnUnequip() override;
+	virtual void Destroyed() override;
 
 	UFUNCTION(Server, Reliable)
 	void Server_UpgradeCurrentDeployable();
@@ -52,8 +53,5 @@ private:
 	void AttemptDeployableRepair(class ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector);
 	bool CanRepairDeployable(class ADeployable* DeployableToRepair, FInventoryItem& RepairCost) const;
 	bool LineTraceOnVisibility(FHitResult& OutHitResult) const;
-
-	UFUNCTION(Client, Reliable)
-	void Client_OnUnequip();
 
 };

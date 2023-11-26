@@ -58,4 +58,8 @@ protected:
 	UPROPERTY()
 	ADeployablePreview* PreviewActor;
 
+private:
+	void UpdatePreview();
+	void UpdateBuildingPrivilegeNotifications();
+
 };

@@ -29,14 +29,8 @@ void ADeployableItemBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (PreviewActor)
-	{
-		FTransform PlacementTransform;
-		bool SpawnValid = GetPlacementTransform(PlacementTransform);
-		PreviewActor->SetActorTransform(PlacementTransform);
-		PreviewActor->Update(SpawnValid);
-		bPrimaryEnabled = SpawnValid;
-	}
+	UpdatePreview();
+	UpdateBuildingPrivilegeNotifications();
 }
 
 void ADeployableItemBase::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID)
@@ -49,18 +43,31 @@ void ADeployableItemBase::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InTh
 void ADeployableItemBase::OnUnequip()
 {
 	Super::OnUnequip();
-
-	Client_DestroyPreview();
 }
 
 void ADeployableItemBase::Destroyed()
 {
 	Super::Destroyed();
 	
-	if (PreviewActor)
+	if (IsValid(PreviewActor))
 	{
 		PreviewActor->Destroy();
+		PreviewActor = nullptr;
 	}
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr || !OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.IsBound())
+	{
+		return;
+	}
+
+	OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.Broadcast();
 }
 
 void ADeployableItemBase::OnPrimaryPressed()
@@ -166,6 +173,55 @@ FRotator ADeployableItemBase::GetFacePlayerRotation(const FVector& PlacementLoca
 UStaticMesh* ADeployableItemBase::GetPreviewMesh()
 {
 	return nullptr;
+}
+
+void ADeployableItemBase::UpdatePreview()
+{
+	if (!IsValid(PreviewActor))
+	{
+		return;
+	}
+
+	FTransform PlacementTransform;
+	bool SpawnValid = GetPlacementTransform(PlacementTransform);
+	PreviewActor->SetActorTransform(PlacementTransform);
+	PreviewActor->Update(SpawnValid);
+	bPrimaryEnabled = SpawnValid;
+}
+
+void ADeployableItemBase::UpdateBuildingPrivilegeNotifications()
+{
+	const AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr)
+	{
+		return;
+	}
+
+	FVector TestLocation = OwnerActor->GetActorLocation();
+
+	FHitResult HitResult;
+	if (LineTraceOnChannel(ECollisionChannel::ECC_Visibility, HitResult))
+	{
+		TestLocation = HitResult.ImpactPoint;
+	}
+
+	const bool RestrictedZone = OwnerBuilderComponent->IsBuildRestrictedZone(TestLocation);
+	const bool BuildingPrivilege = OwnerBuilderComponent->HasBuildingPrivilege(TestLocation);
+
+	if (RestrictedZone && OwnerBuilderComponent->OnAddBuildingPrivilegeNotification.IsBound())
+	{
+		OwnerBuilderComponent->OnAddBuildingPrivilegeNotification.Broadcast(BuildingPrivilege);
+	}
+	else if (!RestrictedZone && OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.IsBound())
+	{
+		OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.Broadcast();
+	}
 }
 
 void ADeployableItemBase::Client_SpawnPreview_Implementation()
