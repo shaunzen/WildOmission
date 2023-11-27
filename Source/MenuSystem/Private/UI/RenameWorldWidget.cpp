@@ -33,6 +33,8 @@ void URenameWorldWidget::NativeConstruct()
 void URenameWorldWidget::Open(const FString& InWorld)
 {
 	World = InWorld;
+	WorldNameInputBox->SetText(FText::FromString(InWorld));
+	WorldNameOnTextChanged(WorldNameInputBox->GetText());
 }
 
 void URenameWorldWidget::RenameWorld()
