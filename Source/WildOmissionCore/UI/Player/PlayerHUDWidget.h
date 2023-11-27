@@ -6,15 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerHUDWidget.generated.h"
 
-class UTextBlock;
-class UBorder;
-class UWidgetSwitcher;
-
-class UInventoryMenuWidget;
-class UCraftingMenuWidget;
-class UGameChatWidget;
-class UNotificationPanelWidget;
-
 UCLASS(Abstract)
 class WILDOMISSIONCORE_API UPlayerHUDWidget : public UUserWidget
 {
@@ -50,38 +41,57 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsChatMenuOpen() const;
 
-	UInventoryMenuWidget* GetInventoryMenu() const;
+	class UInventoryMenuWidget* GetInventoryMenu() const;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UBorder* MenuBackgroundBorder;
+	class UBorder* MenuBackgroundBorder;
 
 	UPROPERTY(Meta = (BindWidget))
-	UWidgetSwitcher* MenuSwitcher;
+	class UWidgetSwitcher* MenuSwitcher;
 
 	UPROPERTY(Meta = (BindWidget))
-	UInventoryMenuWidget* InventoryMenu;
+	UPanelWidget* InventoryPanel;
 
 	UPROPERTY(Meta = (BindWidget))
-	UCraftingMenuWidget* CraftingMenu;
+	class UButton* OpenCraftingButton;
 
 	UPROPERTY(Meta = (BindWidget))
-	UGameChatWidget* Chat;
+	class UInventoryMenuWidget* InventoryMenu;
 
 	UPROPERTY(Meta = (BindWidget))
-	UNotificationPanelWidget* NotificationPanel;
+	UPanelWidget* CraftingPanel;
 
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* BrandingTextBlock;
+	class UButton* OpenInventoryButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UCraftingMenuWidget* CraftingMenu;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UGameChatWidget* Chat;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UNotificationPanelWidget* NotificationPanel;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* BrandingTextBlock;
 
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* Crosshair;
 
 	void UpdateBrandingText();
 
+	UFUNCTION()
 	void OpenMenuPanel(bool ShowBackground = true);
+	
+	UFUNCTION()
 	void SwitchToInventoryMenu();
+	
+	UFUNCTION()
 	void SwitchToCraftingMenu();
+	
+	UFUNCTION()
 	void CloseMenuPanel();
 
 	void SetMouseCursorToCenter();
