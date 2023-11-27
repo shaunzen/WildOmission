@@ -51,7 +51,7 @@ UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& Obj
 		HungerIcon = HungerIconObject.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> BuildingIconObject(TEXT("/Game/WildOmissionCore/UI/Icons/Vitals/M_Building_Icon_Inst"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> BuildingIconObject(TEXT("/Game/WildOmissionCore/UI/Icons/Generic/M_Building_Icon_Inst"));
 	if (BuildingIconObject.Succeeded())
 	{
 		BuildingIcon = BuildingIconObject.Object;
