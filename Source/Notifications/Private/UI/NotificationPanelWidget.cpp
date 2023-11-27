@@ -169,7 +169,7 @@ void UNotificationPanelWidget::AddBuildingPrivilegeNotification(bool HasBuilding
 
 	FNotification BuildingNotification;
 	BuildingNotification.Negative = !HasBuildingPrivilege;
-	// TODO Positive Notifications
+	BuildingNotification.Positive = HasBuildingPrivilege;
 	BuildingNotification.Time = GetWorld()->GetRealTimeSeconds();
 	BuildingNotification.Duration = 0.0f;
 	BuildingNotification.Identifier = Identifier;
