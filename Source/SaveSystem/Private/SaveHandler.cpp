@@ -65,6 +65,9 @@ void ASaveHandler::SetSaveFile(const FString& SaveFileName)
 {
 	CurrentSaveFileName = SaveFileName;
 	ValidateSave();
+
+	CurrentSaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+	CurrentSaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveFileName, 0));
 }
 
 void ASaveHandler::LoadWorld()
@@ -103,14 +106,8 @@ void ASaveHandler::LoadWorld()
 	GetWorld()->GetTimerManager().SetTimer(ActorLoadedTimerHandle, ActorLoadedDelegate, 1.0f, false);
 }
 
-UWildOmissionSaveGame* ASaveHandler::GetSaveFile()
+UWildOmissionSaveGame* ASaveHandler::GetSaveFile() const
 {
-	if (CurrentSaveFile == nullptr)
-	{
-		CurrentSaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
-		CurrentSaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveFileName, 0));
-	}
-
 	return CurrentSaveFile;
 }
 
@@ -141,7 +138,6 @@ UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
 {
 	return PlayerSaveHandlerComponent;
 }
-
 
 void ASaveHandler::ValidateSave()
 {

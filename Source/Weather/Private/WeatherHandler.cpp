@@ -3,6 +3,8 @@
 
 #include "WeatherHandler.h"
 #include "Actors/Storm.h"
+#include "SaveHandler.h"
+#include "WildOmissionSaveGame.h"
 #include "TimeOfDayHandler.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -143,6 +145,23 @@ void AWeatherHandler::Tick(float DeltaTime)
 	CalculateWindParameters();
 }
 
+bool AWeatherHandler::IsPeacefulMode() const
+{
+	const ASaveHandler* SaveHandler = ASaveHandler::GetSaveHandler();
+	if (!IsValid(SaveHandler))
+	{
+		return false;
+	}
+	
+	const UWildOmissionSaveGame* SaveFile = SaveHandler->GetSaveFile();
+	if (SaveFile == nullptr)
+	{
+		return false;
+	}
+
+	return SaveFile->Difficulty == EGameDifficulty::EGD_Peaceful;
+}
+
 AStorm* AWeatherHandler::SpawnStorm(bool FromCommand)
 {
 	if (CurrentStorm)
@@ -169,7 +188,7 @@ void AWeatherHandler::ClearStorm()
 
 bool AWeatherHandler::CanSpawnStorm() const
 {
-	return CurrentStorm == nullptr;
+	return !IsPeacefulMode() && CurrentStorm == nullptr;
 }
 
 void AWeatherHandler::CalculateWindParameters()

@@ -41,7 +41,7 @@ void AMonsterSpawnHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* World = GetWorld();
+	const UWorld* World = GetWorld();
 	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
 	{
 		return;
@@ -59,16 +59,16 @@ void AMonsterSpawnHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 bool AMonsterSpawnHandler::IsSpawnConditionValid()
 {
-	ASaveHandler* SaveHandler = ASaveHandler::GetSaveHandler();
+	const ASaveHandler* SaveHandler = ASaveHandler::GetSaveHandler();
 	if (!IsValid(SaveHandler))
 	{
 		return false;
 	}
 
-	UWildOmissionSaveGame* SaveFile = SaveHandler->GetSaveFile();
+	const UWildOmissionSaveGame* SaveFile = SaveHandler->GetSaveFile();
 	if (SaveFile == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	if (SaveFile->Difficulty == EGameDifficulty::EGD_Peaceful)
@@ -76,7 +76,7 @@ bool AMonsterSpawnHandler::IsSpawnConditionValid()
 		return false;
 	}
 
-	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
+	const ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
 	if (!IsValid(TimeOfDayHandler))
 	{
 		return false;

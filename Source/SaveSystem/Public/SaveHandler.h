@@ -29,7 +29,7 @@ public:
 	void LoadWorld();
 
 	UPlayerSaveHandlerComponent* GetPlayerHandler() const;
-	UWildOmissionSaveGame* GetSaveFile();
+	UWildOmissionSaveGame* GetSaveFile() const;
 
 protected:
 	virtual void BeginPlay() override;
