@@ -9,6 +9,8 @@
 #include "OptionBoxes/SliderOptionBox.h"
 #include "Components/TextBlock.h"
 #include "Enums/GameDifficulty.h"
+#include "Kismet/GameplayStatics.h"
+#include "WildOmissionSaveGame.h"
 #include "GameFramework/PlayerState.h"
 
 UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -71,24 +73,43 @@ void UWorldMenuWidget::Open(const FString& InWorldName)
 
 TEnumAsByte<EGameDifficulty> UWorldMenuWidget::GetWorldDifficulty() const
 {
-	// TODO Get World Difficulty
-
 	// Get the save file
+	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+	if (SaveFile == nullptr)
+	{
+		return EGameDifficulty::EGD_Normal;
+	}
+
+	SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
+	if (SaveFile == nullptr)
+	{
+		return EGameDifficulty::EGD_Normal;
+	}
 
 	// Return the save difficulty value
-
-	return EGameDifficulty::EGD_Normal;
+	return SaveFile->Difficulty;
 }
 
 void UWorldMenuWidget::SetWorldDifficulty(const TEnumAsByte<EGameDifficulty>& NewDifficulty)
 {
-	// TODO Set World Difficulty
-
 	// Get the save file
+	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+	if (SaveFile == nullptr)
+	{
+		return;
+	}
+
+	SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
+	if (SaveFile == nullptr)
+	{
+		return;
+	}
 
 	// Set the difficulty value to NewDifficulty
+	SaveFile->Difficulty = NewDifficulty;
 
 	// Save the save game
+	UGameplayStatics::SaveGameToSlot(SaveFile, WorldName, 0);
 }
 
 void UWorldMenuWidget::ServerNameOnTextChanged(const FText& Text)
@@ -117,6 +138,7 @@ void UWorldMenuWidget::BroadcastPlayButtonClicked()
 	}
 	
 	// Set Difficulty in save file
+	SetWorldDifficulty(TEnumAsByte<EGameDifficulty>(DifficultyMultiOptionBox->GetSelectedIndex()));
 
 	const FString ServerName = ServerNameInputBox->GetText().ToString();
 	const bool IsMultiplayer = MultiplayerCheckOptionBox->IsChecked();
