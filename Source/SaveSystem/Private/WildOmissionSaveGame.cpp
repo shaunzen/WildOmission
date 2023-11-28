@@ -29,6 +29,7 @@ UWildOmissionSaveGame::UWildOmissionSaveGame()
 	DaysPlayed = 0;
 	NormalizedProgressThroughDay = 0.0f;
 	LastPlayedTime = FDateTime::Now();
+	Difficulty = EGameDifficulty::EGD_Normal;
 	LevelFile = TEXT("LV_Sandbox");
 	Version = 0;
 	CheatsEnabled = false;

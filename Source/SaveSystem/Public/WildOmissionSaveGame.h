@@ -47,6 +47,12 @@ struct FActorSaveData
 
 };
 
+UENUM()
+enum EGameDifficulty
+{
+	EGD_Peaceful, EGD_Easy, EGD_Normal, EGD_Hard
+};
+
 USTRUCT()
 struct FWildOmissionSaveCreationInformation
 {
@@ -87,6 +93,9 @@ public:
 
 	UPROPERTY()
 	FDateTime LastPlayedTime;
+
+	UPROPERTY()
+	TEnumAsByte<EGameDifficulty> Difficulty;
 
 	UPROPERTY()
 	FString LevelFile;
