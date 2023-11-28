@@ -147,13 +147,13 @@ void AWeatherHandler::Tick(float DeltaTime)
 
 bool AWeatherHandler::IsPeacefulMode() const
 {
-	const ASaveHandler* SaveHandler = ASaveHandler::GetSaveHandler();
+	ASaveHandler* SaveHandler = ASaveHandler::GetSaveHandler();
 	if (!IsValid(SaveHandler))
 	{
 		return false;
 	}
 	
-	const UWildOmissionSaveGame* SaveFile = SaveHandler->GetSaveFile();
+	UWildOmissionSaveGame* SaveFile = SaveHandler->GetSaveFile();
 	if (SaveFile == nullptr)
 	{
 		return false;

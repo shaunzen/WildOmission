@@ -93,7 +93,7 @@ void ASaveHandler::LoadWorld()
 		TimeOfDayHandler->SetDaysPlayed(SaveFile->DaysPlayed);
 		TimeOfDayHandler->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
 	}
-
+	
 	SetLoadingSubtitle(TEXT("Loading objects."));
 	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves, SaveFile->Version);
 
