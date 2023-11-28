@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "Structs/PlayerSave.h"
+#include "Enums/GameDifficulty.h"
 #include "WildOmissionSaveGame.generated.h"
 
 const int32 CURRENT_SAVE_FILE_VERSION = 1;
@@ -45,12 +46,6 @@ struct FActorSaveData
 	UPROPERTY()
 	TArray<FActorComponentSaveData> ComponentData;
 
-};
-
-UENUM()
-enum EGameDifficulty
-{
-	EGD_Peaceful, EGD_Easy, EGD_Normal, EGD_Hard
 };
 
 USTRUCT()
