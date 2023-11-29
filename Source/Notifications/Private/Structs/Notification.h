@@ -12,21 +12,26 @@ struct FNotification
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FName Identifier = FName();
+	FName Identifier;
 
 	UPROPERTY()
-	bool Negative = false;
+	bool Negative;
 
 	UPROPERTY()
-	float Time = 0.0f;
+	bool Positive;
 
 	UPROPERTY()
-	float Duration = 0.0f;
+	float Time;
 
 	UPROPERTY()
-	FString Message = FString();
+	float Duration;
 
 	UPROPERTY()
-	UMaterialInterface* Icon = nullptr;
+	FString Message;
+
+	UPROPERTY()
+	UMaterialInterface* Icon;
+
+	FNotification();
 
 };

@@ -43,6 +43,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	bool IsPeacefulMode() const;
+
 	AStorm* SpawnStorm(bool FromCommand = false);
 	void ClearStorm();
 	

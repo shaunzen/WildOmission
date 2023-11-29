@@ -7,6 +7,6 @@ public class Notifications: ModuleRules
     public Notifications(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "CustomUI", "Inventory", "Vitals" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "CustomUI", "Deployables", "Inventory", "Vitals" });
     }
 }

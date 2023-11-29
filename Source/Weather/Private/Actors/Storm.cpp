@@ -279,6 +279,12 @@ void AStorm::OnLoadComplete_Implementation()
 		return;
 	}
 	
+	if (WeatherHandler->IsPeacefulMode())
+	{
+		HandleDestruction();
+		return;
+	}
+
 	WeatherHandler->SetCurrentStorm(this);
 
 	CalculateTargetLocation();

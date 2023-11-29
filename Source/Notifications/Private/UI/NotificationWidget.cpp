@@ -19,11 +19,17 @@ void UNotificationWidget::Setup(const FNotification& InNotification)
 {
 	Notification = InNotification;
 
-	if (Notification.Negative)
+	FUIColor* NegativeColor = UUIColors::GetBaseColor(TEXT("Red"));
+	FUIColor* PositiveColor = UUIColors::GetBaseColor(TEXT("Green"));
+	if (Notification.Negative && NegativeColor)
 	{
-		FUIColor* NegativeColor = UUIColors::GetBaseColor(FName("Red"));
 		Border->SetBrushColor(NegativeColor->Default - FLinearColor(0.0f, 0.0f, 0.0f, 0.5f));
 	}
+	else if (Notification.Positive)
+	{
+		Border->SetBrushColor(PositiveColor->Default - FLinearColor(0.0f, 0.0f, 0.0f, 0.5f));
+	}
+
 	Icon->SetBrushFromMaterial(Notification.Icon);
 	TextBlock->SetText(FText::FromString(Notification.Message));
 	SetRenderTranslation(FVector2D(500.0f, 0.0f));
@@ -62,6 +68,11 @@ void UNotificationWidget::HandleRemoval()
 bool UNotificationWidget::IsInfinite() const
 {
 	return Notification.Duration == 0.0f;
+}
+
+bool UNotificationWidget::IsSlidingOut() const
+{
+	return ShouldSlideOut;
 }
 
 FNotification UNotificationWidget::GetNotification() const

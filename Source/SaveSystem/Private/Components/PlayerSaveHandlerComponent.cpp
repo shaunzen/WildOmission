@@ -41,6 +41,7 @@ void UPlayerSaveHandlerComponent::Save(TArray<FPlayerSave>& OutUpdatedSavesList)
 {
 	for (const FPlayerSave& InSave : PendingSaves)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Saving Player Location: %s"), *InSave.WorldLocation.ToString());
 		AddSaveToList(InSave, OutUpdatedSavesList);
 	}
 
@@ -61,21 +62,30 @@ void UPlayerSaveHandlerComponent::Load(APlayerController* PlayerController)
 	const FString PlayerUniqueID = SavablePlayer->GetUniqueID();
 	const bool PlayerIsHost = SavablePlayer->IsHost();
 
-	if (PlayerIsHost && FindHostSaveIndexInList(SaveHandlerOwner->GetSaveFile()->PlayerSaves, SaveIndex))
+	UWildOmissionSaveGame* SaveFile = SaveHandlerOwner->GetSaveFile();
+	if (SaveFile == nullptr)
 	{
-		SavablePlayer->LoadPlayerSave(SaveHandlerOwner->GetSaveFile()->PlayerSaves[SaveIndex]);
 		return;
 	}
 
-	// Does the player have a pending save that is more up to date than the save file
+	// Attempt host parody
+	if (PlayerIsHost && FindHostSaveIndexInList(SaveFile->PlayerSaves, SaveIndex))
+	{
+		SavablePlayer->LoadPlayerSave(SaveFile->PlayerSaves[SaveIndex]);
+		SaveFile->PlayerSaves[SaveIndex].IsHost = false;
+		SaveHandlerOwner->UpdateSaveFile(SaveFile);
+		return;
+	}
+
+	// Find existing save in the pending list
 	if (FindSaveIndexInList(PendingSaves, PlayerUniqueID, SaveIndex))
 	{
 		SavablePlayer->LoadPlayerSave(PendingSaves[SaveIndex]);
 	}
-	// If there is no pending saves, does the player exist in the save file
-	else if (FindSaveIndexInList(SaveHandlerOwner->GetSaveFile()->PlayerSaves, PlayerUniqueID, SaveIndex))
+	// Find existing save in the save file
+	else if (FindSaveIndexInList(SaveFile->PlayerSaves, PlayerUniqueID, SaveIndex))
 	{
-		SavablePlayer->LoadPlayerSave(SaveHandlerOwner->GetSaveFile()->PlayerSaves[SaveIndex]);
+		SavablePlayer->LoadPlayerSave(SaveFile->PlayerSaves[SaveIndex]);
 	}
 }
 

@@ -24,6 +24,7 @@ public:
 	void HandleRemoval();
 
 	bool IsInfinite() const;
+	bool IsSlidingOut() const;
 	FNotification GetNotification() const;
 
 private:

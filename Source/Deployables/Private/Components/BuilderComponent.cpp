@@ -100,6 +100,68 @@ void UBuilderComponent::BeginPlay()
 	
 }
 
+bool UBuilderComponent::HasBuildingPrivilege() const
+{
+	const AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return false;
+	}
+
+	return HasBuildingPrivilege(OwnerActor->GetActorLocation());
+}
+
+bool UBuilderComponent::HasBuildingPrivilege(const FVector& LocationToTest) const
+{
+	const AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return false;
+	}
+
+	const FString& OwnerID = GetOwnerUniqueID();
+
+	const TArray<AToolCupboard*> SpawnedToolCupboards = AToolCupboard::GetAllToolCupboards();
+	for (const AToolCupboard* ToolCupboard : SpawnedToolCupboards)
+	{
+		if (ToolCupboard == nullptr || !ToolCupboard->IsWithinRange(LocationToTest) || ToolCupboard->IsPlayerAuthorized(OwnerID))
+		{
+			continue;
+		}
+
+		return false;
+	}
+
+	return true;
+}
+
+bool UBuilderComponent::IsBuildRestrictedZone() const
+{
+	const AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return false;
+	}
+
+	return IsBuildRestrictedZone(OwnerActor->GetActorLocation());
+}
+
+bool UBuilderComponent::IsBuildRestrictedZone(const FVector& LocationToTest) const
+{
+	const TArray<AToolCupboard*> SpawnedToolCupboards = AToolCupboard::GetAllToolCupboards();
+	for (const AToolCupboard* ToolCupboard : SpawnedToolCupboards)
+	{
+		if (ToolCupboard == nullptr || !ToolCupboard->IsWithinRange(LocationToTest))
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 FString UBuilderComponent::GetOwnerUniqueID() const
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());

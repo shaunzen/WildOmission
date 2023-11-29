@@ -160,7 +160,7 @@ void UGameplayMenuWidget::OpenHelpGuide()
 
 void UGameplayMenuWidget::OpenFeedbackPage()
 {
-	UKismetSystemLibrary::LaunchURL(TEXT("https://forms.gle/2GP8ZSTU5ARa5Pmu8"));
+	UKismetSystemLibrary::LaunchURL(TEXT("https://steamcommunity.com/app/2348700/discussions/3/"));
 }
 
 void UGameplayMenuWidget::Save()

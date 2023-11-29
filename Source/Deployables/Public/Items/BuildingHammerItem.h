@@ -6,10 +6,6 @@
 #include "Items/ToolItem.h"
 #include "BuildingHammerItem.generated.h"
 
-class ADeployable;
-class ABuildingBlock;
-class UBuildingHammerWidget;
-
 UCLASS()
 class DEPLOYABLES_API ABuildingHammerItem : public AToolItem
 {
@@ -18,10 +14,13 @@ class DEPLOYABLES_API ABuildingHammerItem : public AToolItem
 public:
 	ABuildingHammerItem();
 
+	virtual void Tick(float DeltaTime) override;
+
 	virtual void OnPrimaryHeld() override;
 	virtual void OnSecondaryPressed() override;
 
 	virtual void OnUnequip() override;
+	virtual void Destroyed() override;
 
 	UFUNCTION(Server, Reliable)
 	void Server_UpgradeCurrentDeployable();
@@ -30,8 +29,8 @@ public:
 
 	bool GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const;
 	static FName GetResourceIDFromMaterialType(TEnumAsByte<EToolType> MaterialType);
-	static FInventoryItem GetUpgradeCostForBuildingBlock(ABuildingBlock* BuildingBlock);
-	static FInventoryItem GetDestructionRefundForDeployable(ADeployable* Deployable);
+	static FInventoryItem GetUpgradeCostForBuildingBlock(class ABuildingBlock* BuildingBlock);
+	static FInventoryItem GetDestructionRefundForDeployable(class ADeployable* Deployable);
 
 protected:
 	virtual void OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance) override;
@@ -41,13 +40,18 @@ private:
 	float MaxRepairAmount;
 
 	UPROPERTY()
-	UBuildingHammerWidget* Widget;
+	class UBuildingHammerWidget* Widget;
 
 	UFUNCTION()
 	void ClearWidget();
 
-	void AttemptDeployableRepair(ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector);
-	bool CanRepairDeployable(ADeployable* DeployableToRepair, FInventoryItem& RepairCost) const;
+	void UpdateBuildingPrivilegeNotifications();
+
+	bool IsBuildRestrictedZone(const FVector& LocationToTest) const;
+	bool HasBuildingPrivilege(const FVector& LocationToTest) const;
+
+	void AttemptDeployableRepair(class ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector);
+	bool CanRepairDeployable(class ADeployable* DeployableToRepair, FInventoryItem& RepairCost) const;
 	bool LineTraceOnVisibility(FHitResult& OutHitResult) const;
 
 };

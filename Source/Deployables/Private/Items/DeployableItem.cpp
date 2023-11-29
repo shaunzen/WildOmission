@@ -88,11 +88,11 @@ bool ADeployableItem::GetPlacementTransform(FTransform& OutPlacementTransform)
 			BuildAnchorThatFacesPlayer.SetRotation(FQuat(FRotator(0.0f, FacePlayerYaw + AnchorOffsetFromNearestSnap, 0.0f)));
 			
 			OutPlacementTransform = BuildAnchorThatFacesPlayer;
-			return HasAuthorizationToBuild(OutPlacementTransform.GetLocation());
+			return HasBuildingPrivilege(OutPlacementTransform.GetLocation());
 		}
 
 		OutPlacementTransform = HitBuildAnchor->GetCorrectedTransform();
-		return HasAuthorizationToBuild(OutPlacementTransform.GetLocation());
+		return HasBuildingPrivilege(OutPlacementTransform.GetLocation());
 	}
 
 	FHitResult HitResult;
@@ -112,7 +112,7 @@ bool ADeployableItem::GetPlacementTransform(FTransform& OutPlacementTransform)
 	// Check ground condition
 	if (HitActor->ActorHasTag(TEXT("Ground")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnGround())
 	{
-		return !InvalidOverlap && HasAuthorizationToBuild(HitResult.ImpactPoint);
+		return !InvalidOverlap && HasBuildingPrivilege(HitResult.ImpactPoint);
 	}
 
 	// Check floor condition
@@ -122,13 +122,13 @@ bool ADeployableItem::GetPlacementTransform(FTransform& OutPlacementTransform)
 	
 	if (HitActor->ActorHasTag(TEXT("Floor")) && (CanSpawnOnFloor || CanSpawnOnCeiling))
 	{
-		return !InvalidOverlap && HasAuthorizationToBuild(HitResult.ImpactPoint);
+		return !InvalidOverlap && HasBuildingPrivilege(HitResult.ImpactPoint);
 	}
 
 	// Check wall condition
 	if (HitActor->ActorHasTag(TEXT("Wall")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnWall())
 	{
-		return !InvalidOverlap && HasAuthorizationToBuild(HitResult.ImpactPoint);
+		return !InvalidOverlap && HasBuildingPrivilege(HitResult.ImpactPoint);
 	}
 
 	return false;

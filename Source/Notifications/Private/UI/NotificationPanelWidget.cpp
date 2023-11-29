@@ -9,11 +9,18 @@
 #include "Structs/Notification.h"
 #include "Components/InventoryComponent.h"
 #include "Components/VitalsComponent.h"
+#include "Components/BuilderComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 static UMaterialInterface* HealthIcon = nullptr;
 static UMaterialInterface* ThirstIcon = nullptr;
 static UMaterialInterface* HungerIcon = nullptr;
+static UMaterialInterface* BuildingIcon = nullptr;
+
+const static FName THIRSTY_IDENTIFIER = TEXT("Thirsty");
+const static FName STARVING_IDENTIFIER = TEXT("Starving");
+const static FName BUILDING_PRIVILEGE_IDENTIFIER = TEXT("BuildingPrivilege");
+const static FName BUILDING_BLOCKED_IDENTIFIER = TEXT("BuildingBlocked");
 
 UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -43,29 +50,44 @@ UNotificationPanelWidget::UNotificationPanelWidget(const FObjectInitializer& Obj
 	{
 		HungerIcon = HungerIconObject.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> BuildingIconObject(TEXT("/Game/WildOmissionCore/UI/Icons/Generic/M_Building_Icon_Inst"));
+	if (BuildingIconObject.Succeeded())
+	{
+		BuildingIcon = BuildingIconObject.Object;
+	}
 }
 
 void UNotificationPanelWidget::NativeConstruct()
-{	
-	// We want to add notif if we add an item to our inventory, or remove
-	UInventoryComponent* OwnerInventoryComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryComponent>();
-	if (OwnerInventoryComponent == nullptr)
+{
+	APawn* OwnerPawn = GetOwningPlayerPawn();
+	if (OwnerPawn == nullptr)
 	{
 		return;
 	}
 
-	OwnerInventoryComponent->OnItemUpdate.AddDynamic(this, &UNotificationPanelWidget::CreateItemNotification);
-
-	UVitalsComponent* OwnerVitalsComponent = GetOwningPlayerPawn()->FindComponentByClass<UVitalsComponent>();
-	if (OwnerVitalsComponent == nullptr)
+	// Bind inventory updates to create notifications
+	if (UInventoryComponent* OwnerInventoryComponent = OwnerPawn->FindComponentByClass<UInventoryComponent>())
 	{
-		return;
+		OwnerInventoryComponent->OnItemUpdate.AddDynamic(this, &UNotificationPanelWidget::CreateItemNotification);
+	}
+	
+	// Bind vitals updates to create nofifications
+	if (UVitalsComponent* OwnerVitalsComponent = OwnerPawn->FindComponentByClass<UVitalsComponent>())
+	{
+		OwnerVitalsComponent->OnBeginThirst.AddDynamic(this, &UNotificationPanelWidget::AddThirstyNotification);
+		OwnerVitalsComponent->OnEndThirst.AddDynamic(this, &UNotificationPanelWidget::RemoveThirstyNotification);
+		OwnerVitalsComponent->OnBeginStarving.AddDynamic(this, &UNotificationPanelWidget::AddStarvingNotification);
+		OwnerVitalsComponent->OnEndStarving.AddDynamic(this, &UNotificationPanelWidget::RemoveStarvingNotification);
 	}
 
-	OwnerVitalsComponent->OnBeginThirst.AddDynamic(this, &UNotificationPanelWidget::AddThirstyNotification);
-	OwnerVitalsComponent->OnEndThirst.AddDynamic(this, &UNotificationPanelWidget::RemoveThirstyNotification);
-	OwnerVitalsComponent->OnBeginStarving.AddDynamic(this, &UNotificationPanelWidget::AddStarvingNotification);
-	OwnerVitalsComponent->OnEndStarving.AddDynamic(this, &UNotificationPanelWidget::RemoveStarvingNotification);
+	// Bind builder updates to create notifications
+	if (UBuilderComponent* OwnerBuilderComponent = OwnerPawn->FindComponentByClass<UBuilderComponent>())
+	{
+		// TODO bind delegates
+		OwnerBuilderComponent->OnAddBuildingPrivilegeNotification.AddDynamic(this, &UNotificationPanelWidget::AddBuildingPrivilegeNotification);
+		OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.AddDynamic(this, &UNotificationPanelWidget::ClearBuildingPrivilegeNotification);
+	}
 }
 
 void UNotificationPanelWidget::CreateItemNotification(const FInventoryItemUpdate& ItemUpdate)
@@ -100,8 +122,8 @@ void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
 	ThirstyNotification.Negative = true;
 	ThirstyNotification.Time = Time;
 	ThirstyNotification.Duration = 0.0f;
-	ThirstyNotification.Identifier = FName("Thirsty");
-	ThirstyNotification.Message = FString("Thirsty");
+	ThirstyNotification.Identifier = THIRSTY_IDENTIFIER;
+	ThirstyNotification.Message = TEXT("Thirsty");
 	ThirstyNotification.Icon = ThirstIcon;
 
 	AddNotification(ThirstyNotification);
@@ -109,7 +131,7 @@ void UNotificationPanelWidget::AddThirstyNotification(const float& Time)
 
 void UNotificationPanelWidget::RemoveThirstyNotification(const float& Time)
 {
-	RemoveNotification(FName("Thirsty"));
+	RemoveNotification(THIRSTY_IDENTIFIER);
 }
 
 void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
@@ -118,8 +140,8 @@ void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
 	StarvingNotification.Negative = true;
 	StarvingNotification.Time = Time;
 	StarvingNotification.Duration = 0.0f;
-	StarvingNotification.Identifier = FName("Starving");
-	StarvingNotification.Message = FString("Starving");
+	StarvingNotification.Identifier = STARVING_IDENTIFIER;
+	StarvingNotification.Message = TEXT("Starving");
 	StarvingNotification.Icon = HungerIcon;
 
 	AddNotification(StarvingNotification);
@@ -127,7 +149,40 @@ void UNotificationPanelWidget::AddStarvingNotification(const float& Time)
 
 void UNotificationPanelWidget::RemoveStarvingNotification(const float& Time)
 {
-	RemoveNotification(FName("Starving"));
+	RemoveNotification(STARVING_IDENTIFIER);
+}
+
+void UNotificationPanelWidget::AddBuildingPrivilegeNotification(bool HasBuildingPrivilege)
+{
+	const FName Identifier = HasBuildingPrivilege ? BUILDING_PRIVILEGE_IDENTIFIER : BUILDING_BLOCKED_IDENTIFIER;
+	const FName OtherIdentifier = HasBuildingPrivilege ? BUILDING_BLOCKED_IDENTIFIER : BUILDING_PRIVILEGE_IDENTIFIER;
+
+	if (HasNotification(Identifier))
+	{
+		return;
+	}
+
+	if (HasNotification(OtherIdentifier))
+	{
+		RemoveNotification(OtherIdentifier);
+	}
+
+	FNotification BuildingNotification;
+	BuildingNotification.Negative = !HasBuildingPrivilege;
+	BuildingNotification.Positive = HasBuildingPrivilege;
+	BuildingNotification.Time = GetWorld()->GetRealTimeSeconds();
+	BuildingNotification.Duration = 0.0f;
+	BuildingNotification.Identifier = Identifier;
+	BuildingNotification.Message = HasBuildingPrivilege ? TEXT("Building Privilege") : TEXT("Building Blocked");
+	BuildingNotification.Icon = BuildingIcon;
+
+	AddNotification(BuildingNotification);
+}
+
+void UNotificationPanelWidget::ClearBuildingPrivilegeNotification()
+{
+	RemoveNotification(BUILDING_PRIVILEGE_IDENTIFIER);
+	RemoveNotification(BUILDING_BLOCKED_IDENTIFIER);
 }
 
 void UNotificationPanelWidget::AddNotification(const FNotification& Notification)
@@ -155,12 +210,39 @@ void UNotificationPanelWidget::AddNotification(const FNotification& Notification
 	NotificationContainer->AddChild(NotificationWidget);
 }
 
-void UNotificationPanelWidget::RemoveNotification(const FName& NotificationIdentifier)
+bool UNotificationPanelWidget::HasNotification(const FName& NotificationIdentifier)
 {
 	for (UWidget* ChildWidget : StatusNotificationContainer->GetAllChildren())
 	{
 		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
 		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier)
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	for (UWidget* ChildWidget : NotificationContainer->GetAllChildren())
+	{
+		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
+		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier)
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+void UNotificationPanelWidget::RemoveNotification(const FName& NotificationIdentifier)
+{
+	for (UWidget* ChildWidget : StatusNotificationContainer->GetAllChildren())
+	{
+		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
+		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier || ChildNotificationWidget->IsSlidingOut())
 		{
 			continue;
 		}
@@ -172,7 +254,7 @@ void UNotificationPanelWidget::RemoveNotification(const FName& NotificationIdent
 	for (UWidget* ChildWidget : NotificationContainer->GetAllChildren())
 	{
 		UNotificationWidget* ChildNotificationWidget = Cast<UNotificationWidget>(ChildWidget);
-		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier)
+		if (ChildNotificationWidget == nullptr || ChildNotificationWidget->GetNotification().Identifier != NotificationIdentifier || ChildNotificationWidget->IsSlidingOut())
 		{
 			continue;
 		}

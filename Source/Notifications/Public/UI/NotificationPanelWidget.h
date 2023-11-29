@@ -42,7 +42,14 @@ private:
 	UFUNCTION()
 	void RemoveStarvingNotification(const float& Time);
 
+	UFUNCTION()
+	void AddBuildingPrivilegeNotification(bool HasBuildingPrivilege);
+
+	UFUNCTION()
+	void ClearBuildingPrivilegeNotification();
+
 	void AddNotification(const FNotification& Notification);
-	void RemoveNotification(const FName& NotificationName);
+	bool HasNotification(const FName& NotificationIdentifier);
+	void RemoveNotification(const FName& NotificationIdentifier);
 
 };

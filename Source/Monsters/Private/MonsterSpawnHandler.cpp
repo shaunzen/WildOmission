@@ -2,7 +2,9 @@
 
 
 #include "MonsterSpawnHandler.h"
+#include "SaveHandler.h"
 #include "TimeOfDayHandler.h"
+#include "WildOmissionSaveGame.h"
 #include "Engine/DataTable.h"
 #include "Monsters/Monster.h"
 #include "Net/UnrealNetwork.h"
@@ -39,7 +41,7 @@ void AMonsterSpawnHandler::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* World = GetWorld();
+	const UWorld* World = GetWorld();
 	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
 	{
 		return;
@@ -57,11 +59,33 @@ void AMonsterSpawnHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 bool AMonsterSpawnHandler::IsSpawnConditionValid()
 {
-	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
-	if (TimeOfDayHandler && TimeOfDayHandler->IsNight())
+	const ASaveHandler* SaveHandler = ASaveHandler::GetSaveHandler();
+	if (!IsValid(SaveHandler))
 	{
-		return true;
+		return false;
 	}
 
-	return false;
+	const UWildOmissionSaveGame* SaveFile = SaveHandler->GetSaveFile();
+	if (SaveFile == nullptr)
+	{
+		return false;
+	}
+
+	if (SaveFile->Difficulty == EGameDifficulty::EGD_Peaceful)
+	{
+		return false;
+	}
+
+	const ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
+	if (!IsValid(TimeOfDayHandler))
+	{
+		return false;
+	}
+
+	if (TimeOfDayHandler->IsDay())
+	{
+		return false;
+	}
+
+	return true;
 }

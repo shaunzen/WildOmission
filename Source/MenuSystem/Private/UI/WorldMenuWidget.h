@@ -45,6 +45,9 @@ private:
 	class UButton* CancelButton;
 	
 	UPROPERTY(Meta = (BindWidget))
+	class UMultiOptionBox* DifficultyMultiOptionBox;
+
+	UPROPERTY(Meta = (BindWidget))
 	class UCheckOptionBox* MultiplayerCheckOptionBox;
 	
 	UPROPERTY(Meta = (BindWidget))
@@ -59,7 +62,11 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UEditableTextBox* ServerNameInputBox;
 
+	UPROPERTY()
 	FString WorldName;
+
+	TEnumAsByte<enum EGameDifficulty> GetWorldDifficulty() const;
+	void SetWorldDifficulty(const TEnumAsByte<enum EGameDifficulty>& NewDifficulty);
 
 	UFUNCTION()
 	void ServerNameOnTextChanged(const FText& Text);

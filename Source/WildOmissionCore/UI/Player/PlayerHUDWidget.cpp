@@ -4,6 +4,7 @@
 #include "PlayerHUDWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
+#include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "UI/InventoryMenuWidget.h"
 #include "UI/CraftingMenuWidget.h"
@@ -18,7 +19,9 @@ UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) 
 {
 	MenuBackgroundBorder = nullptr;
 	MenuSwitcher = nullptr;
+	OpenCraftingButton = nullptr;
 	InventoryMenu = nullptr;
+	OpenInventoryButton = nullptr;
 	CraftingMenu = nullptr;
 	Chat = nullptr;
 	NotificationPanel = nullptr;
@@ -33,6 +36,10 @@ void UPlayerHUDWidget::NativeConstruct()
 
 	MenuBackgroundBorder->OnMouseButtonDownEvent.BindUFunction(this, TEXT("MenuBackgroundMouseButtonDown"));
 	Chat->OnToggleRequested.AddDynamic(this, &UPlayerHUDWidget::ToggleChatMenu);
+
+	OpenCraftingButton->OnClicked.AddDynamic(this, &UPlayerHUDWidget::SwitchToCraftingMenu);
+	OpenCraftingButton->SetVisibility(ESlateVisibility::Hidden);
+	OpenInventoryButton->OnClicked.AddDynamic(this, &UPlayerHUDWidget::SwitchToInventoryMenu);
 
 	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (PlayerInventoryManipulatorComponent == nullptr)
@@ -78,6 +85,7 @@ void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
 		}
 
 		OwnerInventoryManipulator->DropSelectedItemInWorld(false);
+		OpenCraftingButton->SetVisibility(ESlateVisibility::Hidden);
 		CloseMenuPanel();
 	}
 	else
@@ -149,7 +157,7 @@ bool UPlayerHUDWidget::IsInventoryMenuOpen() const
 
 bool UPlayerHUDWidget::IsCraftingMenuOpen() const
 {
-	return MenuSwitcher->GetActiveWidget() == CraftingMenu;
+	return MenuSwitcher->GetActiveWidget() == CraftingPanel;
 }
 
 bool UPlayerHUDWidget::IsChatMenuOpen() const
@@ -197,15 +205,15 @@ void UPlayerHUDWidget::OpenMenuPanel(bool ShowBackground)
 
 void UPlayerHUDWidget::SwitchToInventoryMenu()
 {
-	MenuSwitcher->SetActiveWidget(InventoryMenu);
+	MenuSwitcher->SetActiveWidget(InventoryPanel);
+	OpenCraftingButton->SetVisibility(ESlateVisibility::Visible);
 	InventoryMenu->Open();
 }
 
 void UPlayerHUDWidget::SwitchToCraftingMenu()
 {
 	InventoryMenu->Close();
-	
-	MenuSwitcher->SetActiveWidget(CraftingMenu);
+	MenuSwitcher->SetActiveWidget(CraftingPanel);
 	CraftingMenu->Refresh();
 }
 
@@ -222,6 +230,7 @@ void UPlayerHUDWidget::CloseMenuPanel()
 	PlayerController->bShowMouseCursor = false;
 	
 	InventoryMenu->Close(true);
+	OpenCraftingButton->SetVisibility(ESlateVisibility::Hidden);
 	MenuBackgroundBorder->SetVisibility(ESlateVisibility::Hidden);
 }
 

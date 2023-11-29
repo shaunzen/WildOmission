@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "Structs/PlayerSave.h"
+#include "Enums/GameDifficulty.h"
 #include "WildOmissionSaveGame.generated.h"
 
 const int32 CURRENT_SAVE_FILE_VERSION = 1;
@@ -87,6 +88,9 @@ public:
 
 	UPROPERTY()
 	FDateTime LastPlayedTime;
+
+	UPROPERTY()
+	TEnumAsByte<EGameDifficulty> Difficulty;
 
 	UPROPERTY()
 	FString LevelFile;

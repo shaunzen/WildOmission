@@ -3,6 +3,7 @@
 
 #include "Items/BuildingHammerItem.h"
 #include "Components/EquipComponent.h"
+#include "Components/BuilderComponent.h"
 #include "Interfaces/DurabilityInterface.h"
 #include "Components/InventoryComponent.h"
 #include "UI/BuildingHammerWidget.h"
@@ -30,6 +31,13 @@ ABuildingHammerItem::ABuildingHammerItem()
 	{
 		WidgetClass = BuildingHammerWidgetBlueprint.Class;
 	}
+}
+
+void ABuildingHammerItem::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UpdateBuildingPrivilegeNotifications();
 }
 
 void ABuildingHammerItem::OnPrimaryHeld()
@@ -61,7 +69,7 @@ void ABuildingHammerItem::OnSecondaryPressed()
 	}
 
 	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
-	if (HitDeployable == nullptr)
+	if (HitDeployable == nullptr || !HasBuildingPrivilege(HitDeployable->GetActorLocation()))
 	{
 		return;
 	}
@@ -85,10 +93,30 @@ void ABuildingHammerItem::OnUnequip()
 {
 	Super::OnUnequip();
 
+}
+
+void ABuildingHammerItem::Destroyed()
+{
+	Super::Destroyed();
+	
 	if (Widget)
 	{
 		Widget->Teardown();
 	}
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr || !OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.IsBound())
+	{
+		return;
+	}
+
+	OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.Broadcast();
 }
 
 void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
@@ -100,7 +128,7 @@ void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 	}
 
 	ABuildingBlock* HitBuildingBlock = Cast<ABuildingBlock>(HitResult.GetActor());
-	if (HitBuildingBlock == nullptr || !HitBuildingBlock->IsUpgradable())
+	if (HitBuildingBlock == nullptr || !HitBuildingBlock->IsUpgradable() || !HasBuildingPrivilege(HitBuildingBlock->GetActorLocation()))
 	{
 		return;
 	}
@@ -131,7 +159,7 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 	}
 
 	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
-	if (HitDeployable == nullptr)
+	if (HitDeployable == nullptr || !HasBuildingPrivilege(HitDeployable->GetActorLocation()))
 	{
 		return;
 	}
@@ -246,6 +274,75 @@ void ABuildingHammerItem::OnSwingImpact(const FHitResult& HitResult, const FVect
 void ABuildingHammerItem::ClearWidget()
 {
 	Widget = nullptr;
+}
+
+void ABuildingHammerItem::UpdateBuildingPrivilegeNotifications()
+{
+	const AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+	
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr)
+	{
+		return;
+	}
+
+	FVector TestLocation = OwnerActor->GetActorLocation();
+
+	FHitResult HitResult;
+	if (LineTraceOnVisibility(HitResult))
+	{
+		TestLocation = HitResult.ImpactPoint;
+	}
+
+	const bool RestrictedZone = OwnerBuilderComponent->IsBuildRestrictedZone(TestLocation);
+	const bool BuildingPrivilege = OwnerBuilderComponent->HasBuildingPrivilege(TestLocation);
+
+	if (RestrictedZone && OwnerBuilderComponent->OnAddBuildingPrivilegeNotification.IsBound())
+	{
+		OwnerBuilderComponent->OnAddBuildingPrivilegeNotification.Broadcast(BuildingPrivilege);
+	}
+	else if (!RestrictedZone && OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.IsBound())
+	{
+		OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.Broadcast();
+	}
+}
+
+bool ABuildingHammerItem::IsBuildRestrictedZone(const FVector& LocationToTest) const
+{
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return true;
+	}
+
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr)
+	{
+		return true;
+	}
+
+	return OwnerBuilderComponent->IsBuildRestrictedZone(LocationToTest);
+}
+
+bool ABuildingHammerItem::HasBuildingPrivilege(const FVector& LocationToTest) const
+{
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return false;
+	}
+
+	UBuilderComponent* OwnerBuilderComponent = OwnerActor->FindComponentByClass<UBuilderComponent>();
+	if (OwnerBuilderComponent == nullptr)
+	{
+		return false;
+	}
+
+	return OwnerBuilderComponent->HasBuildingPrivilege(LocationToTest);
 }
 
 void ABuildingHammerItem::AttemptDeployableRepair(ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector)

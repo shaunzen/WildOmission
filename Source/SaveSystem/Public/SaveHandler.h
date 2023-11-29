@@ -28,8 +28,10 @@ public:
 	void SetSaveFile(const FString& SaveFileName);
 	void LoadWorld();
 
+	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
+
 	UPlayerSaveHandlerComponent* GetPlayerHandler() const;
-	UWildOmissionSaveGame* GetSaveFile();
+	UWildOmissionSaveGame* GetSaveFile() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -50,8 +52,6 @@ private:
 
 	UFUNCTION()
 	void MarkSaveGenerated();
-
-	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 
 	UPROPERTY()
 	UWildOmissionSaveGame* CurrentSaveFile;
