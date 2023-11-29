@@ -617,8 +617,8 @@ void AWildOmissionCharacter::HandleAiming()
 
 	// Calculate Sensitivity
 	const float SettingsSensitivity = UserSettings->GetMouseSensitivity();
-	const float SensitivityReduction = 0.5f;
-	LookSensitivity = SettingsSensitivity - (SensitivityReduction * (float)bAiming);
+	const float SensitivityAimMultiplier = bAiming ? 0.25f : 1.0f;
+	LookSensitivity = SettingsSensitivity * SensitivityAimMultiplier;
 
 	// Calculate FOV
 	const float SettingsFOV = UserSettings->GetFieldOfView();
