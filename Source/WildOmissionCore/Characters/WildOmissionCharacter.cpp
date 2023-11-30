@@ -455,6 +455,7 @@ void AWildOmissionCharacter::ApplyInputSettings()
 	DefaultMappingContext->MapKey(MoveRightAction, UserSettings->GetMoveRightKey());
 	DefaultMappingContext->MapKey(LookAction, EKeys::Mouse2D);
 	DefaultMappingContext->MapKey(SprintAction, UserSettings->GetSprintKey());
+	DefaultMappingContext->MapKey(CrouchAction, UserSettings->GetCrouchKey());
 	DefaultMappingContext->MapKey(JumpAction, UserSettings->GetJumpKey());
 	DefaultMappingContext->MapKey(PrimaryAction, UserSettings->GetPrimaryKey());
 	DefaultMappingContext->MapKey(SecondaryAction, UserSettings->GetSecondaryKey());
@@ -680,6 +681,8 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::Look);
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartSprint);
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndSprint);
+	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartCrouch);
+	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndCrouch);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::PrimaryPressed);
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::PrimaryReleased);
@@ -785,6 +788,16 @@ void AWildOmissionCharacter::EndSprint()
 	Server_Sprint(false);
 	bSprinting = false;
 	RefreshDesiredMovementSpeed();
+}
+
+void AWildOmissionCharacter::StartCrouch()
+{
+	Crouch();
+}
+
+void AWildOmissionCharacter::EndCrouch()
+{
+	UnCrouch();
 }
 
 void AWildOmissionCharacter::OnRep_MovementSpeed()

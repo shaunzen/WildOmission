@@ -247,6 +247,11 @@ private:
 	UFUNCTION()
 	void EndSprint();
 
+	UFUNCTION()
+	void StartCrouch();
+	UFUNCTION()
+	void EndCrouch();
+
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MovementSpeed)
 	float DesiredMovementSpeed;
 
