@@ -205,6 +205,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		SprintAction = SprintActionBlueprint.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> CrouchActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Crouch"));
+	if (CrouchActionBlueprint.Succeeded())
+	{
+		CrouchAction = CrouchActionBlueprint.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Jump"));
 	if (JumpActionBlueprint.Succeeded())
 	{

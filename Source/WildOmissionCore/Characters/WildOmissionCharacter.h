@@ -174,6 +174,9 @@ private:
 	class UInputAction* SprintAction;
 
 	UPROPERTY()
+	class UInputAction* CrouchAction;
+
+	UPROPERTY()
 	class UInputAction* JumpAction;
 		
 	UPROPERTY()
