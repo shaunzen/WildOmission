@@ -8,7 +8,7 @@
 #include "Interfaces/CharacterSettingsInterface.h"
 #include "WildOmissionGameUserSettings.h"
 
-UControlsSettingsWidget::UControlsSettingsWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+UControlsSettingsWidget::UControlsSettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
 {
 	InvertMouseYCheckOptionBox = nullptr;
 	MouseSensitivitySliderOptionBox = nullptr;
