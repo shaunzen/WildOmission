@@ -4,10 +4,12 @@
 #include "Ragdolls/Ragdoll.h"
 #include "Components/TimerDespawnComponent.h"
 #include "Components/HarvestableComponent.h"
+#include "GameFramework/PhysicsVolume.h"
 #include "Net/UnrealNetwork.h"
 
 ARagdoll::ARagdoll()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	SetReplicateMovement(true);
 	NetUpdateFrequency = 2.0f;
@@ -29,6 +31,29 @@ ARagdoll::ARagdoll()
 	DespawnComponent->SetDespawnTime(600.0f);
 
 	HarvestableComponent = CreateDefaultSubobject<UHarvestableComponent>(TEXT("HarvestableComponent"));
+}
+
+void ARagdoll::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (MeshComponent == nullptr)
+	{
+		return;
+	}
+
+	APhysicsVolume* MeshPhysicsVolume = MeshComponent->GetPhysicsVolume();
+	if (MeshPhysicsVolume == nullptr)
+	{
+		return;
+	}
+
+	
+	if (MeshPhysicsVolume->bWaterVolume == true)
+	{
+		const FVector ForceVector = FVector::UpVector * 100.0f * DeltaTime;
+		MeshComponent->AddForce(ForceVector);
+	}
 }
 
 FName ARagdoll::GetIdentifier() const
