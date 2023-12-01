@@ -8,6 +8,7 @@
 
 ALootableRagdoll::ALootableRagdoll()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	InventoryComponent->SetSlotCount(30);
 	InventoryComponent->SetDisplayName(TEXT("Inventory"));

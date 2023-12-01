@@ -25,6 +25,7 @@ ARagdoll::ARagdoll()
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Block);
+	MeshComponent->SetShouldUpdatePhysicsVolume(true);
 	RootComponent = MeshComponent;
 
 	DespawnComponent = CreateDefaultSubobject<UTimerDespawnComponent>(TEXT("DespawnComponent"));
@@ -47,13 +48,14 @@ void ARagdoll::Tick(float DeltaTime)
 	{
 		return;
 	}
-
 	
-	if (MeshPhysicsVolume->bWaterVolume == true)
+	if (MeshPhysicsVolume->bWaterVolume == false)
 	{
-		const FVector ForceVector = FVector::UpVector * 100.0f * DeltaTime;
-		MeshComponent->AddForce(ForceVector);
+		return;
 	}
+
+	const FVector ForceVector = FVector::UpVector * 1000.0f;
+	MeshComponent->AddImpulse(ForceVector);
 }
 
 FName ARagdoll::GetIdentifier() const
