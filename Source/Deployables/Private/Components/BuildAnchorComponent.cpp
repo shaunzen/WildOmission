@@ -31,7 +31,7 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 
 	IsOccupied = false;
 
-	ComponentTags.Add("BuildAnchor");
+	ComponentTags.Add(TEXT("BuildAnchor"));
 }
 
 void UBuildAnchorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
