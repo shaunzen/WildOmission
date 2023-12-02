@@ -13,21 +13,20 @@ void ADeployableItem::OnPlace()
 		return;
 	}
 
-	ADeployable* SpawnedDeployable = World->SpawnActor<ADeployable>(DeployableActorClass);
+
+	FTransform PlacementTransform;
+	if (!GetPlacementTransform(PlacementTransform))
+	{
+		return;
+	}
+
+	ADeployable* SpawnedDeployable = World->SpawnActor<ADeployable>(DeployableActorClass, PlacementTransform);
 	if (SpawnedDeployable == nullptr)
 	{
 		return;
 	}
 
-	FTransform PlacementTransform;
-	bool SpawnValid = GetPlacementTransform(PlacementTransform);
-	SpawnedDeployable->SetActorTransform(PlacementTransform);
 	SpawnedDeployable->OnSpawn();
-
-	if (SpawnValid == false)
-	{
-		SpawnedDeployable->Destroy();
-	}
 
 	Super::OnPlace();
 }

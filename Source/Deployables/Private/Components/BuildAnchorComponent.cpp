@@ -12,6 +12,8 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+	SetMobility(EComponentMobility::Type::Stationary);
+
 	Type = EBuildAnchorType::FoundationAnchor;
 	
 	SetRelativeScale3D(FVector(0.9f));

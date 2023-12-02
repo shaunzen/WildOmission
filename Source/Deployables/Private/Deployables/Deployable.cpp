@@ -29,6 +29,7 @@ ADeployable::ADeployable()
 	RootComponent = DeployableRootComponent;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->SetMobility(EComponentMobility::Type::Stationary);
 	MeshComponent->SetupAttachment(DeployableRootComponent);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Overlap);
 
