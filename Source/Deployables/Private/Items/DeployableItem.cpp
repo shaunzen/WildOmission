@@ -81,7 +81,7 @@ bool ADeployableItem::GetPlacementTransform(FTransform& OutPlacementTransform)
 			float FacePlayerYaw = GetFacePlayerRotation(HitBuildAnchor->GetComponentLocation()).Yaw;
 			FacePlayerYaw = FMath::RoundToFloat(FacePlayerYaw / 90.0f) * 90.0f;
 			
-			float AnchorOffsetFromNearestSnap = GetOffsetFromNearestSnapDegree(AnchorHitResult.GetActor()->GetActorRotation().Yaw);
+			float AnchorOffsetFromNearestSnap = GetOffsetFromNearestSnapDegree(HitBuildAnchor->GetComponentRotation().Yaw);
 			
 			FTransform BuildAnchorThatFacesPlayer = HitBuildAnchor->GetCorrectedTransform();
 			BuildAnchorThatFacesPlayer.SetRotation(FQuat(FRotator(0.0f, FacePlayerYaw + AnchorOffsetFromNearestSnap, 0.0f)));
