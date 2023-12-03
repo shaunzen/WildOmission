@@ -41,7 +41,6 @@ void UPlayerSaveHandlerComponent::Save(TArray<FPlayerSave>& OutUpdatedSavesList)
 {
 	for (const FPlayerSave& InSave : PendingSaves)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Saving Player Location: %s"), *InSave.WorldLocation.ToString());
 		AddSaveToList(InSave, OutUpdatedSavesList);
 	}
 

@@ -26,6 +26,7 @@ ADeployable::ADeployable()
 	NetDormancy = DORM_DormantAll;
 
 	DeployableRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DeployableRootComponent"));
+	DeployableRootComponent->SetMobility(EComponentMobility::Type::Stationary);
 	RootComponent = DeployableRootComponent;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
@@ -88,7 +89,23 @@ void ADeployable::OnLoadComplete_Implementation()
 
 void ADeployable::OnSpawn()
 {
+	// Broadcast Overlap
+	TArray<UPrimitiveComponent*> OverlappingComponents;
+	GetOverlappingComponents(OverlappingComponents);
+	for (UPrimitiveComponent* OverlappingComponent : OverlappingComponents)
+	{
+		if (OverlappingComponent == nullptr || !OverlappingComponent->OnComponentBeginOverlap.IsBound())
+		{
+			continue;
+		}
+
+		OverlappingComponent->OnComponentBeginOverlap.Broadcast(OverlappingComponent, this, MeshComponent, INDEX_NONE, false, FHitResult());
+	}
+
+	// Set Durability
 	CurrentDurability = MaxDurability;
+
+	// Placement Effects
 	Multi_PlayPlacementEffects();
 }
 
