@@ -227,6 +227,7 @@ FName ABuildingHammerItem::GetResourceIDFromMaterialType(TEnumAsByte<EToolType> 
 
 FInventoryItem ABuildingHammerItem::GetUpgradeCostForBuildingBlock(ABuildingBlock* BuildingBlock)
 {
+	// TODO get crafting recipe
 	FInventoryItem UpgradeCost;
 	switch (BuildingBlock->GetMaterialType())
 	{
@@ -247,9 +248,10 @@ FInventoryItem ABuildingHammerItem::GetUpgradeCostForBuildingBlock(ABuildingBloc
 
 FInventoryItem ABuildingHammerItem::GetDestructionRefundForDeployable(ADeployable* Deployable)
 {
+	// TODO get crafting recipe
 	FInventoryItem RefundItem;
-	RefundItem.Name = GetResourceIDFromMaterialType(Deployable->GetMaterialType());
-	RefundItem.Quantity = FMath::Clamp(Deployable->GetCurrentDurability() * 0.25f, 1, 100);
+	//RefundItem.Name = GetResourceIDFromMaterialType(Deployable->GetMaterialType());
+	//RefundItem.Quantity = FMath::Clamp(Deployable->GetCurrentDurability() * 0.25f, 1, 100);
 	return RefundItem;
 }
 
@@ -379,8 +381,9 @@ bool ABuildingHammerItem::CanRepairDeployable(ADeployable* DeployableToRepair, F
 		return false;
 	}
 
-	RepairCost.Name = GetResourceIDFromMaterialType(DeployableToRepair->GetMaterialType());
-	RepairCost.Quantity = MaxRepairAmount;
+	// TODO get crafting recipe
+	//RepairCost.Name = GetResourceIDFromMaterialType(DeployableToRepair->GetMaterialType());
+	//RepairCost.Quantity = MaxRepairAmount;
 
 	// Check if the player has this amount of resources?
 	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();

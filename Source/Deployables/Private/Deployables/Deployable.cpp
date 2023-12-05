@@ -45,8 +45,8 @@ ADeployable::ADeployable()
 	MaxDurability = 100.0f;
 
 	Identifier = NAME_None;
-
-	MaterialType = EToolType::WOOD;
+	
+	ItemID = NAME_None;
 
 	bCanSpawnOnGround = true;
 	bCanSpawnOnFloor = false;
@@ -179,9 +179,9 @@ FName ADeployable::GetIdentifier() const
 	return Identifier;
 }
 
-TEnumAsByte<EToolType> ADeployable::GetMaterialType()
+FName ADeployable::GetItemID() const
 {
-	return MaterialType;
+	return ItemID;
 }
 
 bool ADeployable::CanSpawnOnGround() const
