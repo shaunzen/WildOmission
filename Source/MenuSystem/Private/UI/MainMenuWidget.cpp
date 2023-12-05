@@ -161,8 +161,28 @@ void UMainMenuWidget::RefreshSplashText()
 	{
 		return;
 	}
-	// TODO special messages
-	SplashTextBlock->SetText(FText::FromString(SPLASH_MESSAGES[Index]));
+	
+	FString SplashText = SPLASH_MESSAGES[Index];
+
+	FDateTime TimeNow = FDateTime::Now();
+	if (TimeNow.GetMonth() == 1 && TimeNow.GetDay() == 1)
+	{
+		SplashText = TEXT("Happy New Year!");
+	}
+	else if (TimeNow.GetMonth() == 1 && TimeNow.GetDay() == 13)
+	{
+		SplashText = TEXT("Happy Birthday Larch!");
+	}
+	else if (TimeNow.GetMonth() == 10 && TimeNow.GetDay() == 31)
+	{
+		SplashText = TEXT("Happy Halloween!");
+	}
+	else if (TimeNow.GetMonth() == 12 && (TimeNow.GetDay() == 24 || TimeNow.GetDay() == 25))
+	{
+		SplashText = TEXT("Merry XMas!");
+	}
+
+	SplashTextBlock->SetText(FText::FromString(SplashText));
 }
 
 void UMainMenuWidget::JoinServer(const uint32& ServerIndex)
