@@ -20,11 +20,26 @@
 const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("Alpha!"),
 	TEXT("Aww Cute Poly Piggies <3"),
-	TEXT("A Wild Storm Appears"),
+	TEXT("A Wild Storm Appears..."),
 	TEXT("Now with crouching!"),
+	TEXT("Larch was 16 at the start of development."),
+	TEXT("Not possible without you!"),
+	TEXT("Not a day off in over a year"),
+	TEXT("Played by FloppySword!"),
+	TEXT("Congatulations on 25K FloppySword!"),
+	TEXT("wellyesh <3"),
+	TEXT("NELSInfinity <3"),
+	TEXT("LifeOn30FPS <3"),
+	TEXT("rcjoe69 <3"),
+	TEXT("dmyress <3"),
+	TEXT("Violafame <3"),
+	TEXT("Made entierly on a Model M Keyboard!")
 	TEXT("Refined Metal is obtained from zombies, harvesting metal nodes with a metal pickaxe, or by crafting"),
 	TEXT("333"),
 	TEXT("Made by Larch"),
+	TEXT("Build without limits!"),
+	TEXT("Build a massive tower!"),
+	TEXT("This is a splash text."),
 	TEXT("96.7% C++"),
 	TEXT("1.8% C"),
 	TEXT("1.5% C#"),
@@ -146,7 +161,7 @@ void UMainMenuWidget::RefreshSplashText()
 	{
 		return;
 	}
-
+	// TODO special messages
 	SplashTextBlock->SetText(FText::FromString(SPLASH_MESSAGES[Index]));
 }
 
