@@ -4,6 +4,7 @@
 #include "UI/MainMenuWidget.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "WorldSelectionWidget.h"
 #include "WorldCreationWidget.h"
 #include "WorldMenuWidget.h"
@@ -16,16 +17,35 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Log.h"
 
+const static TArray<FString> SPLASH_MESSAGES = {
+	TEXT("Alpha!"),
+	TEXT("Aww Cute Poly Piggies <3"),
+	TEXT("A Wild Storm Appears"),
+	TEXT("Now with crouching!"),
+	TEXT("Refined Metal is obtained from zombies, harvesting metal nodes with a metal pickaxe, or by crafting"),
+	TEXT("333"),
+	TEXT("Made by Larch"),
+	TEXT("96.7% C++"),
+	TEXT("1.8% C"),
+	TEXT("1.5% C#"),
+	TEXT("Updated Weekly!"),
+	TEXT("Leave a Review (Your Opinion Matters)")
+};
+
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	SetIsFocusable(true);
 
 	MenuSwitcher = nullptr;
+
 	PlayButton = nullptr;
 	OptionsButton = nullptr;
 	FeedbackButton = nullptr;
 	CreditsButton = nullptr;
 	ExitButton = nullptr;
+	
+	SplashTextBlock = nullptr;
+
 	MainMenu = nullptr;
 	WorldSelectionMenu = nullptr;
 	WorldCreationMenu = nullptr;
@@ -48,6 +68,8 @@ void UMainMenuWidget::NativeConstruct()
 	FeedbackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenFeedbackPage);
 	CreditsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenCreditsMenu);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
+
+	RefreshSplashText();
 
 	WorldSelectionMenu->OnSelectButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
 	WorldSelectionMenu->OnCreateNewWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
@@ -117,6 +139,17 @@ IMenuInterface* UMainMenuWidget::GetMenuInterface() const
 	return MenuInterface;
 }
 
+void UMainMenuWidget::RefreshSplashText()
+{
+	const int32 Index = FMath::RandRange(0, SPLASH_MESSAGES.Num() - 1);
+	if (!SPLASH_MESSAGES.IsValidIndex(Index))
+	{
+		return;
+	}
+
+	SplashTextBlock->SetText(FText::FromString(SPLASH_MESSAGES[Index]));
+}
+
 void UMainMenuWidget::JoinServer(const uint32& ServerIndex)
 {
 	if (MenuInterface == nullptr)
@@ -146,6 +179,7 @@ void UMainMenuWidget::OpenMainMenu()
 	}
 	UE_LOG(LogMenuSystem, Verbose, TEXT("Switching to main menu"));
 	MenuSwitcher->SetActiveWidget(MainMenu);
+	RefreshSplashText();
 }
 
 void UMainMenuWidget::OpenWorldSelectionMenu()
