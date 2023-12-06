@@ -171,8 +171,14 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 		return;
 	}
 
-	FInventoryItem Refund = GetDestructionRefundForDeployable(HitDeployable);
-	OwnerInventoryComponent->AddItem(Refund);
+	TArray<FInventoryItem> Refund;
+	if (GetDestructionRefundForDeployable(HitDeployable, Refund))
+	{
+		for (const FInventoryItem& RefundItem : Refund)
+		{
+			OwnerInventoryComponent->AddItem(RefundItem);
+		}
+	}
 
 	HitDeployable->Destroy();
 	DecrementDurability();
@@ -205,7 +211,50 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability
 
 bool ABuildingHammerItem::GetUpgradeCostForDeployable(ADeployable* Deployable, TArray<FInventoryItem>& OutCost)
 {
-	return false;
+	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
+
+	if (!IsValid(BuildingBlock))
+	{
+		return false;
+	}
+	
+	const FString BuildingBlockIDString = BuildingBlock->GetItemID().ToString();
+	FName UpgradeID = NAME_None;
+	if (BuildingBlockIDString.Contains(TEXT("wood")))
+	{
+		UpgradeID = FName(BuildingBlockIDString.Replace(TEXT("wood"), TEXT("stone")));
+	}
+	else if (BuildingBlockIDString.Contains(TEXT("stone")))
+	{
+		UpgradeID = FName(BuildingBlockIDString.Replace(TEXT("stone"), TEXT("metal")));
+	}
+	else if (BuildingBlockIDString.Contains(TEXT("metal")))
+	{
+		return false;
+	}
+
+	FCraftingRecipe* UpgradeRecipe = UCraftingComponent::GetRecipe(UpgradeID);
+	if (UpgradeRecipe == nullptr)
+	{
+		return false;
+	}
+
+	for (const FInventoryItem& Ingredient : UpgradeRecipe->Ingredients)
+	{
+		const float IngredientCount = Ingredient.Quantity * 0.75f;
+		if (IngredientCount < 1.0f)
+		{
+			continue;
+		}
+
+		FInventoryItem UpgradeCostItem;
+		UpgradeCostItem.Name = Ingredient.Name;
+		UpgradeCostItem.Quantity = IngredientCount;
+
+		OutCost.Add(UpgradeCostItem);
+	}
+
+	return true;
 }
 
 bool ABuildingHammerItem::GetDestructionRefundForDeployable(ADeployable* Deployable, TArray<FInventoryItem>& OutRefund)
