@@ -33,6 +33,7 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("rcjoe69 <3"),
 	TEXT("dmyress <3"),
 	TEXT("Violafame <3"),
+	TEXT("TyceMcMac <3"),
 	TEXT("Made entierly on a Model M Keyboard!")
 	TEXT("Refined Metal is obtained from zombies, harvesting metal nodes with a metal pickaxe, or by crafting"),
 	TEXT("333"),
