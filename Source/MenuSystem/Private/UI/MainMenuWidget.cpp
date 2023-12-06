@@ -43,8 +43,7 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("96.7% C++"),
 	TEXT("1.8% C"),
 	TEXT("1.5% C#"),
-	TEXT("Updated Weekly!"),
-	TEXT("Leave a Review (Your Opinion Matters)")
+	TEXT("Updated Weekly!")
 };
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
