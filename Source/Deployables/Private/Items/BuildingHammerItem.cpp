@@ -6,6 +6,7 @@
 #include "Components/BuilderComponent.h"
 #include "Interfaces/DurabilityInterface.h"
 #include "Components/InventoryComponent.h"
+#include "Components/CraftingComponent.h"
 #include "UI/BuildingHammerWidget.h"
 #include "Deployables/Deployable.h"
 #include "Deployables/BuildingBlock.h"
@@ -202,57 +203,89 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability
 	return true;
 }
 
-FName ABuildingHammerItem::GetResourceIDFromMaterialType(TEnumAsByte<EToolType> MaterialType)
+bool ABuildingHammerItem::GetUpgradeCostForDeployable(ADeployable* Deployable, TArray<FInventoryItem>& OutCost)
 {
-	FName ResourceID = NAME_None;
-
-	switch (MaterialType)
-	{
-	case EToolType::WOOD:
-		ResourceID = TEXT("wood");
-		break;
-	case EToolType::STONE:
-		ResourceID = TEXT("stone");
-		break;
-	case EToolType::METAL:
-		ResourceID = TEXT("metal");
-		break;
-	default:
-		ResourceID = TEXT("wood");
-		break;
-	}
-
-	return ResourceID;
+	return false;
 }
 
-FInventoryItem ABuildingHammerItem::GetUpgradeCostForBuildingBlock(ABuildingBlock* BuildingBlock)
+bool ABuildingHammerItem::GetDestructionRefundForDeployable(ADeployable* Deployable, TArray<FInventoryItem>& OutRefund)
 {
-	// TODO get crafting recipe
-	FInventoryItem UpgradeCost;
-	switch (BuildingBlock->GetMaterialType())
+	if (!IsValid(Deployable))
 	{
-	case EToolType::WOOD:
-		UpgradeCost.Name = GetResourceIDFromMaterialType(EToolType::STONE);
-		break;
-	case EToolType::STONE:
-		UpgradeCost.Name = GetResourceIDFromMaterialType(EToolType::METAL);
-		break;
-	default:
-		UpgradeCost.Name = GetResourceIDFromMaterialType(EToolType::WOOD);
-		break;
+		return false;
 	}
-	UpgradeCost.Quantity = BuildingBlock->GetMaxDurability() * 0.75f;
 
-	return UpgradeCost;
+	const FName DeployableItemID = Deployable->GetItemID();
+
+	// Get crafting recipe
+	FCraftingRecipe* DeployableRecipe = UCraftingComponent::GetRecipe(DeployableItemID);
+
+	// Return if no recipe found
+	if (DeployableRecipe == nullptr)
+	{
+		return false;
+	}
+
+	// Get the ingredients
+	for (const FInventoryItem& Ingredient : DeployableRecipe->Ingredients)
+	{
+		// Multiply by some factor
+		const float IngredientRefund = Ingredient.Quantity * 0.25f;
+
+		// Discard if less than 1
+		if (IngredientRefund < 1.0f)
+		{
+			continue;
+		}
+
+		// Add this to cost
+		FInventoryItem RefundItem;
+		RefundItem.Name = Ingredient.Name;
+		RefundItem.Quantity = FMath::CeilToInt32(IngredientRefund);
+		OutRefund.Add(RefundItem);
+	}
+
+	return true;
 }
 
-FInventoryItem ABuildingHammerItem::GetDestructionRefundForDeployable(ADeployable* Deployable)
+bool ABuildingHammerItem::GetRepairCostForDeployable(ADeployable* Deployable, TArray<FInventoryItem>& OutCost)
 {
-	// TODO get crafting recipe
-	FInventoryItem RefundItem;
-	//RefundItem.Name = GetResourceIDFromMaterialType(Deployable->GetMaterialType());
-	//RefundItem.Quantity = FMath::Clamp(Deployable->GetCurrentDurability() * 0.25f, 1, 100);
-	return RefundItem;
+	if (!IsValid(Deployable))
+	{
+		return false;
+	}
+
+	const FName DeployableItemID = Deployable->GetItemID();
+
+	// Get crafting recipe
+	FCraftingRecipe* DeployableRecipe = UCraftingComponent::GetRecipe(DeployableItemID);
+
+	// Return if no crafting recipe
+	if (DeployableRecipe == nullptr)
+	{
+		return false;
+	}
+	
+	// Get the ingredients
+	for (const FInventoryItem& Ingredient : DeployableRecipe->Ingredients)
+	{
+		// Multiply by some factor
+		const float IngredientCost = Ingredient.Quantity * 0.1f;
+
+		// Discard if less than 1
+		if (IngredientCost < 1.0f)
+		{
+			continue;
+		}
+
+		// Add this to cost
+		FInventoryItem CostItem;
+		CostItem.Name = Ingredient.Name;
+		CostItem.Quantity = FMath::CeilToInt32(IngredientCost);
+		OutCost.Add(CostItem);
+	}
+
+	return true;
 }
 
 void ABuildingHammerItem::OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance)
@@ -372,41 +405,6 @@ void ABuildingHammerItem::AttemptDeployableRepair(ADeployable* DeployableToRepai
 	const float RepairAmount = -(RepairCost.Quantity);
 	FPointDamageEvent HitByToolEvent(RepairAmount, HitResult, DirectionVector, nullptr);
 	DeployableToRepair->TakeDamage(RepairAmount, HitByToolEvent, GetOwnerPawn()->GetController(), this);
-}
-
-bool ABuildingHammerItem::CanRepairDeployable(ADeployable* DeployableToRepair, FInventoryItem& RepairCost) const
-{
-	if (DeployableToRepair == nullptr)
-	{
-		return false;
-	}
-
-	// TODO get crafting recipe
-	//RepairCost.Name = GetResourceIDFromMaterialType(DeployableToRepair->GetMaterialType());
-	//RepairCost.Quantity = MaxRepairAmount;
-
-	// Check if the player has this amount of resources?
-	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
-	if (OwnerInventoryComponent == nullptr || !OwnerInventoryComponent->GetContents()->HasItem(RepairCost.Name))
-	{
-		return false;
-	}
-
-	// if the deployable needs less than we are willing to give, we need to cut back and only use the amount required
-	const float DurabilityDifference = DeployableToRepair->GetMaxDurability() - DeployableToRepair->GetCurrentDurability();
-	if (DurabilityDifference < RepairCost.Quantity)
-	{
-		RepairCost.Quantity = DurabilityDifference;
-	}
-
-	// if the player is lacking sufficient resources we must reduce the amount of repair performed
-	const int32 PlayerResourceQuantity = OwnerInventoryComponent->GetContents()->GetItemQuantity(RepairCost.Name);
-	if (PlayerResourceQuantity < RepairCost.Quantity)
-	{
-		RepairCost.Quantity = PlayerResourceQuantity;
-	}
-
-	return true;
 }
 
 bool ABuildingHammerItem::LineTraceOnVisibility(FHitResult& OutHitResult) const
