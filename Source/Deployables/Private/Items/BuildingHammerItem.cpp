@@ -328,7 +328,7 @@ bool ABuildingHammerItem::GetRepairCostForDeployable(ADeployable* Deployable, TA
 	for (const FInventoryItem& Ingredient : DeployableRecipe->Ingredients)
 	{
 		// Multiply by some factor
-		const float IngredientCost = Ingredient.Quantity * 0.1f;
+		const float IngredientCost = Ingredient.Quantity * 0.05f;
 
 		// Discard if less than 1
 		if (IngredientCost < 1.0f)
@@ -456,6 +456,15 @@ void ABuildingHammerItem::AttemptDeployableRepair(ADeployable* DeployableToRepai
 	if (!GetRepairCostForDeployable(DeployableToRepair, RepairCost))
 	{
 		return;
+	}
+
+	// Check first if we have enough to repair
+	for (const FInventoryItem& CostItem : RepairCost)
+	{
+		if (OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
+		{
+			return;
+		}
 	}
 
 	for (const FInventoryItem& CostItem : RepairCost)
