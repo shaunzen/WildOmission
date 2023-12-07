@@ -230,8 +230,8 @@ void UBuildingHammerWidget::SetupUpgradeText()
 
 	
 	UpgradeTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Upgrade To %s"), TEXT("something"))));
-	UpgradeCostTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Requires %s"), *RequiresString)));
-	UpgradeHasTextBlock->SetText(FText::FromString(FString::Printf(TEXT("You Have %s"), *YouHaveString)));
+	UpgradeCostTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Requires%s"), *RequiresString)));
+	UpgradeHasTextBlock->SetText(FText::FromString(FString::Printf(TEXT("You Have%s"), *YouHaveString)));
 
 
 	if (!CanPlayerAffordUpgrade())
@@ -245,15 +245,27 @@ void UBuildingHammerWidget::SetupUpgradeText()
 
 void UBuildingHammerWidget::SetupDestroyText()
 {
-	FInventoryItem RefundItem; //= ABuildingHammerItem::GetDestructionRefundForDeployable(Deployable);
-	FItemData* RefundItemData = UInventoryComponent::GetItemData(RefundItem.Name);
-	if (RefundItemData == nullptr)
+	TArray<FInventoryItem> DestructionRefund;
+	if (!ABuildingHammerItem::GetDestructionRefundForDeployable(Deployable, DestructionRefund))
 	{
-		DestroyRefundTextBlock->SetVisibility(ESlateVisibility::Collapsed);
+		DestroyRefundTextBlock->SetText(FText::FromString(TEXT("No Refund")));
 		return;
 	}
 
-	DestroyRefundTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Refund %i %s"), RefundItem.Quantity, *RefundItemData->DisplayName)));
+	FString RefundString;
+	
+	for (const FInventoryItem& RefundItem : DestructionRefund)
+	{
+		FItemData* RefundItemData = UInventoryComponent::GetItemData(RefundItem.Name);
+		if (RefundItemData == nullptr)
+		{
+			continue;
+		}
+
+		RefundString.Append(FString::Printf(TEXT(" %i %s"), RefundItem.Quantity, *RefundItemData->DisplayName));
+	}
+
+	DestroyRefundTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Refund%s"), *RefundString)));
 }
 
 void UBuildingHammerWidget::SetMouseCursorToCenter()
