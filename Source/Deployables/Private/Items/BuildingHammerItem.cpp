@@ -139,13 +139,22 @@ void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 	{
 		return;
 	}
-	FInventoryItem UpgradeCost = GetUpgradeCostForBuildingBlock(HitBuildingBlock);
-	if (OwnerInventoryComponent->GetContents()->GetItemQuantity(UpgradeCost.Name) < UpgradeCost.Quantity)
+
+	TArray<FInventoryItem> UpgradeCost;
+	if (!GetUpgradeCostForDeployable(HitBuildingBlock, UpgradeCost))
 	{
 		return;
 	}
+	
+	for (const FInventoryItem& CostItem : UpgradeCost)
+	{
+		if (OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
+		{
+			return;
+		}
 
-	OwnerInventoryComponent->RemoveItem(UpgradeCost);
+		OwnerInventoryComponent->RemoveItem(CostItem);
+	}
 
 	HitBuildingBlock->Upgrade();
 	DecrementDurability();
@@ -436,22 +445,25 @@ void ABuildingHammerItem::AttemptDeployableRepair(ADeployable* DeployableToRepai
 	{
 		return;
 	}
-
-	FInventoryItem RepairCost;
-	if (!CanRepairDeployable(DeployableToRepair, RepairCost))
-	{
-		return;
-	}
-
+	
 	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)
 	{
 		return;
 	}
+	
+	TArray<FInventoryItem> RepairCost;
+	if (!GetRepairCostForDeployable(DeployableToRepair, RepairCost))
+	{
+		return;
+	}
 
-	OwnerInventoryComponent->RemoveItem(RepairCost);
-
-	const float RepairAmount = -(RepairCost.Quantity);
+	for (const FInventoryItem& CostItem : RepairCost)
+	{
+		OwnerInventoryComponent->RemoveItem(CostItem);
+	}
+	
+	const float RepairAmount = -10;
 	FPointDamageEvent HitByToolEvent(RepairAmount, HitResult, DirectionVector, nullptr);
 	DeployableToRepair->TakeDamage(RepairAmount, HitByToolEvent, GetOwnerPawn()->GetController(), this);
 }
