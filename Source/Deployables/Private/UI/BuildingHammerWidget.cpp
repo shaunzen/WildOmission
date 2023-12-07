@@ -163,9 +163,19 @@ bool UBuildingHammerWidget::CanPlayerAffordUpgrade() const
 		return false;
 	}
 
-	FInventoryItem UpgradeCost; //= ABuildingHammerItem::GetUpgradeCostForBuildingBlock(BuildingBlock);
-	if (OwnerInventoryComponent->GetContents()->GetItemQuantity(UpgradeCost.Name) < UpgradeCost.Quantity)
+	TArray<FInventoryItem> UpgradeCost;
+	if (!ABuildingHammerItem::GetUpgradeCostForDeployable(BuildingBlock, UpgradeCost))
 	{
+		return false;
+	}
+
+	for (const FInventoryItem& CostItem : UpgradeCost)
+	{
+		if (OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) >= CostItem.Quantity)
+		{
+			continue;
+		}
+		
 		return false;
 	}
 
