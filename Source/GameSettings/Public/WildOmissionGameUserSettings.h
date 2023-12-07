@@ -153,6 +153,12 @@ public:
 	FKey GetSprintKey() const;
 
 	UFUNCTION()
+	void SetCrouchKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetCrouchKey() const;
+
+	UFUNCTION()
 	void SetJumpKey(const FKey& NewKey);
 
 	UFUNCTION()
@@ -275,6 +281,8 @@ private:
 	FKey MoveRightKey;
 	UPROPERTY(Config)
 	FKey SprintKey;
+	UPROPERTY(Config)
+	FKey CrouchKey;
 	UPROPERTY(Config)
 	FKey JumpKey;
 	UPROPERTY(Config)

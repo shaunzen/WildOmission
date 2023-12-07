@@ -28,9 +28,12 @@ public:
 	void Server_DestroyCurrentDeployable();
 
 	bool GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const;
-	static FName GetResourceIDFromMaterialType(TEnumAsByte<EToolType> MaterialType);
-	static FInventoryItem GetUpgradeCostForBuildingBlock(class ABuildingBlock* BuildingBlock);
-	static FInventoryItem GetDestructionRefundForDeployable(class ADeployable* Deployable);
+	
+	//static FName GetResourceIDFromMaterialType(TEnumAsByte<EToolType> MaterialType);
+	
+	static bool GetUpgradeCostForDeployable(class ADeployable* Deployable, TArray<FInventoryItem>& OutCost);
+	static bool GetDestructionRefundForDeployable(class ADeployable* Deployable, TArray<FInventoryItem>& OutRefund);
+	static bool GetRepairCostForDeployable(class ADeployable* Deployable, TArray<FInventoryItem>& OutCost);
 
 protected:
 	virtual void OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance) override;
@@ -51,7 +54,6 @@ private:
 	bool HasBuildingPrivilege(const FVector& LocationToTest) const;
 
 	void AttemptDeployableRepair(class ADeployable* DeployableToRepair, const FHitResult& HitResult, const FVector& DirectionVector);
-	bool CanRepairDeployable(class ADeployable* DeployableToRepair, FInventoryItem& RepairCost) const;
 	bool LineTraceOnVisibility(FHitResult& OutHitResult) const;
 
 };

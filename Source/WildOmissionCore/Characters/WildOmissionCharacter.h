@@ -174,6 +174,9 @@ private:
 	class UInputAction* SprintAction;
 
 	UPROPERTY()
+	class UInputAction* CrouchAction;
+
+	UPROPERTY()
 	class UInputAction* JumpAction;
 		
 	UPROPERTY()
@@ -243,6 +246,11 @@ private:
 	void StartSprint();
 	UFUNCTION()
 	void EndSprint();
+
+	UFUNCTION()
+	void StartCrouch();
+	UFUNCTION()
+	void EndCrouch();
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MovementSpeed)
 	float DesiredMovementSpeed;

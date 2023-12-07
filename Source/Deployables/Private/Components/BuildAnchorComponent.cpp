@@ -12,6 +12,8 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+	SetMobility(EComponentMobility::Type::Stationary);
+
 	Type = EBuildAnchorType::FoundationAnchor;
 	
 	SetRelativeScale3D(FVector(0.9f));
@@ -29,7 +31,7 @@ UBuildAnchorComponent::UBuildAnchorComponent()
 
 	IsOccupied = false;
 
-	ComponentTags.Add("BuildAnchor");
+	ComponentTags.Add(TEXT("BuildAnchor"));
 }
 
 void UBuildAnchorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -46,8 +48,21 @@ void UBuildAnchorComponent::BeginPlay()
 
 	OnComponentBeginOverlap.AddDynamic(this, &UBuildAnchorComponent::OnBeginOverlap);
 	OnComponentEndOverlap.AddDynamic(this, &UBuildAnchorComponent::OnEndOverlap);
-
 	OnRep_IsOccupied();
+
+	TArray<UPrimitiveComponent*> OverlappingPrimitiveComponents;
+	GetOverlappingComponents(OverlappingPrimitiveComponents);
+	for (UPrimitiveComponent* OverlappingComponent : OverlappingPrimitiveComponents)
+	{
+		if (OverlappingComponent == nullptr)
+		{
+			continue;
+		}
+
+		AActor* OverlappingActor = OverlappingComponent->GetOwner();
+		OnBeginOverlap(this, OverlappingActor, OverlappingComponent, INDEX_NONE, false, FHitResult());
+	}
+
 }
 
 FTransform UBuildAnchorComponent::GetCorrectedTransform() const

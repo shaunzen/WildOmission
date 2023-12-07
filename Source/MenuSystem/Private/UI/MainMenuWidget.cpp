@@ -4,6 +4,7 @@
 #include "UI/MainMenuWidget.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "WorldSelectionWidget.h"
 #include "WorldCreationWidget.h"
 #include "WorldMenuWidget.h"
@@ -16,16 +17,50 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Log.h"
 
+const static TArray<FString> SPLASH_MESSAGES = {
+	TEXT("Alpha!"),
+	TEXT("Aww Cute Poly Piggies <3"),
+	TEXT("A Wild Storm Appears..."),
+	TEXT("Now with crouching!"),
+	TEXT("Larch was 16 at the start of development."),
+	TEXT("Not possible without you!"),
+	TEXT("Not a day off in over a year"),
+	TEXT("Played by FloppySword!"),
+	TEXT("Congatulations on 25K FloppySword!"),
+	TEXT("wellyesh <3"),
+	TEXT("NELSInfinity <3"),
+	TEXT("LifeOn30FPS <3"),
+	TEXT("rcjoe69 <3"),
+	TEXT("dmyress <3"),
+	TEXT("Violafame <3"),
+	TEXT("TyceMcMac <3"),
+	TEXT("Made entierly on a Model M Keyboard!")
+	TEXT("Refined Metal is obtained from zombies, harvesting metal nodes with a metal pickaxe, or by crafting"),
+	TEXT("333"),
+	TEXT("Made by Larch"),
+	TEXT("Build without limits!"),
+	TEXT("Build a massive tower!"),
+	TEXT("This is a splash text."),
+	TEXT("96.7% C++"),
+	TEXT("1.8% C"),
+	TEXT("1.5% C#"),
+	TEXT("Updated Weekly!")
+};
+
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 	SetIsFocusable(true);
 
 	MenuSwitcher = nullptr;
+
 	PlayButton = nullptr;
 	OptionsButton = nullptr;
 	FeedbackButton = nullptr;
 	CreditsButton = nullptr;
 	ExitButton = nullptr;
+	
+	SplashTextBlock = nullptr;
+
 	MainMenu = nullptr;
 	WorldSelectionMenu = nullptr;
 	WorldCreationMenu = nullptr;
@@ -48,6 +83,8 @@ void UMainMenuWidget::NativeConstruct()
 	FeedbackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenFeedbackPage);
 	CreditsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OpenCreditsMenu);
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::ExitGame);
+
+	RefreshSplashText();
 
 	WorldSelectionMenu->OnSelectButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldMenu);
 	WorldSelectionMenu->OnCreateNewWorldButtonClicked.AddDynamic(this, &UMainMenuWidget::OpenWorldCreationMenu);
@@ -115,6 +152,37 @@ void UMainMenuWidget::Teardown()
 IMenuInterface* UMainMenuWidget::GetMenuInterface() const
 {
 	return MenuInterface;
+}
+
+void UMainMenuWidget::RefreshSplashText()
+{
+	const int32 Index = FMath::RandRange(0, SPLASH_MESSAGES.Num() - 1);
+	if (!SPLASH_MESSAGES.IsValidIndex(Index))
+	{
+		return;
+	}
+	
+	FString SplashText = SPLASH_MESSAGES[Index];
+
+	FDateTime TimeNow = FDateTime::Now();
+	if (TimeNow.GetMonth() == 1 && TimeNow.GetDay() == 1)
+	{
+		SplashText = TEXT("Happy New Year!");
+	}
+	else if (TimeNow.GetMonth() == 1 && TimeNow.GetDay() == 13)
+	{
+		SplashText = TEXT("Happy Birthday Larch!");
+	}
+	else if (TimeNow.GetMonth() == 10 && TimeNow.GetDay() == 31)
+	{
+		SplashText = TEXT("Happy Halloween!");
+	}
+	else if (TimeNow.GetMonth() == 12 && (TimeNow.GetDay() == 24 || TimeNow.GetDay() == 25))
+	{
+		SplashText = TEXT("Merry XMas!");
+	}
+
+	SplashTextBlock->SetText(FText::FromString(SplashText));
 }
 
 void UMainMenuWidget::JoinServer(const uint32& ServerIndex)

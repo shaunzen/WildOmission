@@ -70,6 +70,9 @@ private:
 	class UButton* ExitButton;
 
 	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* SplashTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
 	UWidget* MainMenu;
 	UPROPERTY(Meta = (BindWidget))
 	class UWorldSelectionWidget* WorldSelectionMenu;
@@ -92,6 +95,9 @@ private:
 
 	class IMenuInterface* MenuInterface;
 	
+	UFUNCTION()
+	void RefreshSplashText();
+
 	UFUNCTION()
 	void JoinServer(const uint32& ServerIndex);
 

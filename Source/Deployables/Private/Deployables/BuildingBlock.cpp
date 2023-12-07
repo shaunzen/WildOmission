@@ -5,6 +5,7 @@
 
 ABuildingBlock::ABuildingBlock()
 {
+	MaterialType = EToolType::WOOD;
 	UpgradedTier = nullptr;
 }
 
@@ -29,6 +30,11 @@ void ABuildingBlock::Upgrade()
 bool ABuildingBlock::IsUpgradable() const
 {
 	return UpgradedTier != nullptr;
+}
+
+TEnumAsByte<EToolType> ABuildingBlock::GetMaterialType()
+{
+	return MaterialType;
 }
 
 ABuildingBlock* ABuildingBlock::GetUpgradeDefaultClass() const

@@ -4,10 +4,12 @@
 #include "Ragdolls/Ragdoll.h"
 #include "Components/TimerDespawnComponent.h"
 #include "Components/HarvestableComponent.h"
+#include "GameFramework/PhysicsVolume.h"
 #include "Net/UnrealNetwork.h"
 
 ARagdoll::ARagdoll()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	SetReplicateMovement(true);
 	NetUpdateFrequency = 2.0f;
@@ -23,12 +25,37 @@ ARagdoll::ARagdoll()
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Block);
+	MeshComponent->SetShouldUpdatePhysicsVolume(true);
 	RootComponent = MeshComponent;
 
 	DespawnComponent = CreateDefaultSubobject<UTimerDespawnComponent>(TEXT("DespawnComponent"));
 	DespawnComponent->SetDespawnTime(600.0f);
 
 	HarvestableComponent = CreateDefaultSubobject<UHarvestableComponent>(TEXT("HarvestableComponent"));
+}
+
+void ARagdoll::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (MeshComponent == nullptr)
+	{
+		return;
+	}
+
+	APhysicsVolume* MeshPhysicsVolume = MeshComponent->GetPhysicsVolume();
+	if (MeshPhysicsVolume == nullptr)
+	{
+		return;
+	}
+	
+	if (MeshPhysicsVolume->bWaterVolume == false)
+	{
+		return;
+	}
+
+	const FVector ForceVector = FVector::UpVector * 1000.0f;
+	MeshComponent->AddImpulse(ForceVector);
 }
 
 FName ARagdoll::GetIdentifier() const

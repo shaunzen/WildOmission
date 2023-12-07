@@ -18,9 +18,15 @@ public:
 	ABuildingBlock();
 	void Upgrade();
 	bool IsUpgradable() const;
+
+	TEnumAsByte<EToolType> GetMaterialType();
+
 	ABuildingBlock* GetUpgradeDefaultClass() const;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Deployable")
+	TEnumAsByte<EToolType> MaterialType;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable")
 	TSubclassOf<ABuildingBlock> UpgradedTier;
 };

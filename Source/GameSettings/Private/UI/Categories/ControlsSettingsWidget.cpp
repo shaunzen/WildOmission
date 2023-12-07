@@ -8,6 +8,28 @@
 #include "Interfaces/CharacterSettingsInterface.h"
 #include "WildOmissionGameUserSettings.h"
 
+UControlsSettingsWidget::UControlsSettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
+{
+	InvertMouseYCheckOptionBox = nullptr;
+	MouseSensitivitySliderOptionBox = nullptr;
+	MoveForwardKeyOptionBox = nullptr;
+	MoveBackwardKeyOptionBox = nullptr;
+	MoveLeftKeyOptionBox = nullptr;
+	MoveRightKeyOptionBox = nullptr;
+	SprintKeyOptionBox = nullptr;
+	CrouchKeyOptionBox = nullptr;
+	JumpKeyOptionBox = nullptr;
+
+	PrimaryKeyOptionBox = nullptr;
+	SecondaryKeyOptionBox = nullptr;
+	InteractKeyOptionBox = nullptr;
+	ReloadKeyOptionBox = nullptr;
+
+	InventoryKeyOptionBox = nullptr;
+	CraftingKeyOptionBox = nullptr;
+	ChatKeyOptionBox = nullptr;
+}
+
 void UControlsSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -36,6 +58,7 @@ void UControlsSettingsWidget::OnApply()
 	UserSettings->SetMoveLeftKey(MoveLeftKeyOptionBox->GetSelectedKey());
 	UserSettings->SetMoveRightKey(MoveRightKeyOptionBox->GetSelectedKey());
 	UserSettings->SetSprintKey(SprintKeyOptionBox->GetSelectedKey());
+	UserSettings->SetCrouchKey(CrouchKeyOptionBox->GetSelectedKey());
 	UserSettings->SetJumpKey(JumpKeyOptionBox->GetSelectedKey());
 
 	UserSettings->SetPrimaryKey(PrimaryKeyOptionBox->GetSelectedKey());
@@ -76,6 +99,7 @@ void UControlsSettingsWidget::OnRefresh()
 	MoveLeftKeyOptionBox->SetSelectedKey(UserSettings->GetMoveLeftKey());
 	MoveRightKeyOptionBox->SetSelectedKey(UserSettings->GetMoveRightKey());
 	SprintKeyOptionBox->SetSelectedKey(UserSettings->GetSprintKey());
+	CrouchKeyOptionBox->SetSelectedKey(UserSettings->GetCrouchKey());
 	JumpKeyOptionBox->SetSelectedKey(UserSettings->GetJumpKey());
 
 	PrimaryKeyOptionBox->SetSelectedKey(UserSettings->GetPrimaryKey());

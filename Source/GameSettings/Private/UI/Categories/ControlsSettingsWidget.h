@@ -6,54 +6,53 @@
 #include "SettingsCategoryWidget.h"
 #include "ControlsSettingsWidget.generated.h"
 
-class UVerticalBox;
-class UKeyOptionBox;
-class UCheckOptionBox;
-class USliderOptionBox;
-
 UCLASS()
 class UControlsSettingsWidget : public USettingsCategoryWidget
 {
 	GENERATED_BODY()
 
 public:
+	UControlsSettingsWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 	virtual void OnApply() override;
 	virtual void OnRefresh() override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* InvertMouseYCheckOptionBox;
+	class UCheckOptionBox* InvertMouseYCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* MouseSensitivitySliderOptionBox;
+	class USliderOptionBox* MouseSensitivitySliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* MoveForwardKeyOptionBox;
+	class UKeyOptionBox* MoveForwardKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* MoveBackwardKeyOptionBox;
+	class UKeyOptionBox* MoveBackwardKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* MoveLeftKeyOptionBox;
+	class UKeyOptionBox* MoveLeftKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* MoveRightKeyOptionBox;
+	class UKeyOptionBox* MoveRightKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* SprintKeyOptionBox;
+	class UKeyOptionBox* SprintKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* JumpKeyOptionBox;
+	class UKeyOptionBox* CrouchKeyOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	class UKeyOptionBox* JumpKeyOptionBox;
 
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* PrimaryKeyOptionBox;
+	class UKeyOptionBox* PrimaryKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* SecondaryKeyOptionBox;
+	class UKeyOptionBox* SecondaryKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* InteractKeyOptionBox;
+	class UKeyOptionBox* InteractKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* ReloadKeyOptionBox;
+	class UKeyOptionBox* ReloadKeyOptionBox;
 
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* InventoryKeyOptionBox;
+	class UKeyOptionBox* InventoryKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* CraftingKeyOptionBox;
+	class UKeyOptionBox* CraftingKeyOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UKeyOptionBox* ChatKeyOptionBox;
+	class UKeyOptionBox* ChatKeyOptionBox;
 
 
 };

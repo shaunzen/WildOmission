@@ -163,9 +163,19 @@ bool UBuildingHammerWidget::CanPlayerAffordUpgrade() const
 		return false;
 	}
 
-	FInventoryItem UpgradeCost = ABuildingHammerItem::GetUpgradeCostForBuildingBlock(BuildingBlock);
-	if (OwnerInventoryComponent->GetContents()->GetItemQuantity(UpgradeCost.Name) < UpgradeCost.Quantity)
+	TArray<FInventoryItem> UpgradeCost;
+	if (!ABuildingHammerItem::GetUpgradeCostForDeployable(BuildingBlock, UpgradeCost))
 	{
+		return false;
+	}
+
+	for (const FInventoryItem& CostItem : UpgradeCost)
+	{
+		if (OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) >= CostItem.Quantity)
+		{
+			continue;
+		}
+		
 		return false;
 	}
 
@@ -198,12 +208,10 @@ void UBuildingHammerWidget::SetupUpgradeText()
 		return;
 	}
 
-	FInventoryItem UpgradeCost = ABuildingHammerItem::GetUpgradeCostForBuildingBlock(BuildingBlock);
+	TArray<FInventoryItem> UpgradeCost;
 
-	FItemData* ItemData = UInventoryComponent::GetItemData(UpgradeCost.Name);
-	if (ItemData == nullptr)
+	if (!ABuildingHammerItem::GetUpgradeCostForDeployable(BuildingBlock, UpgradeCost))
 	{
-		UE_LOG(LogDeployables, Warning, TEXT("Item Data for '%s' wasn't availible."), *UpgradeCost.Name.ToString());
 		UpgradeTextBlock->SetText(FText::FromString(TEXT("Invalid")));
 		UpgradeCostTextBlock->SetText(FText::FromString(TEXT("Invalid")));
 		UpgradeHasTextBlock->SetText(FText::FromString(TEXT("Invalid")));
@@ -213,14 +221,41 @@ void UBuildingHammerWidget::SetupUpgradeText()
 		return;
 	}
 
-	UpgradeTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Upgrade To %s"), *ItemData->DisplayName)));
-	UpgradeCostTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Requires %i %s"), UpgradeCost.Quantity, *ItemData->DisplayName)));
-	UpgradeHasTextBlock->SetText(FText::FromString(FString::Printf(TEXT("You Have %i %s"),
-		OwnerInventoryComponent->GetContents()->GetItemQuantity(UpgradeCost.Name), *ItemData->DisplayName)));
+	FString RequiresString;
+	FString YouHaveString;
+	bool InitialElement = true;
+	for (const FInventoryItem& CostItem : UpgradeCost)
+	{
+		FItemData* ItemData = UInventoryComponent::GetItemData(CostItem.Name);
+		if (ItemData == nullptr)
+		{
+			UE_LOG(LogDeployables, Warning, TEXT("Item Data for '%s' wasn't availible."), *CostItem.Name.ToString());
+			continue;
+		}
+
+		const FString Separator = InitialElement ? TEXT("") : TEXT(",");
+		
+		RequiresString.Append(FString::Printf(TEXT("%s %i %s"), *Separator, CostItem.Quantity, *ItemData->DisplayName));
+		YouHaveString.Append(FString::Printf(TEXT("%s %i %s"), *Separator,
+			OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name), *ItemData->DisplayName));
+		InitialElement = false;
+	}
+
+	
+	FItemData* InitialItemData = UInventoryComponent::GetItemData(UpgradeCost[0].Name);
+	if (InitialItemData == nullptr)
+	{
+		return;
+	}
+
+	UpgradeTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Upgrade To %s"), *InitialItemData->DisplayName)));
+	UpgradeCostTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Requires%s"), *RequiresString)));
+	UpgradeHasTextBlock->SetText(FText::FromString(FString::Printf(TEXT("You Have%s"), *YouHaveString)));
+
 
 	if (!CanPlayerAffordUpgrade())
 	{
-		UpgradeTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Cannot Upgrade to %s"), *ItemData->DisplayName)));
+		UpgradeTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Cannot Upgrade to %s"), *InitialItemData->DisplayName)));
 		UpgradeTextBlock->SetIsEnabled(false);
 		UpgradeCostTextBlock->SetIsEnabled(false);
 		UpgradeHasTextBlock->SetIsEnabled(false);
@@ -229,15 +264,29 @@ void UBuildingHammerWidget::SetupUpgradeText()
 
 void UBuildingHammerWidget::SetupDestroyText()
 {
-	FInventoryItem RefundItem = ABuildingHammerItem::GetDestructionRefundForDeployable(Deployable);
-	FItemData* RefundItemData = UInventoryComponent::GetItemData(RefundItem.Name);
-	if (RefundItemData == nullptr)
+	TArray<FInventoryItem> DestructionRefund;
+	if (!ABuildingHammerItem::GetDestructionRefundForDeployable(Deployable, DestructionRefund))
 	{
-		DestroyRefundTextBlock->SetVisibility(ESlateVisibility::Collapsed);
+		DestroyRefundTextBlock->SetText(FText::FromString(TEXT("No Refund")));
 		return;
 	}
 
-	DestroyRefundTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Refund %i %s"), RefundItem.Quantity, *RefundItemData->DisplayName)));
+	FString RefundString;
+	bool InitialElement = true;
+	for (const FInventoryItem& RefundItem : DestructionRefund)
+	{
+		FItemData* RefundItemData = UInventoryComponent::GetItemData(RefundItem.Name);
+		if (RefundItemData == nullptr)
+		{
+			continue;
+		}
+
+		const FString Separator = InitialElement ? TEXT("") : TEXT(",");
+		RefundString.Append(FString::Printf(TEXT("%s %i %s"), *Separator, RefundItem.Quantity, *RefundItemData->DisplayName));
+		InitialElement = false;
+	}
+
+	DestroyRefundTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Refund%s"), *RefundString)));
 }
 
 void UBuildingHammerWidget::SetMouseCursorToCenter()

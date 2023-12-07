@@ -6,6 +6,7 @@
 #include "Components/BuilderComponent.h"
 #include "Interfaces/DurabilityInterface.h"
 #include "Components/InventoryComponent.h"
+#include "Components/CraftingComponent.h"
 #include "UI/BuildingHammerWidget.h"
 #include "Deployables/Deployable.h"
 #include "Deployables/BuildingBlock.h"
@@ -138,13 +139,22 @@ void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 	{
 		return;
 	}
-	FInventoryItem UpgradeCost = GetUpgradeCostForBuildingBlock(HitBuildingBlock);
-	if (OwnerInventoryComponent->GetContents()->GetItemQuantity(UpgradeCost.Name) < UpgradeCost.Quantity)
+
+	TArray<FInventoryItem> UpgradeCost;
+	if (!GetUpgradeCostForDeployable(HitBuildingBlock, UpgradeCost))
 	{
 		return;
 	}
+	
+	for (const FInventoryItem& CostItem : UpgradeCost)
+	{
+		if (OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
+		{
+			return;
+		}
 
-	OwnerInventoryComponent->RemoveItem(UpgradeCost);
+		OwnerInventoryComponent->RemoveItem(CostItem);
+	}
 
 	HitBuildingBlock->Upgrade();
 	DecrementDurability();
@@ -170,8 +180,14 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 		return;
 	}
 
-	FInventoryItem Refund = GetDestructionRefundForDeployable(HitDeployable);
-	OwnerInventoryComponent->AddItem(Refund);
+	TArray<FInventoryItem> Refund;
+	if (GetDestructionRefundForDeployable(HitDeployable, Refund))
+	{
+		for (const FInventoryItem& RefundItem : Refund)
+		{
+			OwnerInventoryComponent->AddItem(RefundItem);
+		}
+	}
 
 	HitDeployable->Destroy();
 	DecrementDurability();
@@ -202,55 +218,132 @@ bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability
 	return true;
 }
 
-FName ABuildingHammerItem::GetResourceIDFromMaterialType(TEnumAsByte<EToolType> MaterialType)
+bool ABuildingHammerItem::GetUpgradeCostForDeployable(ADeployable* Deployable, TArray<FInventoryItem>& OutCost)
 {
-	FName ResourceID = NAME_None;
+	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
 
-	switch (MaterialType)
+	if (!IsValid(BuildingBlock))
 	{
-	case EToolType::WOOD:
-		ResourceID = TEXT("wood");
-		break;
-	case EToolType::STONE:
-		ResourceID = TEXT("stone");
-		break;
-	case EToolType::METAL:
-		ResourceID = TEXT("metal");
-		break;
-	default:
-		ResourceID = TEXT("wood");
-		break;
+		return false;
+	}
+	
+	const FString BuildingBlockIDString = BuildingBlock->GetItemID().ToString();
+	FName UpgradeID = NAME_None;
+	if (BuildingBlockIDString.Contains(TEXT("wood")))
+	{
+		UpgradeID = FName(BuildingBlockIDString.Replace(TEXT("wood"), TEXT("stone")));
+	}
+	else if (BuildingBlockIDString.Contains(TEXT("stone")))
+	{
+		UpgradeID = FName(BuildingBlockIDString.Replace(TEXT("stone"), TEXT("metal")));
+	}
+	else if (BuildingBlockIDString.Contains(TEXT("metal")))
+	{
+		return false;
 	}
 
-	return ResourceID;
-}
-
-FInventoryItem ABuildingHammerItem::GetUpgradeCostForBuildingBlock(ABuildingBlock* BuildingBlock)
-{
-	FInventoryItem UpgradeCost;
-	switch (BuildingBlock->GetMaterialType())
+	FCraftingRecipe* UpgradeRecipe = UCraftingComponent::GetRecipe(UpgradeID);
+	if (UpgradeRecipe == nullptr)
 	{
-	case EToolType::WOOD:
-		UpgradeCost.Name = GetResourceIDFromMaterialType(EToolType::STONE);
-		break;
-	case EToolType::STONE:
-		UpgradeCost.Name = GetResourceIDFromMaterialType(EToolType::METAL);
-		break;
-	default:
-		UpgradeCost.Name = GetResourceIDFromMaterialType(EToolType::WOOD);
-		break;
+		return false;
 	}
-	UpgradeCost.Quantity = BuildingBlock->GetMaxDurability() * 0.75f;
 
-	return UpgradeCost;
+	for (const FInventoryItem& Ingredient : UpgradeRecipe->Ingredients)
+	{
+		const float IngredientCount = Ingredient.Quantity * 0.75f;
+		if (IngredientCount < 1.0f)
+		{
+			continue;
+		}
+
+		FInventoryItem UpgradeCostItem;
+		UpgradeCostItem.Name = Ingredient.Name;
+		UpgradeCostItem.Quantity = IngredientCount;
+
+		OutCost.Add(UpgradeCostItem);
+	}
+
+	return true;
 }
 
-FInventoryItem ABuildingHammerItem::GetDestructionRefundForDeployable(ADeployable* Deployable)
+bool ABuildingHammerItem::GetDestructionRefundForDeployable(ADeployable* Deployable, TArray<FInventoryItem>& OutRefund)
 {
-	FInventoryItem RefundItem;
-	RefundItem.Name = GetResourceIDFromMaterialType(Deployable->GetMaterialType());
-	RefundItem.Quantity = FMath::Clamp(Deployable->GetCurrentDurability() * 0.25f, 1, 100);
-	return RefundItem;
+	if (!IsValid(Deployable))
+	{
+		return false;
+	}
+
+	const FName DeployableItemID = Deployable->GetItemID();
+
+	// Get crafting recipe
+	FCraftingRecipe* DeployableRecipe = UCraftingComponent::GetRecipe(DeployableItemID);
+
+	// Return if no recipe found
+	if (DeployableRecipe == nullptr)
+	{
+		return false;
+	}
+
+	// Get the ingredients
+	for (const FInventoryItem& Ingredient : DeployableRecipe->Ingredients)
+	{
+		// Multiply by some factor
+		const float IngredientRefund = Ingredient.Quantity * 0.25f;
+
+		// Discard if less than 1
+		if (IngredientRefund < 1.0f)
+		{
+			continue;
+		}
+
+		// Add this to cost
+		FInventoryItem RefundItem;
+		RefundItem.Name = Ingredient.Name;
+		RefundItem.Quantity = FMath::CeilToInt32(IngredientRefund);
+		OutRefund.Add(RefundItem);
+	}
+
+	return true;
+}
+
+bool ABuildingHammerItem::GetRepairCostForDeployable(ADeployable* Deployable, TArray<FInventoryItem>& OutCost)
+{
+	if (!IsValid(Deployable))
+	{
+		return false;
+	}
+
+	const FName DeployableItemID = Deployable->GetItemID();
+
+	// Get crafting recipe
+	FCraftingRecipe* DeployableRecipe = UCraftingComponent::GetRecipe(DeployableItemID);
+
+	// Return if no crafting recipe
+	if (DeployableRecipe == nullptr)
+	{
+		return false;
+	}
+	
+	// Get the ingredients
+	for (const FInventoryItem& Ingredient : DeployableRecipe->Ingredients)
+	{
+		// Multiply by some factor
+		const float IngredientCost = Ingredient.Quantity * 0.05f;
+
+		// Discard if less than 1
+		if (IngredientCost < 1.0f)
+		{
+			continue;
+		}
+
+		// Add this to cost
+		FInventoryItem CostItem;
+		CostItem.Name = Ingredient.Name;
+		CostItem.Quantity = FMath::CeilToInt32(IngredientCost);
+		OutCost.Add(CostItem);
+	}
+
+	return true;
 }
 
 void ABuildingHammerItem::OnSwingImpact(const FHitResult& HitResult, const FVector& OwnerCharacterLookVector, bool FromFirstPersonInstance)
@@ -352,58 +445,36 @@ void ABuildingHammerItem::AttemptDeployableRepair(ADeployable* DeployableToRepai
 	{
 		return;
 	}
-
-	FInventoryItem RepairCost;
-	if (!CanRepairDeployable(DeployableToRepair, RepairCost))
-	{
-		return;
-	}
-
+	
 	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)
 	{
 		return;
 	}
+	
+	TArray<FInventoryItem> RepairCost;
+	if (!GetRepairCostForDeployable(DeployableToRepair, RepairCost))
+	{
+		return;
+	}
 
-	OwnerInventoryComponent->RemoveItem(RepairCost);
+	// Check first if we have enough to repair
+	for (const FInventoryItem& CostItem : RepairCost)
+	{
+		if (OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
+		{
+			return;
+		}
+	}
 
-	const float RepairAmount = -(RepairCost.Quantity);
+	for (const FInventoryItem& CostItem : RepairCost)
+	{
+		OwnerInventoryComponent->RemoveItem(CostItem);
+	}
+	
+	const float RepairAmount = -10;
 	FPointDamageEvent HitByToolEvent(RepairAmount, HitResult, DirectionVector, nullptr);
 	DeployableToRepair->TakeDamage(RepairAmount, HitByToolEvent, GetOwnerPawn()->GetController(), this);
-}
-
-bool ABuildingHammerItem::CanRepairDeployable(ADeployable* DeployableToRepair, FInventoryItem& RepairCost) const
-{
-	if (DeployableToRepair == nullptr)
-	{
-		return false;
-	}
-
-	RepairCost.Name = GetResourceIDFromMaterialType(DeployableToRepair->GetMaterialType());
-	RepairCost.Quantity = MaxRepairAmount;
-
-	// Check if the player has this amount of resources?
-	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
-	if (OwnerInventoryComponent == nullptr || !OwnerInventoryComponent->GetContents()->HasItem(RepairCost.Name))
-	{
-		return false;
-	}
-
-	// if the deployable needs less than we are willing to give, we need to cut back and only use the amount required
-	const float DurabilityDifference = DeployableToRepair->GetMaxDurability() - DeployableToRepair->GetCurrentDurability();
-	if (DurabilityDifference < RepairCost.Quantity)
-	{
-		RepairCost.Quantity = DurabilityDifference;
-	}
-
-	// if the player is lacking sufficient resources we must reduce the amount of repair performed
-	const int32 PlayerResourceQuantity = OwnerInventoryComponent->GetContents()->GetItemQuantity(RepairCost.Name);
-	if (PlayerResourceQuantity < RepairCost.Quantity)
-	{
-		RepairCost.Quantity = PlayerResourceQuantity;
-	}
-
-	return true;
 }
 
 bool ABuildingHammerItem::LineTraceOnVisibility(FHitResult& OutHitResult) const

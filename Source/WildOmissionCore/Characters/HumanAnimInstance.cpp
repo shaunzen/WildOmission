@@ -6,10 +6,12 @@
 #include "Items/ToolItem.h"
 #include "Items/FirearmItem.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UHumanAnimInstance::UHumanAnimInstance(const FObjectInitializer& ObjectInitializer) : UWildOmissionAnimInstance(ObjectInitializer)
 {
 	HeadAngle = 0.0f;
+	IsCrouched = false;
 	EquipedItemPose = nullptr;
 	
 	RightArmOffset = FRotator::ZeroRotator;
@@ -23,6 +25,7 @@ void UHumanAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	CalculateHeadAngle();
+	UpdateIsCrouched();
 	HandleEquipedItemPose();
 	HandleArmOffset();
 }
@@ -98,6 +101,23 @@ void UHumanAnimInstance::CalculateHeadAngle()
 	}
 
 	HeadAngle = CharacterOwner->GetHeadPitch() * 0.5f;
+}
+
+void UHumanAnimInstance::UpdateIsCrouched()
+{
+	ACharacter* CharacterOwner = Cast<ACharacter>(TryGetPawnOwner());
+	if (CharacterOwner == nullptr)
+	{
+		return;
+	}
+
+	UCharacterMovementComponent* CharacterMovementComponent = CharacterOwner->GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	IsCrouched = CharacterMovementComponent->IsCrouching();
 }
 
 void UHumanAnimInstance::HandleEquipedItemPose()

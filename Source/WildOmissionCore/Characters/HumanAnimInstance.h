@@ -27,6 +27,9 @@ public:
 	float HeadAngle;
 
 	UPROPERTY(BlueprintReadOnly)
+	bool IsCrouched;
+
+	UPROPERTY(BlueprintReadOnly)
 	UAnimSequence* EquipedItemPose;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -44,6 +47,9 @@ private:
 
 	UFUNCTION()
 	void CalculateHeadAngle();
+
+	UFUNCTION()
+	void UpdateIsCrouched();
 
 	UFUNCTION()
 	void HandleEquipedItemPose();

@@ -19,6 +19,8 @@ class RAGDOLL_API ARagdoll : public AActor, public ISavableObject
 public:
 	ARagdoll();
 
+	virtual void Tick(float DeltaTime) override;
+
 	// Begin ISavableObject Implementation
 	virtual FName GetIdentifier() const override;
 	// End ISavableObject Implementation

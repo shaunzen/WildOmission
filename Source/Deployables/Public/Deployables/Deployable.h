@@ -48,7 +48,7 @@ public:
 	virtual FName GetIdentifier() const override;
 	// End ISavableObject Implementation
 
-	TEnumAsByte<EToolType> GetMaterialType();
+	FName GetItemID() const;
 
 	bool CanSpawnOnGround() const;
 	bool CanSpawnOnFloor() const;
@@ -80,9 +80,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable")
 	float MaxDurability;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Deployable")
-	TEnumAsByte<EToolType> MaterialType;
-
 	UPROPERTY(Replicated)
 	float CurrentDurability;
 
@@ -91,6 +88,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Save System")
 	FName Identifier;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Deployable")
+	FName ItemID;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Placement Settings")
 	bool bCanSpawnOnGround;

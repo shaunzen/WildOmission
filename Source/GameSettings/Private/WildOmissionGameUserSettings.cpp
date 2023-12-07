@@ -23,6 +23,7 @@ static const FKey DEFAULT_MOVEBACKWARD = EKeys::S;
 static const FKey DEFAULT_MOVELEFT = EKeys::A;
 static const FKey DEFAULT_MOVERIGHT = EKeys::D;
 static const FKey DEFAULT_SPRINT = EKeys::LeftShift;
+static const FKey DEFAULT_CROUCH = EKeys::LeftControl;
 static const FKey DEFAULT_JUMP = EKeys::SpaceBar;
 
 static const FKey DEFAULT_PRIMARY = EKeys::LeftMouseButton;
@@ -65,6 +66,7 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
     SetMoveLeftKey(DEFAULT_MOVELEFT);
     SetMoveRightKey(DEFAULT_MOVERIGHT);
     SetSprintKey(DEFAULT_SPRINT);
+    SetCrouchKey(DEFAULT_CROUCH);
     SetJumpKey(DEFAULT_JUMP);
 
     SetPrimaryKey(DEFAULT_PRIMARY);
@@ -112,6 +114,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
     SetMoveLeftKey(DEFAULT_MOVELEFT);
     SetMoveRightKey(DEFAULT_MOVERIGHT);
     SetSprintKey(DEFAULT_SPRINT);
+    SetCrouchKey(DEFAULT_CROUCH);
     SetJumpKey(DEFAULT_JUMP);
 
     SetPrimaryKey(DEFAULT_PRIMARY);
@@ -356,6 +359,16 @@ void UWildOmissionGameUserSettings::SetSprintKey(const FKey& NewKey)
 FKey UWildOmissionGameUserSettings::GetSprintKey() const
 {
     return SprintKey;
+}
+
+void UWildOmissionGameUserSettings::SetCrouchKey(const FKey& NewKey)
+{
+    CrouchKey = NewKey;
+}
+
+FKey UWildOmissionGameUserSettings::GetCrouchKey() const
+{
+    return CrouchKey;
 }
 
 void UWildOmissionGameUserSettings::SetJumpKey(const FKey& NewKey)
