@@ -84,7 +84,7 @@ void UResourceRegenerationComponent::CheckNodeRegenerationConditionsAroundOrigin
 			++NodeCount;
 		}
 		
-		if (NodeCount > 2)
+		if (NodeCount >= 1)
 		{
 			UE_LOG(LogWorldGeneration, Verbose, TEXT("Found %i Nodes Around Player, Less than 2 is required to invoke regeneration."), NodeCount);
 			continue;
@@ -102,7 +102,7 @@ void UResourceRegenerationComponent::RegenerateNodeAroundOrigin(const FWorldGene
 		return;
 	}
 
-	const int32 AmountOfNodesToSpawn = FMath::RandRange(1, 10);
+	const int32 AmountOfNodesToSpawn = FMath::RandRange(1, 3);
 
 	for (int32 i = 0; i < AmountOfNodesToSpawn; i++)
 	{
