@@ -214,7 +214,6 @@ void UMainMenuWidget::OpenMainMenu()
 	}
 	UE_LOG(LogMenuSystem, Verbose, TEXT("Switching to main menu"));
 	MenuSwitcher->SetActiveWidget(MainMenu);
-	RefreshSplashText();
 }
 
 void UMainMenuWidget::OpenWorldSelectionMenu()
