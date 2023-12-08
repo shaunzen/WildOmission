@@ -24,6 +24,7 @@ AChunk::AChunk()
 	UVScale = 1.0f;
 	Material = nullptr;
 
+	Tags.Add(TEXT("Ground"));
 }
 
 // Called when the game starts or when spawned
@@ -52,7 +53,8 @@ void AChunk::CreateVerticies()
 	{
 		for (uint32 Y = 0; Y <= YSize; ++Y)
 		{
-			const float Z = FMath::PerlinNoise2D(FVector2D(static_cast<float>(X) * NoiseScale, static_cast<float>(Y) * NoiseScale)) * ZScale;
+			const uint32 Seed = FMath::RandRange(0, 1000000);
+			const float Z = FMath::PerlinNoise2D(FVector2D(static_cast<float>(X + Seed) * NoiseScale, static_cast<float>(Y + Seed) * NoiseScale)) * ZScale;
 			Verticies.Add(FVector(X * Scale, Y * Scale, Z));
 			UVs.Add(FVector2D(X * UVScale, Y * UVScale));
 		}
