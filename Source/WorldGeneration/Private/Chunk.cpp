@@ -34,16 +34,16 @@ void AChunk::BeginPlay()
 
 	Verticies.Reset();
 	Triangles.Reset();
-	UVs.Reset();
+	UV0.Reset();
 	Normals.Reset();
 	Tangents.Reset();
 
 	CreateVerticies();
 	CreateTriangles();
 
-	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Verticies, Triangles, UVs, Normals, Tangents);
+	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Verticies, Triangles, UV0, Normals, Tangents);
 
-	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UVs, TArray<FColor>(), Tangents, true);
+	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UV0, TArray<FColor>(), Tangents, true);
 	MeshComponent->SetMaterial(0, Material);
 }
 
@@ -56,7 +56,7 @@ void AChunk::CreateVerticies()
 		{
 			const float Z = FMath::PerlinNoise2D(FVector2D(static_cast<float>(X + Seed) * NoiseScale, static_cast<float>(Y + Seed) * NoiseScale)) * ZScale;
 			Verticies.Add(FVector(X * Scale, Y * Scale, Z));
-			UVs.Add(FVector2D(X * UVScale, Y * UVScale));
+			UV0.Add(FVector2D(X * UVScale, Y * UVScale));
 		}
 	}
 }

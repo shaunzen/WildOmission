@@ -51,7 +51,7 @@ private:
 	TArray<int32> Triangles;
 
 	UPROPERTY()
-	TArray<FVector2D> UVs;
+	TArray<FVector2D> UV0;
 
 	UPROPERTY()
 	TArray<FVector> Normals;
