@@ -2,6 +2,7 @@
 
 
 #include "Chunk.h"
+#include "WorldGenerationHandler.h"
 #include "ProceduralMeshComponent.h"
 #include "KismetProceduralMeshLibrary.h"
 
@@ -27,11 +28,22 @@ AChunk::AChunk()
 	Tags.Add(TEXT("Ground"));
 }
 
+void AChunk::Generate()
+{
+	GenerateTerrain();
+	GenerateTrees();
+}
+
 // Called when the game starts or when spawned
 void AChunk::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Generate();
+}
+
+void AChunk::GenerateTerrain()
+{
 	Verticies.Reset();
 	Triangles.Reset();
 	UV0.Reset();
@@ -45,6 +57,43 @@ void AChunk::BeginPlay()
 
 	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UV0, TArray<FColor>(), Tangents, true);
 	MeshComponent->SetMaterial(0, Material);
+}
+
+void AChunk::GenerateTrees()
+{
+	FBiomeGenerationData* Biome = AWorldGenerationHandler::GetBiomeGenerationData(TEXT("Plains"));
+	if (Biome == nullptr)
+	{
+		return;
+	}
+	
+	for (const FSpawnData& Resource : Biome->Trees)
+	{
+		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((16 * Resource.DensityPerMeter) / Biome->Trees.Num());
+		for (int32 i = 0; i < AmountOfResourceToSpawn; i++)
+		{
+			FTransform SpawnTransform;
+			if (!GetRandomPointOnTerrain(SpawnTransform))
+			{
+				continue;
+			}
+
+			AActor* SpawnedResource = GetWorld()->SpawnActor<AActor>(Resource.BlueprintClass, SpawnTransform);
+		}
+	}
+
+}
+
+bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
+{
+	const int32 Point = FMath::RandRange(0, Verticies.Num() - 1);
+	if (!Verticies.IsValidIndex(Point))
+	{
+		return false;
+	}
+
+	OutTransform.SetLocation(Verticies[Point]);
+	return true;
 }
 
 void AChunk::CreateVerticies()

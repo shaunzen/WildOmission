@@ -15,6 +15,9 @@ public:
 	// Sets default values for this actor's properties
 	AChunk();
 
+	UFUNCTION()
+	void Generate();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -58,6 +61,11 @@ private:
 
 	UPROPERTY()
 	TArray<struct FProcMeshTangent> Tangents;
+
+	void GenerateTerrain();
+	void GenerateTrees();
+
+	bool GetRandomPointOnTerrain(FTransform& OutTransform);
 
 	void CreateVerticies();
 	void CreateTriangles();

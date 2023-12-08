@@ -16,7 +16,7 @@ struct FSpawnData
 	TSubclassOf<AActor> BlueprintClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float DensityPerMeter = 0.00001f;
+	float DensityPerMeter = 1.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool FollowSurfaceNormal = false;
