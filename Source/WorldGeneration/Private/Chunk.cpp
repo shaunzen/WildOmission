@@ -49,11 +49,11 @@ void AChunk::BeginPlay()
 
 void AChunk::CreateVerticies()
 {
+	const uint32 Seed = FMath::RandRange(0, 1000000);
 	for (uint32 X = 0; X <= XSize; ++X)
 	{
 		for (uint32 Y = 0; Y <= YSize; ++Y)
 		{
-			const uint32 Seed = FMath::RandRange(0, 1000000);
 			const float Z = FMath::PerlinNoise2D(FVector2D(static_cast<float>(X + Seed) * NoiseScale, static_cast<float>(Y + Seed) * NoiseScale)) * ZScale;
 			Verticies.Add(FVector(X * Scale, Y * Scale, Z));
 			UVs.Add(FVector2D(X * UVScale, Y * UVScale));
