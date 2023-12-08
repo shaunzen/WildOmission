@@ -30,6 +30,12 @@ private:
 	uint32 YSize;
 
 	UPROPERTY(EditAnywhere)
+	float ZScale;
+
+	UPROPERTY(EditAnywhere)
+	float NoiseScale;
+
+	UPROPERTY(EditAnywhere)
 	float Scale;
 
 	UPROPERTY(EditAnywhere)
@@ -46,6 +52,12 @@ private:
 
 	UPROPERTY()
 	TArray<FVector2D> UVs;
+
+	UPROPERTY()
+	TArray<FVector> Normals;
+
+	UPROPERTY()
+	TArray<struct FProcMeshTangent> Tangents;
 
 	void CreateVerticies();
 	void CreateTriangles();

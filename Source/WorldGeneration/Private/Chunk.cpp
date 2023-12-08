@@ -3,6 +3,7 @@
 
 #include "Chunk.h"
 #include "ProceduralMeshComponent.h"
+#include "KismetProceduralMeshLibrary.h"
 
 // Sets default values
 AChunk::AChunk()
@@ -13,8 +14,12 @@ AChunk::AChunk()
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(RootComponent);
 
-	XSize = 10;
-	YSize = 10;
+	XSize = 16;
+	YSize = 16;
+
+	ZScale = 100.0f;
+	NoiseScale = 0.1f;
+
 	Scale = 100.0f;
 	UVScale = 1.0f;
 	Material = nullptr;
@@ -26,10 +31,18 @@ void AChunk::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Verticies.Reset();
+	Triangles.Reset();
+	UVs.Reset();
+	Normals.Reset();
+	Tangents.Reset();
+
 	CreateVerticies();
 	CreateTriangles();
 
-	MeshComponent->CreateMeshSection(0, Verticies, Triangles, TArray<FVector>(), UVs, TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Verticies, Triangles, UVs, Normals, Tangents);
+
+	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UVs, TArray<FColor>(), Tangents, true);
 	MeshComponent->SetMaterial(0, Material);
 }
 
@@ -39,7 +52,8 @@ void AChunk::CreateVerticies()
 	{
 		for (uint32 Y = 0; Y <= YSize; ++Y)
 		{
-			Verticies.Add(FVector(X * Scale, Y * Scale, 0));
+			const float Z = FMath::PerlinNoise2D(FVector2D(static_cast<float>(X) * NoiseScale, static_cast<float>(Y) * NoiseScale)) * ZScale;
+			Verticies.Add(FVector(X * Scale, Y * Scale, Z));
 			UVs.Add(FVector2D(X * UVScale, Y * UVScale));
 		}
 	}
