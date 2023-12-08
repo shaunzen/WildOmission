@@ -27,10 +27,7 @@ private:
 	class UProceduralMeshComponent* MeshComponent;
 
 	UPROPERTY(EditAnywhere)
-	uint32 XSize;
-
-	UPROPERTY(EditAnywhere)
-	uint32 YSize;
+	uint32 Size;
 
 	UPROPERTY(EditAnywhere)
 	float ZScale;

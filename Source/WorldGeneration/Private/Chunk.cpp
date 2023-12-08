@@ -15,8 +15,7 @@ AChunk::AChunk()
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(RootComponent);
 
-	XSize = 16;
-	YSize = 16;
+	Size = 16;
 
 	ZScale = 100.0f;
 	NoiseScale = 0.1f;
@@ -81,7 +80,6 @@ void AChunk::GenerateTrees()
 			AActor* SpawnedResource = GetWorld()->SpawnActor<AActor>(Resource.BlueprintClass, SpawnTransform);
 		}
 	}
-
 }
 
 bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
@@ -99,9 +97,9 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
 void AChunk::CreateVerticies()
 {
 	const uint32 Seed = FMath::RandRange(0, 1000000);
-	for (uint32 X = 0; X <= XSize; ++X)
+	for (uint32 X = 0; X <= Size; ++X)
 	{
-		for (uint32 Y = 0; Y <= YSize; ++Y)
+		for (uint32 Y = 0; Y <= Size; ++Y)
 		{
 			const float Z = FMath::PerlinNoise2D(FVector2D(static_cast<float>(X + Seed) * NoiseScale, static_cast<float>(Y + Seed) * NoiseScale)) * ZScale;
 			Verticies.Add(FVector(X * Scale, Y * Scale, Z));
@@ -113,17 +111,17 @@ void AChunk::CreateVerticies()
 void AChunk::CreateTriangles()
 {
 	uint32 Vertex = 0;
-	for (uint32 X = 0; X < XSize; ++X)
+	for (uint32 X = 0; X < Size; ++X)
 	{
-		for (uint32 Y = 0; Y < YSize; ++Y)
+		for (uint32 Y = 0; Y < Size; ++Y)
 		{
 			Triangles.Add(Vertex);
 			Triangles.Add(Vertex + 1);
-			Triangles.Add(Vertex + YSize + 1);
+			Triangles.Add(Vertex + Size + 1);
 
 			Triangles.Add(Vertex + 1);
-			Triangles.Add(Vertex + YSize + 2);
-			Triangles.Add(Vertex + YSize + 1);
+			Triangles.Add(Vertex + Size + 2);
+			Triangles.Add(Vertex + Size + 1);
 
 			++Vertex;
 		}
