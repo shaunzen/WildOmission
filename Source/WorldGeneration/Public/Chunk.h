@@ -19,8 +19,35 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+private:
+	UPROPERTY(VisibleAnywhere)
+	class UProceduralMeshComponent* MeshComponent;
+
+	UPROPERTY(EditAnywhere)
+	uint32 XSize;
+
+	UPROPERTY(EditAnywhere)
+	uint32 YSize;
+
+	UPROPERTY(EditAnywhere)
+	float Scale;
+
+	UPROPERTY(EditAnywhere)
+	float UVScale;
+
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* Material;
+
+	UPROPERTY()
+	TArray<FVector> Verticies;
+
+	UPROPERTY()
+	TArray<int32> Triangles;
+
+	UPROPERTY()
+	TArray<FVector2D> UVs;
+
+	void CreateVerticies();
+	void CreateTriangles();
 
 };
