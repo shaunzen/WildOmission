@@ -11,6 +11,8 @@ ADoor::ADoor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	MeshComponent->SetMobility(EComponentMobility::Type::Movable);
+
 	InteractionMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InteractionMesh"));
 	InteractionMesh->SetupAttachment(DeployableRootComponent);
 	InteractionMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
