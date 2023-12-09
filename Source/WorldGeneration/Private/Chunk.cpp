@@ -31,6 +31,12 @@ void AChunk::Generate()
 {
 	GenerateTerrain();
 	GenerateTrees();
+	GenerateNodes();
+}
+
+uint32 AChunk::GetSize() const
+{
+	return Size;
 }
 
 // Called when the game starts or when spawned
@@ -68,7 +74,7 @@ void AChunk::GenerateTrees()
 	
 	for (const FSpawnData& Resource : Biome->Trees)
 	{
-		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((16 * Resource.DensityPerMeter) / Biome->Trees.Num());
+		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((Size * Resource.DensityPerMeter) / Biome->Trees.Num());
 		for (int32 i = 0; i < AmountOfResourceToSpawn; i++)
 		{
 			FTransform SpawnTransform;
@@ -78,6 +84,32 @@ void AChunk::GenerateTrees()
 			}
 
 			AActor* SpawnedResource = GetWorld()->SpawnActor<AActor>(Resource.BlueprintClass, SpawnTransform);
+			Trees.Add(SpawnedResource);
+		}
+	}
+}
+
+void AChunk::GenerateNodes()
+{
+	FBiomeGenerationData* Biome = AWorldGenerationHandler::GetBiomeGenerationData(TEXT("Plains"));
+	if (Biome == nullptr)
+	{
+		return;
+	}
+
+	for (const FSpawnData& Resource : Biome->Nodes)
+	{
+		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((Size * Resource.DensityPerMeter) / Biome->Nodes.Num());
+		for (int32 i = 0; i < AmountOfResourceToSpawn; i++)
+		{
+			FTransform SpawnTransform;
+			if (!GetRandomPointOnTerrain(SpawnTransform))
+			{
+				continue;
+			}
+
+			AActor* SpawnedResource = GetWorld()->SpawnActor<AActor>(Resource.BlueprintClass, SpawnTransform);
+			Nodes.Add(SpawnedResource);
 		}
 	}
 }
@@ -90,7 +122,7 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
 		return false;
 	}
 
-	OutTransform.SetLocation(Verticies[Point]);
+	OutTransform.SetLocation(Verticies[Point] + GetActorLocation());
 	return true;
 }
 
@@ -101,7 +133,7 @@ void AChunk::CreateVerticies()
 	{
 		for (uint32 Y = 0; Y <= Size; ++Y)
 		{
-			const float Z = FMath::PerlinNoise2D(FVector2D(static_cast<float>(X + Seed) * NoiseScale, static_cast<float>(Y + Seed) * NoiseScale)) * ZScale;
+			const float Z = FMath::PerlinNoise2D(FVector2D(static_cast<float>(X + GetActorLocation().X + Seed) * NoiseScale, static_cast<float>(Y + GetActorLocation().Y + Seed) * NoiseScale)) * ZScale;
 			Verticies.Add(FVector(X * Scale, Y * Scale, Z));
 			UV0.Add(FVector2D(X * UVScale, Y * UVScale));
 		}

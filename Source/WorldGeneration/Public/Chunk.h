@@ -18,6 +18,8 @@ public:
 	UFUNCTION()
 	void Generate();
 
+	uint32 GetSize() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -61,6 +63,13 @@ private:
 
 	void GenerateTerrain();
 	void GenerateTrees();
+	void GenerateNodes();
+
+	UPROPERTY()
+	TArray<AActor*> Trees;
+
+	UPROPERTY()
+	TArray<AActor*> Nodes;
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform);
 

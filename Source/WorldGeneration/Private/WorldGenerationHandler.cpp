@@ -4,6 +4,7 @@
 #include "WorldGenerationHandler.h"
 #include "Components/PreventExtinctionComponent.h"
 #include "Components/ResourceRegenerationComponent.h"
+#include "Chunk.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
@@ -24,6 +25,12 @@ AWorldGenerationHandler::AWorldGenerationHandler()
 	if (BiomeDataTableBlueprint.Succeeded())
 	{
 		BiomeGenerationDataTable = BiomeDataTableBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FClassFinder<AChunk> ChunkBlueprint(TEXT("/Game/WorldGeneration/BP_Chunk"));
+	if (ChunkBlueprint.Succeeded())
+	{
+		ChunkClass = ChunkBlueprint.Class;
 	}
 }
 
@@ -66,14 +73,34 @@ void AWorldGenerationHandler::Generate(const FWorldGenerationSettings& Generatio
 		return;
 	}
 
-	GenerateResource(BiomeData->Trees, GenerationSettings, false);
-	GenerateResource(BiomeData->Nodes, GenerationSettings, true);
-	GenerateResource(BiomeData->Collectables, GenerationSettings, true);
-	GenerateResource(BiomeData->Lootables, GenerationSettings, true);
+	//GenerateResource(BiomeData->Trees, GenerationSettings, false);
+	//GenerateResource(BiomeData->Nodes, GenerationSettings, true);
+	//GenerateResource(BiomeData->Collectables, GenerationSettings, true);
+	//GenerateResource(BiomeData->Lootables, GenerationSettings, true);
 	
+	// TODO generate chunks
+
+	GenerateChunks();
+
 	if (OnGenerationComplete.IsBound())
 	{
 		OnGenerationComplete.Broadcast();
+	}
+}
+
+void AWorldGenerationHandler::GenerateChunks()
+{
+	const int32 WorldSize = 10;
+	for (int32 X = 0; X < WorldSize; ++X)
+	{
+		for (int32 Y = 0; Y < WorldSize; ++Y)
+		{
+			// generate chunk
+			const FVector ChunkLocation(X * 1600.0f, Y * 1600.0f, 0.0f);
+			AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
+
+			// TODO add to chunk list for keeping track of
+		}
 	}
 }
 

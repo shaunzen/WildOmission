@@ -50,9 +50,14 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UResourceRegenerationComponent* RegenerationComponent;
 
+	UPROPERTY()
+	TSubclassOf<class AChunk> ChunkClass;
+
 	UFUNCTION()
 	void Generate(const FWorldGenerationSettings& GenerationSettings);
 	
+	void GenerateChunks();
+
 	void GenerateResource(const TArray<FSpawnData>& SpawnData, const FWorldGenerationSettings& GenerationSettings, bool FollowSurfaceNormal = false);
 	
 };
