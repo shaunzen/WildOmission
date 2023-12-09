@@ -3,8 +3,11 @@
 
 #include "Chunk.h"
 #include "WorldGenerationHandler.h"
+#include "Noise/PerlinNoise.hpp"
 #include "ProceduralMeshComponent.h"
 #include "KismetProceduralMeshLibrary.h"
+
+static siv::PerlinNoise Noise(10);
 
 // Sets default values
 AChunk::AChunk()
@@ -30,8 +33,8 @@ AChunk::AChunk()
 void AChunk::Generate()
 {
 	GenerateTerrain();
-	//GenerateTrees();
-	//GenerateNodes();
+	GenerateTrees();
+	GenerateNodes();
 }
 
 uint32 AChunk::GetSize() const
@@ -129,14 +132,14 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
 void AChunk::CreateVerticies()
 {
 	const uint32 Seed = 10; //= FMath::RandRange(0, 1000000);
-	const FVector Location = GetActorLocation();
+	const FVector Location = GetActorLocation() * 0.01f;
 	for (uint32 X = 0; X <= Size; ++X)
 	{
 		for (uint32 Y = 0; Y <= Size; ++Y)
 		{
-			
-			const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
-			Verticies.Add(FVector(X * Scale, Y * Scale, Z));
+			const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
+			//const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
+			Verticies.Add(FVector(X * Scale, Y * Scale, NewZ));
 			UV0.Add(FVector2D(X * UVScale, Y * UVScale));
 		}
 	}
