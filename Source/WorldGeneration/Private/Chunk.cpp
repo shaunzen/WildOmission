@@ -30,8 +30,8 @@ AChunk::AChunk()
 void AChunk::Generate()
 {
 	GenerateTerrain();
-	GenerateTrees();
-	GenerateNodes();
+	//GenerateTrees();
+	//GenerateNodes();
 }
 
 uint32 AChunk::GetSize() const
@@ -128,12 +128,14 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
 
 void AChunk::CreateVerticies()
 {
-	const uint32 Seed = FMath::RandRange(0, 1000000);
+	const uint32 Seed = 10; //= FMath::RandRange(0, 1000000);
+	const FVector Location = GetActorLocation();
 	for (uint32 X = 0; X <= Size; ++X)
 	{
 		for (uint32 Y = 0; Y <= Size; ++Y)
 		{
-			const float Z = FMath::PerlinNoise2D(FVector2D(static_cast<float>(X + GetActorLocation().X + Seed) * NoiseScale, static_cast<float>(Y + GetActorLocation().Y + Seed) * NoiseScale)) * ZScale;
+			
+			const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
 			Verticies.Add(FVector(X * Scale, Y * Scale, Z));
 			UV0.Add(FVector2D(X * UVScale, Y * UVScale));
 		}
