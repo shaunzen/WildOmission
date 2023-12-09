@@ -27,8 +27,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Begin ISavablePlayer Implementation
-	virtual FPlayerSave SavePlayer() override;
-	virtual void LoadPlayerSave(const FPlayerSave& PlayerSave) override;
+	virtual FPlayerSaveData SavePlayer() override;
+	virtual void LoadPlayerSave(const FPlayerSaveData& SaveData) override;
 	virtual bool IsStillLoading() const override;
 	virtual FString GetUniqueID() const override;
 	virtual bool IsHost() const override;
@@ -95,7 +95,7 @@ private:
 	// into the server, it will wait until the player if fully loaded before attempting
 	// to load their data from the save file.
 	bool bIsStillLoading;
-	FPlayerSave StoredPlayerSave;
+	FPlayerSaveData StoredPlayerSaveData;
 
 	UFUNCTION(Server, Reliable)
 	void Server_SendMessage(APlayerState* Sender, const FString& Message);

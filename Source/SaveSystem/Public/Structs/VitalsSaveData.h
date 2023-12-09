@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "VitalsSave.generated.h"
+#include "VitalsSaveData.generated.h"
 
 USTRUCT()
-struct SAVESYSTEM_API FVitalsSave
+struct SAVESYSTEM_API FVitalsSaveData
 {
 	GENERATED_BODY()
 

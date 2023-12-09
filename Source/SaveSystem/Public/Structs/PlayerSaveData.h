@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "VitalsSave.h"
-#include "InventorySave.h"
-#include "PlayerSave.generated.h"
+#include "VitalsSaveData.h"
+#include "InventorySaveData.h"
+#include "PlayerSaveData.generated.h"
 
 USTRUCT()
-struct SAVESYSTEM_API FPlayerSave
+struct SAVESYSTEM_API FPlayerSaveData
 {
 	GENERATED_BODY()
 
@@ -32,10 +32,10 @@ struct SAVESYSTEM_API FPlayerSave
 	FVector WorldLocation = FVector::ZeroVector;
 
 	UPROPERTY()
-	FVitalsSave Vitals;
+	FVitalsSaveData Vitals;
 
 	UPROPERTY()
-	FInventorySave Inventory;
+	FInventorySaveData Inventory;
 
 	UPROPERTY()
 	TArray<uint8> SelectedItemByteData;

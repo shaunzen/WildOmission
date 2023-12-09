@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "InventorySave.generated.h"
+#include "InventorySaveData.generated.h"
 
 USTRUCT()
-struct SAVESYSTEM_API FInventorySave
+struct SAVESYSTEM_API FInventorySaveData
 {
 	GENERATED_BODY()
 

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "Structs/PlayerSave.h"
+#include "Structs/PlayerSaveData.h"
 #include "Enums/GameDifficulty.h"
 #include "WildOmissionSaveGame.generated.h"
 
@@ -119,12 +119,10 @@ public:
 	UPROPERTY()
 	bool CheatsEnabled;
 
-	//UPROPERTY()
-	//TArray<FActorSaveData> ActorSaves;
-	
-
+	UPROPERTY()
+	TArray<FChunkSaveData> ChunkSaveData;
 
 	UPROPERTY()
-	TArray<FPlayerSave> PlayerSaves;
+	TArray<FPlayerSaveData> PlayerSaveData;
 
 };

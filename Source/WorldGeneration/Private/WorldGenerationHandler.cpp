@@ -77,7 +77,6 @@ void AWorldGenerationHandler::GenerateChunks()
 			const FVector ChunkLocation(X * 1600.0f, Y * 1600.0f, 0.0f);
 			AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
 			Chunks.Add(SpawnedChunk);
-			// TODO add to chunk list for keeping track of
 		}
 	}
 }

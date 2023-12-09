@@ -6,8 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "PlayerSaveHandlerComponent.generated.h"
 
-struct FPlayerSave;
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SAVESYSTEM_API UPlayerSaveHandlerComponent : public UActorComponent
 {
@@ -18,7 +16,7 @@ public:
 	UPlayerSaveHandlerComponent();
 
 	// Will update the list passed in to include saves from the pending list.
-	void Save(TArray<struct FPlayerSave>& OutUpdatedSavesList);
+	void Save(TArray<struct FPlayerSaveData>& OutUpdatedSavesList);
 
 	// Adds the passed in PlayerControllers Save File to the pending list
 	void AddToPending(APlayerController* PlayerController);
@@ -32,15 +30,15 @@ protected:
 
 private:
 	UPROPERTY()
-	TArray<FPlayerSave> PendingSaves;
+	TArray<struct FPlayerSaveData> PendingSaves;
 
 	UFUNCTION()
 	void AddAllToPending();
 
-	void AddSaveToList(const FPlayerSave& InSave, TArray<FPlayerSave>& OutSavesList);
+	void AddSaveToList(const FPlayerSaveData& InSave, TArray<FPlayerSaveData>& OutSavesList);
 
-	bool FindSaveIndexInList(const TArray<FPlayerSave>& SaveList, const FString& UniqueID, int32& OutIndex) const;
-	bool FindHostSaveIndexInList(const TArray<FPlayerSave>& SaveList, int32& OutIndex) const;
+	bool FindSaveIndexInList(const TArray<FPlayerSaveData>& SaveList, const FString& UniqueID, int32& OutIndex) const;
+	bool FindHostSaveIndexInList(const TArray<FPlayerSaveData>& SaveList, int32& OutIndex) const;
 
 	TArray<APlayerController*> GetAllPlayerControllers();
 

@@ -54,7 +54,7 @@ void ASaveHandler::SaveGame()
 	}
 
 	//ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
-	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
+	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaveData);
 	
 	SaveFile->Version = CURRENT_SAVE_FILE_VERSION;
 

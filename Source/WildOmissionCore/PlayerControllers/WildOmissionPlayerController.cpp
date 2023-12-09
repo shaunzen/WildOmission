@@ -51,53 +51,53 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
 }
 
-FPlayerSave AWildOmissionPlayerController::SavePlayer()
+FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 {
-	FPlayerSave PlayerSave;
+	FPlayerSaveData PlayerSaveData;
 
 	if (HasAuthority() == false)
 	{
-		return PlayerSave;
+		return PlayerSaveData;
 	}
 
 	APlayerState* CurrentPlayerState = PlayerState.Get();
 	if (CurrentPlayerState == nullptr)
 	{
-		return PlayerSave;
+		return PlayerSaveData;
 	}
 
-	PlayerSave.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
-	PlayerSave.BedUniqueID = BedUniqueID;
-	PlayerSave.NewPlayer = false;
+	PlayerSaveData.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
+	PlayerSaveData.BedUniqueID = BedUniqueID;
+	PlayerSaveData.NewPlayer = false;
 	
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
 	if (WildOmissionCharacter == nullptr)
 	{
-		PlayerSave.IsAlive = false;
-		return PlayerSave;
+		PlayerSaveData.IsAlive = false;
+		return PlayerSaveData;
 	}
 
-	PlayerSave.WorldLocation = WildOmissionCharacter->GetActorLocation();
+	PlayerSaveData.WorldLocation = WildOmissionCharacter->GetActorLocation();
 	
-	PlayerSave.IsAlive = true;
-	PlayerSave.IsHost = IsHost();
+	PlayerSaveData.IsAlive = true;
+	PlayerSaveData.IsHost = IsHost();
 
-	PlayerSave.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
-	PlayerSave.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
-	PlayerSave.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
+	PlayerSaveData.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
+	PlayerSaveData.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
+	PlayerSaveData.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
 
-	PlayerSave.Inventory.ByteData = WildOmissionCharacter->GetInventoryComponent()->Save();
+	PlayerSaveData.Inventory.ByteData = WildOmissionCharacter->GetInventoryComponent()->Save();
 	
-	PlayerSave.SelectedItemByteData = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItemAsByteData();
+	PlayerSaveData.SelectedItemByteData = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItemAsByteData();
 
-	return PlayerSave;
+	return PlayerSaveData;
 }
 
-void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& PlayerSave)
+void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSaveData& SaveData)
 {
-	BedUniqueID = PlayerSave.BedUniqueID;
+	BedUniqueID = SaveData.BedUniqueID;
 
-	StoredPlayerSave = PlayerSave;
+	StoredPlayerSaveData = SaveData;
 }
 
 bool AWildOmissionPlayerController::IsStillLoading() const
@@ -287,22 +287,21 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(aPawn);
 
-	bool PlayerFromOldSave = (StoredPlayerSave.IsAlive == true && StoredPlayerSave.NewPlayer == true);
-	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSave.IsAlive == false || (StoredPlayerSave.NewPlayer == true && PlayerFromOldSave == false))
+	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true)
 	{
 		return;
 	}
 
-	WildOmissionCharacter->SetActorLocation(StoredPlayerSave.WorldLocation);
+	WildOmissionCharacter->SetActorLocation(StoredPlayerSaveData.WorldLocation);
 	
-	WildOmissionCharacter->GetVitalsComponent()->SetHealth(StoredPlayerSave.Vitals.Health);
-	WildOmissionCharacter->GetVitalsComponent()->SetHunger(StoredPlayerSave.Vitals.Hunger);
-	WildOmissionCharacter->GetVitalsComponent()->SetThirst(StoredPlayerSave.Vitals.Thirst);
+	WildOmissionCharacter->GetVitalsComponent()->SetHealth(StoredPlayerSaveData.Vitals.Health);
+	WildOmissionCharacter->GetVitalsComponent()->SetHunger(StoredPlayerSaveData.Vitals.Hunger);
+	WildOmissionCharacter->GetVitalsComponent()->SetThirst(StoredPlayerSaveData.Vitals.Thirst);
 
-	WildOmissionCharacter->GetInventoryComponent()->Load(StoredPlayerSave.Inventory.ByteData);
-	WildOmissionCharacter->GetInventoryManipulatorComponent()->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSave.SelectedItemByteData);
+	WildOmissionCharacter->GetInventoryComponent()->Load(StoredPlayerSaveData.Inventory.ByteData);
+	WildOmissionCharacter->GetInventoryManipulatorComponent()->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSaveData.SelectedItemByteData);
 
-	StoredPlayerSave = FPlayerSave();
+	StoredPlayerSaveData = FPlayerSaveData();
 }
 
 void AWildOmissionPlayerController::ValidateWorldState()
@@ -348,7 +347,7 @@ void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerSta
 void AWildOmissionPlayerController::Server_Spawn_Implementation()
 {
 	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode && (StoredPlayerSave.IsAlive || StoredPlayerSave.NewPlayer))
+	if (GameMode && (StoredPlayerSaveData.IsAlive || StoredPlayerSaveData.NewPlayer))
 	{
 		GameMode->SpawnHumanForController(this);
 	}
