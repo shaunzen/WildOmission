@@ -34,3 +34,9 @@ UWildOmissionSaveGame::UWildOmissionSaveGame()
 	Version = 0;
 	CheatsEnabled = false;
 }
+
+FChunkSaveData::FChunkSaveData()
+{
+	ByteData = TArray<uint8>();
+	ActorData = TArray<FActorSaveData>();
+}

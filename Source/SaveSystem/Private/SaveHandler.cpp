@@ -53,7 +53,7 @@ void ASaveHandler::SaveGame()
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayHandler->GetNormalizedProgressThroughDay();
 	}
 
-	ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
+	//ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaves);
 	
 	SaveFile->Version = CURRENT_SAVE_FILE_VERSION;
@@ -82,7 +82,7 @@ void ASaveHandler::LoadWorld()
 	if (WorldGenerationHandler && SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
-		WorldGenerationHandler->GenerateLevel();
+		WorldGenerationHandler->Generate();
 		WorldGenerationHandler->OnGenerationComplete.AddDynamic(this, &ASaveHandler::MarkSaveGenerated);
 		return;
 	}
@@ -95,10 +95,10 @@ void ASaveHandler::LoadWorld()
 	}
 	
 	SetLoadingSubtitle(TEXT("Loading objects."));
-	ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves, SaveFile->Version);
+	//ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves, SaveFile->Version);
 
 	// Make sure there is at least 20 of all collectables
-	WorldGenerationHandler->PreventExtinction();
+	//WorldGenerationHandler->PreventExtinction();
 
 	FTimerHandle ActorLoadedTimerHandle;
 	FTimerDelegate ActorLoadedDelegate;

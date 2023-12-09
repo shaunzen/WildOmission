@@ -49,6 +49,21 @@ struct FActorSaveData
 };
 
 USTRUCT()
+struct FChunkSaveData
+{
+	GENERATED_BODY()
+
+	FChunkSaveData();
+
+	UPROPERTY()
+	TArray<uint8> ByteData;
+
+	UPROPERTY()
+	TArray<FActorSaveData> ActorData;
+
+};
+
+USTRUCT()
 struct FWildOmissionSaveCreationInformation
 {
 	GENERATED_BODY()
@@ -104,9 +119,11 @@ public:
 	UPROPERTY()
 	bool CheatsEnabled;
 
-	UPROPERTY()
-	TArray<FActorSaveData> ActorSaves;
+	//UPROPERTY()
+	//TArray<FActorSaveData> ActorSaves;
 	
+
+
 	UPROPERTY()
 	TArray<FPlayerSave> PlayerSaves;
 
