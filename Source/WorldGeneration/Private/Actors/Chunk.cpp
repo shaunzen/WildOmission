@@ -16,7 +16,8 @@ AChunk::AChunk()
 	PrimaryActorTick.bCanEverTick = false;
 	
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
-	MeshComponent->SetupAttachment(RootComponent);
+	RootComponent = MeshComponent;
+	// MeshComponent->SetupAttachment(RootComponent);
 
 	Size = 16;
 
@@ -30,11 +31,31 @@ AChunk::AChunk()
 	Tags.Add(TEXT("Ground"));
 }
 
-void AChunk::Generate()
+void AChunk::Generate(const FIntVector2& InLocation)
 {
+	GridLocation = InLocation;
 	GenerateTerrain();
 	GenerateTrees();
 	GenerateNodes();
+}
+
+void AChunk::OnLoadFromSaveComplete()
+{
+	UV0.Reset();
+	Normals.Reset();
+	Tangents.Reset();
+
+	CreateMesh();
+}
+
+void AChunk::SetGenerationSeed(const uint32& Seed)
+{
+	Noise.reseed(Seed);
+}
+
+FIntVector2 AChunk::GetChunkLocation() const
+{
+	return GridLocation;
 }
 
 uint32 AChunk::GetSize() const
@@ -47,7 +68,6 @@ void AChunk::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Generate();
 }
 
 void AChunk::GenerateTerrain()
@@ -60,7 +80,48 @@ void AChunk::GenerateTerrain()
 
 	CreateVerticies();
 	CreateTriangles();
+	CreateMesh();	
+}
 
+void AChunk::CreateVerticies()
+{
+	const uint32 Seed = 10; //= FMath::RandRange(0, 1000000);
+	const FVector Location = GetActorLocation() * 0.01f;
+	for (uint32 X = 0; X <= Size; ++X)
+	{
+		for (uint32 Y = 0; Y <= Size; ++Y)
+		{
+			const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
+			//const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
+			Verticies.Add(FVector(X * Scale, Y * Scale, NewZ));
+			UV0.Add(FVector2D(X * UVScale, Y * UVScale));
+		}
+	}
+}
+
+void AChunk::CreateTriangles()
+{
+	uint32 Vertex = 0;
+	for (uint32 X = 0; X < Size; ++X)
+	{
+		for (uint32 Y = 0; Y < Size; ++Y)
+		{
+			Triangles.Add(Vertex);
+			Triangles.Add(Vertex + 1);
+			Triangles.Add(Vertex + Size + 1);
+
+			Triangles.Add(Vertex + 1);
+			Triangles.Add(Vertex + Size + 2);
+			Triangles.Add(Vertex + Size + 1);
+
+			++Vertex;
+		}
+		++Vertex;
+	}
+}
+
+void AChunk::CreateMesh()
+{
 	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Verticies, Triangles, UV0, Normals, Tangents);
 
 	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UV0, TArray<FColor>(), Tangents, true);
@@ -127,41 +188,4 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
 
 	OutTransform.SetLocation(Verticies[Point] + GetActorLocation());
 	return true;
-}
-
-void AChunk::CreateVerticies()
-{
-	const uint32 Seed = 10; //= FMath::RandRange(0, 1000000);
-	const FVector Location = GetActorLocation() * 0.01f;
-	for (uint32 X = 0; X <= Size; ++X)
-	{
-		for (uint32 Y = 0; Y <= Size; ++Y)
-		{
-			const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
-			//const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
-			Verticies.Add(FVector(X * Scale, Y * Scale, NewZ));
-			UV0.Add(FVector2D(X * UVScale, Y * UVScale));
-		}
-	}
-}
-
-void AChunk::CreateTriangles()
-{
-	uint32 Vertex = 0;
-	for (uint32 X = 0; X < Size; ++X)
-	{
-		for (uint32 Y = 0; Y < Size; ++Y)
-		{
-			Triangles.Add(Vertex);
-			Triangles.Add(Vertex + 1);
-			Triangles.Add(Vertex + Size + 1);
-
-			Triangles.Add(Vertex + 1);
-			Triangles.Add(Vertex + Size + 2);
-			Triangles.Add(Vertex + Size + 1);
-
-			++Vertex;
-		}
-		++Vertex;
-	}
 }

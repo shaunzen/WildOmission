@@ -5,63 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "Structs/PlayerSaveData.h"
+#include "Structs/ChunkSaveData.h"
 #include "Enums/GameDifficulty.h"
 #include "WildOmissionSaveGame.generated.h"
 
-const int32 CURRENT_SAVE_FILE_VERSION = 1;
-
-USTRUCT()
-struct FActorComponentSaveData
-{
-	GENERATED_BODY()
-
-	FActorComponentSaveData();
-
-	UPROPERTY()
-	FName Name;
-
-	UPROPERTY()
-	UClass* Class;
-
-	UPROPERTY()
-	TArray<uint8> ByteData;
-};
-
-USTRUCT()
-struct FActorSaveData
-{
-	GENERATED_BODY()
-
-	FActorSaveData();
-
-	UPROPERTY()
-	FName Identifier;
-	
-	UPROPERTY()
-	FTransform Transform;
-	
-	UPROPERTY()
-	TArray<uint8> ByteData;
-
-	UPROPERTY()
-	TArray<FActorComponentSaveData> ComponentData;
-
-};
-
-USTRUCT()
-struct FChunkSaveData
-{
-	GENERATED_BODY()
-
-	FChunkSaveData();
-
-	UPROPERTY()
-	TArray<uint8> ByteData;
-
-	UPROPERTY()
-	TArray<FActorSaveData> ActorData;
-
-};
+const int32 CURRENT_SAVE_FILE_VERSION = 2;
 
 USTRUCT()
 struct FWildOmissionSaveCreationInformation

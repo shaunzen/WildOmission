@@ -21,6 +21,12 @@ public:
 	UFUNCTION()
 	void Generate();
 
+	UFUNCTION()
+	void Save(TArray<struct FChunkSaveData>& ChunkData);
+
+	UFUNCTION()
+	void Load(const TArray<struct FChunkSaveData>& ChunkData);
+
 	FOnGenerationCompleteSignature OnGenerationComplete;
 
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();

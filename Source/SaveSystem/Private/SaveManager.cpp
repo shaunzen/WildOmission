@@ -53,6 +53,12 @@ void ASaveManager::SaveGame()
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayManager->GetNormalizedProgressThroughDay();
 	}
 
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager)
+	{
+		ChunkManager->Save(SaveFile->ChunkSaveData);
+	}
+
 	//ActorSaveManagerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveManagerComponent->Save(SaveFile->PlayerSaveData);
 	
@@ -95,10 +101,11 @@ void ASaveManager::LoadWorld()
 	}
 	
 	SetLoadingSubtitle(TEXT("Loading objects."));
-	//ActorSaveManagerComponent->LoadActors(SaveFile->ActorSaves, SaveFile->Version);
-
-	// Make sure there is at least 20 of all collectables
-	//ChunkManager->PreventExtinction();
+	
+	if (ChunkManager)
+	{
+		ChunkManager->Load(SaveFile->ChunkSaveData);
+	}
 
 	FTimerHandle ActorLoadedTimerHandle;
 	FTimerDelegate ActorLoadedDelegate;

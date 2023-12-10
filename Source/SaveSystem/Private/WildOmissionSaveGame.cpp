@@ -3,18 +3,6 @@
 
 #include "WildOmissionSaveGame.h"
 
-FActorComponentSaveData::FActorComponentSaveData()
-{
-	Name = NAME_None;
-	Class = nullptr;
-}
-
-FActorSaveData::FActorSaveData()
-{
-	Identifier = NAME_None;
-	Transform = FTransform::Identity;
-}
-
 FWildOmissionSaveCreationInformation::FWildOmissionSaveCreationInformation()
 {
 	Name = TEXT("");
@@ -33,10 +21,4 @@ UWildOmissionSaveGame::UWildOmissionSaveGame()
 	LevelFile = TEXT("LV_Sandbox");
 	Version = 0;
 	CheatsEnabled = false;
-}
-
-FChunkSaveData::FChunkSaveData()
-{
-	ByteData = TArray<uint8>();
-	ActorData = TArray<FActorSaveData>();
 }

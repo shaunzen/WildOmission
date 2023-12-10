@@ -35,7 +35,7 @@ void UActorSaveManagerComponent::BeginPlay()
 
 void UActorSaveManagerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 {
-	OutSaves.Empty();
+	/*OutSaves.Empty();
 
 	for (FActorIterator Iterator(GetWorld()); Iterator; ++Iterator)
 	{
@@ -77,12 +77,12 @@ void UActorSaveManagerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 		}
 
 		OutSaves.Add(ActorData);
-	}
+	}*/
 }
 
 void UActorSaveManagerComponent::LoadActors(const TArray<FActorSaveData>& InSaves, const int32& SaveFileVersion)
 {
-	for (const FActorSaveData& ActorData : InSaves)
+	/*for (const FActorSaveData& ActorData : InSaves)
 	{
 		UClass* ActorClass = FindSavableObjectClassUsingIdentifier(ActorData.Identifier);
 			
@@ -123,7 +123,7 @@ void UActorSaveManagerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 		}
 
 		ISavableObject::Execute_OnLoadComplete(SpawnedActor);
-	}
+	}*/
 }
 
 TArray<FActorComponentSaveData> UActorSaveManagerComponent::FindComponentsByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* ClassToFind)

@@ -16,7 +16,14 @@ public:
 	AChunk();
 
 	UFUNCTION()
-	void Generate();
+	void Generate(const FIntVector2& InLocation);
+
+	UFUNCTION()
+	void OnLoadFromSaveComplete();
+
+	static void SetGenerationSeed(const uint32& Seed);
+
+	FIntVector2 GetChunkLocation() const;
 
 	uint32 GetSize() const;
 
@@ -27,6 +34,9 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	class UProceduralMeshComponent* MeshComponent;
+
+	UPROPERTY(SaveGame)
+	FIntVector2 GridLocation;
 
 	UPROPERTY(EditAnywhere)
 	uint32 Size;
@@ -46,10 +56,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* Material;
 
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	TArray<FVector> Verticies;
 
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	TArray<int32> Triangles;
 
 	UPROPERTY()
@@ -75,5 +85,6 @@ private:
 
 	void CreateVerticies();
 	void CreateTriangles();
+	void CreateMesh();
 
 };
