@@ -7,7 +7,7 @@
 #include "Structs/BiomeGenerationData.h"
 #include "ChunkManager.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGenerationCompleteSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWorldGenerationCompleteSignature);
 
 UCLASS()
 class WORLDGENERATION_API AChunkManager : public AActor
@@ -27,7 +27,7 @@ public:
 	UFUNCTION()
 	void Load(const TArray<struct FChunkSaveData>& ChunkData);
 
-	FOnGenerationCompleteSignature OnGenerationComplete;
+	FOnWorldGenerationCompleteSignature OnWorldGenerationComplete;
 
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
@@ -45,6 +45,7 @@ private:
 
 	TArray<AChunk*> Chunks;
 
+	UFUNCTION()
 	void GenerateChunks();
 
 };

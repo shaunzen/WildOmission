@@ -56,6 +56,7 @@ void ASaveManager::SaveGame()
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Saving Chunks to save file."));
 		ChunkManager->Save(SaveFile->ChunkSaveData);
 	}
 
@@ -88,8 +89,9 @@ void ASaveManager::LoadWorld()
 	if (ChunkManager && SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
+		UE_LOG(LogTemp, Warning, TEXT("Chunks missing, generating new ones."));
 		ChunkManager->Generate();
-		ChunkManager->OnGenerationComplete.AddDynamic(this, &ASaveManager::MarkSaveGenerated);
+		ChunkManager->OnWorldGenerationComplete.AddDynamic(this, &ASaveManager::MarkSaveGenerated);
 		return;
 	}
 
@@ -104,6 +106,7 @@ void ASaveManager::LoadWorld()
 	
 	if (ChunkManager)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Chunks are being loaded from save."))
 		ChunkManager->Load(SaveFile->ChunkSaveData);
 	}
 
@@ -168,6 +171,12 @@ void ASaveManager::MarkSaveGenerated()
 
 	SaveFile->CreationInformation.LevelHasGenerated = true;
 	UpdateSaveFile(SaveFile);
+
+	FTimerHandle ActorLoadedTimerHandle;
+	FTimerDelegate ActorLoadedDelegate;
+	ActorLoadedDelegate.BindUObject(this, &ASaveManager::StopLoading);
+	GetWorld()->GetTimerManager().SetTimer(ActorLoadedTimerHandle, ActorLoadedDelegate, 1.0f, false);
+	UE_LOG(LogTemp, Warning, TEXT("Marked Save as Generated."));
 }
 
 void ASaveManager::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)

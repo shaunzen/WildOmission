@@ -266,7 +266,7 @@ void AWildOmissionPlayerController::BeginPlay()
 		FTimerHandle LoadTimerHandle;
 		FTimerDelegate LoadTimerDelegate;
 		LoadTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::StopLoading);
-		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 1.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 2.0f, false);
 	}
 	else
 	{

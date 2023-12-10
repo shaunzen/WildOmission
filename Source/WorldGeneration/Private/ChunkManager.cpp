@@ -53,19 +53,10 @@ void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AChunkManager::Generate()
 {
-	const FName DefaultBiome(TEXT("Plains"));
-	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
-	if (BiomeData == nullptr)
-	{
-		return;
-	}
-
-	GenerateChunks();
-
-	if (OnGenerationComplete.IsBound())
-	{
-		OnGenerationComplete.Broadcast();
-	}
+	FTimerHandle GenerationTimerHandle;
+	FTimerDelegate GenerationTimerDelegate;
+	GenerationTimerDelegate.BindUObject(this, &AChunkManager::GenerateChunks);
+	GetWorld()->GetTimerManager().SetTimer(GenerationTimerHandle, GenerationTimerDelegate, 1.0f, false);	
 }
 
 void AChunkManager::Save(TArray<FChunkSaveData>& ChunkData)
@@ -118,6 +109,7 @@ void AChunkManager::Load(const TArray<FChunkSaveData>& ChunkData)
 
 void AChunkManager::GenerateChunks()
 {
+
 	const int32 WorldSize = 10;
 	const int32 Seed = FMath::RandRange(0, 999999999);
 	AChunk::SetGenerationSeed(999999999);
@@ -134,6 +126,12 @@ void AChunkManager::GenerateChunks()
 			SpawnedChunk->Generate(FIntVector2(X, Y));
 			Chunks.Add(SpawnedChunk);
 		}
+	}
+
+	if (OnWorldGenerationComplete.IsBound())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Broadcasting some shit."));
+		OnWorldGenerationComplete.Broadcast();
 	}
 }
 
