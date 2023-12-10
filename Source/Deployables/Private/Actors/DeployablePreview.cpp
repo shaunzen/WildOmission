@@ -100,6 +100,8 @@ void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedCompo
 
 	OverlapCount++;
 	
+	UE_LOG(LogTemp, Warning, TEXT("Begin Overlap, Count %i"), OverlapCount);
+
 	InvalidOverlap = true;
 }
 
@@ -117,6 +119,8 @@ void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedCompone
 	}
 
 	OverlapCount--;
+
+	UE_LOG(LogTemp, Warning, TEXT("End Overlap, Count %i"), OverlapCount);
 	
 	if (OverlapCount > 0)
 	{

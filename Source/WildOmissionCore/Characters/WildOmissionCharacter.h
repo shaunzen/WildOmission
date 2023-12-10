@@ -111,7 +111,7 @@ private:
 	class UNameTagComponent* NameTag;
 
 	UPROPERTY(VisibleAnywhere)
-	class USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
+	class USpecialEffectsManagerComponent* SpecialEffectsManagerComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	class ULockModifierComponent* LockModifierComponent;

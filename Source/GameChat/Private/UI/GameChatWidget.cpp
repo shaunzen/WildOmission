@@ -7,7 +7,7 @@
 #include "Components/EditableTextBox.h"
 #include "Interfaces/PlayerControllerMessageSender.h"
 #include "GameFramework/PlayerState.h"
-#include "GameChatHandler.h"
+#include "GameChatManager.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Structs/ChatMessage.h"
 #include "Log.h"
@@ -36,22 +36,22 @@ void UGameChatWidget::NativeConstruct()
 	MessageContainerPanel->ClearChildren();	
 	Close();
 	MessageBox->OnTextCommitted.AddDynamic(this, &UGameChatWidget::OnMessageBoxTextCommitted);
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetGameChatHandler();
-	if (ChatHandler == nullptr)
+	AGameChatManager* ChatManager = AGameChatManager::GetGameChatManager();
+	if (ChatManager == nullptr)
 	{
 		UE_LOG(LogGameChat, Warning, TEXT("Couldn't retrieve game chat handler."));
 		return;
 	}
 
-	ChatHandler->OnMessageRecieved.AddDynamic(this, &UGameChatWidget::RefreshMessages);
+	ChatManager->OnMessageRecieved.AddDynamic(this, &UGameChatWidget::RefreshMessages);
 	RefreshMessages();
 }
 
 void UGameChatWidget::RefreshMessages()
 {
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetGameChatHandler();
+	AGameChatManager* ChatManager = AGameChatManager::GetGameChatManager();
 	APlayerState* OwnerPlayerState = GetOwningPlayerState();
-	if (ChatHandler == nullptr || OwnerPlayerState == nullptr)
+	if (ChatManager == nullptr || OwnerPlayerState == nullptr)
 	{
 		return;
 	}
@@ -60,7 +60,7 @@ void UGameChatWidget::RefreshMessages()
 	const FString OurPlayerNetName = OwnerPlayerState->GetPlayerName();
 
 	TArray<FChatMessage> Messages;
-	Messages = ChatHandler->GetChatMessages();
+	Messages = ChatManager->GetChatMessages();
 
 	if (Messages.IsEmpty())
 	{

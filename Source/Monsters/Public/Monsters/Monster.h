@@ -10,7 +10,7 @@
 class UPlayerInventoryComponent;
 class UEquipComponent;
 class UNiagaraComponent;
-class ATimeOfDayHandler;
+class ATimeOfDayManager;
 
 UCLASS()
 class MONSTERS_API AMonster : public AWildOmissionAICharacter

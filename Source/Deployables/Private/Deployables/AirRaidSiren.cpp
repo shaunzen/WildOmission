@@ -2,7 +2,7 @@
 
 
 #include "Deployables/AirRaidSiren.h"
-#include "WeatherHandler.h"
+#include "WeatherManager.h"
 #include "Actors/Storm.h"
 #include "Actors/Tornado.h"
 #include "Components/AudioComponent.h"
@@ -79,15 +79,15 @@ void AAirRaidSiren::CheckForTornado()
 		return;
 	}
 	
-	// Get The Weather Handler
-	AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
-	if (WeatherHandler == nullptr)
+	// Get The Weather Manager
+	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+	if (WeatherManager == nullptr)
 	{
 		return;
 	}
 
 	// Check If Storm
-	AStorm* SpawnedStorm = WeatherHandler->GetCurrentStorm();
+	AStorm* SpawnedStorm = WeatherManager->GetCurrentStorm();
 	if (SpawnedStorm == nullptr)
 	{
 		return;

@@ -3,21 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AISpawnHandler.h"
-#include "MonsterSpawnHandler.generated.h"
+#include "AISpawnManager.h"
+#include "MonsterSpawnManager.generated.h"
 
-class ATimeOfDayHandler;
+class ATimeOfDayManager;
 
 UCLASS()
-class MONSTERS_API AMonsterSpawnHandler : public AAISpawnHandler
+class MONSTERS_API AMonsterSpawnManager : public AAISpawnManager
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMonsterSpawnHandler();
+	AMonsterSpawnManager();
 	
-	static AMonsterSpawnHandler* GetMonsterSpawnHandler();
+	static AMonsterSpawnManager* GetMonsterSpawnManager();
 
 protected:
 	// Called when the game starts or when spawned

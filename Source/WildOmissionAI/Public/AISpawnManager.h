@@ -4,20 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "AISpawnHandler.generated.h"
+#include "AISpawnManager.generated.h"
 
 class UDataTable;
 class AWildOmissionAICharacter;
 struct FAISpawnData;
 
 UCLASS()
-class WILDOMISSIONAI_API AAISpawnHandler : public AActor
+class WILDOMISSIONAI_API AAISpawnManager : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AAISpawnHandler();
+	AAISpawnManager();
 	
 protected:
 	// Called when the game starts or when spawned

@@ -3,6 +3,7 @@
 
 #include "Deployables/Deployable.h"
 #include "Components/BuildAnchorComponent.h"
+#include "Actors/DeployablePreview.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "NiagaraSystem.h"
@@ -94,7 +95,7 @@ void ADeployable::OnSpawn()
 	GetOverlappingComponents(OverlappingComponents);
 	for (UPrimitiveComponent* OverlappingComponent : OverlappingComponents)
 	{
-		if (OverlappingComponent == nullptr || !OverlappingComponent->OnComponentBeginOverlap.IsBound())
+		if (OverlappingComponent == nullptr || !OverlappingComponent->OnComponentBeginOverlap.IsBound() || Cast<ADeployablePreview>(OverlappingComponent->GetOwner()))
 		{
 			continue;
 		}

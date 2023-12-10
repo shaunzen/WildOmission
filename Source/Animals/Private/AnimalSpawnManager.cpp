@@ -1,13 +1,13 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "AnimalSpawnHandler.h"
+#include "AnimalSpawnManager.h"
 #include "Engine/DataTable.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
 // Sets default values
-AAnimalSpawnHandler::AAnimalSpawnHandler()
+AAnimalSpawnManager::AAnimalSpawnManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -26,7 +26,7 @@ AAnimalSpawnHandler::AAnimalSpawnHandler()
 }
 
 // Called when the game starts or when spawned
-void AAnimalSpawnHandler::BeginPlay()
+void AAnimalSpawnManager::BeginPlay()
 {
 	Super::BeginPlay();
 }

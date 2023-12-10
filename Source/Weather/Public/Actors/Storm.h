@@ -8,7 +8,7 @@
 #include "Tornado.h"
 #include "Storm.generated.h"
 
-class AWeatherHandler;
+class AWeatherManager;
 class ALightning;
 class UNiagaraComponent;
 

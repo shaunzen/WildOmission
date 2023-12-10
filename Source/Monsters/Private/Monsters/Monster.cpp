@@ -7,7 +7,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "NiagaraComponent.h"
-#include "TimeOfDayHandler.h"
+#include "TimeOfDayManager.h"
 #include "Components/InventoryComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/PhysicsVolume.h"
@@ -94,8 +94,8 @@ void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
-	if (TimeOfDayHandler && TimeOfDayHandler->IsDay() && FireEffects->IsActive() == false)
+	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
+	if (TimeOfDayManager && TimeOfDayManager->IsDay() && FireEffects->IsActive() == false)
 	{
 		SetFire();
 	}

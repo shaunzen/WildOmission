@@ -6,13 +6,13 @@
 #include "GameFramework/GameModeBase.h"
 #include "WildOmissionGameMode.generated.h"
 
-class ASaveHandler;
-class AWorldGenerationHandler;
-class ATimeOfDayHandler;
-class AWeatherHandler;
-class AAnimalSpawnHandler;
-class AMonsterSpawnHandler;
-class AGameChatHandler;
+class ASaveManager;
+class AChunkManager;
+class ATimeOfDayManager;
+class AWeatherManager;
+class AAnimalSpawnManager;
+class AMonsterSpawnManager;
+class AGameChatManager;
 class AWildOmissionCharacter;
 class AWildOmissionPlayerController;
 
@@ -45,9 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void Weather(const FString& WeatherToSet);
 
-	ASaveHandler* GetSaveHandler() const;
-	AWorldGenerationHandler* GetWorldGenerationHandler() const;
-	AWeatherHandler* GetWeatherHandler() const;
+	ASaveManager* GetSaveManager() const;
+	AChunkManager* GetChunkManager() const;
+	AWeatherManager* GetWeatherManager() const;
 
 	UFUNCTION(Exec)
 	void LogPlayerInventoryComponents();
@@ -62,25 +62,25 @@ private:
 	bool FriendsOnly = true;
 
 	UPROPERTY()
-	ASaveHandler* SaveHandler;
+	ASaveManager* SaveManager;
 
 	UPROPERTY()
-	AWorldGenerationHandler* WorldGenerationHandler;
+	AChunkManager* ChunkManager;
 	
 	UPROPERTY()
-	ATimeOfDayHandler* TimeOfDayHandler;
+	ATimeOfDayManager* TimeOfDayManager;
 	
 	UPROPERTY()
-	AWeatherHandler* WeatherHandler;
+	AWeatherManager* WeatherManager;
 
 	UPROPERTY()
-	AAnimalSpawnHandler* AnimalSpawnHandler;
+	AAnimalSpawnManager* AnimalSpawnManager;
 
 	UPROPERTY()
-	AMonsterSpawnHandler* MonsterSpawnHandler;
+	AMonsterSpawnManager* MonsterSpawnManager;
 	
 	UPROPERTY()
-	AGameChatHandler* ChatHandler;
+	AGameChatManager* ChatManager;
 
 	void SpawnHumanAtStartSpot(AController* Controller);
 	void SpawnHumanAtBed(AController* Controller);

@@ -5,18 +5,18 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Structs/BiomeGenerationData.h"
-#include "WorldGenerationHandler.generated.h"
+#include "ChunkManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGenerationCompleteSignature);
 
 UCLASS()
-class WORLDGENERATION_API AWorldGenerationHandler : public AActor
+class WORLDGENERATION_API AChunkManager : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AWorldGenerationHandler();
+	AChunkManager();
 
 	UFUNCTION()
 	void Generate();
@@ -26,7 +26,7 @@ public:
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
 
-	static AWorldGenerationHandler* GetWorldGenerationHandler();
+	static AChunkManager* GetChunkManager();
 
 protected:
 	// Called when the game starts or when spawned

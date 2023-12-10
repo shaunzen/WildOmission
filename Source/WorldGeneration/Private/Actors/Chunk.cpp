@@ -1,8 +1,8 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Chunk.h"
-#include "WorldGenerationHandler.h"
+#include "Actors/Chunk.h"
+#include "ChunkManager.h"
 #include "Noise/PerlinNoise.hpp"
 #include "ProceduralMeshComponent.h"
 #include "KismetProceduralMeshLibrary.h"
@@ -69,7 +69,7 @@ void AChunk::GenerateTerrain()
 
 void AChunk::GenerateTrees()
 {
-	FBiomeGenerationData* Biome = AWorldGenerationHandler::GetBiomeGenerationData(TEXT("Plains"));
+	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
 	if (Biome == nullptr)
 	{
 		return;
@@ -94,7 +94,7 @@ void AChunk::GenerateTrees()
 
 void AChunk::GenerateNodes()
 {
-	FBiomeGenerationData* Biome = AWorldGenerationHandler::GetBiomeGenerationData(TEXT("Plains"));
+	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
 	if (Biome == nullptr)
 	{
 		return;

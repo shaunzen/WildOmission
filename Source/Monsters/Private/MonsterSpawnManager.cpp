@@ -1,19 +1,19 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "MonsterSpawnHandler.h"
-#include "SaveHandler.h"
-#include "TimeOfDayHandler.h"
+#include "MonsterSpawnManager.h"
+#include "SaveManager.h"
+#include "TimeOfDayManager.h"
 #include "WildOmissionSaveGame.h"
 #include "Engine/DataTable.h"
 #include "Monsters/Monster.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
-static AMonsterSpawnHandler* Instance = nullptr;
+static AMonsterSpawnManager* Instance = nullptr;
 
 // Sets default values
-AMonsterSpawnHandler::AMonsterSpawnHandler()
+AMonsterSpawnManager::AMonsterSpawnManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -31,13 +31,13 @@ AMonsterSpawnHandler::AMonsterSpawnHandler()
 	}
 }
 
-AMonsterSpawnHandler* AMonsterSpawnHandler::GetMonsterSpawnHandler()
+AMonsterSpawnManager* AMonsterSpawnManager::GetMonsterSpawnManager()
 {
 	return Instance;
 }
 
 // Called when the game starts or when spawned
-void AMonsterSpawnHandler::BeginPlay()
+void AMonsterSpawnManager::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -50,22 +50,22 @@ void AMonsterSpawnHandler::BeginPlay()
 	Instance = this;
 }
 
-void AMonsterSpawnHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AMonsterSpawnManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
 	Instance = nullptr;
 }
 
-bool AMonsterSpawnHandler::IsSpawnConditionValid()
+bool AMonsterSpawnManager::IsSpawnConditionValid()
 {
-	const ASaveHandler* SaveHandler = ASaveHandler::GetSaveHandler();
-	if (!IsValid(SaveHandler))
+	const ASaveManager* SaveManager = ASaveManager::GetSaveManager();
+	if (!IsValid(SaveManager))
 	{
 		return false;
 	}
 
-	const UWildOmissionSaveGame* SaveFile = SaveHandler->GetSaveFile();
+	const UWildOmissionSaveGame* SaveFile = SaveManager->GetSaveFile();
 	if (SaveFile == nullptr)
 	{
 		return false;
@@ -76,13 +76,13 @@ bool AMonsterSpawnHandler::IsSpawnConditionValid()
 		return false;
 	}
 
-	const ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
-	if (!IsValid(TimeOfDayHandler))
+	const ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
+	if (!IsValid(TimeOfDayManager))
 	{
 		return false;
 	}
 
-	if (TimeOfDayHandler->IsDay())
+	if (TimeOfDayManager->IsDay())
 	{
 		return false;
 	}

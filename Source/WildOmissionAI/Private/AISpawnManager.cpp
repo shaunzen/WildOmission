@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "AISpawnHandler.h"
+#include "AISpawnManager.h"
 #include "Characters/WildOmissionAICharacter.h"
 #include "Structs/AISpawnData.h"
 #include "Engine/DataTable.h"
@@ -11,7 +11,7 @@
 #include "Log.h"
 
 // Sets default values
-AAISpawnHandler::AAISpawnHandler()
+AAISpawnManager::AAISpawnManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -26,7 +26,7 @@ AAISpawnHandler::AAISpawnHandler()
 }
 
 // Called when the game starts or when spawned
-void AAISpawnHandler::BeginPlay()
+void AAISpawnManager::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -35,12 +35,12 @@ void AAISpawnHandler::BeginPlay()
 	CheckSpawnConditionsForAllPlayers();
 }
 
-bool AAISpawnHandler::IsSpawnConditionValid()
+bool AAISpawnManager::IsSpawnConditionValid()
 {
 	return true;
 }
 
-void AAISpawnHandler::CheckSpawnConditionsForAllPlayers()
+void AAISpawnManager::CheckSpawnConditionsForAllPlayers()
 {
 	UE_LOG(LogWildOmissionAI, Verbose, TEXT("Checking AICharacter Spawn Conditions."));
 	
@@ -48,7 +48,7 @@ void AAISpawnHandler::CheckSpawnConditionsForAllPlayers()
 	const float NextCheckTimeSeconds = FMath::RandRange(MinSpawnCheckTimeSeconds, MaxSpawnCheckTimeSeconds);
 	UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("Making Next AICharacter Spawn Check In %f Seconds."), NextCheckTimeSeconds);
 	FTimerDelegate NextSpawnCheckTimerDelegate;
-	NextSpawnCheckTimerDelegate.BindUObject(this, &AAISpawnHandler::CheckSpawnConditionsForAllPlayers);
+	NextSpawnCheckTimerDelegate.BindUObject(this, &AAISpawnManager::CheckSpawnConditionsForAllPlayers);
 	GetWorld()->GetTimerManager().SetTimer(NextSpawnCheckTimerHandle, NextSpawnCheckTimerDelegate, NextCheckTimeSeconds, false);
 
 	if (!IsSpawnConditionValid())
@@ -68,7 +68,7 @@ void AAISpawnHandler::CheckSpawnConditionsForAllPlayers()
 	}
 }
 
-void AAISpawnHandler::CheckSpawnConditionsForPlayer(APawn* Player)
+void AAISpawnManager::CheckSpawnConditionsForPlayer(APawn* Player)
 {
 	if (Player == nullptr)
 	{
@@ -90,7 +90,7 @@ void AAISpawnHandler::CheckSpawnConditionsForPlayer(APawn* Player)
 	SpawnAICharactersInRadiusFromOrigin(Player->GetActorLocation());
 }
 
-int32 AAISpawnHandler::GetNumAICharactersWithinRadiusFromLocation(const FVector& TestLocation) const
+int32 AAISpawnManager::GetNumAICharactersWithinRadiusFromLocation(const FVector& TestLocation) const
 {
 	if (SpawnedAICharacters.IsEmpty())
 	{
@@ -111,7 +111,7 @@ int32 AAISpawnHandler::GetNumAICharactersWithinRadiusFromLocation(const FVector&
 	return AICharactersInRange;
 }
 
-void AAISpawnHandler::SpawnAICharactersInRadiusFromOrigin(const FVector& Origin)
+void AAISpawnManager::SpawnAICharactersInRadiusFromOrigin(const FVector& Origin)
 {
 	if (AISpawnDataTable == nullptr)
 	{
@@ -137,7 +137,7 @@ void AAISpawnHandler::SpawnAICharactersInRadiusFromOrigin(const FVector& Origin)
 	}
 }
 
-void AAISpawnHandler::RemoveAICharacterFromList(AWildOmissionAICharacter* CharacterToRemove)
+void AAISpawnManager::RemoveAICharacterFromList(AWildOmissionAICharacter* CharacterToRemove)
 {
 	const int32 AICharacterIndex = SpawnedAICharacters.IndexOfByKey(CharacterToRemove);
 	if (AICharacterIndex == INDEX_NONE)
@@ -148,7 +148,7 @@ void AAISpawnHandler::RemoveAICharacterFromList(AWildOmissionAICharacter* Charac
 	SpawnedAICharacters.RemoveAtSwap(AICharacterIndex, 1, false);
 }
 
-bool AAISpawnHandler::FindSpawnTransform(const FVector& Origin, FTransform& OutTransform) const
+bool AAISpawnManager::FindSpawnTransform(const FVector& Origin, FTransform& OutTransform) const
 {
 	const float TraceHeight = 50000.0f;
 	const float SpawnDistance = FMath::RandRange(InnerSpawnRadiusCentimeters, OuterSpawnRadiusCentimeters);
@@ -176,7 +176,7 @@ bool AAISpawnHandler::FindSpawnTransform(const FVector& Origin, FTransform& OutT
 	return true;
 }
 
-FAISpawnData* AAISpawnHandler::GetSpawnData(const FName& AIName)
+FAISpawnData* AAISpawnManager::GetSpawnData(const FName& AIName)
 {
 	if (AISpawnDataTable== nullptr)
 	{
@@ -187,10 +187,10 @@ FAISpawnData* AAISpawnHandler::GetSpawnData(const FName& AIName)
 	return AISpawnDataTable->FindRow<FAISpawnData>(AIName, ContextString, true);
 }
 
-AWildOmissionAICharacter* AAISpawnHandler::HandleAISpawn(UClass* Class, const FTransform& SpawnTransform)
+AWildOmissionAICharacter* AAISpawnManager::HandleAISpawn(UClass* Class, const FTransform& SpawnTransform)
 {
 	AWildOmissionAICharacter* SpawnedAICharacter = GetWorld()->SpawnActor<AWildOmissionAICharacter>(Class, SpawnTransform);
-	SpawnedAICharacter->OnDespawn.AddDynamic(this, &AAISpawnHandler::RemoveAICharacterFromList);
+	SpawnedAICharacter->OnDespawn.AddDynamic(this, &AAISpawnManager::RemoveAICharacterFromList);
 	SpawnedAICharacters.Add(SpawnedAICharacter);
 	return SpawnedAICharacter;
 }

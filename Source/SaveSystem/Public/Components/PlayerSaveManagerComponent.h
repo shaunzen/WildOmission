@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "PlayerSaveHandlerComponent.generated.h"
+#include "PlayerSaveManagerComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SAVESYSTEM_API UPlayerSaveHandlerComponent : public UActorComponent
+class SAVESYSTEM_API UPlayerSaveManagerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UPlayerSaveHandlerComponent();
+	UPlayerSaveManagerComponent();
 
 	// Will update the list passed in to include saves from the pending list.
 	void Save(TArray<struct FPlayerSaveData>& OutUpdatedSavesList);

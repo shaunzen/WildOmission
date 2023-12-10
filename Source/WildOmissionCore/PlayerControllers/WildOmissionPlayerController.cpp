@@ -9,9 +9,9 @@
 #include "Components/VitalsComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmissionCore/GameModes/WildOmissionGameMode.h"
-#include "SaveHandler.h"
-#include "GameChatHandler.h"
-#include "Components/PlayerSaveHandlerComponent.h"
+#include "SaveManager.h"
+#include "GameChatManager.h"
+#include "Components/PlayerSaveManagerComponent.h"
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
 #include "UI/GameplayMenuWidget.h"
@@ -178,7 +178,7 @@ void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
 		return;
 	}
 
-	GameMode->GetSaveHandler()->GetPlayerHandler()->AddToPending(this);
+	GameMode->GetSaveManager()->GetPlayerManager()->AddToPending(this);
 }
 
 void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
@@ -335,13 +335,13 @@ void AWildOmissionPlayerController::StopLoading()
 
 void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerState* Sender, const FString& Message)
 {
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetGameChatHandler();
-	if (ChatHandler == nullptr)
+	AGameChatManager* ChatManager = AGameChatManager::GetGameChatManager();
+	if (ChatManager == nullptr)
 	{
 		return;
 	}
 
-	ChatHandler->SendMessage(Sender, Message, false);
+	ChatManager->SendMessage(Sender, Message, false);
 }
 
 void AWildOmissionPlayerController::Server_Spawn_Implementation()

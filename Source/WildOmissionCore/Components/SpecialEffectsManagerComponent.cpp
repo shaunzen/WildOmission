@@ -1,13 +1,13 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "SpecialEffectsHandlerComponent.h"
+#include "SpecialEffectsManagerComponent.h"
 #include "Actors/Storm.h"
 #include "Components/VitalsComponent.h"
 #include "Engine/ExponentialHeightFog.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
-#include "TimeOfDayHandler.h"
+#include "TimeOfDayManager.h"
 #include "WildOmissionGameUserSettings.h"
 #include "Components/PostProcessComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -21,7 +21,7 @@
 static UMaterialParameterCollection* MPC_Effects = nullptr;
 
 // Sets default values for this component's properties
-USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
+USpecialEffectsManagerComponent::USpecialEffectsManagerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -33,7 +33,7 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 	SpawnedRainAudioComponent = nullptr;
 	RainSound = nullptr;
 	FogComponent = nullptr;
-	TimeOfDayHandler = nullptr;
+	TimeOfDayManager = nullptr;
 	OwnerCamera = nullptr;
 
 	PreviouslyHitStorm = nullptr;
@@ -62,11 +62,11 @@ USpecialEffectsHandlerComponent::USpecialEffectsHandlerComponent()
 }
 
 // Called when the game starts
-void USpecialEffectsHandlerComponent::BeginPlay()
+void USpecialEffectsManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetOwner()->OnDestroyed.AddDynamic(this, &USpecialEffectsHandlerComponent::OnOwnerDestroyed);
+	GetOwner()->OnDestroyed.AddDynamic(this, &USpecialEffectsManagerComponent::OnOwnerDestroyed);
 
 	OwnerCamera = GetOwner()->FindComponentByClass<UCameraComponent>();
 
@@ -78,12 +78,12 @@ void USpecialEffectsHandlerComponent::BeginPlay()
 
 	FogComponent = HeightFogActor->FindComponentByClass<UExponentialHeightFogComponent>();
 
-	TimeOfDayHandler = Cast<ATimeOfDayHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeOfDayHandler::StaticClass()));
+	TimeOfDayManager = Cast<ATimeOfDayManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeOfDayManager::StaticClass()));
 }
 
 
 // Called every frame
-void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void USpecialEffectsManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
@@ -92,14 +92,14 @@ void USpecialEffectsHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 	HandleWeatherEffects();
 }
 
-void USpecialEffectsHandlerComponent::HandleNightTimeGamma()
+void USpecialEffectsManagerComponent::HandleNightTimeGamma()
 {
 	if (OwnerCamera == nullptr)
 	{
 		return;
 	}
 	
-	if (TimeOfDayHandler->IsNight())
+	if (TimeOfDayManager->IsNight())
 	{
 		NightGammaStrength = FMath::Clamp(NightGammaStrength + (0.1f * GetWorld()->GetDeltaSeconds()), 0.0f, 1.0f);
 	}
@@ -118,7 +118,7 @@ void USpecialEffectsHandlerComponent::HandleNightTimeGamma()
 	OwnerCamera->PostProcessSettings.AutoExposureBias = FMath::Lerp(0.5f, -3.0f, NightGammaStrength);
 }
 
-void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
+void USpecialEffectsManagerComponent::HandleLowHealthEffects()
 {
 	if (GetOwner() == nullptr || OwnerCamera == nullptr)
 	{
@@ -138,7 +138,7 @@ void USpecialEffectsHandlerComponent::HandleLowHealthEffects()
 	OwnerCamera->PostProcessSettings.BloomDirtMaskIntensity = FMath::Lerp(200.0f, 0.0f, FMath::Clamp(OwnerVitalsComponent->GetHealth() / LowHealthEffectThreshold, 0.0f, 1.0f));
 }
 
-void USpecialEffectsHandlerComponent::HandleWeatherEffects()
+void USpecialEffectsManagerComponent::HandleWeatherEffects()
 {
 	FHitResult HitResult;
 	if (!LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_GameTraceChannel2, HitResult))
@@ -167,7 +167,7 @@ void USpecialEffectsHandlerComponent::HandleWeatherEffects()
 	EnableRainfallEffects(RainDensity);
 }
 
-void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)
+void USpecialEffectsManagerComponent::EnableRainfallEffects(float RainDensity)
 {
 	FogComponent->SetFogDensity(0.05f);
 	FogComponent->SetFogHeightFalloff(0.001f);
@@ -205,7 +205,7 @@ void USpecialEffectsHandlerComponent::EnableRainfallEffects(float RainDensity)
 
 }
 
-void USpecialEffectsHandlerComponent::DisableRainfallEffects()
+void USpecialEffectsManagerComponent::DisableRainfallEffects()
 {
 	FogComponent->SetFogDensity(0.02f);
 	FogComponent->SetFogHeightFalloff(0.2f);
@@ -230,12 +230,12 @@ void USpecialEffectsHandlerComponent::DisableRainfallEffects()
 	}
 }
 
-AStorm* USpecialEffectsHandlerComponent::CastToStorm(AActor* InActor)
+AStorm* USpecialEffectsManagerComponent::CastToStorm(AActor* InActor)
 {
 	return Cast<AStorm>(InActor);
 }
 
-bool USpecialEffectsHandlerComponent::LineTraceIntoSkyOnChannel(ECollisionChannel ChannelToTrace, FHitResult& OutHitResult) const
+bool USpecialEffectsManagerComponent::LineTraceIntoSkyOnChannel(ECollisionChannel ChannelToTrace, FHitResult& OutHitResult) const
 {
 	FVector Start = GetComponentLocation();
 	FVector End = Start + FVector::UpVector * 100000.0f;
@@ -245,7 +245,7 @@ bool USpecialEffectsHandlerComponent::LineTraceIntoSkyOnChannel(ECollisionChanne
 	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ChannelToTrace, Params);
 }
 
-void USpecialEffectsHandlerComponent::OnOwnerDestroyed(AActor* DestroyedActor)
+void USpecialEffectsManagerComponent::OnOwnerDestroyed(AActor* DestroyedActor)
 {
 	if (SpawnedRainComponent)
 	{

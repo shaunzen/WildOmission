@@ -1,20 +1,20 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "SaveHandler.h"
-#include "Components/ActorSaveHandlerComponent.h"
-#include "Components/PlayerSaveHandlerComponent.h"
-#include "WorldGenerationHandler.h"
-#include "TimeOfDayHandler.h"
+#include "SaveManager.h"
+#include "Components/ActorSaveManagerComponent.h"
+#include "Components/PlayerSaveManagerComponent.h"
+#include "ChunkManager.h"
+#include "TimeOfDayManager.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Log.h"
 
-static ASaveHandler* Instance = nullptr;
+static ASaveManager* Instance = nullptr;
 
 // Sets default values
-ASaveHandler::ASaveHandler()
+ASaveManager::ASaveManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -22,21 +22,21 @@ ASaveHandler::ASaveHandler()
 	GameSaveLoadController = nullptr;
 	CurrentSaveFile = nullptr;
 
-	ActorSaveHandlerComponent = CreateDefaultSubobject<UActorSaveHandlerComponent>(TEXT("ActorSaveHandlerComponent"));
-	PlayerSaveHandlerComponent = CreateDefaultSubobject<UPlayerSaveHandlerComponent>(TEXT("PlayerSaveHandlerComponent"));
+	ActorSaveManagerComponent = CreateDefaultSubobject<UActorSaveManagerComponent>(TEXT("ActorSaveManagerComponent"));
+	PlayerSaveManagerComponent = CreateDefaultSubobject<UPlayerSaveManagerComponent>(TEXT("PlayerSaveManagerComponent"));
 }
 
-void ASaveHandler::SetGameSaveLoadController(IGameSaveLoadController* InGameSaveLoadController)
+void ASaveManager::SetGameSaveLoadController(IGameSaveLoadController* InGameSaveLoadController)
 {
 	GameSaveLoadController = InGameSaveLoadController;
 }
 
-ASaveHandler* ASaveHandler::GetSaveHandler()
+ASaveManager* ASaveManager::GetSaveManager()
 {
 	return Instance;
 }
 
-void ASaveHandler::SaveGame()
+void ASaveManager::SaveGame()
 {
 	UWildOmissionSaveGame* SaveFile = GetSaveFile();
 	if (SaveFile == nullptr)
@@ -46,22 +46,22 @@ void ASaveHandler::SaveGame()
 	}
 	SaveFile->LastPlayedTime = FDateTime::Now();
 
-	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
-	if (TimeOfDayHandler)
+	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
+	if (TimeOfDayManager)
 	{
-		SaveFile->DaysPlayed = TimeOfDayHandler->GetDaysPlayed();
-		SaveFile->NormalizedProgressThroughDay = TimeOfDayHandler->GetNormalizedProgressThroughDay();
+		SaveFile->DaysPlayed = TimeOfDayManager->GetDaysPlayed();
+		SaveFile->NormalizedProgressThroughDay = TimeOfDayManager->GetNormalizedProgressThroughDay();
 	}
 
-	//ActorSaveHandlerComponent->SaveActors(SaveFile->ActorSaves);
-	PlayerSaveHandlerComponent->Save(SaveFile->PlayerSaveData);
+	//ActorSaveManagerComponent->SaveActors(SaveFile->ActorSaves);
+	PlayerSaveManagerComponent->Save(SaveFile->PlayerSaveData);
 	
 	SaveFile->Version = CURRENT_SAVE_FILE_VERSION;
 
 	UpdateSaveFile(SaveFile);
 }
 
-void ASaveHandler::SetSaveFile(const FString& SaveFileName)
+void ASaveManager::SetSaveFile(const FString& SaveFileName)
 {
 	CurrentSaveFileName = SaveFileName;
 	ValidateSave();
@@ -70,7 +70,7 @@ void ASaveHandler::SetSaveFile(const FString& SaveFileName)
 	CurrentSaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(CurrentSaveFileName, 0));
 }
 
-void ASaveHandler::LoadWorld()
+void ASaveManager::LoadWorld()
 {
 	UWildOmissionSaveGame* SaveFile = GetSaveFile();
 	if (SaveFile == nullptr)
@@ -78,40 +78,40 @@ void ASaveHandler::LoadWorld()
 		return;
 	}
 
-	AWorldGenerationHandler* WorldGenerationHandler = AWorldGenerationHandler::GetWorldGenerationHandler();
-	if (WorldGenerationHandler && SaveFile->CreationInformation.LevelHasGenerated == false)
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager && SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
-		WorldGenerationHandler->Generate();
-		WorldGenerationHandler->OnGenerationComplete.AddDynamic(this, &ASaveHandler::MarkSaveGenerated);
+		ChunkManager->Generate();
+		ChunkManager->OnGenerationComplete.AddDynamic(this, &ASaveManager::MarkSaveGenerated);
 		return;
 	}
 
-	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
-	if (TimeOfDayHandler)
+	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
+	if (TimeOfDayManager)
 	{
-		TimeOfDayHandler->SetDaysPlayed(SaveFile->DaysPlayed);
-		TimeOfDayHandler->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
+		TimeOfDayManager->SetDaysPlayed(SaveFile->DaysPlayed);
+		TimeOfDayManager->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
 	}
 	
 	SetLoadingSubtitle(TEXT("Loading objects."));
-	//ActorSaveHandlerComponent->LoadActors(SaveFile->ActorSaves, SaveFile->Version);
+	//ActorSaveManagerComponent->LoadActors(SaveFile->ActorSaves, SaveFile->Version);
 
 	// Make sure there is at least 20 of all collectables
-	//WorldGenerationHandler->PreventExtinction();
+	//ChunkManager->PreventExtinction();
 
 	FTimerHandle ActorLoadedTimerHandle;
 	FTimerDelegate ActorLoadedDelegate;
-	ActorLoadedDelegate.BindUObject(this, &ASaveHandler::StopLoading);
+	ActorLoadedDelegate.BindUObject(this, &ASaveManager::StopLoading);
 	GetWorld()->GetTimerManager().SetTimer(ActorLoadedTimerHandle, ActorLoadedDelegate, 1.0f, false);
 }
 
-UWildOmissionSaveGame* ASaveHandler::GetSaveFile() const
+UWildOmissionSaveGame* ASaveManager::GetSaveFile() const
 {
 	return CurrentSaveFile;
 }
 
-void ASaveHandler::BeginPlay()
+void ASaveManager::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -124,22 +124,22 @@ void ASaveHandler::BeginPlay()
 	Instance = this;
 
 	FTimerHandle AutoSaveTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveHandler::SaveGame, 90.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveManager::SaveGame, 90.0f, true);
 }
 
-void ASaveHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void ASaveManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
 	Instance = nullptr;
 }
 
-UPlayerSaveHandlerComponent* ASaveHandler::GetPlayerHandler() const
+UPlayerSaveManagerComponent* ASaveManager::GetPlayerManager() const
 {
-	return PlayerSaveHandlerComponent;
+	return PlayerSaveManagerComponent;
 }
 
-void ASaveHandler::ValidateSave()
+void ASaveManager::ValidateSave()
 {
 	if (CurrentSaveFileName.Len() > 0)
 	{
@@ -151,7 +151,7 @@ void ASaveHandler::ValidateSave()
 	CreateWorld(CurrentSaveFileName);
 }
 
-void ASaveHandler::MarkSaveGenerated()
+void ASaveManager::MarkSaveGenerated()
 {
 	UWildOmissionSaveGame* SaveFile = GetSaveFile();
 	if (SaveFile == nullptr)
@@ -163,7 +163,7 @@ void ASaveHandler::MarkSaveGenerated()
 	UpdateSaveFile(SaveFile);
 }
 
-void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
+void ASaveManager::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
 {
 	if (UpdatedSaveFile == nullptr)
 	{
@@ -174,7 +174,7 @@ void ASaveHandler::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
 	UGameplayStatics::SaveGameToSlot(UpdatedSaveFile, CurrentSaveFileName, 0);
 }
 
-void ASaveHandler::StartLoading()
+void ASaveManager::StartLoading()
 {
 	if (GameSaveLoadController == nullptr)
 	{
@@ -184,7 +184,7 @@ void ASaveHandler::StartLoading()
 	GameSaveLoadController->StartLoading();
 }
 
-void ASaveHandler::StopLoading()
+void ASaveManager::StopLoading()
 {
 	if (GameSaveLoadController == nullptr)
 	{
@@ -194,7 +194,7 @@ void ASaveHandler::StopLoading()
 	GameSaveLoadController->StopLoading();
 }
 
-void ASaveHandler::SetLoadingTitle(const FString& NewTitle)
+void ASaveManager::SetLoadingTitle(const FString& NewTitle)
 {
 	if (GameSaveLoadController == nullptr)
 	{
@@ -204,7 +204,7 @@ void ASaveHandler::SetLoadingTitle(const FString& NewTitle)
 	GameSaveLoadController->SetLoadingTitle(NewTitle);
 }
 
-void ASaveHandler::SetLoadingSubtitle(const FString& NewSubtitle)
+void ASaveManager::SetLoadingSubtitle(const FString& NewSubtitle)
 {
 	if (GameSaveLoadController == nullptr)
 	{
@@ -214,7 +214,7 @@ void ASaveHandler::SetLoadingSubtitle(const FString& NewSubtitle)
 	GameSaveLoadController->SetLoadingSubtitle(NewSubtitle);
 }
 
-void ASaveHandler::CreateWorld(const FString& NewWorldName)
+void ASaveManager::CreateWorld(const FString& NewWorldName)
 {
 	if (GameSaveLoadController == nullptr)
 	{

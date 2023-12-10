@@ -40,8 +40,8 @@ void UWildOmissionStatics::GetWorldSize(UWorld* WorldContextObject, FVector2D& O
 	{
 		return;
 	}
-	ASaveHandler* SaveHandler = GameMode->GetSaveHandler();
-	if (SaveHandler == nullptr)
+	ASaveManager* SaveManager = GameMode->GetSaveManager();
+	if (SaveManager == nullptr)
 	{
 		return;
 	}

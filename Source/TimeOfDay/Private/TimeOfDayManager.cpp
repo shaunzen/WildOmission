@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "TimeOfDayHandler.h"
+#include "TimeOfDayManager.h"
 #include "Engine/DirectionalLight.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -11,12 +11,12 @@
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
 
-static ATimeOfDayHandler* Instance = nullptr;
+static ATimeOfDayManager* Instance = nullptr;
 static const float DAY_NIGHT_SPEED = 0.3f;
 static UMaterialParameterCollection* MPC_Sky = nullptr;
 
 // Sets default values
-ATimeOfDayHandler::ATimeOfDayHandler()
+ATimeOfDayManager::ATimeOfDayManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -40,13 +40,13 @@ ATimeOfDayHandler::ATimeOfDayHandler()
 	}
 }
 
-ATimeOfDayHandler* ATimeOfDayHandler::GetTimeOfDayHandler()
+ATimeOfDayManager* ATimeOfDayManager::GetTimeOfDayManager()
 {
 	return Instance;
 }
 
 // Called when the game starts or when spawned
-void ATimeOfDayHandler::BeginPlay()
+void ATimeOfDayManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -61,13 +61,13 @@ void ATimeOfDayHandler::BeginPlay()
 	Instance = this;
 }
 
-void ATimeOfDayHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void ATimeOfDayManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 	Instance = nullptr;
 }
 
-void ATimeOfDayHandler::CalculateMoonPhase()
+void ATimeOfDayManager::CalculateMoonPhase()
 {
 	if (MPC_Sky == nullptr)
 	{
@@ -79,18 +79,18 @@ void ATimeOfDayHandler::CalculateMoonPhase()
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Sky, TEXT("MoonPhase"), MoonPhase);
 }
 
-void ATimeOfDayHandler::OnRep_DaysPlayed()
+void ATimeOfDayManager::OnRep_DaysPlayed()
 {
 	SetDaysPlayed(DaysPlayed);
 }
 
-void ATimeOfDayHandler::OnRep_NormalizedProgressThroughDay()
+void ATimeOfDayManager::OnRep_NormalizedProgressThroughDay()
 {
 	SetNormalizedProgressThroughDay(NormalizedProgressThroughDay);
 	HandleDelegates();
 }
 
-void ATimeOfDayHandler::HandleDelegates()
+void ATimeOfDayManager::HandleDelegates()
 {
 	// Sunrise = 0, Noon = .25, Sunset = .5, Midnight = .75
 	const bool SunriseConditionValid = NormalizedProgressThroughDay > 0 && NormalizedProgressThroughDay < 0.05f;
@@ -136,7 +136,7 @@ void ATimeOfDayHandler::HandleDelegates()
 }
 
 // Called every frame
-void ATimeOfDayHandler::Tick(float DeltaTime)
+void ATimeOfDayManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -151,26 +151,26 @@ void ATimeOfDayHandler::Tick(float DeltaTime)
 	OnRep_NormalizedProgressThroughDay();
 }
 
-void ATimeOfDayHandler::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void ATimeOfDayManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ATimeOfDayHandler, DaysPlayed);
-	DOREPLIFETIME(ATimeOfDayHandler, NormalizedProgressThroughDay);
+	DOREPLIFETIME(ATimeOfDayManager, DaysPlayed);
+	DOREPLIFETIME(ATimeOfDayManager, NormalizedProgressThroughDay);
 }
 
-void ATimeOfDayHandler::SetDaysPlayed(int32 InDaysPlayed)
+void ATimeOfDayManager::SetDaysPlayed(int32 InDaysPlayed)
 {
 	DaysPlayed = InDaysPlayed;
 	CalculateMoonPhase();
 }
 
-int32 ATimeOfDayHandler::GetDaysPlayed() const
+int32 ATimeOfDayManager::GetDaysPlayed() const
 {
 	return DaysPlayed;
 }
 
-void ATimeOfDayHandler::SetNormalizedProgressThroughDay(float InProgress)
+void ATimeOfDayManager::SetNormalizedProgressThroughDay(float InProgress)
 {
 	if (DirectionalLight == nullptr)
 	{
@@ -182,12 +182,12 @@ void ATimeOfDayHandler::SetNormalizedProgressThroughDay(float InProgress)
 	DirectionalLight->AddActorLocalRotation(FRotator(NormalizedProgressThroughDay * 360.0f, 0.0f, 0.0f));
 }
 
-float ATimeOfDayHandler::GetNormalizedProgressThroughDay() const
+float ATimeOfDayManager::GetNormalizedProgressThroughDay() const
 {
 	return NormalizedProgressThroughDay;
 }
 
-bool ATimeOfDayHandler::IsDay() const
+bool ATimeOfDayManager::IsDay() const
 {
 	if (DirectionalLight == nullptr)
 	{
@@ -197,7 +197,7 @@ bool ATimeOfDayHandler::IsDay() const
 	return DirectionalLight->GetActorRotation().Pitch < 0.0f;
 }
 
-bool ATimeOfDayHandler::IsNight() const
+bool ATimeOfDayManager::IsNight() const
 {
 	return !IsDay();
 }

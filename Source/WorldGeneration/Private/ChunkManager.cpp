@@ -1,16 +1,16 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "WorldGenerationHandler.h"
-#include "Chunk.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
-static AWorldGenerationHandler* Instance = nullptr;
+static AChunkManager* Instance = nullptr;
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
 // Sets default values
-AWorldGenerationHandler::AWorldGenerationHandler()
+AChunkManager::AChunkManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -29,7 +29,7 @@ AWorldGenerationHandler::AWorldGenerationHandler()
 }
 
 // Called when the game starts or when spawned
-void AWorldGenerationHandler::BeginPlay()
+void AChunkManager::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -42,14 +42,14 @@ void AWorldGenerationHandler::BeginPlay()
 	Instance = this;
 }
 
-void AWorldGenerationHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
 	Instance = nullptr;
 }
 
-void AWorldGenerationHandler::Generate()
+void AChunkManager::Generate()
 {
 	const FName DefaultBiome(TEXT("Plains"));
 	FBiomeGenerationData* BiomeData = GetBiomeGenerationData(DefaultBiome);
@@ -66,7 +66,7 @@ void AWorldGenerationHandler::Generate()
 	}
 }
 
-void AWorldGenerationHandler::GenerateChunks()
+void AChunkManager::GenerateChunks()
 {
 	const int32 WorldSize = 10;
 	for (int32 X = 0; X < WorldSize; ++X)
@@ -81,7 +81,7 @@ void AWorldGenerationHandler::GenerateChunks()
 	}
 }
 
-TArray<FBiomeGenerationData*> AWorldGenerationHandler::GetAllPossibleBiomes()
+TArray<FBiomeGenerationData*> AChunkManager::GetAllPossibleBiomes()
 {
 	TArray<FBiomeGenerationData*> Biomes;
 	if (BiomeGenerationDataTable == nullptr)
@@ -96,7 +96,7 @@ TArray<FBiomeGenerationData*> AWorldGenerationHandler::GetAllPossibleBiomes()
 	return Biomes;
 }
 
-FBiomeGenerationData* AWorldGenerationHandler::GetBiomeGenerationData(const FName& BiomeName)
+FBiomeGenerationData* AChunkManager::GetBiomeGenerationData(const FName& BiomeName)
 {
 	if (BiomeGenerationDataTable == nullptr)
 	{
@@ -108,7 +108,7 @@ FBiomeGenerationData* AWorldGenerationHandler::GetBiomeGenerationData(const FNam
 	return BiomeGenerationDataTable->FindRow<FBiomeGenerationData>(BiomeName, ContextString, true);
 }
 
-AWorldGenerationHandler* AWorldGenerationHandler::GetWorldGenerationHandler()
+AChunkManager* AChunkManager::GetChunkManager()
 {
 	return Instance;
 }

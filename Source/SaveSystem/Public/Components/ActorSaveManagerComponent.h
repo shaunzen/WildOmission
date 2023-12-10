@@ -5,17 +5,17 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "WildOmissionSaveGame.h"
-#include "ActorSaveHandlerComponent.generated.h"
+#include "ActorSaveManagerComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SAVESYSTEM_API UActorSaveHandlerComponent : public UActorComponent
+class SAVESYSTEM_API UActorSaveManagerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UActorSaveHandlerComponent();
+	UActorSaveManagerComponent();
 	
 	UFUNCTION()
 	void SaveActors(TArray<FActorSaveData>& OutSaves);

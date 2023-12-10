@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WeatherHandler.generated.h"
+#include "WeatherManager.generated.h"
 
 class AStorm;
 
@@ -28,15 +28,15 @@ struct FWindParameters
 };
 
 UCLASS()
-class WEATHER_API AWeatherHandler : public AActor
+class WEATHER_API AWeatherManager : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AWeatherHandler();
+	AWeatherManager();
 	
-	static AWeatherHandler* GetWeatherHandler();
+	static AWeatherManager* GetWeatherManager();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

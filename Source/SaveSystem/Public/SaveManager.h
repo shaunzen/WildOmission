@@ -4,25 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SaveHandler.generated.h"
+#include "SaveManager.generated.h"
 
 class UWildOmissionSaveGame;
-class UActorSaveHandlerComponent;
-class UPlayerSaveHandlerComponent;
+class UActorSaveManagerComponent;
+class UPlayerSaveManagerComponent;
 class IGameSaveLoadController;
 
 UCLASS()
-class SAVESYSTEM_API ASaveHandler : public AActor
+class SAVESYSTEM_API ASaveManager : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ASaveHandler();
+	ASaveManager();
 
 	void SetGameSaveLoadController(IGameSaveLoadController* InGameSaveLoadController);
 
-	static ASaveHandler* GetSaveHandler();
+	static ASaveManager* GetSaveManager();
 
 	void SaveGame();
 	void SetSaveFile(const FString& SaveFileName);
@@ -30,7 +30,7 @@ public:
 
 	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
 
-	UPlayerSaveHandlerComponent* GetPlayerHandler() const;
+	UPlayerSaveManagerComponent* GetPlayerManager() const;
 	UWildOmissionSaveGame* GetSaveFile() const;
 
 protected:
@@ -41,10 +41,10 @@ private:
 	FString CurrentSaveFileName;
 
 	UPROPERTY(VisibleAnywhere)
-	UActorSaveHandlerComponent* ActorSaveHandlerComponent;
+	UActorSaveManagerComponent* ActorSaveManagerComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UPlayerSaveHandlerComponent* PlayerSaveHandlerComponent;
+	UPlayerSaveManagerComponent* PlayerSaveManagerComponent;
 
 	IGameSaveLoadController* GameSaveLoadController;
 

@@ -22,7 +22,7 @@
 #include "Components/CraftingComponent.h"
 #include "Components/BuilderComponent.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
-#include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
+#include "WildOmissionCore/Components/SpecialEffectsManagerComponent.h"
 #include "Components/LockModifierComponent.h"
 #include "WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
@@ -89,7 +89,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 
-	SpecialEffectsHandlerComponent = nullptr;
+	SpecialEffectsManagerComponent = nullptr;
 	
 	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
 
@@ -532,13 +532,13 @@ void AWildOmissionCharacter::SetupLocalComponents()
 		return;
 	}
 
-	if (SpecialEffectsHandlerComponent == nullptr)
+	if (SpecialEffectsManagerComponent == nullptr)
 	{
-		SpecialEffectsHandlerComponent = NewObject<USpecialEffectsHandlerComponent>(this, USpecialEffectsHandlerComponent::StaticClass(), TEXT("SpecialEffectsHandlerComponent"));
-		if (SpecialEffectsHandlerComponent)
+		SpecialEffectsManagerComponent = NewObject<USpecialEffectsManagerComponent>(this, USpecialEffectsManagerComponent::StaticClass(), TEXT("SpecialEffectsManagerComponent"));
+		if (SpecialEffectsManagerComponent)
 		{
-			SpecialEffectsHandlerComponent->RegisterComponent();
-			SpecialEffectsHandlerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			SpecialEffectsManagerComponent->RegisterComponent();
+			SpecialEffectsManagerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		}
 	}
 }

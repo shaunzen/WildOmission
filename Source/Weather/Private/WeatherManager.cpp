@@ -1,11 +1,11 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "WeatherHandler.h"
+#include "WeatherManager.h"
 #include "Actors/Storm.h"
-#include "SaveHandler.h"
+#include "SaveManager.h"
 #include "WildOmissionSaveGame.h"
-#include "TimeOfDayHandler.h"
+#include "TimeOfDayManager.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
@@ -14,11 +14,11 @@
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
 
-static AWeatherHandler* Instance = nullptr;
+static AWeatherManager* Instance = nullptr;
 static UMaterialParameterCollection* MPC_WindCollection = nullptr;
 
 // Sets default values
-AWeatherHandler::AWeatherHandler()
+AWeatherManager::AWeatherManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -44,13 +44,13 @@ AWeatherHandler::AWeatherHandler()
 	}
 }
 
-AWeatherHandler* AWeatherHandler::GetWeatherHandler()
+AWeatherManager* AWeatherManager::GetWeatherManager()
 {
 	return Instance;
 }
 
 // Called when the game starts or when spawned
-void AWeatherHandler::BeginPlay()
+void AWeatherManager::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -67,26 +67,26 @@ void AWeatherHandler::BeginPlay()
 		return;
 	}
 	
-	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
-	if (TimeOfDayHandler == nullptr)
+	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
+	if (TimeOfDayManager == nullptr)
 	{
 		return;
 	}
 
-	TimeOfDayHandler->OnTimeSunrise.AddDynamic(this, &AWeatherHandler::AttemptSunriseStorm);
-	TimeOfDayHandler->OnTimeNoon.AddDynamic(this, &AWeatherHandler::AttemptNoonStorm);
-	TimeOfDayHandler->OnTimeSunset.AddDynamic(this, &AWeatherHandler::AttemptSunsetStorm);
-	TimeOfDayHandler->OnTimeMidnight.AddDynamic(this, &AWeatherHandler::AttemptMidnightStorm);
+	TimeOfDayManager->OnTimeSunrise.AddDynamic(this, &AWeatherManager::AttemptSunriseStorm);
+	TimeOfDayManager->OnTimeNoon.AddDynamic(this, &AWeatherManager::AttemptNoonStorm);
+	TimeOfDayManager->OnTimeSunset.AddDynamic(this, &AWeatherManager::AttemptSunsetStorm);
+	TimeOfDayManager->OnTimeMidnight.AddDynamic(this, &AWeatherManager::AttemptMidnightStorm);
 }
 
-void AWeatherHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AWeatherManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
 	Instance = nullptr;
 }
 
-void AWeatherHandler::AttemptSunriseStorm()
+void AWeatherManager::AttemptSunriseStorm()
 {
 	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(SunriseStormSpawnChance);
 	if (ShouldSpawn == false)
@@ -97,7 +97,7 @@ void AWeatherHandler::AttemptSunriseStorm()
 	SpawnStorm();
 }
 
-void AWeatherHandler::AttemptNoonStorm()
+void AWeatherManager::AttemptNoonStorm()
 {
 	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(NoonStormSpawnChance);
 	if (ShouldSpawn == false)
@@ -108,7 +108,7 @@ void AWeatherHandler::AttemptNoonStorm()
 	SpawnStorm();
 }
 
-void AWeatherHandler::AttemptSunsetStorm()
+void AWeatherManager::AttemptSunsetStorm()
 {
 	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(SunsetStormSpawnChance);
 	if (ShouldSpawn == false)
@@ -119,7 +119,7 @@ void AWeatherHandler::AttemptSunsetStorm()
 	SpawnStorm();
 }
 
-void AWeatherHandler::AttemptMidnightStorm()
+void AWeatherManager::AttemptMidnightStorm()
 {
 	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(MidnightStormSpawnChance);
 	if (ShouldSpawn == false)
@@ -130,30 +130,30 @@ void AWeatherHandler::AttemptMidnightStorm()
 	SpawnStorm();
 }
 
-void AWeatherHandler::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void AWeatherManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AWeatherHandler, CurrentStorm);
+	DOREPLIFETIME(AWeatherManager, CurrentStorm);
 }
 
 // Called every frame
-void AWeatherHandler::Tick(float DeltaTime)
+void AWeatherManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
 	CalculateWindParameters();
 }
 
-bool AWeatherHandler::IsPeacefulMode() const
+bool AWeatherManager::IsPeacefulMode() const
 {
-	ASaveHandler* SaveHandler = ASaveHandler::GetSaveHandler();
-	if (!IsValid(SaveHandler))
+	ASaveManager* SaveManager = ASaveManager::GetSaveManager();
+	if (!IsValid(SaveManager))
 	{
 		return false;
 	}
 	
-	UWildOmissionSaveGame* SaveFile = SaveHandler->GetSaveFile();
+	UWildOmissionSaveGame* SaveFile = SaveManager->GetSaveFile();
 	if (SaveFile == nullptr)
 	{
 		return false;
@@ -162,7 +162,7 @@ bool AWeatherHandler::IsPeacefulMode() const
 	return SaveFile->Difficulty == EGameDifficulty::EGD_Peaceful;
 }
 
-AStorm* AWeatherHandler::SpawnStorm(bool FromCommand)
+AStorm* AWeatherManager::SpawnStorm(bool FromCommand)
 {
 	if (CurrentStorm)
 	{
@@ -175,7 +175,7 @@ AStorm* AWeatherHandler::SpawnStorm(bool FromCommand)
 	return CurrentStorm;
 }
 
-void AWeatherHandler::ClearStorm()
+void AWeatherManager::ClearStorm()
 {
 	if (CurrentStorm == nullptr)
 	{
@@ -186,12 +186,12 @@ void AWeatherHandler::ClearStorm()
 	CurrentStorm = nullptr;
 }
 
-bool AWeatherHandler::CanSpawnStorm() const
+bool AWeatherManager::CanSpawnStorm() const
 {
 	return !IsPeacefulMode() && CurrentStorm == nullptr;
 }
 
-void AWeatherHandler::CalculateWindParameters()
+void AWeatherManager::CalculateWindParameters()
 {
 	FWindParameters NewParams;
 
@@ -237,7 +237,7 @@ void AWeatherHandler::CalculateWindParameters()
 	ApplyWindParameters(NewParams);
 }
 
-void AWeatherHandler::ApplyWindParameters(const FWindParameters& NewParameters)
+void AWeatherManager::ApplyWindParameters(const FWindParameters& NewParameters)
 {
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, TEXT("GlobalWindStrength"), NewParameters.GlobalWindStrength);
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, TEXT("GlobalWindDirection"), FLinearColor(NewParameters.GlobalWindDirection.X, NewParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
@@ -245,12 +245,12 @@ void AWeatherHandler::ApplyWindParameters(const FWindParameters& NewParameters)
 	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, TEXT("TornadoLocation"), FLinearColor(NewParameters.TornadoLocation.X, NewParameters.TornadoLocation.Y, 0.0f, 1.0f));
 }
 
-AStorm* AWeatherHandler::GetCurrentStorm() const
+AStorm* AWeatherManager::GetCurrentStorm() const
 {
 	return CurrentStorm;
 }
 
-void AWeatherHandler::SetCurrentStorm(AStorm* NewCurrentStorm)
+void AWeatherManager::SetCurrentStorm(AStorm* NewCurrentStorm)
 {
 	if (CurrentStorm)
 	{

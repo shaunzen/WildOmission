@@ -4,23 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "SpecialEffectsHandlerComponent.generated.h"
+#include "SpecialEffectsManagerComponent.generated.h"
 
 class UNiagaraSystem;
 class UNiagaraComponent;
 class UExponentialHeightFogComponent;
-class ATimeOfDayHandler;
+class ATimeOfDayManager;
 class UCameraComponent;
 class AStorm;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WILDOMISSIONCORE_API USpecialEffectsHandlerComponent : public USceneComponent
+class WILDOMISSIONCORE_API USpecialEffectsManagerComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	USpecialEffectsHandlerComponent();
+	USpecialEffectsManagerComponent();
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -46,7 +46,7 @@ private:
 	UExponentialHeightFogComponent* FogComponent;
 
 	UPROPERTY()
-	ATimeOfDayHandler* TimeOfDayHandler;
+	ATimeOfDayManager* TimeOfDayManager;
 
 	UPROPERTY()
 	UCameraComponent* OwnerCamera;

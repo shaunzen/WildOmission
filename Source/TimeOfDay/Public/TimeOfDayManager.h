@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "TimeOfDayHandler.generated.h"
+#include "TimeOfDayManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeSunriseSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeNoonSignature);
@@ -13,15 +13,15 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTimeMidnightSignature);
 
 class ADirectionalLight;
 UCLASS()
-class TIMEOFDAY_API ATimeOfDayHandler : public AActor
+class TIMEOFDAY_API ATimeOfDayManager : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ATimeOfDayHandler();
+	ATimeOfDayManager();
 
-	static ATimeOfDayHandler* GetTimeOfDayHandler();
+	static ATimeOfDayManager* GetTimeOfDayManager();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

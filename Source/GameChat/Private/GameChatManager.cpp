@@ -1,13 +1,13 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "GameChatHandler.h"
+#include "GameChatManager.h"
 #include "GameFramework/PlayerState.h"
 
-static AGameChatHandler* Instance;
+static AGameChatManager* Instance;
 
 // Sets default values
-AGameChatHandler::AGameChatHandler()
+AGameChatManager::AGameChatManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -15,7 +15,7 @@ AGameChatHandler::AGameChatHandler()
 	bAlwaysRelevant = true;
 }
 
-void AGameChatHandler::BeginPlay()
+void AGameChatManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -36,13 +36,13 @@ void AGameChatHandler::BeginPlay()
 	SetOwner(PlayerController);
 }
 
-void AGameChatHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AGameChatManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 	Instance = nullptr;
 }
 
-void AGameChatHandler::SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate)
+void AGameChatManager::SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate)
 {
 	if (SenderPlayerState == nullptr || Message.IsEmpty())
 	{
@@ -57,7 +57,7 @@ void AGameChatHandler::SendMessage(APlayerState* SenderPlayerState, const FStrin
 	Multi_PushMessageToClients(ChatMessage);
 }
 
-void AGameChatHandler::Multi_PushMessageToClients_Implementation(const FChatMessage& ChatMessage)
+void AGameChatManager::Multi_PushMessageToClients_Implementation(const FChatMessage& ChatMessage)
 {
 	UWorld* World = GetWorld();
 	if (!IsValidMessage(ChatMessage) || World == nullptr)
@@ -81,12 +81,12 @@ void AGameChatHandler::Multi_PushMessageToClients_Implementation(const FChatMess
 	}
 }
 
-AGameChatHandler* AGameChatHandler::GetGameChatHandler()
+AGameChatManager* AGameChatManager::GetGameChatManager()
 {
 	return Instance;
 }
 
-bool AGameChatHandler::IsValidMessage(const FChatMessage& ChatMessage)
+bool AGameChatManager::IsValidMessage(const FChatMessage& ChatMessage)
 {
 	if (ChatMessage.Message == TEXT("") || ChatMessage.SenderName == TEXT(""))
 	{
@@ -96,7 +96,7 @@ bool AGameChatHandler::IsValidMessage(const FChatMessage& ChatMessage)
 	return true;
 }
 
-TArray<FChatMessage> AGameChatHandler::GetChatMessages()
+TArray<FChatMessage> AGameChatManager::GetChatMessages()
 {
 	return ChatMessages;
 }

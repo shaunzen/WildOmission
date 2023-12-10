@@ -2,7 +2,7 @@
 
 
 #include "Actors/Storm.h"
-#include "WeatherHandler.h"
+#include "WeatherManager.h"
 #include "Actors/Lightning.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
@@ -144,13 +144,13 @@ void AStorm::HandleMovement()
 
 	if (TraveledDistance >= TravelDistance)
 	{
-		AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
-		if (WeatherHandler == nullptr)
+		AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+		if (WeatherManager == nullptr)
 		{
 			return;
 		}
 
-		WeatherHandler->ClearStorm();
+		WeatherManager->ClearStorm();
 	}
 }
 
@@ -273,19 +273,19 @@ void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 
 void AStorm::OnLoadComplete_Implementation()
 {
-	AWeatherHandler* WeatherHandler = AWeatherHandler::GetWeatherHandler();
-	if (WeatherHandler == nullptr)
+	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+	if (WeatherManager == nullptr)
 	{
 		return;
 	}
 	
-	if (WeatherHandler->IsPeacefulMode())
+	if (WeatherManager->IsPeacefulMode())
 	{
 		HandleDestruction();
 		return;
 	}
 
-	WeatherHandler->SetCurrentStorm(this);
+	WeatherManager->SetCurrentStorm(this);
 
 	CalculateTargetLocation();
 	CalculateTravelDistance();

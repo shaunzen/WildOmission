@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Components/ActorSaveHandlerComponent.h"
+#include "Components/ActorSaveManagerComponent.h"
 #include "Interfaces/SavableObject.h"
 #include "Structs/SavableObjectDefinition.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
@@ -13,7 +13,7 @@
 static UDataTable* DT_SavableObjectDefinitions = nullptr;
 
 // Sets default values for this component's properties
-UActorSaveHandlerComponent::UActorSaveHandlerComponent()
+UActorSaveManagerComponent::UActorSaveManagerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -27,13 +27,13 @@ UActorSaveHandlerComponent::UActorSaveHandlerComponent()
 }
 
 // Called when the game starts
-void UActorSaveHandlerComponent::BeginPlay()
+void UActorSaveManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
+void UActorSaveManagerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 {
 	OutSaves.Empty();
 
@@ -80,7 +80,7 @@ void UActorSaveHandlerComponent::SaveActors(TArray<FActorSaveData>& OutSaves)
 	}
 }
 
-void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSaves, const int32& SaveFileVersion)
+void UActorSaveManagerComponent::LoadActors(const TArray<FActorSaveData>& InSaves, const int32& SaveFileVersion)
 {
 	for (const FActorSaveData& ActorData : InSaves)
 	{
@@ -126,7 +126,7 @@ void UActorSaveHandlerComponent::LoadActors(const TArray<FActorSaveData>& InSave
 	}
 }
 
-TArray<FActorComponentSaveData> UActorSaveHandlerComponent::FindComponentsByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* ClassToFind)
+TArray<FActorComponentSaveData> UActorSaveManagerComponent::FindComponentsByClass(const TArray<FActorComponentSaveData>& ComponentSaveList, UClass* ClassToFind)
 {
 	TArray<FActorComponentSaveData> SortedList;
 
@@ -142,7 +142,7 @@ TArray<FActorComponentSaveData> UActorSaveHandlerComponent::FindComponentsByClas
 	return SortedList;
 }
 
-FActorComponentSaveData UActorSaveHandlerComponent::FindComponentDataByName(const TArray<FActorComponentSaveData>& ComponentSaveList, const FName& ComponentName, UClass* ComponentClass)
+FActorComponentSaveData UActorSaveManagerComponent::FindComponentDataByName(const TArray<FActorComponentSaveData>& ComponentSaveList, const FName& ComponentName, UClass* ComponentClass)
 {
 	for (const FActorComponentSaveData& ComponentData : ComponentSaveList)
 	{
@@ -157,7 +157,7 @@ FActorComponentSaveData UActorSaveHandlerComponent::FindComponentDataByName(cons
 	return FActorComponentSaveData();
 }
 
-UClass* UActorSaveHandlerComponent::FindSavableObjectClassUsingIdentifier(const FName& Identifier)
+UClass* UActorSaveManagerComponent::FindSavableObjectClassUsingIdentifier(const FName& Identifier)
 {
 	if (DT_SavableObjectDefinitions == nullptr)
 	{
@@ -177,7 +177,7 @@ UClass* UActorSaveHandlerComponent::FindSavableObjectClassUsingIdentifier(const 
 	return ObjectDefinition->Class.Get();
 }
 
-void UActorSaveHandlerComponent::FixSaveCompatibility(AActor* ActorToFix, const int32& OldSaveFileVersion)
+void UActorSaveManagerComponent::FixSaveCompatibility(AActor* ActorToFix, const int32& OldSaveFileVersion)
 {
 	// Sea Level Change
 	if (OldSaveFileVersion <= 0)
