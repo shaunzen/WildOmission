@@ -21,13 +21,14 @@ public:
 	UFUNCTION()
 	void Generate();
 
-	UFUNCTION()
-	void Save(TArray<struct FChunkSaveData>& ChunkData);
-
-	UFUNCTION()
-	void Load(const TArray<struct FChunkSaveData>& ChunkData);
-
 	FOnWorldGenerationCompleteSignature OnWorldGenerationComplete;
+
+	void AddChunk(class AChunk* ChunkToAdd);
+	void RemoveChunk(class AChunk* ChunkToRemove);
+	void ClearChunks();
+
+	TArray<class AChunk*> GetChunks() const;
+	UClass* GetChunkClass() const;
 
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
@@ -43,7 +44,7 @@ private:
 	UPROPERTY()
 	TSubclassOf<class AChunk> ChunkClass;
 
-	TArray<AChunk*> Chunks;
+	TArray<class AChunk*> Chunks;
 
 	UFUNCTION()
 	void GenerateChunks();

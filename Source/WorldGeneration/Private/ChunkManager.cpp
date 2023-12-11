@@ -59,59 +59,33 @@ void AChunkManager::Generate()
 	GetWorld()->GetTimerManager().SetTimer(GenerationTimerHandle, GenerationTimerDelegate, 1.0f, false);	
 }
 
-void AChunkManager::Save(TArray<FChunkSaveData>& ChunkData)
+void AChunkManager::AddChunk(AChunk* ChunkToAdd)
 {
-	ChunkData.Empty();
-
-	for (AChunk* Chunk : Chunks)
-	{
-		if (!IsValid(Chunk))
-		{
-			continue;
-		}
-
-		FChunkSaveData SaveData;
-
-		FMemoryWriter MemoryWriter(SaveData.ByteData);
-		FObjectAndNameAsStringProxyArchive Archive(MemoryWriter, true);
-		Archive.ArIsSaveGame = true;
-
-		Chunk->Serialize(Archive);
-
-		SaveData.GridLocation = Chunk->GetChunkLocation();
-
-
-		
-		ChunkData.Add(SaveData);
-	}
+	Chunks.Add(ChunkToAdd);
 }
 
-void AChunkManager::Load(const TArray<FChunkSaveData>& ChunkData)
+void AChunkManager::RemoveChunk(AChunk* ChunkToRemove)
 {
+	Chunks.Remove(ChunkToRemove);
+}
 
-	for (const FChunkSaveData& SaveData : ChunkData)
-	{
-		const FVector ChunkLocation(SaveData.GridLocation.X * 1600.0f, SaveData.GridLocation.Y * 1600.0f, 0.0f);
-		AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
+void AChunkManager::ClearChunks()
+{
+	Chunks.Empty();
+}
 
-		// TODO Load values from save
-		FMemoryReader MemoryReader(SaveData.ByteData);
-		
-		FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);
-		Archive.ArIsSaveGame = true;
+TArray<class AChunk*> AChunkManager::GetChunks() const
+{
+	return Chunks;
+}
 
-		SpawnedChunk->Serialize(Archive);
-
-		SpawnedChunk->OnLoadFromSaveComplete();
-
-		Chunks.Add(SpawnedChunk);
-	}
-	
+UClass* AChunkManager::GetChunkClass() const
+{
+	return ChunkClass;
 }
 
 void AChunkManager::GenerateChunks()
 {
-
 	const int32 WorldSize = 10;
 	const int32 Seed = FMath::RandRange(0, 999999999);
 	AChunk::SetGenerationSeed(999999999);
