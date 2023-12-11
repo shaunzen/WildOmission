@@ -6,11 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "SaveManager.generated.h"
 
-class UWildOmissionSaveGame;
-class UActorSaveManagerComponent;
-class UPlayerSaveManagerComponent;
-class IGameSaveLoadController;
-
 UCLASS()
 class SAVESYSTEM_API ASaveManager : public AActor
 {
@@ -20,7 +15,7 @@ public:
 	// Sets default values for this actor's properties
 	ASaveManager();
 
-	void SetGameSaveLoadController(IGameSaveLoadController* InGameSaveLoadController);
+	void SetGameSaveLoadController(class IGameSaveLoadController* InGameSaveLoadController);
 
 	static ASaveManager* GetSaveManager();
 
@@ -28,10 +23,10 @@ public:
 	void SetSaveFile(const FString& SaveFileName);
 	void LoadWorld();
 
-	void UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile);
+	void UpdateSaveFile(class UWildOmissionSaveGame* UpdatedSaveFile);
 
-	UPlayerSaveManagerComponent* GetPlayerManager() const;
-	UWildOmissionSaveGame* GetSaveFile() const;
+	class UPlayerSaveManagerComponent* GetPlayerManager() const;
+	class UWildOmissionSaveGame* GetSaveFile() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,12 +36,15 @@ private:
 	FString CurrentSaveFileName;
 
 	UPROPERTY(VisibleAnywhere)
-	UActorSaveManagerComponent* ActorSaveManagerComponent;
+	class UChunkSaveManagerComponent* ChunkSaveManagerComponent;
+	
+	UPROPERTY(VisibleAnywhere)
+	class UActorSaveManagerComponent* ActorSaveManagerComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UPlayerSaveManagerComponent* PlayerSaveManagerComponent;
+	class UPlayerSaveManagerComponent* PlayerSaveManagerComponent;
 
-	IGameSaveLoadController* GameSaveLoadController;
+	class IGameSaveLoadController* GameSaveLoadController;
 
 	void ValidateSave();
 
@@ -54,7 +52,7 @@ private:
 	void MarkSaveGenerated();
 
 	UPROPERTY()
-	UWildOmissionSaveGame* CurrentSaveFile;
+	class UWildOmissionSaveGame* CurrentSaveFile;
 
 	UFUNCTION()
 	void StartLoading();

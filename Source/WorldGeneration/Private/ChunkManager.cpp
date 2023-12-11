@@ -3,7 +3,6 @@
 
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
-#include "Structs/ChunkSaveData.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"

@@ -2,6 +2,7 @@
 
 
 #include "SaveManager.h"
+#include "Components/ChunkSaveManagerComponent.h"
 #include "Components/ActorSaveManagerComponent.h"
 #include "Components/PlayerSaveManagerComponent.h"
 #include "ChunkManager.h"
@@ -22,6 +23,7 @@ ASaveManager::ASaveManager()
 	GameSaveLoadController = nullptr;
 	CurrentSaveFile = nullptr;
 
+	ChunkSaveManagerComponent = CreateDefaultSubobject<UChunkSaveManagerComponent>(TEXT("ChunkSaveManagerComponent"));
 	ActorSaveManagerComponent = CreateDefaultSubobject<UActorSaveManagerComponent>(TEXT("ActorSaveManagerComponent"));
 	PlayerSaveManagerComponent = CreateDefaultSubobject<UPlayerSaveManagerComponent>(TEXT("PlayerSaveManagerComponent"));
 }
@@ -57,8 +59,10 @@ void ASaveManager::SaveGame()
 	if (ChunkManager)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Saving Chunks to save file."));
-		ChunkManager->Save(SaveFile->ChunkSaveData);
+		//ChunkManager->Save(SaveFile->ChunkSaveData);
 	}
+
+	// TODO ChunkComponent->Save();
 
 	//ActorSaveManagerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveManagerComponent->Save(SaveFile->PlayerSaveData);
@@ -104,10 +108,11 @@ void ASaveManager::LoadWorld()
 	
 	SetLoadingSubtitle(TEXT("Loading objects."));
 	
+	// TODO ChunkComponent->Load();
 	if (ChunkManager)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Chunks are being loaded from save."))
-		ChunkManager->Load(SaveFile->ChunkSaveData);
+		//ChunkManager->Load(SaveFile->ChunkSaveData);
 	}
 
 	FTimerHandle ActorLoadedTimerHandle;
