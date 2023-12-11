@@ -112,7 +112,8 @@ void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataL
 			{
 				continue;
 			}
-
+			const float Yaw = FMath::RandRange(0.0f, 360.0f);
+			SpawnTransform.SetRotation(FRotator(0.0f, Yaw, 0.0f).Quaternion());
 			AActor* SpawnedResource = GetWorld()->SpawnActor<AActor>(SpawnData.BlueprintClass, SpawnTransform);
 			SpawnedResource->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 		}
