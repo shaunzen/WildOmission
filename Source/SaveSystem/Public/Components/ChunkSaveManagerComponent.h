@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "ChunkSaveManagerComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWorldGenerationCompletedSignature);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SAVESYSTEM_API UChunkSaveManagerComponent : public UActorComponent
 {
@@ -14,6 +16,15 @@ class SAVESYSTEM_API UChunkSaveManagerComponent : public UActorComponent
 public:	
 	UChunkSaveManagerComponent();
 
+	void Generate();
+	FOnWorldGenerationCompletedSignature OnWorldGenerationCompleted;
+
+	void Save(TArray<struct FChunkSaveData>& OutData);
+	void Load(const TArray<struct FChunkSaveData>& InData);
+
 private:
+
+	UFUNCTION()
+	void BroadcastGenerationCompleted();
 
 };

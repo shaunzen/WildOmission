@@ -5,7 +5,6 @@
 #include "Components/ChunkSaveManagerComponent.h"
 #include "Components/ActorSaveManagerComponent.h"
 #include "Components/PlayerSaveManagerComponent.h"
-#include "ChunkManager.h"
 #include "TimeOfDayManager.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
@@ -55,15 +54,7 @@ void ASaveManager::SaveGame()
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayManager->GetNormalizedProgressThroughDay();
 	}
 
-	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
-	if (ChunkManager)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Saving Chunks to save file."));
-		//ChunkManager->Save(SaveFile->ChunkSaveData);
-	}
-
-	// TODO ChunkComponent->Save();
-
+	ChunkSaveManagerComponent->Save(SaveFile->ChunkSaveData);
 	//ActorSaveManagerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveManagerComponent->Save(SaveFile->PlayerSaveData);
 	
@@ -89,13 +80,13 @@ void ASaveManager::LoadWorld()
 		return;
 	}
 
-	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
-	if (ChunkManager && SaveFile->CreationInformation.LevelHasGenerated == false)
+	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
 		UE_LOG(LogTemp, Warning, TEXT("Chunks missing, generating new ones."));
-		ChunkManager->Generate();
-		ChunkManager->OnWorldGenerationComplete.AddDynamic(this, &ASaveManager::MarkSaveGenerated);
+		
+		ChunkSaveManagerComponent->OnWorldGenerationCompleted.AddDynamic(this, &ASaveManager::MarkSaveGenerated);
+		ChunkSaveManagerComponent->Generate();
 		return;
 	}
 
@@ -108,12 +99,7 @@ void ASaveManager::LoadWorld()
 	
 	SetLoadingSubtitle(TEXT("Loading objects."));
 	
-	// TODO ChunkComponent->Load();
-	if (ChunkManager)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Chunks are being loaded from save."))
-		//ChunkManager->Load(SaveFile->ChunkSaveData);
-	}
+	ChunkSaveManagerComponent->Load(SaveFile->ChunkSaveData);
 
 	FTimerHandle ActorLoadedTimerHandle;
 	FTimerDelegate ActorLoadedDelegate;
