@@ -99,7 +99,7 @@ void ASaveManager::LoadWorld()
 	
 	SetLoadingSubtitle(TEXT("Loading objects."));
 	
-	ChunkSaveManagerComponent->Load(SaveFile->ChunkSaveData);
+	ChunkSaveManagerComponent->Load(SaveFile->ChunkSaveData, SaveFile->Version);
 
 	FTimerHandle ActorLoadedTimerHandle;
 	FTimerDelegate ActorLoadedDelegate;
