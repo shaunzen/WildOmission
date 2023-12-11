@@ -8,7 +8,7 @@
 #include "ChunkSaveData.generated.h"
 
 USTRUCT()
-struct WORLDGENERATION_API FChunkSaveData
+struct FChunkSaveData
 {
 	GENERATED_BODY()
 

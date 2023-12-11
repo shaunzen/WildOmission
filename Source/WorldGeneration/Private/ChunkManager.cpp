@@ -79,6 +79,8 @@ void AChunkManager::Save(TArray<FChunkSaveData>& ChunkData)
 		Chunk->Serialize(Archive);
 
 		SaveData.GridLocation = Chunk->GetChunkLocation();
+
+
 		
 		ChunkData.Add(SaveData);
 	}
