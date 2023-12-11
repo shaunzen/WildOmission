@@ -72,14 +72,7 @@ private:
 	TArray<struct FProcMeshTangent> Tangents;
 
 	void GenerateTerrain();
-	void GenerateTrees();
-	void GenerateNodes();
-
-	UPROPERTY()
-	TArray<AActor*> Trees;
-
-	UPROPERTY()
-	TArray<AActor*> Nodes;
+	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform);
 

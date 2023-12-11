@@ -6,6 +6,7 @@
 #include "Noise/PerlinNoise.hpp"
 #include "ProceduralMeshComponent.h"
 #include "KismetProceduralMeshLibrary.h"
+#include "UObject/ConstructorHelpers.h"
 
 static siv::PerlinNoise Noise(10);
 
@@ -28,6 +29,15 @@ AChunk::AChunk()
 	UVScale = 1.0f;
 	Material = nullptr;
 
+	if (GetWorld())
+	{
+		static ConstructorHelpers::FObjectFinder<UMaterialInterface> TerrainMaterial(TEXT("/Game/WorldGeneration/M_Terrain"));
+		if (TerrainMaterial.Succeeded())
+		{
+			Material = TerrainMaterial.Object;
+		}
+	}
+
 	Tags.Add(TEXT("Ground"));
 }
 
@@ -35,8 +45,15 @@ void AChunk::Generate(const FIntVector2& InLocation)
 {
 	GridLocation = InLocation;
 	GenerateTerrain();
-	GenerateTrees();
-	GenerateNodes();
+
+	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
+	if (Biome)
+	{
+		GenerateSpawnableActors(Biome->Trees);
+		GenerateSpawnableActors(Biome->Nodes);
+		GenerateSpawnableActors(Biome->Collectables);
+		GenerateSpawnableActors(Biome->Lootables);
+	}
 }
 
 void AChunk::OnLoadFromSaveComplete()
@@ -83,6 +100,25 @@ void AChunk::GenerateTerrain()
 	CreateMesh();	
 }
 
+void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList)
+{
+	for (const FSpawnData& SpawnData : SpawnDataList)
+	{
+		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((Size * SpawnData.DensityPerMeter) / SpawnDataList.Num());
+		for (int32 i = 0; i < AmountOfResourceToSpawn; i++)
+		{
+			FTransform SpawnTransform;
+			if (!GetRandomPointOnTerrain(SpawnTransform))
+			{
+				continue;
+			}
+
+			AActor* SpawnedResource = GetWorld()->SpawnActor<AActor>(SpawnData.BlueprintClass, SpawnTransform);
+			SpawnedResource->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+		}
+	}
+}
+
 void AChunk::CreateVerticies()
 {
 	const uint32 Seed = 10; //= FMath::RandRange(0, 1000000);
@@ -126,56 +162,6 @@ void AChunk::CreateMesh()
 
 	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UV0, TArray<FColor>(), Tangents, true);
 	MeshComponent->SetMaterial(0, Material);
-}
-
-void AChunk::GenerateTrees()
-{
-	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
-	if (Biome == nullptr)
-	{
-		return;
-	}
-	
-	for (const FSpawnData& Resource : Biome->Trees)
-	{
-		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((Size * Resource.DensityPerMeter) / Biome->Trees.Num());
-		for (int32 i = 0; i < AmountOfResourceToSpawn; i++)
-		{
-			FTransform SpawnTransform;
-			if (!GetRandomPointOnTerrain(SpawnTransform))
-			{
-				continue;
-			}
-
-			AActor* SpawnedResource = GetWorld()->SpawnActor<AActor>(Resource.BlueprintClass, SpawnTransform);
-			Trees.Add(SpawnedResource);
-		}
-	}
-}
-
-void AChunk::GenerateNodes()
-{
-	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
-	if (Biome == nullptr)
-	{
-		return;
-	}
-
-	for (const FSpawnData& Resource : Biome->Nodes)
-	{
-		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((Size * Resource.DensityPerMeter) / Biome->Nodes.Num());
-		for (int32 i = 0; i < AmountOfResourceToSpawn; i++)
-		{
-			FTransform SpawnTransform;
-			if (!GetRandomPointOnTerrain(SpawnTransform))
-			{
-				continue;
-			}
-
-			AActor* SpawnedResource = GetWorld()->SpawnActor<AActor>(Resource.BlueprintClass, SpawnTransform);
-			Nodes.Add(SpawnedResource);
-		}
-	}
 }
 
 bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
