@@ -10,7 +10,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
-static UDataTable* DT_SavableObjectDefinitions = nullptr;
+//static UDataTable* DT_SavableObjectDefinitions = nullptr;
 
 // Sets default values for this component's properties
 UActorSaveManagerComponent::UActorSaveManagerComponent()
@@ -19,11 +19,11 @@ UActorSaveManagerComponent::UActorSaveManagerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> SavableObjectDefinitionsBlueprint(TEXT("/Game/SaveSystem/DataTables/DT_SavableObjectDefinitions"));
+	/*static ConstructorHelpers::FObjectFinder<UDataTable> SavableObjectDefinitionsBlueprint(TEXT("/Game/SaveSystem/DataTables/DT_SavableObjectDefinitions"));
 	if (SavableObjectDefinitionsBlueprint.Succeeded())
 	{
 		DT_SavableObjectDefinitions = SavableObjectDefinitionsBlueprint.Object;
-	}
+	}*/
 }
 
 // Called when the game starts
@@ -160,7 +160,7 @@ FActorComponentSaveData UActorSaveManagerComponent::FindComponentDataByName(cons
 
 UClass* UActorSaveManagerComponent::FindSavableObjectClassUsingIdentifier(const FName& Identifier)
 {
-	if (DT_SavableObjectDefinitions == nullptr)
+	/*if (DT_SavableObjectDefinitions == nullptr)
 	{
 		UE_LOG(LogSaveSystem, Error, TEXT("SavableObjectDefinitions DataTable is nullptr."));
 		return nullptr;
@@ -173,9 +173,9 @@ UClass* UActorSaveManagerComponent::FindSavableObjectClassUsingIdentifier(const 
 	{
 		UE_LOG(LogSaveSystem, Warning, TEXT("Couldn't find SavableObjectDefinition for %s."), *Identifier.ToString());
 		return nullptr;
-	}
+	}*/
 
-	return ObjectDefinition->Class.Get();
+	return nullptr; //ObjectDefinition->Class.Get();
 }
 
 void UActorSaveManagerComponent::FixSaveCompatibility(AActor* ActorToFix, const int32& OldSaveFileVersion)

@@ -22,7 +22,7 @@ public:
 	void OnLoadFromSaveComplete();
 
 	static void SetGenerationSeed(const uint32& Seed);
-
+	static float GetTerrainHeightAtLocation(const FVector2D& Location, float Scale = 1.0f);
 	FIntVector2 GetChunkLocation() const;
 
 	uint32 GetSize() const;

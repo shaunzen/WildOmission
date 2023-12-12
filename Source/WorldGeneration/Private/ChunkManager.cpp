@@ -85,9 +85,9 @@ UClass* AChunkManager::GetChunkClass() const
 
 void AChunkManager::GenerateChunks()
 {
-	const int32 WorldSize = 10;
+	const int32 WorldSize = 50;
 	const int32 Seed = FMath::RandRange(0, 999999999);
-	AChunk::SetGenerationSeed(999999999);
+	AChunk::SetGenerationSeed(Seed);
 	
 	UE_LOG(LogTemp, Warning, TEXT("Generating Terrain with seed %i"), Seed);
 

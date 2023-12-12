@@ -70,6 +70,19 @@ void AChunk::SetGenerationSeed(const uint32& Seed)
 	Noise.reseed(Seed);
 }
 
+float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float Scale)
+{
+	const float MajorScale = 0.005f;
+	const float MinorScale = 0.1f;
+	const float RoughnessScale = 0.2f;
+	const float MajorHeight = Noise.noise2D(Location.X * MajorScale, Location.Y * MajorScale) * 10000.0f;
+	const float MinorHeight = Noise.noise2D(Location.X * MinorScale, Location.Y * MinorScale) * 100.0f;
+	const float RoughnessHeight = Noise.octave2D(Location.X * RoughnessScale, Location.Y * RoughnessScale, 3) * 10.0f;
+
+	return MajorHeight + MinorHeight + RoughnessHeight;
+	//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
+}
+
 FIntVector2 AChunk::GetChunkLocation() const
 {
 	return GridLocation;
@@ -128,9 +141,10 @@ void AChunk::CreateVerticies()
 	{
 		for (uint32 Y = 0; Y <= Size; ++Y)
 		{
-			const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
+			//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
 			//const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
-			Verticies.Add(FVector(X * Scale, Y * Scale, NewZ));
+			const float Z = GetTerrainHeightAtLocation(FVector2D(X + Location.X, Y + Location.Y));
+			Verticies.Add(FVector(X * Scale, Y * Scale, Z));
 			UV0.Add(FVector2D(X * UVScale, Y * UVScale));
 		}
 	}
