@@ -96,7 +96,7 @@ void AChunkManager::GenerateChunks()
 		for (int32 Y = 0; Y < WorldSize; ++Y)
 		{
 			// generate chunk
-			const FVector ChunkLocation(X * 1600.0f, Y * 1600.0f, 0.0f);
+			const FVector ChunkLocation(X * AChunk::GetChunkSize() * AChunk::GetVertexDistanceScale(), Y * AChunk::GetChunkSize() * AChunk::GetVertexDistanceScale(), 0.0f);
 			AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
 			SpawnedChunk->Generate(FIntVector2(X, Y));
 			Chunks.Add(SpawnedChunk);

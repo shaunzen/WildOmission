@@ -25,7 +25,8 @@ public:
 	static float GetTerrainHeightAtLocation(const FVector2D& Location, float Scale = 1.0f);
 	FIntVector2 GetChunkLocation() const;
 
-	uint32 GetSize() const;
+	static uint32 GetChunkSize();
+	static float GetVertexDistanceScale();
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,17 +39,12 @@ private:
 	UPROPERTY(SaveGame)
 	FIntVector2 GridLocation;
 
-	UPROPERTY(EditAnywhere)
-	uint32 Size;
-
+	// Begin these will be biome specific
 	UPROPERTY(EditAnywhere)
 	float ZScale;
-
 	UPROPERTY(EditAnywhere)
 	float NoiseScale;
-
-	UPROPERTY(EditAnywhere)
-	float Scale;
+	// End these will be biome specific
 
 	UPROPERTY(EditAnywhere)
 	float UVScale;
