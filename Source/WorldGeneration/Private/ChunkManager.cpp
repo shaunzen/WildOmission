@@ -38,11 +38,15 @@ void AChunkManager::Tick(float DeltaTime)
 	// Get Player Location
 	const FVector PlayerLocation = GetFirstPlayerLocation();
 
-	FChunkPosition PlayerCurrentChunk(PlayerLocation.X / AChunk::GetVertexDistanceScale(), PlayerLocation.Y / AChunk::GetVertexDistanceScale());
+	FChunkPosition PlayerCurrentChunk(PlayerLocation.X / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()), PlayerLocation.Y / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()));
 
+
+
+	UE_LOG(LogTemp, Warning, TEXT("Player Chunk Location: %s"), *FString::Printf(TEXT("X: %i, Y: %i"), PlayerCurrentChunk.X, PlayerCurrentChunk.Y));
 	if (!GeneratedChunks.Contains(PlayerCurrentChunk))
 	{
 		const FVector ChunkLocation(PlayerCurrentChunk.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), PlayerCurrentChunk.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
+		UE_LOG(LogTemp, Warning, TEXT("Chunk Location: %s"), *ChunkLocation.ToString());
 		AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
 		SpawnedChunk->Generate(FIntVector2(PlayerCurrentChunk.X, PlayerCurrentChunk.Y));
 		Chunks.Add(SpawnedChunk);
