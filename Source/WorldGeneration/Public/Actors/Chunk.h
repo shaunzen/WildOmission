@@ -25,7 +25,7 @@ public:
 	static float GetTerrainHeightAtLocation(const FVector2D& Location, float Scale = 1.0f);
 	FIntVector2 GetChunkLocation() const;
 
-	static uint32 GetChunkSize();
+	static uint32 GetVertexSize();
 	static float GetVertexDistanceScale();
 
 protected:

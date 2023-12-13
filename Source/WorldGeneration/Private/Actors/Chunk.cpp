@@ -9,7 +9,7 @@
 #include "UObject/ConstructorHelpers.h"
 
 static siv::PerlinNoise Noise(10);
-const static uint32 CHUNK_SIZE = 16;
+const static uint32 VERTEX_SIZE = 16;
 const static float VERTEX_DISTANCE_SCALE = 100.0f;
 
 // Sets default values
@@ -88,9 +88,9 @@ FIntVector2 AChunk::GetChunkLocation() const
 	return GridLocation;
 }
 
-uint32 AChunk::GetChunkSize()
+uint32 AChunk::GetVertexSize()
 {
-	return CHUNK_SIZE;
+	return VERTEX_SIZE;
 }
 
 float AChunk::GetVertexDistanceScale()
@@ -122,7 +122,7 @@ void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataL
 {
 	for (const FSpawnData& SpawnData : SpawnDataList)
 	{
-		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((CHUNK_SIZE * SpawnData.DensityPerMeter) / SpawnDataList.Num());
+		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((VERTEX_SIZE * SpawnData.DensityPerMeter) / SpawnDataList.Num());
 		for (int32 i = 0; i < AmountOfResourceToSpawn; i++)
 		{
 			FTransform SpawnTransform;
@@ -141,14 +141,17 @@ void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataL
 void AChunk::CreateVerticies()
 {
 	const FVector Location = GetActorLocation() * 0.01f;
-	for (uint32 X = 0; X <= CHUNK_SIZE; ++X)
+	for (uint32 X = 0; X <= VERTEX_SIZE; ++X)
 	{
-		for (uint32 Y = 0; Y <= CHUNK_SIZE; ++Y)
+		for (uint32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
 			//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
 			//const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
 			const float Z = GetTerrainHeightAtLocation(FVector2D(X + Location.X, Y + Location.Y));
-			Verticies.Add(FVector(X * VERTEX_DISTANCE_SCALE, Y * VERTEX_DISTANCE_SCALE, Z));
+
+			const float Offset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
+
+			Verticies.Add(FVector((X * VERTEX_DISTANCE_SCALE) - Offset, (Y * VERTEX_DISTANCE_SCALE) - Offset, Z));
 			UV0.Add(FVector2D(X * UVScale, Y * UVScale));
 		}
 	}
@@ -157,17 +160,17 @@ void AChunk::CreateVerticies()
 void AChunk::CreateTriangles()
 {
 	uint32 Vertex = 0;
-	for (uint32 X = 0; X < CHUNK_SIZE; ++X)
+	for (uint32 X = 0; X < VERTEX_SIZE; ++X)
 	{
-		for (uint32 Y = 0; Y < CHUNK_SIZE; ++Y)
+		for (uint32 Y = 0; Y < VERTEX_SIZE; ++Y)
 		{
 			Triangles.Add(Vertex);
 			Triangles.Add(Vertex + 1);
-			Triangles.Add(Vertex + CHUNK_SIZE + 1);
+			Triangles.Add(Vertex + VERTEX_SIZE + 1);
 
 			Triangles.Add(Vertex + 1);
-			Triangles.Add(Vertex + CHUNK_SIZE + 2);
-			Triangles.Add(Vertex + CHUNK_SIZE + 1);
+			Triangles.Add(Vertex + VERTEX_SIZE + 2);
+			Triangles.Add(Vertex + VERTEX_SIZE + 1);
 
 			++Vertex;
 		}

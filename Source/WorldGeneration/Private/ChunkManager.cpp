@@ -10,11 +10,13 @@
 static AChunkManager* Instance = nullptr;
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
+const static uint8 RENDER_DISTANCE = 12;
+
 // Sets default values
 AChunkManager::AChunkManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
 	if (BiomeDataTableBlueprint.Succeeded())
@@ -29,10 +31,36 @@ AChunkManager::AChunkManager()
 	}
 }
 
+void AChunkManager::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// Get Player Location
+	const FVector PlayerLocation = GetFirstPlayerLocation();
+
+	FChunkPosition PlayerCurrentChunk(PlayerLocation.X / AChunk::GetVertexDistanceScale(), PlayerLocation.Y / AChunk::GetVertexDistanceScale());
+
+	if (!GeneratedChunks.Contains(PlayerCurrentChunk))
+	{
+		const FVector ChunkLocation(PlayerCurrentChunk.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), PlayerCurrentChunk.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
+		AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
+		SpawnedChunk->Generate(FIntVector2(PlayerCurrentChunk.X, PlayerCurrentChunk.Y));
+		Chunks.Add(SpawnedChunk);
+
+		GeneratedChunks.Add(PlayerCurrentChunk);
+	}
+
+	//const int32 WorldSize = 50;
+
+}
+
 // Called when the game starts or when spawned
 void AChunkManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	const int32 Seed = FMath::RandRange(0, 999999999);
+	AChunk::SetGenerationSeed(Seed);
 
 	UWorld* World = GetWorld();
 	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
@@ -83,25 +111,32 @@ UClass* AChunkManager::GetChunkClass() const
 	return ChunkClass;
 }
 
+FVector AChunkManager::GetFirstPlayerLocation() const
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	if (PlayerController == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
+	APawn* PlayerPawn = PlayerController->GetPawn();
+	if (PlayerPawn == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
+	return PlayerPawn->GetActorLocation();
+}
+
 void AChunkManager::GenerateChunks()
 {
-	const int32 WorldSize = 50;
-	const int32 Seed = FMath::RandRange(0, 999999999);
-	AChunk::SetGenerationSeed(Seed);
-	
-	UE_LOG(LogTemp, Warning, TEXT("Generating Terrain with seed %i"), Seed);
 
-	for (int32 X = 0; X < WorldSize; ++X)
-	{
-		for (int32 Y = 0; Y < WorldSize; ++Y)
-		{
-			// generate chunk
-			const FVector ChunkLocation(X * AChunk::GetChunkSize() * AChunk::GetVertexDistanceScale(), Y * AChunk::GetChunkSize() * AChunk::GetVertexDistanceScale(), 0.0f);
-			AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
-			SpawnedChunk->Generate(FIntVector2(X, Y));
-			Chunks.Add(SpawnedChunk);
-		}
-	}
 
 	if (OnWorldGenerationComplete.IsBound())
 	{

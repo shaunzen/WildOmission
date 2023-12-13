@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Structs/BiomeGenerationData.h"
+#include "Structs/ChunkPosition.h"
 #include "ChunkManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWorldGenerationCompleteSignature);
@@ -17,6 +18,8 @@ class WORLDGENERATION_API AChunkManager : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AChunkManager();
+
+	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
 	void Generate();
@@ -45,6 +48,10 @@ private:
 	TSubclassOf<class AChunk> ChunkClass;
 
 	TArray<class AChunk*> Chunks;
+
+	TArray<FChunkPosition> GeneratedChunks;
+
+	FVector GetFirstPlayerLocation() const;
 
 	UFUNCTION()
 	void GenerateChunks();
