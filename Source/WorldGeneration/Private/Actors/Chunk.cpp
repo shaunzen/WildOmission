@@ -9,7 +9,7 @@
 #include "UObject/ConstructorHelpers.h"
 
 static siv::PerlinNoise Noise(10);
-const static uint32 VERTEX_SIZE = 16;
+const static int32 VERTEX_SIZE = 16;
 const static float VERTEX_DISTANCE_SCALE = 100.0f;
 
 // Sets default values
@@ -88,7 +88,7 @@ FIntVector2 AChunk::GetChunkLocation() const
 	return GridLocation;
 }
 
-uint32 AChunk::GetVertexSize()
+int32 AChunk::GetVertexSize()
 {
 	return VERTEX_SIZE;
 }

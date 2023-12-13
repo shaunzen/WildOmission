@@ -40,19 +40,25 @@ void AChunkManager::Tick(float DeltaTime)
 
 	FChunkPosition PlayerCurrentChunk(PlayerLocation.X / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()), PlayerLocation.Y / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()));
 
+	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
+	{
+		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
+		{
+			const FChunkPosition RenderChunk(RenderX + PlayerCurrentChunk.X, RenderY + PlayerCurrentChunk.Y);
+			if (!GeneratedChunks.Contains(RenderChunk))
+			{
+				const FVector ChunkLocation(RenderChunk.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), RenderChunk.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
+				UE_LOG(LogTemp, Warning, TEXT("Chunk Location: %s"), *ChunkLocation.ToString());
+				AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
+				SpawnedChunk->Generate(FIntVector2(RenderChunk.X, RenderChunk.Y));
+				Chunks.Add(SpawnedChunk);
 
+				GeneratedChunks.Add(RenderChunk);
+			}
+		}
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Player Chunk Location: %s"), *FString::Printf(TEXT("X: %i, Y: %i"), PlayerCurrentChunk.X, PlayerCurrentChunk.Y));
-	if (!GeneratedChunks.Contains(PlayerCurrentChunk))
-	{
-		const FVector ChunkLocation(PlayerCurrentChunk.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), PlayerCurrentChunk.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
-		UE_LOG(LogTemp, Warning, TEXT("Chunk Location: %s"), *ChunkLocation.ToString());
-		AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
-		SpawnedChunk->Generate(FIntVector2(PlayerCurrentChunk.X, PlayerCurrentChunk.Y));
-		Chunks.Add(SpawnedChunk);
-
-		GeneratedChunks.Add(PlayerCurrentChunk);
-	}
 
 	//const int32 WorldSize = 50;
 
