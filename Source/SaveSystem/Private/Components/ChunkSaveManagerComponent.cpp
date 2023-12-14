@@ -38,6 +38,7 @@ void UChunkSaveManagerComponent::Generate()
 	ChunkManager->Generate();
 }
 
+// this will only be called when chunk manager requests a save of a specific chunk
 void UChunkSaveManagerComponent::Save(TArray<FChunkData>& OutData)
 {
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
@@ -48,68 +49,68 @@ void UChunkSaveManagerComponent::Save(TArray<FChunkData>& OutData)
 
 	OutData.Empty();
 
-	TArray<AChunk*> Chunks = ChunkManager->GetChunks();
-	for (AChunk* Chunk : Chunks)
-	{
-		if (!IsValid(Chunk))
-		{
-			continue;
-		}
+	//TSet<AChunk*> Chunks = ChunkManager->GetChunks();
+	//for (AChunk* Chunk : Chunks)
+	//{
+	//	if (!IsValid(Chunk))
+	//	{
+	//		continue;
+	//	}
 
-		FChunkData ChunkSaveData;
-		ChunkSaveData.GridLocation = Chunk->GetChunkLocation();
+	//	FChunkData ChunkSaveData;
+	//	ChunkSaveData.GridLocation = Chunk->GetChunkLocation();
 
-		FMemoryWriter ChunkMemoryWriter(ChunkSaveData.ByteData);
-		FObjectAndNameAsStringProxyArchive ChunkArchive(ChunkMemoryWriter, true);
-		ChunkArchive.ArIsSaveGame = true;
-		Chunk->Serialize(ChunkArchive);
+	//	FMemoryWriter ChunkMemoryWriter(ChunkSaveData.ByteData);
+	//	FObjectAndNameAsStringProxyArchive ChunkArchive(ChunkMemoryWriter, true);
+	//	ChunkArchive.ArIsSaveGame = true;
+	//	Chunk->Serialize(ChunkArchive);
 
-		TArray<AActor*> AttachedActors;
-		Chunk->GetAttachedActors(AttachedActors);
+	//	TArray<AActor*> AttachedActors;
+	//	Chunk->GetAttachedActors(AttachedActors);
 
-		for (AActor* Actor : AttachedActors)
-		{
-			if (!IsValid(Actor) || !Actor->Implements<USavableObject>())
-			{
-				continue;
-			}
+	//	for (AActor* Actor : AttachedActors)
+	//	{
+	//		if (!IsValid(Actor) || !Actor->Implements<USavableObject>())
+	//		{
+	//			continue;
+	//		}
 
-			ISavableObject* SavableObjectActor = Cast<ISavableObject>(Actor);
-			if (SavableObjectActor == nullptr)
-			{
-				UE_LOG(LogSaveSystem, Warning, TEXT("Cannot Cast to SavableObject, Actor: %s"), *Actor->GetActorNameOrLabel());
-				continue;
-			}
+	//		ISavableObject* SavableObjectActor = Cast<ISavableObject>(Actor);
+	//		if (SavableObjectActor == nullptr)
+	//		{
+	//			UE_LOG(LogSaveSystem, Warning, TEXT("Cannot Cast to SavableObject, Actor: %s"), *Actor->GetActorNameOrLabel());
+	//			continue;
+	//		}
 
-			FActorSaveData ActorData;
-			ActorData.Identifier = SavableObjectActor->GetIdentifier();
-			ActorData.Transform = Actor->GetActorTransform();
+	//		FActorSaveData ActorData;
+	//		ActorData.Identifier = SavableObjectActor->GetIdentifier();
+	//		ActorData.Transform = Actor->GetActorTransform();
 
-			FMemoryWriter ActorMemoryWriter(ActorData.ByteData);
-			FObjectAndNameAsStringProxyArchive ActorArchive(ActorMemoryWriter, true);
-			ActorArchive.ArIsSaveGame = true;
-			Actor->Serialize(ActorArchive);
+	//		FMemoryWriter ActorMemoryWriter(ActorData.ByteData);
+	//		FObjectAndNameAsStringProxyArchive ActorArchive(ActorMemoryWriter, true);
+	//		ActorArchive.ArIsSaveGame = true;
+	//		Actor->Serialize(ActorArchive);
 
-			TArray<UActorComponent*> SavableComponents = Actor->GetComponentsByInterface(USavableObject::StaticClass());
-			for (UActorComponent* ActorComponent : SavableComponents)
-			{
-				FActorComponentSaveData ComponentSaveData;
-				ComponentSaveData.Name = ActorComponent->GetFName();
-				ComponentSaveData.Class = ActorComponent->GetClass();
+	//		TArray<UActorComponent*> SavableComponents = Actor->GetComponentsByInterface(USavableObject::StaticClass());
+	//		for (UActorComponent* ActorComponent : SavableComponents)
+	//		{
+	//			FActorComponentSaveData ComponentSaveData;
+	//			ComponentSaveData.Name = ActorComponent->GetFName();
+	//			ComponentSaveData.Class = ActorComponent->GetClass();
 
-				FMemoryWriter ComponentMemoryWriter(ComponentSaveData.ByteData);
-				FObjectAndNameAsStringProxyArchive ComponentArchive(ComponentMemoryWriter, true);
-				ComponentArchive.ArIsSaveGame = true;
-				ActorComponent->Serialize(ComponentArchive);
+	//			FMemoryWriter ComponentMemoryWriter(ComponentSaveData.ByteData);
+	//			FObjectAndNameAsStringProxyArchive ComponentArchive(ComponentMemoryWriter, true);
+	//			ComponentArchive.ArIsSaveGame = true;
+	//			ActorComponent->Serialize(ComponentArchive);
 
-				ActorData.ComponentData.Add(ComponentSaveData);
-			}
+	//			ActorData.ComponentData.Add(ComponentSaveData);
+	//		}
 
-			ChunkSaveData.ActorData.Add(ActorData);
-		}
+	//		ChunkSaveData.ActorData.Add(ActorData);
+	//	}
 
-		OutData.Add(ChunkSaveData);
-	}
+	//	OutData.Add(ChunkSaveData);
+	//}
 }
 
 void UChunkSaveManagerComponent::Load(const TArray<FChunkData>& InData, const int32& SaveFileVersion)

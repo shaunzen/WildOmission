@@ -30,7 +30,7 @@ public:
 	void RemoveChunk(class AChunk* ChunkToRemove);
 	void ClearChunks();
 
-	TArray<class AChunk*> GetChunks() const;
+	TSet<class AChunk*> GetChunks() const;
 	UClass* GetChunkClass() const;
 
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
@@ -47,13 +47,13 @@ private:
 	UPROPERTY()
 	TSubclassOf<class AChunk> ChunkClass;
 
-	TArray<class AChunk*> Chunks;
+	TSet<class AChunk*> SpawnedChunks;
 
-	TArray<FChunkData> ChunkData;
 	// Chunk Data contains stuff like, the grid location for query, the spawn data for actors on that chunk
 	// shape of the terrain, if it has been generated or dormant, just about anything that the system needs 
 	// to know to load/unload the chunk properly. The save system can load its save data into the FChunkData
 	// format for the chunk manager to handle
+	TSet<FChunkData> ChunkData;
 
 	FVector GetFirstPlayerLocation() const;
 

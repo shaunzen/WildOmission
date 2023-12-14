@@ -126,22 +126,22 @@ void AChunkManager::Generate()
 
 void AChunkManager::AddChunk(AChunk* ChunkToAdd)
 {
-	Chunks.Add(ChunkToAdd);
+	SpawnedChunks.Add(ChunkToAdd);
 }
 
 void AChunkManager::RemoveChunk(AChunk* ChunkToRemove)
 {
-	Chunks.Remove(ChunkToRemove);
+	SpawnedChunks.Remove(ChunkToRemove);
 }
 
 void AChunkManager::ClearChunks()
 {
-	Chunks.Empty();
+	SpawnedChunks.Empty();
 }
 
-TArray<class AChunk*> AChunkManager::GetChunks() const
+TSet<class AChunk*> AChunkManager::GetChunks() const
 {
-	return Chunks;
+	return SpawnedChunks;
 }
 
 UClass* AChunkManager::GetChunkClass() const

@@ -18,6 +18,9 @@ struct WORLDGENERATION_API FChunkData
 	FIntVector2 GridLocation;
 
 	UPROPERTY()
+	bool Generated;
+
+	UPROPERTY()
 	TArray<uint8> ByteData;
 
 	UPROPERTY()
