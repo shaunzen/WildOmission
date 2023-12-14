@@ -5,14 +5,14 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Structs/ActorSaveData.h"
-#include "ChunkSaveData.generated.h"
+#include "ChunkData.generated.h"
 
 USTRUCT()
-struct FChunkSaveData
+struct WORLDGENERATION_API FChunkData
 {
 	GENERATED_BODY()
 
-	FChunkSaveData();
+	FChunkData();
 
 	UPROPERTY()
 	FIntVector2 GridLocation;

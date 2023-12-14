@@ -1,9 +1,9 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Structs/ChunkSaveData.h"
+#include "Structs/ChunkData.h"
 
-FChunkSaveData::FChunkSaveData()
+FChunkData::FChunkData()
 {
 	GridLocation = FIntVector2();
 	ByteData = TArray<uint8>();

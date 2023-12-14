@@ -3,7 +3,7 @@
 #include "Components/ChunkSaveManagerComponent.h"
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
-#include "Structs/ChunkSaveData.h"
+#include "Structs/ChunkData.h"
 #include "WildOmissionSaveGame.h"
 #include "Interfaces/SavableObject.h"
 #include "Structs/SavableObjectDefinition.h"
@@ -38,7 +38,7 @@ void UChunkSaveManagerComponent::Generate()
 	ChunkManager->Generate();
 }
 
-void UChunkSaveManagerComponent::Save(TArray<FChunkSaveData>& OutData)
+void UChunkSaveManagerComponent::Save(TArray<FChunkData>& OutData)
 {
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager == nullptr)
@@ -56,7 +56,7 @@ void UChunkSaveManagerComponent::Save(TArray<FChunkSaveData>& OutData)
 			continue;
 		}
 
-		FChunkSaveData ChunkSaveData;
+		FChunkData ChunkSaveData;
 		ChunkSaveData.GridLocation = Chunk->GetChunkLocation();
 
 		FMemoryWriter ChunkMemoryWriter(ChunkSaveData.ByteData);
@@ -112,7 +112,7 @@ void UChunkSaveManagerComponent::Save(TArray<FChunkSaveData>& OutData)
 	}
 }
 
-void UChunkSaveManagerComponent::Load(const TArray<FChunkSaveData>& InData, const int32& SaveFileVersion)
+void UChunkSaveManagerComponent::Load(const TArray<FChunkData>& InData, const int32& SaveFileVersion)
 {
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager == nullptr)
@@ -122,7 +122,7 @@ void UChunkSaveManagerComponent::Load(const TArray<FChunkSaveData>& InData, cons
 
 	ChunkManager->ClearChunks();
 
-	for (const FChunkSaveData& ChunkSaveData : InData)
+	for (const FChunkData& ChunkSaveData : InData)
 	{
 		const FVector ChunkLocation(ChunkSaveData.GridLocation.X * 1600.0f, ChunkSaveData.GridLocation.Y * 1600.0f, 0.0f);
 		AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkManager->GetChunkClass(), ChunkLocation, FRotator::ZeroRotator);

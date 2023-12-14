@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Structs/BiomeGenerationData.h"
-#include "Structs/ChunkPosition.h"
+#include "Structs/ChunkData.h"
 #include "ChunkManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWorldGenerationCompleteSignature);

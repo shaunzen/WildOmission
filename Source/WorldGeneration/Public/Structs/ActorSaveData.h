@@ -7,7 +7,7 @@
 #include "ActorSaveData.generated.h"
 
 USTRUCT()
-struct FActorComponentSaveData
+struct WORLDGENERATION_API FActorComponentSaveData
 {
 	GENERATED_BODY()
 
@@ -24,7 +24,7 @@ struct FActorComponentSaveData
 };
 
 USTRUCT()
-struct FActorSaveData
+struct WORLDGENERATION_API FActorSaveData
 {
 	GENERATED_BODY()
 

@@ -38,57 +38,57 @@ void AChunkManager::Tick(float DeltaTime)
 	// Get Player Location
 	const FVector PlayerLocation = GetFirstPlayerLocation();
 
-	FChunkPosition PlayerCurrentChunk(PlayerLocation.X / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()), PlayerLocation.Y / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()));
-	// this is terrible, please optimize the hell out of this
-	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
-	{
-		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
-		{
-			const FChunkPosition RenderChunk(RenderX + PlayerCurrentChunk.X, RenderY + PlayerCurrentChunk.Y);
-			if (!GeneratedChunks.Contains(RenderChunk))
-			{
-				const FVector ChunkLocation(RenderChunk.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), RenderChunk.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
-				UE_LOG(LogTemp, Warning, TEXT("Chunk Location: %s"), *ChunkLocation.ToString());
-				AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
-				SpawnedChunk->Generate(FIntVector2(RenderChunk.X, RenderChunk.Y));
-				Chunks.Add(SpawnedChunk);
+	//FChunkPosition PlayerCurrentChunk(PlayerLocation.X / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()), PlayerLocation.Y / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()));
+	//// this is terrible, please optimize the hell out of this
+	//for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
+	//{
+	//	for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
+	//	{
+	//		const FChunkPosition RenderChunk(RenderX + PlayerCurrentChunk.X, RenderY + PlayerCurrentChunk.Y);
+	//		if (!GeneratedChunks.Contains(RenderChunk))
+	//		{
+	//			const FVector ChunkLocation(RenderChunk.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), RenderChunk.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
+	//			UE_LOG(LogTemp, Warning, TEXT("Chunk Location: %s"), *ChunkLocation.ToString());
+	//			AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
+	//			SpawnedChunk->Generate(FIntVector2(RenderChunk.X, RenderChunk.Y));
+	//			Chunks.Add(SpawnedChunk);
 
-				GeneratedChunks.Add(RenderChunk);
-			}
-		}
-	}
+	//			GeneratedChunks.Add(RenderChunk);
+	//		}
+	//	}
+	//}
 
-	//const FChunkPosition OutOfRangeTopRight(PlayerCurrentChunk.X + -RENDER_DISTANCE, PlayerCurrentChunk.Y + RENDER_DISTANCE);
-	//const FChunkPosition OutOfRangeBottomLeft(PlayerCurrentChunk.X + RENDER_DISTANCE, PlayerCurrentChunk.Y + -RENDER_DISTANCE);
-	const int32 MinX = PlayerCurrentChunk.X - RENDER_DISTANCE;
-	const int32 MinY = PlayerCurrentChunk.Y - RENDER_DISTANCE;
-	const int32 MaxX = PlayerCurrentChunk.X + RENDER_DISTANCE;
-	const int32 MaxY = PlayerCurrentChunk.Y + RENDER_DISTANCE;
+	////const FChunkPosition OutOfRangeTopRight(PlayerCurrentChunk.X + -RENDER_DISTANCE, PlayerCurrentChunk.Y + RENDER_DISTANCE);
+	////const FChunkPosition OutOfRangeBottomLeft(PlayerCurrentChunk.X + RENDER_DISTANCE, PlayerCurrentChunk.Y + -RENDER_DISTANCE);
+	//const int32 MinX = PlayerCurrentChunk.X - RENDER_DISTANCE;
+	//const int32 MinY = PlayerCurrentChunk.Y - RENDER_DISTANCE;
+	//const int32 MaxX = PlayerCurrentChunk.X + RENDER_DISTANCE;
+	//const int32 MaxY = PlayerCurrentChunk.Y + RENDER_DISTANCE;
 
-	UE_LOG(LogTemp, Warning, TEXT("MinX %i, MinY %i, MaxX %i, MaxY %i"), MinX, MinY, MaxX, MaxY);
+	//UE_LOG(LogTemp, Warning, TEXT("MinX %i, MinY %i, MaxX %i, MaxY %i"), MinX, MinY, MaxX, MaxY);
 
-	for (const FChunkPosition& ChunkPosition : GeneratedChunks)
-	{
-		if (ChunkPosition.X > MinX && ChunkPosition.X < MaxX &&
-			ChunkPosition.Y > MinY && ChunkPosition.Y < MaxY)
-		{
-			continue;
-		}
-		
-		// this is an out of range chunk, find and remove it!
-		for (AChunk* Chunk : Chunks)
-		{
-			if (!IsValid(Chunk) || (Chunk->GetChunkLocation().X != ChunkPosition.X && Chunk->GetChunkLocation().Y != ChunkPosition.Y))
-			{
-				continue;
-			}
-			//GeneratedChunks.Remove(ChunkPosition);
-			Chunk->Destroy();
-		}
-	}
-	UE_LOG(LogTemp, Warning, TEXT("Player Chunk Location: %s"), *FString::Printf(TEXT("X: %i, Y: %i"), PlayerCurrentChunk.X, PlayerCurrentChunk.Y));
+	//for (const FChunkPosition& ChunkPosition : GeneratedChunks)
+	//{
+	//	if (ChunkPosition.X > MinX && ChunkPosition.X < MaxX &&
+	//		ChunkPosition.Y > MinY && ChunkPosition.Y < MaxY)
+	//	{
+	//		continue;
+	//	}
+	//	
+	//	// this is an out of range chunk, find and remove it!
+	//	for (AChunk* Chunk : Chunks)
+	//	{
+	//		if (!IsValid(Chunk) || (Chunk->GetChunkLocation().X != ChunkPosition.X && Chunk->GetChunkLocation().Y != ChunkPosition.Y))
+	//		{
+	//			continue;
+	//		}
+	//		//GeneratedChunks.Remove(ChunkPosition);
+	//		Chunk->Destroy();
+	//	}
+	//}
+	//UE_LOG(LogTemp, Warning, TEXT("Player Chunk Location: %s"), *FString::Printf(TEXT("X: %i, Y: %i"), PlayerCurrentChunk.X, PlayerCurrentChunk.Y));
 
-	//const int32 WorldSize = 50;
+	////const int32 WorldSize = 50;
 
 }
 
