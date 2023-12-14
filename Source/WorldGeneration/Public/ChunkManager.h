@@ -49,7 +49,11 @@ private:
 
 	TArray<class AChunk*> Chunks;
 
-	TArray<FChunkPosition> GeneratedChunks;
+	TArray<FChunkData> ChunkData;
+	// Chunk Data contains stuff like, the grid location for query, the spawn data for actors on that chunk
+	// shape of the terrain, if it has been generated or dormant, just about anything that the system needs 
+	// to know to load/unload the chunk properly. The save system can load its save data into the FChunkData
+	// format for the chunk manager to handle
 
 	FVector GetFirstPlayerLocation() const;
 
