@@ -26,4 +26,11 @@ struct WORLDGENERATION_API FChunkData
 	UPROPERTY()
 	TArray<FActorSaveData> ActorData;
 
+	bool operator==(const FChunkData& Other) const
+	{
+		return this->GridLocation.X == Other.GridLocation.X && this->GridLocation.Y == Other.GridLocation.Y;
+	}
+
 };
+
+uint32 WORLDGENERATION_API GetTypeHash(const FChunkData& ChunkData);

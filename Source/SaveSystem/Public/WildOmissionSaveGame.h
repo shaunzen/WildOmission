@@ -59,6 +59,9 @@ public:
 	FString LevelFile;
 
 	UPROPERTY()
+	uint32 Seed;
+
+	UPROPERTY()
 	FWildOmissionSaveCreationInformation CreationInformation;
 
 	UPROPERTY()
@@ -68,7 +71,7 @@ public:
 	bool CheatsEnabled;
 
 	UPROPERTY()
-	TArray<FChunkData> ChunkSaveData;
+	TSet<FChunkData> ChunkSaveData;
 
 	UPROPERTY()
 	TArray<FPlayerSaveData> PlayerSaveData;

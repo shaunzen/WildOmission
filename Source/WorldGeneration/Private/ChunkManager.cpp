@@ -10,7 +10,7 @@
 static AChunkManager* Instance = nullptr;
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
-const static uint8 RENDER_DISTANCE = 12;
+const static int32 RENDER_DISTANCE = 12;
 
 // Sets default values
 AChunkManager::AChunkManager()
@@ -37,6 +37,11 @@ void AChunkManager::Tick(float DeltaTime)
 
 	// Get Player Location
 	const FVector PlayerLocation = GetFirstPlayerLocation();
+
+	// TODO generate chunks
+
+
+
 
 	//FChunkPosition PlayerCurrentChunk(PlayerLocation.X / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()), PlayerLocation.Y / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()));
 	//// this is terrible, please optimize the hell out of this
@@ -92,13 +97,30 @@ void AChunkManager::Tick(float DeltaTime)
 
 }
 
+void AChunkManager::SetChunkData(const TSet<FChunkData> InChunkData)
+{
+	ChunkData = InChunkData;
+}
+
+TSet<FChunkData> AChunkManager::GetChunkData() const
+{
+	return ChunkData;
+}
+
+TSet<AChunk*> AChunkManager::GetSpawnedChunks() const
+{
+	return SpawnedChunks;
+}
+
+void AChunkManager::SetGenerationSeed(const uint32& Seed)
+{
+	AChunk::SetGenerationSeed(Seed);
+}
+
 // Called when the game starts or when spawned
 void AChunkManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	const int32 Seed = FMath::RandRange(0, 999999999);
-	AChunk::SetGenerationSeed(Seed);
 
 	UWorld* World = GetWorld();
 	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
@@ -114,39 +136,6 @@ void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	Instance = nullptr;
-}
-
-void AChunkManager::Generate()
-{
-	FTimerHandle GenerationTimerHandle;
-	FTimerDelegate GenerationTimerDelegate;
-	GenerationTimerDelegate.BindUObject(this, &AChunkManager::GenerateChunks);
-	GetWorld()->GetTimerManager().SetTimer(GenerationTimerHandle, GenerationTimerDelegate, 1.0f, false);	
-}
-
-void AChunkManager::AddChunk(AChunk* ChunkToAdd)
-{
-	SpawnedChunks.Add(ChunkToAdd);
-}
-
-void AChunkManager::RemoveChunk(AChunk* ChunkToRemove)
-{
-	SpawnedChunks.Remove(ChunkToRemove);
-}
-
-void AChunkManager::ClearChunks()
-{
-	SpawnedChunks.Empty();
-}
-
-TSet<class AChunk*> AChunkManager::GetChunks() const
-{
-	return SpawnedChunks;
-}
-
-UClass* AChunkManager::GetChunkClass() const
-{
-	return ChunkClass;
 }
 
 FVector AChunkManager::GetFirstPlayerLocation() const
@@ -170,17 +159,6 @@ FVector AChunkManager::GetFirstPlayerLocation() const
 	}
 
 	return PlayerPawn->GetActorLocation();
-}
-
-void AChunkManager::GenerateChunks()
-{
-
-
-	if (OnWorldGenerationComplete.IsBound())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Broadcasting some shit."));
-		OnWorldGenerationComplete.Broadcast();
-	}
 }
 
 TArray<FBiomeGenerationData*> AChunkManager::GetAllPossibleBiomes()

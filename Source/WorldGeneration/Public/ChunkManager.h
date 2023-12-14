@@ -8,8 +8,6 @@
 #include "Structs/ChunkData.h"
 #include "ChunkManager.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWorldGenerationCompleteSignature);
-
 UCLASS()
 class WORLDGENERATION_API AChunkManager : public AActor
 {
@@ -21,17 +19,12 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION()
-	void Generate();
+	void SetChunkData(const TSet<struct FChunkData> InChunkData);
+	TSet<struct FChunkData> GetChunkData() const;
 
-	FOnWorldGenerationCompleteSignature OnWorldGenerationComplete;
+	TSet<class AChunk*> GetSpawnedChunks() const;
 
-	void AddChunk(class AChunk* ChunkToAdd);
-	void RemoveChunk(class AChunk* ChunkToRemove);
-	void ClearChunks();
-
-	TSet<class AChunk*> GetChunks() const;
-	UClass* GetChunkClass() const;
+	static void SetGenerationSeed(const uint32& Seed);
 
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
@@ -56,8 +49,5 @@ private:
 	TSet<FChunkData> ChunkData;
 
 	FVector GetFirstPlayerLocation() const;
-
-	UFUNCTION()
-	void GenerateChunks();
 
 };

@@ -86,7 +86,8 @@ void ASaveManager::LoadWorld()
 		UE_LOG(LogTemp, Warning, TEXT("Chunks missing, generating new ones."));
 		
 		ChunkSaveManagerComponent->OnWorldGenerationCompleted.AddDynamic(this, &ASaveManager::MarkSaveGenerated);
-		ChunkSaveManagerComponent->Generate();
+		const uint32 Seed = FMath::RandRange(0, 999999999);
+		ChunkSaveManagerComponent->Generate(Seed);
 		return;
 	}
 
@@ -99,7 +100,7 @@ void ASaveManager::LoadWorld()
 	
 	SetLoadingSubtitle(TEXT("Loading objects."));
 	
-	ChunkSaveManagerComponent->Load(SaveFile->ChunkSaveData, SaveFile->Version);
+	ChunkSaveManagerComponent->Load(SaveFile->ChunkSaveData, SaveFile->Seed, SaveFile->Version);
 
 	FTimerHandle ActorLoadedTimerHandle;
 	FTimerDelegate ActorLoadedDelegate;
