@@ -47,6 +47,7 @@ void AChunkManager::Tick(float DeltaTime)
 		{
 			FSpawnedChunkData SpawnedChunkData;
 			SpawnedChunkData.GridLocation = FIntVector2(RenderX, RenderY) + PlayerChunkLocation;
+			
 			if (!SpawnedChunks.Contains(SpawnedChunkData))
 			{
 				GenerateChunk(SpawnedChunkData);
@@ -55,7 +56,11 @@ void AChunkManager::Tick(float DeltaTime)
 		}
 	}
 
-
+	FSpawnedChunkData CenterChunk;
+	CenterChunk.GridLocation = FIntVector2(0, 0);
+	int32 DistanceFromCenter = SpawnedChunks.Find(CenterChunk)->Distance(PlayerChunkLocation);
+	
+	UE_LOG(LogTemp, Error, TEXT("Distance From Center: %i"), DistanceFromCenter);
 
 	//FChunkPosition PlayerCurrentChunk(PlayerLocation.X / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()), PlayerLocation.Y / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()));
 	//// this is terrible, please optimize the hell out of this
