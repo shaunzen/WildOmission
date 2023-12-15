@@ -37,9 +37,23 @@ void AChunkManager::Tick(float DeltaTime)
 
 	// Get Player Location
 	const FVector PlayerLocation = GetFirstPlayerLocation();
-
+	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
+		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
 	// TODO generate chunks
-
+	
+	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
+	{
+		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
+		{
+			FSpawnedChunkData SpawnedChunkData;
+			SpawnedChunkData.GridLocation = FIntVector2(RenderX, RenderY) + PlayerChunkLocation;
+			if (!SpawnedChunks.Contains(SpawnedChunkData))
+			{
+				GenerateChunk(SpawnedChunkData);
+				SpawnedChunks.Add(SpawnedChunkData);
+			}
+		}
+	}
 
 
 
@@ -107,7 +121,7 @@ TSet<FChunkData> AChunkManager::GetChunkData() const
 	return ChunkData;
 }
 
-TSet<AChunk*> AChunkManager::GetSpawnedChunks() const
+TSet<FSpawnedChunkData> AChunkManager::GetSpawnedChunkData() const
 {
 	return SpawnedChunks;
 }
@@ -136,6 +150,20 @@ void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	Instance = nullptr;
+}
+
+void AChunkManager::GenerateChunk(FSpawnedChunkData& OutSpawnedChunkData)
+{
+	const FVector SpawnLocation(OutSpawnedChunkData.GridLocation.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(),
+		OutSpawnedChunkData.GridLocation.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
+	OutSpawnedChunkData.Chunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, SpawnLocation, FRotator::ZeroRotator);
+	if (!IsValid(OutSpawnedChunkData.Chunk))
+	{
+		OutSpawnedChunkData.Chunk = nullptr;
+		return;
+	}
+
+	OutSpawnedChunkData.Chunk->Generate(OutSpawnedChunkData.GridLocation);
 }
 
 FVector AChunkManager::GetFirstPlayerLocation() const

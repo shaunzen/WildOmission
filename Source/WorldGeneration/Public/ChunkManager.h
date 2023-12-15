@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Structs/BiomeGenerationData.h"
 #include "Structs/ChunkData.h"
+#include "Structs/SpawnedChunkData.h"
 #include "ChunkManager.generated.h"
 
 UCLASS()
@@ -20,9 +21,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetChunkData(const TSet<struct FChunkData> InChunkData);
-	TSet<struct FChunkData> GetChunkData() const;
+	TSet<FChunkData> GetChunkData() const;
 
-	TSet<class AChunk*> GetSpawnedChunks() const;
+	TSet<FSpawnedChunkData> GetSpawnedChunkData() const;
 
 	static void SetGenerationSeed(const uint32& Seed);
 
@@ -40,13 +41,21 @@ private:
 	UPROPERTY()
 	TSubclassOf<class AChunk> ChunkClass;
 
-	TSet<class AChunk*> SpawnedChunks;
 
 	// Chunk Data contains stuff like, the grid location for query, the spawn data for actors on that chunk
 	// shape of the terrain, if it has been generated or dormant, just about anything that the system needs 
 	// to know to load/unload the chunk properly. The save system can load its save data into the FChunkData
 	// format for the chunk manager to handle
+
+	// Chunk data contains data for all chunks (save data weather an area was generated or not ect).
 	TSet<FChunkData> ChunkData;
+	
+	// Spawned Chunk Data contains grid location information 
+	// about spawned chunks, as well as a pointer to the spawned chunk object.
+	TSet<FSpawnedChunkData> SpawnedChunks;
+
+	// When Passing Chunk Data in, make sure to populate grid location, it is what will be used when generating the chunk.
+	void GenerateChunk(FSpawnedChunkData& OutSpawnedChunkData);
 
 	FVector GetFirstPlayerLocation() const;
 
