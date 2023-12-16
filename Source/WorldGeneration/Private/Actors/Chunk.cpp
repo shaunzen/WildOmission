@@ -91,7 +91,7 @@ void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 		ISavableObject* SavableObjectActor = Cast<ISavableObject>(AttachedActor);
 		if (SavableObjectActor == nullptr)
 		{
-			UE_LOG(LogWorldGeneration, Warning, TEXT("Cannot Cast to SavableObject, Actor: %s"), *Actor->GetActorNameOrLabel());
+			UE_LOG(LogWorldGeneration, Warning, TEXT("Cannot Cast to SavableObject, Actor: %s"), *AttachedActor->GetActorNameOrLabel());
 			continue;
 		}
 		
@@ -146,14 +146,14 @@ void AChunk::Load(const FChunkData& InChunkData)
 		UClass* ActorClass = nullptr; // TODO find class
 		if (ActorClass == nullptr)
 		{
-			UE_LOG(LogWorldGeneration, Warning, TEXT("Savable Object Definition was unable to find class for %s"), *ActorData.Identifier.ToString());
+			UE_LOG(LogWorldGeneration, Warning, TEXT("Savable Object Definition was unable to find class for %s"), *ActorSaveData.Identifier.ToString());
 			continue;
 		}
 
 		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, ActorSaveData.Transform);
 		if (SpawnedActor == nullptr)
 		{
-			UE_LOG(LogWorldGeneration, Warning, TEXT("Failed to load actor from save file: %s"), *ActorData.Identifier.ToString());
+			UE_LOG(LogWorldGeneration, Warning, TEXT("Failed to load actor from save file: %s"), *ActorSaveData.Identifier.ToString());
 			continue;
 		}
 
