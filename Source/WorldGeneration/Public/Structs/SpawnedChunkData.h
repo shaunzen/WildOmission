@@ -18,7 +18,7 @@ struct WORLDGENERATION_API FSpawnedChunkData
 
 	UPROPERTY()
 	class AChunk* Chunk;
-
+	
 	int32 Distance(const FIntVector2& OtherGridLocation) const;
 
 	bool operator==(const FSpawnedChunkData& Other) const

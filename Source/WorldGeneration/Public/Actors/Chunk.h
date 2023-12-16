@@ -28,6 +28,12 @@ public:
 	static int32 GetVertexSize();
 	static float GetVertexDistanceScale();
 
+	UFUNCTION()
+	bool IsPendingUnload() const;
+	
+	UFUNCTION()
+	void SetPendingUnload(bool Unload);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -66,6 +72,9 @@ private:
 
 	UPROPERTY()
 	TArray<struct FProcMeshTangent> Tangents;
+
+	UPROPERTY()
+	bool PendingUnload;
 
 	void GenerateTerrain();
 	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);

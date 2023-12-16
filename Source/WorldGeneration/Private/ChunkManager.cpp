@@ -47,10 +47,15 @@ void AChunkManager::Tick(float DeltaTime)
 		{
 			FSpawnedChunkData SpawnedChunkData;
 			SpawnedChunkData.GridLocation = FIntVector2(RenderX, RenderY) + PlayerChunkLocation;
-			
+			if (SpawnedChunkData.Distance(PlayerChunkLocation) > RENDER_DISTANCE)
+			{
+				continue;
+			}
+
 			if (!SpawnedChunks.Contains(SpawnedChunkData))
 			{
 				GenerateChunk(SpawnedChunkData);
+
 				SpawnedChunks.Add(SpawnedChunkData);
 			}
 		}

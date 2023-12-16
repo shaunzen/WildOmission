@@ -29,6 +29,8 @@ AChunk::AChunk()
 	UVScale = 1.0f;
 	Material = nullptr;
 
+	PendingUnload = true;
+
 	if (GetWorld())
 	{
 		static ConstructorHelpers::FObjectFinder<UMaterialInterface> TerrainMaterial(TEXT("/Game/WorldGeneration/M_Terrain"));
@@ -96,6 +98,16 @@ int32 AChunk::GetVertexSize()
 float AChunk::GetVertexDistanceScale()
 {
 	return VERTEX_DISTANCE_SCALE;
+}
+
+bool AChunk::IsPendingUnload() const
+{
+	return PendingUnload;
+}
+
+void AChunk::SetPendingUnload(bool Unload)
+{
+	PendingUnload = Unload;
 }
 
 // Called when the game starts or when spawned
