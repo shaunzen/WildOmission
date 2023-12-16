@@ -10,6 +10,7 @@
 #include "ProceduralMeshComponent.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Log.h"
 
 static siv::PerlinNoise Noise(10);
 const static int32 VERTEX_SIZE = 16;
@@ -104,6 +105,7 @@ void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 		AttachedActor->Serialize(ActorArchive);
 
 		TArray<UActorComponent*> SavableComponents = AttachedActor->GetComponentsByInterface(USavableObject::StaticClass());
+		// TODO make const
 		for (UActorComponent* ActorComponent : SavableComponents)
 		{
 			FActorComponentSaveData ComponentSaveData;
@@ -120,6 +122,55 @@ void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 		}
 
 		OutChunkData.ActorData.Add(ActorSaveData);
+	}
+}
+
+void AChunk::Load(const FChunkData& InChunkData)
+{
+	this->GridLocation = InChunkData.GridLocation;
+	
+	FMemoryReader ChunkMemoryReader(InChunkData.ByteData);
+	FObjectAndNameAsStringProxyArchive ChunkArchive(ChunkMemoryReader, true);
+	ChunkArchive.ArIsSaveGame = true;
+	this->Serialize(ChunkArchive);
+
+	for (const FActorSaveData& ActorSaveData : InChunkData.ActorData)
+	{
+		UClass* ActorClass = nullptr; // TODO find class
+		if (ActorClass == nullptr)
+		{
+			UE_LOG(LogWorldGeneration, Warning, TEXT("Savable Object Definition was unable to find class for %s"), *ActorData.Identifier.ToString());
+			continue;
+		}
+
+		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, ActorSaveData.Transform);
+		if (SpawnedActor == nullptr)
+		{
+			UE_LOG(LogWorldGeneration, Warning, TEXT("Failed to load actor from save file: %s"), *ActorData.Identifier.ToString());
+			continue;
+		}
+
+		SpawnedActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+		FMemoryReader ActorMemoryReader(ActorSaveData.ByteData);
+		FObjectAndNameAsStringProxyArchive ActorArchive(ActorMemoryReader, true);
+		ActorArchive.ArIsSaveGame = true;
+		SpawnedActor->Serialize(ActorArchive);
+
+		TArray<UActorComponent*> SavableComponents = SpawnedActor->GetComponentsByInterface(USavableObject::StaticClass());
+		// TODO make const
+		for (UActorComponent* ActorComponent : SavableComponents)
+		{
+			FActorComponentSaveData ComponentSaveData; // TODO find data
+			FMemoryReader ComponentMemoryReader(ComponentSaveData.ByteData);
+			FObjectAndNameAsStringProxyArchive ComponentArchive(ComponentMemoryReader, true);
+			ComponentArchive.ArIsSaveGame = true;
+
+			ActorComponent->Serialize(ComponentArchive);
+			ISavableObject::Execute_OnLoadComplete(ActorComponent);
+		}
+
+		ISavableObject::Execute_OnLoadComplete(SpawnedActor);
 	}
 }
 
