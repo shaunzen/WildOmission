@@ -41,6 +41,11 @@ void AChunkManager::Tick(float DeltaTime)
 		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
 	// TODO generate chunks
 	
+	if (SetAllChunksPendingUnload.IsBound())
+	{
+		SetAllChunksPendingUnload.Broadcast(true);
+	}
+
 	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
 	{
 		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
@@ -55,17 +60,45 @@ void AChunkManager::Tick(float DeltaTime)
 			if (!SpawnedChunks.Contains(SpawnedChunkData))
 			{
 				GenerateChunk(SpawnedChunkData);
+				if (!IsValid(SpawnedChunkData.Chunk))
+				{
+					continue;
+				}
 
+				SetAllChunksPendingUnload.AddDynamic(SpawnedChunkData.Chunk, &AChunk::SetPendingUnload);
+				SpawnedChunkData.Chunk->SetPendingUnload(false);
+				// todo add dynamic to allchunkpending
 				SpawnedChunks.Add(SpawnedChunkData);
 			}
+			else
+			{
+				SpawnedChunks.Find(SpawnedChunkData)->Chunk->SetPendingUnload(false);
+			}
+			
 		}
 	}
 
-	FSpawnedChunkData CenterChunk;
-	CenterChunk.GridLocation = FIntVector2(0, 0);
-	int32 DistanceFromCenter = SpawnedChunks.Find(CenterChunk)->Distance(PlayerChunkLocation);
-	
-	UE_LOG(LogTemp, Error, TEXT("Distance From Center: %i"), DistanceFromCenter);
+	// TODO remove all pending unload
+	TSet<FSpawnedChunkData> NewSpawnedChunks = SpawnedChunks;
+	for (const FSpawnedChunkData& SpawnedChunkData : SpawnedChunks)
+	{
+		if (!IsValid(SpawnedChunkData.Chunk) || !SpawnedChunkData.Chunk->IsPendingUnload())
+		{
+			continue;
+		}
+
+		// TODO create an unload function that handles saving and things like that
+		SpawnedChunkData.Chunk->Destroy();
+		NewSpawnedChunks.Remove(SpawnedChunkData);
+	}
+
+	SpawnedChunks = NewSpawnedChunks;
+
+	//FSpawnedChunkData CenterChunk;
+	//CenterChunk.GridLocation = FIntVector2(0, 0);
+	//int32 DistanceFromCenter = SpawnedChunks.Find(CenterChunk)->Distance(PlayerChunkLocation);
+	//
+	//UE_LOG(LogTemp, Error, TEXT("Distance From Center: %i"), DistanceFromCenter);
 
 	//FChunkPosition PlayerCurrentChunk(PlayerLocation.X / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()), PlayerLocation.Y / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()));
 	//// this is terrible, please optimize the hell out of this
