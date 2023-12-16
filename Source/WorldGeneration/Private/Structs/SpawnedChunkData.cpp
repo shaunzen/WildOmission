@@ -14,7 +14,7 @@ int32 FSpawnedChunkData::Distance(const FIntVector2& OtherGridLocation) const
 	int32 X = this->GridLocation.X - OtherGridLocation.X;
 	int32 Y = this->GridLocation.Y - OtherGridLocation.Y;
 
-	return FMath::Abs(X + Y);
+	return (X * X + Y * Y) / 4;
 }
 
 uint32 GetTypeHash(const FSpawnedChunkData& SpawnedChunkData)

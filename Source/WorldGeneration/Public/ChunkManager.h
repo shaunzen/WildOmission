@@ -9,8 +9,6 @@
 #include "Structs/SpawnedChunkData.h"
 #include "ChunkManager.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetAllChunksPendingUnloadSignature, bool, Unload);
-
 UCLASS()
 class WORLDGENERATION_API AChunkManager : public AActor
 {
@@ -28,7 +26,6 @@ public:
 	TSet<FSpawnedChunkData> GetSpawnedChunkData() const;
 
 	static void SetGenerationSeed(const uint32& Seed);
-
 
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
@@ -59,8 +56,6 @@ private:
 
 	// When Passing Chunk Data in, make sure to populate grid location, it is what will be used when generating the chunk.
 	void GenerateChunk(FSpawnedChunkData& OutSpawnedChunkData);
-
-	FSetAllChunksPendingUnloadSignature SetAllChunksPendingUnload;
 
 	FVector GetFirstPlayerLocation() const;
 

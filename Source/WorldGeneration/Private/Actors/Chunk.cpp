@@ -29,8 +29,6 @@ AChunk::AChunk()
 	UVScale = 1.0f;
 	Material = nullptr;
 
-	PendingUnload = true;
-
 	if (GetWorld())
 	{
 		static ConstructorHelpers::FObjectFinder<UMaterialInterface> TerrainMaterial(TEXT("/Game/WorldGeneration/M_Terrain"));
@@ -67,6 +65,19 @@ void AChunk::OnLoadFromSaveComplete()
 	CreateMesh();
 }
 
+void AChunk::Unload(FChunkData& OutChunkData)
+{
+	// TODO populate data for saving
+	TArray<AActor*> AttachedActors;
+	GetAttachedActors(AttachedActors);
+	for (AActor* AttachedActor : AttachedActors)
+	{
+		AttachedActor->Destroy();
+	}
+
+	this->Destroy();
+}
+
 void AChunk::SetGenerationSeed(const uint32& Seed)
 {
 	Noise.reseed(Seed);
@@ -98,16 +109,6 @@ int32 AChunk::GetVertexSize()
 float AChunk::GetVertexDistanceScale()
 {
 	return VERTEX_DISTANCE_SCALE;
-}
-
-bool AChunk::IsPendingUnload() const
-{
-	return PendingUnload;
-}
-
-void AChunk::SetPendingUnload(bool Unload)
-{
-	PendingUnload = Unload;
 }
 
 // Called when the game starts or when spawned

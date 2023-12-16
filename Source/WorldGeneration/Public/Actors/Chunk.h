@@ -21,18 +21,14 @@ public:
 	UFUNCTION()
 	void OnLoadFromSaveComplete();
 
+	void Unload(struct FChunkData& OutChunkData);
+
 	static void SetGenerationSeed(const uint32& Seed);
 	static float GetTerrainHeightAtLocation(const FVector2D& Location, float Scale = 1.0f);
 	FIntVector2 GetChunkLocation() const;
 
 	static int32 GetVertexSize();
 	static float GetVertexDistanceScale();
-
-	UFUNCTION()
-	bool IsPendingUnload() const;
-	
-	UFUNCTION()
-	void SetPendingUnload(bool Unload);
 
 protected:
 	// Called when the game starts or when spawned
@@ -72,9 +68,6 @@ private:
 
 	UPROPERTY()
 	TArray<struct FProcMeshTangent> Tangents;
-
-	UPROPERTY()
-	bool PendingUnload;
 
 	void GenerateTerrain();
 	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);

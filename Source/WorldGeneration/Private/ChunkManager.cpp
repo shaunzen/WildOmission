@@ -39,13 +39,40 @@ void AChunkManager::Tick(float DeltaTime)
 	const FVector PlayerLocation = GetFirstPlayerLocation();
 	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
 		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
-	// TODO generate chunks
 	
-	if (SetAllChunksPendingUnload.IsBound())
+	// TODO clean up out of range chunks
+	TSet<FSpawnedChunkData> NewSpawnedChunks = SpawnedChunks;
+	for (const FSpawnedChunkData& SpawnedChunkData : SpawnedChunks)
 	{
-		SetAllChunksPendingUnload.Broadcast(true);
+		if (!IsValid(SpawnedChunkData.Chunk))
+		{
+			continue;
+		}
+
+		const int32 DistanceFromPlayer = SpawnedChunkData.Distance(PlayerChunkLocation);
+		if (DistanceFromPlayer <= RENDER_DISTANCE)
+		{
+			continue;
+		}
+
+		// TODO save and unload
+		FChunkData ChunkSaveData;
+		SpawnedChunkData.Chunk->Unload(ChunkSaveData);
+
+		// Be sure to overwrite the existing data for this chunk
+		if (ChunkData.Contains(ChunkSaveData))
+		{
+			ChunkData.Remove(ChunkSaveData);
+		}
+
+		ChunkData.Add(ChunkSaveData);
+
+		NewSpawnedChunks.Remove(SpawnedChunkData);
 	}
 
+	SpawnedChunks = NewSpawnedChunks;
+
+	// TODO generate/load new in range chunks
 	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
 	{
 		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
@@ -59,99 +86,16 @@ void AChunkManager::Tick(float DeltaTime)
 
 			if (!SpawnedChunks.Contains(SpawnedChunkData))
 			{
+				// TODO check if we have existing data to load
 				GenerateChunk(SpawnedChunkData);
 				if (!IsValid(SpawnedChunkData.Chunk))
 				{
 					continue;
 				}
-
-				SetAllChunksPendingUnload.AddDynamic(SpawnedChunkData.Chunk, &AChunk::SetPendingUnload);
-				SpawnedChunkData.Chunk->SetPendingUnload(false);
-				// todo add dynamic to allchunkpending
 				SpawnedChunks.Add(SpawnedChunkData);
 			}
-			else
-			{
-				SpawnedChunks.Find(SpawnedChunkData)->Chunk->SetPendingUnload(false);
-			}
-			
 		}
 	}
-
-	// TODO remove all pending unload
-	TSet<FSpawnedChunkData> NewSpawnedChunks = SpawnedChunks;
-	for (const FSpawnedChunkData& SpawnedChunkData : SpawnedChunks)
-	{
-		if (!IsValid(SpawnedChunkData.Chunk) || !SpawnedChunkData.Chunk->IsPendingUnload())
-		{
-			continue;
-		}
-
-		// TODO create an unload function that handles saving and things like that
-		SpawnedChunkData.Chunk->Destroy();
-		NewSpawnedChunks.Remove(SpawnedChunkData);
-	}
-
-	SpawnedChunks = NewSpawnedChunks;
-
-	//FSpawnedChunkData CenterChunk;
-	//CenterChunk.GridLocation = FIntVector2(0, 0);
-	//int32 DistanceFromCenter = SpawnedChunks.Find(CenterChunk)->Distance(PlayerChunkLocation);
-	//
-	//UE_LOG(LogTemp, Error, TEXT("Distance From Center: %i"), DistanceFromCenter);
-
-	//FChunkPosition PlayerCurrentChunk(PlayerLocation.X / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()), PlayerLocation.Y / (AChunk::GetVertexDistanceScale() * AChunk::GetVertexSize()));
-	//// this is terrible, please optimize the hell out of this
-	//for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
-	//{
-	//	for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
-	//	{
-	//		const FChunkPosition RenderChunk(RenderX + PlayerCurrentChunk.X, RenderY + PlayerCurrentChunk.Y);
-	//		if (!GeneratedChunks.Contains(RenderChunk))
-	//		{
-	//			const FVector ChunkLocation(RenderChunk.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), RenderChunk.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
-	//			UE_LOG(LogTemp, Warning, TEXT("Chunk Location: %s"), *ChunkLocation.ToString());
-	//			AChunk* SpawnedChunk = GetWorld()->SpawnActor<AChunk>(ChunkClass, ChunkLocation, FRotator::ZeroRotator);
-	//			SpawnedChunk->Generate(FIntVector2(RenderChunk.X, RenderChunk.Y));
-	//			Chunks.Add(SpawnedChunk);
-
-	//			GeneratedChunks.Add(RenderChunk);
-	//		}
-	//	}
-	//}
-
-	////const FChunkPosition OutOfRangeTopRight(PlayerCurrentChunk.X + -RENDER_DISTANCE, PlayerCurrentChunk.Y + RENDER_DISTANCE);
-	////const FChunkPosition OutOfRangeBottomLeft(PlayerCurrentChunk.X + RENDER_DISTANCE, PlayerCurrentChunk.Y + -RENDER_DISTANCE);
-	//const int32 MinX = PlayerCurrentChunk.X - RENDER_DISTANCE;
-	//const int32 MinY = PlayerCurrentChunk.Y - RENDER_DISTANCE;
-	//const int32 MaxX = PlayerCurrentChunk.X + RENDER_DISTANCE;
-	//const int32 MaxY = PlayerCurrentChunk.Y + RENDER_DISTANCE;
-
-	//UE_LOG(LogTemp, Warning, TEXT("MinX %i, MinY %i, MaxX %i, MaxY %i"), MinX, MinY, MaxX, MaxY);
-
-	//for (const FChunkPosition& ChunkPosition : GeneratedChunks)
-	//{
-	//	if (ChunkPosition.X > MinX && ChunkPosition.X < MaxX &&
-	//		ChunkPosition.Y > MinY && ChunkPosition.Y < MaxY)
-	//	{
-	//		continue;
-	//	}
-	//	
-	//	// this is an out of range chunk, find and remove it!
-	//	for (AChunk* Chunk : Chunks)
-	//	{
-	//		if (!IsValid(Chunk) || (Chunk->GetChunkLocation().X != ChunkPosition.X && Chunk->GetChunkLocation().Y != ChunkPosition.Y))
-	//		{
-	//			continue;
-	//		}
-	//		//GeneratedChunks.Remove(ChunkPosition);
-	//		Chunk->Destroy();
-	//	}
-	//}
-	//UE_LOG(LogTemp, Warning, TEXT("Player Chunk Location: %s"), *FString::Printf(TEXT("X: %i, Y: %i"), PlayerCurrentChunk.X, PlayerCurrentChunk.Y));
-
-	////const int32 WorldSize = 50;
-
 }
 
 void AChunkManager::SetChunkData(const TSet<FChunkData> InChunkData)
