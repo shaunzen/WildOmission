@@ -26,6 +26,7 @@ public:
 
 	static void SetGenerationSeed(const uint32& Seed);
 	static float GetTerrainHeightAtLocation(const FVector2D& Location, float Scale = 1.0f);
+	void SetChunkLocation(const FIntVector2& InLocation);
 	FIntVector2 GetChunkLocation() const;
 
 	static int32 GetVertexSize();
