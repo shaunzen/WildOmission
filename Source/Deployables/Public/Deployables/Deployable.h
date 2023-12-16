@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Components/BuildAnchorComponent.h"
 #include "Interfaces/SavableObject.h"
-#include "Interfaces/RequiredForLoad.h"
 #include "Interfaces/DurabilityInterface.h"
 #include "Enums/ToolType.h"
 #include "Interfaces/DamagedByWind.h"
@@ -15,7 +14,7 @@
 class UNavModifierComponent;
 
 UCLASS()
-class DEPLOYABLES_API ADeployable : public AActor, public IDurabilityInterface, public ISavableObject, public IRequiredForLoad, public IDamagedByWind
+class DEPLOYABLES_API ADeployable : public AActor, public IDurabilityInterface, public ISavableObject, public IDamagedByWind
 {
 	GENERATED_BODY()
 	

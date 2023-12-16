@@ -6,14 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
 #include "Interfaces/SavableObject.h"
-#include "Interfaces/RequiredForLoad.h"
 #include "Structs/InventoryItem.h"
 #include "WorldItem.generated.h"
 
 class UTimerDespawnComponent;
 
 UCLASS()
-class INVENTORY_API AWorldItem : public AActor, public IInteractable, public ISavableObject, public IRequiredForLoad
+class INVENTORY_API AWorldItem : public AActor, public IInteractable, public ISavableObject
 {
 	GENERATED_BODY()
 	

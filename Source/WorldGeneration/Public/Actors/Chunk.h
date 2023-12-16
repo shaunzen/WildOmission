@@ -21,7 +21,8 @@ public:
 	UFUNCTION()
 	void OnLoadFromSaveComplete();
 
-	void Unload(struct FChunkData& OutChunkData);
+	void Save(struct FChunkData& OutChunkData, bool AlsoDestroy = false);
+	void Load(const struct FChunkData& InChunkData);
 
 	static void SetGenerationSeed(const uint32& Seed);
 	static float GetTerrainHeightAtLocation(const FVector2D& Location, float Scale = 1.0f);

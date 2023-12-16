@@ -6,14 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
 #include "Interfaces/SavableObject.h"
-#include "Interfaces/RequiredForLoad.h"
 #include "Structs/InventoryItem.h"
 #include "CollectableResource.generated.h"
 
 class UNavModifierComponent;
 
 UCLASS()
-class GATHERABLERESOURCES_API ACollectableResource : public AActor, public IInteractable, public ISavableObject, public IRequiredForLoad
+class GATHERABLERESOURCES_API ACollectableResource : public AActor, public IInteractable, public ISavableObject
 {
 	GENERATED_BODY()
 	

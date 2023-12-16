@@ -17,7 +17,7 @@ public class Ragdoll : ModuleRules
             "GatherableResources",
             "Interaction",
             "Inventory",
-            "SaveSystem"
+            "SavableObject"
         });
     }
 }

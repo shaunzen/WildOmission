@@ -7,13 +7,12 @@
 #include "Structs/InventoryItem.h"
 #include "Enums/ToolType.h"
 #include "Interfaces/SavableObject.h"
-#include "Interfaces/RequiredForLoad.h"
 #include "HarvestableResource.generated.h"
 
 class UNavModifierComponent;
 
 UCLASS()
-class GATHERABLERESOURCES_API AHarvestableResource : public AActor, public ISavableObject, public IRequiredForLoad
+class GATHERABLERESOURCES_API AHarvestableResource : public AActor, public ISavableObject
 {
 	GENERATED_BODY()
 	

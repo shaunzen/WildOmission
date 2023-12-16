@@ -5,7 +5,6 @@
 #include "Actors/Chunk.h"
 #include "Structs/ChunkData.h"
 #include "WildOmissionSaveGame.h"
-#include "Interfaces/SavableObject.h"
 #include "Structs/SavableObjectDefinition.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "Engine/DataTable.h"

@@ -16,7 +16,7 @@ class USavableObject : public UInterface
 /**
  * 
  */
-class SAVESYSTEM_API ISavableObject
+class SAVABLEOBJECT_API ISavableObject
 {
 	GENERATED_BODY()
 

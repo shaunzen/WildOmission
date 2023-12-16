@@ -65,17 +65,19 @@ void AChunk::OnLoadFromSaveComplete()
 	CreateMesh();
 }
 
-void AChunk::Unload(FChunkData& OutChunkData)
+void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 {
 	// TODO populate data for saving
 	TArray<AActor*> AttachedActors;
 	GetAttachedActors(AttachedActors);
 	for (AActor* AttachedActor : AttachedActors)
 	{
-		AttachedActor->Destroy();
+		/*if (!IsValid(AttachedActor) || !AttachedActor->Implements<ISavableObject>())
+		{
+			continue;
+		}*/
 	}
 
-	this->Destroy();
 }
 
 void AChunk::SetGenerationSeed(const uint32& Seed)
