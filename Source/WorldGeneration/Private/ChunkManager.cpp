@@ -57,6 +57,7 @@ void AChunkManager::Tick(float DeltaTime)
 
 		// TODO save and unload
 		FChunkData ChunkSaveData;
+		SpawnedChunkData.Chunk->Save(ChunkSaveData, true);
 		//SpawnedChunkData.Chunk->Unload(ChunkSaveData);
 
 		// Be sure to overwrite the existing data for this chunk

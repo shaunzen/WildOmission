@@ -122,7 +122,14 @@ void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 		}
 
 		OutChunkData.ActorData.Add(ActorSaveData);
+
+		if (AlsoDestroy == true)
+		{
+			AttachedActor->Destroy();
+		}
 	}
+
+	this->Destroy();
 }
 
 void AChunk::Load(const FChunkData& InChunkData)
