@@ -3,6 +3,9 @@
 
 #include "Actors/Chunk.h"
 #include "ChunkManager.h"
+#include "Structs/SavableObjectDefinition.h"
+#include "Interfaces/SavableObject.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "Noise/PerlinNoise.hpp"
 #include "ProceduralMeshComponent.h"
 #include "KismetProceduralMeshLibrary.h"
@@ -67,17 +70,57 @@ void AChunk::OnLoadFromSaveComplete()
 
 void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 {
-	// TODO populate data for saving
+	OutChunkData.GridLocation = GetChunkLocation();
+	OutChunkData.Generated = true;
+	
+	FMemoryWriter ChunkMemoryWriter(OutChunkData.ByteData);
+	FObjectAndNameAsStringProxyArchive ChunkArchive(ChunkMemoryWriter, true);
+	ChunkArchive.ArIsSaveGame = true;
+	this->Serialize(ChunkArchive);
+
 	TArray<AActor*> AttachedActors;
 	GetAttachedActors(AttachedActors);
 	for (AActor* AttachedActor : AttachedActors)
 	{
-		/*if (!IsValid(AttachedActor) || !AttachedActor->Implements<ISavableObject>())
+		if (!IsValid(AttachedActor) || !AttachedActor->Implements<USavableObject>())
 		{
 			continue;
-		}*/
-	}
+		}
+		
+		ISavableObject* SavableObjectActor = Cast<ISavableObject>(AttachedActor);
+		if (SavableObjectActor == nullptr)
+		{
+			UE_LOG(LogWorldGeneration, Warning, TEXT("Cannot Cast to SavableObject, Actor: %s"), *Actor->GetActorNameOrLabel());
+			continue;
+		}
+		
+		FActorSaveData ActorSaveData;
+		ActorSaveData.Identifier = SavableObjectActor->GetIdentifier();
+		ActorSaveData.Transform = AttachedActor->GetTransform();
+		
+		FMemoryWriter ActorMemoryWriter(ActorSaveData.ByteData);
+		FObjectAndNameAsStringProxyArchive ActorArchive(ActorMemoryWriter, true);
+		ActorArchive.ArIsSaveGame = true;
+		AttachedActor->Serialize(ActorArchive);
 
+		TArray<UActorComponent*> SavableComponents = AttachedActor->GetComponentsByInterface(USavableObject::StaticClass());
+		for (UActorComponent* ActorComponent : SavableComponents)
+		{
+			FActorComponentSaveData ComponentSaveData;
+			ComponentSaveData.Name = ActorComponent->GetFName();
+			ComponentSaveData.Class = ActorComponent->GetClass();
+			
+			FMemoryWriter ComponentMemoryWriter(ComponentSaveData.ByteData);
+			FObjectAndNameAsStringProxyArchive ComponentArchive(ComponentMemoryWriter, true);
+			ComponentArchive.ArIsSaveGame = true;
+
+			ActorComponent->Serialize(ComponentArchive);
+
+			ActorSaveData.ComponentData.Add(ComponentSaveData);
+		}
+
+		OutChunkData.ActorData.Add(ActorSaveData);
+	}
 }
 
 void AChunk::SetGenerationSeed(const uint32& Seed)

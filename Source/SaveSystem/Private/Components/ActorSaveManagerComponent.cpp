@@ -2,7 +2,7 @@
 
 
 #include "Components/ActorSaveManagerComponent.h"
-#include "Structs/SavableObjectDefinition.h"
+//#include "Structs/SavableObjectDefinition.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "Engine/DataTable.h"
 #include "EngineUtils.h"

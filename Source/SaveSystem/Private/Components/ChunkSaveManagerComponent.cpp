@@ -5,7 +5,7 @@
 #include "Actors/Chunk.h"
 #include "Structs/ChunkData.h"
 #include "WildOmissionSaveGame.h"
-#include "Structs/SavableObjectDefinition.h"
+//#include "Structs/SavableObjectDefinition.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "Engine/DataTable.h"
 #include "EngineUtils.h"
@@ -88,14 +88,15 @@ UClass* UChunkSaveManagerComponent::FindSavableObjectClassUsingIdentifier(const 
 
 	static const FString ContextString = TEXT("SavableObjectDefinition Context");
 
-	FSavableObjectDefinition* ObjectDefinition = DT_SavableObjectDefinitions->FindRow<FSavableObjectDefinition>(Identifier, ContextString, true);
-	if (ObjectDefinition == nullptr)
+	//FSavableObjectDefinition* ObjectDefinition = DT_SavableObjectDefinitions->FindRow<FSavableObjectDefinition>(Identifier, ContextString, true);
+	/*if (ObjectDefinition == nullptr)
 	{
 		UE_LOG(LogSaveSystem, Warning, TEXT("Couldn't find SavableObjectDefinition for %s."), *Identifier.ToString());
 		return nullptr;
-	}
+	}*/
 
-	return ObjectDefinition->Class.Get();
+	//return ObjectDefinition->Class.Get();
+	return nullptr;
 }
 
 void UChunkSaveManagerComponent::FixSaveCompatibility(AActor* ActorToFix, const int32& OldSaveFileVersion)

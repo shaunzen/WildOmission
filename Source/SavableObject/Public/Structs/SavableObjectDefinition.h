@@ -8,7 +8,7 @@
 #include "SavableObjectDefinition.generated.h"
 
 USTRUCT(BlueprintType)
-struct SAVESYSTEM_API FSavableObjectDefinition : public FTableRowBase
+struct SAVABLEOBJECT_API FSavableObjectDefinition : public FTableRowBase
 {
 	GENERATED_BODY()
 
