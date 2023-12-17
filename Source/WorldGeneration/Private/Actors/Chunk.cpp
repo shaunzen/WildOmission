@@ -2,9 +2,10 @@
 
 
 #include "Actors/Chunk.h"
+#include "ProceduralMeshComponent.h"
+#include "Components/ChunkSaveComponent.h"
 #include "ChunkManager.h"
 #include "Noise/PerlinNoise.hpp"
-#include "ProceduralMeshComponent.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -22,7 +23,7 @@ AChunk::AChunk()
 	RootComponent = MeshComponent;
 	// MeshComponent->SetupAttachment(RootComponent);
 
-	// TODO save component
+	SaveComponent = CreateDefaultSubobject<UChunkSaveComponent>(TEXT("SaveComponent"));
 
 	// TODO these might be tied to biome in the future
 	ZScale = 100.0f;
@@ -43,9 +44,8 @@ AChunk::AChunk()
 	Tags.Add(TEXT("Ground"));
 }
 
-void AChunk::Generate(const FIntVector2& InLocation)
+void AChunk::Generate()
 {
-	GridLocation = InLocation;
 	GenerateTerrain();
 
 	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
@@ -60,7 +60,7 @@ void AChunk::Generate(const FIntVector2& InLocation)
 
 void AChunk::OnLoadFromSaveComplete()
 {
-	UV0.Reset();
+	Triangles.Reset();
 	Normals.Reset();
 	Tangents.Reset();
 
@@ -69,12 +69,13 @@ void AChunk::OnLoadFromSaveComplete()
 
 void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 {
-	
+	SaveComponent->Save(OutChunkData, AlsoDestroy);
 }
 
 void AChunk::Load(const FChunkData& InChunkData)
 {
-	
+	SaveComponent->Load(InChunkData);
+	OnLoadFromSaveComplete();
 }
 
 void AChunk::SetGenerationSeed(const uint32& Seed)
@@ -131,7 +132,6 @@ void AChunk::GenerateTerrain()
 	Tangents.Reset();
 
 	CreateVerticies();
-	CreateTriangles();
 	CreateMesh();	
 }
 
@@ -197,6 +197,8 @@ void AChunk::CreateTriangles()
 
 void AChunk::CreateMesh()
 {
+	CreateTriangles();
+
 	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Verticies, Triangles, UV0, Normals, Tangents);
 
 	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UV0, TArray<FColor>(), Tangents, true);

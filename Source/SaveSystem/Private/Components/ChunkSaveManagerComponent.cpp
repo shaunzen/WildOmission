@@ -40,7 +40,7 @@ void UChunkSaveManagerComponent::Generate(const uint32& Seed)
 }
 
 // this will only be called when chunk manager requests a save of a specific chunk
-void UChunkSaveManagerComponent::Save(TSet<FChunkData>& OutData)
+void UChunkSaveManagerComponent::Save(TArray<FChunkData>& OutData)
 {
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager == nullptr)
@@ -52,7 +52,7 @@ void UChunkSaveManagerComponent::Save(TSet<FChunkData>& OutData)
 	OutData = ChunkManager->GetChunkData();
 }
 
-void UChunkSaveManagerComponent::Load(const TSet<FChunkData>& InData,const uint32& Seed, const int32& SaveFileVersion)
+void UChunkSaveManagerComponent::Load(const TArray<FChunkData>& InData,const uint32& Seed, const int32& SaveFileVersion)
 {
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager == nullptr)

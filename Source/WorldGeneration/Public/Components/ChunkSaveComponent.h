@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Structs/ActorSaveData.h"
 #include "ChunkSaveComponent.generated.h"
 
 

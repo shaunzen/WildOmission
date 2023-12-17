@@ -12,5 +12,5 @@ FChunkData::FChunkData()
 
 uint32 GetTypeHash(const FChunkData& ChunkData)
 {
-	return FCrc::MemCrc32(&ChunkData, sizeof(FChunkData));
+	return FCrc::MemCrc32(&ChunkData.GridLocation, sizeof(FIntVector2));
 }

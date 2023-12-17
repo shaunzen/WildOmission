@@ -16,7 +16,7 @@ public:
 	AChunk();
 
 	UFUNCTION()
-	void Generate(const FIntVector2& InLocation);
+	void Generate();
 
 	UFUNCTION()
 	void OnLoadFromSaveComplete();
@@ -40,6 +40,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UProceduralMeshComponent* MeshComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	class UChunkSaveComponent* SaveComponent;
+
 	UPROPERTY(SaveGame)
 	FIntVector2 GridLocation;
 
@@ -59,10 +62,10 @@ private:
 	UPROPERTY(SaveGame)
 	TArray<FVector> Verticies;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY()
 	TArray<int32> Triangles;
 
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	TArray<FVector2D> UV0;
 
 	UPROPERTY()

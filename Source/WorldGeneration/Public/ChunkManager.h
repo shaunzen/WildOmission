@@ -20,10 +20,10 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void SetChunkData(const TSet<struct FChunkData> InChunkData);
-	TSet<FChunkData> GetChunkData() const;
+	void SetChunkData(const TArray<struct FChunkData> InChunkData);
+	TArray<FChunkData> GetChunkData() const;
 
-	TSet<FSpawnedChunkData> GetSpawnedChunkData() const;
+	TArray<FSpawnedChunkData> GetSpawnedChunkData() const;
 
 	static void SetGenerationSeed(const uint32& Seed);
 
@@ -48,14 +48,16 @@ private:
 	// format for the chunk manager to handle
 
 	// Chunk data contains data for all chunks (save data weather an area was generated or not ect).
-	TSet<FChunkData> ChunkData;
+	TArray<FChunkData> ChunkData;
 	
 	// Spawned Chunk Data contains grid location information 
 	// about spawned chunks, as well as a pointer to the spawned chunk object.
-	TSet<FSpawnedChunkData> SpawnedChunks;
+	TArray<FSpawnedChunkData> SpawnedChunks;
 
 	// When Passing Chunk Data in, make sure to populate grid location, it is what will be used when generating the chunk.
-	void GenerateChunk(FSpawnedChunkData& OutSpawnedChunkData);
+	void SpawnChunk(FSpawnedChunkData& OutSpawnedChunkData);
+	void GenerateChunk(const FSpawnedChunkData& InSpawnedChunkData);
+	void LoadChunk(const FSpawnedChunkData& InSpawnedChunkData, const FChunkData& InChunkData);
 
 	FVector GetFirstPlayerLocation() const;
 

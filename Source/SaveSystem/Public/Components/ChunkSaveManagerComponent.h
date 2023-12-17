@@ -19,8 +19,8 @@ public:
 	void Generate(const uint32& Seed);
 	FOnWorldGenerationCompletedSignature OnWorldGenerationCompleted;
 
-	void Save(TSet<struct FChunkData>& OutData);
-	void Load(const TSet<struct FChunkData>& InData, const uint32& Seed, const int32& SaveFileVersion);
+	void Save(TArray<struct FChunkData>& OutData);
+	void Load(const TArray<struct FChunkData>& InData, const uint32& Seed, const int32& SaveFileVersion);
 
 private:
 	struct FActorComponentSaveData FindComponentDataByName(const TArray<struct FActorComponentSaveData>& ComponentSaveList, const FName& ComponentName, UClass* ComponentClass = nullptr);

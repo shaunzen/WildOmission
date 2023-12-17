@@ -109,8 +109,6 @@ void UChunkSaveComponent::Load(const FChunkData& InChunkData)
 		return;
 	}
 
-	OwnerChunk->SetChunkLocation(InChunkData.GridLocation);
-
 	FMemoryReader ChunkMemoryReader(InChunkData.ByteData);
 	FObjectAndNameAsStringProxyArchive ChunkArchive(ChunkMemoryReader, true);
 	ChunkArchive.ArIsSaveGame = true;
@@ -132,7 +130,7 @@ void UChunkSaveComponent::Load(const FChunkData& InChunkData)
 			continue;
 		}
 
-		SpawnedActor->AttachToActor(OwnerChunk, FAttachmentTransformRules::KeepRelativeTransform);
+		SpawnedActor->AttachToActor(OwnerChunk, FAttachmentTransformRules::KeepWorldTransform);
 
 		FMemoryReader ActorMemoryReader(ActorSaveData.ByteData);
 		FObjectAndNameAsStringProxyArchive ActorArchive(ActorMemoryReader, true);
@@ -161,7 +159,7 @@ UClass* UChunkSaveComponent::FindSavableObjectClassUsingIdentifier(const FName& 
 	if (DT_SavableObjectDefinitions == nullptr)
 	{
 		UE_LOG(LogWorldGeneration, Error, TEXT("SavableObjectDefinitions DataTable is nullptr."));
-		return;
+		return nullptr;
 	}
 	
 	static const FString ContextString = TEXT("SavableObjectDefinition Context");
