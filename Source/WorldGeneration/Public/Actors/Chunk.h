@@ -69,6 +69,9 @@ private:
 	UPROPERTY(SaveGame)
 	TArray<FVector2D> UV0;
 
+	UPROPERTY(SaveGame)
+	TArray<FColor> VertexColors;
+
 	UPROPERTY()
 	TArray<FVector> Normals;
 

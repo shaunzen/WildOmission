@@ -30,7 +30,7 @@ AChunk::AChunk()
 	ZScale = 100.0f;
 	NoiseScale = 0.1f;
 
-	UVScale = 1.0f;
+	UVScale = 100.0f;
 	Material = nullptr;
 
 	if (GetWorld())
@@ -134,6 +134,7 @@ void AChunk::GenerateTerrain()
 	Verticies.Reset();
 	Triangles.Reset();
 	UV0.Reset();
+	VertexColors.Reset();
 	Normals.Reset();
 	Tangents.Reset();
 
@@ -175,7 +176,8 @@ void AChunk::CreateVerticies()
 			const float Offset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
 
 			Verticies.Add(FVector((X * VERTEX_DISTANCE_SCALE) - Offset, (Y * VERTEX_DISTANCE_SCALE) - Offset, Z));
-			UV0.Add(FVector2D(X * UVScale, Y * UVScale));
+			VertexColors.Add(FColor::Green);
+			UV0.Add(FVector2D(X * 0.0625f, Y * 0.0625f));
 		}
 	}
 }
@@ -207,7 +209,7 @@ void AChunk::CreateMesh()
 
 	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Verticies, Triangles, UV0, Normals, Tangents);
 
-	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UV0, TArray<FColor>(), Tangents, true);
+	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UV0, VertexColors, Tangents, true);
 	MeshComponent->SetMaterial(0, Material);
 }
 
