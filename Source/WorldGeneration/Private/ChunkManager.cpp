@@ -117,14 +117,44 @@ void AChunkManager::SetChunkData(const TArray<FChunkData> InChunkData)
 	ChunkData = InChunkData;
 }
 
-TArray<FChunkData> AChunkManager::GetChunkData() const
+TArray<FChunkData> AChunkManager::GetChunksData() const
 {
 	return ChunkData;
 }
 
-TArray<FSpawnedChunkData> AChunkManager::GetSpawnedChunkData() const
+bool AChunkManager::GetChunkData(const FIntVector2& ChunkLocation, FChunkData& OutChunkData) const
+{
+	FChunkData ChunkDataLocator;
+	ChunkDataLocator.GridLocation = ChunkLocation;
+
+	const int32 ChunkIndex = ChunkData.Find(ChunkDataLocator);
+	if (ChunkIndex == INDEX_NONE)
+	{
+		return false;
+	}
+
+	OutChunkData = ChunkData[ChunkIndex];
+	return true;
+}
+
+TArray<FSpawnedChunkData> AChunkManager::GetSpawnedChunks() const
 {
 	return SpawnedChunks;
+}
+
+bool AChunkManager::GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunkData& OutSpawnedChunkData) const
+{
+	FSpawnedChunkData ChunkDataLocator;
+	ChunkDataLocator.GridLocation = ChunkLocation;
+
+	const int32 ChunkIndex = SpawnedChunks.Find(ChunkDataLocator);
+	if (ChunkIndex == INDEX_NONE)
+	{
+		return false;
+	}
+
+	OutSpawnedChunkData = SpawnedChunks[ChunkIndex];
+	return true;
 }
 
 void AChunkManager::SetGenerationSeed(const uint32& Seed)

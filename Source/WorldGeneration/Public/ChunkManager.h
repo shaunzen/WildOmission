@@ -21,9 +21,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetChunkData(const TArray<struct FChunkData> InChunkData);
-	TArray<FChunkData> GetChunkData() const;
 
-	TArray<FSpawnedChunkData> GetSpawnedChunkData() const;
+	TArray<FChunkData> GetChunksData() const;
+	bool GetChunkData(const FIntVector2& ChunkLocation, FChunkData& OutChunkData) const;
+
+	TArray<FSpawnedChunkData> GetSpawnedChunks() const;
+	bool GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunkData& OutSpawnedChunkData) const;
 
 	static void SetGenerationSeed(const uint32& Seed);
 

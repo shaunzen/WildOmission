@@ -3,6 +3,8 @@
 
 #include "Items/DeployableItem.h"
 #include "Deployables/Deployable.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "Actors/DeployablePreview.h"
 
 void ADeployableItem::OnPlace()
@@ -25,6 +27,25 @@ void ADeployableItem::OnPlace()
 	{
 		return;
 	}
+
+
+	int32 ChunkLocationX = PlacementTransform.GetLocation().X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale());
+	int32 ChunkLocationY = PlacementTransform.GetLocation().Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale());
+
+	// TODO find nearest chunk and attach
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	FSpawnedChunkData ChunkData;
+	if (!ChunkManager->GetSpawnedChunk(FIntVector2(ChunkLocationX, ChunkLocationY), ChunkData) || !IsValid(ChunkData.Chunk))
+	{
+		return;
+	}
+
+	SpawnedDeployable->AttachToActor(ChunkData.Chunk, FAttachmentTransformRules::KeepWorldTransform);
 
 	SpawnedDeployable->OnSpawn();
 

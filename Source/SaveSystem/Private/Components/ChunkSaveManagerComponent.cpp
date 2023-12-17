@@ -49,7 +49,7 @@ void UChunkSaveManagerComponent::Save(TArray<FChunkData>& OutData)
 	}
 
 	OutData.Empty();
-	OutData = ChunkManager->GetChunkData();
+	OutData = ChunkManager->GetChunksData();
 }
 
 void UChunkSaveManagerComponent::Load(const TArray<FChunkData>& InData,const uint32& Seed, const int32& SaveFileVersion)
