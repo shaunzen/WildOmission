@@ -6,6 +6,7 @@
 #include "Components/PlayerSaveManagerComponent.h"
 #include "Deployables/Bed.h"
 #include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "TimeOfDayManager.h"
 #include "Interfaces/RequiredForLoad.h"
 #include "WeatherManager.h"
@@ -74,7 +75,6 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 		return;
 	}
 
-	NewWildOmissionPlayer->Client_SetNumRequiredActors(IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()));
 	SaveManager->GetPlayerManager()->Load(NewPlayer);
 
 	if (GetWorld()->IsPlayInEditor())
@@ -259,21 +259,22 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 
 void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 {
-	AActor* StartSpot = FindPlayerStart(Controller);
-	if (StartSpot == nullptr && Controller->StartSpot != nullptr)
-	{
-		StartSpot = Controller->StartSpot.Get();
-	}
+	FIntVector2 StartChunkLocation(FMath::RandRange(-10, 10), FMath::RandRange(-10, 10));
 
-	if (StartSpot == nullptr)
+	// Ensure the chunk we want to start at exists
+	ChunkManager->GenerateChunkAtLocation(StartChunkLocation);
+
+	// Line trace down to find ground
+	FHitResult HitResult;
+	const FVector Start(StartChunkLocation.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(),
+		StartChunkLocation.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), AChunk::GetMaxHeight());
+	const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
+	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 	{
 		return;
 	}
 
-	FRotator SpawnRotation = StartSpot->GetActorRotation();
-
-	UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart %s"), (Controller && Controller->PlayerState) ? *Controller->PlayerState->GetPlayerName() : TEXT("Unknown"));
-
+	// Spawn there
 	if (MustSpectate(Cast<APlayerController>(Controller)))
 	{
 		UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart: Tried to restart a spectator-only player!"));
@@ -283,7 +284,7 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 	if (HumanCharacterClass != nullptr)
 	{
 		// Try to create a pawn to use of the default class for this player
-		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, StartSpot->GetActorLocation(), SpawnRotation);
+		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, HitResult.ImpactPoint + FVector(0.0f, 0.0f, 100.0f), FRotator::ZeroRotator);
 		if (IsValid(NewPawn))
 		{
 			Controller->SetPawn(NewPawn);
@@ -296,10 +297,7 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 	}
 	else
 	{
-		// Tell the start spot it was used
-		InitStartSpot(StartSpot, Controller);
-
-		FinishRestartPlayer(Controller, SpawnRotation);
+		FinishRestartPlayer(Controller, FRotator::ZeroRotator);
 	}
 }
 

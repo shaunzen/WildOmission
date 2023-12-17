@@ -157,6 +157,37 @@ bool AChunkManager::GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedCh
 	return true;
 }
 
+// TODO use this for all chunk generation
+void AChunkManager::GenerateChunkAtLocation(FIntVector2& ChunkLocation)
+{
+	FSpawnedChunkData SpawnedChunkData;
+	SpawnedChunkData.GridLocation = ChunkLocation;
+
+	if (!SpawnedChunks.Contains(SpawnedChunkData))
+	{
+		SpawnChunk(SpawnedChunkData);
+
+		if (!IsValid(SpawnedChunkData.Chunk))
+		{
+			return;
+		}
+
+		// Check if we have existing data to load
+		FChunkData ChunkSaveData;
+		ChunkSaveData.GridLocation = SpawnedChunkData.GridLocation;
+		const int32 SaveIndex = ChunkData.Find(ChunkSaveData);
+		if (SaveIndex != INDEX_NONE)
+		{
+			LoadChunk(SpawnedChunkData, ChunkData[SaveIndex]);
+		}
+		else
+		{
+			GenerateChunk(SpawnedChunkData);
+		}
+
+		SpawnedChunks.Add(SpawnedChunkData);
+	}
+}
 void AChunkManager::SetGenerationSeed(const uint32& Seed)
 {
 	AChunk::SetGenerationSeed(Seed);

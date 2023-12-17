@@ -31,6 +31,7 @@ public:
 
 	static int32 GetVertexSize();
 	static float GetVertexDistanceScale();
+	static float GetMaxHeight();
 
 protected:
 	// Called when the game starts or when spawned

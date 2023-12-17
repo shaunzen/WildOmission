@@ -12,6 +12,7 @@
 static siv::PerlinNoise Noise(10);
 const static int32 VERTEX_SIZE = 16;
 const static float VERTEX_DISTANCE_SCALE = 100.0f;
+const static float MAX_HEIGHT = 1000000.0f;
 
 // Sets default values
 AChunk::AChunk()
@@ -92,7 +93,7 @@ float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float Vertex
 	const float MinorHeight = Noise.noise2D(Location.X * MinorScale, Location.Y * MinorScale) * 100.0f;
 	const float RoughnessHeight = Noise.octave2D(Location.X * RoughnessScale, Location.Y * RoughnessScale, 3) * 10.0f;
 
-	return MajorHeight + MinorHeight + RoughnessHeight;
+	return FMath::Clamp(MajorHeight + MinorHeight + RoughnessHeight, -MAX_HEIGHT, MAX_HEIGHT);
 	//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
 }
 
@@ -114,6 +115,11 @@ int32 AChunk::GetVertexSize()
 float AChunk::GetVertexDistanceScale()
 {
 	return VERTEX_DISTANCE_SCALE;
+}
+
+float AChunk::GetMaxHeight()
+{
+	return MAX_HEIGHT;
 }
 
 // Called when the game starts or when spawned
