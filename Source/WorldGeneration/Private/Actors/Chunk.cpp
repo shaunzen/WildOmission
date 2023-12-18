@@ -92,6 +92,9 @@ void AChunk::SetGenerationSeed(const uint32& Seed)
 
 float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float VertexDistanceScale)
 {
+	// TODO get biome
+
+	// Use Biome Settings to determine height
 	const float MajorScale = 0.005f;
 	const float MinorScale = 0.1f;
 	const float RoughnessScale = 0.2f;
@@ -238,4 +241,21 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
 
 	OutTransform.SetLocation(Verticies[Point] + GetActorLocation());
 	return true;
+}
+
+FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) const
+{
+	const float TempatureScale = 0.01f;
+	const float HumidityScale = 0.001f;
+
+	const float Tempature = Noise.noise2D(Location.X * TempatureScale, Location.Y * TempatureScale);
+	const float Humidity = Noise.noise2D(Location.X * HumidityScale, Location.Y * TempatureScale);
+
+	// Temp High, Humidity Low = Desert
+	// Temp High, Humidity High = Swamp
+	// Temp Low, Humidity Low = Tundra
+	// Temp Low, Humidity High = Snow Forest
+	// Temp ~, Humidity ~ = Plains/Forest
+
+	return nullptr;
 }

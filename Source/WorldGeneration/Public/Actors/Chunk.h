@@ -88,6 +88,8 @@ private:
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform);
 
+	FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location) const;
+
 	void CreateVerticies();
 	void CreateTriangles();
 	void CreateMesh();
