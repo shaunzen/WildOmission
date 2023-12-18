@@ -259,19 +259,34 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 
 void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 {
-	FIntVector2 StartChunkLocation(FMath::RandRange(-10, 10), FMath::RandRange(-10, 10));
-
-	// Ensure the chunk we want to start at exists
-	ChunkManager->GenerateChunkAtLocation(StartChunkLocation);
+	
+	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
 
 	// Line trace down to find ground
 	FHitResult HitResult;
-	const FVector Start(StartChunkLocation.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(),
-		StartChunkLocation.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), AChunk::GetMaxHeight());
-	const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+	bool FoundValidSpawn = false;
+	while (!FoundValidSpawn)
 	{
-		return;
+		const FIntVector2 StartChunkLocation(FMath::RandRange(-10, 10), FMath::RandRange(-10, 10));
+
+		// Ensure the chunk we want to start at exists
+		ChunkManager->GenerateChunkAtLocation(StartChunkLocation);
+	
+		const FVector Start((StartChunkLocation.X * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)),
+			(StartChunkLocation.Y * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)), AChunk::GetMaxHeight());
+		const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
+		if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+		{
+			continue;
+		}
+
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor == nullptr || !HitActor->ActorHasTag(TEXT("Ground")))
+		{
+			continue;
+		}
+
+		FoundValidSpawn = true;
 	}
 
 	// Spawn there

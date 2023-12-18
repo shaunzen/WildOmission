@@ -28,7 +28,7 @@ public:
 	TArray<FSpawnedChunkData> GetSpawnedChunks() const;
 	bool GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunkData& OutSpawnedChunkData) const;
 
-	void GenerateChunkAtLocation(FIntVector2& ChunkLocation);
+	void GenerateChunkAtLocation(const FIntVector2& ChunkLocation);
 
 	static void SetGenerationSeed(const uint32& Seed);
 

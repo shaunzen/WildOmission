@@ -158,7 +158,7 @@ bool AChunkManager::GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedCh
 }
 
 // TODO use this for all chunk generation
-void AChunkManager::GenerateChunkAtLocation(FIntVector2& ChunkLocation)
+void AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 {
 	FSpawnedChunkData SpawnedChunkData;
 	SpawnedChunkData.GridLocation = ChunkLocation;
