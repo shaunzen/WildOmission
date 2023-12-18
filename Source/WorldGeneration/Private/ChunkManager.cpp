@@ -35,80 +35,9 @@ void AChunkManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Get Player Location
-	const FVector PlayerLocation = GetFirstPlayerLocation();
-	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
-		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
-	
-	// TODO clean up out of range chunks
-	TArray<FSpawnedChunkData> NewSpawnedChunks = SpawnedChunks;
-	for (const FSpawnedChunkData& SpawnedChunkData : SpawnedChunks)
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		if (!IsValid(SpawnedChunkData.Chunk))
-		{
-			continue;
-		}
-
-		const int32 DistanceFromPlayer = SpawnedChunkData.Distance(PlayerChunkLocation);
-		if (DistanceFromPlayer <= RENDER_DISTANCE)
-		{
-			continue;
-		}
-
-		FChunkData ChunkSaveData;
-		SpawnedChunkData.Chunk->Save(ChunkSaveData, true);
-
-		// TODO Be sure to overwrite the existing data for this chunk
-		// so that we can prevent memory leak
-		if (ChunkData.Contains(ChunkSaveData))
-		{
-			ChunkData.Remove(ChunkSaveData);
-		}
-
-		ChunkData.Add(ChunkSaveData);
-
-		NewSpawnedChunks.Remove(SpawnedChunkData);
-	}
-
-	SpawnedChunks = NewSpawnedChunks;
-
-	// TODO generate/load new in range chunks
-	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
-	{
-		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
-		{
-			FSpawnedChunkData SpawnedChunkData;
-			SpawnedChunkData.GridLocation = FIntVector2(RenderX, RenderY) + PlayerChunkLocation;
-			if (SpawnedChunkData.Distance(PlayerChunkLocation) > RENDER_DISTANCE)
-			{
-				continue;
-			}
-
-			if (!SpawnedChunks.Contains(SpawnedChunkData))
-			{
-				SpawnChunk(SpawnedChunkData);
-
-				if (!IsValid(SpawnedChunkData.Chunk))
-				{
-					continue;
-				}
-
-				// TODO check if we have existing data to load
-				FChunkData ChunkSaveData;
-				ChunkSaveData.GridLocation = SpawnedChunkData.GridLocation;
-				const int32 SaveIndex = ChunkData.Find(ChunkSaveData);
-				if (SaveIndex != INDEX_NONE)
-				{
-					LoadChunk(SpawnedChunkData, ChunkData[SaveIndex]);
-				}
-				else
-				{
-					GenerateChunk(SpawnedChunkData);
-				}
-
-				SpawnedChunks.Add(SpawnedChunkData);
-			}
-		}
+		SpawnChunksForPlayer(Iterator->Get());
 	}
 }
 
@@ -212,6 +141,128 @@ void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	Instance = nullptr;
+}
+
+void AChunkManager::RemoveOutOfRangeChunks()
+{
+	TArray<FSpawnedChunkData> NewSpawnedChunks = SpawnedChunks;
+	for (const FSpawnedChunkData& SpawnedChunkData : SpawnedChunks)
+	{
+		if (!IsValid(SpawnedChunkData.Chunk))
+		{
+			continue;
+		}
+		
+		int32 DistanceFromClosestPlayer = 0;
+		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+		{
+			APlayerController* PlayerController = Iterator->Get();
+			if (!IsValid(PlayerController))
+			{
+				continue;
+			}
+
+			APawn* Pawn = PlayerController->GetPawn();
+			if (!IsValid(Pawn))
+			{
+				continue;
+			}
+
+			const FVector PlayerLocation = Pawn->GetActorLocation();
+
+			const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
+				PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
+
+			const int32 DistanceFromPlayer = SpawnedChunkData.Distance(PlayerChunkLocation);
+			if (DistanceFromClosestPlayer > 0 && DistanceFromPlayer > DistanceFromClosestPlayer)
+			{
+				continue;
+			}
+
+			DistanceFromClosestPlayer = DistanceFromPlayer;
+		}
+
+		if (DistanceFromClosestPlayer <= RENDER_DISTANCE)
+		{
+			continue;
+		}
+
+		FChunkData ChunkSaveData;
+		SpawnedChunkData.Chunk->Save(ChunkSaveData, true);
+
+		// TODO Be sure to overwrite the existing data for this chunk
+		// so that we can prevent memory leak
+		if (ChunkData.Contains(ChunkSaveData))
+		{
+			ChunkData.Remove(ChunkSaveData);
+		}
+
+		ChunkData.Add(ChunkSaveData);
+
+		NewSpawnedChunks.Remove(SpawnedChunkData);
+	}
+
+	SpawnedChunks = NewSpawnedChunks;
+}
+
+void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
+{
+	if (!IsValid(PlayerController))
+	{
+		return;
+	}
+
+	APawn* Pawn = PlayerController->GetPawn();
+	if (!IsValid(Pawn))
+	{
+		return;
+	}
+
+	// Get Player Location
+	const FVector PlayerLocation = Pawn->GetActorLocation();
+
+	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
+		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
+
+	
+	// Generate/load new in range chunks
+	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
+	{
+		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
+		{
+			FSpawnedChunkData SpawnedChunkData;
+			SpawnedChunkData.GridLocation = FIntVector2(RenderX, RenderY) + PlayerChunkLocation;
+			if (SpawnedChunkData.Distance(PlayerChunkLocation) > RENDER_DISTANCE)
+			{
+				continue;
+			}
+
+			if (!SpawnedChunks.Contains(SpawnedChunkData))
+			{
+				SpawnChunk(SpawnedChunkData);
+
+				if (!IsValid(SpawnedChunkData.Chunk))
+				{
+					continue;
+				}
+
+				// TODO check if we have existing data to load
+				FChunkData ChunkSaveData;
+				ChunkSaveData.GridLocation = SpawnedChunkData.GridLocation;
+				const int32 SaveIndex = ChunkData.Find(ChunkSaveData);
+				if (SaveIndex != INDEX_NONE)
+				{
+					LoadChunk(SpawnedChunkData, ChunkData[SaveIndex]);
+				}
+				else
+				{
+					GenerateChunk(SpawnedChunkData);
+				}
+
+				SpawnedChunks.Add(SpawnedChunkData);
+			}
+		}
+	}
 }
 
 void AChunkManager::SpawnChunk(FSpawnedChunkData& OutSpawnedChunkData)

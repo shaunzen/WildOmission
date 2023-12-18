@@ -59,6 +59,9 @@ private:
 	// about spawned chunks, as well as a pointer to the spawned chunk object.
 	TArray<FSpawnedChunkData> SpawnedChunks;
 
+	void RemoveOutOfRangeChunks();
+	void SpawnChunksForPlayer(APlayerController* PlayerController);
+
 	// When Passing Chunk Data in, make sure to populate grid location, it is what will be used when generating the chunk.
 	void SpawnChunk(FSpawnedChunkData& OutSpawnedChunkData);
 	void GenerateChunk(const FSpawnedChunkData& InSpawnedChunkData);

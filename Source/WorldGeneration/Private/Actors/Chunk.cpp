@@ -7,6 +7,7 @@
 #include "ChunkManager.h"
 #include "Noise/PerlinNoise.hpp"
 #include "KismetProceduralMeshLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 static siv::PerlinNoise Noise(10);
@@ -19,6 +20,8 @@ AChunk::AChunk()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+	bReplicates = true;
 	
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
@@ -45,6 +48,13 @@ AChunk::AChunk()
 	Tags.Add(TEXT("Ground"));
 }
 
+void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AChunk, Verticies, COND_InitialOnly);
+}
+
 void AChunk::Generate()
 {
 	GenerateTerrain();
@@ -61,11 +71,7 @@ void AChunk::Generate()
 
 void AChunk::OnLoadFromSaveComplete()
 {
-	Triangles.Reset();
-	Normals.Reset();
-	Tangents.Reset();
-
-	CreateMesh();
+	OnRep_Verticies();
 }
 
 void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
@@ -127,6 +133,15 @@ void AChunk::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+
+void AChunk::OnRep_Verticies()
+{
+	Triangles.Reset();
+	Normals.Reset();
+	Tangents.Reset();
+
+	CreateMesh();
 }
 
 void AChunk::GenerateTerrain()

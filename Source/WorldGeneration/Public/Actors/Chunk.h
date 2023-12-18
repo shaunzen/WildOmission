@@ -15,6 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	AChunk();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
 	UFUNCTION()
 	void Generate();
 
@@ -60,7 +62,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* Material;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Verticies, SaveGame)
 	TArray<FVector> Verticies;
 
 	UPROPERTY()
@@ -69,7 +71,7 @@ private:
 	UPROPERTY(SaveGame)
 	TArray<FVector2D> UV0;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY()
 	TArray<FColor> VertexColors;
 
 	UPROPERTY()
@@ -77,6 +79,9 @@ private:
 
 	UPROPERTY()
 	TArray<struct FProcMeshTangent> Tangents;
+
+	UFUNCTION()
+	void OnRep_Verticies();
 
 	void GenerateTerrain();
 	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);
