@@ -82,7 +82,7 @@ private:
 
 	UFUNCTION()
 	void OnRep_Verticies();
-
+	
 	void GenerateTerrain();
 	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);
 
