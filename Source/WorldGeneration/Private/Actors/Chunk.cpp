@@ -95,7 +95,7 @@ float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float Vertex
 	// TODO get biome
 
 	// Use Biome Settings to determine height
-	const float MajorScale = 0.005f;
+	const float MajorScale = 0.0025f;
 	const float MinorScale = 0.1f;
 	const float RoughnessScale = 0.2f;
 	const float MajorHeight = Noise.noise2D(Location.X * MajorScale, Location.Y * MajorScale) * 10000.0f;
