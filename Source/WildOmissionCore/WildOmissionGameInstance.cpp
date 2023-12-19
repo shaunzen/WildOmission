@@ -289,7 +289,7 @@ void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
 
 	NewSaveGame->LastPlayedTime = Time;
 
-	NewSaveGame->LevelFile = TEXT("LV_World");
+	NewSaveGame->LevelFile = TEXT("LV_Procedural");
 	NewSaveGame->Version = CURRENT_SAVE_FILE_VERSION;
 
 	NewSaveGame->CreationInformation.Name = WorldName;
