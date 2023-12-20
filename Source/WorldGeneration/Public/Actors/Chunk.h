@@ -83,7 +83,9 @@ private:
 	UFUNCTION()
 	void OnRep_Verticies();
 	
-	void GenerateTerrain();
+	void GenerateTerrainShape();
+	void GenerateBiome();
+	void GenerateDecorations();
 	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform);

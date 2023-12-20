@@ -57,8 +57,9 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 
 void AChunk::Generate()
 {
-	GenerateTerrain();
-
+	GenerateTerrainShape();
+	GenerateBiome();
+	GenerateDecorations();
 	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
 	if (Biome)
 	{
@@ -92,7 +93,19 @@ void AChunk::SetGenerationSeed(const uint32& Seed)
 
 float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float VertexDistanceScale)
 {
-	// TODO get biome
+	const float ContinentalnessScale = 0.001f;
+	const float ErosionScale = 0.001f;
+	const float PeaksAndValleysScale = 0.1f;
+	
+	const float Continentalness = Noise.noise2D(Location.X * ContinentalnessScale, Location.Y * ContinentalnessScale);
+	const float Erosion = Noise.noise2D(Location.X * ErosionScale, Location.Y * ErosionScale);
+	float PeaksAndValleys = FMath::Clamp(Noise.noise2D(Location.X * PeaksAndValleysScale, Location.Y * PeaksAndValleysScale) * 2.0f, -1.0f, 1.0f);
+	// Multiply and clamp
+	UE_LOG(LogTemp, Warning, TEXT("Location %s"), *Location.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("C %f"), Continentalness);
+	UE_LOG(LogTemp, Warning, TEXT("E %f"), Erosion);
+	UE_LOG(LogTemp, Warning, TEXT("P&V %f"), PeaksAndValleys);
+
 
 	// Use Biome Settings to determine height
 	const float MajorScale = 0.0025f;
@@ -147,7 +160,7 @@ void AChunk::OnRep_Verticies()
 	CreateMesh();
 }
 
-void AChunk::GenerateTerrain()
+void AChunk::GenerateTerrainShape()
 {
 	Verticies.Reset();
 	Triangles.Reset();
@@ -158,6 +171,14 @@ void AChunk::GenerateTerrain()
 
 	CreateVerticies();
 	CreateMesh();	
+}
+
+void AChunk::GenerateBiome()
+{
+}
+
+void AChunk::GenerateDecorations()
+{
 }
 
 void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList)
