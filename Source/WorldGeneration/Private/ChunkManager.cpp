@@ -220,6 +220,12 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 
 	// Get Player Location
 	const FVector PlayerLocation = Pawn->GetActorLocation();
+	
+	const FVector2D TwoDimensionPlayerLocation(PlayerLocation.X, PlayerLocation.Y);
+	UE_LOG(LogTemp, Warning, TEXT("Location %s"), *TwoDimensionPlayerLocation.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("C %f"), AChunk::GetContinentalnessAtLocation(TwoDimensionPlayerLocation));
+	UE_LOG(LogTemp, Warning, TEXT("E %f"), AChunk::GetErosionAtLocation(TwoDimensionPlayerLocation));
+	UE_LOG(LogTemp, Warning, TEXT("P&V %f"), AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation));
 
 	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
 		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));

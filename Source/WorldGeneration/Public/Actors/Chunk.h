@@ -27,6 +27,10 @@ public:
 	void Load(const struct FChunkData& InChunkData);
 
 	static void SetGenerationSeed(const uint32& Seed);
+
+	static float GetContinentalnessAtLocation(const FVector2D& Location);
+	static float GetErosionAtLocation(const FVector2D& Location);
+	static float GetPeaksAndValleysAtLocation(const FVector2D& Location);
 	static float GetTerrainHeightAtLocation(const FVector2D& Location, float Scale = 1.0f);
 	void SetChunkLocation(const FIntVector2& InLocation);
 	FIntVector2 GetChunkLocation() const;
@@ -87,6 +91,8 @@ private:
 	void GenerateBiome();
 	void GenerateDecorations();
 	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);
+
+
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform);
 
