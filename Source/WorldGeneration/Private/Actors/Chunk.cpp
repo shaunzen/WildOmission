@@ -125,6 +125,9 @@ float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float Vertex
 
 	const float Continentalness = ContinentalnessHeightCurve->GetFloatValue(
 		Noise.noise2D(Location.X * ContinentalnessScale, Location.Y * ContinentalnessScale)) * ContinentalnessInfluence;
+	// If continentalness > 0
+		// Add Erosion
+
 	const float Erosion = ErosionHeightCurve->GetFloatValue(
 		Noise.noise2D(Location.X * ErosionScale, Location.Y * ErosionScale)) * ErosionInfluence;
 	const float PeaksAndValleys = PeaksAndValleysHeightCurve->GetFloatValue(
@@ -134,8 +137,17 @@ float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float Vertex
 	UE_LOG(LogTemp, Warning, TEXT("C %f"), Continentalness);
 	UE_LOG(LogTemp, Warning, TEXT("E %f"), Erosion);
 	UE_LOG(LogTemp, Warning, TEXT("P&V %f"), PeaksAndValleys);*/
+	float Height = Continentalness;
 
-	return Continentalness + Erosion + PeaksAndValleys;
+	if (Continentalness > 0.0f)
+	{
+		Height += Erosion;
+		if (Erosion > 0.0f)
+		{
+			Height += PeaksAndValleys;
+		}
+	}
+	return Height;
 	//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
 }
 
