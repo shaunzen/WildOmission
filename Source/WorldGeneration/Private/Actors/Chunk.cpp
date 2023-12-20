@@ -5,6 +5,7 @@
 #include "ProceduralMeshComponent.h"
 #include "Components/ChunkSaveComponent.h"
 #include "ChunkManager.h"
+#include "Curves/CurveFloat.h"
 #include "Noise/PerlinNoise.hpp"
 #include "KismetProceduralMeshLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -14,6 +15,9 @@ static siv::PerlinNoise Noise(10);
 const static int32 VERTEX_SIZE = 16;
 const static float VERTEX_DISTANCE_SCALE = 100.0f;
 const static float MAX_HEIGHT = 1000000.0f;
+static UCurveFloat* ContinentalnessHeightCurve = nullptr;;
+static UCurveFloat* ErosionHeightCurve = nullptr;
+static UCurveFloat* PeaksAndValleysHeightCurve = nullptr;
 
 // Sets default values
 AChunk::AChunk()
@@ -42,6 +46,24 @@ AChunk::AChunk()
 		if (TerrainMaterial.Succeeded())
 		{
 			Material = TerrainMaterial.Object;
+		}
+
+		static ConstructorHelpers::FObjectFinder<UCurveFloat> ContinentalnessHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_Continentalness_Height"));
+		if (ContinentalnessHeightCurveBlueprint.Succeeded())
+		{
+			ContinentalnessHeightCurve = ContinentalnessHeightCurveBlueprint.Object;
+		}
+
+		static ConstructorHelpers::FObjectFinder<UCurveFloat> ErosionHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_Erosion_Height"));
+		if (ErosionHeightCurveBlueprint.Succeeded())
+		{
+			ErosionHeightCurve = ErosionHeightCurveBlueprint.Object;
+		}
+
+		static ConstructorHelpers::FObjectFinder<UCurveFloat> PeaksAndValleysHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_PeaksAndValleys_Height"));
+		if (PeaksAndValleysHeightCurveBlueprint.Succeeded())
+		{
+			PeaksAndValleysHeightCurve = PeaksAndValleysHeightCurveBlueprint.Object;
 		}
 	}
 
@@ -93,29 +115,27 @@ void AChunk::SetGenerationSeed(const uint32& Seed)
 
 float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float VertexDistanceScale)
 {
-	const float ContinentalnessScale = 0.001f;
-	const float ErosionScale = 0.001f;
+	const float ContinentalnessScale = 0.01f;
+	const float ErosionScale = 0.01f;
 	const float PeaksAndValleysScale = 0.1f;
 	
-	const float Continentalness = Noise.noise2D(Location.X * ContinentalnessScale, Location.Y * ContinentalnessScale);
-	const float Erosion = Noise.noise2D(Location.X * ErosionScale, Location.Y * ErosionScale);
-	float PeaksAndValleys = FMath::Clamp(Noise.noise2D(Location.X * PeaksAndValleysScale, Location.Y * PeaksAndValleysScale) * 2.0f, -1.0f, 1.0f);
-	// Multiply and clamp
-	UE_LOG(LogTemp, Warning, TEXT("Location %s"), *Location.ToString());
+	const float ContinentalnessInfluence = 1000.0f;
+	const float ErosionInfluence = 100.0f;
+	const float PeaksAndValleysInfluence = 100.0f;
+
+	const float Continentalness = ContinentalnessHeightCurve->GetFloatValue(
+		Noise.noise2D(Location.X * ContinentalnessScale, Location.Y * ContinentalnessScale)) * ContinentalnessInfluence;
+	const float Erosion = ErosionHeightCurve->GetFloatValue(
+		Noise.noise2D(Location.X * ErosionScale, Location.Y * ErosionScale)) * ErosionInfluence;
+	const float PeaksAndValleys = PeaksAndValleysHeightCurve->GetFloatValue(
+		Noise.noise2D(Location.X * PeaksAndValleysScale, Location.Y * PeaksAndValleysScale)) * PeaksAndValleysInfluence;
+	
+	/*UE_LOG(LogTemp, Warning, TEXT("Location %s"), *Location.ToString());
 	UE_LOG(LogTemp, Warning, TEXT("C %f"), Continentalness);
 	UE_LOG(LogTemp, Warning, TEXT("E %f"), Erosion);
-	UE_LOG(LogTemp, Warning, TEXT("P&V %f"), PeaksAndValleys);
+	UE_LOG(LogTemp, Warning, TEXT("P&V %f"), PeaksAndValleys);*/
 
-
-	// Use Biome Settings to determine height
-	const float MajorScale = 0.0025f;
-	const float MinorScale = 0.1f;
-	const float RoughnessScale = 0.2f;
-	const float MajorHeight = Noise.noise2D(Location.X * MajorScale, Location.Y * MajorScale) * 10000.0f;
-	const float MinorHeight = Noise.noise2D(Location.X * MinorScale, Location.Y * MinorScale) * 100.0f;
-	const float RoughnessHeight = Noise.octave2D(Location.X * RoughnessScale, Location.Y * RoughnessScale, 3) * 10.0f;
-
-	return FMath::Clamp(MajorHeight + MinorHeight + RoughnessHeight, -MAX_HEIGHT, MAX_HEIGHT);
+	return Continentalness + Erosion + PeaksAndValleys;
 	//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
 }
 
