@@ -254,7 +254,7 @@ float AChunk::GetErosionAtLocation(const FVector2D& Location, bool UseRawValue)
 		return 0.0f;
 	}
 
-	const float ErosionScale = 0.00001f;
+	const float ErosionScale = 0.00005f;
 	const float ErosionOffset = 50000.0f;
 	const FVector2D TestLocation = Location + ErosionOffset;
 
