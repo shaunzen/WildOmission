@@ -12,6 +12,7 @@
 #include "UObject/ConstructorHelpers.h"
 
 static siv::PerlinNoise Noise(10);
+static uint32 Seed = 0;
 const static int32 VERTEX_SIZE = 16;
 const static float VERTEX_DISTANCE_SCALE = 100.0f;
 const static float MAX_HEIGHT = 1000000.0f;
@@ -108,9 +109,10 @@ void AChunk::Load(const FChunkData& InChunkData)
 	OnLoadFromSaveComplete();
 }
 
-void AChunk::SetGenerationSeed(const uint32& Seed)
+void AChunk::SetGenerationSeed(const uint32& InSeed)
 {
-	Noise.reseed(Seed);
+	Seed = InSeed;
+	Noise.reseed(InSeed);
 }
 
 float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float VertexDistanceScale)
@@ -118,16 +120,17 @@ float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float Vertex
 	
 
 	
-	const float ContinentalnessInfluence = 500.0f;
-	const float ErosionInfluence = 10000.0f;
-	const float PeaksAndValleysInfluence = 10000.0f;
+	const float ContinentalnessInfluence = 1000.0f;
+	const float ErosionInfluence = 5000.0f;
+	const float PeaksAndValleysInfluence = 25000.0f;
 
-	const float Continentalness = GetContinentalnessAtLocation(Location);
-	const float Erosion = GetErosionAtLocation(Location);
-	const float PeaksAndValleys = GetPeaksAndValleysAtLocation(Location);
-	const float ContinentalnessHeight = Continentalness * ContinentalnessInfluence;
-	const float ErosionHeight = Erosion + 1 * ErosionInfluence;
-	const float PeaksAndValleysHeight = PeaksAndValleys * PeaksAndValleysInfluence;
+	const float ContinentalnessHeight = GetContinentalnessAtLocation(Location) * ContinentalnessInfluence;
+	const float ErosionHeight = (GetErosionAtLocation(Location) + 1) * ErosionInfluence;
+	const float PeaksAndValleysHeight = (GetPeaksAndValleysAtLocation(Location) + 1) * PeaksAndValleysInfluence;
+
+	const float ContinentalnessRaw = GetContinentalnessAtLocation(Location, true);
+	const float ErosionRaw = GetErosionAtLocation(Location, true);
+	const float PeaksAndValleysRaw = GetPeaksAndValleysAtLocation(Location, true);
 	// If continentalness > 0
 		// Add Erosion
 	
@@ -137,12 +140,12 @@ float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float Vertex
 	UE_LOG(LogTemp, Warning, TEXT("P&V %f"), PeaksAndValleys);*/
 	float Height = ContinentalnessHeight;
 	
-	if (Continentalness > 0.0f)
+	if (ContinentalnessRaw > 0.0f)
 	{	
-		Height += ErosionHeight * Continentalness;
-		if (Erosion > 0.0f)
+		Height += ErosionHeight * ContinentalnessRaw;
+		if (ErosionRaw > 0.0f)
 		{
-			Height += PeaksAndValleysHeight * Erosion;
+			Height += PeaksAndValleysHeight * ErosionRaw * ContinentalnessRaw;
 		}
 	}
 	return Height;
@@ -231,42 +234,47 @@ void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataL
 	}
 }
 
-float AChunk::GetContinentalnessAtLocation(const FVector2D& Location)
+float AChunk::GetContinentalnessAtLocation(const FVector2D& Location, bool UseRawValue)
 {
 	if (ContinentalnessHeightCurve == nullptr)
 	{
 		return 0.0f;
 	}
 
-	const float ContinentalnessScale = 0.0001f;
-	return ContinentalnessHeightCurve->GetFloatValue(
-		Noise.noise2D(Location.X * ContinentalnessScale, Location.Y * ContinentalnessScale));
+	const float ContinentalnessScale = 0.000005f;
+	const float RawValue = Noise.octave2D(Location.X * ContinentalnessScale, Location.Y * ContinentalnessScale, 3);
+
+	return UseRawValue ? RawValue : ContinentalnessHeightCurve->GetFloatValue(RawValue);
 }
 
-float AChunk::GetErosionAtLocation(const FVector2D& Location)
+float AChunk::GetErosionAtLocation(const FVector2D& Location, bool UseRawValue)
 {
 	if (ErosionHeightCurve == nullptr)
 	{
 		return 0.0f;
 	}
 
-	const float ErosionScale = 0.001f;
-	const float ErosionOffset = 1000.0f;
-	return ErosionHeightCurve->GetFloatValue(
-		Noise.noise2D((Location.X * ErosionOffset) * ErosionScale, (Location.Y * ErosionOffset) * ErosionScale));
+	const float ErosionScale = 0.00001f;
+	const float ErosionOffset = 50000.0f;
+	const FVector2D TestLocation = Location + ErosionOffset;
+
+	const float RawValue = Noise.octave2D(TestLocation.X * ErosionScale, TestLocation.Y * ErosionScale, 3);
+
+	return UseRawValue ? RawValue : ErosionHeightCurve->GetFloatValue(RawValue);
 }
 
-float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location)
+float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRawValue)
 {
 	if (PeaksAndValleysHeightCurve == nullptr)
 	{
 		return 0.0f;
 	}
 
-	const float PeaksAndValleysScale = 0.0005f;
-	const float PeaksAndValleysOffset = 5000.0f;
-	return PeaksAndValleysHeightCurve->GetFloatValue(
-		Noise.noise2D((Location.X * PeaksAndValleysOffset) * PeaksAndValleysScale, (Location.Y * PeaksAndValleysOffset) * PeaksAndValleysScale));
+	const float PeaksAndValleysScale = 0.00005f;
+	const float PeaksAndValleysOffset = -50000.0f;
+	const FVector2D TestLocation = Location + PeaksAndValleysOffset;
+	const float RawValue = Noise.octave2D(TestLocation.X * PeaksAndValleysScale, TestLocation.Y * PeaksAndValleysScale, 3);
+	return UseRawValue ? RawValue : PeaksAndValleysHeightCurve->GetFloatValue(RawValue);
 }
 
 void AChunk::CreateVerticies()

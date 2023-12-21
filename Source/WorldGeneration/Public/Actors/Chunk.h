@@ -26,11 +26,12 @@ public:
 	void Save(struct FChunkData& OutChunkData, bool AlsoDestroy = false);
 	void Load(const struct FChunkData& InChunkData);
 
-	static void SetGenerationSeed(const uint32& Seed);
+	static void SetGenerationSeed(const uint32& InSeed);
 
-	static float GetContinentalnessAtLocation(const FVector2D& Location);
-	static float GetErosionAtLocation(const FVector2D& Location);
-	static float GetPeaksAndValleysAtLocation(const FVector2D& Location);
+	static float GetContinentalnessAtLocation(const FVector2D& Location, bool UseRawValue = false);
+	static float GetErosionAtLocation(const FVector2D& Location, bool UseRawValue = false);
+	static float GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRawValue = false);
+
 	static float GetTerrainHeightAtLocation(const FVector2D& Location, float Scale = 1.0f);
 	void SetChunkLocation(const FIntVector2& InLocation);
 	FIntVector2 GetChunkLocation() const;

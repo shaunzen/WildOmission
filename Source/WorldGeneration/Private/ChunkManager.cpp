@@ -223,9 +223,12 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 	
 	const FVector2D TwoDimensionPlayerLocation(PlayerLocation.X, PlayerLocation.Y);
 	UE_LOG(LogTemp, Warning, TEXT("Location %s"), *TwoDimensionPlayerLocation.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("C %f"), AChunk::GetContinentalnessAtLocation(TwoDimensionPlayerLocation));
-	UE_LOG(LogTemp, Warning, TEXT("E %f"), AChunk::GetErosionAtLocation(TwoDimensionPlayerLocation));
-	UE_LOG(LogTemp, Warning, TEXT("P&V %f"), AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation));
+	UE_LOG(LogTemp, Warning, TEXT("C %f, Raw C %f"),
+		AChunk::GetContinentalnessAtLocation(TwoDimensionPlayerLocation), AChunk::GetContinentalnessAtLocation(TwoDimensionPlayerLocation, true));
+	UE_LOG(LogTemp, Warning, TEXT("E %f, Raw E %f"),
+		AChunk::GetErosionAtLocation(TwoDimensionPlayerLocation), AChunk::GetErosionAtLocation(TwoDimensionPlayerLocation, true));
+	UE_LOG(LogTemp, Warning, TEXT("P&V %f, Raw P&V %f"),
+		AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation), AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation, true));
 
 	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
 		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
