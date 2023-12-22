@@ -217,6 +217,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 		JumpAction = JumpActionBlueprint.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> FlyActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Fly"));
+	if (FlyActionBlueprint.Succeeded())
+	{
+		FlyAction = FlyActionBlueprint.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Primary"));
 	if (PrimaryActionBlueprint.Succeeded())
 	{
@@ -388,6 +394,18 @@ void AWildOmissionCharacter::Jump()
 {
 	Super::Jump();
 
+	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
+	if (OurCharacterMovement == nullptr)
+	{
+		return;
+	}
+
+	if (OurCharacterMovement->IsFlying())
+	{
+		const float UpwardSpeed = 5000000.0f;
+		OurCharacterMovement->AddForce(UpwardSpeed * FVector::UpVector);
+	}
+
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (IsLocallyControlled() && CanJump() && UserSettings && UserSettings->GetCameraShakeEnabled() && PlayerController && JumpCameraShake)
@@ -413,6 +431,19 @@ void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 		TakeDamage(DamageToApply, FallDamageEvent, GetController(), this);
 		Multi_PlayFallCrunchSound();
 	}
+}
+
+void AWildOmissionCharacter::HandleFly()
+{
+	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
+	if (OurCharacterMovement == nullptr)
+	{
+		return;
+	}
+
+	const bool AlreadyFlying = OurCharacterMovement->IsFlying();
+	AlreadyFlying ? OurCharacterMovement->SetMovementMode(EMovementMode::MOVE_Walking)
+		: OurCharacterMovement->SetMovementMode(EMovementMode::MOVE_Flying);
 }
 
 void AWildOmissionCharacter::SetupEnhancedInputSubsystem()
@@ -457,6 +488,7 @@ void AWildOmissionCharacter::ApplyInputSettings()
 	DefaultMappingContext->MapKey(SprintAction, UserSettings->GetSprintKey());
 	DefaultMappingContext->MapKey(CrouchAction, UserSettings->GetCrouchKey());
 	DefaultMappingContext->MapKey(JumpAction, UserSettings->GetJumpKey());
+	DefaultMappingContext->MapKey(FlyAction, EKeys::L);
 	DefaultMappingContext->MapKey(PrimaryAction, UserSettings->GetPrimaryKey());
 	DefaultMappingContext->MapKey(SecondaryAction, UserSettings->GetSecondaryKey());
 	DefaultMappingContext->MapKey(InteractAction, UserSettings->GetInteractKey());
@@ -683,7 +715,9 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndSprint);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartCrouch);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndCrouch);
-	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::ClientCheatFly);
+	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
+	EnhancedInputComponent->BindAction(FlyAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::HandleFly);
+
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::PrimaryPressed);
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::PrimaryReleased);
 	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::SecondaryPressed);
@@ -792,6 +826,17 @@ void AWildOmissionCharacter::EndSprint()
 
 void AWildOmissionCharacter::StartCrouch()
 {
+	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
+	if (OurCharacterMovement == nullptr)
+	{
+		return;
+	}
+
+	if (OurCharacterMovement->IsFlying())
+	{
+		const float DownwardSpeed = 5000000.0f;
+		OurCharacterMovement->AddForce(DownwardSpeed * -FVector::UpVector);
+	}
 	Crouch();
 }
 

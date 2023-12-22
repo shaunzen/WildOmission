@@ -35,6 +35,8 @@ void AChunkManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	RemoveOutOfRangeChunks();
+
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		SpawnChunksForPlayer(Iterator->Get());
@@ -221,14 +223,15 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 	// Get Player Location
 	const FVector PlayerLocation = Pawn->GetActorLocation();
 	
-	const FVector2D TwoDimensionPlayerLocation(PlayerLocation.X, PlayerLocation.Y);
+	// Uncomment for generation stats
+	/*const FVector2D TwoDimensionPlayerLocation(PlayerLocation.X, PlayerLocation.Y);
 	UE_LOG(LogTemp, Warning, TEXT("Location %s"), *TwoDimensionPlayerLocation.ToString());
 	UE_LOG(LogTemp, Warning, TEXT("C %f, Raw C %f"),
 		AChunk::GetContinentalnessAtLocation(TwoDimensionPlayerLocation), AChunk::GetContinentalnessAtLocation(TwoDimensionPlayerLocation, true));
 	UE_LOG(LogTemp, Warning, TEXT("E %f, Raw E %f"),
 		AChunk::GetErosionAtLocation(TwoDimensionPlayerLocation), AChunk::GetErosionAtLocation(TwoDimensionPlayerLocation, true));
 	UE_LOG(LogTemp, Warning, TEXT("P&V %f, Raw P&V %f"),
-		AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation), AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation, true));
+		AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation), AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation, true));*/
 
 	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
 		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));

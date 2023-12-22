@@ -29,6 +29,9 @@ public:
 	virtual void Jump() override;
 	virtual void Landed(const FHitResult& HitResult) override;
 
+	UFUNCTION()
+	void HandleFly();
+
 	// Begin ICharacterSettingsInterface Implementation
 	virtual void ApplyInputSettings() override;
 	virtual void ApplyGameplaySettings() override;
@@ -178,6 +181,9 @@ private:
 
 	UPROPERTY()
 	class UInputAction* JumpAction;
+
+	UPROPERTY()
+	class UInputAction* FlyAction;
 		
 	UPROPERTY()
 	class UInputAction* PrimaryAction;
