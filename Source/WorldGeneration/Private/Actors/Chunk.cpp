@@ -143,22 +143,18 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 			OutHeight += PeaksAndValleysHeight * RawErosion * RawContinentalness;
 		}
 	}
-	OutColor = FColor::Purple;
+	OutColor = FColor::Yellow;
 	// Ground Color
-	if (RawContinentalness < 0.0f)
+	if (RawContinentalness <= 0.0f)
 	{
 		// Sand
 		OutColor = FColor::Yellow;
 	}
-	else if (RawContinentalness > 0.0f && RawErosion > 0.3f)
+	else
 	{
-		// Stone
-		OutColor = FColor::White;
-	}
-	else if (RawContinentalness > 0.0f)
-	{
-		// Grass
-		OutColor = FColor::Green;
+		
+		const bool HighAltitude = OutHeight > 10000.0f;
+		HighAltitude? OutColor = FColor::Silver : OutColor = FColor::Green;
 	}
 }
 

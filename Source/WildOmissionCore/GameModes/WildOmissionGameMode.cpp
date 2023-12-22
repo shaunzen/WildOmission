@@ -259,21 +259,27 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 
 void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 {
-	
 	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
 
 	// Line trace down to find ground
 	FHitResult HitResult;
 	bool FoundValidSpawn = false;
+	const FVector StartSearchDirection(FMath::RandRange(-1, 1), FMath::RandRange(-1, 1), 0);
+	FVector CurrentSearchLocation = FVector::ZeroVector;
 	while (!FoundValidSpawn)
 	{
-		const FIntVector2 StartChunkLocation(FMath::RandRange(-10, 10), FMath::RandRange(-10, 10));
-
 		// Ensure the chunk we want to start at exists
-		ChunkManager->GenerateChunkAtLocation(StartChunkLocation);
-	
-		const FVector Start((StartChunkLocation.X * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)),
-			(StartChunkLocation.Y * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)), AChunk::GetMaxHeight());
+		CurrentSearchLocation += StartSearchDirection * ChunkSize;
+		const float Continentalness = AChunk::GetContinentalnessAtLocation(FVector2D(CurrentSearchLocation.X, CurrentSearchLocation.Y), true);
+		if (Continentalness < 0.0f)
+		{
+			continue;
+		}
+
+		ChunkManager->GenerateChunkAtLocation(FIntVector2(CurrentSearchLocation.X, CurrentSearchLocation.Y));
+
+		const FVector Start((CurrentSearchLocation.X * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)),
+			(CurrentSearchLocation.Y * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)), AChunk::GetMaxHeight());
 		const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
 		if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 		{
