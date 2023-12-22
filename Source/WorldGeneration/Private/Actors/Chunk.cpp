@@ -150,7 +150,7 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 		// Sand
 		OutColor = FColor::Yellow;
 	}
-	else if (RawContinentalness > 0.0f && RawErosion > 0.0f)
+	else if (RawContinentalness > 0.0f && RawErosion > 0.3f)
 	{
 		// Stone
 		OutColor = FColor::White;
