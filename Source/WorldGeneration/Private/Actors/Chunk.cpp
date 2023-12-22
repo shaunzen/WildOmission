@@ -115,41 +115,51 @@ void AChunk::SetGenerationSeed(const uint32& InSeed)
 	Noise.reseed(InSeed);
 }
 
-float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location, float VertexDistanceScale)
+void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, FColor& OutColor)
 {
-	
-
-	
 	const float ContinentalnessInfluence = 1000.0f;
 	const float ErosionInfluence = 5000.0f;
 	const float PeaksAndValleysInfluence = 25000.0f;
 
-	const float ContinentalnessHeight = GetContinentalnessAtLocation(Location) * ContinentalnessInfluence;
-	const float ErosionHeight = (GetErosionAtLocation(Location) + 1) * ErosionInfluence;
-	const float PeaksAndValleysHeight = (GetPeaksAndValleysAtLocation(Location) + 1) * PeaksAndValleysInfluence;
+	const float NormalizedContinentalnessHeight = GetContinentalnessAtLocation(Location);
+	const float NormalizedErosionHeight = GetErosionAtLocation(Location);
+	const float NormalizedPeaksAndValleysHeight = GetPeaksAndValleysAtLocation(Location);
 
-	const float ContinentalnessRaw = GetContinentalnessAtLocation(Location, true);
-	const float ErosionRaw = GetErosionAtLocation(Location, true);
-	const float PeaksAndValleysRaw = GetPeaksAndValleysAtLocation(Location, true);
-	// If continentalness > 0
-		// Add Erosion
+	const float ContinentalnessHeight = NormalizedContinentalnessHeight * ContinentalnessInfluence;
+	const float ErosionHeight = (NormalizedContinentalnessHeight + 1) * ErosionInfluence;
+	const float PeaksAndValleysHeight = (NormalizedContinentalnessHeight + 1) * PeaksAndValleysInfluence;
+
+	const float RawContinentalness = GetContinentalnessAtLocation(Location, true);
+	const float RawErosion = GetErosionAtLocation(Location, true);
+	const float RawPeaksAndValleys = GetPeaksAndValleysAtLocation(Location, true);
 	
-	/*UE_LOG(LogTemp, Warning, TEXT("Location %s"), *Location.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("C %f"), Continentalness);
-	UE_LOG(LogTemp, Warning, TEXT("E %f"), Erosion);
-	UE_LOG(LogTemp, Warning, TEXT("P&V %f"), PeaksAndValleys);*/
-	float Height = ContinentalnessHeight;
-	
-	if (ContinentalnessRaw > 0.0f)
+	// Height
+	OutHeight = ContinentalnessHeight;
+	if (RawContinentalness > 0.0f)
 	{	
-		Height += ErosionHeight * ContinentalnessRaw;
-		if (ErosionRaw > 0.0f)
+		OutHeight += ErosionHeight * RawContinentalness;
+		if (RawErosion > 0.0f)
 		{
-			Height += PeaksAndValleysHeight * ErosionRaw * ContinentalnessRaw;
+			OutHeight += PeaksAndValleysHeight * RawErosion * RawContinentalness;
 		}
 	}
-	return Height;
-	//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
+	OutColor = FColor::Purple;
+	// Ground Color
+	if (RawContinentalness < 0.0f)
+	{
+		// Sand
+		OutColor = FColor::Yellow;
+	}
+	else if (RawContinentalness > 0.0f && RawErosion > 0.0f)
+	{
+		// Stone
+		OutColor = FColor::White;
+	}
+	else if (RawContinentalness > 0.0f)
+	{
+		// Grass
+		OutColor = FColor::Green;
+	}
 }
 
 void AChunk::SetChunkLocation(const FIntVector2& InLocation)
@@ -286,12 +296,14 @@ void AChunk::CreateVerticies()
 		{
 			//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
 			//const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
-			const float Z = GetTerrainHeightAtLocation(FVector2D((X * VERTEX_DISTANCE_SCALE) + Location.X, (Y * VERTEX_DISTANCE_SCALE) + Location.Y));
+			float Height;
+			FColor TerrainColor;
+			GetTerrainDataAtLocation(FVector2D((X * VERTEX_DISTANCE_SCALE) + Location.X, (Y * VERTEX_DISTANCE_SCALE) + Location.Y), Height, TerrainColor);
 
 			const float Offset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
 
-			Verticies.Add(FVector((X * VERTEX_DISTANCE_SCALE) - Offset, (Y * VERTEX_DISTANCE_SCALE) - Offset, Z));
-			VertexColors.Add(FColor::Green);
+			Verticies.Add(FVector((X * VERTEX_DISTANCE_SCALE) - Offset, (Y * VERTEX_DISTANCE_SCALE) - Offset, Height));
+			VertexColors.Add(TerrainColor);
 			UV0.Add(FVector2D(X * 0.0625f, Y * 0.0625f));
 		}
 	}

@@ -32,7 +32,7 @@ public:
 	static float GetErosionAtLocation(const FVector2D& Location, bool UseRawValue = false);
 	static float GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRawValue = false);
 
-	static float GetTerrainHeightAtLocation(const FVector2D& Location, float Scale = 1.0f);
+	static void GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, FColor& OutTerrainColor);
 	void SetChunkLocation(const FIntVector2& InLocation);
 	FIntVector2 GetChunkLocation() const;
 
@@ -76,7 +76,7 @@ private:
 	UPROPERTY(SaveGame)
 	TArray<FVector2D> UV0;
 
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	TArray<FColor> VertexColors;
 
 	UPROPERTY()
