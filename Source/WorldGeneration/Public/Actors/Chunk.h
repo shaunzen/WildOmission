@@ -18,7 +18,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	UFUNCTION()
-	void Generate();
+	void Generate(const TArray<FChunkData>& Neighbors);
 
 	UFUNCTION()
 	void OnLoadFromSaveComplete();
@@ -88,7 +88,7 @@ private:
 	UFUNCTION()
 	void OnRep_Verticies();
 	
-	void GenerateTerrainShape();
+	void GenerateTerrainShape(const TArray<FChunkData>& Neighbors);
 	void GenerateBiome();
 	void GenerateDecorations();
 	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);
@@ -99,7 +99,7 @@ private:
 
 	struct FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location) const;
 
-	void CreateVerticies();
+	void CreateVerticies(const TArray<FChunkData>& Neighbors);
 	void CreateTriangles();
 	void CreateMesh();
 

@@ -10,6 +10,13 @@ FChunkData::FChunkData()
 	ActorData = TArray<FActorSaveData>();
 }
 
+FChunkData::FChunkData(const FIntVector2& InGridLocation)
+{
+	GridLocation = InGridLocation;
+	ByteData = TArray<uint8>();
+	ActorData = TArray<FActorSaveData>();
+}
+
 uint32 GetTypeHash(const FChunkData& ChunkData)
 {
 	return FCrc::MemCrc32(&ChunkData.GridLocation, sizeof(FIntVector2));

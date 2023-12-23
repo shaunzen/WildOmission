@@ -13,6 +13,7 @@ struct WORLDGENERATION_API FChunkData
 	GENERATED_BODY()
 
 	FChunkData();
+	FChunkData(const FIntVector2& InGridLocation);
 
 	UPROPERTY()
 	FIntVector2 GridLocation;

@@ -86,7 +86,7 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME_CONDITION(AChunk, Verticies, COND_InitialOnly);
 }
 
-void AChunk::Generate()
+void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 {
 	GenerateTerrainShape();
 	GenerateBiome();
@@ -205,7 +205,7 @@ void AChunk::OnRep_Verticies()
 	CreateMesh();
 }
 
-void AChunk::GenerateTerrainShape()
+void AChunk::GenerateTerrainShape(const TArray<FChunkData>& Neighbors)
 {
 	Verticies.Reset();
 	Triangles.Reset();
@@ -289,8 +289,11 @@ float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRa
 	return UseRawValue ? RawValue : PeaksAndValleysHeightCurve->GetFloatValue(RawValue);
 }
 
-void AChunk::CreateVerticies()
+void AChunk::CreateVerticies(const TArray<FChunkData>& Neighbors)
 {
+	// Iterate through neibors and store there edge height
+	// Use Neighbor edge height when generating this to ensure that there will be no gaps
+
 	const FVector Location = GetActorLocation();
 	for (uint32 X = 0; X <= VERTEX_SIZE; ++X)
 	{

@@ -303,7 +303,33 @@ void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk)
 		return;
 	}
 
-	InSpawnedChunk.Chunk->Generate();
+
+
+	
+	// We need to get neighbors from save file, because they might not be spawned when we are generating this chunk
+
+	// Neighbors
+	TArray<FChunkData> NeighborsData{
+		InSpawnedChunk.GridLocation - FIntVector2(0, 1),
+		InSpawnedChunk.GridLocation - FIntVector2(1, 0),
+		InSpawnedChunk.GridLocation + FIntVector2(1, 0),
+		InSpawnedChunk.GridLocation + FIntVector2(0, 1)
+	};
+	
+	for (FChunkData& NeighborData : NeighborsData)
+	{
+		const int32 NeighborIndex = ChunkData.Find(NeighborData);
+
+		if (NeighborIndex == INDEX_NONE)
+		{
+			continue;
+		}
+
+		NeighborData = ChunkData[NeighborIndex];
+	}
+
+	// Pass neighbors
+	InSpawnedChunk.Chunk->Generate(NeighborsData);
 }
 
 void AChunkManager::LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkData& InChunkData)
