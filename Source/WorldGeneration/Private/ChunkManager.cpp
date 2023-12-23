@@ -68,55 +68,55 @@ bool AChunkManager::GetChunkData(const FIntVector2& ChunkLocation, FChunkData& O
 	return true;
 }
 
-TArray<FSpawnedChunkData> AChunkManager::GetSpawnedChunks() const
+TArray<FSpawnedChunk> AChunkManager::GetSpawnedChunks() const
 {
 	return SpawnedChunks;
 }
 
-bool AChunkManager::GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunkData& OutSpawnedChunkData) const
+bool AChunkManager::GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunk& OutSpawnedChunk) const
 {
-	FSpawnedChunkData ChunkDataLocator;
-	ChunkDataLocator.GridLocation = ChunkLocation;
+	FSpawnedChunk SpawnedChunkLocator;
+	SpawnedChunkLocator.GridLocation = ChunkLocation;
 
-	const int32 ChunkIndex = SpawnedChunks.Find(ChunkDataLocator);
+	const int32 ChunkIndex = SpawnedChunks.Find(SpawnedChunkLocator);
 	if (ChunkIndex == INDEX_NONE)
 	{
 		return false;
 	}
 
-	OutSpawnedChunkData = SpawnedChunks[ChunkIndex];
+	OutSpawnedChunk = SpawnedChunks[ChunkIndex];
 	return true;
 }
 
 // TODO use this for all chunk generation
 void AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 {
-	FSpawnedChunkData SpawnedChunkData;
-	SpawnedChunkData.GridLocation = ChunkLocation;
+	FSpawnedChunk SpawnedChunk;
+	SpawnedChunk.GridLocation = ChunkLocation;
 
-	if (!SpawnedChunks.Contains(SpawnedChunkData))
+	if (!SpawnedChunks.Contains(SpawnedChunk))
 	{
-		SpawnChunk(SpawnedChunkData);
+		SpawnChunk(SpawnedChunk);
 
-		if (!IsValid(SpawnedChunkData.Chunk))
+		if (!IsValid(SpawnedChunk.Chunk))
 		{
 			return;
 		}
 
 		// Check if we have existing data to load
 		FChunkData ChunkSaveData;
-		ChunkSaveData.GridLocation = SpawnedChunkData.GridLocation;
+		ChunkSaveData.GridLocation = SpawnedChunk.GridLocation;
 		const int32 SaveIndex = ChunkData.Find(ChunkSaveData);
 		if (SaveIndex != INDEX_NONE)
 		{
-			LoadChunk(SpawnedChunkData, ChunkData[SaveIndex]);
+			LoadChunk(SpawnedChunk, ChunkData[SaveIndex]);
 		}
 		else
 		{
-			GenerateChunk(SpawnedChunkData);
+			GenerateChunk(SpawnedChunk);
 		}
 
-		SpawnedChunks.Add(SpawnedChunkData);
+		SpawnedChunks.Add(SpawnedChunk);
 	}
 }
 void AChunkManager::SetGenerationSeed(const uint32& Seed)
@@ -147,10 +147,10 @@ void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AChunkManager::RemoveOutOfRangeChunks()
 {
-	TArray<FSpawnedChunkData> NewSpawnedChunks = SpawnedChunks;
-	for (const FSpawnedChunkData& SpawnedChunkData : SpawnedChunks)
+	TArray<FSpawnedChunk> NewSpawnedChunks = SpawnedChunks;
+	for (const FSpawnedChunk& SpawnedChunk : SpawnedChunks)
 	{
-		if (!IsValid(SpawnedChunkData.Chunk))
+		if (!IsValid(SpawnedChunk.Chunk))
 		{
 			continue;
 		}
@@ -175,7 +175,7 @@ void AChunkManager::RemoveOutOfRangeChunks()
 			const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
 				PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
 
-			const int32 DistanceFromPlayer = SpawnedChunkData.Distance(PlayerChunkLocation);
+			const int32 DistanceFromPlayer = SpawnedChunk.Distance(PlayerChunkLocation);
 			if (DistanceFromClosestPlayer > 0 && DistanceFromPlayer > DistanceFromClosestPlayer)
 			{
 				continue;
@@ -190,7 +190,7 @@ void AChunkManager::RemoveOutOfRangeChunks()
 		}
 
 		FChunkData ChunkSaveData;
-		SpawnedChunkData.Chunk->Save(ChunkSaveData, true);
+		SpawnedChunk.Chunk->Save(ChunkSaveData, true);
 
 		// TODO Be sure to overwrite the existing data for this chunk
 		// so that we can prevent memory leak
@@ -201,7 +201,7 @@ void AChunkManager::RemoveOutOfRangeChunks()
 
 		ChunkData.Add(ChunkSaveData);
 
-		NewSpawnedChunks.Remove(SpawnedChunkData);
+		NewSpawnedChunks.Remove(SpawnedChunk);
 	}
 
 	SpawnedChunks = NewSpawnedChunks;
@@ -242,42 +242,42 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 	{
 		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
 		{
-			FSpawnedChunkData SpawnedChunkData;
-			SpawnedChunkData.GridLocation = FIntVector2(RenderX, RenderY) + PlayerChunkLocation;
-			if (SpawnedChunkData.Distance(PlayerChunkLocation) > RENDER_DISTANCE)
+			FSpawnedChunk SpawnedChunk;
+			SpawnedChunk.GridLocation = FIntVector2(RenderX, RenderY) + PlayerChunkLocation;
+			if (SpawnedChunk.Distance(PlayerChunkLocation) > RENDER_DISTANCE)
 			{
 				continue;
 			}
 
-			if (!SpawnedChunks.Contains(SpawnedChunkData))
+			if (!SpawnedChunks.Contains(SpawnedChunk))
 			{
-				SpawnChunk(SpawnedChunkData);
+				SpawnChunk(SpawnedChunk);
 
-				if (!IsValid(SpawnedChunkData.Chunk))
+				if (!IsValid(SpawnedChunk.Chunk))
 				{
 					continue;
 				}
 
 				// TODO check if we have existing data to load
 				FChunkData ChunkSaveData;
-				ChunkSaveData.GridLocation = SpawnedChunkData.GridLocation;
+				ChunkSaveData.GridLocation = SpawnedChunk.GridLocation;
 				const int32 SaveIndex = ChunkData.Find(ChunkSaveData);
 				if (SaveIndex != INDEX_NONE)
 				{
-					LoadChunk(SpawnedChunkData, ChunkData[SaveIndex]);
+					LoadChunk(SpawnedChunk, ChunkData[SaveIndex]);
 				}
 				else
 				{
-					GenerateChunk(SpawnedChunkData);
+					GenerateChunk(SpawnedChunk);
 				}
 
-				SpawnedChunks.Add(SpawnedChunkData);
+				SpawnedChunks.Add(SpawnedChunk);
 			}
 		}
 	}
 }
 
-void AChunkManager::SpawnChunk(FSpawnedChunkData& OutSpawnedChunkData)
+void AChunkManager::SpawnChunk(FSpawnedChunk& OutSpawnedChunk)
 {
 	UWorld* World = GetWorld();
 	if (World == nullptr)
@@ -285,35 +285,35 @@ void AChunkManager::SpawnChunk(FSpawnedChunkData& OutSpawnedChunkData)
 		return;
 	}
 
-	const FVector SpawnLocation(OutSpawnedChunkData.GridLocation.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(),
-		OutSpawnedChunkData.GridLocation.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
-	OutSpawnedChunkData.Chunk = World->SpawnActor<AChunk>(ChunkClass, SpawnLocation, FRotator::ZeroRotator);
-	if (!IsValid(OutSpawnedChunkData.Chunk))
+	const FVector SpawnLocation(OutSpawnedChunk.GridLocation.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(),
+		OutSpawnedChunk.GridLocation.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
+	OutSpawnedChunk.Chunk = World->SpawnActor<AChunk>(ChunkClass, SpawnLocation, FRotator::ZeroRotator);
+	if (!IsValid(OutSpawnedChunk.Chunk))
 	{
 		return;
 	}
 
-	OutSpawnedChunkData.Chunk->SetChunkLocation(FIntVector2(OutSpawnedChunkData.GridLocation.X, OutSpawnedChunkData.GridLocation.Y));
+	OutSpawnedChunk.Chunk->SetChunkLocation(FIntVector2(OutSpawnedChunk.GridLocation.X, OutSpawnedChunk.GridLocation.Y));
 }
 
-void AChunkManager::GenerateChunk(const FSpawnedChunkData& InSpawnedChunkData)
+void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk)
 {
-	if (!IsValid(InSpawnedChunkData.Chunk))
+	if (!IsValid(InSpawnedChunk.Chunk))
 	{
 		return;
 	}
 
-	InSpawnedChunkData.Chunk->Generate();
+	InSpawnedChunk.Chunk->Generate();
 }
 
-void AChunkManager::LoadChunk(const FSpawnedChunkData& InSpawnedChunkData, const FChunkData& InChunkData)
+void AChunkManager::LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkData& InChunkData)
 {
-	if (!IsValid(InSpawnedChunkData.Chunk))
+	if (!IsValid(InSpawnedChunk.Chunk))
 	{
 		return;
 	}
 
-	InSpawnedChunkData.Chunk->Load(InChunkData);
+	InSpawnedChunk.Chunk->Load(InChunkData);
 }
 
 FVector AChunkManager::GetFirstPlayerLocation() const

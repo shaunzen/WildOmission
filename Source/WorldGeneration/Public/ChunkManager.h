@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Structs/BiomeGenerationData.h"
 #include "Structs/ChunkData.h"
-#include "Structs/SpawnedChunkData.h"
+#include "Structs/SpawnedChunk.h"
 #include "ChunkManager.generated.h"
 
 UCLASS()
@@ -25,8 +25,8 @@ public:
 	TArray<FChunkData> GetChunksData() const;
 	bool GetChunkData(const FIntVector2& ChunkLocation, FChunkData& OutChunkData) const;
 
-	TArray<FSpawnedChunkData> GetSpawnedChunks() const;
-	bool GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunkData& OutSpawnedChunkData) const;
+	TArray<FSpawnedChunk> GetSpawnedChunks() const;
+	bool GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunk& OutSpawnedChunks) const;
 
 	void GenerateChunkAtLocation(const FIntVector2& ChunkLocation);
 
@@ -57,15 +57,15 @@ private:
 	
 	// Spawned Chunk Data contains grid location information 
 	// about spawned chunks, as well as a pointer to the spawned chunk object.
-	TArray<FSpawnedChunkData> SpawnedChunks;
+	TArray<FSpawnedChunk> SpawnedChunks;
 
 	void RemoveOutOfRangeChunks();
 	void SpawnChunksForPlayer(APlayerController* PlayerController);
 
 	// When Passing Chunk Data in, make sure to populate grid location, it is what will be used when generating the chunk.
-	void SpawnChunk(FSpawnedChunkData& OutSpawnedChunkData);
-	void GenerateChunk(const FSpawnedChunkData& InSpawnedChunkData);
-	void LoadChunk(const FSpawnedChunkData& InSpawnedChunkData, const FChunkData& InChunkData);
+	void SpawnChunk(FSpawnedChunk& OutSpawnedChunkData);
+	void GenerateChunk(const FSpawnedChunk& InSpawnedChunk);
+	void LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkData& InChunkData);
 
 	FVector GetFirstPlayerLocation() const;
 
