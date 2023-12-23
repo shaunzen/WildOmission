@@ -261,25 +261,52 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 {
 	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
 
+	const int32 TestRadius = 32;
+	// TODO limit this to prevent the game from crashing
+	const int32 MaxInterations = 128;
+	int32 ChunkIterations = 0;
+	int32 SpawnIterations = 0;
+	bool FoundValidChunk = false;
+	FIntVector2 ValidChunk;
+	while (!FoundValidChunk)
+	{
+		// Get a start chunk
+		const FIntVector2 StartChunk(FMath::RandRange(-TestRadius, TestRadius), FMath::RandRange(-TestRadius, TestRadius));
+		
+		// Test in a 32 chunk radius to find if there is a high continentalness
+		for (int32 X = -TestRadius; X < TestRadius; ++X)
+		{
+			for (int32 Y = -TestRadius; Y < TestRadius; ++Y)
+			{
+				const FVector2D TestLocation(
+					(X + StartChunk.X) * ChunkSize,
+					(Y + StartChunk.Y) * ChunkSize
+				);
+				const float Continentalness = AChunk::GetContinentalnessAtLocation(TestLocation, true);
+				if (Continentalness < 0.25f)
+				{
+					// If not pick a new starting point and keep going
+					continue;
+				}
+				ValidChunk = FIntVector2(X + StartChunk.X, Y + StartChunk.Y);
+				FoundValidChunk = true;
+			}
+		}
+	}
+
+	// if we find an area with high continentalness but hit actor wasnt ground
+	// keep picking random location in that chunk until we get it
+
 	// Line trace down to find ground
 	FHitResult HitResult;
 	bool FoundValidSpawn = false;
-	const FVector StartSearchDirection(FMath::RandRange(-1, 1), FMath::RandRange(-1, 1), 0);
-	FVector CurrentSearchLocation = FVector::ZeroVector;
 	while (!FoundValidSpawn)
 	{
 		// Ensure the chunk we want to start at exists
-		CurrentSearchLocation += StartSearchDirection * ChunkSize;
-		const float Continentalness = AChunk::GetContinentalnessAtLocation(FVector2D(CurrentSearchLocation.X, CurrentSearchLocation.Y), true);
-		if (Continentalness < 0.0f)
-		{
-			continue;
-		}
+		ChunkManager->GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
 
-		ChunkManager->GenerateChunkAtLocation(FIntVector2(CurrentSearchLocation.X, CurrentSearchLocation.Y));
-
-		const FVector Start((CurrentSearchLocation.X * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)),
-			(CurrentSearchLocation.Y * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)), AChunk::GetMaxHeight());
+		const FVector Start((ValidChunk.X * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)),
+			(ValidChunk.Y * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)), AChunk::GetMaxHeight());
 		const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
 		if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 		{

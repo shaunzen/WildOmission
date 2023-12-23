@@ -246,7 +246,7 @@ float AChunk::GetContinentalnessAtLocation(const FVector2D& Location, bool UseRa
 	{
 		return 0.0f;
 	}
-
+	
 	const float ContinentalnessScale = 0.000005f;
 	const float RawValue = Noise.octave2D(Location.X * ContinentalnessScale, Location.Y * ContinentalnessScale, 3);
 
