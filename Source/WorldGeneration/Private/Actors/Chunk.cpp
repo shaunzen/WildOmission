@@ -20,6 +20,14 @@ static UCurveFloat* ContinentalnessHeightCurve = nullptr;;
 static UCurveFloat* ErosionHeightCurve = nullptr;
 static UCurveFloat* PeaksAndValleysHeightCurve = nullptr;
 
+const static FColor SAND_VERTEX_COLOR = FColor(255, 0, 0);
+const static FColor GRASS_VERTEX_COLOR = FColor(0, 255, 0);
+const static FColor DIRT_VERTEX_COLOR = FColor(0, 0, 255);
+const static FColor GRAVEL_VERTEX_COLOR = FColor(255, 255, 0);
+const static FColor STONE_VERTEX_COLOR = FColor(0, 255, 255);
+const static FColor SNOW_VERTEX_COLOR = FColor(255, 255, 255);
+const static FColor RESERVED_VERTEX_COLOR = FColor(0, 0, 0);
+
 // Sets default values
 AChunk::AChunk()
 {
@@ -147,14 +155,12 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 	// Ground Color
 	if (RawContinentalness <= 0.0f)
 	{
-		// Sand
-		OutColor = FColor::Yellow;
+		OutColor = SAND_VERTEX_COLOR;
 	}
 	else
-	{
-		
+	{	
 		const bool HighAltitude = OutHeight > 10000.0f;
-		HighAltitude? OutColor = FColor::Silver : OutColor = FColor::Green;
+		HighAltitude? OutColor = SNOW_VERTEX_COLOR : OutColor = GRASS_VERTEX_COLOR;
 	}
 }
 

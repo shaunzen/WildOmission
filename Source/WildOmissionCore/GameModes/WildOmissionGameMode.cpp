@@ -263,13 +263,19 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 
 	const int32 TestRadius = 32;
 	// TODO limit this to prevent the game from crashing
-	const int32 MaxInterations = 128;
+	const int32 MaxIterations = 128;
 	int32 ChunkIterations = 0;
 	int32 SpawnIterations = 0;
 	bool FoundValidChunk = false;
 	FIntVector2 ValidChunk;
 	while (!FoundValidChunk)
 	{
+		++ChunkIterations;
+		if (ChunkIterations > MaxIterations)
+		{
+			break;
+		}
+
 		// Get a start chunk
 		const FIntVector2 StartChunk(FMath::RandRange(-TestRadius, TestRadius), FMath::RandRange(-TestRadius, TestRadius));
 		
@@ -302,6 +308,12 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 	bool FoundValidSpawn = false;
 	while (!FoundValidSpawn)
 	{
+		++SpawnIterations;
+		if (SpawnIterations > MaxIterations)
+		{
+			break;
+		}
+
 		// Ensure the chunk we want to start at exists
 		ChunkManager->GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
 
