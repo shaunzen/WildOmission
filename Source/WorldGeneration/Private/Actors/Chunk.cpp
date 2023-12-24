@@ -83,12 +83,12 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AChunk, Verticies, COND_InitialOnly);
+	DOREPLIFETIME_CONDITION(AChunk, Vertices, COND_InitialOnly);
 }
 
 void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 {
-	GenerateTerrainShape();
+	GenerateTerrainShape(Neighbors);
 	GenerateBiome();
 	GenerateDecorations();
 	/*FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
@@ -103,7 +103,7 @@ void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 
 void AChunk::OnLoadFromSaveComplete()
 {
-	OnRep_Verticies();
+	OnRep_Vertices();
 }
 
 void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
@@ -174,6 +174,16 @@ FIntVector2 AChunk::GetChunkLocation() const
 	return GridLocation;
 }
 
+void AChunk::SetVertices(const TArray<FVector>& InVertices)
+{
+	Vertices = InVertices;
+}
+
+TArray<FVector> AChunk::GetVertices() const
+{
+	return Vertices;
+}
+
 int32 AChunk::GetVertexSize()
 {
 	return VERTEX_SIZE;
@@ -196,7 +206,7 @@ void AChunk::BeginPlay()
 
 }
 
-void AChunk::OnRep_Verticies()
+void AChunk::OnRep_Vertices()
 {
 	Triangles.Reset();
 	Normals.Reset();
@@ -207,14 +217,14 @@ void AChunk::OnRep_Verticies()
 
 void AChunk::GenerateTerrainShape(const TArray<FChunkData>& Neighbors)
 {
-	Verticies.Reset();
+	Vertices.Reset();
 	Triangles.Reset();
 	UV0.Reset();
 	VertexColors.Reset();
 	Normals.Reset();
 	Tangents.Reset();
 
-	CreateVerticies();
+	CreateVertices(Neighbors);
 	CreateMesh();	
 }
 
@@ -289,9 +299,36 @@ float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRa
 	return UseRawValue ? RawValue : PeaksAndValleysHeightCurve->GetFloatValue(RawValue);
 }
 
-void AChunk::CreateVerticies(const TArray<FChunkData>& Neighbors)
+void AChunk::CreateVertices(const TArray<FChunkData>& Neighbors)
 {
-	// Iterate through neibors and store there edge height
+	TArray<FVector> TopNeighborVertices;
+	TArray<FVector> BottomNeighborVertices;
+	TArray<FVector> LeftNeighborVertices;
+	TArray<FVector> RightNeighborVertices;
+	
+	// Iterate through neibors and store their edge height
+	for (const FChunkData& ChunkData : Neighbors)
+	{
+		// Read Vertices data
+		TArray<FVector> NeighborVertices = ChunkData.Vertices;
+		if (ChunkData.GridLocation == GridLocation + FIntVector2(1, 0))
+		{
+			TopNeighborVertices = NeighborVertices;
+		}
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, 0))
+		{
+			BottomNeighborVertices = NeighborVertices;
+		}
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(0, -1))
+		{
+			LeftNeighborVertices = NeighborVertices;
+		}
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(0, 1))
+		{
+			RightNeighborVertices = NeighborVertices;
+		}
+	}
+
 	// Use Neighbor edge height when generating this to ensure that there will be no gaps
 
 	const FVector Location = GetActorLocation();
@@ -305,9 +342,26 @@ void AChunk::CreateVerticies(const TArray<FChunkData>& Neighbors)
 			FColor TerrainColor;
 			GetTerrainDataAtLocation(FVector2D((X * VERTEX_DISTANCE_SCALE) + Location.X, (Y * VERTEX_DISTANCE_SCALE) + Location.Y), Height, TerrainColor);
 
+			if (!TopNeighborVertices.IsEmpty() && Y == VERTEX_SIZE)
+			{
+				Height = TopNeighborVertices[X].Z;
+			}
+			else if (!BottomNeighborVertices.IsEmpty() && Y == 0)
+			{
+				Height = BottomNeighborVertices[(VERTEX_SIZE * 15) + X].Z;
+			}
+			else if (!LeftNeighborVertices.IsEmpty() && X == 0)
+			{
+				//Height = LeftNeighborVertices[Y * VERTEX_SIZE].Z;
+			}
+			else if (!RightNeighborVertices.IsEmpty() && X == VERTEX_SIZE)
+			{
+				//Height = RightNeighborVertices[((Y + 1) * VERTEX_SIZE) - 1].Z;
+			}
+
 			const float Offset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
 
-			Verticies.Add(FVector((X * VERTEX_DISTANCE_SCALE) - Offset, (Y * VERTEX_DISTANCE_SCALE) - Offset, Height));
+			Vertices.Add(FVector((X * VERTEX_DISTANCE_SCALE) - Offset, (Y * VERTEX_DISTANCE_SCALE) - Offset, Height));
 			VertexColors.Add(TerrainColor);
 			UV0.Add(FVector2D(X * 0.0625f, Y * 0.0625f));
 		}
@@ -339,21 +393,21 @@ void AChunk::CreateMesh()
 {
 	CreateTriangles();
 
-	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Verticies, Triangles, UV0, Normals, Tangents);
+	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices, Triangles, UV0, Normals, Tangents);
 
-	MeshComponent->CreateMeshSection(0, Verticies, Triangles, Normals, UV0, VertexColors, Tangents, true);
+	MeshComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UV0, VertexColors, Tangents, true);
 	MeshComponent->SetMaterial(0, Material);
 }
 
 bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
 {
-	const int32 Point = FMath::RandRange(0, Verticies.Num() - 1);
-	if (!Verticies.IsValidIndex(Point))
+	const int32 Point = FMath::RandRange(0, Vertices.Num() - 1);
+	if (!Vertices.IsValidIndex(Point))
 	{
 		return false;
 	}
 
-	OutTransform.SetLocation(Verticies[Point] + GetActorLocation());
+	OutTransform.SetLocation(Vertices[Point] + GetActorLocation());
 	return true;
 }
 

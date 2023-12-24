@@ -18,7 +18,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	UFUNCTION()
-	void Generate(const TArray<FChunkData>& Neighbors);
+	void Generate(const TArray<struct FChunkData>& Neighbors);
 
 	UFUNCTION()
 	void OnLoadFromSaveComplete();
@@ -35,6 +35,9 @@ public:
 	static void GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, FColor& OutTerrainColor);
 	void SetChunkLocation(const FIntVector2& InLocation);
 	FIntVector2 GetChunkLocation() const;
+
+	void SetVertices(const TArray<FVector>& InVertices);
+	TArray<FVector> GetVertices() const;
 
 	static int32 GetVertexSize();
 	static float GetVertexDistanceScale();
@@ -67,8 +70,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* Material;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Verticies, SaveGame)
-	TArray<FVector> Verticies;
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Vertices)
+	TArray<FVector> Vertices;
 
 	UPROPERTY()
 	TArray<int32> Triangles;
@@ -86,7 +89,7 @@ private:
 	TArray<struct FProcMeshTangent> Tangents;
 
 	UFUNCTION()
-	void OnRep_Verticies();
+	void OnRep_Vertices();
 	
 	void GenerateTerrainShape(const TArray<FChunkData>& Neighbors);
 	void GenerateBiome();
@@ -99,7 +102,7 @@ private:
 
 	struct FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location) const;
 
-	void CreateVerticies(const TArray<FChunkData>& Neighbors);
+	void CreateVertices(const TArray<FChunkData>& Neighbors);
 	void CreateTriangles();
 	void CreateMesh();
 

@@ -267,7 +267,7 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 	int32 ChunkIterations = 0;
 	int32 SpawnIterations = 0;
 	bool FoundValidChunk = false;
-	FIntVector2 ValidChunk;
+	FIntVector2 ValidChunk(0, 0);
 	while (!FoundValidChunk)
 	{
 		++ChunkIterations;

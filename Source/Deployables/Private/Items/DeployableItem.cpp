@@ -39,13 +39,13 @@ void ADeployableItem::OnPlace()
 		return;
 	}
 
-	FSpawnedChunkData ChunkData;
-	if (!ChunkManager->GetSpawnedChunk(FIntVector2(ChunkLocationX, ChunkLocationY), ChunkData) || !IsValid(ChunkData.Chunk))
+	FSpawnedChunk SpawnedChunk;
+	if (!ChunkManager->GetSpawnedChunk(FIntVector2(ChunkLocationX, ChunkLocationY), SpawnedChunk) || !IsValid(SpawnedChunk.Chunk))
 	{
 		return;
 	}
 
-	SpawnedDeployable->AttachToActor(ChunkData.Chunk, FAttachmentTransformRules::KeepWorldTransform);
+	SpawnedDeployable->AttachToActor(SpawnedChunk.Chunk, FAttachmentTransformRules::KeepWorldTransform);
 
 	SpawnedDeployable->OnSpawn();
 
