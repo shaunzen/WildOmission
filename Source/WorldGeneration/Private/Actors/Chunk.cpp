@@ -342,21 +342,29 @@ void AChunk::CreateVertices(const TArray<FChunkData>& Neighbors)
 			FColor TerrainColor;
 			GetTerrainDataAtLocation(FVector2D((X * VERTEX_DISTANCE_SCALE) + Location.X, (Y * VERTEX_DISTANCE_SCALE) + Location.Y), Height, TerrainColor);
 
-			if (!TopNeighborVertices.IsEmpty() && Y == VERTEX_SIZE)
+			UE_LOG(LogTemp, Warning, TEXT("X = %i, Y = %i, Size: %i"), X, Y, Vertices.Num());
+
+			const int32 RowColumnSize = VERTEX_SIZE + 1;
+			if (!TopNeighborVertices.IsEmpty() && X == VERTEX_SIZE)
 			{
-				Height = TopNeighborVertices[X].Z;
+				Height = TopNeighborVertices[Y].Z;
 			}
-			else if (!BottomNeighborVertices.IsEmpty() && Y == 0)
+			else if (!BottomNeighborVertices.IsEmpty() && X == 0)
 			{
-				Height = BottomNeighborVertices[(VERTEX_SIZE * 15) + X].Z;
+				//UE_LOG(LogTemp, Warning, TEXT("BottomVertSize: %i"), BottomNeighborVertices.Num());
+				Height = BottomNeighborVertices[Y + (RowColumnSize * VERTEX_SIZE)].Z;
 			}
-			else if (!LeftNeighborVertices.IsEmpty() && X == 0)
+			if (!LeftNeighborVertices.IsEmpty() && Y == 0)
 			{
-				//Height = LeftNeighborVertices[Y * VERTEX_SIZE].Z;
+				//Height = LeftNeighborVertices[].Z;
+				// This is this last one causing issues
+				Height = LeftNeighborVertices[X + (X * VERTEX_SIZE)].Z;
 			}
-			else if (!RightNeighborVertices.IsEmpty() && X == VERTEX_SIZE)
+			else if (!RightNeighborVertices.IsEmpty() && Y == VERTEX_SIZE)
 			{
-				//Height = RightNeighborVertices[((Y + 1) * VERTEX_SIZE) - 1].Z;
+
+				Height = RightNeighborVertices[X * RowColumnSize].Z;
+				// (VERTEX_SIZE * 15) + X
 			}
 
 			const float Offset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
