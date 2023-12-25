@@ -306,26 +306,56 @@ void AChunk::CreateVertices(const TArray<FChunkData>& Neighbors)
 	TArray<FVector> LeftNeighborVertices;
 	TArray<FVector> RightNeighborVertices;
 	
+	TArray<FVector> TopLeftNeighborVertices;
+	TArray<FVector> TopRightNeighborVertices;
+	TArray<FVector> BottomLeftNeighborVertices;
+	TArray<FVector> BottomRightNeighborVertices;
+
 	// Iterate through neibors and store their edge height
 	for (const FChunkData& ChunkData : Neighbors)
 	{
 		// Read Vertices data
 		TArray<FVector> NeighborVertices = ChunkData.Vertices;
+		
+		// Top
 		if (ChunkData.GridLocation == GridLocation + FIntVector2(1, 0))
 		{
 			TopNeighborVertices = NeighborVertices;
 		}
+		// Bottom
 		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, 0))
 		{
 			BottomNeighborVertices = NeighborVertices;
 		}
+		// Left
 		else if (ChunkData.GridLocation == GridLocation + FIntVector2(0, -1))
 		{
 			LeftNeighborVertices = NeighborVertices;
 		}
+		// Right
 		else if (ChunkData.GridLocation == GridLocation + FIntVector2(0, 1))
 		{
 			RightNeighborVertices = NeighborVertices;
+		}
+		// Top Left
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(1, -1))
+		{
+			TopLeftNeighborVertices = NeighborVertices;
+		}
+		// Top Right
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(1, 1))
+		{
+			TopRightNeighborVertices = NeighborVertices;
+		}
+		// Bottom Left
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, -1))
+		{
+			BottomLeftNeighborVertices = NeighborVertices;
+		}
+		// Bottom Right
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, 1))
+		{
+			BottomRightNeighborVertices = NeighborVertices;
 		}
 	}
 
@@ -342,24 +372,48 @@ void AChunk::CreateVertices(const TArray<FChunkData>& Neighbors)
 			FColor TerrainColor;
 			GetTerrainDataAtLocation(FVector2D((X * VERTEX_DISTANCE_SCALE) + Location.X, (Y * VERTEX_DISTANCE_SCALE) + Location.Y), Height, TerrainColor);
 
-			
 			const int32 RowColumnSize = VERTEX_SIZE + 1;
+			
+			// Top
 			if (!TopNeighborVertices.IsEmpty() && X == VERTEX_SIZE)
 			{
 				Height = TopNeighborVertices[Y].Z;
 			}
+			// Bottom
 			else if (!BottomNeighborVertices.IsEmpty() && X == 0)
 			{
 				Height = BottomNeighborVertices[Y + (RowColumnSize * VERTEX_SIZE)].Z;
 			}
-			if (!LeftNeighborVertices.IsEmpty() && Y == 0)
+			// Left
+			else if (!LeftNeighborVertices.IsEmpty() && Y == 0)
 			{
 				Height = LeftNeighborVertices[(X * RowColumnSize) + VERTEX_SIZE].Z;
 			}
+			// Right
 			else if (!RightNeighborVertices.IsEmpty() && Y == VERTEX_SIZE)
 			{
 
 				Height = RightNeighborVertices[X * RowColumnSize].Z;
+			}
+			// Top Left
+			else if (!TopLeftNeighborVertices.IsEmpty() && X == VERTEX_SIZE && Y == 0)
+			{
+				Height = TopLeftNeighborVertices[VERTEX_SIZE].Z;
+			}
+			// Top Right
+			else if (!TopRightNeighborVertices.IsEmpty() && X == VERTEX_SIZE && Y == VERTEX_SIZE)
+			{
+				Height = TopRightNeighborVertices[0].Z;
+			}
+			// Bottom Left
+			else if (!BottomLeftNeighborVertices.IsEmpty() && X == 0 && Y == 0)
+			{
+				Height = BottomLeftNeighborVertices[(RowColumnSize * RowColumnSize) - 1].Z;
+			}
+			// Bottom Right
+			else if (!BottomRightNeighborVertices.IsEmpty() && X == 0 && Y == VERTEX_SIZE)
+			{
+				Height = BottomRightNeighborVertices[RowColumnSize * VERTEX_SIZE].Z;
 			}
 
 			const float Offset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;

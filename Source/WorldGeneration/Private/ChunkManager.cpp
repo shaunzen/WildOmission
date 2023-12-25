@@ -310,10 +310,22 @@ void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk)
 
 	// Neighbors
 	TArray<FChunkData> NeighborsData{
-		InSpawnedChunk.GridLocation - FIntVector2(0, 1),
-		InSpawnedChunk.GridLocation - FIntVector2(1, 0),
+		// Top
+		InSpawnedChunk.GridLocation + FIntVector2(0, 1),
+		// Bottom
+		InSpawnedChunk.GridLocation + FIntVector2(0, -1),
+		// Left
+		InSpawnedChunk.GridLocation + FIntVector2(-1, 0),
+		// Right
 		InSpawnedChunk.GridLocation + FIntVector2(1, 0),
-		InSpawnedChunk.GridLocation + FIntVector2(0, 1)
+		// Top Left
+		InSpawnedChunk.GridLocation + FIntVector2(-1, 1),
+		// Top Right
+		InSpawnedChunk.GridLocation + FIntVector2(1, 1),
+		// Bottom Left
+		InSpawnedChunk.GridLocation + FIntVector2(-1, -1),
+		// Bottom Right
+		InSpawnedChunk.GridLocation + FIntVector2(1, -1)
 	};
 	
 	for (FChunkData& NeighborData : NeighborsData)
