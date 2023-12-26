@@ -325,8 +325,8 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 			continue;
 		}
 
-		AActor* HitActor = HitResult.GetActor();
-		if (HitActor == nullptr || !HitActor->ActorHasTag(TEXT("Ground")))
+		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+		if (HitComponent == nullptr || !HitComponent->ComponentHasTag(TEXT("Ground")))
 		{
 			continue;
 		}

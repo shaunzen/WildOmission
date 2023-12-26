@@ -37,10 +37,12 @@ AChunk::AChunk()
 	bReplicates = true;
 	
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->ComponentTags.Add(TEXT("Ground"));
 	RootComponent = MeshComponent;
 	// MeshComponent->SetupAttachment(RootComponent);
 
 	WaterMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WaterMeshComponent"));
+	WaterMeshComponent->ComponentTags.Add(TEXT("Water"));
 	WaterMeshComponent->SetupAttachment(MeshComponent);
 
 	SaveComponent = CreateDefaultSubobject<UChunkSaveComponent>(TEXT("SaveComponent"));
@@ -78,8 +80,6 @@ AChunk::AChunk()
 			PeaksAndValleysHeightCurve = PeaksAndValleysHeightCurveBlueprint.Object;
 		}
 	}
-
-	Tags.Add(TEXT("Ground"));
 }
 
 void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

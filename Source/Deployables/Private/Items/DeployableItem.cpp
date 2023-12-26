@@ -122,15 +122,15 @@ bool ADeployableItem::GetPlacementTransform(FTransform& OutPlacementTransform)
 	}
 
 	AActor* HitActor = HitResult.GetActor();
-	
-	if (HitActor == nullptr)
+	UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+	if (HitActor == nullptr || HitComponent == nullptr)
 	{
 		return false;
 	}
 
 
 	// Check ground condition
-	if (HitActor->ActorHasTag(TEXT("Ground")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnGround())
+	if (HitComponent->ComponentHasTag(TEXT("Ground")) && DeployableActorClass.GetDefaultObject()->CanSpawnOnGround())
 	{
 		return !InvalidOverlap && HasBuildingPrivilege(HitResult.ImpactPoint);
 	}
