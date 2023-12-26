@@ -100,7 +100,7 @@ private:
 	void GenerateDecorations();
 	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);
 
-	bool GetRandomPointOnTerrain(FTransform& OutTransform);
+	bool GetRandomPointOnTerrain(FTransform& OutTransform) const;
 
 	struct FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location) const;
 

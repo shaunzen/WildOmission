@@ -94,14 +94,6 @@ void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 	GenerateTerrainShape(Neighbors);
 	GenerateBiome();
 	GenerateDecorations();
-	/*FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
-	if (Biome)
-	{
-		GenerateSpawnableActors(Biome->Trees);
-		GenerateSpawnableActors(Biome->Nodes);
-		GenerateSpawnableActors(Biome->Collectables);
-		GenerateSpawnableActors(Biome->Lootables);
-	}*/
 }
 
 void AChunk::OnLoadFromSaveComplete()
@@ -242,6 +234,14 @@ void AChunk::GenerateBiome()
 
 void AChunk::GenerateDecorations()
 {
+	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
+	if (Biome)
+	{
+		GenerateSpawnableActors(Biome->Trees);
+		GenerateSpawnableActors(Biome->Nodes);
+		GenerateSpawnableActors(Biome->Collectables);
+		GenerateSpawnableActors(Biome->Lootables);
+	}
 }
 
 void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList)
@@ -464,10 +464,18 @@ void AChunk::CreateMesh()
 	MeshComponent->SetMaterial(0, Material);
 }
 
-bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform)
+bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 {
 	const int32 Point = FMath::RandRange(0, Vertices.Num() - 1);
 	if (!Vertices.IsValidIndex(Point))
+	{
+		return false;
+	}
+
+	const FVector ThisChunkLocation = GetActorLocation();
+	const FVector2D ContinentalnessTestPoint = FVector2D(Vertices[Point].X + ThisChunkLocation.X, Vertices[Point].Y + ThisChunkLocation.Y);
+	const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
+	if (Continentalness < 0.1f)
 	{
 		return false;
 	}
