@@ -31,6 +31,7 @@ public:
 	void GenerateChunkAtLocation(const FIntVector2& ChunkLocation);
 
 	static void SetGenerationSeed(const uint32& Seed);
+	static uint32 GetGenerationSeed();
 
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);

@@ -3,6 +3,7 @@
 
 #include "SaveManager.h"
 #include "Components/PlayerSaveManagerComponent.h"
+#include "ChunkManager.h"
 #include "TimeOfDayManager.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
@@ -43,6 +44,13 @@ void ASaveManager::SaveGame()
 	}
 	SaveFile->LastPlayedTime = FDateTime::Now();
 
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager)
+	{
+		SaveFile->Seed = ChunkManager->GetGenerationSeed();
+		SaveFile->ChunkSaveData = ChunkManager->GetChunksData();
+	}
+
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
 	if (TimeOfDayManager)
 	{
@@ -73,13 +81,14 @@ void ASaveManager::LoadWorld()
 	{
 		return;
 	}
-
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
-		UE_LOG(LogTemp, Warning, TEXT("Chunks missing, generating new ones."));
 		
 		const uint32 Seed = FMath::RandRange(0, 999999999);
+		AChunkManager::SetGenerationSeed(Seed);
+
+		MarkSaveGenerated();
 		return;
 	}
 
@@ -92,13 +101,17 @@ void ASaveManager::LoadWorld()
 	
 	SetLoadingSubtitle(TEXT("Loading level."));
 
-	// TODO proper function in chunk manager
-	ChunkSaveManagerComponent->Load(SaveFile->ChunkSaveData, SaveFile->Seed, SaveFile->Version);
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager)
+	{
+		ChunkManager->SetGenerationSeed(SaveFile->Seed);
+		ChunkManager->SetChunkData(SaveFile->ChunkSaveData);
+	}
 
-	FTimerHandle ActorLoadedTimerHandle;
-	FTimerDelegate ActorLoadedDelegate;
-	ActorLoadedDelegate.BindUObject(this, &ASaveManager::StopLoading);
-	GetWorld()->GetTimerManager().SetTimer(ActorLoadedTimerHandle, ActorLoadedDelegate, 1.0f, false);
+	FTimerHandle FinishedLoadingTimerHandle;
+	FTimerDelegate FinishedLoadingTimerDelegate;
+	FinishedLoadingTimerDelegate.BindUObject(this, &ASaveManager::StopLoading);
+	GetWorld()->GetTimerManager().SetTimer(FinishedLoadingTimerHandle, FinishedLoadingTimerDelegate, 1.0f, false);
 }
 
 UWildOmissionSaveGame* ASaveManager::GetSaveFile() const
@@ -156,12 +169,11 @@ void ASaveManager::MarkSaveGenerated()
 
 	SaveFile->CreationInformation.LevelHasGenerated = true;
 	UpdateSaveFile(SaveFile);
-
-	FTimerHandle ActorLoadedTimerHandle;
-	FTimerDelegate ActorLoadedDelegate;
-	ActorLoadedDelegate.BindUObject(this, &ASaveManager::StopLoading);
-	GetWorld()->GetTimerManager().SetTimer(ActorLoadedTimerHandle, ActorLoadedDelegate, 1.0f, false);
-	UE_LOG(LogTemp, Warning, TEXT("Marked Save as Generated."));
+	
+	FTimerHandle FinishedLoadingTimerHandle;
+	FTimerDelegate FinishedLoadingTimerDelegate;
+	FinishedLoadingTimerDelegate.BindUObject(this, &ASaveManager::StopLoading);
+	GetWorld()->GetTimerManager().SetTimer(FinishedLoadingTimerHandle, FinishedLoadingTimerDelegate, 1.0f, false);
 }
 
 void ASaveManager::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)

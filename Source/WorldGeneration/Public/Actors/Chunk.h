@@ -27,6 +27,7 @@ public:
 	void Load(const struct FChunkData& InChunkData);
 
 	static void SetGenerationSeed(const uint32& InSeed);
+	static uint32 GetGenerationSeed();
 
 	static float GetContinentalnessAtLocation(const FVector2D& Location, bool UseRawValue = false);
 	static float GetErosionAtLocation(const FVector2D& Location, bool UseRawValue = false);

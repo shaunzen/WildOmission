@@ -124,6 +124,11 @@ void AChunkManager::SetGenerationSeed(const uint32& Seed)
 	AChunk::SetGenerationSeed(Seed);
 }
 
+uint32 AChunkManager::GetGenerationSeed()
+{
+	return AChunk::GetGenerationSeed();
+}
+
 // Called when the game starts or when spawned
 void AChunkManager::BeginPlay()
 {

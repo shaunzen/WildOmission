@@ -126,6 +126,11 @@ void AChunk::SetGenerationSeed(const uint32& InSeed)
 	Noise.reseed(InSeed);
 }
 
+uint32 AChunk::GetGenerationSeed()
+{
+	return Seed;
+}
+
 void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, FColor& OutColor)
 {
 	const float ContinentalnessInfluence = 1000.0f;
