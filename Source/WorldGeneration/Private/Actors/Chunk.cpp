@@ -40,6 +40,9 @@ AChunk::AChunk()
 	RootComponent = MeshComponent;
 	// MeshComponent->SetupAttachment(RootComponent);
 
+	WaterMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WaterMeshComponent"));
+	WaterMeshComponent->SetupAttachment(MeshComponent);
+
 	SaveComponent = CreateDefaultSubobject<UChunkSaveComponent>(TEXT("SaveComponent"));
 
 	// TODO these might be tied to biome in the future

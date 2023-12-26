@@ -52,6 +52,9 @@ private:
 	class UProceduralMeshComponent* MeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
+	class UStaticMeshComponent* WaterMeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	class UChunkSaveComponent* SaveComponent;
 
 	UPROPERTY(SaveGame)
@@ -95,8 +98,6 @@ private:
 	void GenerateBiome();
 	void GenerateDecorations();
 	void GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList);
-
-
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform);
 
