@@ -160,7 +160,7 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 	else
 	{	
 		const bool HighAltitude = OutHeight > 10000.0f;
-		HighAltitude? OutColor = SNOW_VERTEX_COLOR : OutColor = GRASS_VERTEX_COLOR;
+		HighAltitude ? OutColor = SNOW_VERTEX_COLOR : OutColor = GRASS_VERTEX_COLOR;
 	}
 }
 
