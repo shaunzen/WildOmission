@@ -475,7 +475,7 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 	const FVector ThisChunkLocation = GetActorLocation();
 	const FVector2D ContinentalnessTestPoint = FVector2D(Vertices[Point].X + ThisChunkLocation.X, Vertices[Point].Y + ThisChunkLocation.Y);
 	const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
-	if (Continentalness < 0.1f)
+	if (Continentalness < 0.01f)
 	{
 		return false;
 	}
