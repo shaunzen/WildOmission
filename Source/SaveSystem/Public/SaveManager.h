@@ -36,12 +36,6 @@ private:
 	FString CurrentSaveFileName;
 
 	UPROPERTY(VisibleAnywhere)
-	class UChunkSaveManagerComponent* ChunkSaveManagerComponent;
-	
-	UPROPERTY(VisibleAnywhere)
-	class UActorSaveManagerComponent* ActorSaveManagerComponent;
-
-	UPROPERTY(VisibleAnywhere)
 	class UPlayerSaveManagerComponent* PlayerSaveManagerComponent;
 
 	class IGameSaveLoadController* GameSaveLoadController;

@@ -2,8 +2,6 @@
 
 
 #include "SaveManager.h"
-#include "Components/ChunkSaveManagerComponent.h"
-#include "Components/ActorSaveManagerComponent.h"
 #include "Components/PlayerSaveManagerComponent.h"
 #include "TimeOfDayManager.h"
 #include "Interfaces/GameSaveLoadController.h"
@@ -22,8 +20,6 @@ ASaveManager::ASaveManager()
 	GameSaveLoadController = nullptr;
 	CurrentSaveFile = nullptr;
 
-	ChunkSaveManagerComponent = CreateDefaultSubobject<UChunkSaveManagerComponent>(TEXT("ChunkSaveManagerComponent"));
-	ActorSaveManagerComponent = CreateDefaultSubobject<UActorSaveManagerComponent>(TEXT("ActorSaveManagerComponent"));
 	PlayerSaveManagerComponent = CreateDefaultSubobject<UPlayerSaveManagerComponent>(TEXT("PlayerSaveManagerComponent"));
 }
 
@@ -54,8 +50,6 @@ void ASaveManager::SaveGame()
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayManager->GetNormalizedProgressThroughDay();
 	}
 
-	ChunkSaveManagerComponent->Save(SaveFile->ChunkSaveData);
-	//ActorSaveManagerComponent->SaveActors(SaveFile->ActorSaves);
 	PlayerSaveManagerComponent->Save(SaveFile->PlayerSaveData);
 	
 	SaveFile->Version = CURRENT_SAVE_FILE_VERSION;
@@ -85,9 +79,7 @@ void ASaveManager::LoadWorld()
 		SetLoadingSubtitle(TEXT("Generating level."));
 		UE_LOG(LogTemp, Warning, TEXT("Chunks missing, generating new ones."));
 		
-		ChunkSaveManagerComponent->OnWorldGenerationCompleted.AddDynamic(this, &ASaveManager::MarkSaveGenerated);
 		const uint32 Seed = FMath::RandRange(0, 999999999);
-		ChunkSaveManagerComponent->Generate(Seed);
 		return;
 	}
 
@@ -98,8 +90,9 @@ void ASaveManager::LoadWorld()
 		TimeOfDayManager->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
 	}
 	
-	SetLoadingSubtitle(TEXT("Loading objects."));
-	
+	SetLoadingSubtitle(TEXT("Loading level."));
+
+	// TODO proper function in chunk manager
 	ChunkSaveManagerComponent->Load(SaveFile->ChunkSaveData, SaveFile->Seed, SaveFile->Version);
 
 	FTimerHandle ActorLoadedTimerHandle;
