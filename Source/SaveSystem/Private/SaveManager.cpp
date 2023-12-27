@@ -48,7 +48,7 @@ void ASaveManager::SaveGame()
 	if (ChunkManager)
 	{
 		SaveFile->Seed = ChunkManager->GetGenerationSeed();
-		SaveFile->ChunkSaveData = ChunkManager->GetChunksData();
+		SaveFile->ChunkData = ChunkManager->GetChunksData();
 	}
 
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
@@ -58,7 +58,7 @@ void ASaveManager::SaveGame()
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayManager->GetNormalizedProgressThroughDay();
 	}
 
-	PlayerSaveManagerComponent->Save(SaveFile->PlayerSaveData);
+	PlayerSaveManagerComponent->Save(SaveFile->PlayerData);
 	
 	SaveFile->Version = CURRENT_SAVE_FILE_VERSION;
 
@@ -105,7 +105,7 @@ void ASaveManager::LoadWorld()
 	if (ChunkManager)
 	{
 		ChunkManager->SetGenerationSeed(SaveFile->Seed);
-		ChunkManager->SetChunkData(SaveFile->ChunkSaveData);
+		ChunkManager->SetChunkData(SaveFile->ChunkData);
 	}
 
 	FTimerHandle FinishedLoadingTimerHandle;

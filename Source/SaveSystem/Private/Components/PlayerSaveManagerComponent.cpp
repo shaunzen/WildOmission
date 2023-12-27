@@ -68,10 +68,10 @@ void UPlayerSaveManagerComponent::Load(APlayerController* PlayerController)
 	}
 
 	// Attempt host parody
-	if (PlayerIsHost && FindHostSaveIndexInList(SaveFile->PlayerSaveData, SaveIndex))
+	if (PlayerIsHost && FindHostSaveIndexInList(SaveFile->PlayerData, SaveIndex))
 	{
-		SavablePlayer->LoadPlayerSave(SaveFile->PlayerSaveData[SaveIndex]);
-		SaveFile->PlayerSaveData[SaveIndex].IsHost = false;
+		SavablePlayer->LoadPlayerSave(SaveFile->PlayerData[SaveIndex]);
+		SaveFile->PlayerData[SaveIndex].IsHost = false;
 		SaveManagerOwner->UpdateSaveFile(SaveFile);
 		return;
 	}
@@ -82,9 +82,9 @@ void UPlayerSaveManagerComponent::Load(APlayerController* PlayerController)
 		SavablePlayer->LoadPlayerSave(PendingSaves[SaveIndex]);
 	}
 	// Find existing save in the save file
-	else if (FindSaveIndexInList(SaveFile->PlayerSaveData, PlayerUniqueID, SaveIndex))
+	else if (FindSaveIndexInList(SaveFile->PlayerData, PlayerUniqueID, SaveIndex))
 	{
-		SavablePlayer->LoadPlayerSave(SaveFile->PlayerSaveData[SaveIndex]);
+		SavablePlayer->LoadPlayerSave(SaveFile->PlayerData[SaveIndex]);
 	}
 }
 

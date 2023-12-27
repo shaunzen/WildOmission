@@ -435,6 +435,12 @@ void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 
 void AWildOmissionCharacter::HandleFly()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr || !World->IsEditorWorld())
+	{
+		return;
+	}
+
 	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
 	if (OurCharacterMovement == nullptr)
 	{

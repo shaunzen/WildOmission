@@ -71,9 +71,9 @@ public:
 	bool CheatsEnabled;
 
 	UPROPERTY()
-	TArray<FChunkData> ChunkSaveData;
+	TArray<FChunkData> ChunkData;
 
 	UPROPERTY()
-	TArray<FPlayerSaveData> PlayerSaveData;
+	TArray<FPlayerSaveData> PlayerData;
 
 };

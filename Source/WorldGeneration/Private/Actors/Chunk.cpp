@@ -42,6 +42,7 @@ AChunk::AChunk()
 	// MeshComponent->SetupAttachment(RootComponent);
 
 	WaterMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WaterMeshComponent"));
+	WaterMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
 	WaterMeshComponent->ComponentTags.Add(TEXT("Water"));
 	WaterMeshComponent->SetupAttachment(MeshComponent);
 
