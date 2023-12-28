@@ -7,6 +7,6 @@ public class GatherableResources: ModuleRules
     public GatherableResources(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Interaction", "Inventory", "SavableObject", "Weather" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "NavigationSystem" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "NavigationSystem", "WorldGeneration" });
     }
 }

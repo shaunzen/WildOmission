@@ -12,6 +12,7 @@
 #include "NavModifierComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/DamageEvents.h"
+#include "ChunkManager.h"
 #include "UObject/ConstructorHelpers.h"
 
 static UNiagaraSystem* DustSystem = nullptr;
@@ -25,7 +26,7 @@ ADeployable::ADeployable()
 	bAlwaysRelevant = false;
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = DORM_DormantAll;
-	NetCullDistanceSquared = 2621440000.0f;
+	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
 
 	DeployableRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DeployableRootComponent"));
 	DeployableRootComponent->SetMobility(EComponentMobility::Type::Stationary);

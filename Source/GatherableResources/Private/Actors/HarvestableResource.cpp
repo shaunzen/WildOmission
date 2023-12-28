@@ -4,6 +4,7 @@
 #include "Actors/HarvestableResource.h"
 #include "Components/InventoryComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ChunkManager.h"
 #include "NavModifierComponent.h"
 #include "Log.h"
 
@@ -16,7 +17,7 @@ AHarvestableResource::AHarvestableResource()
 	bAlwaysRelevant = false;
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = ENetDormancy::DORM_DormantAll;
-	NetCullDistanceSquared = 2621440000.0f;
+	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));

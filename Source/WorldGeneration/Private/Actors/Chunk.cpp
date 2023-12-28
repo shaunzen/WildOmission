@@ -37,9 +37,9 @@ AChunk::AChunk()
 	bReplicates = true;
 	NetUpdateFrequency = 2.0f;
 	NetPriority = 3.0f;
-							// 51200cm
-	NetCullDistanceSquared = 2621440000.0f;
-
+	NetDormancy = ENetDormancy::DORM_DormantAll;
+	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
+	
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->ComponentTags.Add(TEXT("Ground"));
 	RootComponent = MeshComponent;
@@ -94,7 +94,7 @@ void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 {
 	GenerateTerrainShape(Neighbors);
 	GenerateBiome();
-	//GenerateDecorations();
+	GenerateDecorations();
 }
 
 void AChunk::OnLoadFromSaveComplete()

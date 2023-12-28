@@ -4,6 +4,7 @@
 #include "Actors/CollectableResource.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "ChunkManager.h"
 #include "NavModifierComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -16,7 +17,7 @@ ACollectableResource::ACollectableResource()
 	bAlwaysRelevant = false;
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = DORM_DormantAll;
-	NetCullDistanceSquared = 2621440000.0f;
+	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;

@@ -118,6 +118,17 @@ void AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 		SpawnedChunks.Add(SpawnedChunk);
 	}
 }
+
+float AChunkManager::GetRenderDistanceCentimeters()
+{
+	return AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale() * RENDER_DISTANCE;
+}
+
+int32 AChunkManager::GetRenderDistance()
+{
+	return RENDER_DISTANCE;
+}
+
 void AChunkManager::SetGenerationSeed(const uint32& Seed)
 {
 	AChunk::SetGenerationSeed(Seed);
