@@ -35,8 +35,10 @@ AChunk::AChunk()
 	PrimaryActorTick.bCanEverTick = false;
 
 	bReplicates = true;
-	NetDormancy = ENetDormancy::DORM_Awake;
-	NetCullDistanceSquared = 51200.0f;//102400.0f;
+	NetUpdateFrequency = 2.0f;
+	NetPriority = 3.0f;
+							// 51200cm
+	NetCullDistanceSquared = 2621440000.0f;
 
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->ComponentTags.Add(TEXT("Ground"));
@@ -51,9 +53,6 @@ AChunk::AChunk()
 
 	UVScale = 100.0f;
 	Material = nullptr;
-
-	VerticesReplicated = false;
-	VertexColorsReplicated = false;
 
 	if (GetWorld())
 	{
@@ -87,15 +86,15 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AChunk, Vertices);
-	DOREPLIFETIME(AChunk, VertexColors);
+	DOREPLIFETIME_CONDITION(AChunk, Vertices, COND_InitialOnly);
+	DOREPLIFETIME_CONDITION(AChunk, VertexColors, COND_InitialOnly);
 }
 
 void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 {
 	GenerateTerrainShape(Neighbors);
 	GenerateBiome();
-	GenerateDecorations();
+	//GenerateDecorations();
 }
 
 void AChunk::OnLoadFromSaveComplete()
@@ -208,23 +207,9 @@ void AChunk::BeginPlay()
 
 }
 
-void AChunk::OnRep_Vertices()
+void AChunk::OnRep_MeshData()
 {
-	VerticesReplicated = true;
-
-	if (!VertexColorsReplicated)
-	{
-		return;
-	}
-	
-	CreateMesh();
-}
-
-void AChunk::OnRep_VertexColors()
-{
-	VertexColorsReplicated = true;
-
-	if (!VerticesReplicated)
+	if (Vertices.IsEmpty() || VertexColors.IsEmpty())
 	{
 		return;
 	}

@@ -67,7 +67,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* Material;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_Vertices)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MeshData)
 	TArray<FVector> Vertices;
 
 	UPROPERTY()
@@ -76,7 +76,7 @@ private:
 	UPROPERTY(SaveGame)
 	TArray<FVector2D> UV0;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_VertexColors, SaveGame)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MeshData, SaveGame)
 	TArray<FColor> VertexColors;
 
 	UPROPERTY()
@@ -85,16 +85,9 @@ private:
 	UPROPERTY()
 	TArray<struct FProcMeshTangent> Tangents;
 
-	bool VerticesReplicated;
-
 	UFUNCTION()
-	void OnRep_Vertices();
+	void OnRep_MeshData();
 	
-	bool VertexColorsReplicated;
-
-	UFUNCTION()
-	void OnRep_VertexColors();
-
 	void GenerateTerrainShape(const TArray<FChunkData>& Neighbors);
 	void GenerateBiome();
 	void GenerateDecorations();

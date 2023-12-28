@@ -13,9 +13,10 @@ AHarvestableResource::AHarvestableResource()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
-	bAlwaysRelevant = true;
+	bAlwaysRelevant = false;
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = ENetDormancy::DORM_DormantAll;
+	NetCullDistanceSquared = 2621440000.0f;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
