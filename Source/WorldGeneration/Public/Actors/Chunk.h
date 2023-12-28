@@ -61,13 +61,6 @@ private:
 	UPROPERTY(SaveGame)
 	FIntVector2 GridLocation;
 
-	// Begin these will be biome specific
-	UPROPERTY(EditAnywhere)
-	float ZScale;
-	UPROPERTY(EditAnywhere)
-	float NoiseScale;
-	// End these will be biome specific
-
 	UPROPERTY(EditAnywhere)
 	float UVScale;
 
@@ -83,7 +76,7 @@ private:
 	UPROPERTY(SaveGame)
 	TArray<FVector2D> UV0;
 
-	UPROPERTY(SaveGame)
+	UPROPERTY(Replicated, ReplicatedUsing = OnRep_VertexColors, SaveGame)
 	TArray<FColor> VertexColors;
 
 	UPROPERTY()
@@ -92,9 +85,16 @@ private:
 	UPROPERTY()
 	TArray<struct FProcMeshTangent> Tangents;
 
+	bool VerticesReplicated;
+
 	UFUNCTION()
 	void OnRep_Vertices();
 	
+	bool VertexColorsReplicated;
+
+	UFUNCTION()
+	void OnRep_VertexColors();
+
 	void GenerateTerrainShape(const TArray<FChunkData>& Neighbors);
 	void GenerateBiome();
 	void GenerateDecorations();

@@ -35,11 +35,12 @@ AChunk::AChunk()
 	PrimaryActorTick.bCanEverTick = false;
 
 	bReplicates = true;
-	
+	NetDormancy = ENetDormancy::DORM_Awake;
+	NetCullDistanceSquared = 51200.0f;//102400.0f;
+
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->ComponentTags.Add(TEXT("Ground"));
 	RootComponent = MeshComponent;
-	// MeshComponent->SetupAttachment(RootComponent);
 
 	WaterMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WaterMeshComponent"));
 	WaterMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
@@ -48,12 +49,11 @@ AChunk::AChunk()
 
 	SaveComponent = CreateDefaultSubobject<UChunkSaveComponent>(TEXT("SaveComponent"));
 
-	// TODO these might be tied to biome in the future
-	ZScale = 100.0f;
-	NoiseScale = 0.1f;
-
 	UVScale = 100.0f;
 	Material = nullptr;
+
+	VerticesReplicated = false;
+	VertexColorsReplicated = false;
 
 	if (GetWorld())
 	{
@@ -87,7 +87,8 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AChunk, Vertices, COND_InitialOnly);
+	DOREPLIFETIME(AChunk, Vertices);
+	DOREPLIFETIME(AChunk, VertexColors);
 }
 
 void AChunk::Generate(const TArray<FChunkData>& Neighbors)
@@ -99,7 +100,7 @@ void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 
 void AChunk::OnLoadFromSaveComplete()
 {
-	OnRep_Vertices();
+	CreateMesh();
 }
 
 void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
@@ -209,9 +210,24 @@ void AChunk::BeginPlay()
 
 void AChunk::OnRep_Vertices()
 {
-	Triangles.Reset();
-	Normals.Reset();
-	Tangents.Reset();
+	VerticesReplicated = true;
+
+	if (!VertexColorsReplicated)
+	{
+		return;
+	}
+	
+	CreateMesh();
+}
+
+void AChunk::OnRep_VertexColors()
+{
+	VertexColorsReplicated = true;
+
+	if (!VerticesReplicated)
+	{
+		return;
+	}
 
 	CreateMesh();
 }
@@ -457,6 +473,10 @@ void AChunk::CreateTriangles()
 
 void AChunk::CreateMesh()
 {
+	Triangles.Reset();
+	Normals.Reset();
+	Tangents.Reset();
+
 	CreateTriangles();
 
 	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices, Triangles, UV0, Normals, Tangents);

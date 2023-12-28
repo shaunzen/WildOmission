@@ -88,7 +88,6 @@ bool AChunkManager::GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedCh
 	return true;
 }
 
-// TODO use this for all chunk generation
 void AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 {
 	FSpawnedChunk SpawnedChunk;
@@ -152,6 +151,15 @@ void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AChunkManager::RemoveOutOfRangeChunks()
 {
+	// This seems to destroy and replace chunks over and over every frame?
+	// I need to figure out why
+
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	TArray<FSpawnedChunk> NewSpawnedChunks = SpawnedChunks;
 	for (const FSpawnedChunk& SpawnedChunk : SpawnedChunks)
 	{
@@ -160,8 +168,10 @@ void AChunkManager::RemoveOutOfRangeChunks()
 			continue;
 		}
 		
-		int32 DistanceFromClosestPlayer = 0;
-		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+		int32 DistanceFromClosestPlayer = -1;
+
+		// Gets the distance from closest player
+		for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
 		{
 			APlayerController* PlayerController = Iterator->Get();
 			if (!IsValid(PlayerController))
@@ -181,7 +191,7 @@ void AChunkManager::RemoveOutOfRangeChunks()
 				PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
 
 			const int32 DistanceFromPlayer = SpawnedChunk.Distance(PlayerChunkLocation);
-			if (DistanceFromClosestPlayer > 0 && DistanceFromPlayer > DistanceFromClosestPlayer)
+			if (DistanceFromClosestPlayer >= 0 && DistanceFromPlayer > DistanceFromClosestPlayer)
 			{
 				continue;
 			}
@@ -189,24 +199,25 @@ void AChunkManager::RemoveOutOfRangeChunks()
 			DistanceFromClosestPlayer = DistanceFromPlayer;
 		}
 
-		if (DistanceFromClosestPlayer <= RENDER_DISTANCE)
+		if (DistanceFromClosestPlayer == INDEX_NONE || DistanceFromClosestPlayer <= RENDER_DISTANCE)
 		{
 			continue;
 		}
 
+		// TODO does this automatically shrink?
+		NewSpawnedChunks.Remove(SpawnedChunk);
+
 		FChunkData ChunkSaveData;
 		SpawnedChunk.Chunk->Save(ChunkSaveData, true);
-
-		// TODO Be sure to overwrite the existing data for this chunk
-		// so that we can prevent memory leak
-		if (ChunkData.Contains(ChunkSaveData))
+		
+		const int32 ChunkIndex = ChunkData.Find(ChunkSaveData);
+		if (ChunkIndex == INDEX_NONE)
 		{
-			ChunkData.Remove(ChunkSaveData);
+			ChunkData.Add(ChunkSaveData);
+			continue;
 		}
-
-		ChunkData.Add(ChunkSaveData);
-
-		NewSpawnedChunks.Remove(SpawnedChunk);
+		
+		ChunkData[ChunkIndex] = ChunkSaveData;
 	}
 
 	SpawnedChunks = NewSpawnedChunks;
@@ -225,9 +236,6 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 		return;
 	}
 
-	// Get Player Location
-	const FVector PlayerLocation = Pawn->GetActorLocation();
-	
 	// Uncomment for generation stats
 	/*const FVector2D TwoDimensionPlayerLocation(PlayerLocation.X, PlayerLocation.Y);
 	UE_LOG(LogTemp, Warning, TEXT("Location %s"), *TwoDimensionPlayerLocation.ToString());
@@ -238,6 +246,9 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 	UE_LOG(LogTemp, Warning, TEXT("P&V %f, Raw P&V %f"),
 		AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation), AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation, true));*/
 
+	// Get Player Location
+	const FVector PlayerLocation = Pawn->GetActorLocation();
+	
 	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
 		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
 
