@@ -10,7 +10,7 @@
 static AChunkManager* Instance = nullptr;
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
-const static int32 RENDER_DISTANCE = 32;
+const static int32 RENDER_DISTANCE = 16;
 
 // Sets default values
 AChunkManager::AChunkManager()
