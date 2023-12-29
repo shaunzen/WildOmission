@@ -36,6 +36,9 @@ private:
 	class UButton* PlayButton;
 	
 	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* PlayButtonTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
 	class UButton* RenameButton;
 
 	UPROPERTY(Meta = (BindWidget))
@@ -64,6 +67,8 @@ private:
 
 	UPROPERTY()
 	FString WorldName;
+
+	int32 GetWorldVersion() const;
 
 	TEnumAsByte<enum EGameDifficulty> GetWorldDifficulty() const;
 	void SetWorldDifficulty(const TEnumAsByte<enum EGameDifficulty>& NewDifficulty);

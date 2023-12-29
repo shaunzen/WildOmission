@@ -61,24 +61,24 @@ AChunk::AChunk()
 		{
 			Material = TerrainMaterial.Object;
 		}
+	}
 
-		static ConstructorHelpers::FObjectFinder<UCurveFloat> ContinentalnessHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_Continentalness_Height"));
-		if (ContinentalnessHeightCurveBlueprint.Succeeded())
-		{
-			ContinentalnessHeightCurve = ContinentalnessHeightCurveBlueprint.Object;
-		}
+	static ConstructorHelpers::FObjectFinder<UCurveFloat> ContinentalnessHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_Continentalness_Height"));
+	if (ContinentalnessHeightCurveBlueprint.Succeeded())
+	{
+		ContinentalnessHeightCurve = ContinentalnessHeightCurveBlueprint.Object;
+	}
 
-		static ConstructorHelpers::FObjectFinder<UCurveFloat> ErosionHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_Erosion_Height"));
-		if (ErosionHeightCurveBlueprint.Succeeded())
-		{
-			ErosionHeightCurve = ErosionHeightCurveBlueprint.Object;
-		}
+	static ConstructorHelpers::FObjectFinder<UCurveFloat> ErosionHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_Erosion_Height"));
+	if (ErosionHeightCurveBlueprint.Succeeded())
+	{
+		ErosionHeightCurve = ErosionHeightCurveBlueprint.Object;
+	}
 
-		static ConstructorHelpers::FObjectFinder<UCurveFloat> PeaksAndValleysHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_PeaksAndValleys_Height"));
-		if (PeaksAndValleysHeightCurveBlueprint.Succeeded())
-		{
-			PeaksAndValleysHeightCurve = PeaksAndValleysHeightCurveBlueprint.Object;
-		}
+	static ConstructorHelpers::FObjectFinder<UCurveFloat> PeaksAndValleysHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_PeaksAndValleys_Height"));
+	if (PeaksAndValleysHeightCurveBlueprint.Succeeded())
+	{
+		PeaksAndValleysHeightCurve = PeaksAndValleysHeightCurveBlueprint.Object;
 	}
 }
 
