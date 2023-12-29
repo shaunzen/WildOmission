@@ -121,7 +121,7 @@ void AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 
 float AChunkManager::GetRenderDistanceCentimeters()
 {
-	return AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale() * RENDER_DISTANCE;
+	return AChunk::GetVertexSize() * (AChunk::GetVertexDistanceScale() * 0.5f) * RENDER_DISTANCE;
 }
 
 int32 AChunkManager::GetRenderDistance()

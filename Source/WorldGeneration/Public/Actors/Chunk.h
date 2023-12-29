@@ -17,8 +17,13 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
+	virtual void Tick(float DeltaTime) override;
+
 	UFUNCTION()
 	void Generate(const TArray<struct FChunkData>& Neighbors);
+
+	UFUNCTION()
+	void SetChunkHidden(bool Hidden);
 
 	UFUNCTION()
 	void OnLoadFromSaveComplete();
@@ -84,6 +89,8 @@ private:
 
 	UPROPERTY()
 	TArray<struct FProcMeshTangent> Tangents;
+
+	bool ChunkHidden;
 
 	UFUNCTION()
 	void OnRep_MeshData();

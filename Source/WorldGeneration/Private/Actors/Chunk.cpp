@@ -32,7 +32,7 @@ const static FColor RESERVED_VERTEX_COLOR = FColor(0, 0, 0);
 AChunk::AChunk()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	bReplicates = true;
 	NetUpdateFrequency = 2.0f;
@@ -53,6 +53,8 @@ AChunk::AChunk()
 
 	UVScale = 100.0f;
 	Material = nullptr;
+
+	ChunkHidden = false;
 
 	if (GetWorld())
 	{
@@ -90,11 +92,72 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME_CONDITION(AChunk, VertexColors, COND_InitialOnly);
 }
 
+void AChunk::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerController* LocalPlayerController = World->GetFirstPlayerController();
+	if (LocalPlayerController == nullptr)
+	{
+		return;
+	}
+
+	APawn* LocalPawn = LocalPlayerController->GetPawn();
+	if (LocalPawn == nullptr)
+	{
+		return;
+	}
+
+	const FVector FlattenedPawnLocation(LocalPawn->GetActorLocation().X, LocalPawn->GetActorLocation().Y, 0.0f);
+	const FVector FlattenedChunkLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
+
+	float Distance = FVector::Distance(FlattenedPawnLocation, FlattenedChunkLocation);
+	if (Distance > AChunkManager::GetRenderDistanceCentimeters())
+	{
+		SetChunkHidden(true);
+	}
+	else
+	{
+		SetChunkHidden(false);
+	}
+}
+
 void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 {
 	GenerateTerrainShape(Neighbors);
 	GenerateBiome();
 	GenerateDecorations();
+}
+
+void AChunk::SetChunkHidden(bool Hidden)
+{
+	if ((Hidden == true && ChunkHidden == true) || (Hidden == false && ChunkHidden == false))
+	{
+		return;
+	}
+
+	this->SetActorHiddenInGame(Hidden);
+
+	TArray<AActor*> AttachedActors;
+	this->GetAttachedActors(AttachedActors);
+
+	for (AActor* AttachedActor : AttachedActors)
+	{
+		if (AttachedActor == nullptr)
+		{
+			continue;
+		}
+
+		AttachedActor->SetActorHiddenInGame(Hidden);
+	}
+
+	ChunkHidden = Hidden;
 }
 
 void AChunk::OnLoadFromSaveComplete()
