@@ -137,12 +137,16 @@ void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 
 void AChunk::SetChunkHidden(bool Hidden)
 {
-	if ((Hidden == true && ChunkHidden == true) || (Hidden == false && ChunkHidden == false))
+	const bool AlreadyHidden = Hidden && ChunkHidden;
+	const bool AlreadyShown = !Hidden && !ChunkHidden;
+
+	if (AlreadyHidden || AlreadyShown)
 	{
 		return;
 	}
 
-	this->SetActorHiddenInGame(Hidden);
+	MeshComponent->SetVisibility(!Hidden);
+	WaterMeshComponent->SetVisibility(!Hidden);
 
 	TArray<AActor*> AttachedActors;
 	this->GetAttachedActors(AttachedActors);
@@ -153,8 +157,13 @@ void AChunk::SetChunkHidden(bool Hidden)
 		{
 			continue;
 		}
+		UStaticMeshComponent* AttachedActorMeshComponent = AttachedActor->FindComponentByClass<UStaticMeshComponent>();
+		if (AttachedActorMeshComponent == nullptr)
+		{
+			continue;
+		}
 
-		AttachedActor->SetActorHiddenInGame(Hidden);
+		AttachedActorMeshComponent->SetVisibility(!Hidden, false);
 	}
 
 	ChunkHidden = Hidden;
