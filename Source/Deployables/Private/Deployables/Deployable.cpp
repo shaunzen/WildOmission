@@ -125,14 +125,13 @@ void ADeployable::Serialize(FArchive& Ar)
 	{
 		NormalizedDurability = CurrentDurability / MaxDurability;
 	}
+
 	Super::Serialize(Ar);
 }
 
 void ADeployable::Destroyed()
 {
 	Super::Destroyed();
-	
-	PlayDestructionEffects();
 }
 
 void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
@@ -150,6 +149,7 @@ float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEven
 	
 	if (CurrentDurability < KINDA_SMALL_NUMBER)
 	{
+		Multi_PlayDestructionEffects();
 		this->Destroy();
 	}
 
@@ -232,7 +232,7 @@ void ADeployable::Multi_PlayPlacementEffects_Implementation()
 	SpawnDustEffects();
 }
 
-void ADeployable::PlayDestructionEffects()
+void ADeployable::Multi_PlayDestructionEffects_Implementation()
 {
 	if (DestructionSound)
 	{
