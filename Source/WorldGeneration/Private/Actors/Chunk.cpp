@@ -279,6 +279,14 @@ void AChunk::BeginPlay()
 
 }
 
+void AChunk::Multi_UpdateTerrain_Implementation(const TArray<FVector>& InVertices, const TArray<FColor>& InVertexColors)
+{
+	Vertices = InVertices;
+	VertexColors = InVertexColors;
+
+	CreateMesh();
+}
+
 void AChunk::OnRep_MeshData()
 {
 	if (Vertices.IsEmpty() || VertexColors.IsEmpty())

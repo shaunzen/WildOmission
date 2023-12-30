@@ -92,6 +92,9 @@ private:
 
 	bool ChunkHidden;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_UpdateTerrain(const TArray<FVector>& InVertices, const TArray<FColor>& InVertexColors);
+
 	UFUNCTION()
 	void OnRep_MeshData();
 	
