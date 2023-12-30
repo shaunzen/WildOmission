@@ -42,7 +42,7 @@ void UChunkSaveComponent::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 
 	OutChunkData.GridLocation = OwnerChunk->GetChunkLocation();
 	OutChunkData.Generated = true;
-	OutChunkData.Vertices = OwnerChunk->GetVertices();
+	OutChunkData.HeightData = OwnerChunk->GetHeightData();
 
 	FMemoryWriter ChunkMemoryWriter(OutChunkData.ByteData);
 	FObjectAndNameAsStringProxyArchive ChunkArchive(ChunkMemoryWriter, true);
@@ -110,7 +110,7 @@ void UChunkSaveComponent::Load(const FChunkData& InChunkData)
 		return;
 	}
 
-	OwnerChunk->SetVertices(InChunkData.Vertices);
+	OwnerChunk->SetHeightData(InChunkData.HeightData);
 
 	FMemoryReader ChunkMemoryReader(InChunkData.ByteData);
 	FObjectAndNameAsStringProxyArchive ChunkArchive(ChunkMemoryReader, true);

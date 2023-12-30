@@ -22,7 +22,7 @@ struct WORLDGENERATION_API FChunkData
 	bool Generated;
 
 	UPROPERTY()
-	TArray<FVector> Vertices;
+	TArray<float> HeightData;
 
 	UPROPERTY()
 	TArray<uint8> ByteData;

@@ -42,8 +42,8 @@ public:
 	void SetChunkLocation(const FIntVector2& InLocation);
 	FIntVector2 GetChunkLocation() const;
 
-	void SetVertices(const TArray<FVector>& InVertices);
-	TArray<FVector> GetVertices() const;
+	void SetHeightData(const TArray<float>& InHeightData);
+	TArray<float> GetHeightData() const;
 
 	static int32 GetVertexSize();
 	static float GetVertexDistanceScale();
@@ -67,33 +67,15 @@ private:
 	FIntVector2 GridLocation;
 
 	UPROPERTY(EditAnywhere)
-	float UVScale;
-
-	UPROPERTY(EditAnywhere)
 	UMaterialInterface* Material;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MeshData)
-	TArray<FVector> Vertices;
-
-	UPROPERTY()
-	TArray<int32> Triangles;
-
-	UPROPERTY(SaveGame)
-	TArray<FVector2D> UV0;
+	TArray<float> HeightData;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MeshData, SaveGame)
 	TArray<FColor> VertexColors;
 
-	UPROPERTY()
-	TArray<FVector> Normals;
-
-	UPROPERTY()
-	TArray<struct FProcMeshTangent> Tangents;
-
 	bool ChunkHidden;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_UpdateTerrain(const TArray<FVector>& InVertices, const TArray<FColor>& InVertexColors);
 
 	UFUNCTION()
 	void OnRep_MeshData();
@@ -107,8 +89,9 @@ private:
 
 	struct FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location) const;
 
-	void CreateVertices(const TArray<FChunkData>& Neighbors);
-	void CreateTriangles();
+	void GenerateHeightData(const TArray<FChunkData>& Neighbors);
+	void CreateVertices(TArray<FVector>& OutVertices, TArray<FVector2D>& OutUV);
+	void CreateTriangles(TArray<int32>& OutTriangle);
 	void CreateMesh();
 
 };

@@ -15,6 +15,7 @@ static siv::PerlinNoise Noise(10);
 static uint32 Seed = 0;
 const static int32 VERTEX_SIZE = 16;
 const static float VERTEX_DISTANCE_SCALE = 100.0f;
+const static float UV_SCALE = 0.0625f;
 const static float MAX_HEIGHT = 1000000.0f;
 static UCurveFloat* ContinentalnessHeightCurve = nullptr;;
 static UCurveFloat* ErosionHeightCurve = nullptr;
@@ -36,7 +37,7 @@ AChunk::AChunk()
 
 	bReplicates = true;
 	NetUpdateFrequency = 2.0f;
-	NetPriority = 3.0f;
+	NetPriority = 1.0f;
 	NetDormancy = ENetDormancy::DORM_DormantAll;
 	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
 	
@@ -51,7 +52,6 @@ AChunk::AChunk()
 
 	SaveComponent = CreateDefaultSubobject<UChunkSaveComponent>(TEXT("SaveComponent"));
 
-	UVScale = 100.0f;
 	Material = nullptr;
 
 	ChunkHidden = false;
@@ -88,7 +88,7 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AChunk, Vertices, COND_InitialOnly);
+	DOREPLIFETIME_CONDITION(AChunk, HeightData, COND_InitialOnly);
 	DOREPLIFETIME_CONDITION(AChunk, VertexColors, COND_InitialOnly);
 }
 
@@ -247,14 +247,14 @@ FIntVector2 AChunk::GetChunkLocation() const
 	return GridLocation;
 }
 
-void AChunk::SetVertices(const TArray<FVector>& InVertices)
+void AChunk::SetHeightData(const TArray<float>& InHeightData)
 {
-	Vertices = InVertices;
+	HeightData = InHeightData;
 }
 
-TArray<FVector> AChunk::GetVertices() const
+TArray<float> AChunk::GetHeightData() const
 {
-	return Vertices;
+	return HeightData;
 }
 
 int32 AChunk::GetVertexSize()
@@ -279,17 +279,9 @@ void AChunk::BeginPlay()
 
 }
 
-void AChunk::Multi_UpdateTerrain_Implementation(const TArray<FVector>& InVertices, const TArray<FColor>& InVertexColors)
-{
-	Vertices = InVertices;
-	VertexColors = InVertexColors;
-
-	CreateMesh();
-}
-
 void AChunk::OnRep_MeshData()
 {
-	if (Vertices.IsEmpty() || VertexColors.IsEmpty())
+	if (HeightData.IsEmpty() || VertexColors.IsEmpty())
 	{
 		return;
 	}
@@ -299,14 +291,7 @@ void AChunk::OnRep_MeshData()
 
 void AChunk::GenerateTerrainShape(const TArray<FChunkData>& Neighbors)
 {
-	Vertices.Reset();
-	Triangles.Reset();
-	UV0.Reset();
-	VertexColors.Reset();
-	Normals.Reset();
-	Tangents.Reset();
-
-	CreateVertices(Neighbors);
+	GenerateHeightData(Neighbors);
 	CreateMesh();	
 }
 
@@ -389,160 +374,16 @@ float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRa
 	return UseRawValue ? RawValue : PeaksAndValleysHeightCurve->GetFloatValue(RawValue);
 }
 
-void AChunk::CreateVertices(const TArray<FChunkData>& Neighbors)
-{
-	TArray<FVector> TopNeighborVertices;
-	TArray<FVector> BottomNeighborVertices;
-	TArray<FVector> LeftNeighborVertices;
-	TArray<FVector> RightNeighborVertices;
-	
-	TArray<FVector> TopLeftNeighborVertices;
-	TArray<FVector> TopRightNeighborVertices;
-	TArray<FVector> BottomLeftNeighborVertices;
-	TArray<FVector> BottomRightNeighborVertices;
-
-	// Iterate through neibors and store their edge height
-	for (const FChunkData& ChunkData : Neighbors)
-	{
-		// Read Vertices data
-		TArray<FVector> NeighborVertices = ChunkData.Vertices;
-		
-		// Top
-		if (ChunkData.GridLocation == GridLocation + FIntVector2(1, 0))
-		{
-			TopNeighborVertices = NeighborVertices;
-		}
-		// Bottom
-		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, 0))
-		{
-			BottomNeighborVertices = NeighborVertices;
-		}
-		// Left
-		else if (ChunkData.GridLocation == GridLocation + FIntVector2(0, -1))
-		{
-			LeftNeighborVertices = NeighborVertices;
-		}
-		// Right
-		else if (ChunkData.GridLocation == GridLocation + FIntVector2(0, 1))
-		{
-			RightNeighborVertices = NeighborVertices;
-		}
-		// Top Left
-		else if (ChunkData.GridLocation == GridLocation + FIntVector2(1, -1))
-		{
-			TopLeftNeighborVertices = NeighborVertices;
-		}
-		// Top Right
-		else if (ChunkData.GridLocation == GridLocation + FIntVector2(1, 1))
-		{
-			TopRightNeighborVertices = NeighborVertices;
-		}
-		// Bottom Left
-		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, -1))
-		{
-			BottomLeftNeighborVertices = NeighborVertices;
-		}
-		// Bottom Right
-		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, 1))
-		{
-			BottomRightNeighborVertices = NeighborVertices;
-		}
-	}
-
-	// Use Neighbor edge height when generating this to ensure that there will be no gaps
-
-	const FVector Location = GetActorLocation();
-	for (uint32 X = 0; X <= VERTEX_SIZE; ++X)
-	{
-		for (uint32 Y = 0; Y <= VERTEX_SIZE; ++Y)
-		{
-			//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
-			//const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
-			float Height;
-			FColor TerrainColor;
-			GetTerrainDataAtLocation(FVector2D((X * VERTEX_DISTANCE_SCALE) + Location.X, (Y * VERTEX_DISTANCE_SCALE) + Location.Y), Height, TerrainColor);
-
-			const int32 RowColumnSize = VERTEX_SIZE + 1;
-			
-			// Top
-			if (!TopNeighborVertices.IsEmpty() && X == VERTEX_SIZE)
-			{
-				Height = TopNeighborVertices[Y].Z;
-			}
-			// Bottom
-			else if (!BottomNeighborVertices.IsEmpty() && X == 0)
-			{
-				Height = BottomNeighborVertices[Y + (RowColumnSize * VERTEX_SIZE)].Z;
-			}
-			// Left
-			else if (!LeftNeighborVertices.IsEmpty() && Y == 0)
-			{
-				Height = LeftNeighborVertices[(X * RowColumnSize) + VERTEX_SIZE].Z;
-			}
-			// Right
-			else if (!RightNeighborVertices.IsEmpty() && Y == VERTEX_SIZE)
-			{
-
-				Height = RightNeighborVertices[X * RowColumnSize].Z;
-			}
-			// Top Left
-			else if (!TopLeftNeighborVertices.IsEmpty() && X == VERTEX_SIZE && Y == 0)
-			{
-				Height = TopLeftNeighborVertices[VERTEX_SIZE].Z;
-			}
-			// Top Right
-			else if (!TopRightNeighborVertices.IsEmpty() && X == VERTEX_SIZE && Y == VERTEX_SIZE)
-			{
-				Height = TopRightNeighborVertices[0].Z;
-			}
-			// Bottom Left
-			else if (!BottomLeftNeighborVertices.IsEmpty() && X == 0 && Y == 0)
-			{
-				Height = BottomLeftNeighborVertices[(RowColumnSize * RowColumnSize) - 1].Z;
-			}
-			// Bottom Right
-			else if (!BottomRightNeighborVertices.IsEmpty() && X == 0 && Y == VERTEX_SIZE)
-			{
-				Height = BottomRightNeighborVertices[RowColumnSize * VERTEX_SIZE].Z;
-			}
-
-			const float Offset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
-
-			Vertices.Add(FVector((X * VERTEX_DISTANCE_SCALE) - Offset, (Y * VERTEX_DISTANCE_SCALE) - Offset, Height));
-			VertexColors.Add(TerrainColor);
-			UV0.Add(FVector2D(X * 0.0625f, Y * 0.0625f));
-		}
-	}
-}
-
-void AChunk::CreateTriangles()
-{
-	uint32 Vertex = 0;
-	for (uint32 X = 0; X < VERTEX_SIZE; ++X)
-	{
-		for (uint32 Y = 0; Y < VERTEX_SIZE; ++Y)
-		{
-			Triangles.Add(Vertex);
-			Triangles.Add(Vertex + 1);
-			Triangles.Add(Vertex + VERTEX_SIZE + 1);
-
-			Triangles.Add(Vertex + 1);
-			Triangles.Add(Vertex + VERTEX_SIZE + 2);
-			Triangles.Add(Vertex + VERTEX_SIZE + 1);
-
-			++Vertex;
-		}
-		++Vertex;
-	}
-}
-
 void AChunk::CreateMesh()
 {
-	Triangles.Reset();
-	Normals.Reset();
-	Tangents.Reset();
+	TArray<FVector> Vertices;
+	TArray<FVector2D> UV0;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FProcMeshTangent> Tangents;
 
-	CreateTriangles();
+	CreateVertices(Vertices, UV0);
+	CreateTriangles(Triangles);
 
 	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices, Triangles, UV0, Normals, Tangents);
 
@@ -552,21 +393,19 @@ void AChunk::CreateMesh()
 
 bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 {
-	const int32 Point = FMath::RandRange(0, Vertices.Num() - 1);
-	if (!Vertices.IsValidIndex(Point))
-	{
-		return false;
-	}
+	const float X = FMath::RandRange(0, VERTEX_SIZE);
+	const float Y = FMath::RandRange(0, VERTEX_SIZE);
+	const float Z = HeightData[(X * (VERTEX_SIZE + 1)) + Y];
 
 	const FVector ThisChunkLocation = GetActorLocation();
-	const FVector2D ContinentalnessTestPoint = FVector2D(Vertices[Point].X + ThisChunkLocation.X, Vertices[Point].Y + ThisChunkLocation.Y);
+	const FVector2D ContinentalnessTestPoint = FVector2D(X + ThisChunkLocation.X, Y + ThisChunkLocation.Y);
 	const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
 	if (Continentalness < 0.01f)
 	{
 		return false;
 	}
 
-	OutTransform.SetLocation(Vertices[Point] + GetActorLocation());
+	OutTransform.SetLocation(FVector(X, Y, Z) + GetActorLocation());
 	return true;
 }
 
@@ -585,4 +424,167 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) cons
 	// Temp ~, Humidity ~ = Plains/Forest
 
 	return nullptr;
+}
+
+void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
+{
+	TArray<float> TopNeighborHeightData;
+	TArray<float> BottomNeighborHeightData;
+	TArray<float> LeftNeighborHeightData;
+	TArray<float> RightNeighborHeightData;
+
+	TArray<float> TopLeftNeighborHeightData;
+	TArray<float> TopRightNeighborHeightData;
+	TArray<float> BottomLeftNeighborHeightData;
+	TArray<float> BottomRightNeighborHeightData;
+
+	// Iterate through neibors and store their edge height
+	for (const FChunkData& ChunkData : Neighbors)
+	{
+		// Read Vertices data
+		TArray<float> NeighborHeightData = ChunkData.HeightData;
+
+		// Top
+		if (ChunkData.GridLocation == GridLocation + FIntVector2(1, 0))
+		{
+			TopNeighborHeightData = NeighborHeightData;
+		}
+		// Bottom
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, 0))
+		{
+			BottomNeighborHeightData = NeighborHeightData;
+		}
+		// Left
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(0, -1))
+		{
+			LeftNeighborHeightData = NeighborHeightData;
+		}
+		// Right
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(0, 1))
+		{
+			RightNeighborHeightData = NeighborHeightData;
+		}
+		// Top Left
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(1, -1))
+		{
+			TopLeftNeighborHeightData = NeighborHeightData;
+		}
+		// Top Right
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(1, 1))
+		{
+			TopRightNeighborHeightData = NeighborHeightData;
+		}
+		// Bottom Left
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, -1))
+		{
+			BottomLeftNeighborHeightData = NeighborHeightData;
+		}
+		// Bottom Right
+		else if (ChunkData.GridLocation == GridLocation + FIntVector2(-1, 1))
+		{
+			BottomRightNeighborHeightData = NeighborHeightData;
+		}
+	}
+
+	// Use Neighbor edge height when generating this to ensure that there will be no gaps
+
+	const FVector Location = GetActorLocation();
+	for (uint32 X = 0; X <= VERTEX_SIZE; ++X)
+	{
+		for (uint32 Y = 0; Y <= VERTEX_SIZE; ++Y)
+		{
+			//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
+			//const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
+			float Height;
+			FColor TerrainColor;
+			GetTerrainDataAtLocation(FVector2D((X * VERTEX_DISTANCE_SCALE) + Location.X, (Y * VERTEX_DISTANCE_SCALE) + Location.Y), Height, TerrainColor);
+
+			const int32 RowColumnSize = VERTEX_SIZE + 1;
+
+			// Top
+			if (!TopNeighborHeightData.IsEmpty() && X == VERTEX_SIZE)
+			{
+				Height = TopNeighborHeightData[Y];
+			}
+			// Bottom
+			else if (!BottomNeighborHeightData.IsEmpty() && X == 0)
+			{
+				Height = BottomNeighborHeightData[Y + (RowColumnSize * VERTEX_SIZE)];
+			}
+			// Left
+			else if (!LeftNeighborHeightData.IsEmpty() && Y == 0)
+			{
+				Height = LeftNeighborHeightData[(X * RowColumnSize) + VERTEX_SIZE];
+			}
+			// Right
+			else if (!RightNeighborHeightData.IsEmpty() && Y == VERTEX_SIZE)
+			{
+
+				Height = RightNeighborHeightData[X * RowColumnSize];
+			}
+			// Top Left
+			else if (!TopLeftNeighborHeightData.IsEmpty() && X == VERTEX_SIZE && Y == 0)
+			{
+				Height = TopLeftNeighborHeightData[VERTEX_SIZE];
+			}
+			// Top Right
+			else if (!TopRightNeighborHeightData.IsEmpty() && X == VERTEX_SIZE && Y == VERTEX_SIZE)
+			{
+				Height = TopRightNeighborHeightData[0];
+			}
+			// Bottom Left
+			else if (!BottomLeftNeighborHeightData.IsEmpty() && X == 0 && Y == 0)
+			{
+				Height = BottomLeftNeighborHeightData[(RowColumnSize * RowColumnSize) - 1];
+			}
+			// Bottom Right
+			else if (!BottomRightNeighborHeightData.IsEmpty() && X == 0 && Y == VERTEX_SIZE)
+			{
+				Height = BottomRightNeighborHeightData[RowColumnSize * VERTEX_SIZE];
+			}
+
+			HeightData.Add(Height);
+			VertexColors.Add(TerrainColor);
+		}
+	}
+}
+
+void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FVector2D>& OutUV)
+{
+	OutVertices.Empty();
+	OutUV.Empty();
+
+	const float VertexOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
+
+	for (int32 X = 0; X <= VERTEX_SIZE; ++X)
+	{
+		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
+		{
+			OutVertices.Add(FVector((X * VERTEX_DISTANCE_SCALE) - VertexOffset, (Y * VERTEX_DISTANCE_SCALE) - VertexOffset, HeightData[(X * (VERTEX_SIZE + 1)) + Y]));
+			OutUV.Add(FVector2D(X * UV_SCALE, Y * UV_SCALE));
+		}
+	}
+}
+
+void AChunk::CreateTriangles(TArray<int32>& OutTriangles)
+{
+	OutTriangles.Empty();
+
+	uint32 Vertex = 0;
+	for (uint32 X = 0; X < VERTEX_SIZE; ++X)
+	{
+		for (uint32 Y = 0; Y < VERTEX_SIZE; ++Y)
+		{
+			OutTriangles.Add(Vertex);
+			OutTriangles.Add(Vertex + 1);
+			OutTriangles.Add(Vertex + VERTEX_SIZE + 1);
+
+			OutTriangles.Add(Vertex + 1);
+			OutTriangles.Add(Vertex + VERTEX_SIZE + 2);
+			OutTriangles.Add(Vertex + VERTEX_SIZE + 1);
+
+			++Vertex;
+		}
+		++Vertex;
+	}
 }
