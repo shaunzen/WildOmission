@@ -329,28 +329,51 @@ void AChunk::GenerateDecorations()
 	if (Biome)
 	{
 		GenerateSpawnableActors(Biome->Trees);
-		GenerateSpawnableActors(Biome->Nodes);
-		GenerateSpawnableActors(Biome->Collectables);
-		GenerateSpawnableActors(Biome->Lootables);
+		//GenerateSpawnableActors(Biome->Nodes);
+		//GenerateSpawnableActors(Biome->Collectables);
+		//GenerateSpawnableActors(Biome->Lootables);
 	}
 }
 
 void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList)
 {
-	for (const FSpawnData& SpawnData : SpawnDataList)
+	UWorld* World = GetWorld();
+	if (World == nullptr)
 	{
-		const int32 AmountOfResourceToSpawn = FMath::RoundToInt32((VERTEX_SIZE * SpawnData.DensityPerMeter) / SpawnDataList.Num());
-		for (int32 i = 0; i < AmountOfResourceToSpawn; i++)
+		return;
+	}
+
+	const float ChunkOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
+	const FVector ThisChunkLocation = GetActorLocation();
+	
+	// TODO we should use perlin noise for spawning trees
+	for (int32 X = 0; X <= VERTEX_SIZE; ++X)
+	{
+		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
-			FTransform SpawnTransform;
-			if (!GetRandomPointOnTerrain(SpawnTransform))
+			const FVector2D ContinentalnessTestPoint = FVector2D(X + ThisChunkLocation.X, Y + ThisChunkLocation.Y);
+			const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
+			if (Continentalness < 0.01f)
 			{
 				continue;
 			}
-			const float Yaw = FMath::RandRange(0.0f, 360.0f);
-			SpawnTransform.SetRotation(FRotator(0.0f, Yaw, 0.0f).Quaternion());
-			AActor* SpawnedResource = GetWorld()->SpawnActor<AActor>(SpawnData.BlueprintClass, SpawnTransform);
-			SpawnedResource->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+			
+			float Spawn = Noise.noise2D(ContinentalnessTestPoint.X, ContinentalnessTestPoint.Y);
+
+			if (Spawn > 0.5f)
+			{
+				const FVector SpawnLocation = FVector(
+					(X * VERTEX_DISTANCE_SCALE) - ChunkOffset,
+					(Y * VERTEX_DISTANCE_SCALE) - ChunkOffset,
+					HeightData[(X * (VERTEX_SIZE + 1)) + Y])
+					+ ThisChunkLocation;
+				const FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
+				const int32 SpawnDataIndex = FMath::RandRange(0, SpawnDataList.Num() - 1);
+
+				AActor* SpawnedActor = World->SpawnActor<AActor>(SpawnDataList[SpawnDataIndex].BlueprintClass, SpawnLocation, SpawnRotation);
+				SpawnedActor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+			}
+
 		}
 	}
 }

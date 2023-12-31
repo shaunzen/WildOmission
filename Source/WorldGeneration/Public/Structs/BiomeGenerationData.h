@@ -15,9 +15,19 @@ struct FSpawnData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AActor> BlueprintClass;
 
+	// Min attempts to spawn per chunk
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float DensityPerMeter = 1.0f;
+	int32 MinCountPerChunk = 0;
 
+	// Max attempts to spawn per chunk, not guaranteed unless spawn chance is 1
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 MaxCountPerChunk = 3;
+
+	// 1 = 100% chance of spawning, 0.5 = 50% chance of spawning, 0 = 0% chance of spawning
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float SpawnChance = 1.0f;
+
+	// TODO this is deprecated as of now
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool FollowSurfaceNormal = false;
 
