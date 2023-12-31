@@ -7,6 +7,7 @@ FChunkData::FChunkData()
 {
 	GridLocation = FIntVector2();
 	HeightData = TArray<float>();
+	SurfaceData = TArray<uint8>();
 	ByteData = TArray<uint8>();
 	ActorData = TArray<FActorSaveData>();
 }
@@ -15,6 +16,7 @@ FChunkData::FChunkData(const FIntVector2& InGridLocation)
 {
 	GridLocation = InGridLocation;
 	HeightData = TArray<float>();
+	SurfaceData = TArray<uint8>();
 	ByteData = TArray<uint8>();
 	ActorData = TArray<FActorSaveData>();
 }

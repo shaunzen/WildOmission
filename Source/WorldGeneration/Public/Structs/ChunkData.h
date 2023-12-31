@@ -25,6 +25,9 @@ struct WORLDGENERATION_API FChunkData
 	TArray<float> HeightData;
 
 	UPROPERTY()
+	TArray<uint8> SurfaceData;
+
+	UPROPERTY()
 	TArray<uint8> ByteData;
 
 	UPROPERTY()

@@ -17,15 +17,18 @@ const static int32 VERTEX_SIZE = 16;
 const static float VERTEX_DISTANCE_SCALE = 100.0f;
 const static float UV_SCALE = 0.0625f;
 const static float MAX_HEIGHT = 1000000.0f;
+
 static UCurveFloat* ContinentalnessHeightCurve = nullptr;;
 static UCurveFloat* ErosionHeightCurve = nullptr;
 static UCurveFloat* PeaksAndValleysHeightCurve = nullptr;
 
-const static FColor SAND_VERTEX_COLOR = FColor(255, 0, 0);
+static UMaterialInterface* ChunkMaterial = nullptr;
+
+const static FColor STONE_VERTEX_COLOR = FColor(255, 0, 0);
 const static FColor GRASS_VERTEX_COLOR = FColor(0, 255, 0);
 const static FColor DIRT_VERTEX_COLOR = FColor(0, 0, 255);
-const static FColor GRAVEL_VERTEX_COLOR = FColor(255, 255, 0);
-const static FColor STONE_VERTEX_COLOR = FColor(0, 255, 255);
+const static FColor SAND_VERTEX_COLOR = FColor(255, 255, 0);
+const static FColor GRAVEL_VERTEX_COLOR = FColor(0, 255, 255);
 const static FColor SNOW_VERTEX_COLOR = FColor(255, 255, 255);
 const static FColor RESERVED_VERTEX_COLOR = FColor(0, 0, 0);
 
@@ -52,8 +55,6 @@ AChunk::AChunk()
 
 	SaveComponent = CreateDefaultSubobject<UChunkSaveComponent>(TEXT("SaveComponent"));
 
-	Material = nullptr;
-
 	ChunkHidden = false;
 
 	if (GetWorld())
@@ -61,7 +62,7 @@ AChunk::AChunk()
 		static ConstructorHelpers::FObjectFinder<UMaterialInterface> TerrainMaterial(TEXT("/Game/WorldGeneration/M_Terrain"));
 		if (TerrainMaterial.Succeeded())
 		{
-			Material = TerrainMaterial.Object;
+			ChunkMaterial = TerrainMaterial.Object;
 		}
 	}
 
@@ -89,7 +90,7 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(AChunk, HeightData, COND_InitialOnly);
-	DOREPLIFETIME_CONDITION(AChunk, VertexColors, COND_InitialOnly);
+	DOREPLIFETIME_CONDITION(AChunk, SurfaceData, COND_InitialOnly);
 }
 
 void AChunk::Tick(float DeltaTime)
@@ -181,6 +182,7 @@ void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 
 void AChunk::Load(const FChunkData& InChunkData)
 {
+	this->GridLocation = InChunkData.GridLocation;
 	SaveComponent->Load(InChunkData);
 	OnLoadFromSaveComplete();
 }
@@ -196,7 +198,7 @@ uint32 AChunk::GetGenerationSeed()
 	return Seed;
 }
 
-void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, FColor& OutColor)
+void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, uint8& OutSurface)
 {
 	const float ContinentalnessInfluence = 1000.0f;
 	const float ErosionInfluence = 5000.0f;
@@ -224,16 +226,28 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 			OutHeight += PeaksAndValleysHeight * RawErosion * RawContinentalness;
 		}
 	}
-	OutColor = FColor::Yellow;
+
+	// 1 = Stone
+	// 2 = Grass
+	// 3 = Dirt
+	// 4 = Sand
+	// 5 = Gravel
+	// 6 = Snow
+	// 7 = Reserved
+
+	OutSurface = 1;
+
 	// Ground Color
 	if (RawContinentalness <= 0.0f)
 	{
-		OutColor = SAND_VERTEX_COLOR;
+		// Sand
+		OutSurface = 4;
 	}
 	else
 	{	
 		const bool HighAltitude = OutHeight > 10000.0f;
-		HighAltitude ? OutColor = SNOW_VERTEX_COLOR : OutColor = GRASS_VERTEX_COLOR;
+		// Snow or Grass
+		HighAltitude ? OutSurface = 6: OutSurface = 2;
 	}
 }
 
@@ -255,6 +269,16 @@ void AChunk::SetHeightData(const TArray<float>& InHeightData)
 TArray<float> AChunk::GetHeightData() const
 {
 	return HeightData;
+}
+
+void AChunk::SetSurfaceData(const TArray<uint8>& InSurfaceData)
+{
+	SurfaceData = InSurfaceData;
+}
+
+TArray<uint8> AChunk::GetSurfaceData() const
+{
+	return SurfaceData;
 }
 
 int32 AChunk::GetVertexSize()
@@ -281,7 +305,7 @@ void AChunk::BeginPlay()
 
 void AChunk::OnRep_MeshData()
 {
-	if (HeightData.IsEmpty() || VertexColors.IsEmpty())
+	if (HeightData.IsEmpty() || SurfaceData.IsEmpty())
 	{
 		return;
 	}
@@ -377,18 +401,19 @@ float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRa
 void AChunk::CreateMesh()
 {
 	TArray<FVector> Vertices;
+	TArray<FColor> VertexColors;
 	TArray<FVector2D> UV0;
 	TArray<int32> Triangles;
 	TArray<FVector> Normals;
 	TArray<FProcMeshTangent> Tangents;
 
-	CreateVertices(Vertices, UV0);
+	CreateVertices(Vertices, VertexColors, UV0);
 	CreateTriangles(Triangles);
 
 	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices, Triangles, UV0, Normals, Tangents);
 
 	MeshComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UV0, VertexColors, Tangents, true);
-	MeshComponent->SetMaterial(0, Material);
+	MeshComponent->SetMaterial(0, ChunkMaterial);
 }
 
 bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
@@ -405,7 +430,8 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 		return false;
 	}
 
-	OutTransform.SetLocation(FVector(X, Y, Z) + GetActorLocation());
+	float ChunkOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
+	OutTransform.SetLocation(FVector((X * VERTEX_DISTANCE_SCALE) - ChunkOffset, (Y * VERTEX_DISTANCE_SCALE) - ChunkOffset, Z) + GetActorLocation());
 	return true;
 }
 
@@ -496,8 +522,8 @@ void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
 			//const float NewZ = Noise.octave2D(static_cast<float>(X + Location.X) * NoiseScale, static_cast<float>(Y + Location.Y) * NoiseScale, 3) * ZScale;
 			//const float Z = FMath::PerlinNoise2D(FVector2D((static_cast<float>(X) + Location.X) * NoiseScale, (static_cast<float>(Y) + Location.Y) * NoiseScale)) * ZScale;
 			float Height;
-			FColor TerrainColor;
-			GetTerrainDataAtLocation(FVector2D((X * VERTEX_DISTANCE_SCALE) + Location.X, (Y * VERTEX_DISTANCE_SCALE) + Location.Y), Height, TerrainColor);
+			uint8 Surface;
+			GetTerrainDataAtLocation(FVector2D((X * VERTEX_DISTANCE_SCALE) + Location.X, (Y * VERTEX_DISTANCE_SCALE) + Location.Y), Height, Surface);
 
 			const int32 RowColumnSize = VERTEX_SIZE + 1;
 
@@ -544,12 +570,12 @@ void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
 			}
 
 			HeightData.Add(Height);
-			VertexColors.Add(TerrainColor);
+			SurfaceData.Add(Surface);
 		}
 	}
 }
 
-void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FVector2D>& OutUV)
+void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV)
 {
 	OutVertices.Empty();
 	OutUV.Empty();
@@ -560,7 +586,35 @@ void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FVector2D>& Out
 	{
 		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
-			OutVertices.Add(FVector((X * VERTEX_DISTANCE_SCALE) - VertexOffset, (Y * VERTEX_DISTANCE_SCALE) - VertexOffset, HeightData[(X * (VERTEX_SIZE + 1)) + Y]));
+			const int32 ArrayIndex = (X * (VERTEX_SIZE + 1)) + Y;
+			OutVertices.Add(FVector((X * VERTEX_DISTANCE_SCALE) - VertexOffset, (Y * VERTEX_DISTANCE_SCALE) - VertexOffset, HeightData[ArrayIndex]));
+			switch (SurfaceData[ArrayIndex])
+			{
+			default:
+				OutColors.Add(STONE_VERTEX_COLOR);
+				break;
+			case 1:
+				OutColors.Add(STONE_VERTEX_COLOR);
+				break;
+			case 2:
+				OutColors.Add(GRASS_VERTEX_COLOR);
+				break;
+			case 3:
+				OutColors.Add(DIRT_VERTEX_COLOR);
+				break;
+			case 4:
+				OutColors.Add(SAND_VERTEX_COLOR);
+				break;
+			case 5:
+				OutColors.Add(GRAVEL_VERTEX_COLOR);
+				break;
+			case 6:
+				OutColors.Add(SNOW_VERTEX_COLOR);
+				break;
+			case 7:
+				OutColors.Add(RESERVED_VERTEX_COLOR);
+				break;
+			}
 			OutUV.Add(FVector2D(X * UV_SCALE, Y * UV_SCALE));
 		}
 	}
