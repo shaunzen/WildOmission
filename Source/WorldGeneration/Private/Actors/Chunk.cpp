@@ -336,13 +336,16 @@ void AChunk::GenerateDecorations()
 	}
 }
 
-void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList, float TestValue)
+void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValue)
 {
-	// TODO these can be tied to biome
-	// This is good for a forest or something, but a little too dense for most other biomes
-	float NoiseScale = 0.5f;
-	float Tolerance = 0.05f;
-	float SpawnChance = 0.75f;
+	if (SpawnData.Spawnables.IsEmpty())
+	{
+		return;
+	}
+
+	FMath::SRandInit(Seed);
+	FRandomStream RandomStream;
+	UKismetMathLibrary::SetRandomStreamSeed(RandomStream, Seed);
 
 	UWorld* World = GetWorld();
 	if (World == nullptr)
@@ -363,24 +366,24 @@ void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataL
 				continue;
 			}
 			
-			float Spawn = Noise.noise2D((X + ThisChunkLocation.X) * NoiseScale, (Y + ThisChunkLocation.Y) * NoiseScale);
+			float Spawn = Noise.noise2D((X + ThisChunkLocation.X) * SpawnData.NoiseParameters.NoiseScale, (Y + ThisChunkLocation.Y) * SpawnData.NoiseParameters.NoiseScale);
 			//UE_LOG(LogTemp, Warning, TEXT("Spawn Value is %f"), Spawn);
-			if (FMath::IsNearlyEqual(Spawn, 0.5f, 0.05f))
+			if (FMath::IsNearlyEqual(Spawn, 0.5f, SpawnData.NoiseParameters.Tolerance))
 			{
-				FRandomStream RandomStream;
-				UKismetMathLibrary::SetRandomStreamSeed(RandomStream, Seed);
-				UKismetMathLibrary::RandomBoolWithWeightFromStream(RandomStream, SpawnChance);
+				const int32 SpawnDataIndex = FMath::RandRange(0, SpawnData.Spawnables.Num() - 1);
+				if (!UKismetMathLibrary::RandomBoolWithWeightFromStream(RandomStream, SpawnData.Spawnables[SpawnDataIndex].SpawnChance))
+				{
+					return;
+				}
 
 				const FVector SpawnLocation = FVector(
 					(X * VERTEX_DISTANCE_SCALE) - ChunkOffset,
 					(Y * VERTEX_DISTANCE_SCALE) - ChunkOffset,
 					HeightData[(X * (VERTEX_SIZE + 1)) + Y])
 					+ ThisChunkLocation;
-				FMath::SRandInit(Seed);
 				const FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
-				const int32 SpawnDataIndex = FMath::RandRange(0, SpawnDataList.Num() - 1);
 				//UE_LOG(LogTemp, Warning, TEXT("Spawned Decoration at %s"), *SpawnLocation.ToString());
-				AActor* SpawnedActor = World->SpawnActor<AActor>(SpawnDataList[SpawnDataIndex].BlueprintClass, SpawnLocation, SpawnRotation);
+				AActor* SpawnedActor = World->SpawnActor<AActor>(SpawnData.Spawnables[SpawnDataIndex].BlueprintClass, SpawnLocation, SpawnRotation);
 				SpawnedActor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 			}
 
