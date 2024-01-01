@@ -192,6 +192,7 @@ void AChunk::SetGenerationSeed(const uint32& InSeed)
 {
 	Seed = InSeed;
 	Noise.reseed(InSeed);
+	FMath::RandInit(InSeed);
 }
 
 uint32 AChunk::GetGenerationSeed()
@@ -329,10 +330,10 @@ void AChunk::GenerateDecorations()
 	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
 	if (Biome)
 	{
-		GenerateSpawnableActors(Biome->Trees, 0.5f);
-		GenerateSpawnableActors(Biome->Nodes, 0.25f);
-		GenerateSpawnableActors(Biome->Collectables, 0.0f);
-		GenerateSpawnableActors(Biome->Lootables, -0.5f);
+		GenerateSpawnableActors(Biome->Trees, 1.0f);
+		GenerateSpawnableActors(Biome->Nodes, 0.75f);
+		GenerateSpawnableActors(Biome->Collectables, 0.5f);
+		GenerateSpawnableActors(Biome->Lootables, 0.25f);
 	}
 }
 
@@ -355,7 +356,7 @@ void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValu
 	{
 		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
-			FMath::RandInit(Seed + ThisChunkLocation.X + ThisChunkLocation.Y + (X * VERTEX_DISTANCE_SCALE) + (Y * VERTEX_DISTANCE_SCALE));
+			//const int32 SeedBase = Seed + ((GridLocation.X + GridLocation.Y) * (X + Y));
 			const FVector2D ContinentalnessTestPoint = FVector2D((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X, (Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y);
 			const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
 			if (Continentalness < 0.01f)
@@ -363,10 +364,13 @@ void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValu
 				continue;
 			}
 			
-			float Spawn = Noise.noise2D(((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X) * SpawnData.NoiseParameters.NoiseScale, ((Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y) * SpawnData.NoiseParameters.NoiseScale);
-			//UE_LOG(LogTemp, Warning, TEXT("Spawn Value is %f"), Spawn);
-			if (FMath::IsNearlyEqual(Spawn, TestValue, SpawnData.NoiseParameters.Tolerance))
+			float Spawn = FMath::FRand();
+			
+				//Noise.noise2D(((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X) * SpawnData.NoiseParameters.NoiseScale, ((Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y) * SpawnData.NoiseParameters.NoiseScale);
+			UE_LOG(LogTemp, Warning, TEXT("Spawn Value is %f"), Spawn);
+			if (FMath::IsNearlyEqual(Spawn, TestValue, 0.25f))
 			{
+				
 				const int32 SpawnDataIndex = FMath::RandRange(0, SpawnData.Spawnables.Num() - 1);
 				if (!UKismetMathLibrary::RandomBoolWithWeight(SpawnData.Spawnables[SpawnDataIndex].SpawnChance))
 				{

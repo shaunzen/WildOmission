@@ -19,7 +19,7 @@ struct FSpawnableNoiseParameters
 
 	// The +- tolerance that the noise will use to determine if spawn should be attemped
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float Tolerance = 0.05f;
+	float Tolerance = 0.1f;
 
 };
 
