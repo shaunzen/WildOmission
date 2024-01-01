@@ -355,7 +355,7 @@ void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValu
 	{
 		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
-			FMath::SRandInit(Seed + ThisChunkLocation.X + ThisChunkLocation.Y + (X * VERTEX_DISTANCE_SCALE) + (Y * VERTEX_DISTANCE_SCALE));
+			FMath::RandInit(Seed + ThisChunkLocation.X + ThisChunkLocation.Y + (X * VERTEX_DISTANCE_SCALE) + (Y * VERTEX_DISTANCE_SCALE));
 			const FVector2D ContinentalnessTestPoint = FVector2D((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X, (Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y);
 			const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
 			if (Continentalness < 0.01f)

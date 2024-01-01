@@ -84,9 +84,14 @@ void ASaveManager::LoadWorld()
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
-		
-		const uint32 Seed = FMath::RandRange(0, 999999999);
-		AChunkManager::SetGenerationSeed(Seed);
+		FDateTime Now = FDateTime::Now();
+		const int32 SeedRandInit =
+			Now.GetMillisecond() + Now.GetSecond()
+			+ Now.GetMinute() + Now.GetHour()
+			+ Now.GetDay() + Now.GetMonth() + Now.GetYear();
+		FMath::RandInit(SeedRandInit);
+		const uint32 GenerationSeed = FMath::RandRange(0, 999999999);
+		AChunkManager::SetGenerationSeed(10);
 
 		MarkSaveGenerated();
 		return;
