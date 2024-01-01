@@ -7,6 +7,7 @@
 #include "ChunkManager.h"
 #include "Curves/CurveFloat.h"
 #include "Noise/PerlinNoise.hpp"
+#include "Kismet/KismetMathLibrary.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
@@ -328,15 +329,21 @@ void AChunk::GenerateDecorations()
 	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
 	if (Biome)
 	{
-		GenerateSpawnableActors(Biome->Trees);
+		GenerateSpawnableActors(Biome->Trees, 0.5f);
 		//GenerateSpawnableActors(Biome->Nodes);
 		//GenerateSpawnableActors(Biome->Collectables);
 		//GenerateSpawnableActors(Biome->Lootables);
 	}
 }
 
-void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList)
+void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataList, float TestValue)
 {
+	// TODO these can be tied to biome
+	// This is good for a forest or something, but a little too dense for most other biomes
+	float NoiseScale = 0.5f;
+	float Tolerance = 0.05f;
+	float SpawnChance = 0.75f;
+
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -345,31 +352,34 @@ void AChunk::GenerateSpawnableActors(const TArray<struct FSpawnData>& SpawnDataL
 
 	const float ChunkOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
 	const FVector ThisChunkLocation = GetActorLocation();
-	
-	// TODO we should use perlin noise for spawning trees
 	for (int32 X = 0; X <= VERTEX_SIZE; ++X)
 	{
 		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
-			const FVector2D ContinentalnessTestPoint = FVector2D(X + ThisChunkLocation.X, Y + ThisChunkLocation.Y);
+			const FVector2D ContinentalnessTestPoint = FVector2D((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X, (Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y);
 			const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
 			if (Continentalness < 0.01f)
 			{
 				continue;
 			}
 			
-			float Spawn = Noise.noise2D(ContinentalnessTestPoint.X, ContinentalnessTestPoint.Y);
-
-			if (Spawn > 0.5f)
+			float Spawn = Noise.noise2D((X + ThisChunkLocation.X) * NoiseScale, (Y + ThisChunkLocation.Y) * NoiseScale);
+			//UE_LOG(LogTemp, Warning, TEXT("Spawn Value is %f"), Spawn);
+			if (FMath::IsNearlyEqual(Spawn, 0.5f, 0.05f))
 			{
+				FRandomStream RandomStream;
+				UKismetMathLibrary::SetRandomStreamSeed(RandomStream, Seed);
+				UKismetMathLibrary::RandomBoolWithWeightFromStream(RandomStream, SpawnChance);
+
 				const FVector SpawnLocation = FVector(
 					(X * VERTEX_DISTANCE_SCALE) - ChunkOffset,
 					(Y * VERTEX_DISTANCE_SCALE) - ChunkOffset,
 					HeightData[(X * (VERTEX_SIZE + 1)) + Y])
 					+ ThisChunkLocation;
+				FMath::SRandInit(Seed);
 				const FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
 				const int32 SpawnDataIndex = FMath::RandRange(0, SpawnDataList.Num() - 1);
-
+				//UE_LOG(LogTemp, Warning, TEXT("Spawned Decoration at %s"), *SpawnLocation.ToString());
 				AActor* SpawnedActor = World->SpawnActor<AActor>(SpawnDataList[SpawnDataIndex].BlueprintClass, SpawnLocation, SpawnRotation);
 				SpawnedActor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 			}
