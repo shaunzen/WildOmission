@@ -330,9 +330,9 @@ void AChunk::GenerateDecorations()
 	if (Biome)
 	{
 		GenerateSpawnableActors(Biome->Trees, 0.5f);
-		//GenerateSpawnableActors(Biome->Nodes);
-		//GenerateSpawnableActors(Biome->Collectables);
-		//GenerateSpawnableActors(Biome->Lootables);
+		GenerateSpawnableActors(Biome->Nodes, 0.25f);
+		GenerateSpawnableActors(Biome->Collectables, 0.0f);
+		GenerateSpawnableActors(Biome->Lootables, -0.5f);
 	}
 }
 
@@ -342,10 +342,6 @@ void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValu
 	{
 		return;
 	}
-
-	FMath::SRandInit(Seed);
-	FRandomStream RandomStream;
-	UKismetMathLibrary::SetRandomStreamSeed(RandomStream, Seed);
 
 	UWorld* World = GetWorld();
 	if (World == nullptr)
@@ -359,6 +355,7 @@ void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValu
 	{
 		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
+			FMath::SRandInit(Seed + ThisChunkLocation.X + ThisChunkLocation.Y + (X * VERTEX_DISTANCE_SCALE) + (Y * VERTEX_DISTANCE_SCALE));
 			const FVector2D ContinentalnessTestPoint = FVector2D((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X, (Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y);
 			const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
 			if (Continentalness < 0.01f)
@@ -366,12 +363,12 @@ void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValu
 				continue;
 			}
 			
-			float Spawn = Noise.noise2D((X + ThisChunkLocation.X) * SpawnData.NoiseParameters.NoiseScale, (Y + ThisChunkLocation.Y) * SpawnData.NoiseParameters.NoiseScale);
+			float Spawn = Noise.noise2D(((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X) * SpawnData.NoiseParameters.NoiseScale, ((Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y) * SpawnData.NoiseParameters.NoiseScale);
 			//UE_LOG(LogTemp, Warning, TEXT("Spawn Value is %f"), Spawn);
-			if (FMath::IsNearlyEqual(Spawn, 0.5f, SpawnData.NoiseParameters.Tolerance))
+			if (FMath::IsNearlyEqual(Spawn, TestValue, SpawnData.NoiseParameters.Tolerance))
 			{
 				const int32 SpawnDataIndex = FMath::RandRange(0, SpawnData.Spawnables.Num() - 1);
-				if (!UKismetMathLibrary::RandomBoolWithWeightFromStream(RandomStream, SpawnData.Spawnables[SpawnDataIndex].SpawnChance))
+				if (!UKismetMathLibrary::RandomBoolWithWeight(SpawnData.Spawnables[SpawnDataIndex].SpawnChance))
 				{
 					return;
 				}
