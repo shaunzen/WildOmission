@@ -9,33 +9,6 @@
 class AStorm;
 class UWindSuckerComponent;
 
-USTRUCT()
-struct FTornadoSaveInformation
-{
-	GENERATED_BODY()
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	bool WasSpawned = false;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	FTransform Transform = FTransform();
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RotationSpeed = 0.0f;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float MovementSpeed = 0.0f;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	FVector TargetLocation = FVector::ZeroVector;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float TotalLifetime = 0.0f;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RemainingLifetime = 0.0f;
-};
-
 UCLASS()
 class WEATHER_API ATornado : public AActor
 {

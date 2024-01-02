@@ -35,6 +35,20 @@ struct FWildOmissionSaveCreationInformation
 
 };
 
+USTRUCT()
+struct FWeatherSave
+{
+	GENERATED_BODY()
+
+	FWeatherSave();
+
+	UPROPERTY()
+	float NextStormSpawnTime;
+
+	TArray<uint8> ByteData;
+
+};
+
 UCLASS()
 class SAVESYSTEM_API UWildOmissionSaveGame : public USaveGame
 {
@@ -48,6 +62,8 @@ public:
 	
 	UPROPERTY()
 	float NormalizedProgressThroughDay;
+
+	
 
 	UPROPERTY()
 	FDateTime LastPlayedTime;

@@ -5,6 +5,7 @@
 #include "Components/PlayerSaveManagerComponent.h"
 #include "ChunkManager.h"
 #include "TimeOfDayManager.h"
+#include "WeatherManager.h"
 #include "Interfaces/GameSaveLoadController.h"
 #include "WildOmissionSaveGame.h"
 #include "Kismet/GameplayStatics.h"
@@ -57,6 +58,8 @@ void ASaveManager::SaveGame()
 		SaveFile->DaysPlayed = TimeOfDayManager->GetDaysPlayed();
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayManager->GetNormalizedProgressThroughDay();
 	}
+
+	AWeatherManager* WeatherManager = AWeather
 
 	PlayerSaveManagerComponent->Save(SaveFile->PlayerData);
 	

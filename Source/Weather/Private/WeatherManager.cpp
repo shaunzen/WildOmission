@@ -3,8 +3,6 @@
 
 #include "WeatherManager.h"
 #include "Actors/Storm.h"
-#include "SaveManager.h"
-#include "WildOmissionSaveGame.h"
 #include "TimeOfDayManager.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -26,6 +24,8 @@ AWeatherManager::AWeatherManager()
 	bAlwaysRelevant = true;
 	NetUpdateFrequency = 2.0f;
 	
+	StormsDisabled = false;
+
 	CurrentStorm = nullptr;
 	SunriseStormSpawnChance = 0.1f;
 	NoonStormSpawnChance = 0.25f;
@@ -145,21 +145,14 @@ void AWeatherManager::Tick(float DeltaTime)
 	CalculateWindParameters();
 }
 
-bool AWeatherManager::IsPeacefulMode() const
+void AWeatherManager::SetStormsDisabled(bool InStormsDisabled)
 {
-	ASaveManager* SaveManager = ASaveManager::GetSaveManager();
-	if (!IsValid(SaveManager))
-	{
-		return false;
-	}
-	
-	UWildOmissionSaveGame* SaveFile = SaveManager->GetSaveFile();
-	if (SaveFile == nullptr)
-	{
-		return false;
-	}
+	StormsDisabled = InStormsDisabled;
+}
 
-	return SaveFile->Difficulty == EGameDifficulty::EGD_Peaceful;
+bool AWeatherManager::GetStormsDisabled() const
+{
+	return StormsDisabled;
 }
 
 AStorm* AWeatherManager::SpawnStorm(bool FromCommand)
@@ -188,7 +181,7 @@ void AWeatherManager::ClearStorm()
 
 bool AWeatherManager::CanSpawnStorm() const
 {
-	return !IsPeacefulMode() && CurrentStorm == nullptr;
+	return !StormsDisabled && CurrentStorm == nullptr;
 }
 
 void AWeatherManager::CalculateWindParameters()

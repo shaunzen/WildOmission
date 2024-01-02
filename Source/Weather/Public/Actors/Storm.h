@@ -62,9 +62,6 @@ private:
 	float RainSeverityThreshold;
 	UPROPERTY(EditDefaultsOnly)
 	float TornadoSeverityThreshold;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Save System")
-	FName Identifier;
 
 	UPROPERTY(SaveGame)
 	FVector SpawnLocation;

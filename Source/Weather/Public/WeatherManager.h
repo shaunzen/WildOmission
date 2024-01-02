@@ -43,7 +43,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	bool IsPeacefulMode() const;
+	void SetStormsDisabled(bool InStormsDisabled);
+	bool GetStormsDisabled() const;
 
 	AStorm* SpawnStorm(bool FromCommand = false);
 	void ClearStorm();
@@ -81,8 +82,11 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AStorm> StormClass;
 	
+	bool StormsDisabled;
+
 	UPROPERTY(Replicated)
 	AStorm* CurrentStorm;
+
 	bool CanSpawnStorm() const;
 
 	void CalculateWindParameters();
