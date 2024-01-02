@@ -5,6 +5,7 @@
 #include "ProceduralMeshComponent.h"
 #include "Components/ChunkSaveComponent.h"
 #include "ChunkManager.h"
+#include "Structs/SpawnQuery.h"
 #include "Curves/CurveFloat.h"
 #include "Noise/PerlinNoise.hpp"
 #include "Kismet/KismetMathLibrary.h"
@@ -330,16 +331,21 @@ void AChunk::GenerateDecorations()
 	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
 	if (Biome)
 	{
-		GenerateSpawnableActors(Biome->Trees, 1.0f);
-		GenerateSpawnableActors(Biome->Nodes, 0.75f);
-		GenerateSpawnableActors(Biome->Collectables, 0.5f);
-		GenerateSpawnableActors(Biome->Lootables, 0.25f);
+		TArray<FSpawnQuery> SpawnQueryList
+		{
+			FSpawnQuery(Biome->Trees, 0.25f),
+			FSpawnQuery(Biome->Nodes, 0.0f),
+			FSpawnQuery(Biome->Collectables, -0.25f),
+			FSpawnQuery(Biome->Lootables, -0.5f)
+		};
+
+		GenerateSpawnableActors(SpawnQueryList);
 	}
 }
 
-void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValue)
+void AChunk::GenerateSpawnableActors(const TArray<FSpawnQuery>& SpawnQueryList)
 {
-	if (SpawnData.Spawnables.IsEmpty())
+	if (SpawnQueryList.IsEmpty())
 	{
 		return;
 	}
@@ -364,17 +370,21 @@ void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValu
 				continue;
 			}
 			
-			float Spawn = FMath::FRand();
-			
-				//Noise.noise2D(((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X) * SpawnData.NoiseParameters.NoiseScale, ((Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y) * SpawnData.NoiseParameters.NoiseScale);
-			UE_LOG(LogTemp, Warning, TEXT("Spawn Value is %f"), Spawn);
-			if (FMath::IsNearlyEqual(Spawn, TestValue, 0.25f))
+			const float DecorationNoiseScale = 0.5f;
+			const float Spawn = (FMath::FRand() * 2.0f) - 1.0f;//Noise.noise2D((X + (GridLocation.X * VERTEX_SIZE)) * DecorationNoiseScale, (Y + (GridLocation.Y * VERTEX_SIZE)) * DecorationNoiseScale);
+
+			for (const FSpawnQuery& Query : SpawnQueryList)
 			{
-				
-				const int32 SpawnDataIndex = FMath::RandRange(0, SpawnData.Spawnables.Num() - 1);
-				if (!UKismetMathLibrary::RandomBoolWithWeight(SpawnData.Spawnables[SpawnDataIndex].SpawnChance))
+				if (Query.SpawnData.Spawnables.IsEmpty()
+					|| !FMath::IsNearlyEqual(Spawn, Query.TestValue, Query.SpawnData.NoiseParameters.Tolerance))
 				{
-					return;
+					continue;
+				}
+				
+				const int32 SpawnDataIndex = FMath::RandRange(0, Query.SpawnData.Spawnables.Num() - 1);
+				if (!UKismetMathLibrary::RandomBoolWithWeight(Query.SpawnData.Spawnables[SpawnDataIndex].SpawnChance))
+				{
+					continue;
 				}
 
 				const FVector SpawnLocation = FVector(
@@ -383,11 +393,10 @@ void AChunk::GenerateSpawnableActors(const FSpawnData& SpawnData, float TestValu
 					HeightData[(X * (VERTEX_SIZE + 1)) + Y])
 					+ ThisChunkLocation;
 				const FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
-				//UE_LOG(LogTemp, Warning, TEXT("Spawned Decoration at %s"), *SpawnLocation.ToString());
-				AActor* SpawnedActor = World->SpawnActor<AActor>(SpawnData.Spawnables[SpawnDataIndex].BlueprintClass, SpawnLocation, SpawnRotation);
+			
+				AActor* SpawnedActor = World->SpawnActor<AActor>(Query.SpawnData.Spawnables[SpawnDataIndex].BlueprintClass, SpawnLocation, SpawnRotation);
 				SpawnedActor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 			}
-
 		}
 	}
 }

@@ -83,7 +83,7 @@ private:
 	void GenerateTerrainShape(const TArray<FChunkData>& Neighbors);
 	void GenerateBiome();
 	void GenerateDecorations();
-	void GenerateSpawnableActors(const struct FSpawnData& SpawnData, float TestValue);
+	void GenerateSpawnableActors(const TArray<struct FSpawnQuery>& SpawnQueryList);
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform) const;
 
