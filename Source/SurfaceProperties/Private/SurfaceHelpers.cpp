@@ -20,6 +20,12 @@ FSurfaceProperties* USurfaceHelpers::GetSurfaceProperties(TEnumAsByte<EPhysicalS
 {
 	switch (SurfaceType)
 	{
+	case SurfaceType1:	// GRASS
+		return GetSurfaceData(TEXT("Grass"));
+		break;
+	case SurfaceType2:	// GRAVEL
+		return GetSurfaceData(TEXT("Gravel"));
+		break;
 	case SurfaceType4:	// WOOD
 		return GetSurfaceData(TEXT("Wood"));
 		break;
