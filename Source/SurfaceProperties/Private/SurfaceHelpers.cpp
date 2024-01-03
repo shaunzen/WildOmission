@@ -23,8 +23,8 @@ FSurfaceProperties* USurfaceHelpers::GetSurfaceProperties(TEnumAsByte<EPhysicalS
 	case SurfaceType4:	// WOOD
 		return GetSurfaceData(TEXT("Wood"));
 		break;
-	case SurfaceType3:	// ROCK
-		return GetSurfaceData(TEXT("Rock"));
+	case SurfaceType3:	// STONE
+		return GetSurfaceData(TEXT("Stone"));
 		break;
 	case SurfaceType7:	// METAL
 		return GetSurfaceData(TEXT("Metal"));
@@ -34,7 +34,7 @@ FSurfaceProperties* USurfaceHelpers::GetSurfaceProperties(TEnumAsByte<EPhysicalS
 		break;
 	}
 
-	return GetSurfaceData(TEXT("Rock"));
+	return GetSurfaceData(TEXT("Stone"));
 }
 
 USoundBase* USurfaceHelpers::GetImpactSound(TEnumAsByte<EPhysicalSurface> SurfaceType)

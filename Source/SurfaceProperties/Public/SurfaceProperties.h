@@ -12,13 +12,18 @@ struct SURFACEPROPERTIES_API FSurfaceProperties : public FTableRowBase
 {
 	GENERATED_BODY()
 	
+	FSurfaceProperties();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	USoundBase* ImpactSound = nullptr;
+	USoundBase* FootstepSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USoundBase* ImpactSound;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	class UNiagaraSystem* ImpactParticles = nullptr;
+	class UNiagaraSystem* ImpactParticles;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	UMaterialInterface* ImpactDecal = nullptr;
+	UMaterialInterface* ImpactDecal;
 
 };
