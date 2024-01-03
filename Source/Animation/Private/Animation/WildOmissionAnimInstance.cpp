@@ -103,6 +103,7 @@ void UWildOmissionAnimInstance::PlayFootstepSound()
 
 		// TODO if ground use surface on ground
 
+		// TODO use the new surface helpers instead of this
 		switch (HitResult.PhysMaterial->SurfaceType)
 		{
 		case SurfaceType1: // Grass
