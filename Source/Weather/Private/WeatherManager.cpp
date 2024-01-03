@@ -4,6 +4,7 @@
 #include "WeatherManager.h"
 #include "Actors/Storm.h"
 #include "TimeOfDayManager.h"
+#include "Components/WeatherSaveComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
@@ -24,6 +25,8 @@ AWeatherManager::AWeatherManager()
 	bAlwaysRelevant = true;
 	NetUpdateFrequency = 2.0f;
 	
+	SaveComponent = CreateDefaultSubobject<UWeatherSaveComponent>(TEXT("Save Component"));
+
 	StormsDisabled = false;
 
 	CurrentStorm = nullptr;
@@ -143,6 +146,26 @@ void AWeatherManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	CalculateWindParameters();
+}
+
+void AWeatherManager::Save(FWeatherData& OutWeatherData)
+{
+	if (SaveComponent == nullptr)
+	{
+		return;
+	}
+
+	SaveComponent->Save(OutWeatherData);
+}
+
+void AWeatherManager::Load(const FWeatherData& InWeatherData)
+{
+	if (SaveComponent == nullptr)
+	{
+		return;
+	}
+
+	SaveComponent->Load(InWeatherData);
 }
 
 void AWeatherManager::SetStormsDisabled(bool InStormsDisabled)

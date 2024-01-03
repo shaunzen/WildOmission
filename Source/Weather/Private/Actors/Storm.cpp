@@ -202,11 +202,11 @@ void AStorm::SpawnTornado(bool bFromSave)
 {
 	FActorSpawnParameters TornadoSpawnParams;
 	TornadoSpawnParams.Owner = this;
-	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass, FVector(0.0f,0.0f, 999999.0f), FRotator::ZeroRotator, TornadoSpawnParams);
+	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass, FVector(0.0f, 0.0f, 999999.0f), FRotator::ZeroRotator, TornadoSpawnParams);
 	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	if (bFromSave)
 	{
-		SpawnedTornado->LoadSaveInformation(TornadoSave, this);
+		SpawnedTornado->LoadTornadoData(TornadoData, this);
 		return;
 	}
 
@@ -271,7 +271,7 @@ void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME_CONDITION(AStorm, MovementVector, COND_InitialOnly);
 }
 
-void AStorm::OnLoadComplete_Implementation()
+void AStorm::OnLoadComplete()
 {
 	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
 	if (WeatherManager == nullptr)
@@ -279,19 +279,17 @@ void AStorm::OnLoadComplete_Implementation()
 		return;
 	}
 	
-	if (WeatherManager->IsPeacefulMode())
+	if (WeatherManager->GetStormsDisabled())
 	{
 		HandleDestruction();
 		return;
 	}
 
-	WeatherManager->SetCurrentStorm(this);
-
 	CalculateTargetLocation();
 	CalculateTravelDistance();
 	CalculateTraveledDistance();
 
-	if (TornadoSave.WasSpawned)
+	if (TornadoData.WasSpawned)
 	{
 		SpawnTornado(true);
 	}

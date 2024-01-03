@@ -59,7 +59,11 @@ void ASaveManager::SaveGame()
 		SaveFile->NormalizedProgressThroughDay = TimeOfDayManager->GetNormalizedProgressThroughDay();
 	}
 
-	AWeatherManager* WeatherManager = AWeather
+	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+	if (WeatherManager)
+	{
+		WeatherManager->Save(SaveFile->WeatherData);
+	}
 
 	PlayerSaveManagerComponent->Save(SaveFile->PlayerData);
 	
@@ -114,6 +118,12 @@ void ASaveManager::LoadWorld()
 	{
 		ChunkManager->SetGenerationSeed(SaveFile->Seed);
 		ChunkManager->SetChunkData(SaveFile->ChunkData);
+	}
+
+	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+	if (WeatherManager)
+	{
+		WeatherManager->Load(SaveFile->WeatherData);
 	}
 
 	FTimerHandle FinishedLoadingTimerHandle;

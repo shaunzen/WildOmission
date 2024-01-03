@@ -82,29 +82,29 @@ void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnAtWorldOrigin)
 
 }
 
-FTornadoSaveInformation ATornado::GetSaveInformation()
+FTornadoData ATornado::GetTornadoData()
 {
-	FTornadoSaveInformation NewSave;
-	NewSave.Transform = MeshComponent->GetRelativeTransform();
-	NewSave.MovementSpeed = MovementSpeed;
-	NewSave.TotalLifetime = TotalLifetime;
-	NewSave.RemainingLifetime = RemainingLifetime;
-	NewSave.RotationSpeed = RotationSpeed;
-	NewSave.TargetLocation = TargetLocation;
+	FTornadoData NewData;
+	NewData.Transform = MeshComponent->GetRelativeTransform();
+	NewData.MovementSpeed = MovementSpeed;
+	NewData.TotalLifetime = TotalLifetime;
+	NewData.RemainingLifetime = RemainingLifetime;
+	NewData.RotationSpeed = RotationSpeed;
+	NewData.TargetLocation = TargetLocation;
 
-	return NewSave;
+	return NewData;
 }
 
-void ATornado::LoadSaveInformation(const FTornadoSaveInformation& InSave, AStorm* InOwnerStorm)
+void ATornado::LoadTornadoData(const FTornadoData& InTornadoData, AStorm* InOwnerStorm)
 {
 	OwnerStorm = InOwnerStorm;
 
-	MeshComponent->SetRelativeTransform(InSave.Transform);
-	MovementSpeed = InSave.MovementSpeed;
-	TotalLifetime = InSave.TotalLifetime;
-	RemainingLifetime = InSave.RemainingLifetime;
-	RotationSpeed = InSave.RotationSpeed;
-	TargetLocation = InSave.TargetLocation;
+	MeshComponent->SetRelativeTransform(InTornadoData.Transform);
+	MovementSpeed = InTornadoData.MovementSpeed;
+	TotalLifetime = InTornadoData.TotalLifetime;
+	RemainingLifetime = InTornadoData.RemainingLifetime;
+	RotationSpeed = InTornadoData.RotationSpeed;
+	TargetLocation = InTornadoData.TargetLocation;
 }
 
 // Called every frame
@@ -264,4 +264,15 @@ bool ATornado::HasLineOfSightTo(AActor* InActor) const
 	}
 
 	return HitResult.GetActor() == InActor;
+}
+
+FTornadoData::FTornadoData()
+{
+	WasSpawned = false;
+	Transform = FTransform();
+	RotationSpeed = 0.0f;
+	MovementSpeed = 0.0f;
+	TargetLocation = FVector::ZeroVector;
+	TotalLifetime = 0.0f;
+	RemainingLifetime = 0.0f;
 }

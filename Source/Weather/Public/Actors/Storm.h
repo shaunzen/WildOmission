@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/SavableObject.h"
 #include "Tornado.h"
 #include "Storm.generated.h"
 
@@ -13,7 +12,7 @@ class ALightning;
 class UNiagaraComponent;
 
 UCLASS()
-class WEATHER_API AStorm : public AActor, public ISavableObject
+class WEATHER_API AStorm : public AActor
 {
 	GENERATED_BODY()
 	
@@ -25,6 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void Serialize(FArchive& Ar) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void OnLoadComplete();
 
 	void HandleSpawn(bool SpawnedFromCommand = false);
 	void HandleDestruction();
@@ -74,7 +75,7 @@ private:
 	UPROPERTY(Replicated, SaveGame)
 	float Severity;
 	UPROPERTY(SaveGame)
-	FTornadoSaveInformation TornadoSave;
+	FTornadoData TornadoData;
 	UPROPERTY(SaveGame)
 	bool HasSpawnedTornado;
 
@@ -103,8 +104,5 @@ private:
 	void HandleLightning();
 	void SpawnLightning();
 	void SpawnTornado(bool bFromSave = false);
-
-	UFUNCTION()
-	virtual void OnLoadComplete_Implementation() override;
 
 };

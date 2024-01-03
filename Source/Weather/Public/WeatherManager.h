@@ -43,6 +43,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void Save(struct FWeatherData& OutWeatherData);
+	void Load(const struct FWeatherData& InWeatherData);
+
 	void SetStormsDisabled(bool InStormsDisabled);
 	bool GetStormsDisabled() const;
 
@@ -57,7 +60,10 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-private:	
+private:
+	UPROPERTY(VisibleAnywhere)
+	class UWeatherSaveComponent* SaveComponent;
+
 	UPROPERTY(EditDefaultsOnly)
 	float SunriseStormSpawnChance;
 	UPROPERTY(EditDefaultsOnly)

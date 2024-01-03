@@ -6,6 +6,7 @@
 #include "GameFramework/SaveGame.h"
 #include "Structs/PlayerSaveData.h"
 #include "Structs/ChunkData.h"
+#include "Structs/WeatherData.h"
 #include "Enums/GameDifficulty.h"
 #include "WildOmissionSaveGame.generated.h"
 
@@ -35,20 +36,6 @@ struct FWildOmissionSaveCreationInformation
 
 };
 
-USTRUCT()
-struct FWeatherSave
-{
-	GENERATED_BODY()
-
-	FWeatherSave();
-
-	UPROPERTY()
-	float NextStormSpawnTime;
-
-	TArray<uint8> ByteData;
-
-};
-
 UCLASS()
 class SAVESYSTEM_API UWildOmissionSaveGame : public USaveGame
 {
@@ -63,7 +50,8 @@ public:
 	UPROPERTY()
 	float NormalizedProgressThroughDay;
 
-	
+	UPROPERTY()
+	FWeatherData WeatherData;
 
 	UPROPERTY()
 	FDateTime LastPlayedTime;
