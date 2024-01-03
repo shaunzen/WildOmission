@@ -100,7 +100,10 @@ void UChunkSaveComponent::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 		}
 	}
 
-	OwnerChunk->Destroy();
+	if (AlsoDestroy == true)
+	{
+		OwnerChunk->Destroy();
+	}
 }
 
 void UChunkSaveComponent::Load(const FChunkData& InChunkData)
