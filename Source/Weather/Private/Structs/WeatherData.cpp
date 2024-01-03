@@ -1,7 +1,7 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Structs/WeatherSave.h"
+#include "Structs/WeatherData.h"
 
 FStormData::FStormData()
 {
@@ -10,6 +10,5 @@ FStormData::FStormData()
 
 FWeatherData::FWeatherData()
 {
-	NextStormSpawnTime = 0.0f;
 	StormData = TArray<FStormData>();
 }

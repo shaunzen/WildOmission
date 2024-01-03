@@ -39,7 +39,7 @@ AStorm::AStorm()
 	MovementSpeed = 0.0f;
 	SeverityMultiplier = 0.0f;
 	Severity = 0.0f;
-	TornadoSave = FTornadoSaveInformation();
+	TornadoData = FTornadoData();
 
 	SpawnedTornado = nullptr;
 	HasSpawnedTornado = false;
@@ -52,8 +52,6 @@ AStorm::AStorm()
 	TornadoClass = nullptr;
 
 	Tags.Add(TEXT("StormCloud"));
-
-	Identifier = NAME_None;
 
 	static ConstructorHelpers::FClassFinder<ATornado> TornadoBlueprint(TEXT("/Game/Weather/Actors/BP_Tornado"));
 	if (TornadoBlueprint.Succeeded())
@@ -251,12 +249,12 @@ void AStorm::Serialize(FArchive& Ar)
 	{
 		if (SpawnedTornado == nullptr)
 		{
-			TornadoSave = FTornadoSaveInformation();
+			TornadoData = FTornadoData();
 		}
 		else
 		{
-			TornadoSave = SpawnedTornado->GetSaveInformation();
-			TornadoSave.WasSpawned = true;
+			TornadoData = SpawnedTornado->GetTornadoData();
+			TornadoData.WasSpawned = true;
 		}
 	}
 	Super::Serialize(Ar);
@@ -319,11 +317,6 @@ bool AStorm::IsRaining(float& OutDensity) const
 void AStorm::SetLocalPlayerUnderneath(bool IsUnder)
 {
 	LocalPlayerUnder = IsUnder;
-}
-
-FName AStorm::GetIdentifier() const
-{
-	return Identifier;
 }
 
 void AStorm::SetSeverity(float NewSeverity)

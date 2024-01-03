@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "WeatherSave.generated.h"
+#include "WeatherData.generated.h"
 
 USTRUCT()
 struct WEATHER_API FStormData
@@ -12,7 +12,8 @@ struct WEATHER_API FStormData
 	GENERATED_BODY()
 
 	FStormData();
-	
+
+	UPROPERTY()
 	TArray<uint8> ByteData;
 
 };
@@ -25,8 +26,6 @@ struct WEATHER_API FWeatherData
 	FWeatherData();
 
 	UPROPERTY()
-	float NextStormSpawnTime;
-
 	TArray<FStormData> StormData;
 
 };

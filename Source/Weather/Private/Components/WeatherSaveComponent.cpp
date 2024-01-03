@@ -4,7 +4,7 @@
 #include "Components/WeatherSaveComponent.h"
 #include "WeatherManager.h"
 #include "Actors/Storm.h"
-#include "Structs/WeatherSave.h"
+#include "Structs/WeatherData.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 // Sets default values for this component's properties
@@ -18,9 +18,12 @@ UWeatherSaveComponent::UWeatherSaveComponent()
 
 void UWeatherSaveComponent::Save(FWeatherData& OutWeatherData)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Saving Weather."));
+
 	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
 	if (!IsValid(WeatherManager))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("No Weather Manager, Save Failed."));
 		return;
 	}
 
@@ -29,6 +32,7 @@ void UWeatherSaveComponent::Save(FWeatherData& OutWeatherData)
 	AStorm* CurrentStorm = WeatherManager->GetCurrentStorm();
 	if (!IsValid(CurrentStorm))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("No Storm, Saved Successfully."));
 		return;
 	}
 	
@@ -41,24 +45,29 @@ void UWeatherSaveComponent::Save(FWeatherData& OutWeatherData)
 
 	OutWeatherData.StormData.Add(StormData);
 
+	UE_LOG(LogTemp, Warning, TEXT("Saving Weather Complete."));
 }
 
 void UWeatherSaveComponent::Load(const FWeatherData& InWeatherData)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Begin Weather Load."));
 	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
 	if (!IsValid(WeatherManager))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Weather Load Failed, No Weather Manager."));
 		return;
 	}
 
 	if (InWeatherData.StormData.IsEmpty())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Weather Load Successfull No Storms Found In Save."));
 		return;
 	}
 
 	AStorm* CurrentStorm = WeatherManager->SpawnStorm();
 	if (!IsValid(CurrentStorm))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Weather Load Failed, Storm Failed to spawn."));
 		return;
 	}
 
@@ -69,4 +78,6 @@ void UWeatherSaveComponent::Load(const FWeatherData& InWeatherData)
 	CurrentStorm->Serialize(Archive);
 
 	CurrentStorm->OnLoadComplete();
+
+	UE_LOG(LogTemp, Warning, TEXT("Finished Weather Load."));
 }

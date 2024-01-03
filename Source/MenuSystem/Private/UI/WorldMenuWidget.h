@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Enums/GameDifficulty.h"
 #include "WorldMenuWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FWorldMenuOnPlayButtonClickedSignature, const FString&, WorldName, const FString&, ServerName, const bool, IsMultiplayer, const bool, IsFriendsOnly, const int32&, MaxPlayerCount);

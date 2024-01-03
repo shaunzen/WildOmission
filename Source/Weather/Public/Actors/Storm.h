@@ -42,10 +42,6 @@ public:
 	bool IsRaining(float& OutDensity) const;
 	void SetLocalPlayerUnderneath(bool IsUnder);
 
-	// Begin ISavableObject Implementation
-	virtual FName GetIdentifier() const override;
-	// End ISavableObject Implementation
-
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* StormRootComponent;
