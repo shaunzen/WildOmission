@@ -28,7 +28,10 @@ public:
 	TArray<FSpawnedChunk> GetSpawnedChunks() const;
 	bool GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunk& OutSpawnedChunks) const;
 
-	void GenerateChunkAtLocation(const FIntVector2& ChunkLocation);
+	// Returns Chunk that was existing/generated/loaded
+	AChunk* GenerateChunkAtLocation(const FIntVector2& ChunkLocation);
+
+	uint8 GetSurfaceTypeAtLocation(const FVector& TestLocation) const;
 
 	static float GetRenderDistanceCentimeters();
 	static int32 GetRenderDistance();
@@ -67,9 +70,9 @@ private:
 	void SpawnChunksForPlayer(APlayerController* PlayerController);
 
 	// When Passing Chunk Data in, make sure to populate grid location, it is what will be used when generating the chunk.
-	void SpawnChunk(FSpawnedChunk& OutSpawnedChunkData);
-	void GenerateChunk(const FSpawnedChunk& InSpawnedChunk);
-	void LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkData& InChunkData);
+	void SpawnChunk(FSpawnedChunk& OutSpawnedChunkData) const;
+	void GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const;
+	void LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkData& InChunkData) const;
 
 	FVector GetFirstPlayerLocation() const;
 

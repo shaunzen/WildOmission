@@ -88,18 +88,19 @@ bool AChunkManager::GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedCh
 	return true;
 }
 
-void AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
+AChunk* AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 {
 	FSpawnedChunk SpawnedChunk;
 	SpawnedChunk.GridLocation = ChunkLocation;
 
-	if (!SpawnedChunks.Contains(SpawnedChunk))
+	const int32 SpawnedIndex = SpawnedChunks.Find(SpawnedChunk);
+	if (SpawnedIndex == INDEX_NONE)
 	{
 		SpawnChunk(SpawnedChunk);
 
 		if (!IsValid(SpawnedChunk.Chunk))
 		{
-			return;
+			return nullptr;
 		}
 
 		// Check if we have existing data to load
@@ -116,7 +117,66 @@ void AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 		}
 
 		SpawnedChunks.Add(SpawnedChunk);
+
+		return SpawnedChunk.Chunk;
 	}
+
+	return SpawnedChunks[SpawnedIndex].Chunk;
+}
+
+uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
+{
+	const int32 ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+	const FIntVector2 TestChunkLocation(
+		TestLocation.X / ChunkSize,
+		TestLocation.Y / ChunkSize);
+
+	FSpawnedChunk SpawnedChunk;
+	SpawnedChunk.GridLocation = TestChunkLocation;
+	const int32 SpawnedChunkIndex = SpawnedChunks.Find(SpawnedChunk);
+	if (SpawnedChunkIndex == INDEX_NONE)
+	{
+		return 0;
+	}
+	
+
+	const AChunk* TestChunk = SpawnedChunks[SpawnedChunkIndex].Chunk;
+	if (TestChunk == nullptr)
+	{
+		return 0;
+	}
+
+
+	// TODO some weird stuff is going on here
+
+
+
+	// Get surface index at point at which we are testing for within this chunk
+	const int32 ChunkHalfVertexSize = AChunk::GetVertexSize() * 0.5f;
+	const float ChunkHalfVertexDistanceScale = AChunk::GetVertexDistanceScale() * 0.5f;
+	const float ChunkHalfSize = ChunkSize * 0.5f;
+	const float AX = ((TestLocation.X - ChunkHalfSize) / ChunkSize);
+	const float AY = ((TestLocation.Y - ChunkHalfSize) / ChunkSize);
+	const int32 TestX =
+		(AX - FMath::Floor(AX)) * (AChunk::GetVertexSize() + 1);
+		//((TestLocation.X - (static_cast<float>(TestChunkLocation.X) * ChunkSize)) / AChunk::GetVertexDistanceScale()) + ChunkHalfVertexSize;
+	const int32 TestY =
+		(AY - FMath::Floor(AY)) * (AChunk::GetVertexSize() + 1);
+		//((TestLocation.Y - (static_cast<float>(TestChunkLocation.Y) * ChunkSize)) / AChunk::GetVertexDistanceScale()) + ChunkHalfVertexSize;
+	//const int32 SurfaceDataIndex = (TestX * (AChunk::GetVertexSize() + 1)) + TestY;
+	const int32 ArrayIndex = (TestX * (AChunk::GetVertexSize() + 1)) + TestY;
+
+	UE_LOG(LogTemp, Warning, TEXT("Chunk X %i Y %i, Test X %i Y %i"), TestChunkLocation.X, TestChunkLocation.Y, TestX, TestY);
+
+	//UE_LOG(LogTemp, Warning, TEXT("Chunk X %i Y %i, TestLocationWithinChunk: %s, TestX: %i, TestY: %i, DataIndex: %i"), TestChunkLocation.X, TestChunkLocation.Y, *TestLocationWithinChunk.ToString(), TestX, TestY, SurfaceDataIndex);
+
+	const TArray<uint8> SurfaceData = TestChunk->GetSurfaceData();
+	if (!SurfaceData.IsValidIndex(ArrayIndex))
+	{
+		return 0;
+	}
+
+	return SurfaceData[ArrayIndex];
 }
 
 float AChunkManager::GetRenderDistanceCentimeters()
@@ -304,7 +364,7 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 	}
 }
 
-void AChunkManager::SpawnChunk(FSpawnedChunk& OutSpawnedChunk)
+void AChunkManager::SpawnChunk(FSpawnedChunk& OutSpawnedChunk) const
 {
 	UWorld* World = GetWorld();
 	if (World == nullptr)
@@ -323,16 +383,13 @@ void AChunkManager::SpawnChunk(FSpawnedChunk& OutSpawnedChunk)
 	OutSpawnedChunk.Chunk->SetChunkLocation(FIntVector2(OutSpawnedChunk.GridLocation.X, OutSpawnedChunk.GridLocation.Y));
 }
 
-void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk)
+void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const
 {
 	if (!IsValid(InSpawnedChunk.Chunk))
 	{
 		return;
 	}
 
-
-
-	
 	// We need to get neighbors from save file, because they might not be spawned when we are generating this chunk
 
 	// Neighbors
@@ -371,7 +428,7 @@ void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk)
 	InSpawnedChunk.Chunk->Generate(NeighborsData);
 }
 
-void AChunkManager::LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkData& InChunkData)
+void AChunkManager::LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkData& InChunkData) const
 {
 	if (!IsValid(InSpawnedChunk.Chunk))
 	{

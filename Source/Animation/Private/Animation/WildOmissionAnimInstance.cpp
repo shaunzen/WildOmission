@@ -4,6 +4,9 @@
 #include "Animation/WildOmissionAnimInstance.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Actors/Chunk.h"
+#include "ChunkManager.h"
+#include "SurfaceHelpers.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -73,6 +76,12 @@ void UWildOmissionAnimInstance::PlayMontage(UAnimMontage* Montage, float Montage
 
 void UWildOmissionAnimInstance::PlayFootstepSound()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	APawn* PawnOwner = TryGetPawnOwner();
 	if (PawnOwner == nullptr)
 	{
@@ -94,44 +103,45 @@ void UWildOmissionAnimInstance::PlayFootstepSound()
 	Params.bReturnPhysicalMaterial = true;
 	Params.AddIgnoredActor(PawnOwner);
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Visibility, Params))
+	if (!World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Visibility, Params))
 	{
+		return;
+	}
+
+	USoundBase* FootstepSound = nullptr;
+	if (AChunk* HitChunk = Cast<AChunk>(HitResult.GetActor()))
+	{
+		// Get Chunk Manager
+		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+		if (ChunkManager == nullptr)
+		{
+			return;
+		}
+
+		// Set footstep sound
+		const uint8 SurfaceType = ChunkManager->GetSurfaceTypeAtLocation(HitResult.ImpactPoint);
+		UE_LOG(LogTemp, Warning, TEXT("Footstep Surface Type Returned %i"), SurfaceType);
+		FootstepSound = USurfaceHelpers::GetFootstepSound(SurfaceType);
+		
+	}
+	else
+	{
+		// Get hit physical material
 		if (HitResult.PhysMaterial == nullptr)
 		{
 			return;
 		}
 
-		// TODO if ground use surface on ground
-
-		// TODO use the new surface helpers instead of this
-		switch (HitResult.PhysMaterial->SurfaceType)
-		{
-		case SurfaceType1: // Grass
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GrassFootstepSound, HitResult.Location);
-			break;
-		case SurfaceType2: // Gravel
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GravelFootstepSound, HitResult.Location);
-			break;
-		case SurfaceType3: // Rock
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
-			break;
-		case SurfaceType4: // Wood
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), WoodFootstepSound, HitResult.Location);
-			break;
-		case SurfaceType5: // Leaves
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GrassFootstepSound, HitResult.Location);
-			break;
-		case SurfaceType6: // Cloth
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), WoodFootstepSound, HitResult.Location);
-			break;
-		case SurfaceType7: // Metal
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
-			break;
-		case SurfaceType_Default:
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), RockFootstepSound, HitResult.Location);
-			break;
-		}
+		// Set footstep sound
+		FootstepSound = USurfaceHelpers::GetFootstepSound(HitResult.PhysMaterial->SurfaceType);
 	}
+	
+	if (FootstepSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(World, FootstepSound, HitResult.ImpactPoint);
 }
 
 void UWildOmissionAnimInstance::CalculateSpeedAndAngle()
