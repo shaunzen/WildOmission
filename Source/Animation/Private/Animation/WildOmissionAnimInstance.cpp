@@ -11,10 +11,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
-static USoundBase* GrassFootstepSound = nullptr;
-static USoundBase* GravelFootstepSound = nullptr;
-static USoundBase* RockFootstepSound = nullptr;
-static USoundBase* WoodFootstepSound = nullptr;
 static USoundBase* WaterSplashSound = nullptr;
 
 UWildOmissionAnimInstance::UWildOmissionAnimInstance(const FObjectInitializer& ObjectInitializer)
@@ -23,30 +19,6 @@ UWildOmissionAnimInstance::UWildOmissionAnimInstance(const FObjectInitializer& O
 	Angle = 0.0f;
 	Falling = false;
 	Swimming = false;
-
-	static ConstructorHelpers::FObjectFinder<USoundBase> GrassFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Grass/Footstep_Grass_Cue"));
-	if (GrassFootstepSoundObject.Succeeded())
-	{
-		GrassFootstepSound = GrassFootstepSoundObject.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<USoundBase> GravelFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Gravel/Footstep_Gravel_Cue"));
-	if (GravelFootstepSoundObject.Succeeded())
-	{
-		GravelFootstepSound = GravelFootstepSoundObject.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<USoundBase> RockFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Rock/Footstep_Rock_Cue"));
-	if (RockFootstepSoundObject.Succeeded())
-	{
-		RockFootstepSound = RockFootstepSoundObject.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<USoundBase> WoodFootstepSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Wood/Footstep_Wood_Cue"));
-	if (WoodFootstepSoundObject.Succeeded())
-	{
-		WoodFootstepSound = WoodFootstepSoundObject.Object;
-	}
 
 	static ConstructorHelpers::FObjectFinder<USoundBase> WaterSplashSoundObject(TEXT("/Game/WildOmissionCore/Audio/Footsteps/Water/WaterSplash_Cue"));
 	if (WaterSplashSoundObject.Succeeded())
