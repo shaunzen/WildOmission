@@ -37,8 +37,7 @@ void AAISpawnManager::BeginPlay()
 
 bool AAISpawnManager::IsSpawnConditionValid()
 {
-	// TODO true
-	return false;
+	return true;
 }
 
 void AAISpawnManager::CheckSpawnConditionsForAllPlayers()
