@@ -139,36 +139,20 @@ uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
 		return 0;
 	}
 	
-
 	const AChunk* TestChunk = SpawnedChunks[SpawnedChunkIndex].Chunk;
 	if (TestChunk == nullptr)
 	{
 		return 0;
 	}
 
-
-	// TODO some weird stuff is going on here
-
-
-
 	// Get surface index at point at which we are testing for within this chunk
-	const int32 ChunkHalfVertexSize = AChunk::GetVertexSize() * 0.5f;
-	const float ChunkHalfVertexDistanceScale = AChunk::GetVertexDistanceScale() * 0.5f;
 	const float ChunkHalfSize = ChunkSize * 0.5f;
 	const float AX = ((TestLocation.X - ChunkHalfSize) / ChunkSize);
 	const float AY = ((TestLocation.Y - ChunkHalfSize) / ChunkSize);
-	const int32 TestX =
-		(AX - FMath::Floor(AX)) * (AChunk::GetVertexSize() + 1);
-		//((TestLocation.X - (static_cast<float>(TestChunkLocation.X) * ChunkSize)) / AChunk::GetVertexDistanceScale()) + ChunkHalfVertexSize;
-	const int32 TestY =
-		(AY - FMath::Floor(AY)) * (AChunk::GetVertexSize() + 1);
-		//((TestLocation.Y - (static_cast<float>(TestChunkLocation.Y) * ChunkSize)) / AChunk::GetVertexDistanceScale()) + ChunkHalfVertexSize;
-	//const int32 SurfaceDataIndex = (TestX * (AChunk::GetVertexSize() + 1)) + TestY;
+	const int32 TestX = (AX - FMath::Floor(AX)) * (AChunk::GetVertexSize() + 1);
+	const int32 TestY = (AY - FMath::Floor(AY)) * (AChunk::GetVertexSize() + 1);
+
 	const int32 ArrayIndex = (TestX * (AChunk::GetVertexSize() + 1)) + TestY;
-
-	UE_LOG(LogTemp, Warning, TEXT("Chunk X %i Y %i, Test X %i Y %i"), TestChunkLocation.X, TestChunkLocation.Y, TestX, TestY);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Chunk X %i Y %i, TestLocationWithinChunk: %s, TestX: %i, TestY: %i, DataIndex: %i"), TestChunkLocation.X, TestChunkLocation.Y, *TestLocationWithinChunk.ToString(), TestX, TestY, SurfaceDataIndex);
 
 	const TArray<uint8> SurfaceData = TestChunk->GetSurfaceData();
 	if (!SurfaceData.IsValidIndex(ArrayIndex))

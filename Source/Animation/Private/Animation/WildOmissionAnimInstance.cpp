@@ -120,7 +120,6 @@ void UWildOmissionAnimInstance::PlayFootstepSound()
 
 		// Set footstep sound
 		const uint8 SurfaceType = ChunkManager->GetSurfaceTypeAtLocation(HitResult.ImpactPoint);
-		UE_LOG(LogTemp, Warning, TEXT("Footstep Surface Type Returned %i"), SurfaceType);
 		FootstepSound = USurfaceHelpers::GetFootstepSound(SurfaceType);
 		
 	}
