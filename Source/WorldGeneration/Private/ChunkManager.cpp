@@ -128,8 +128,8 @@ uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
 {
 	const int32 ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
 	const FIntVector2 TestChunkLocation(
-		TestLocation.X / ChunkSize,
-		TestLocation.Y / ChunkSize);
+		FMath::RoundToInt32(TestLocation.X / ChunkSize),
+		FMath::RoundToInt32(TestLocation.Y / ChunkSize));
 
 	FSpawnedChunk SpawnedChunk;
 	SpawnedChunk.GridLocation = TestChunkLocation;
