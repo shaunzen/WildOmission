@@ -109,3 +109,18 @@ FName AHarvestableResource::GetIdentifier() const
 {
 	return Identifier;
 }
+
+void AHarvestableResource::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Get Chunk Manager
+	
+	// Get Surface Type at location
+	
+
+	// Set property acordingly
+
+	// do the same thing on collectables
+
+}

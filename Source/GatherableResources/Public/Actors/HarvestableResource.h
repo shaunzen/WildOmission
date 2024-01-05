@@ -34,6 +34,8 @@ public:
 
 
 protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FInventoryItem> CommonDrops;
 	UPROPERTY(EditDefaultsOnly)

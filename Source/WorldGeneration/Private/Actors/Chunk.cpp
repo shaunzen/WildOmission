@@ -242,7 +242,6 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 
 	const FString BiomeName = GetBiomeNameAtLocation(Location).ToString().ToLower();
 
-
 	// Ground Color
 	if (BiomeName.StartsWith("Snow_"))
 	{
@@ -347,6 +346,8 @@ void AChunk::GenerateDecorations()
 	{
 		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
+			const int32 TerrainDataIndex = (X * (VERTEX_SIZE + 1)) + Y;
+
 			const FVector2D BiomeTestLocation = FVector2D((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X, (Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y);
 			FBiomeGenerationData* Biome = GetBiomeAtLocation(BiomeTestLocation);
 			
@@ -383,7 +384,7 @@ void AChunk::GenerateDecorations()
 				const FVector SpawnLocation = FVector(
 					(X * VERTEX_DISTANCE_SCALE) - ChunkOffset,
 					(Y * VERTEX_DISTANCE_SCALE) - ChunkOffset,
-					HeightData[(X * (VERTEX_SIZE + 1)) + Y])
+					HeightData[TerrainDataIndex])
 					+ ThisChunkLocation;
 				const FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
 
