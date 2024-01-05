@@ -22,6 +22,7 @@ public:
 
 	void SetChunkData(const TArray<struct FChunkData> InChunkData);
 
+	void SaveAllLoadedChunks();
 	TArray<FChunkData> GetChunksData() const;
 	bool GetChunkData(const FIntVector2& ChunkLocation, FChunkData& OutChunkData) const;
 
@@ -65,6 +66,8 @@ private:
 	// Spawned Chunk Data contains grid location information 
 	// about spawned chunks, as well as a pointer to the spawned chunk object.
 	TArray<FSpawnedChunk> SpawnedChunks;
+
+	void SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy = false);
 
 	void RemoveOutOfRangeChunks();
 	void SpawnChunksForPlayer(APlayerController* PlayerController);

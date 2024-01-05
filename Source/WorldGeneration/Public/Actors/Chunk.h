@@ -87,7 +87,8 @@ private:
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform) const;
 
-	struct FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location) const;
+	static FName GetBiomeNameAtLocation(const FVector2D& Location);
+	static struct FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location);
 
 	void GenerateHeightData(const TArray<FChunkData>& Neighbors);
 	void CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV);

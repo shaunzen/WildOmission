@@ -48,6 +48,29 @@ void AChunkManager::SetChunkData(const TArray<FChunkData> InChunkData)
 	ChunkData = InChunkData;
 }
 
+void AChunkManager::SaveAllLoadedChunks()
+{
+	for (const FSpawnedChunk& SpawnedChunk : SpawnedChunks)
+	{
+		SaveChunkData(SpawnedChunk.Chunk);
+	}
+}
+
+void AChunkManager::SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy)
+{
+	FChunkData ChunkSaveData;
+	ChunkToSave->Save(ChunkSaveData, AlsoDestroy);
+
+	const int32 ChunkIndex = ChunkData.Find(ChunkSaveData);
+	if (ChunkIndex == INDEX_NONE)
+	{
+		ChunkData.Add(ChunkSaveData);
+		return;
+	}
+
+	ChunkData[ChunkIndex] = ChunkSaveData;
+}
+
 TArray<FChunkData> AChunkManager::GetChunksData() const
 {
 	return ChunkData;
@@ -262,17 +285,7 @@ void AChunkManager::RemoveOutOfRangeChunks()
 		// TODO does this automatically shrink?
 		NewSpawnedChunks.Remove(SpawnedChunk);
 
-		FChunkData ChunkSaveData;
-		SpawnedChunk.Chunk->Save(ChunkSaveData, true);
-		
-		const int32 ChunkIndex = ChunkData.Find(ChunkSaveData);
-		if (ChunkIndex == INDEX_NONE)
-		{
-			ChunkData.Add(ChunkSaveData);
-			continue;
-		}
-		
-		ChunkData[ChunkIndex] = ChunkSaveData;
+		SaveChunkData(SpawnedChunk.Chunk, true);
 	}
 
 	SpawnedChunks = NewSpawnedChunks;

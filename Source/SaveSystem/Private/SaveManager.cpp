@@ -49,6 +49,7 @@ void ASaveManager::SaveGame()
 	if (ChunkManager)
 	{
 		SaveFile->Seed = ChunkManager->GetGenerationSeed();
+		ChunkManager->SaveAllLoadedChunks();
 		SaveFile->ChunkData = ChunkManager->GetChunksData();
 	}
 

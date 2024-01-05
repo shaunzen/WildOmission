@@ -240,8 +240,15 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 
 	OutSurface = 1;
 
+	const FString BiomeName = GetBiomeNameAtLocation(Location).ToString().ToLower();
+
+
 	// Ground Color
-	if (RawContinentalness <= 0.0f)
+	if (BiomeName.StartsWith("Snow_"))
+	{
+		OutSurface = 6;
+	}
+	else if (BiomeName == TEXT("Desert") || RawContinentalness <= 0.0f)
 	{
 		// Sand
 		OutSurface = 4;
@@ -482,7 +489,7 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 	return true;
 }
 
-FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) const
+FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
 {
 	const float Contenentalness = GetContinentalnessAtLocation(Location, true);
 
@@ -494,7 +501,7 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) cons
 
 	const float MinShore = -0.1f;
 	const float MaxShore = 0.0f;
-	
+
 	const int32 TempatureIndex = FMath::RoundToInt32(Tempature / 0.25f);
 	const int32 HumidityIndex = FMath::RoundToInt32(Humidity / 0.25f);
 
@@ -533,10 +540,10 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) cons
 		switch (TempatureIndex)
 		{
 		case 0:
-			BiomeName = TEXT("SnowForest");
+			BiomeName = TEXT("Snow_Forest");
 			break;
 		case 1:
-			BiomeName = TEXT("SnowForest");
+			BiomeName = TEXT("Snow_Forest");
 			break;
 		case 2:
 			BiomeName = TEXT("Forest");
@@ -558,6 +565,13 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) cons
 	// Temp Low, Humidity Low = Tundra
 	// Temp Low, Humidity High = Snow Forest
 	// Temp ~, Humidity ~ = Plains/Forest
+
+	return BiomeName;
+}
+
+FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location)
+{
+	const FName BiomeName = GetBiomeNameAtLocation(Location);
 	if (BiomeName == NAME_None)
 	{
 		return nullptr;
