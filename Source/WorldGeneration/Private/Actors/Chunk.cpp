@@ -483,19 +483,74 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 
 FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) const
 {
+	const float Contenentalness = GetContinentalnessAtLocation(Location, true);
+
 	const float TempatureScale = 0.01f;
 	const float HumidityScale = 0.001f;
 
-	const float Tempature = Noise.noise2D(Location.X * TempatureScale, Location.Y * TempatureScale);
-	const float Humidity = Noise.noise2D(Location.X * HumidityScale, Location.Y * TempatureScale);
+	const float Tempature = (Noise.noise2D(Location.X * TempatureScale, Location.Y * TempatureScale) + 1) * 0.5f;
+	const float Humidity = (Noise.noise2D(Location.X * HumidityScale, Location.Y * TempatureScale) + 1) * 0.5f;
 
+	const float MinShore = 0.0f;
+	const float MaxShore = 0.15f;
+	
+	const int32 TempatureIndex = FMath::RoundToInt32(Tempature / 0.25f);
+	const int32 HumidityIndex = FMath::RoundToInt32(Humidity / 0.25f);
+
+	FName BiomeName = NAME_None;
+	if (Contenentalness > MinShore && Contenentalness < MaxShore)
+	{
+		// Beach biome
+
+		BiomeName = TEXT("Beach");
+
+		// TODO implement other biomes later
+		//if (HumidityIndex == 4)
+		//{
+
+		//}
+		//switch (TempatureIndex)
+		//{
+		//case 0:
+		//	BiomeName = TEXT("IceBeach");
+		//	break;
+		//case 1:
+		//	BiomeName = TEXT("Beach");
+		//	break;
+		//case 2:
+		//	BiomeName = TEXT("Beach");
+		//	break;
+		//case 3:
+		//	BiomeName = TEXT("DriftwoodBeach");
+		//	break;
+		//}
+	}
+	else if (Contenentalness >= MaxShore)
+	{
+		// Middle biome
+
+		switch (TempatureIndex)
+		{
+		case 0:
+			BiomeName = TEXT("SnowForest");
+			break;
+		case 3:
+			BiomeName = TEXT("Forest");
+		case 4:
+			BiomeName = TEXT("Desert");
+			break;
+		default:
+			BiomeName = TEXT("Plains");
+		}
+
+	}
 	// Temp High, Humidity Low = Desert
 	// Temp High, Humidity High = Swamp
 	// Temp Low, Humidity Low = Tundra
 	// Temp Low, Humidity High = Snow Forest
 	// Temp ~, Humidity ~ = Plains/Forest
 
-	return nullptr;
+	return AChunkManager::GetBiomeGenerationData(BiomeName);
 }
 
 void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
