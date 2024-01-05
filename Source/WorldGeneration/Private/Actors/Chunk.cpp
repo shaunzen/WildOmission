@@ -342,9 +342,11 @@ void AChunk::GenerateDecorations()
 
 	const float ChunkOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
 	const FVector ThisChunkLocation = GetActorLocation();
-	for (int32 X = 0; X <= VERTEX_SIZE; ++X)
+
+	// Use less than so nothing can spawn on the border between chunks, confusing the snow systems
+	for (int32 X = 0; X < VERTEX_SIZE; ++X)
 	{
-		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
+		for (int32 Y = 0; Y < VERTEX_SIZE; ++Y)
 		{
 			const int32 TerrainDataIndex = (X * (VERTEX_SIZE + 1)) + Y;
 

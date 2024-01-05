@@ -82,6 +82,24 @@ FName ACollectableResource::GetIdentifier() const
 	return Identifier;
 }
 
+void ACollectableResource::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Get Chunk Manager
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	// Get Surface Type at location
+	const uint8 SurfaceType = ChunkManager->GetSurfaceTypeAtLocation(this->GetActorLocation());
+	
+	// Set property acordingly
+	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, static_cast<float>(SurfaceType == 6));
+}
+
 void ACollectableResource::Client_PlayCollectSound_Implementation()
 {
 	if (CollectSound == nullptr)

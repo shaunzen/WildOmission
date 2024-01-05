@@ -29,6 +29,9 @@ public:
 	virtual FName GetIdentifier() const override;
 	// End ISavableObject Implementation
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FInventoryItem> Yield;
@@ -47,4 +50,5 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayCollectSound();
+
 };

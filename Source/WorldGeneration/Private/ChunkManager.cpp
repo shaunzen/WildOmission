@@ -126,6 +126,8 @@ AChunk* AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 			return nullptr;
 		}
 
+		SpawnedChunks.Add(SpawnedChunk);
+
 		// Check if we have existing data to load
 		FChunkData ChunkSaveData;
 		ChunkSaveData.GridLocation = SpawnedChunk.GridLocation;
@@ -138,8 +140,6 @@ AChunk* AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 		{
 			GenerateChunk(SpawnedChunk);
 		}
-
-		SpawnedChunks.Add(SpawnedChunk);
 
 		return SpawnedChunk.Chunk;
 	}
@@ -165,6 +165,7 @@ uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
 	const AChunk* TestChunk = SpawnedChunks[SpawnedChunkIndex].Chunk;
 	if (TestChunk == nullptr)
 	{
+		// TODO this is causing the snow to break
 		return 0;
 	}
 
@@ -172,8 +173,8 @@ uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
 	const float ChunkHalfSize = ChunkSize * 0.5f;
 	const float AX = ((TestLocation.X - ChunkHalfSize) / ChunkSize);
 	const float AY = ((TestLocation.Y - ChunkHalfSize) / ChunkSize);
-	const int32 TestX = (AX - FMath::Floor(AX)) * (AChunk::GetVertexSize() + 1);
-	const int32 TestY = (AY - FMath::Floor(AY)) * (AChunk::GetVertexSize() + 1);
+	const int32 TestX = (AX - FMath::Floor(AX)) * AChunk::GetVertexSize();
+	const int32 TestY = (AY - FMath::Floor(AY)) * AChunk::GetVertexSize();
 
 	const int32 ArrayIndex = (TestX * (AChunk::GetVertexSize() + 1)) + TestY;
 
@@ -342,6 +343,8 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 					continue;
 				}
 
+				SpawnedChunks.Add(SpawnedChunk);
+
 				// TODO check if we have existing data to load
 				FChunkData ChunkSaveData;
 				ChunkSaveData.GridLocation = SpawnedChunk.GridLocation;
@@ -355,7 +358,6 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 					GenerateChunk(SpawnedChunk);
 				}
 
-				SpawnedChunks.Add(SpawnedChunk);
 			}
 		}
 	}

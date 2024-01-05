@@ -115,12 +115,15 @@ void AHarvestableResource::BeginPlay()
 	Super::BeginPlay();
 
 	// Get Chunk Manager
-	
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
 	// Get Surface Type at location
-	
+	const uint8 SurfaceType = ChunkManager->GetSurfaceTypeAtLocation(this->GetActorLocation());
 
 	// Set property acordingly
-
-	// do the same thing on collectables
-
+	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, static_cast<float>(SurfaceType == 6));
 }
