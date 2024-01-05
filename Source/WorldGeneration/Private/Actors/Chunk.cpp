@@ -328,28 +328,6 @@ void AChunk::GenerateBiome()
 
 void AChunk::GenerateDecorations()
 {
-	FBiomeGenerationData* Biome = AChunkManager::GetBiomeGenerationData(TEXT("Plains"));
-	if (Biome)
-	{
-		TArray<FSpawnQuery> SpawnQueryList
-		{
-			FSpawnQuery(Biome->Trees, 0.25f),
-			FSpawnQuery(Biome->Nodes, 0.0f),
-			FSpawnQuery(Biome->Collectables, -0.25f),
-			FSpawnQuery(Biome->Lootables, -0.5f)
-		};
-
-		GenerateSpawnableActors(SpawnQueryList);
-	}
-}
-
-void AChunk::GenerateSpawnableActors(const TArray<FSpawnQuery>& SpawnQueryList)
-{
-	if (SpawnQueryList.IsEmpty())
-	{
-		return;
-	}
-
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -362,14 +340,22 @@ void AChunk::GenerateSpawnableActors(const TArray<FSpawnQuery>& SpawnQueryList)
 	{
 		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
-			//const int32 SeedBase = Seed + ((GridLocation.X + GridLocation.Y) * (X + Y));
-			const FVector2D ContinentalnessTestPoint = FVector2D((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X, (Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y);
-			const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
-			if (Continentalness < 0.01f)
+			const FVector2D BiomeTestLocation = FVector2D((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X, (Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y);
+			FBiomeGenerationData* Biome = GetBiomeAtLocation(BiomeTestLocation);
+			
+			if (Biome == nullptr)
 			{
 				continue;
 			}
-			
+
+			TArray<FSpawnQuery> SpawnQueryList
+			{
+				FSpawnQuery(Biome->Trees, 0.25f),
+				FSpawnQuery(Biome->Nodes, 0.0f),
+				FSpawnQuery(Biome->Collectables, -0.25f),
+				FSpawnQuery(Biome->Lootables, -0.5f)
+			};
+
 			const float DecorationNoiseScale = 0.5f;
 			const float Spawn = (FMath::FRand() * 2.0f) - 1.0f;//Noise.noise2D((X + (GridLocation.X * VERTEX_SIZE)) * DecorationNoiseScale, (Y + (GridLocation.Y * VERTEX_SIZE)) * DecorationNoiseScale);
 
@@ -380,7 +366,7 @@ void AChunk::GenerateSpawnableActors(const TArray<FSpawnQuery>& SpawnQueryList)
 				{
 					continue;
 				}
-				
+
 				const int32 SpawnDataIndex = FMath::RandRange(0, Query.SpawnData.Spawnables.Num() - 1);
 				if (!UKismetMathLibrary::RandomBoolWithWeight(Query.SpawnData.Spawnables[SpawnDataIndex].SpawnChance))
 				{
@@ -393,12 +379,27 @@ void AChunk::GenerateSpawnableActors(const TArray<FSpawnQuery>& SpawnQueryList)
 					HeightData[(X * (VERTEX_SIZE + 1)) + Y])
 					+ ThisChunkLocation;
 				const FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
-			
+
 				AActor* SpawnedActor = World->SpawnActor<AActor>(Query.SpawnData.Spawnables[SpawnDataIndex].BlueprintClass, SpawnLocation, SpawnRotation);
+				if (SpawnedActor == nullptr)
+				{
+					continue;
+				}
+				
 				SpawnedActor->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 			}
 		}
 	}
+}
+
+void AChunk::GenerateSpawnableActors(const TArray<FSpawnQuery>& SpawnQueryList)
+{
+	if (SpawnQueryList.IsEmpty())
+	{
+		return;
+	}
+
+	
 }
 
 float AChunk::GetContinentalnessAtLocation(const FVector2D& Location, bool UseRawValue)
@@ -485,14 +486,14 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) cons
 {
 	const float Contenentalness = GetContinentalnessAtLocation(Location, true);
 
-	const float TempatureScale = 0.01f;
-	const float HumidityScale = 0.001f;
+	const float TempatureScale = 0.0001f;
+	const float HumidityScale = 0.0005f;
 
 	const float Tempature = (Noise.noise2D(Location.X * TempatureScale, Location.Y * TempatureScale) + 1) * 0.5f;
 	const float Humidity = (Noise.noise2D(Location.X * HumidityScale, Location.Y * TempatureScale) + 1) * 0.5f;
 
-	const float MinShore = 0.0f;
-	const float MaxShore = 0.15f;
+	const float MinShore = -0.1f;
+	const float MaxShore = 0.0f;
 	
 	const int32 TempatureIndex = FMath::RoundToInt32(Tempature / 0.25f);
 	const int32 HumidityIndex = FMath::RoundToInt32(Humidity / 0.25f);
@@ -534,13 +535,21 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) cons
 		case 0:
 			BiomeName = TEXT("SnowForest");
 			break;
+		case 1:
+			BiomeName = TEXT("SnowForest");
+			break;
+		case 2:
+			BiomeName = TEXT("Forest");
+			break;
 		case 3:
 			BiomeName = TEXT("Forest");
+			break;
 		case 4:
 			BiomeName = TEXT("Desert");
 			break;
 		default:
 			BiomeName = TEXT("Plains");
+			break;
 		}
 
 	}
@@ -549,6 +558,10 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location) cons
 	// Temp Low, Humidity Low = Tundra
 	// Temp Low, Humidity High = Snow Forest
 	// Temp ~, Humidity ~ = Plains/Forest
+	if (BiomeName == NAME_None)
+	{
+		return nullptr;
+	}
 
 	return AChunkManager::GetBiomeGenerationData(BiomeName);
 }
