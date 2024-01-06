@@ -51,9 +51,6 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_ShowDeathMenu();
 
-	UFUNCTION(Client, Reliable)
-	void Client_SetNumRequiredActors(const int32& InNum);
-
 	UFUNCTION(Server, Reliable)
 	void Server_Spawn();
 
@@ -81,14 +78,14 @@ private:
 	UPROPERTY(Replicated)
 	int32 BedUniqueID;
 
-	int32 NumRequiredActorsForLoad;
-	FTimerHandle ValidateWorldStateTimerHandle;
-	FTimerHandle UpdateClientRequiredActorCountTimerHandle;
-	void ValidateWorldState();
+	UPROPERTY(Replicated)
+	FIntVector2 SpawnChunk;
+
+	FTimerHandle CheckSpawnChunkValidTimerHandle;
 
 	UFUNCTION()
-	void CountRequiredActorsAndSendToClient();
-
+	void CheckSpawnChunkValid();
+	
 	void StopLoading();
 
 	// Used by the server to figure out if a player is still loading

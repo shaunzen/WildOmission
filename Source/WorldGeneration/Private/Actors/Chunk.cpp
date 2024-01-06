@@ -320,6 +320,40 @@ void AChunk::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!HasAuthority())
+	{
+		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+		if (ChunkManager == nullptr)
+		{
+			return;
+		}
+
+		FSpawnedChunk SpawnedChunk;
+		SpawnedChunk.GridLocation = this->GridLocation;
+		SpawnedChunk.Chunk = this;
+
+		ChunkManager->AddSpawnedChunk(SpawnedChunk);
+	}
+}
+
+void AChunk::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	
+	if (!HasAuthority())
+	{
+		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+		if (ChunkManager == nullptr)
+		{
+			return;
+		}
+
+		FSpawnedChunk SpawnedChunk;
+		SpawnedChunk.GridLocation = this->GridLocation;
+		SpawnedChunk.Chunk = this;
+
+		ChunkManager->RemoveSpawnedChunk(SpawnedChunk);
+	}
 }
 
 void AChunk::OnRep_MeshData()

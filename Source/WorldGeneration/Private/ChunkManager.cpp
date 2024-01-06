@@ -111,6 +111,21 @@ bool AChunkManager::GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedCh
 	return true;
 }
 
+void AChunkManager::AddSpawnedChunk(const FSpawnedChunk& InSpawnedChunk)
+{
+	if (!IsValid(InSpawnedChunk.Chunk))
+	{
+		return;
+	}
+
+	SpawnedChunks.Add(InSpawnedChunk);
+}
+
+void AChunkManager::RemoveSpawnedChunk(const FSpawnedChunk& InSpawnedChunk)
+{
+	SpawnedChunks.Remove(InSpawnedChunk);
+}
+
 AChunk* AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 {
 	FSpawnedChunk SpawnedChunk;
@@ -145,6 +160,64 @@ AChunk* AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
 	}
 
 	return SpawnedChunks[SpawnedIndex].Chunk;
+}
+
+FVector AChunkManager::GetWorldSpawnPoint()
+{
+	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+
+	const int32 TestRadius = 128;
+	FIntVector2 ValidChunk(0, 0);
+	for (int32 X = -TestRadius; X < TestRadius; ++X)
+	{
+		for (int32 Y = -TestRadius; Y < TestRadius; ++Y)
+		{
+			const FVector2D TestLocation(
+				X * ChunkSize,
+				Y * ChunkSize
+			);
+			const float Continentalness = AChunk::GetContinentalnessAtLocation(TestLocation, true);
+			if (Continentalness > 0.0f || Continentalness < -0.1f)
+			{
+				// If not pick a new starting point and keep going
+				continue;
+			}
+
+			ValidChunk = FIntVector2(X, Y);
+			break;
+		}
+	}
+
+	// Line trace down to find ground
+	FHitResult HitResult;
+
+	// Ensure the chunk we want to start at exists
+	(void*)GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
+	const FVector ValidChunkWorldLocation((ValidChunk.X * ChunkSize) - (ChunkSize * 0.5f), (ValidChunk.Y * ChunkSize) - (ChunkSize * 0.5f), 0.0f);
+
+	// Loop through all points on chunk to see if there is a good spot
+	for (int32 X = 0; X <= AChunk::GetVertexSize(); ++X)
+	{
+		for (int32 Y = 0; Y <= AChunk::GetVertexSize(); ++Y)
+		{
+			const FVector Start((X * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.X, (Y * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.Y, AChunk::GetMaxHeight());
+			const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
+			if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+			{
+				continue;
+			}
+
+			UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+			if (HitComponent == nullptr || !HitComponent->ComponentHasTag(TEXT("Ground")))
+			{
+				continue;
+			}
+
+			break;
+		}
+	}
+
+	return HitResult.ImpactPoint;
 }
 
 uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
@@ -263,13 +336,9 @@ void AChunkManager::RemoveOutOfRangeChunks()
 				continue;
 			}
 
-			APawn* Pawn = PlayerController->GetPawn();
-			if (!IsValid(Pawn))
-			{
-				continue;
-			}
-
-			const FVector PlayerLocation = Pawn->GetActorLocation();
+			FVector PlayerLocation = FVector::ZeroVector;
+			FRotator PlayerRotation = FRotator::ZeroRotator;
+			PlayerController->GetPlayerViewPoint(PlayerLocation, PlayerRotation);
 
 			const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
 				PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
@@ -304,28 +373,13 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 		return;
 	}
 
-	APawn* Pawn = PlayerController->GetPawn();
-	if (!IsValid(Pawn))
-	{
-		return;
-	}
-
-	// Uncomment for generation stats
-	/*const FVector2D TwoDimensionPlayerLocation(PlayerLocation.X, PlayerLocation.Y);
-	UE_LOG(LogTemp, Warning, TEXT("Location %s"), *TwoDimensionPlayerLocation.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("C %f, Raw C %f"),
-		AChunk::GetContinentalnessAtLocation(TwoDimensionPlayerLocation), AChunk::GetContinentalnessAtLocation(TwoDimensionPlayerLocation, true));
-	UE_LOG(LogTemp, Warning, TEXT("E %f, Raw E %f"),
-		AChunk::GetErosionAtLocation(TwoDimensionPlayerLocation), AChunk::GetErosionAtLocation(TwoDimensionPlayerLocation, true));
-	UE_LOG(LogTemp, Warning, TEXT("P&V %f, Raw P&V %f"),
-		AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation), AChunk::GetPeaksAndValleysAtLocation(TwoDimensionPlayerLocation, true));*/
-
 	// Get Player Location
-	const FVector PlayerLocation = Pawn->GetActorLocation();
-	
+	FVector PlayerLocation = FVector::ZeroVector;
+	FRotator PlayerRotation = FRotator::ZeroRotator;
+	PlayerController->GetPlayerViewPoint(PlayerLocation, PlayerRotation);
+
 	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
 		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
-
 	
 	// Generate/load new in range chunks
 	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)

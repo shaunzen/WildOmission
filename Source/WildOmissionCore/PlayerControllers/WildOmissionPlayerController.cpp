@@ -2,8 +2,10 @@
 
 
 #include "WildOmissionPlayerController.h"
+#include "GameFramework/SpectatorPawn.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
-#include "Interfaces/RequiredForLoad.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "Components/VitalsComponent.h"
@@ -25,7 +27,7 @@
 AWildOmissionPlayerController::AWildOmissionPlayerController()
 {
 	bIsStillLoading = true;
-	NumRequiredActorsForLoad = 0;
+	SpawnChunk = FIntVector2();
 
 	BedUniqueID = -1;
 
@@ -49,6 +51,7 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SpawnChunk, COND_OwnerOnly);
 }
 
 FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
@@ -164,12 +167,6 @@ bool AWildOmissionPlayerController::IsEditorPlayer() const
 #endif
 }
 
-void AWildOmissionPlayerController::Client_SetNumRequiredActors_Implementation(const int32& InNum)
-{
-	UE_LOG(LogPlayerController, Verbose, TEXT("NumRequiredActorsSet: %i"), InNum);
-	NumRequiredActorsForLoad = InNum;
-}
-
 void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
 {
 	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
@@ -233,11 +230,27 @@ void AWildOmissionPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
 	if (HasAuthority())
 	{
-		FTimerDelegate UpdateClientRequiredActorCountTimerDelegate;
-		UpdateClientRequiredActorCountTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::CountRequiredActorsAndSendToClient);
-		GetWorld()->GetTimerManager().SetTimer(UpdateClientRequiredActorCountTimerHandle, UpdateClientRequiredActorCountTimerDelegate, 10.0f, true);
+		const bool UseDefaultSpawn = StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true;
+		const FVector SpawnPoint = UseDefaultSpawn ? ChunkManager->GetWorldSpawnPoint() : StoredPlayerSaveData.WorldLocation;
+
+		ASpectatorPawn* SpecPawn = GetWorld()->SpawnActor<ASpectatorPawn>(ASpectatorPawn::StaticClass(), SpawnPoint, FRotator::ZeroRotator);
+		if (SpecPawn)
+		{
+			this->Possess(SpecPawn);
+		}
+
+		const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+		SpawnChunk = FIntVector2(
+			FMath::RoundToInt32(SpawnPoint.X / ChunkSize),
+			FMath::RoundToInt32(SpawnPoint.Y / ChunkSize));
 	}
 
 	if (!IsLocalController())
@@ -263,16 +276,16 @@ void AWildOmissionPlayerController::BeginPlay()
 
 	if (HasAuthority())
 	{
-		FTimerHandle LoadTimerHandle;
+		/*FTimerHandle LoadTimerHandle;
 		FTimerDelegate LoadTimerDelegate;
 		LoadTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::StopLoading);
-		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 2.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 2.0f, false);*/
 	}
 	else
 	{
-		FTimerDelegate ValidateWorldStateTimerDelegate;
-		ValidateWorldStateTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::ValidateWorldState);
-		GetWorld()->GetTimerManager().SetTimer(ValidateWorldStateTimerHandle, ValidateWorldStateTimerDelegate, 2.0f, true);
+		FTimerDelegate CheckSpawnChunkValidTimerDelegate;
+		CheckSpawnChunkValidTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::CheckSpawnChunkValid);
+		GetWorld()->GetTimerManager().SetTimer(CheckSpawnChunkValidTimerHandle, CheckSpawnChunkValidTimerDelegate, 2.0f, true);
 	}
 }
 
@@ -304,21 +317,31 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 	StoredPlayerSaveData = FPlayerSaveData();
 }
 
-void AWildOmissionPlayerController::ValidateWorldState()
+void AWildOmissionPlayerController::CheckSpawnChunkValid()
 {
-	if (IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()) < NumRequiredActorsForLoad)
+	UWorld* World = GetWorld();
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (World == nullptr || ChunkManager == nullptr)
 	{
 		return;
 	}
 
-	GetWorld()->GetTimerManager().ClearTimer(ValidateWorldStateTimerHandle);
-	StopLoading();
-}
+	FSpawnedChunk SpawnedChunk;
+	ChunkManager->GetSpawnedChunk(SpawnChunk, SpawnedChunk);
 
-void AWildOmissionPlayerController::CountRequiredActorsAndSendToClient()
-{
-	int32 NewRequiredAmount = IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld());
-	Client_SetNumRequiredActors(NewRequiredAmount);
+	const int32 DataCount = (AChunk::GetVertexSize() + 1) * (AChunk::GetVertexSize() + 1);
+	if (IsValid(SpawnedChunk.Chunk))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SpawnChunkDataCount %i, Required %i"), SpawnedChunk.Chunk->GetHeightData().Num(), DataCount);
+	}
+
+	if (!IsValid(SpawnedChunk.Chunk) || SpawnedChunk.Chunk->GetHeightData().Num() != DataCount)
+	{
+		return;
+	}
+
+	World->GetTimerManager().ClearTimer(CheckSpawnChunkValidTimerHandle);
+	StopLoading();
 }
 
 void AWildOmissionPlayerController::StopLoading()
@@ -356,11 +379,11 @@ void AWildOmissionPlayerController::Server_Spawn_Implementation()
 		Client_ShowDeathMenu();
 	}
 
+	// TODO why is this here, im confused, this whole loading thing goes all over the place
 	if (bIsStillLoading == true)
 	{
 		OnFinishedLoading.Broadcast(this);
 		bIsStillLoading = false;
-		GetWorld()->GetTimerManager().ClearTimer(UpdateClientRequiredActorCountTimerHandle);
 	}
 }
 

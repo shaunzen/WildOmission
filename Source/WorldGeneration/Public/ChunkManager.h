@@ -28,9 +28,13 @@ public:
 
 	TArray<FSpawnedChunk> GetSpawnedChunks() const;
 	bool GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunk& OutSpawnedChunks) const;
+	void AddSpawnedChunk(const FSpawnedChunk& InSpawnedChunk);
+	void RemoveSpawnedChunk(const FSpawnedChunk& InSpawnedChunk);
 
 	// Returns Chunk that was existing/generated/loaded
 	AChunk* GenerateChunkAtLocation(const FIntVector2& ChunkLocation);
+
+	FVector GetWorldSpawnPoint();
 
 	uint8 GetSurfaceTypeAtLocation(const FVector& TestLocation) const;
 	static FBiomeGenerationData* GetBiomeAtLocation(const FVector& TestLocation);

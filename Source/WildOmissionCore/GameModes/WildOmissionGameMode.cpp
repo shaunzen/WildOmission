@@ -117,6 +117,12 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 		return;
 	}
 
+	if (APawn* Pawn = Controller->GetPawnOrSpectator())
+	{
+		Controller->UnPossess();
+		Pawn->Destroy();
+	}
+
 	AWildOmissionPlayerController* WOPlayerController = Cast<AWildOmissionPlayerController>(Controller);
 	if (WOPlayerController && WOPlayerController->GetBedUniqueID() != -1)
 	{
@@ -259,58 +265,12 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 
 void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 {
-	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
-	
-	const int32 TestRadius = 128;
-	FIntVector2 ValidChunk(0, 0);
-	for (int32 X = -TestRadius; X < TestRadius; ++X)
+	if (ChunkManager == nullptr)
 	{
-		for (int32 Y = -TestRadius; Y < TestRadius; ++Y)
-		{
-			const FVector2D TestLocation(
-				X* ChunkSize,
-				Y * ChunkSize
-			);
-			const float Continentalness = AChunk::GetContinentalnessAtLocation(TestLocation, true);
-			if (Continentalness > 0.0f || Continentalness < -0.1f)
-			{
-				// If not pick a new starting point and keep going
-				continue;
-			}
-
-			ValidChunk = FIntVector2(X, Y);
-			break;
-		}
+		return;
 	}
 
-	// Line trace down to find ground
-	FHitResult HitResult;
-	
-	// Ensure the chunk we want to start at exists
-	(void*)ChunkManager->GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
-	const FVector ValidChunkWorldLocation((ValidChunk.X * ChunkSize) - (ChunkSize * 0.5f), (ValidChunk.Y * ChunkSize) - (ChunkSize * 0.5f), 0.0f);
-
-	// Loop through all points on chunk to see if there is a good spot
-	for (int32 X = 0; X <= AChunk::GetVertexSize(); ++X)
-	{
-		for (int32 Y = 0; Y <= AChunk::GetVertexSize(); ++Y)
-		{
-			const FVector Start((X * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.X, (Y * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.Y, AChunk::GetMaxHeight());
-			const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
-			if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
-			{
-				continue;
-			}
-			
-			UPrimitiveComponent* HitComponent = HitResult.GetComponent();
-			if (HitComponent == nullptr || !HitComponent->ComponentHasTag(TEXT("Ground")))
-			{
-				continue;
-			}
-
-			break;
-		}
-	}
+	const FVector SpawnLocation = ChunkManager->GetWorldSpawnPoint();
 
 	// Spawn there
 	if (MustSpectate(Cast<APlayerController>(Controller)))
@@ -322,7 +282,7 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 	if (HumanCharacterClass != nullptr)
 	{
 		// Try to create a pawn to use of the default class for this player
-		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, HitResult.ImpactPoint + FVector(0.0f, 0.0f, 100.0f), FRotator::ZeroRotator);
+		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, SpawnLocation + FVector(0.0f, 0.0f, 100.0f), FRotator::ZeroRotator);
 		if (IsValid(NewPawn))
 		{
 			Controller->SetPawn(NewPawn);
