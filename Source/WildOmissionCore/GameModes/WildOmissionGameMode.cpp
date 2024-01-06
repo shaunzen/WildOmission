@@ -261,42 +261,28 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 {
 	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
 
-	const int32 TestRadius = 32;
-	// TODO limit this to prevent the game from crashing
+	const int32 TestRadius = 128;
 	const int32 MaxIterations = 128;
-	int32 ChunkIterations = 0;
 	int32 SpawnIterations = 0;
-	bool FoundValidChunk = false;
+	
 	FIntVector2 ValidChunk(0, 0);
-	while (!FoundValidChunk)
+	for (int32 X = -TestRadius; X < TestRadius; ++X)
 	{
-		++ChunkIterations;
-		if (ChunkIterations > MaxIterations)
+		for (int32 Y = -TestRadius; Y < TestRadius; ++Y)
 		{
-			break;
-		}
-
-		// Get a start chunk
-		const FIntVector2 StartChunk(FMath::RandRange(-TestRadius, TestRadius), FMath::RandRange(-TestRadius, TestRadius));
-		
-		// Test in a 32 chunk radius to find if there is a high continentalness
-		for (int32 X = -TestRadius; X < TestRadius; ++X)
-		{
-			for (int32 Y = -TestRadius; Y < TestRadius; ++Y)
+			const FVector2D TestLocation(
+				X* ChunkSize,
+				Y * ChunkSize
+			);
+			const float Continentalness = AChunk::GetContinentalnessAtLocation(TestLocation, true);
+			if (Continentalness > 0.05f || Continentalness < 0.0f)
 			{
-				const FVector2D TestLocation(
-					(X + StartChunk.X) * ChunkSize,
-					(Y + StartChunk.Y) * ChunkSize
-				);
-				const float Continentalness = AChunk::GetContinentalnessAtLocation(TestLocation, true);
-				if (Continentalness < 0.25f)
-				{
-					// If not pick a new starting point and keep going
-					continue;
-				}
-				ValidChunk = FIntVector2(X + StartChunk.X, Y + StartChunk.Y);
-				FoundValidChunk = true;
+				// If not pick a new starting point and keep going
+				continue;
 			}
+
+			ValidChunk = FIntVector2(X, Y);
+			break;
 		}
 	}
 
@@ -306,32 +292,30 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 	// Line trace down to find ground
 	FHitResult HitResult;
 	bool FoundValidSpawn = false;
-	while (!FoundValidSpawn)
+	
+	// Ensure the chunk we want to start at exists
+	(void*)ChunkManager->GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
+
+	const FVector ValidChunkWorldLocation((ValidChunk.X * ChunkSize) - (ChunkSize * 0.5f), (ValidChunk.Y * ChunkSize) - (ChunkSize * 0.5f), 0.0f);
+
+	// Loop through all points on chunk to see if there is a good spot
+	for (int32 X = 0; X <= AChunk::GetVertexSize(); ++X)
 	{
-		++SpawnIterations;
-		if (SpawnIterations > MaxIterations)
+		for (int32 Y = 0; Y <= AChunk::GetVertexSize(); ++Y)
 		{
-			break;
+			const FVector Start((X * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.X, (Y * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.Y, AChunk::GetMaxHeight());
+			const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
+			if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+			{
+				continue;
+			}
+			
+			UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+			if (HitComponent == nullptr || !HitComponent->ComponentHasTag(TEXT("Ground")))
+			{
+				continue;
+			}
 		}
-
-		// Ensure the chunk we want to start at exists
-		ChunkManager->GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
-
-		const FVector Start((ValidChunk.X * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)),
-			(ValidChunk.Y * ChunkSize) + (ChunkSize * FMath::RandRange(-0.5f, 0.5f)), AChunk::GetMaxHeight());
-		const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
-		if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
-		{
-			continue;
-		}
-
-		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
-		if (HitComponent == nullptr || !HitComponent->ComponentHasTag(TEXT("Ground")))
-		{
-			continue;
-		}
-
-		FoundValidSpawn = true;
 	}
 
 	// Spawn there
