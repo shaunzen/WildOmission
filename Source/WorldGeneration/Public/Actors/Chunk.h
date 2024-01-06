@@ -42,6 +42,9 @@ public:
 	void SetChunkLocation(const FIntVector2& InLocation);
 	FIntVector2 GetChunkLocation() const;
 
+	static FName GetBiomeNameAtLocation(const FVector2D& Location);
+	static struct FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location);
+
 	void SetHeightData(const TArray<float>& InHeightData);
 	TArray<float> GetHeightData() const;
 
@@ -86,9 +89,6 @@ private:
 	void GenerateSpawnableActors(const TArray<struct FSpawnQuery>& SpawnQueryList);
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform) const;
-
-	static FName GetBiomeNameAtLocation(const FVector2D& Location);
-	static struct FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location);
 
 	void GenerateHeightData(const TArray<FChunkData>& Neighbors);
 	void CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV);

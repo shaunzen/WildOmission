@@ -187,6 +187,11 @@ uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
 	return SurfaceData[ArrayIndex];
 }
 
+FBiomeGenerationData* AChunkManager::GetBiomeAtLocation(const FVector& TestLocation)
+{
+	return AChunk::GetBiomeAtLocation(FVector2D(TestLocation.X, TestLocation.Y));
+}
+
 float AChunkManager::GetRenderDistanceCentimeters()
 {
 	return AChunk::GetVertexSize() * (AChunk::GetVertexDistanceScale() * 0.5f) * RENDER_DISTANCE;

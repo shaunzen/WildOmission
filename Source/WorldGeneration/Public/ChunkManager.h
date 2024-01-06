@@ -33,6 +33,7 @@ public:
 	AChunk* GenerateChunkAtLocation(const FIntVector2& ChunkLocation);
 
 	uint8 GetSurfaceTypeAtLocation(const FVector& TestLocation) const;
+	static FBiomeGenerationData* GetBiomeAtLocation(const FVector& TestLocation);
 
 	static float GetRenderDistanceCentimeters();
 	static int32 GetRenderDistance();

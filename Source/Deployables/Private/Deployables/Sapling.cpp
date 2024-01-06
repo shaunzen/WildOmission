@@ -1,10 +1,12 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Deployables/Seedling.h"
+#include "Deployables/Sapling.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "UObject/ConstructorHelpers.h"
 
-ASeedling::ASeedling()
+ASapling::ASapling()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -19,14 +21,14 @@ ASeedling::ASeedling()
 	}
 }
 
-void ASeedling::OnSpawn()
+void ASapling::OnSpawn()
 {
 	Super::OnSpawn();
 
 	TimeToMatureSeconds = FMath::RandRange(MinMatureTimeSeconds, MaxMatureTimeSeconds);
 }
 
-void ASeedling::Tick(float DeltaTime)
+void ASapling::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -43,25 +45,26 @@ void ASeedling::Tick(float DeltaTime)
 	}
 }
 
-void ASeedling::GrowUp()
+void ASapling::GrowUp()
 {
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
 		return;
 	}
-
-	// Decide which tree we will become
-	int32 MatureStateIndex = FMath::RandRange(0, MatureStates.Num() - 1);
-
-	// Check that tree is valid
-	if (MatureStates[MatureStateIndex] == nullptr)
+	
+	// Get Biome
+	FBiomeGenerationData* Biome = AChunkManager::GetBiomeAtLocation(this->GetActorLocation());
+	if (Biome == nullptr || Biome->Trees.Spawnables.IsEmpty())
 	{
 		return;
 	}
 
+	// Decide which tree we will become
+	int32 MatureStateIndex = FMath::RandRange(0, Biome->Trees.Spawnables.Num() - 1);
+
 	// Spawn it
-	World->SpawnActor<AActor>(MatureStates[MatureStateIndex], this->GetActorLocation(), this->GetActorRotation());
+	World->SpawnActor<AActor>(Biome->Trees.Spawnables[MatureStateIndex].BlueprintClass, this->GetActorLocation(), this->GetActorRotation());
 
 	// Destroy us
 	Multi_PlayDestructionEffects();
