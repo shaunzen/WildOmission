@@ -260,11 +260,8 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 {
 	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
-
-	const int32 TestRadius = 128;
-	const int32 MaxIterations = 128;
-	int32 SpawnIterations = 0;
 	
+	const int32 TestRadius = 128;
 	FIntVector2 ValidChunk(0, 0);
 	for (int32 X = -TestRadius; X < TestRadius; ++X)
 	{
@@ -286,24 +283,22 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 		}
 	}
 
-	// if we find an area with high continentalness but hit actor wasnt ground
-	// keep picking random location in that chunk until we get it
-
 	// Line trace down to find ground
 	FHitResult HitResult;
-	bool FoundValidSpawn = false;
 	
 	// Ensure the chunk we want to start at exists
-	(void*)ChunkManager->GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
-
-	const FVector ValidChunkWorldLocation((ValidChunk.X * ChunkSize) - (ChunkSize * 0.5f), (ValidChunk.Y * ChunkSize) - (ChunkSize * 0.5f), 0.0f);
+	AChunk* GeneratedChunk = ChunkManager->GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
+	if (GeneratedChunk == nullptr)
+	{
+		return;
+	}
 
 	// Loop through all points on chunk to see if there is a good spot
 	for (int32 X = 0; X <= AChunk::GetVertexSize(); ++X)
 	{
 		for (int32 Y = 0; Y <= AChunk::GetVertexSize(); ++Y)
 		{
-			const FVector Start((X * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.X, (Y * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.Y, AChunk::GetMaxHeight());
+			const FVector Start((X * AChunk::GetVertexDistanceScale()) + GeneratedChunk->GetActorLocation().X, (Y * AChunk::GetVertexDistanceScale()) + GeneratedChunk->GetActorLocation().Y, AChunk::GetMaxHeight());
 			const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
 			if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 			{
@@ -315,6 +310,8 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 			{
 				continue;
 			}
+
+			break;
 		}
 	}
 
