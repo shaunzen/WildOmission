@@ -230,14 +230,16 @@ void AWildOmissionPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
-	if (ChunkManager == nullptr)
-	{
-		return;
-	}
+
 
 	if (HasAuthority())
 	{
+		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+		if (ChunkManager == nullptr)
+		{
+			return;
+		}
+
 		const bool UseDefaultSpawn = StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true;
 		const FVector SpawnPoint = UseDefaultSpawn ? ChunkManager->GetWorldSpawnPoint() : StoredPlayerSaveData.WorldLocation;
 
