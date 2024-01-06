@@ -8,7 +8,6 @@
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
 #include "TimeOfDayManager.h"
-#include "Interfaces/RequiredForLoad.h"
 #include "WeatherManager.h"
 #include "AnimalSpawnManager.h"
 #include "MonsterSpawnManager.h"
