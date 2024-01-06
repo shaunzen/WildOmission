@@ -17,7 +17,6 @@ AHarvestableResource::AHarvestableResource()
 	bAlwaysRelevant = false;
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = ENetDormancy::DORM_DormantAll;
-	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
@@ -33,6 +32,17 @@ AHarvestableResource::AHarvestableResource()
 	RequiredToolType = EToolType::WOOD;
 
 	Durability = 10;
+}
+
+bool AHarvestableResource::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
+{
+	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
+
+	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
+	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
+	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
+
+	return Distance < AChunkManager::GetRenderDistanceCentimeters();
 }
 
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool)

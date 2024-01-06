@@ -112,6 +112,17 @@ void ADeployable::OnSpawn()
 	Multi_PlayPlacementEffects();
 }
 
+bool ADeployable::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
+{
+	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
+
+	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
+	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
+	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
+
+	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+}
+
 void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

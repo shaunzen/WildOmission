@@ -2,6 +2,7 @@
 
 
 #include "Projectiles/CollectableProjectile.h"
+#include "ChunkManager.h"
 #include "Components/InventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -31,6 +32,17 @@ ACollectableProjectile::ACollectableProjectile()
 	{
 		CollectSound = CollectSoundObject.Object;
 	}
+}
+
+bool ACollectableProjectile::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
+{
+	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
+
+	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
+	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
+	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
+
+	return Distance < AChunkManager::GetRenderDistanceCentimeters();
 }
 
 void ACollectableProjectile::Interact(AActor* Interactor)

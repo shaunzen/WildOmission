@@ -44,7 +44,6 @@ AChunk::AChunk()
 	NetUpdateFrequency = 2.0f;
 	NetPriority = 1.0f;
 	NetDormancy = ENetDormancy::DORM_DormantAll;
-	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
 	
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->ComponentTags.Add(TEXT("Ground"));
@@ -85,6 +84,17 @@ AChunk::AChunk()
 	{
 		PeaksAndValleysHeightCurve = PeaksAndValleysHeightCurveBlueprint.Object;
 	}
+}
+
+bool AChunk::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
+{
+	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
+
+	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
+	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
+	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
+
+	return Distance < AChunkManager::GetRenderDistanceCentimeters();
 }
 
 void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

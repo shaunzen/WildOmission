@@ -20,6 +20,8 @@ public:
 	// Sets default values for this actor's properties
 	ACollectableResource();
 
+	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
+
 	// Begin Interactable Interface Implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;

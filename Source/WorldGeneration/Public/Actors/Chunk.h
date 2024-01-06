@@ -15,6 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	AChunk();
 
+	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	virtual void Tick(float DeltaTime) override;

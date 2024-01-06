@@ -20,6 +20,8 @@ public:
 	// Sets default values for this actor's properties
 	AHarvestableResource();
 
+	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
+
 	virtual void OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool);
 	
 	TEnumAsByte<EToolType> GetRequiredToolType() const;
