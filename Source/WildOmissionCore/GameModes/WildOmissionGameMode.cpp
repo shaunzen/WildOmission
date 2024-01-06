@@ -275,7 +275,7 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 				Y * ChunkSize
 			);
 			const float Continentalness = AChunk::GetContinentalnessAtLocation(TestLocation, true);
-			if (Continentalness > 0.05f || Continentalness < 0.0f)
+			if (Continentalness > 0.0f || Continentalness < -0.1f)
 			{
 				// If not pick a new starting point and keep going
 				continue;
