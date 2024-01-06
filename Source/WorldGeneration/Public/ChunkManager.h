@@ -20,7 +20,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void SetChunkData(const TArray<struct FChunkData> InChunkData);
+	void SetChunkData(const TArray<FChunkData> InChunkData);
 
 	void SaveAllLoadedChunks();
 	TArray<FChunkData> GetChunksData() const;

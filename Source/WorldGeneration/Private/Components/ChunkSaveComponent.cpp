@@ -19,12 +19,6 @@ UChunkSaveComponent::UChunkSaveComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
-
 	static ConstructorHelpers::FObjectFinder<UDataTable> SavableObjectDefinitionsBlueprint(TEXT("/Game/SaveSystem/DataTables/DT_SavableObjectDefinitions"));
 	if (SavableObjectDefinitionsBlueprint.Succeeded())
 	{
