@@ -263,6 +263,7 @@ void AWildOmissionPlayerController::BeginPlay()
 	{
 		GameInstance->StartLoading();
 		GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
+		UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Brought up loading screen."));
 	}
 
 	if (MusicPlayerComponent == nullptr)
@@ -280,12 +281,14 @@ void AWildOmissionPlayerController::BeginPlay()
 		FTimerDelegate LoadTimerDelegate;
 		LoadTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::StopLoading);
 		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 2.0f, false);
+		UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Setup load timer."));
 	}
 	else
 	{
 		FTimerDelegate CheckSpawnChunkValidTimerDelegate;
 		CheckSpawnChunkValidTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::CheckSpawnChunkValid);
 		GetWorld()->GetTimerManager().SetTimer(CheckSpawnChunkValidTimerHandle, CheckSpawnChunkValidTimerDelegate, 2.0f, true);
+		UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Setup check spawn chunk timer."));
 	}
 }
 
@@ -323,6 +326,7 @@ void AWildOmissionPlayerController::CheckSpawnChunkValid()
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (World == nullptr || ChunkManager == nullptr)
 	{
+		UE_LOG(LogPlayerController, Warning, TEXT("CheckSpawnChunkValid: Failed because World or ChunkManager is nullptr."))
 		return;
 	}
 
@@ -332,9 +336,11 @@ void AWildOmissionPlayerController::CheckSpawnChunkValid()
 	const int32 DataCount = (AChunk::GetVertexSize() + 1) * (AChunk::GetVertexSize() + 1);
 	if (!IsValid(SpawnedChunk.Chunk) || SpawnedChunk.Chunk->GetHeightData().Num() != DataCount)
 	{
+		UE_LOG(LogPlayerController, Verbose, TEXT("CheckSpawnChunkValid: Chunk is still loading."));
 		return;
 	}
 
+	UE_LOG(LogPlayerController, Verbose, TEXT("CheckSpawnChunkValid: Chunk loaded successfully, requesting spawn."));
 	World->GetTimerManager().ClearTimer(CheckSpawnChunkValidTimerHandle);
 	StopLoading();
 }

@@ -17,6 +17,7 @@ static siv::PerlinNoise Noise(10);
 static uint32 Seed = 0;
 const static int32 VERTEX_SIZE = 16;
 const static float VERTEX_DISTANCE_SCALE = 100.0f;
+const static float CHUNK_SIZE_CENTIMETERS = VERTEX_SIZE * VERTEX_DISTANCE_SCALE;
 const static float UV_SCALE = 0.0625f;
 const static float MAX_HEIGHT = 1000000.0f;
 
@@ -194,7 +195,6 @@ void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 
 void AChunk::Load(const FChunkData& InChunkData)
 {
-	this->GridLocation = InChunkData.GridLocation;
 	SaveComponent->Load(InChunkData);
 	OnLoadFromSaveComplete();
 }
@@ -272,12 +272,13 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 
 void AChunk::SetChunkLocation(const FIntVector2& InLocation)
 {
-	GridLocation = InLocation;
+	SetActorLocation(FVector(InLocation.X * CHUNK_SIZE_CENTIMETERS, InLocation.Y * CHUNK_SIZE_CENTIMETERS, 0.0f));
 }
 
 FIntVector2 AChunk::GetChunkLocation() const
 {
-	return GridLocation;
+	const FVector WorldLocation = GetActorLocation();
+	return FIntVector2(WorldLocation.X / CHUNK_SIZE_CENTIMETERS, WorldLocation.Y / CHUNK_SIZE_CENTIMETERS);
 }
 
 void AChunk::SetHeightData(const TArray<float>& InHeightData)
@@ -329,7 +330,7 @@ void AChunk::BeginPlay()
 		}
 
 		FSpawnedChunk SpawnedChunk;
-		SpawnedChunk.GridLocation = this->GridLocation;
+		SpawnedChunk.GridLocation = GetChunkLocation();
 		SpawnedChunk.Chunk = this;
 
 		ChunkManager->AddSpawnedChunk(SpawnedChunk);
@@ -349,7 +350,7 @@ void AChunk::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		}
 
 		FSpawnedChunk SpawnedChunk;
-		SpawnedChunk.GridLocation = this->GridLocation;
+		SpawnedChunk.GridLocation = this->GetChunkLocation();
 		SpawnedChunk.Chunk = this;
 
 		ChunkManager->RemoveSpawnedChunk(SpawnedChunk);
@@ -638,6 +639,8 @@ void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
 	TArray<float> TopRightNeighborHeightData;
 	TArray<float> BottomLeftNeighborHeightData;
 	TArray<float> BottomRightNeighborHeightData;
+
+	const FIntVector2 GridLocation = GetChunkLocation();
 
 	// Iterate through neibors and store their edge height
 	for (const FChunkData& ChunkData : Neighbors)

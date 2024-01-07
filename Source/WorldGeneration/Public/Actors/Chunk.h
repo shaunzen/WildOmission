@@ -72,9 +72,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UChunkSaveComponent* SaveComponent;
 
-	UPROPERTY()
-	FIntVector2 GridLocation;
-
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MeshData)
 	TArray<float> HeightData;
 
