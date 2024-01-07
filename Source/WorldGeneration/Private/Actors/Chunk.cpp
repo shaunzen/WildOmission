@@ -213,6 +213,67 @@ uint32 AChunk::GetGenerationSeed()
 
 void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, uint8& OutSurface)
 {
+	const float RawContinentalness = GetContinentalnessAtLocation(Location, true);
+	OutHeight = GetTerrainHeightAtLocation(Location);
+
+	// 1 = Stone
+	// 2 = Grass
+	// 3 = Dirt
+	// 4 = Sand
+	// 5 = Gravel
+	// 6 = Snow
+	// 7 = Reserved
+
+	OutSurface = 1;
+
+	const FString BiomeName = GetBiomeNameAtLocation(Location).ToString().ToLower();
+	TArray<float> TestPoints 
+	{
+		GetTerrainHeightAtLocation(Location + FVector2D(VERTEX_DISTANCE_SCALE, 0.0f)),
+		GetTerrainHeightAtLocation(Location + FVector2D(-VERTEX_DISTANCE_SCALE, 0.0f)),
+		GetTerrainHeightAtLocation(Location + FVector2D(0.0f, -VERTEX_DISTANCE_SCALE)),
+		GetTerrainHeightAtLocation(Location + FVector2D(0.0f, VERTEX_DISTANCE_SCALE))
+	};
+
+	const float StoneSurfaceDifferenceThreshold = 100.0f;
+	const float DirtSurfaceDifferenceThreshold = 50.0f;
+
+	const bool ShouldBeStone = ArePointsOutsideOfThreshold(TestPoints, OutHeight - StoneSurfaceDifferenceThreshold, OutHeight + StoneSurfaceDifferenceThreshold);
+	const bool ShouldBeDirt = ArePointsOutsideOfThreshold(TestPoints, OutHeight - DirtSurfaceDifferenceThreshold, OutHeight + DirtSurfaceDifferenceThreshold);
+
+	// Ground Color
+	if (BiomeName.StartsWith("Snow_"))
+	{
+		OutSurface = 6;
+	}
+	else if (BiomeName == TEXT("Desert") || RawContinentalness <= 0.0f)
+	{
+		// Sand
+		OutSurface = 4;
+	}
+	else
+	{	
+		if (ShouldBeStone)
+		{
+			OutSurface = 1;
+		}
+		else if (ShouldBeDirt)
+		{
+			OutSurface = 3;
+		}
+		else
+		{
+			const bool HighAltitude = OutHeight > 10000.0f;
+			// Snow or Grass
+			HighAltitude ? OutSurface = 6 : OutSurface = 2;
+		}
+	}
+}
+
+float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location)
+{
+	float Height = 0.0f;
+	
 	const float ContinentalnessInfluence = 1000.0f;
 	const float ErosionInfluence = 5000.0f;
 	const float PeaksAndValleysInfluence = 25000.0f;
@@ -228,46 +289,19 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 	const float RawContinentalness = GetContinentalnessAtLocation(Location, true);
 	const float RawErosion = GetErosionAtLocation(Location, true);
 	const float RawPeaksAndValleys = GetPeaksAndValleysAtLocation(Location, true);
-	
+
 	// Height
-	OutHeight = ContinentalnessHeight;
+	Height = ContinentalnessHeight;
 	if (RawContinentalness > 0.0f)
-	{	
-		OutHeight += ErosionHeight * RawContinentalness;
+	{
+		Height += ErosionHeight * RawContinentalness;
 		if (RawErosion > 0.0f)
 		{
-			OutHeight += PeaksAndValleysHeight * RawErosion * RawContinentalness;
+			Height += PeaksAndValleysHeight * RawErosion * RawContinentalness;
 		}
 	}
 
-	// 1 = Stone
-	// 2 = Grass
-	// 3 = Dirt
-	// 4 = Sand
-	// 5 = Gravel
-	// 6 = Snow
-	// 7 = Reserved
-
-	OutSurface = 1;
-
-	const FString BiomeName = GetBiomeNameAtLocation(Location).ToString().ToLower();
-
-	// Ground Color
-	if (BiomeName.StartsWith("Snow_"))
-	{
-		OutSurface = 6;
-	}
-	else if (BiomeName == TEXT("Desert") || RawContinentalness <= 0.0f)
-	{
-		// Sand
-		OutSurface = 4;
-	}
-	else
-	{	
-		const bool HighAltitude = OutHeight > 10000.0f;
-		// Snow or Grass
-		HighAltitude ? OutSurface = 6: OutSurface = 2;
-	}
+	return Height;
 }
 
 void AChunk::SetChunkLocation(const FIntVector2& InLocation)
@@ -394,6 +428,11 @@ void AChunk::GenerateDecorations()
 		for (int32 Y = 0; Y < VERTEX_SIZE; ++Y)
 		{
 			const int32 TerrainDataIndex = (X * (VERTEX_SIZE + 1)) + Y;
+
+			if (SurfaceData[TerrainDataIndex] == 1)
+			{
+				continue;
+			}
 
 			const FVector2D BiomeTestLocation = FVector2D((X * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.X, (Y * VERTEX_DISTANCE_SCALE) + ThisChunkLocation.Y);
 			FBiomeGenerationData* Biome = GetBiomeAtLocation(BiomeTestLocation);
@@ -535,6 +574,19 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 	float ChunkOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
 	OutTransform.SetLocation(FVector((X * VERTEX_DISTANCE_SCALE) - ChunkOffset, (Y * VERTEX_DISTANCE_SCALE) - ChunkOffset, Z) + GetActorLocation());
 	return true;
+}
+
+bool AChunk::ArePointsOutsideOfThreshold(const TArray<float>& TestPoints, float MinThreshold, float MaxThreshold)
+{
+	for (const float& TestPoint : TestPoints)
+	{
+		if (TestPoint > MaxThreshold || TestPoint < MinThreshold)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)

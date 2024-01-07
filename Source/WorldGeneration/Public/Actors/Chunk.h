@@ -41,6 +41,7 @@ public:
 	static float GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRawValue = false);
 
 	static void GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, uint8& OutSurface);
+	static float GetTerrainHeightAtLocation(const FVector2D& Location);
 	void SetChunkLocation(const FIntVector2& InLocation);
 	FIntVector2 GetChunkLocation() const;
 
@@ -89,6 +90,8 @@ private:
 	void GenerateSpawnableActors(const TArray<struct FSpawnQuery>& SpawnQueryList);
 
 	bool GetRandomPointOnTerrain(FTransform& OutTransform) const;
+
+	static bool ArePointsOutsideOfThreshold(const TArray<float>& TestPoints, float MinThreshold, float MaxThreshold);
 
 	void GenerateHeightData(const TArray<FChunkData>& Neighbors);
 	void CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV);
