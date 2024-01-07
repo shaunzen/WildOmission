@@ -230,8 +230,6 @@ void AWildOmissionPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-
 	if (HasAuthority())
 	{
 		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
@@ -332,11 +330,6 @@ void AWildOmissionPlayerController::CheckSpawnChunkValid()
 	ChunkManager->GetSpawnedChunk(SpawnChunk, SpawnedChunk);
 
 	const int32 DataCount = (AChunk::GetVertexSize() + 1) * (AChunk::GetVertexSize() + 1);
-	if (IsValid(SpawnedChunk.Chunk))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SpawnChunkDataCount %i, Required %i"), SpawnedChunk.Chunk->GetHeightData().Num(), DataCount);
-	}
-
 	if (!IsValid(SpawnedChunk.Chunk) || SpawnedChunk.Chunk->GetHeightData().Num() != DataCount)
 	{
 		return;

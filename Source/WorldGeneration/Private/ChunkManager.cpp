@@ -17,6 +17,8 @@ AChunkManager::AChunkManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+	bAlwaysRelevant = true;
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
 	if (BiomeDataTableBlueprint.Succeeded())
@@ -34,6 +36,11 @@ AChunkManager::AChunkManager()
 void AChunkManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!HasAuthority())
+	{
+		return;
+	}
 
 	RemoveOutOfRangeChunks();
 
