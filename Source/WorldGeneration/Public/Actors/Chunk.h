@@ -92,6 +92,7 @@ private:
 
 	void GenerateHeightData(const TArray<FChunkData>& Neighbors);
 	void CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV);
+
 	void CreateTriangles(TArray<int32>& OutTriangle);
 	void CreateMesh();
 

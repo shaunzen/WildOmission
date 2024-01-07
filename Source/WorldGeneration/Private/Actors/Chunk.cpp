@@ -765,7 +765,10 @@ void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutCol
 		for (int32 Y = 0; Y <= VERTEX_SIZE; ++Y)
 		{
 			const int32 ArrayIndex = (X * (VERTEX_SIZE + 1)) + Y;
-			OutVertices.Add(FVector((X * VERTEX_DISTANCE_SCALE) - VertexOffset, (Y * VERTEX_DISTANCE_SCALE) - VertexOffset, HeightData[ArrayIndex]));
+			const FVector VertexLocation((X * VERTEX_DISTANCE_SCALE) - VertexOffset, (Y * VERTEX_DISTANCE_SCALE) - VertexOffset, HeightData[ArrayIndex]);
+
+			OutVertices.Add(VertexLocation);
+
 			switch (SurfaceData[ArrayIndex])
 			{
 			default:
