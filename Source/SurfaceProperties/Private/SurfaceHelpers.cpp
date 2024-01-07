@@ -27,7 +27,7 @@ FSurfaceProperties* USurfaceHelpers::GetSurfaceProperties(const uint8& SurfaceTy
 		return GetSurfaceData(TEXT("Grass"));
 		break;
 	case 3:	// DIRT
-		return GetSurfaceData(TEXT("Gravel"));
+		return GetSurfaceData(TEXT("Dirt"));
 		break;
 	case 4:	// SAND
 		return GetSurfaceData(TEXT("Gravel"));
@@ -36,7 +36,7 @@ FSurfaceProperties* USurfaceHelpers::GetSurfaceProperties(const uint8& SurfaceTy
 		return GetSurfaceData(TEXT("Gravel"));
 		break;
 	case 6:	// SNOW
-		return GetSurfaceData(TEXT("Grass"));
+		return GetSurfaceData(TEXT("Snow"));
 		break;
 	case 7:	// RESERVED
 		return GetSurfaceData(TEXT("Stone"));
