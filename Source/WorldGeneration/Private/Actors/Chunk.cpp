@@ -640,19 +640,20 @@ FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
 		switch (TempatureIndex)
 		{
 		case 0:
-			BiomeName = TEXT("Snow_Forest");
+			BiomeName = HumidityIndex < 2 ? TEXT("Snow_Plains") : TEXT("Snow_Forest");
 			break;
 		case 1:
-			BiomeName = TEXT("Snow_Forest");
+			BiomeName = HumidityIndex < 2 ? TEXT("Snow_Plains") : TEXT("Snow_Forest");
 			break;
 		case 2:
-			BiomeName = TEXT("Forest");
+			BiomeName = HumidityIndex < 2 ? TEXT("Plains") : TEXT("Forest");
 			break;
 		case 3:
-			BiomeName = TEXT("Forest");
+			BiomeName = TEXT("Birch_Forest");
 			break;
 		case 4:
 			BiomeName = TEXT("Desert");
+			UE_LOG(LogTemp, Warning, TEXT("Desert."));
 			break;
 		default:
 			BiomeName = TEXT("Plains");
