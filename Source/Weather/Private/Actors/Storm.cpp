@@ -74,14 +74,10 @@ void AStorm::HandleSpawn(bool SpawnedFromCommand)
 {
 	WasSpawnedFromCommand = SpawnedFromCommand;
 
-	GetSpawnLocation();
+	GetSpawnData(SpawnLocation, MovementVector);
 
 	SetActorLocation(SpawnLocation);
 
-	CalculateTargetLocation();
-	CalculateTravelDistance();
-	TraveledDistance = 0.0f;
-	
 	Severity = 0.0f;
 
 	MovementSpeed = FMath::RandRange(300.0f, 1000.0f);
@@ -132,15 +128,12 @@ void AStorm::HandleCloudAppearance()
 
 void AStorm::HandleMovement()
 {
-	FVector CurrentLocation = GetActorLocation();
-	MovementVector = (TargetLocation - CurrentLocation).GetSafeNormal();
+	const FVector CurrentLocation = GetActorLocation();
 
-	CalculateTraveledDistance();
-
-	FVector NewLocation = CurrentLocation + (MovementVector * MovementSpeed * GetWorld()->GetDeltaSeconds());
+	const FVector NewLocation = CurrentLocation + (MovementVector * MovementSpeed * GetWorld()->GetDeltaSeconds());
 	SetActorLocation(NewLocation);
 
-	if (TraveledDistance >= TravelDistance)
+	if (GetDistanceTraveled() >= GetTravelDistance())
 	{
 		AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
 		if (WeatherManager == nullptr)
@@ -212,35 +205,48 @@ void AStorm::SpawnTornado(bool bFromSave)
 	HasSpawnedTornado = true;
 }
 
-void AStorm::GetSpawnLocation()
+void AStorm::GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector) const
 {
-	FVector2D WorldSize = FVector2D(2000.0f, 2000.0f);
-	WorldSize = WorldSize * 100.0f;
+	const float SpawnDistance = 1000000.0f;
+	const float StormAltitude = 20000.0f;
 
-	int32 WorldSide = FMath::RandRange(0, 3);
-	float StormAltitude = 20000.0f;
+	const int32 WorldSide = FMath::RandRange(0, 3);
 
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (PlayerPawn == nullptr)
+	{
+		return;
+	}
+
+	const FVector PlayerLocation = PlayerPawn->GetActorLocation();
+	FVector OutLocation = FVector::ZeroVector;
 	switch (WorldSide)
 	{
 	case 0: // Top
-		SpawnLocation.Y = WorldSize.Y * 5.0f;
-		SpawnLocation.X = FMath::RandRange(-WorldSize.X, WorldSize.X);
+		OutSpawnLocation.X = PlayerLocation.X + SpawnDistance;
+		OutSpawnLocation.Y = PlayerLocation.Y;
+		OutMovementVector = FVector::ForwardVector;
 		break;
 	case 1: // Bottom
-		SpawnLocation.Y = -(WorldSize.Y * 5.0f);
-		SpawnLocation.X = FMath::RandRange(-WorldSize.X, WorldSize.X);
+		OutSpawnLocation.X = PlayerLocation.X - SpawnDistance;
+		OutSpawnLocation.Y = PlayerLocation.Y;
+		OutMovementVector = -FVector::ForwardVector;
 		break;
 	case 2:	// Left
-		SpawnLocation.Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
-		SpawnLocation.X = WorldSize.X * 5.0f;
+		OutSpawnLocation.X = PlayerLocation.X;
+		OutSpawnLocation.Y = PlayerLocation.Y - SpawnDistance;
+		OutMovementVector = -FVector::RightVector;
 		break;
 	case 3: // Right
-		SpawnLocation.Y = FMath::RandRange(-WorldSize.Y, WorldSize.Y);
-		SpawnLocation.X = -(WorldSize.X * 5.0f);
+		OutSpawnLocation.X = PlayerLocation.X;
+		OutSpawnLocation.Y = PlayerLocation.Y + SpawnDistance;
+		OutMovementVector = FVector::RightVector;
 		break;
 	}
 
-	SpawnLocation.Z = StormAltitude;
+	OutSpawnLocation.Z = StormAltitude;
+
+	return;
 }
 
 void AStorm::Serialize(FArchive& Ar)
@@ -283,29 +289,26 @@ void AStorm::OnLoadComplete()
 		return;
 	}
 
-	CalculateTargetLocation();
-	CalculateTravelDistance();
-	CalculateTraveledDistance();
-
 	if (TornadoData.WasSpawned)
 	{
 		SpawnTornado(true);
 	}
 }
 
-void AStorm::CalculateTargetLocation()
+FVector AStorm::GetStormTargetLocation() const
 {
-	TargetLocation = FVector(-SpawnLocation.X, -SpawnLocation.Y, SpawnLocation.Z);
+	const float MaxTravelDistance = 2000000.0f;
+	return SpawnLocation + (MovementVector * MaxTravelDistance);
 }
 
-void AStorm::CalculateTravelDistance()
+float AStorm::GetTravelDistance() const
 {
-	TravelDistance = FVector::Distance(SpawnLocation, TargetLocation);
+	return FVector::Distance(SpawnLocation, GetStormTargetLocation());
 }
 
-void AStorm::CalculateTraveledDistance()
+float AStorm::GetDistanceTraveled() const
 {
-	TraveledDistance = FVector::Distance(GetActorLocation(), SpawnLocation);
+	return FVector::Distance(GetActorLocation(), SpawnLocation);
 }
 
 bool AStorm::IsRaining(float& OutDensity) const
@@ -327,16 +330,6 @@ void AStorm::SetSeverity(float NewSeverity)
 float AStorm::GetSeverity() const
 {
 	return Severity;
-}
-
-float AStorm::GetTravelDistance() const
-{
-	return TravelDistance;
-}
-
-float AStorm::GetTraveledDistance() const
-{
-	return TraveledDistance;
 }
 
 void AStorm::SetMovementVector(const FVector& InMovementVector)

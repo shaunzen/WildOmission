@@ -217,15 +217,15 @@ void AWeatherManager::CalculateWindParameters()
 		return;
 	}
 
-	float RemainingDistance = CurrentStorm->GetTravelDistance() - CurrentStorm->GetTraveledDistance();
+	float RemainingDistance = CurrentStorm->GetTravelDistance() - CurrentStorm->GetDistanceTraveled();
 	float DistanceFadeRatio = CurrentStorm->GetTravelDistance() * 0.2f;
 
 	float NormalizedSeverity = CurrentStorm->GetSeverity() / 100.0f;
 
 	float FadeInOutMultiplier = 1.0f;
-	if (CurrentStorm->GetTraveledDistance() < DistanceFadeRatio)
+	if (CurrentStorm->GetDistanceTraveled() < DistanceFadeRatio)
 	{
-		FadeInOutMultiplier = CurrentStorm->GetTraveledDistance() / 1000.0f;
+		FadeInOutMultiplier = CurrentStorm->GetDistanceTraveled() / 1000.0f;
 	}
 	else if (RemainingDistance < DistanceFadeRatio)
 	{

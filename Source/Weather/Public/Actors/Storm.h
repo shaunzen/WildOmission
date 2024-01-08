@@ -33,8 +33,9 @@ public:
 	float GetSeverity() const;
 	void SetSeverity(float NewSeverity);
 
+	FVector GetStormTargetLocation() const;
 	float GetTravelDistance() const;
-	float GetTraveledDistance() const;
+	float GetDistanceTraveled() const;
 
 	void SetMovementVector(const FVector& InMovementVector);
 
@@ -78,9 +79,6 @@ private:
 	UPROPERTY(SaveGame)
 	bool HasSpawnedTornado;
 
-	FVector TargetLocation;
-	float TravelDistance;
-	float TraveledDistance;
 	UPROPERTY(Replicated)
 	ATornado* SpawnedTornado;
 
@@ -89,10 +87,7 @@ private:
 	bool LocalPlayerUnder;
 	float NextLightningStrikeTime;
 
-	void GetSpawnLocation();
-	void CalculateTargetLocation();
-	void CalculateTravelDistance();
-	void CalculateTraveledDistance();
+	void GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector) const;
 
 	// Client-Side Logic
 	void HandleCloudAppearance();

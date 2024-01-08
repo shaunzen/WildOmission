@@ -50,7 +50,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void HandleSpawn(AStorm* OwnerStorm, bool SpawnAtWorldOrigin = false);
+	void HandleSpawn(AStorm* OwnerStorm, bool SpawnedFromCommand = false);
 
 	FTornadoData GetTornadoData();
 

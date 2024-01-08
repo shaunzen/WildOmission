@@ -448,7 +448,7 @@ void AWildOmissionCharacter::HandleFly()
 		return;
 	}
 
-	if (!World->IsEditorWorld() || OurPlayerState->GetUniqueId().ToString() != TEXT("76561198277223961"))
+	if (!World->IsEditorWorld() && OurPlayerState->GetUniqueId().ToString() != TEXT("76561198277223961"))
 	{
 		return;
 	}

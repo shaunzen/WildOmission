@@ -63,20 +63,23 @@ void ATornado::BeginPlay()
 	}
 }
 
-void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnAtWorldOrigin)
+void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnedFromCommand)
 {
 	OwnerStorm = InOwnerStorm;
 
+	// TODO refactor both this class and the storm
 	GetStormRadius();
+	
 	SetActorRelativeLocation(GetRandomLocationInStorm());
-	if (SpawnAtWorldOrigin)
-	{
-		FVector NewSpawnLocation = FVector::ZeroVector;
-		SetActorRelativeLocation(NewSpawnLocation);
-	}
 	
 	TargetLocation = GetRandomLocationInStorm();
 
+	if (SpawnedFromCommand)
+	{
+		SetActorRelativeLocation(FVector(-StormRadius * 0.25f, 0.0f, 0.0f));
+		TargetLocation = FVector(StormRadius * 0.25f, 0.0f, 0.0f);
+	}
+	
 	TotalLifetime = FMath::RandRange(120.0f, 300.0f);
 	RemainingLifetime = TotalLifetime;
 
