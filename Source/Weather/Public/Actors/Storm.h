@@ -35,6 +35,9 @@ public:
 
 	float GetTravelDistance() const;
 	float GetTraveledDistance() const;
+
+	void SetMovementVector(const FVector& InMovementVector);
+
 	FVector GetMovementVector() const;
 	ATornado* GetSpawnedTornado() const;
 

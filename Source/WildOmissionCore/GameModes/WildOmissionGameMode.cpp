@@ -177,20 +177,24 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 
 	AStorm* SpawnedStorm = WeatherManager->SpawnStorm(true);
 	
+	APawn* HostPlayer = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
 	if (WeatherToSet == TEXT("Rain"))
 	{
 		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
-		NewStormLocation.X = 0.0f;
-		NewStormLocation.Y = 0.0f;
+		NewStormLocation.X = HostPlayer->GetActorLocation().X - 10000.0f;
+		NewStormLocation.Y = HostPlayer->GetActorLocation().Y;
 		SpawnedStorm->SetActorLocation(NewStormLocation);
+		SpawnedStorm->SetMovementVector(FVector(1.0f, 0.0f, 0.0f));
 		SpawnedStorm->SetSeverity(30.0f);
 	}
 	else if (WeatherToSet == TEXT("Tornado"))
 	{
 		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
-		NewStormLocation.X = 0.0f;
-		NewStormLocation.Y = 0.0f;
+		NewStormLocation.X = HostPlayer->GetActorLocation().X - 10000.0f;
+		NewStormLocation.Y = HostPlayer->GetActorLocation().Y;
 		SpawnedStorm->SetActorLocation(NewStormLocation);
+		SpawnedStorm->SetMovementVector(FVector(1.0f, 0.0f, 0.0f));
 		SpawnedStorm->SetSeverity(90.0f);
 	}
 	else if (WeatherToSet == TEXT("Clear"))

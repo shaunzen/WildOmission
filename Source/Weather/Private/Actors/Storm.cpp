@@ -339,6 +339,11 @@ float AStorm::GetTraveledDistance() const
 	return TraveledDistance;
 }
 
+void AStorm::SetMovementVector(const FVector& InMovementVector)
+{
+	MovementVector = InMovementVector;
+}
+
 FVector AStorm::GetMovementVector() const
 {
 	return MovementVector;
