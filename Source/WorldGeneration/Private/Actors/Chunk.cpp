@@ -244,7 +244,7 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 	// Ground Color
 	if (BiomeName.StartsWith("Snow_"))
 	{
-		OutSurface = 6;
+		ShouldBeStone ? OutSurface = 1 : OutSurface = 6;
 	}
 	else if (BiomeName == TEXT("Desert") || RawContinentalness <= 0.0f)
 	{
