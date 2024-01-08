@@ -29,7 +29,7 @@ public:
 	virtual void Jump() override;
 	virtual void Landed(const FHitResult& HitResult) override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void HandleFly();
 
 	// Begin ICharacterSettingsInterface Implementation

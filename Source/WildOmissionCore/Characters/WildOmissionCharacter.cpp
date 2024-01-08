@@ -21,6 +21,7 @@
 #include "Components/EquipComponent.h"
 #include "Components/CraftingComponent.h"
 #include "Components/BuilderComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsManagerComponent.h"
 #include "Components/LockModifierComponent.h"
@@ -436,7 +437,18 @@ void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 void AWildOmissionCharacter::HandleFly()
 {
 	UWorld* World = GetWorld();
-	if (World == nullptr || !World->IsEditorWorld())
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerState* OurPlayerState = GetPlayerState();
+	if (OurPlayerState == nullptr)
+	{
+		return;
+	}
+
+	if (!World->IsEditorWorld() || OurPlayerState->GetUniqueId().ToString() != TEXT("76561198277223961"))
 	{
 		return;
 	}
