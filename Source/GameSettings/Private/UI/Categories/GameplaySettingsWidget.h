@@ -25,6 +25,8 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UCheckOptionBox* ShowCrosshairCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
+	UCheckOptionBox* HideHUDCheckOptionBox;
+	UPROPERTY(Meta = (BindWidget))
 	UCheckOptionBox* CameraShakeEnabledCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	USliderOptionBox* FieldOfViewSliderOptionBox;

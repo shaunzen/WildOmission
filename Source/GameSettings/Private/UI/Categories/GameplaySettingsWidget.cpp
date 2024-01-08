@@ -27,6 +27,7 @@ void UGameplaySettingsWidget::OnApply()
 
 	UserSettings->SetShowBranding(ShowBrandingCheckOptionBox->IsChecked());
 	UserSettings->SetShowCrosshair(ShowCrosshairCheckOptionBox->IsChecked());
+	UserSettings->SetHideHUD(HideHUDCheckOptionBox->IsChecked());
 	UserSettings->SetCameraShakeEnabled(CameraShakeEnabledCheckOptionBox->IsChecked());
 	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
 
@@ -51,6 +52,7 @@ void UGameplaySettingsWidget::OnRefresh()
 
 	ShowBrandingCheckOptionBox->SetChecked(UserSettings->GetShowBranding());
 	ShowCrosshairCheckOptionBox->SetChecked(UserSettings->GetShowCrosshair());
+	HideHUDCheckOptionBox->SetChecked(UserSettings->GetHideHUD());
 	CameraShakeEnabledCheckOptionBox->SetChecked(UserSettings->GetCameraShakeEnabled());
 	FieldOfViewSliderOptionBox->SetValue(FieldOfView);
 }

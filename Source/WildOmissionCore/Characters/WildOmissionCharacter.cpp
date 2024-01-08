@@ -526,6 +526,7 @@ void AWildOmissionCharacter::ApplyGameplaySettings()
 	{
 		PlayerHUDWidget->ShowBranding(UserSettings->GetShowBranding());
 		PlayerHUDWidget->ShowCrosshair(UserSettings->GetShowCrosshair());
+		PlayerHUDWidget->SetVisibility(UserSettings->GetHideHUD() ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
 	}
 }
 
