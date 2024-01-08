@@ -26,7 +26,7 @@ void UGameplaySettingsWidget::OnApply()
 	}
 
 	UserSettings->SetShowBranding(ShowBrandingCheckOptionBox->IsChecked());
-	UserSettings->SetShowCrosshair(ShowBrandingCheckOptionBox->IsChecked());
+	UserSettings->SetShowCrosshair(ShowCrosshairCheckOptionBox->IsChecked());
 	UserSettings->SetCameraShakeEnabled(CameraShakeEnabledCheckOptionBox->IsChecked());
 	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
 
