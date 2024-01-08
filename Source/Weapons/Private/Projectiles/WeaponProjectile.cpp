@@ -11,6 +11,7 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "SurfaceHelpers.h"
 #include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "NiagaraFunctionLibrary.h"
@@ -188,26 +189,45 @@ void AWeaponProjectile::PlayHitmarkerSound(bool Headshot)
 
 void AWeaponProjectile::Multi_SpawnImpactEffects_Implementation(const FHitResult& HitResult)
 {
-	const UPhysicalMaterial* PhysMaterial = HitResult.PhysMaterial.Get();
-	if (PhysMaterial == nullptr)
+	USoundBase* ImpactSound = nullptr;
+	UNiagaraSystem* ImpactParticles = nullptr;
+	UMaterialInterface* ImpactDecalMaterial = nullptr;
+	
+	if (AChunk* HitChunk = Cast<AChunk>(HitResult.GetActor()))
 	{
-		UE_LOG(LogWeapons, Warning, TEXT("Failed to spawn impact effects, PhysicalMaterial returned a nullptr."));
-		return;
+		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+		if (ChunkManager == nullptr)
+		{
+			return;
+		}
+		
+		const uint8 SurfaceType = ChunkManager->GetSurfaceTypeAtLocation(HitResult.ImpactPoint);
+		ImpactSound = USurfaceHelpers::GetImpactSound(SurfaceType);
+		ImpactParticles = USurfaceHelpers::GetImpactParticles(SurfaceType);
+		ImpactDecalMaterial = USurfaceHelpers::GetImpactDecal(SurfaceType);
+	}
+	else
+	{
+		UPhysicalMaterial* PhysMaterial = HitResult.PhysMaterial.Get();
+		if (PhysMaterial == nullptr)
+		{
+			UE_LOG(LogWeapons, Warning, TEXT("Failed to spawn impact effects, PhysicalMaterial returned a nullptr."));
+			return;
+		}
+
+		ImpactSound = USurfaceHelpers::GetImpactSound(PhysMaterial->SurfaceType);
+		ImpactParticles = USurfaceHelpers::GetImpactParticles(PhysMaterial->SurfaceType);
+		ImpactDecalMaterial = USurfaceHelpers::GetImpactDecal(PhysMaterial->SurfaceType);
 	}
 	
-	USoundBase* ImpactSound = USurfaceHelpers::GetImpactSound(PhysMaterial->SurfaceType);
 	if (ImpactSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
 	}
-
-	UNiagaraSystem* ImpactParticles = USurfaceHelpers::GetImpactParticles(PhysMaterial->SurfaceType);
 	if (ImpactParticles)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactParticles, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
 	}
-
-	UMaterialInterface* ImpactDecalMaterial = USurfaceHelpers::GetImpactDecal(PhysMaterial->SurfaceType);
 	if (ImpactDecalMaterial)
 	{
 		const FVector DecalSize = FVector(8.0f, 8.0f, 8.0f);
