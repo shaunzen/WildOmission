@@ -593,17 +593,19 @@ FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
 {
 	const float Contenentalness = GetContinentalnessAtLocation(Location, true);
 
-	const float TempatureScale = 0.0001f;
-	const float HumidityScale = 0.0005f;
+	const float TempatureScale = 0.00001f;
+	const float HumidityScale = 0.00005f;
 
-	const float Tempature = (Noise.noise2D(Location.X * TempatureScale, Location.Y * TempatureScale) + 1) * 0.5f;
-	const float Humidity = (Noise.noise2D(Location.X * HumidityScale, Location.Y * TempatureScale) + 1) * 0.5f;
+	const float Tempature = (Noise.noise2D(Location.X * TempatureScale, Location.Y * TempatureScale) + 1.0f) * 0.5f;
+	const float Humidity = (Noise.noise2D(Location.X * HumidityScale, Location.Y * TempatureScale) + 1.0f) * 0.5f;
 
 	const float MinShore = -0.1f;
 	const float MaxShore = 0.0f;
 
 	const int32 TempatureIndex = FMath::RoundToInt32(Tempature / 0.25f);
 	const int32 HumidityIndex = FMath::RoundToInt32(Humidity / 0.25f);
+
+	//UE_LOG(LogTemp, Warning, TEXT("Temp %i, Humi %i"), TempatureIndex, HumidityIndex);
 
 	FName BiomeName = NAME_None;
 	if (Contenentalness > MinShore && Contenentalness < MaxShore)
@@ -649,7 +651,7 @@ FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
 			BiomeName = HumidityIndex < 2 ? TEXT("Plains") : TEXT("Forest");
 			break;
 		case 3:
-			BiomeName = TEXT("Birch_Forest");
+			BiomeName = HumidityIndex < 2 ? TEXT("Desert") : TEXT("Birch_Forest");
 			break;
 		case 4:
 			BiomeName = TEXT("Desert");
