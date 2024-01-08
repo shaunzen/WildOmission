@@ -27,6 +27,7 @@ UGameChatWidget::UGameChatWidget(const FObjectInitializer& ObjectInitializer) : 
 	}
 
 	Opened = false;
+	HideUnlessOpen = false;
 }
 
 void UGameChatWidget::NativeConstruct()
@@ -83,8 +84,16 @@ void UGameChatWidget::RefreshMessages()
 		}
 
 		MessageWidget->Setup(this, Message.SenderName, Message.Message, Message.TimeRecieved);
-
+		if (HideUnlessOpen)
+		{
+			MessageWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
 		MessageContainerPanel->AddChild(MessageWidget);
+	}
+
+	if (FMath::IsNearlyZero(MessageContainerPanel->GetScrollOffsetOfEnd()))
+	{
+		MessageContainerPanel->ScrollToStart();
 	}
 }
 
@@ -112,6 +121,16 @@ void UGameChatWidget::Close()
 bool UGameChatWidget::IsOpen() const
 {
 	return Opened;
+}
+
+void UGameChatWidget::SetHideUnlessOpen(bool InHideUnlessOpen)
+{
+	HideUnlessOpen = InHideUnlessOpen;
+}
+
+bool UGameChatWidget::GetHideUnlessOpen() const
+{
+	return HideUnlessOpen;
 }
 
 void UGameChatWidget::OnMessageBoxTextCommitted(const FText& MessageBoxText, ETextCommit::Type CommitMethod)

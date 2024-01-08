@@ -538,6 +538,7 @@ void AWildOmissionCharacter::ApplyGameplaySettings()
 	{
 		PlayerHUDWidget->ShowBranding(UserSettings->GetShowBranding());
 		PlayerHUDWidget->ShowCrosshair(UserSettings->GetShowCrosshair());
+		PlayerHUDWidget->SetHideChatUnlessOpen(UserSettings->GetHideChatUnlessOpen());
 		PlayerHUDWidget->SetVisibility(UserSettings->GetHideHUD() ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
 	}
 }
@@ -826,6 +827,11 @@ void AWildOmissionCharacter::StartSprint()
 		return;
 	}
 
+	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
 	Server_Sprint(true);
 	bSprinting = true;
 	RefreshDesiredMovementSpeed();
@@ -838,6 +844,11 @@ void AWildOmissionCharacter::EndSprint()
 		return;
 	}
 
+	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
 	Server_Sprint(false);
 	bSprinting = false;
 	RefreshDesiredMovementSpeed();
@@ -845,6 +856,11 @@ void AWildOmissionCharacter::EndSprint()
 
 void AWildOmissionCharacter::StartCrouch()
 {
+	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
 	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
 	if (OurCharacterMovement == nullptr)
 	{
@@ -861,6 +877,11 @@ void AWildOmissionCharacter::StartCrouch()
 
 void AWildOmissionCharacter::EndCrouch()
 {
+	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
 	UnCrouch();
 }
 

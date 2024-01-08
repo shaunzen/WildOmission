@@ -18,6 +18,7 @@ public:
 	
 	void ShowBranding(bool Show);
 	void ShowCrosshair(bool Show);
+	void SetHideChatUnlessOpen(bool HideChatUnlessOpen);
 
 	// Setters
 	UFUNCTION(BlueprintCallable)

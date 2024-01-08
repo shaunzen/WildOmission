@@ -126,11 +126,6 @@ void ASaveManager::LoadWorld()
 	{
 		WeatherManager->Load(SaveFile->WeatherData);
 	}
-
-	FTimerHandle FinishedLoadingTimerHandle;
-	FTimerDelegate FinishedLoadingTimerDelegate;
-	FinishedLoadingTimerDelegate.BindUObject(this, &ASaveManager::StopLoading);
-	GetWorld()->GetTimerManager().SetTimer(FinishedLoadingTimerHandle, FinishedLoadingTimerDelegate, 1.0f, false);
 }
 
 UWildOmissionSaveGame* ASaveManager::GetSaveFile() const
@@ -188,11 +183,6 @@ void ASaveManager::MarkSaveGenerated()
 
 	SaveFile->CreationInformation.LevelHasGenerated = true;
 	UpdateSaveFile(SaveFile);
-	
-	FTimerHandle FinishedLoadingTimerHandle;
-	FTimerDelegate FinishedLoadingTimerDelegate;
-	FinishedLoadingTimerDelegate.BindUObject(this, &ASaveManager::StopLoading);
-	GetWorld()->GetTimerManager().SetTimer(FinishedLoadingTimerHandle, FinishedLoadingTimerDelegate, 1.0f, false);
 }
 
 void ASaveManager::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)
