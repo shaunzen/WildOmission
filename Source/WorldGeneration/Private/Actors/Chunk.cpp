@@ -9,6 +9,7 @@
 #include "Curves/CurveFloat.h"
 #include "Noise/PerlinNoise.hpp"
 #include "Kismet/KismetMathLibrary.h"
+#include "AI/NavigationSystemBase.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
