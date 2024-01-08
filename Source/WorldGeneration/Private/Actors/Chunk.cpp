@@ -59,13 +59,10 @@ AChunk::AChunk()
 
 	ChunkHidden = false;
 
-	if (GetWorld())
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> TerrainMaterial(TEXT("/Game/WorldGeneration/M_Terrain"));
+	if (TerrainMaterial.Succeeded())
 	{
-		static ConstructorHelpers::FObjectFinder<UMaterialInterface> TerrainMaterial(TEXT("/Game/WorldGeneration/M_Terrain"));
-		if (TerrainMaterial.Succeeded())
-		{
-			ChunkMaterial = TerrainMaterial.Object;
-		}
+		ChunkMaterial = TerrainMaterial.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> ContinentalnessHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_Continentalness_Height"));
