@@ -2,7 +2,7 @@
 
 
 #include "WindSuckerComponent.h"
-#include "GameFramework/MovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/DamageEvents.h"
 
 // Sets default values for this component's properties
@@ -88,8 +88,13 @@ void UWindSuckerComponent::Update()
 		}
 
 		UMovementComponent* OwnerMovementComponent = ComponentOwner->FindComponentByClass<UMovementComponent>();
+		UCharacterMovementComponent* OwnerCharMovementComponent = Cast<UCharacterMovementComponent>(OwnerMovementComponent);
 		if (OwnerMovementComponent && OwnerMovementComponent->UpdatedComponent == PrimitiveComponent)
 		{
+			if (OwnerCharMovementComponent && OwnerCharMovementComponent->MovementMode == EMovementMode::MOVE_Flying)
+			{
+				continue;
+			}
 			OwnerMovementComponent->AddRadialForce(Origin, Radius, EffectiveForceStrength, Falloff);
 		}
 
