@@ -34,6 +34,9 @@ public:
 	void SetNormalizedProgressThroughDay(float InProgress);
 	float GetNormalizedProgressThroughDay() const;
 	
+	void SetTimeFrozen(bool InTimeFrozen);
+	bool IsTimeFrozen() const;
+
 	FOnTimeSunriseSignature OnTimeSunrise;
 	FOnTimeNoonSignature OnTimeNoon;
 	FOnTimeSunsetSignature OnTimeSunset;
@@ -65,6 +68,8 @@ private:
 	UFUNCTION()
 	void OnRep_NormalizedProgressThroughDay();
 	
+	bool TimeFrozen;
+
 	bool SunriseBroadcasted;
 	bool NoonBroadcasted;
 	bool SunsetBroadcasted;

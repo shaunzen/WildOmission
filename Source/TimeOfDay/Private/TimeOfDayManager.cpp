@@ -28,6 +28,8 @@ ATimeOfDayManager::ATimeOfDayManager()
 	NormalizedProgressThroughDay = 0.0f;
 	DaysPlayed = 0;
 
+	TimeFrozen = false;
+
 	SunriseBroadcasted = false;
 	NoonBroadcasted = false;
 	SunsetBroadcasted = false;
@@ -139,6 +141,11 @@ void ATimeOfDayManager::HandleDelegates()
 void ATimeOfDayManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (TimeFrozen)
+	{
+		return;
+	}
 
 	NormalizedProgressThroughDay += (DAY_NIGHT_SPEED * DeltaTime / 360.0f);
 	if (NormalizedProgressThroughDay >= 1.0f)
@@ -185,6 +192,16 @@ void ATimeOfDayManager::SetNormalizedProgressThroughDay(float InProgress)
 float ATimeOfDayManager::GetNormalizedProgressThroughDay() const
 {
 	return NormalizedProgressThroughDay;
+}
+
+void ATimeOfDayManager::SetTimeFrozen(bool InTimeFrozen)
+{
+	TimeFrozen = InTimeFrozen;
+}
+
+bool ATimeOfDayManager::IsTimeFrozen() const
+{
+	return TimeFrozen;
 }
 
 bool ATimeOfDayManager::IsDay() const

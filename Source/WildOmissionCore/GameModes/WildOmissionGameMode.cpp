@@ -271,6 +271,26 @@ void AWildOmissionGameMode::RemoveAllPlayersGodMode()
 	}
 }
 
+void AWildOmissionGameMode::FreezeTime()
+{
+	if (TimeOfDayManager == nullptr)
+	{
+		return;
+	}
+
+	TimeOfDayManager->SetTimeFrozen(true);
+}
+
+void AWildOmissionGameMode::UnfreezeTime()
+{
+	if (TimeOfDayManager == nullptr)
+	{
+		return;
+	}
+
+	TimeOfDayManager->SetTimeFrozen(false);
+}
+
 void AWildOmissionGameMode::SetTime(float NormalizedTime)
 {
 	if (TimeOfDayManager == nullptr)

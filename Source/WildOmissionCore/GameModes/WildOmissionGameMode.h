@@ -52,6 +52,12 @@ public:
 	void RemoveAllPlayersGodMode();
 
 	UFUNCTION(BlueprintCallable, Exec)
+	void FreezeTime();
+
+	UFUNCTION(BlueprintCallable, Exec)
+	void UnfreezeTime();
+
+	UFUNCTION(BlueprintCallable, Exec)
 	void SetTime(float NormalizedTime);
 
 	UFUNCTION(BlueprintCallable, Exec)
