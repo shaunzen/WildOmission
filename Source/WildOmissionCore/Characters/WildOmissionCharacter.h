@@ -41,6 +41,9 @@ public:
 	UFUNCTION()
 	void HandleDeath();
 	
+	UFUNCTION()
+	void SetGodMode(bool GodMode);
+
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
 

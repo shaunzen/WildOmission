@@ -101,7 +101,7 @@ void UVitalsComponent::CalculateDepletion()
 	}
 	
 	// If Thirst or Hunger is below threshold start removing Health
-	if (IsThirsty() || IsStarving())
+	if ((IsThirsty() || IsStarving()) && HealthCanDeplete)
 	{
 		CurrentHealth = FMath::Clamp(CurrentHealth - (HealthDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxHealth);
 	}
@@ -201,6 +201,11 @@ void UVitalsComponent::SetHunger(float Value)
 
 void UVitalsComponent::AddHealth(float Value)
 {
+	if (Value < 0.0f && !HealthCanDeplete)
+	{
+		return;
+	}
+
 	CurrentHealth = FMath::Clamp(CurrentHealth + Value, 0.0f, MaxHealth);
 	if (Value < 0.0f)
 	{
@@ -214,11 +219,21 @@ void UVitalsComponent::AddHealth(float Value)
 
 void UVitalsComponent::AddThirst(float Value)
 {
+	if (Value < 0.0f && !ThirstCanDeplete)
+	{
+		return;
+	}
+
 	CurrentThirst = FMath::Clamp(CurrentThirst + Value, 0.0f, MaxThirst);
 }
 
 void UVitalsComponent::AddHunger(float Value)
 {
+	if (Value < 0.0f && !HungerCanDeplete)
+	{
+		return;
+	}
+
 	CurrentHunger = FMath::Clamp(CurrentHunger + Value, 0.0f, MaxHunger);
 }
 
@@ -252,6 +267,11 @@ float UVitalsComponent::GetHunger() const
 	return CurrentHunger;
 }
 
+void UVitalsComponent::SetHealthCanDeplete(bool InCanDeplete)
+{
+	HealthCanDeplete = InCanDeplete;
+}
+
 void UVitalsComponent::SetThirstCanDeplete(bool InCanDeplete)
 {
 	ThirstCanDeplete = InCanDeplete;
@@ -270,6 +290,18 @@ bool UVitalsComponent::IsThirsty() const
 bool UVitalsComponent::IsStarving() const
 {
 	return CurrentHunger < HungerThreshold;
+}
+
+void UVitalsComponent::SetGodMode(bool InGodMode)
+{
+	HealthCanDeplete = !InGodMode;
+	ThirstCanDeplete = !InGodMode;
+	HungerCanDeplete = !InGodMode;
+}
+
+bool UVitalsComponent::IsGodMode() const
+{
+	return !HealthCanDeplete && !ThirstCanDeplete && !HungerCanDeplete;
 }
 
 void UVitalsComponent::Client_PlayHurtSound_Implementation()

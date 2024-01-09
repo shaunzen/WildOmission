@@ -37,7 +37,19 @@ public:
 	void SaveGame();
 
 	UFUNCTION(BlueprintCallable, Exec)
-	void ResetLocationOfAllConnectedPlayers();
+	void TeleportAllPlayersToSelf();
+
+	UFUNCTION(BlueprintCallable, Exec)
+	void GiveSelfGodMode();
+
+	UFUNCTION(BlueprintCallable, Exec)
+	void GiveAllPlayersGodMode();
+
+	UFUNCTION(BlueprintCallable, Exec)
+	void RemoveSelfGodMode();
+
+	UFUNCTION(BlueprintCallable, Exec)
+	void RemoveAllPlayersGodMode();
 
 	UFUNCTION(BlueprintCallable, Exec)
 	void SetTime(float NormalizedTime);

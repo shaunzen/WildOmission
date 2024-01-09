@@ -660,6 +660,11 @@ void AWildOmissionCharacter::HandleDeath()
 	this->Destroy();
 }
 
+void AWildOmissionCharacter::SetGodMode(bool GodMode)
+{
+	VitalsComponent->SetGodMode(GodMode);
+}
+
 void AWildOmissionCharacter::SetAiming(bool Aim)
 {
 	bAiming = Aim;

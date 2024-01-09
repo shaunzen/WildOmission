@@ -138,23 +138,136 @@ void AWildOmissionGameMode::SaveGame()
 	SaveManager->SaveGame();
 }
 
-void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
+
+void AWildOmissionGameMode::TeleportAllPlayersToSelf()
 {
+	APlayerController* SelfPlayerController = GetWorld()->GetFirstPlayerController();
+	if (SelfPlayerController == nullptr)
+	{
+		return;
+	}
+
+	APawn* SelfPlayerPawn = SelfPlayerController->GetPawn();
+	if (SelfPlayerPawn == nullptr)
+	{
+		return;
+	}
+	
+	const FVector TargetLocation = SelfPlayerPawn->GetActorLocation();
+
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		APlayerController* PlayerController = Iterator->Get();
-		if (PlayerController == nullptr || PlayerController->GetPawn() == nullptr)
+		if (PlayerController == nullptr)
+		{
+			continue;
+		}
+
+		APawn* PlayerPawn = PlayerController->GetPawn();
+		if (PlayerPawn == nullptr || PlayerPawn == SelfPlayerPawn)
+		{
+			continue;
+		}
+	
+		PlayerPawn->SetActorLocation(TargetLocation);
+	}
+}
+
+void AWildOmissionGameMode::GiveSelfGodMode()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerController* SelfPlayerController = World->GetFirstPlayerController();
+	if (SelfPlayerController == nullptr)
+	{
+		return;
+	}
+
+	AWildOmissionCharacter* SelfCharacter = Cast<AWildOmissionCharacter>(SelfPlayerController->GetPawn());
+	if (SelfCharacter == nullptr)
+	{
+		return;
+	}
+
+	SelfCharacter->SetGodMode(true);
+}
+
+void AWildOmissionGameMode::GiveAllPlayersGodMode()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
 		{
 			return;
 		}
 
-		FHitResult HitResult;
-		const FVector Start = FVector(0.0f, 0.0f, 5000.0f);
-		const FVector End = -(Start * 2.0f);
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+		AWildOmissionCharacter* PlayerCharacter = Cast<AWildOmissionCharacter>(PlayerController->GetPawn());
+		if (PlayerCharacter == nullptr)
 		{
-			PlayerController->GetPawn()->SetActorLocation(HitResult.ImpactPoint);
+			return;
 		}
+
+		PlayerCharacter->SetGodMode(true);
+	}
+}
+
+void AWildOmissionGameMode::RemoveSelfGodMode()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerController* SelfPlayerController = World->GetFirstPlayerController();
+	if (SelfPlayerController == nullptr)
+	{
+		return;
+	}
+
+	AWildOmissionCharacter* SelfCharacter = Cast<AWildOmissionCharacter>(SelfPlayerController->GetPawn());
+	if (SelfCharacter == nullptr)
+	{
+		return;
+	}
+
+	SelfCharacter->SetGodMode(false);
+}
+
+void AWildOmissionGameMode::RemoveAllPlayersGodMode()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
+		{
+			return;
+		}
+
+		AWildOmissionCharacter* PlayerCharacter = Cast<AWildOmissionCharacter>(PlayerController->GetPawn());
+		if (PlayerCharacter == nullptr)
+		{
+			return;
+		}
+
+		PlayerCharacter->SetGodMode(false);
 	}
 }
 
