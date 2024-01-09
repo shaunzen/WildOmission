@@ -33,6 +33,7 @@ UVitalsComponent::UVitalsComponent()
 	ThirstThreshold = MaxThirst * 0.25f;
 	HungerThreshold = MaxHunger * 0.25f;
 
+	HealthCanDeplete = true;
 	ThirstCanDeplete = true;
 	HungerCanDeplete = true;
 
