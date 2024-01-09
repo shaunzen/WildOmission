@@ -91,16 +91,14 @@ void UGameChatWidget::RefreshMessages()
 		MessageContainerPanel->AddChild(MessageWidget);
 	}
 
-	if (FMath::IsNearlyZero(MessageContainerPanel->GetScrollOffsetOfEnd()))
-	{
-		MessageContainerPanel->ScrollToStart();
-	}
+	MessageContainerPanel->ScrollToEnd();
 }
 
 void UGameChatWidget::Open()
 {
 	Opened = true;
 	MessagePanel->SetVisibility(ESlateVisibility::Visible);
+	MessageContainerPanel->SetVisibility(ESlateVisibility::Visible);
 	MessageBox->SetFocus();
 	
 	// Show all old messages
@@ -116,6 +114,11 @@ void UGameChatWidget::Close()
 {
 	Opened = false;
 	MessagePanel->SetVisibility(ESlateVisibility::Collapsed);
+
+	if (HideUnlessOpen)
+	{
+		MessageContainerPanel->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 bool UGameChatWidget::IsOpen() const

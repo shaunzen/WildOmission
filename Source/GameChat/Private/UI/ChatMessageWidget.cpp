@@ -27,7 +27,7 @@ void UChatMessageWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	double CurrentTime = World->GetRealTimeSeconds();
 	double SecondsSinceMessageRecieved = CurrentTime - TimeRecieved;
 
-	if (ParentChatWidget->IsOpen() || (!ParentChatWidget->GetHideUnlessOpen() && SecondsSinceMessageRecieved <= 5.0f))
+	if (ParentChatWidget->IsOpen() || SecondsSinceMessageRecieved <= 5.0f)
 	{
 		SetVisibility(ESlateVisibility::Visible);
 		return;
