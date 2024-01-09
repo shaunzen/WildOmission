@@ -170,7 +170,7 @@ bool AAISpawnManager::FindSpawnTransform(const FVector& Origin, FTransform& OutT
 	FRotator SpawnRotation = FRotator::ZeroRotator;
 	SpawnRotation.Yaw = FMath::RandRange(0.0f, 360.0f);
 
-	OutTransform.SetLocation(HitResult.ImpactPoint - FVector(0.0f, 0.0f, 100.0f));
+	OutTransform.SetLocation(HitResult.ImpactPoint + FVector(0.0f, 0.0f, 100.0f));
 	OutTransform.SetRotation(FQuat(SpawnRotation));
 
 	return true;
