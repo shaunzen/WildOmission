@@ -2,7 +2,6 @@
 
 
 #include "Tasks/BTTask_MonsterAttack.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Monsters/Monster.h"
 #include "AIController.h"
 
@@ -20,20 +19,14 @@ EBTNodeResult::Type UBTTask_MonsterAttack::ExecuteTask(UBehaviorTreeComponent& O
 	{
 		return EBTNodeResult::Type::Failed;
 	}
+
 	AMonster* OwnerMonster = Cast<AMonster>(OwnerController->GetPawn());
 	if (OwnerMonster == nullptr)
 	{
 		return EBTNodeResult::Type::Failed;
 	}
 
-	UObject* BlackboardObject = OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey());
-	AActor* BlackboardActor = Cast<AActor>(BlackboardObject);
-	if (BlackboardActor == nullptr)
-	{
-		return EBTNodeResult::Type::Failed;
-	}
-
-	OwnerMonster->Attack(BlackboardActor);
+	OwnerMonster->Attack();
 
 	return EBTNodeResult::Type::Succeeded;
 }

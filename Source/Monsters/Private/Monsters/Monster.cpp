@@ -31,8 +31,6 @@ AMonster::AMonster()
 	FireEffects->SetupAttachment(RootComponent);
 	FireEffects->SetAutoActivate(false);
 
-	TargetPawn = nullptr;
-	
 	MaxAttackRange = 300.0f;
 }
 
@@ -134,19 +132,12 @@ void AMonster::Destroyed()
 	}
 }
 
-APawn* AMonster::GetTargetPawn() const
+void AMonster::Attack()
 {
-	return TargetPawn;
-}
-
-void AMonster::Attack(AActor* Target)
-{
-	TargetPawn = Cast<APawn>(Target);
 	EquipComponent->PrimaryPressed();
 }
 
 void AMonster::StopAttack()
 {
 	EquipComponent->PrimaryReleased();
-	TargetPawn = nullptr;
 }

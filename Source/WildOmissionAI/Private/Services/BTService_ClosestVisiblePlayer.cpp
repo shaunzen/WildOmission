@@ -54,6 +54,7 @@ void UBTService_ClosestVisiblePlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 	// If no visible players found, return
 	if (VisiblePlayers.IsEmpty())
 	{
+		OwnerComp.GetBlackboardComponent()->ClearValue(GetSelectedBlackboardKey());
 		return;
 	}
 
@@ -83,5 +84,5 @@ void UBTService_ClosestVisiblePlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 		return;
 	}
 
-	OwnerComp.GetBlackboardComponent()->SetValueAsObject(GetSelectedBlackboardKey(), ClosestVisiblePlayer);
+	OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), ClosestVisiblePlayer->GetActorLocation());
 }
