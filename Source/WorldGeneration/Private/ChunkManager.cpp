@@ -184,7 +184,7 @@ FVector AChunkManager::GetWorldSpawnPoint()
 				Y * ChunkSize
 			);
 			const float Continentalness = AChunk::GetContinentalnessAtLocation(TestLocation, true);
-			if (Continentalness > 0.0f || Continentalness < -0.1f)
+			if (Continentalness > 0.0f || Continentalness < -0.05f)
 			{
 				// If not pick a new starting point and keep going
 				continue;

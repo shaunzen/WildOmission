@@ -596,7 +596,7 @@ FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
 	const float Tempature = (Noise.noise2D(Location.X * TempatureScale, Location.Y * TempatureScale) + 1.0f) * 0.5f;
 	const float Humidity = (Noise.noise2D(Location.X * HumidityScale, Location.Y * TempatureScale) + 1.0f) * 0.5f;
 
-	const float MinShore = -0.1f;
+	const float MinShore = -0.05f;
 	const float MaxShore = 0.0f;
 
 	const int32 TempatureIndex = FMath::RoundToInt32(Tempature / 0.25f);
