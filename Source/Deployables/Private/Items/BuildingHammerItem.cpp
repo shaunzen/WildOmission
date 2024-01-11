@@ -189,6 +189,7 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 		}
 	}
 
+	HitDeployable->Multi_PlayDestructionEffects();
 	HitDeployable->Destroy();
 	DecrementDurability();
 }

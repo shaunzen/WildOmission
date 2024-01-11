@@ -37,6 +37,12 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, const struct FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayPlacementEffects();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayDestructionEffects();
+
 	UStaticMesh* GetMesh() const;
 	FTransform GetMeshTransform() const;
 
@@ -107,12 +113,6 @@ protected:
 	bool bFollowsSurfaceNormal;
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Placement Settings")
 	bool bCanRotate;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayPlacementEffects();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayDestructionEffects();
 
 	void SpawnDustEffects();
 
