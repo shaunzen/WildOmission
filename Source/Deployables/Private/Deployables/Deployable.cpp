@@ -4,6 +4,8 @@
 #include "Deployables/Deployable.h"
 #include "Components/BuildAnchorComponent.h"
 #include "Actors/DeployablePreview.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "NiagaraSystem.h"
@@ -92,6 +94,23 @@ void ADeployable::OnLoadComplete_Implementation()
 
 void ADeployable::OnSpawn()
 {
+	int32 ChunkLocationX = this->GetActorLocation().X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale());
+	int32 ChunkLocationY = this->GetActorLocation().Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale());
+
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	FSpawnedChunk SpawnedChunk;
+	if (!ChunkManager->GetSpawnedChunk(FIntVector2(ChunkLocationX, ChunkLocationY), SpawnedChunk) || !IsValid(SpawnedChunk.Chunk))
+	{
+		return;
+	}
+
+	this->AttachToActor(SpawnedChunk.Chunk, FAttachmentTransformRules::KeepWorldTransform);
+
 	// Broadcast Overlap
 	TArray<UPrimitiveComponent*> OverlappingComponents;
 	GetOverlappingComponents(OverlappingComponents);
