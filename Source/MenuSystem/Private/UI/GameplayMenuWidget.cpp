@@ -67,6 +67,7 @@ void UGameplayMenuWidget::Show()
 		return;
 	}
 	
+	SetupSavingText(PlayerController->HasAuthority());
 	SetQuitButtonText(PlayerController->HasAuthority());
 	
 	OptionsMenu->Refresh();
@@ -185,17 +186,49 @@ void UGameplayMenuWidget::QuitToMenu()
 	MenuInterface->QuitToMenu();
 }
 
+void UGameplayMenuWidget::SetupSavingText(bool PlayerHasAuthority)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || SavingTextBlock == nullptr)
+	{
+		return;
+	}
+	
+	if (!PlayerHasAuthority)
+	{
+		HideSavingText();
+		return;
+	}
+
+	SavingTextBlock->SetText(FText::FromString(TEXT("Saving...")));
+
+	FTimerHandle HideSavingTextTimerHandle;
+	FTimerDelegate HideSavingTextTimerDelegate;
+	HideSavingTextTimerDelegate.BindUObject(this, &UGameplayMenuWidget::HideSavingText);
+	World->GetTimerManager().SetTimer(HideSavingTextTimerHandle, HideSavingTextTimerDelegate, 1.0f, false);
+}
+
+void UGameplayMenuWidget::HideSavingText()
+{
+	if (SavingTextBlock == nullptr)
+	{
+		return;
+	}
+
+	SavingTextBlock->SetText(FText::FromString(TEXT("")));
+}
+
 void UGameplayMenuWidget::SetQuitButtonText(bool PlayerHasAuthority)
 {
 	FString ButtonText;
 	
 	if (PlayerHasAuthority)
 	{
-		ButtonText = FString("Save and quit");
+		ButtonText = TEXT("Save and quit");
 	}
 	else
 	{
-		ButtonText = FString("Leave server");
+		ButtonText = TEXT("Leave server");
 	}
 
 	QuitButtonText->SetText(FText::FromString(ButtonText));

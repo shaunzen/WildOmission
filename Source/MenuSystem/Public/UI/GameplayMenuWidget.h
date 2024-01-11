@@ -7,12 +7,6 @@
 #include "Interfaces/MenuInterface.h"
 #include "GameplayMenuWidget.generated.h"
 
-class UTextBlock;
-class UButton;
-class UWidgetSwitcher;
-class UOptionsWidget;
-class UConnectedPlayersWidget;
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameplayMenuClosedSignature);
 
 UCLASS()
@@ -52,37 +46,40 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UButton* ResumeButton;
+	class UButton* ResumeButton;
 
 	UPROPERTY(Meta = (BindWidget))
-	UButton* OptionsButton;
+	class UButton* OptionsButton;
 
 	UPROPERTY(Meta = (BindWidget))
-	UButton* ConnectedPlayersButton;
+	class UButton* ConnectedPlayersButton;
 
 	UPROPERTY(Meta = (BindWidget))
-	UButton* HowToPlayButton;
+	class UButton* HowToPlayButton;
 
 	UPROPERTY(Meta = (BindWidget))
-	UButton* FeedbackButton;
+	class UButton* FeedbackButton;
 
 	UPROPERTY(Meta = (BindWidget))
-	UButton* QuitButton;
+	class UButton* QuitButton;
 
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* QuitButtonText;
+	class UTextBlock* QuitButtonText;
 	
 	UPROPERTY(Meta = (BindWidget))
-	UWidgetSwitcher* MenuSwitcher;
+	class UTextBlock* SavingTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UWidgetSwitcher* MenuSwitcher;
 
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* GameMenu;
 
 	UPROPERTY(Meta = (BindWidget))
-	UOptionsWidget* OptionsMenu;
+	class UOptionsWidget* OptionsMenu;
 
 	UPROPERTY(Meta = (BindWidget))
-	UConnectedPlayersWidget* ConnectedPlayersMenu;
+	class UConnectedPlayersWidget* ConnectedPlayersMenu;
 
 	IMenuInterface* MenuInterface;
 
@@ -99,6 +96,12 @@ private:
 
 	UFUNCTION()
 	void QuitToMenu();
+
+	UFUNCTION()
+	void SetupSavingText(bool PlayerHasAuthority);
+
+	UFUNCTION()
+	void HideSavingText();
 
 	void SetQuitButtonText(bool PlayerHasAuthority);
 
