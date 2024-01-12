@@ -3,18 +3,6 @@
 
 #include "WildOmissionSaveGame.h"
 
-FActorComponentSaveData::FActorComponentSaveData()
-{
-	Name = NAME_None;
-	Class = nullptr;
-}
-
-FActorSaveData::FActorSaveData()
-{
-	Identifier = NAME_None;
-	Transform = FTransform::Identity;
-}
-
 FWildOmissionSaveCreationInformation::FWildOmissionSaveCreationInformation()
 {
 	Name = TEXT("");
@@ -30,7 +18,8 @@ UWildOmissionSaveGame::UWildOmissionSaveGame()
 	NormalizedProgressThroughDay = 0.0f;
 	LastPlayedTime = FDateTime::Now();
 	Difficulty = EGameDifficulty::EGD_Normal;
-	LevelFile = TEXT("LV_Sandbox");
+	LevelFile = TEXT("LV_Procedural");
+	Seed = 0;
 	Version = 0;
 	CheatsEnabled = false;
 }

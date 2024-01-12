@@ -75,6 +75,18 @@ public:
 	bool GetShowCrosshair() const;
 
 	UFUNCTION()
+	void SetHideChatUnlessOpen(bool Hide);
+
+	UFUNCTION()
+	bool GetHideChatUnlessOpen() const;
+
+	UFUNCTION()
+	void SetHideHUD(bool Hide);
+
+	UFUNCTION()
+	bool GetHideHUD() const;
+
+	UFUNCTION()
 	void SetCameraShakeEnabled(bool Enabled);
 
 	UFUNCTION()
@@ -253,6 +265,10 @@ private:
 	bool ShowBranding;
 	UPROPERTY(Config)
 	bool ShowCrosshair;
+	UPROPERTY(Config)
+	bool HideChatUnlessOpen;
+	UPROPERTY(Config)
+	bool HideHUD;
 	UPROPERTY(Config)
 	bool CameraShakeEnabled;
 	UPROPERTY(Config)

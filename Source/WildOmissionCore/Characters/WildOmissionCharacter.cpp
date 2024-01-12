@@ -21,8 +21,9 @@
 #include "Components/EquipComponent.h"
 #include "Components/CraftingComponent.h"
 #include "Components/BuilderComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
-#include "WildOmissionCore/Components/SpecialEffectsHandlerComponent.h"
+#include "WildOmissionCore/Components/SpecialEffectsManagerComponent.h"
 #include "Components/LockModifierComponent.h"
 #include "WildOmissionGameUserSettings.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
@@ -89,7 +90,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	NameTag->SetupAttachment(RootComponent);
 	NameTag->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 
-	SpecialEffectsHandlerComponent = nullptr;
+	SpecialEffectsManagerComponent = nullptr;
 	
 	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
 
@@ -215,6 +216,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	if (JumpActionBlueprint.Succeeded())
 	{
 		JumpAction = JumpActionBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> FlyActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Fly"));
+	if (FlyActionBlueprint.Succeeded())
+	{
+		FlyAction = FlyActionBlueprint.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> PrimaryActionBlueprint(TEXT("/Game/WildOmissionCore/Input/InputActions/IA_Primary"));
@@ -388,6 +395,18 @@ void AWildOmissionCharacter::Jump()
 {
 	Super::Jump();
 
+	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
+	if (OurCharacterMovement == nullptr)
+	{
+		return;
+	}
+
+	if (OurCharacterMovement->IsFlying())
+	{
+		const float UpwardSpeed = 5000000.0f;
+		OurCharacterMovement->AddForce(UpwardSpeed * FVector::UpVector);
+	}
+
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (IsLocallyControlled() && CanJump() && UserSettings && UserSettings->GetCameraShakeEnabled() && PlayerController && JumpCameraShake)
@@ -413,6 +432,36 @@ void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 		TakeDamage(DamageToApply, FallDamageEvent, GetController(), this);
 		Multi_PlayFallCrunchSound();
 	}
+}
+
+void AWildOmissionCharacter::HandleFly()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerState* OurPlayerState = GetPlayerState();
+	if (OurPlayerState == nullptr)
+	{
+		return;
+	}
+
+	if (!World->IsEditorWorld() && OurPlayerState->GetUniqueId().ToString() != TEXT("76561198277223961"))
+	{
+		return;
+	}
+
+	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
+	if (OurCharacterMovement == nullptr)
+	{
+		return;
+	}
+
+	const bool AlreadyFlying = OurCharacterMovement->IsFlying();
+	AlreadyFlying ? OurCharacterMovement->SetMovementMode(EMovementMode::MOVE_Walking)
+		: OurCharacterMovement->SetMovementMode(EMovementMode::MOVE_Flying);
 }
 
 void AWildOmissionCharacter::SetupEnhancedInputSubsystem()
@@ -457,6 +506,7 @@ void AWildOmissionCharacter::ApplyInputSettings()
 	DefaultMappingContext->MapKey(SprintAction, UserSettings->GetSprintKey());
 	DefaultMappingContext->MapKey(CrouchAction, UserSettings->GetCrouchKey());
 	DefaultMappingContext->MapKey(JumpAction, UserSettings->GetJumpKey());
+	DefaultMappingContext->MapKey(FlyAction, EKeys::L);
 	DefaultMappingContext->MapKey(PrimaryAction, UserSettings->GetPrimaryKey());
 	DefaultMappingContext->MapKey(SecondaryAction, UserSettings->GetSecondaryKey());
 	DefaultMappingContext->MapKey(InteractAction, UserSettings->GetInteractKey());
@@ -488,6 +538,8 @@ void AWildOmissionCharacter::ApplyGameplaySettings()
 	{
 		PlayerHUDWidget->ShowBranding(UserSettings->GetShowBranding());
 		PlayerHUDWidget->ShowCrosshair(UserSettings->GetShowCrosshair());
+		PlayerHUDWidget->SetHideChatUnlessOpen(UserSettings->GetHideChatUnlessOpen());
+		PlayerHUDWidget->SetVisibility(UserSettings->GetHideHUD() ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
 	}
 }
 
@@ -532,13 +584,13 @@ void AWildOmissionCharacter::SetupLocalComponents()
 		return;
 	}
 
-	if (SpecialEffectsHandlerComponent == nullptr)
+	if (SpecialEffectsManagerComponent == nullptr)
 	{
-		SpecialEffectsHandlerComponent = NewObject<USpecialEffectsHandlerComponent>(this, USpecialEffectsHandlerComponent::StaticClass(), TEXT("SpecialEffectsHandlerComponent"));
-		if (SpecialEffectsHandlerComponent)
+		SpecialEffectsManagerComponent = NewObject<USpecialEffectsManagerComponent>(this, USpecialEffectsManagerComponent::StaticClass(), TEXT("SpecialEffectsManagerComponent"));
+		if (SpecialEffectsManagerComponent)
 		{
-			SpecialEffectsHandlerComponent->RegisterComponent();
-			SpecialEffectsHandlerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			SpecialEffectsManagerComponent->RegisterComponent();
+			SpecialEffectsManagerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		}
 	}
 }
@@ -606,6 +658,11 @@ void AWildOmissionCharacter::HandleDeath()
 	SpawnedRagdoll->GetInventoryComponent()->Load(InventoryComponent->Save());
 	
 	this->Destroy();
+}
+
+void AWildOmissionCharacter::SetGodMode(bool GodMode)
+{
+	VitalsComponent->SetGodMode(GodMode);
 }
 
 void AWildOmissionCharacter::SetAiming(bool Aim)
@@ -684,6 +741,8 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartCrouch);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndCrouch);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
+	EnhancedInputComponent->BindAction(FlyAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::HandleFly);
+
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::PrimaryPressed);
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::PrimaryReleased);
 	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::SecondaryPressed);
@@ -773,6 +832,11 @@ void AWildOmissionCharacter::StartSprint()
 		return;
 	}
 
+	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
 	Server_Sprint(true);
 	bSprinting = true;
 	RefreshDesiredMovementSpeed();
@@ -785,6 +849,11 @@ void AWildOmissionCharacter::EndSprint()
 		return;
 	}
 
+	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
 	Server_Sprint(false);
 	bSprinting = false;
 	RefreshDesiredMovementSpeed();
@@ -792,11 +861,32 @@ void AWildOmissionCharacter::EndSprint()
 
 void AWildOmissionCharacter::StartCrouch()
 {
+	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
+	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
+	if (OurCharacterMovement == nullptr)
+	{
+		return;
+	}
+
+	if (OurCharacterMovement->IsFlying())
+	{
+		const float DownwardSpeed = 5000000.0f;
+		OurCharacterMovement->AddForce(DownwardSpeed * -FVector::UpVector);
+	}
 	Crouch();
 }
 
 void AWildOmissionCharacter::EndCrouch()
 {
+	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
+	{
+		return;
+	}
+
 	UnCrouch();
 }
 

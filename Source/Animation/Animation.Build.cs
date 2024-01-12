@@ -7,6 +7,6 @@ public class Animation : ModuleRules
     public Animation(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "SurfaceProperties", "WorldGeneration" });
     }
 }

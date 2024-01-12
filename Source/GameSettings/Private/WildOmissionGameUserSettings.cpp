@@ -8,6 +8,8 @@ static const float DEFAULT_VOLUME = 1.0f;
 
 static const bool DEFAULT_SHOWBRANDING = true;
 static const bool DEFAULT_SHOWCROSSHAIR = true;
+static const bool DEFAULT_HIDECHATUNLESSOPEN = false;
+static const bool DEFAULT_HIDEHUD = false;
 static const bool DEFAULT_CAMERASHAKEENABLED = true;
 static const float DEFAULT_FIELDOFVIEW = 90.0f;
 
@@ -51,6 +53,8 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
 
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
+    SetHideChatUnlessOpen(DEFAULT_HIDECHATUNLESSOPEN);
+    SetHideHUD(DEFAULT_HIDEHUD);
     SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
     SetFieldOfView(DEFAULT_FIELDOFVIEW);
     
@@ -99,6 +103,8 @@ void UWildOmissionGameUserSettings::SetToDefaults()
 
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
+    SetHideChatUnlessOpen(DEFAULT_HIDECHATUNLESSOPEN);
+    SetHideHUD(DEFAULT_HIDEHUD);
     SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
     SetFieldOfView(DEFAULT_FIELDOFVIEW);
 
@@ -229,6 +235,26 @@ void UWildOmissionGameUserSettings::SetShowCrosshair(bool Show)
 bool UWildOmissionGameUserSettings::GetShowCrosshair() const
 {
     return ShowCrosshair;
+}
+
+void UWildOmissionGameUserSettings::SetHideChatUnlessOpen(bool Hide)
+{
+    HideChatUnlessOpen = Hide;
+}
+
+bool UWildOmissionGameUserSettings::GetHideChatUnlessOpen() const
+{
+    return HideChatUnlessOpen;
+}
+
+void UWildOmissionGameUserSettings::SetHideHUD(bool Hide)
+{
+    HideHUD = Hide;
+}
+
+bool UWildOmissionGameUserSettings::GetHideHUD() const
+{
+    return HideHUD;
 }
 
 void UWildOmissionGameUserSettings::SetCameraShakeEnabled(bool Enabled)

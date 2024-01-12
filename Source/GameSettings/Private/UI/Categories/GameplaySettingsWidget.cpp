@@ -7,6 +7,16 @@
 #include "WildOmissionGameUserSettings.h"
 #include "Interfaces/CharacterSettingsInterface.h"
 
+UGameplaySettingsWidget::UGameplaySettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
+{
+	ShowBrandingCheckOptionBox = nullptr;
+	ShowCrosshairCheckOptionBox = nullptr;
+	HideChatUnlessOpenCheckOptionBox = nullptr;
+	HideHUDCheckOptionBox = nullptr;
+	CameraShakeEnabledCheckOptionBox = nullptr;
+	FieldOfViewSliderOptionBox = nullptr;
+}
+
 void UGameplaySettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -26,7 +36,9 @@ void UGameplaySettingsWidget::OnApply()
 	}
 
 	UserSettings->SetShowBranding(ShowBrandingCheckOptionBox->IsChecked());
-	UserSettings->SetShowCrosshair(ShowBrandingCheckOptionBox->IsChecked());
+	UserSettings->SetShowCrosshair(ShowCrosshairCheckOptionBox->IsChecked());
+	UserSettings->SetHideChatUnlessOpen(HideChatUnlessOpenCheckOptionBox->IsChecked());
+	UserSettings->SetHideHUD(HideHUDCheckOptionBox->IsChecked());
 	UserSettings->SetCameraShakeEnabled(CameraShakeEnabledCheckOptionBox->IsChecked());
 	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
 
@@ -51,6 +63,8 @@ void UGameplaySettingsWidget::OnRefresh()
 
 	ShowBrandingCheckOptionBox->SetChecked(UserSettings->GetShowBranding());
 	ShowCrosshairCheckOptionBox->SetChecked(UserSettings->GetShowCrosshair());
+	HideChatUnlessOpenCheckOptionBox->SetChecked(UserSettings->GetHideChatUnlessOpen());
+	HideHUDCheckOptionBox->SetChecked(UserSettings->GetHideHUD());
 	CameraShakeEnabledCheckOptionBox->SetChecked(UserSettings->GetCameraShakeEnabled());
 	FieldOfViewSliderOptionBox->SetValue(FieldOfView);
 }

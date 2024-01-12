@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Structs/PlayerSave.h"
+#include "Structs/PlayerSaveData.h"
 #include "SavablePlayer.generated.h"
 
 // This class does not need to be modified.
@@ -23,8 +23,8 @@ class SAVESYSTEM_API ISavablePlayer
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual FPlayerSave SavePlayer() = 0;
-	virtual void LoadPlayerSave(const FPlayerSave& Save) = 0;
+	virtual FPlayerSaveData SavePlayer() = 0;
+	virtual void LoadPlayerSave(const FPlayerSaveData& SaveData) = 0;
 	
 	virtual bool IsStillLoading() const = 0;
 

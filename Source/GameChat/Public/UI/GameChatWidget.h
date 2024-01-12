@@ -32,6 +32,9 @@ public:
 
 	bool IsOpen() const;
 
+	void SetHideUnlessOpen(bool InHideUnlessOpen);
+	bool GetHideUnlessOpen() const;
+
 private:
 	UPROPERTY(Meta = (BindWidget))
 	UScrollBox* MessageContainerPanel;
@@ -45,6 +48,7 @@ private:
 	TSubclassOf<UChatMessageWidget> ChatMessageClass;
 
 	bool Opened;
+	bool HideUnlessOpen;
 
 	UFUNCTION()
 	void RefreshMessages();

@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "NiagaraFunctionLibrary.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "SurfaceHelpers.h"
 #include "Engine/DamageEvents.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
@@ -164,57 +166,120 @@ void ASwingableItem::DecrementDurability()
 
 void ASwingableItem::PlayImpactSound(const FHitResult& HitResult)
 {
-	if (HitResult.PhysMaterial == nullptr)
+	// Declare decal material
+	USoundBase* ImpactSound = nullptr;
+
+	// Check if we hit the gound
+	if (AChunk* HitChunk = Cast<AChunk>(HitResult.GetActor()))
 	{
-		UE_LOG(LogEquipableItems, Warning, TEXT("Failed to get physical material."));
-		return;
+		// Use the surface type of the ground
+		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+		if (ChunkManager == nullptr)
+		{
+			return;
+		}
+
+		ImpactSound = USurfaceHelpers::GetImpactSound(ChunkManager->GetSurfaceTypeAtLocation(HitResult.ImpactPoint));
+	}
+	else // Use the physical material
+	{
+		// Check if the physical material is valid
+		if (HitResult.PhysMaterial == nullptr)
+		{
+			return;
+		}
+
+		ImpactSound = USurfaceHelpers::GetImpactSound(HitResult.PhysMaterial->SurfaceType);
+
 	}
 
-	USoundBase* ImpactSound = USurfaceHelpers::GetImpactSound(HitResult.PhysMaterial.Get()->SurfaceType);
+	// Check if the sound is valid
 	if (ImpactSound == nullptr)
 	{
-		UE_LOG(LogEquipableItems, Warning, TEXT("Failed to get impact sound."));
 		return;
 	}
 
+	// Play sound
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
 }
 
 void ASwingableItem::SpawnImpactParticles(const FHitResult& HitResult, const FVector& ImpactorForwardVector)
 {
-	if (HitResult.PhysMaterial == nullptr)
+	// Declare particles
+	UNiagaraSystem* ImpactParticles = nullptr;
+
+	// Check if we hit the gound
+	if (AChunk* HitChunk = Cast<AChunk>(HitResult.GetActor()))
 	{
-		UE_LOG(LogEquipableItems, Warning, TEXT("Failed to get physical material."));
-		return;
+		// Use the surface type of the ground
+		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+		if (ChunkManager == nullptr)
+		{
+			return;
+		}
+
+		ImpactParticles = USurfaceHelpers::GetImpactParticles(ChunkManager->GetSurfaceTypeAtLocation(HitResult.ImpactPoint));
+	}
+	else // Use the physical material
+	{
+		// Check if the physical material is valid
+		if (HitResult.PhysMaterial == nullptr)
+		{
+			return;
+		}
+
+		ImpactParticles = USurfaceHelpers::GetImpactParticles(HitResult.PhysMaterial->SurfaceType);
+
 	}
 
-	UNiagaraSystem* ImpactParticles = USurfaceHelpers::GetImpactParticles(HitResult.PhysMaterial->SurfaceType);
+	// Check if the particles are valid
 	if (ImpactParticles == nullptr)
 	{
-		UE_LOG(LogEquipableItems, Warning, TEXT("Failed to spawn impact effects, Impact Effects nullptr."));
 		return;
 	}
 
+	// Spawn particles
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactParticles, HitResult.ImpactPoint, (-ImpactorForwardVector).Rotation());
 }
 
 void ASwingableItem::SpawnImpactDecal(const FHitResult& HitResult)
 {
-	if (HitResult.PhysMaterial == nullptr)
-	{
-		UE_LOG(LogEquipableItems, Warning, TEXT("Cannot spawn impact decal, Failed to get physical material."));
-		return;
-	}
+	// Declare decal material
+	UMaterialInterface* DecalMaterial = nullptr;
 
-	UMaterialInterface* DecalMaterial = USurfaceHelpers::GetImpactDecal(HitResult.PhysMaterial->SurfaceType);
+	// Check if we hit the gound
+	if (AChunk* HitChunk = Cast<AChunk>(HitResult.GetActor()))
+	{
+		// Use the surface type of the ground
+		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+		if (ChunkManager == nullptr)
+		{
+			return;
+		}
+
+		DecalMaterial = USurfaceHelpers::GetImpactDecal(ChunkManager->GetSurfaceTypeAtLocation(HitResult.ImpactPoint));
+	}
+	else // Use the physical material
+	{
+		// Check if the physical material is valid
+		if (HitResult.PhysMaterial == nullptr)
+		{
+			return;
+		}
+
+		DecalMaterial = USurfaceHelpers::GetImpactDecal(HitResult.PhysMaterial->SurfaceType);
+
+	}
+	
+	// Check if the material is valid
 	if (DecalMaterial == nullptr)
 	{
 		return;
 	}
 
-	FVector DecalSize = FVector(8.0f, 15.0f, 15.0f);
+	// Spawn decal
+	const FVector DecalSize = FVector(8.0f, 15.0f, 15.0f);
 	UGameplayStatics::SpawnDecalAttached(DecalMaterial, DecalSize, HitResult.GetComponent(), NAME_None, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 120.0f);
-
 }
 
 void ASwingableItem::PlayCameraShake()

@@ -4,6 +4,7 @@
 #include "Actors/HarvestableResource.h"
 #include "Components/InventoryComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ChunkManager.h"
 #include "NavModifierComponent.h"
 #include "Log.h"
 
@@ -13,7 +14,7 @@ AHarvestableResource::AHarvestableResource()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
-	bAlwaysRelevant = true;
+	bAlwaysRelevant = false;
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = ENetDormancy::DORM_DormantAll;
 
@@ -31,6 +32,17 @@ AHarvestableResource::AHarvestableResource()
 	RequiredToolType = EToolType::WOOD;
 
 	Durability = 10;
+}
+
+bool AHarvestableResource::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
+{
+	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
+
+	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
+	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
+	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
+
+	return Distance < AChunkManager::GetRenderDistanceCentimeters();
 }
 
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool)
@@ -106,4 +118,22 @@ void AHarvestableResource::SetDurability(const int32& InDurability)
 FName AHarvestableResource::GetIdentifier() const
 {
 	return Identifier;
+}
+
+void AHarvestableResource::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Get Chunk Manager
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	// Get Surface Type at location
+	const uint8 SurfaceType = ChunkManager->GetSurfaceTypeAtLocation(this->GetActorLocation());
+
+	// Set property acordingly
+	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, static_cast<float>(SurfaceType == 6));
 }

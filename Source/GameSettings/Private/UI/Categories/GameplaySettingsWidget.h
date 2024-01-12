@@ -15,6 +15,8 @@ class UGameplaySettingsWidget : public USettingsCategoryWidget
 	GENERATED_BODY()
 
 public:
+	UGameplaySettingsWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 	virtual void OnApply() override;
 	virtual void OnRefresh() override;
@@ -24,6 +26,10 @@ private:
 	UCheckOptionBox* ShowBrandingCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	UCheckOptionBox* ShowCrosshairCheckOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UCheckOptionBox* HideChatUnlessOpenCheckOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	UCheckOptionBox* HideHUDCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	UCheckOptionBox* CameraShakeEnabledCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))

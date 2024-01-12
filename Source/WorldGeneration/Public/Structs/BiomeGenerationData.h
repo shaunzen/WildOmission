@@ -8,19 +8,49 @@
 #include "BiomeGenerationData.generated.h"
 
 USTRUCT(BlueprintType)
-struct FSpawnData
+struct FSpawnableNoiseParameters
+{
+	GENERATED_BODY()
+
+	// Lower Number = bigger clusters of spawning, with more gaps
+	// Setting number too high may prevent spawn unless tolerance is increased
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float NoiseScale = 0.5f;
+
+	// The +- tolerance that the noise will use to determine if spawn should be attemped
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float Tolerance = 0.1f;
+
+};
+
+USTRUCT(BlueprintType)
+struct FSpawnableData
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AActor> BlueprintClass;
 
+	// 1 = 100% chance of spawning, 0.5 = 50% chance of spawning, 0 = 0% chance of spawning
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float DensityPerMeter = 0.00001f;
+	float SpawnChance = 0.75f;
 
+	// This is deprecated as of now
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool FollowSurfaceNormal = false;
 
+};
+
+USTRUCT(BlueprintType)
+struct FSpawnData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FSpawnableNoiseParameters NoiseParameters;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<FSpawnableData> Spawnables;
 };
 
 USTRUCT(BlueprintType)
@@ -29,15 +59,15 @@ struct WORLDGENERATION_API FBiomeGenerationData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray<FSpawnData> Trees;
+	FSpawnData Trees;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray<FSpawnData> Nodes;
+	FSpawnData Nodes;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray<FSpawnData> Collectables;
+	FSpawnData Collectables;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray<FSpawnData> Lootables;
+	FSpawnData Lootables;
 
 };

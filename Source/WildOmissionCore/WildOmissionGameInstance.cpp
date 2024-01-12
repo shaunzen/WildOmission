@@ -26,7 +26,8 @@ const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
-const static FString GameVersion = TEXT("Alpha 1.0.4");
+
+const static FString GameVersion = TEXT("Alpha 1.1.0");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -289,7 +290,7 @@ void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
 
 	NewSaveGame->LastPlayedTime = Time;
 
-	NewSaveGame->LevelFile = TEXT("LV_Island");
+	NewSaveGame->LevelFile = TEXT("LV_Procedural");
 	NewSaveGame->Version = CURRENT_SAVE_FILE_VERSION;
 
 	NewSaveGame->CreationInformation.Name = WorldName;

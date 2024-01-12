@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Components/BuildAnchorComponent.h"
 #include "Interfaces/SavableObject.h"
-#include "Interfaces/RequiredForLoad.h"
 #include "Interfaces/DurabilityInterface.h"
 #include "Enums/ToolType.h"
 #include "Interfaces/DamagedByWind.h"
@@ -15,7 +14,7 @@
 class UNavModifierComponent;
 
 UCLASS()
-class DEPLOYABLES_API ADeployable : public AActor, public IDurabilityInterface, public ISavableObject, public IRequiredForLoad, public IDamagedByWind
+class DEPLOYABLES_API ADeployable : public AActor, public IDurabilityInterface, public ISavableObject, public IDamagedByWind
 {
 	GENERATED_BODY()
 	
@@ -24,6 +23,8 @@ public:
 	ADeployable();
 	
 	virtual void OnSpawn();
+
+	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Serialize(FArchive& Ar) override;
@@ -35,6 +36,12 @@ public:
 	// End IDamagedByWind Implementation
 
 	virtual float TakeDamage(float DamageAmount, const struct FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayPlacementEffects();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayDestructionEffects();
 
 	UStaticMesh* GetMesh() const;
 	FTransform GetMeshTransform() const;
@@ -106,11 +113,6 @@ protected:
 	bool bFollowsSurfaceNormal;
 	UPROPERTY(EditDefaultsOnly, Category = "Deployable Placement Settings")
 	bool bCanRotate;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_PlayPlacementEffects();
-
-	void PlayDestructionEffects();
 
 	void SpawnDustEffects();
 

@@ -4,16 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/SavableObject.h"
 #include "Tornado.h"
 #include "Storm.generated.h"
 
-class AWeatherHandler;
+class AWeatherManager;
 class ALightning;
 class UNiagaraComponent;
 
 UCLASS()
-class WEATHER_API AStorm : public AActor, public ISavableObject
+class WEATHER_API AStorm : public AActor
 {
 	GENERATED_BODY()
 	
@@ -26,24 +25,26 @@ public:
 	virtual void Serialize(FArchive& Ar) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	void OnLoadComplete();
+
 	void HandleSpawn(bool SpawnedFromCommand = false);
 	void HandleDestruction();
 
 	float GetSeverity() const;
 	void SetSeverity(float NewSeverity);
 
+	FVector GetStormTargetLocation() const;
 	float GetTravelDistance() const;
-	float GetTraveledDistance() const;
+	float GetDistanceTraveled() const;
+
+	void SetMovementVector(const FVector& InMovementVector);
+
 	FVector GetMovementVector() const;
 	ATornado* GetSpawnedTornado() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsRaining(float& OutDensity) const;
 	void SetLocalPlayerUnderneath(bool IsUnder);
-
-	// Begin ISavableObject Implementation
-	virtual FName GetIdentifier() const override;
-	// End ISavableObject Implementation
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -62,9 +63,6 @@ private:
 	float RainSeverityThreshold;
 	UPROPERTY(EditDefaultsOnly)
 	float TornadoSeverityThreshold;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Save System")
-	FName Identifier;
 
 	UPROPERTY(SaveGame)
 	FVector SpawnLocation;
@@ -77,13 +75,10 @@ private:
 	UPROPERTY(Replicated, SaveGame)
 	float Severity;
 	UPROPERTY(SaveGame)
-	FTornadoSaveInformation TornadoSave;
+	FTornadoData TornadoData;
 	UPROPERTY(SaveGame)
 	bool HasSpawnedTornado;
 
-	FVector TargetLocation;
-	float TravelDistance;
-	float TraveledDistance;
 	UPROPERTY(Replicated)
 	ATornado* SpawnedTornado;
 
@@ -92,10 +87,7 @@ private:
 	bool LocalPlayerUnder;
 	float NextLightningStrikeTime;
 
-	void GetSpawnLocation();
-	void CalculateTargetLocation();
-	void CalculateTravelDistance();
-	void CalculateTraveledDistance();
+	void GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector) const;
 
 	// Client-Side Logic
 	void HandleCloudAppearance();
@@ -106,8 +98,5 @@ private:
 	void HandleLightning();
 	void SpawnLightning();
 	void SpawnTornado(bool bFromSave = false);
-
-	UFUNCTION()
-	virtual void OnLoadComplete_Implementation() override;
 
 };

@@ -7,7 +7,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "NiagaraComponent.h"
-#include "TimeOfDayHandler.h"
+#include "TimeOfDayManager.h"
 #include "Components/InventoryComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/PhysicsVolume.h"
@@ -31,8 +31,6 @@ AMonster::AMonster()
 	FireEffects->SetupAttachment(RootComponent);
 	FireEffects->SetAutoActivate(false);
 
-	TargetPawn = nullptr;
-	
 	MaxAttackRange = 300.0f;
 }
 
@@ -94,8 +92,8 @@ void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
-	if (TimeOfDayHandler && TimeOfDayHandler->IsDay() && FireEffects->IsActive() == false)
+	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
+	if (TimeOfDayManager && TimeOfDayManager->IsDay() && FireEffects->IsActive() == false)
 	{
 		SetFire();
 	}
@@ -134,19 +132,12 @@ void AMonster::Destroyed()
 	}
 }
 
-APawn* AMonster::GetTargetPawn() const
+void AMonster::Attack()
 {
-	return TargetPawn;
-}
-
-void AMonster::Attack(AActor* Target)
-{
-	TargetPawn = Cast<APawn>(Target);
 	EquipComponent->PrimaryPressed();
 }
 
 void AMonster::StopAttack()
 {
 	EquipComponent->PrimaryReleased();
-	TargetPawn = nullptr;
 }

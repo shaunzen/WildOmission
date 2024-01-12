@@ -2,16 +2,18 @@
 
 
 #include "WildOmissionPlayerController.h"
+#include "GameFramework/SpectatorPawn.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
-#include "Interfaces/RequiredForLoad.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "Components/VitalsComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "WildOmissionCore/GameModes/WildOmissionGameMode.h"
-#include "SaveHandler.h"
-#include "GameChatHandler.h"
-#include "Components/PlayerSaveHandlerComponent.h"
+#include "SaveManager.h"
+#include "GameChatManager.h"
+#include "Components/PlayerSaveManagerComponent.h"
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
 #include "UI/GameplayMenuWidget.h"
@@ -25,7 +27,7 @@
 AWildOmissionPlayerController::AWildOmissionPlayerController()
 {
 	bIsStillLoading = true;
-	NumRequiredActorsForLoad = 0;
+	SpawnChunk = FIntVector2();
 
 	BedUniqueID = -1;
 
@@ -49,55 +51,56 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SpawnChunk, COND_OwnerOnly);
 }
 
-FPlayerSave AWildOmissionPlayerController::SavePlayer()
+FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 {
-	FPlayerSave PlayerSave;
+	FPlayerSaveData PlayerSaveData;
 
 	if (HasAuthority() == false)
 	{
-		return PlayerSave;
+		return PlayerSaveData;
 	}
 
 	APlayerState* CurrentPlayerState = PlayerState.Get();
 	if (CurrentPlayerState == nullptr)
 	{
-		return PlayerSave;
+		return PlayerSaveData;
 	}
 
-	PlayerSave.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
-	PlayerSave.BedUniqueID = BedUniqueID;
-	PlayerSave.NewPlayer = false;
+	PlayerSaveData.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
+	PlayerSaveData.BedUniqueID = BedUniqueID;
+	PlayerSaveData.NewPlayer = false;
 	
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
 	if (WildOmissionCharacter == nullptr)
 	{
-		PlayerSave.IsAlive = false;
-		return PlayerSave;
+		PlayerSaveData.IsAlive = false;
+		return PlayerSaveData;
 	}
 
-	PlayerSave.WorldLocation = WildOmissionCharacter->GetActorLocation();
+	PlayerSaveData.WorldLocation = WildOmissionCharacter->GetActorLocation();
 	
-	PlayerSave.IsAlive = true;
-	PlayerSave.IsHost = IsHost();
+	PlayerSaveData.IsAlive = true;
+	PlayerSaveData.IsHost = IsHost();
 
-	PlayerSave.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
-	PlayerSave.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
-	PlayerSave.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
+	PlayerSaveData.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
+	PlayerSaveData.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
+	PlayerSaveData.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
 
-	PlayerSave.Inventory.ByteData = WildOmissionCharacter->GetInventoryComponent()->Save();
+	PlayerSaveData.Inventory.ByteData = WildOmissionCharacter->GetInventoryComponent()->Save();
 	
-	PlayerSave.SelectedItemByteData = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItemAsByteData();
+	PlayerSaveData.SelectedItemByteData = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItemAsByteData();
 
-	return PlayerSave;
+	return PlayerSaveData;
 }
 
-void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSave& PlayerSave)
+void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSaveData& SaveData)
 {
-	BedUniqueID = PlayerSave.BedUniqueID;
+	BedUniqueID = SaveData.BedUniqueID;
 
-	StoredPlayerSave = PlayerSave;
+	StoredPlayerSaveData = SaveData;
 }
 
 bool AWildOmissionPlayerController::IsStillLoading() const
@@ -164,12 +167,6 @@ bool AWildOmissionPlayerController::IsEditorPlayer() const
 #endif
 }
 
-void AWildOmissionPlayerController::Client_SetNumRequiredActors_Implementation(const int32& InNum)
-{
-	UE_LOG(LogPlayerController, Verbose, TEXT("NumRequiredActorsSet: %i"), InNum);
-	NumRequiredActorsForLoad = InNum;
-}
-
 void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
 {
 	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
@@ -178,7 +175,7 @@ void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
 		return;
 	}
 
-	GameMode->GetSaveHandler()->GetPlayerHandler()->AddToPending(this);
+	GameMode->GetSaveManager()->GetPlayerManager()->AddToPending(this);
 }
 
 void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
@@ -235,9 +232,25 @@ void AWildOmissionPlayerController::BeginPlay()
 
 	if (HasAuthority())
 	{
-		FTimerDelegate UpdateClientRequiredActorCountTimerDelegate;
-		UpdateClientRequiredActorCountTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::CountRequiredActorsAndSendToClient);
-		GetWorld()->GetTimerManager().SetTimer(UpdateClientRequiredActorCountTimerHandle, UpdateClientRequiredActorCountTimerDelegate, 10.0f, true);
+		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+		if (ChunkManager == nullptr)
+		{
+			return;
+		}
+
+		const bool UseDefaultSpawn = StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true;
+		const FVector SpawnPoint = UseDefaultSpawn ? ChunkManager->GetWorldSpawnPoint() : StoredPlayerSaveData.WorldLocation;
+
+		ASpectatorPawn* SpecPawn = GetWorld()->SpawnActor<ASpectatorPawn>(ASpectatorPawn::StaticClass(), SpawnPoint, FRotator::ZeroRotator);
+		if (SpecPawn)
+		{
+			this->Possess(SpecPawn);
+		}
+
+		const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+		SpawnChunk = FIntVector2(
+			FMath::RoundToInt32(SpawnPoint.X / ChunkSize),
+			FMath::RoundToInt32(SpawnPoint.Y / ChunkSize));
 	}
 
 	if (!IsLocalController())
@@ -250,6 +263,7 @@ void AWildOmissionPlayerController::BeginPlay()
 	{
 		GameInstance->StartLoading();
 		GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
+		UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Brought up loading screen."));
 	}
 
 	if (MusicPlayerComponent == nullptr)
@@ -266,13 +280,15 @@ void AWildOmissionPlayerController::BeginPlay()
 		FTimerHandle LoadTimerHandle;
 		FTimerDelegate LoadTimerDelegate;
 		LoadTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::StopLoading);
-		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 1.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 2.0f, false);
+		UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Setup load timer."));
 	}
 	else
 	{
-		FTimerDelegate ValidateWorldStateTimerDelegate;
-		ValidateWorldStateTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::ValidateWorldState);
-		GetWorld()->GetTimerManager().SetTimer(ValidateWorldStateTimerHandle, ValidateWorldStateTimerDelegate, 2.0f, true);
+		FTimerDelegate CheckSpawnChunkValidTimerDelegate;
+		CheckSpawnChunkValidTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::CheckSpawnChunkValid);
+		GetWorld()->GetTimerManager().SetTimer(CheckSpawnChunkValidTimerHandle, CheckSpawnChunkValidTimerDelegate, 2.0f, true);
+		UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Setup check spawn chunk timer."));
 	}
 }
 
@@ -287,39 +303,46 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(aPawn);
 
-	bool PlayerFromOldSave = (StoredPlayerSave.IsAlive == true && StoredPlayerSave.NewPlayer == true);
-	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSave.IsAlive == false || (StoredPlayerSave.NewPlayer == true && PlayerFromOldSave == false))
+	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true)
 	{
 		return;
 	}
 
-	WildOmissionCharacter->SetActorLocation(StoredPlayerSave.WorldLocation);
+	WildOmissionCharacter->SetActorLocation(StoredPlayerSaveData.WorldLocation);
 	
-	WildOmissionCharacter->GetVitalsComponent()->SetHealth(StoredPlayerSave.Vitals.Health);
-	WildOmissionCharacter->GetVitalsComponent()->SetHunger(StoredPlayerSave.Vitals.Hunger);
-	WildOmissionCharacter->GetVitalsComponent()->SetThirst(StoredPlayerSave.Vitals.Thirst);
+	WildOmissionCharacter->GetVitalsComponent()->SetHealth(StoredPlayerSaveData.Vitals.Health);
+	WildOmissionCharacter->GetVitalsComponent()->SetHunger(StoredPlayerSaveData.Vitals.Hunger);
+	WildOmissionCharacter->GetVitalsComponent()->SetThirst(StoredPlayerSaveData.Vitals.Thirst);
 
-	WildOmissionCharacter->GetInventoryComponent()->Load(StoredPlayerSave.Inventory.ByteData);
-	WildOmissionCharacter->GetInventoryManipulatorComponent()->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSave.SelectedItemByteData);
+	WildOmissionCharacter->GetInventoryComponent()->Load(StoredPlayerSaveData.Inventory.ByteData);
+	WildOmissionCharacter->GetInventoryManipulatorComponent()->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSaveData.SelectedItemByteData);
 
-	StoredPlayerSave = FPlayerSave();
+	StoredPlayerSaveData = FPlayerSaveData();
 }
 
-void AWildOmissionPlayerController::ValidateWorldState()
+void AWildOmissionPlayerController::CheckSpawnChunkValid()
 {
-	if (IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()) < NumRequiredActorsForLoad)
+	UWorld* World = GetWorld();
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (World == nullptr || ChunkManager == nullptr)
 	{
+		UE_LOG(LogPlayerController, Warning, TEXT("CheckSpawnChunkValid: Failed because World or ChunkManager is nullptr."))
 		return;
 	}
 
-	GetWorld()->GetTimerManager().ClearTimer(ValidateWorldStateTimerHandle);
-	StopLoading();
-}
+	FSpawnedChunk SpawnedChunk;
+	ChunkManager->GetSpawnedChunk(SpawnChunk, SpawnedChunk);
 
-void AWildOmissionPlayerController::CountRequiredActorsAndSendToClient()
-{
-	int32 NewRequiredAmount = IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld());
-	Client_SetNumRequiredActors(NewRequiredAmount);
+	const int32 DataCount = (AChunk::GetVertexSize() + 1) * (AChunk::GetVertexSize() + 1);
+	if (!IsValid(SpawnedChunk.Chunk) || SpawnedChunk.Chunk->GetHeightData().Num() != DataCount)
+	{
+		UE_LOG(LogPlayerController, Verbose, TEXT("CheckSpawnChunkValid: Chunk is still loading."));
+		return;
+	}
+
+	UE_LOG(LogPlayerController, Verbose, TEXT("CheckSpawnChunkValid: Chunk loaded successfully, requesting spawn."));
+	World->GetTimerManager().ClearTimer(CheckSpawnChunkValidTimerHandle);
+	StopLoading();
 }
 
 void AWildOmissionPlayerController::StopLoading()
@@ -336,19 +359,19 @@ void AWildOmissionPlayerController::StopLoading()
 
 void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerState* Sender, const FString& Message)
 {
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetGameChatHandler();
-	if (ChatHandler == nullptr)
+	AGameChatManager* ChatManager = AGameChatManager::GetGameChatManager();
+	if (ChatManager == nullptr)
 	{
 		return;
 	}
 
-	ChatHandler->SendMessage(Sender, Message, false);
+	ChatManager->SendMessage(Sender, Message, false);
 }
 
 void AWildOmissionPlayerController::Server_Spawn_Implementation()
 {
 	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode && (StoredPlayerSave.IsAlive || StoredPlayerSave.NewPlayer))
+	if (GameMode && (StoredPlayerSaveData.IsAlive || StoredPlayerSaveData.NewPlayer))
 	{
 		GameMode->SpawnHumanForController(this);
 	}
@@ -357,11 +380,11 @@ void AWildOmissionPlayerController::Server_Spawn_Implementation()
 		Client_ShowDeathMenu();
 	}
 
+	// TODO why is this here, im confused, this whole loading thing goes all over the place
 	if (bIsStillLoading == true)
 	{
 		OnFinishedLoading.Broadcast(this);
 		bIsStillLoading = false;
-		GetWorld()->GetTimerManager().ClearTimer(UpdateClientRequiredActorCountTimerHandle);
 	}
 }
 

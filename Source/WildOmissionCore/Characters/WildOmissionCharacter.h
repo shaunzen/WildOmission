@@ -29,6 +29,9 @@ public:
 	virtual void Jump() override;
 	virtual void Landed(const FHitResult& HitResult) override;
 
+	UFUNCTION(BlueprintCallable)
+	void HandleFly();
+
 	// Begin ICharacterSettingsInterface Implementation
 	virtual void ApplyInputSettings() override;
 	virtual void ApplyGameplaySettings() override;
@@ -38,6 +41,9 @@ public:
 	UFUNCTION()
 	void HandleDeath();
 	
+	UFUNCTION()
+	void SetGodMode(bool GodMode);
+
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetArmsMesh() const;
 
@@ -111,7 +117,7 @@ private:
 	class UNameTagComponent* NameTag;
 
 	UPROPERTY(VisibleAnywhere)
-	class USpecialEffectsHandlerComponent* SpecialEffectsHandlerComponent;
+	class USpecialEffectsManagerComponent* SpecialEffectsManagerComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	class ULockModifierComponent* LockModifierComponent;
@@ -178,6 +184,9 @@ private:
 
 	UPROPERTY()
 	class UInputAction* JumpAction;
+
+	UPROPERTY()
+	class UInputAction* FlyAction;
 		
 	UPROPERTY()
 	class UInputAction* PrimaryAction;

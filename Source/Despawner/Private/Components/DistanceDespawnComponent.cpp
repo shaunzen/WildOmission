@@ -2,6 +2,7 @@
 
 
 #include "Components/DistanceDespawnComponent.h"
+#include "ChunkManager.h"
 
 // Sets default values for this component's properties
 UDistanceDespawnComponent::UDistanceDespawnComponent()
@@ -9,7 +10,9 @@ UDistanceDespawnComponent::UDistanceDespawnComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-	DespawnDistance = 100000.0f;
+
+	// In the future this should be tied to render distance
+	DespawnDistance = AChunkManager::GetRenderDistanceCentimeters();
 }
 
 // Called when the game starts
@@ -44,12 +47,21 @@ void UDistanceDespawnComponent::CheckDespawnConditions()
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		APlayerController* PlayerController = Iterator->Get();
-		if (PlayerController == nullptr || PlayerController->GetPawn() == nullptr)
+		if (PlayerController == nullptr)
 		{
 			continue;
 		}
 
-		const float DistanceFromThisPlayer = FVector::Distance(PlayerController->GetPawn()->GetActorLocation(), GetComponentLocation());
+		APawn* Pawn = PlayerController->GetPawn();
+		if (Pawn == nullptr)
+		{
+			continue;
+		}
+
+		const FVector CorrectedPawnLocation(Pawn->GetActorLocation().X, Pawn->GetActorLocation().Y, 0.0f);
+		const FVector CorrectedComponentLocation(this->GetComponentLocation().X, this->GetComponentLocation().Y, 0.0f);
+
+		const float DistanceFromThisPlayer = FVector::Distance(CorrectedPawnLocation, CorrectedComponentLocation);
 		if (DistanceFromThisPlayer < DistanceFromClosestPlayer || DistanceFromClosestPlayer == -1.0f)
 		{
 			DistanceFromClosestPlayer = DistanceFromThisPlayer;

@@ -6,35 +6,38 @@
 #include "GameFramework/Actor.h"
 #include "Tornado.generated.h"
 
-class AStorm;
-class UWindSuckerComponent;
-
 USTRUCT()
-struct FTornadoSaveInformation
+struct FTornadoData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	bool WasSpawned = false;
+	FTornadoData();
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	FTransform Transform = FTransform();
+	bool WasSpawned;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RotationSpeed = 0.0f;
+	FTransform Transform;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	float MovementSpeed = 0.0f;
+	float RotationSpeed;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	FVector TargetLocation = FVector::ZeroVector;
+	float MovementSpeed;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	float TotalLifetime = 0.0f;
+	FVector TargetLocation;
 
 	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RemainingLifetime = 0.0f;
+	float TotalLifetime;
+
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	float RemainingLifetime;
+
 };
+
+class AStorm;
+class UWindSuckerComponent;
 
 UCLASS()
 class WEATHER_API ATornado : public AActor
@@ -47,11 +50,11 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void HandleSpawn(AStorm* OwnerStorm, bool SpawnAtWorldOrigin = false);
+	void HandleSpawn(AStorm* OwnerStorm, bool SpawnedFromCommand = false);
 
-	FTornadoSaveInformation GetSaveInformation();
+	FTornadoData GetTornadoData();
 
-	void LoadSaveInformation(const FTornadoSaveInformation& InSave, AStorm* OwnerStorm);
+	void LoadTornadoData(const FTornadoData& InTornadoData, AStorm* OwnerStorm);
 
 protected:
 	// Called when the game starts or when spawned

@@ -20,6 +20,8 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponProjectile();
 
+	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void Setup(const FName& ItemID);

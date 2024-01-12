@@ -87,13 +87,16 @@ bool ADeployablePreview::IsOverlappingInvalidObject() const
 
 void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->ActorHasTag(TEXT("Water")) 
+
+	if (OtherActor == nullptr
+		|| OtherComponent == nullptr
+		|| OtherComponent->ComponentHasTag(TEXT("Water")) 
 		|| PreviewingDeployable == nullptr
-		|| (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround()) 
+		|| (OtherComponent->ComponentHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround()) 
 		|| (OtherActor->ActorHasTag(TEXT("Wall")) && PreviewingDeployable->CanSpawnOnWall()) 
 		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnFloor()) 
 		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnCeiling()) 
-		|| (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && (OtherActor->ActorHasTag(TEXT("BuildingPart")) || OtherActor->ActorHasTag(TEXT("Ground")))))
+		|| (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && (OtherActor->ActorHasTag(TEXT("BuildingPart")) || OtherComponent->ComponentHasTag(TEXT("Ground")))))
 	{
 		return;
 	}
@@ -105,13 +108,15 @@ void ADeployablePreview::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedCompo
 
 void ADeployablePreview::OnMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
 {
-	if (OtherActor->ActorHasTag(TEXT("Water"))
+	if (OtherActor == nullptr
+		|| OtherComponent == nullptr
+		|| OtherComponent->ComponentHasTag(TEXT("Water"))
 		|| PreviewingDeployable == nullptr
-		|| (OtherActor->ActorHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround())
+		|| (OtherComponent->ComponentHasTag(TEXT("Ground")) && PreviewingDeployable->CanSpawnOnGround())
 		|| (OtherActor->ActorHasTag(TEXT("Wall")) && PreviewingDeployable->CanSpawnOnWall())
 		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnFloor())
 		|| (OtherActor->ActorHasTag(TEXT("Floor")) && PreviewingDeployable->CanSpawnOnCeiling())
-		|| (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && (OtherActor->ActorHasTag(TEXT("BuildingPart")) || OtherActor->ActorHasTag(TEXT("Ground")))))
+		|| (PreviewingDeployable->CanSpawnOnBuildAnchor() != None && (OtherActor->ActorHasTag(TEXT("BuildingPart")) || OtherComponent->ComponentHasTag(TEXT("Ground")))))
 	{
 		return;
 	}

@@ -2,7 +2,7 @@
 
 
 #include "AmbientSoundProducerComponent.h"
-#include "TimeOfDayHandler.h"
+#include "TimeOfDayManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -48,8 +48,8 @@ void UAmbientSoundProducerComponent::PlaySoundCue()
 		return;
 	}
 
-	ATimeOfDayHandler* TimeOfDayHandler = ATimeOfDayHandler::GetTimeOfDayHandler();
-	if (TimeOfDayHandler && TimeOfDayHandler->IsNight())
+	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
+	if (TimeOfDayManager && TimeOfDayManager->IsNight())
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), NightCue, GetComponentLocation());
 	}

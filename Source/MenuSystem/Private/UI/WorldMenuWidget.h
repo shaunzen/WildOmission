@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Enums/GameDifficulty.h"
 #include "WorldMenuWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FWorldMenuOnPlayButtonClickedSignature, const FString&, WorldName, const FString&, ServerName, const bool, IsMultiplayer, const bool, IsFriendsOnly, const int32&, MaxPlayerCount);
@@ -36,6 +37,9 @@ private:
 	class UButton* PlayButton;
 	
 	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* PlayButtonTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
 	class UButton* RenameButton;
 
 	UPROPERTY(Meta = (BindWidget))
@@ -64,6 +68,8 @@ private:
 
 	UPROPERTY()
 	FString WorldName;
+
+	int32 GetWorldVersion() const;
 
 	TEnumAsByte<enum EGameDifficulty> GetWorldDifficulty() const;
 	void SetWorldDifficulty(const TEnumAsByte<enum EGameDifficulty>& NewDifficulty);

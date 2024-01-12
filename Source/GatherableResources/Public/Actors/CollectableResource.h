@@ -6,20 +6,21 @@
 #include "GameFramework/Actor.h"
 #include "Interfaces/Interactable.h"
 #include "Interfaces/SavableObject.h"
-#include "Interfaces/RequiredForLoad.h"
 #include "Structs/InventoryItem.h"
 #include "CollectableResource.generated.h"
 
 class UNavModifierComponent;
 
 UCLASS()
-class GATHERABLERESOURCES_API ACollectableResource : public AActor, public IInteractable, public ISavableObject, public IRequiredForLoad
+class GATHERABLERESOURCES_API ACollectableResource : public AActor, public IInteractable, public ISavableObject
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
 	ACollectableResource();
+
+	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
 
 	// Begin Interactable Interface Implementation
 	virtual void Interact(AActor* Interactor) override;
@@ -29,6 +30,9 @@ public:
 	// Begin ISavableObject Implementation
 	virtual FName GetIdentifier() const override;
 	// End ISavableObject Implementation
+
+protected:
+	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -48,4 +52,5 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Client_PlayCollectSound();
+
 };

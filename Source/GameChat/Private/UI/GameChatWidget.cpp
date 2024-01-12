@@ -7,7 +7,7 @@
 #include "Components/EditableTextBox.h"
 #include "Interfaces/PlayerControllerMessageSender.h"
 #include "GameFramework/PlayerState.h"
-#include "GameChatHandler.h"
+#include "GameChatManager.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Structs/ChatMessage.h"
 #include "Log.h"
@@ -27,6 +27,7 @@ UGameChatWidget::UGameChatWidget(const FObjectInitializer& ObjectInitializer) : 
 	}
 
 	Opened = false;
+	HideUnlessOpen = false;
 }
 
 void UGameChatWidget::NativeConstruct()
@@ -36,22 +37,22 @@ void UGameChatWidget::NativeConstruct()
 	MessageContainerPanel->ClearChildren();	
 	Close();
 	MessageBox->OnTextCommitted.AddDynamic(this, &UGameChatWidget::OnMessageBoxTextCommitted);
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetGameChatHandler();
-	if (ChatHandler == nullptr)
+	AGameChatManager* ChatManager = AGameChatManager::GetGameChatManager();
+	if (ChatManager == nullptr)
 	{
 		UE_LOG(LogGameChat, Warning, TEXT("Couldn't retrieve game chat handler."));
 		return;
 	}
 
-	ChatHandler->OnMessageRecieved.AddDynamic(this, &UGameChatWidget::RefreshMessages);
+	ChatManager->OnMessageRecieved.AddDynamic(this, &UGameChatWidget::RefreshMessages);
 	RefreshMessages();
 }
 
 void UGameChatWidget::RefreshMessages()
 {
-	AGameChatHandler* ChatHandler = AGameChatHandler::GetGameChatHandler();
+	AGameChatManager* ChatManager = AGameChatManager::GetGameChatManager();
 	APlayerState* OwnerPlayerState = GetOwningPlayerState();
-	if (ChatHandler == nullptr || OwnerPlayerState == nullptr)
+	if (ChatManager == nullptr || OwnerPlayerState == nullptr)
 	{
 		return;
 	}
@@ -60,7 +61,7 @@ void UGameChatWidget::RefreshMessages()
 	const FString OurPlayerNetName = OwnerPlayerState->GetPlayerName();
 
 	TArray<FChatMessage> Messages;
-	Messages = ChatHandler->GetChatMessages();
+	Messages = ChatManager->GetChatMessages();
 
 	if (Messages.IsEmpty())
 	{
@@ -83,15 +84,21 @@ void UGameChatWidget::RefreshMessages()
 		}
 
 		MessageWidget->Setup(this, Message.SenderName, Message.Message, Message.TimeRecieved);
-
+		if (HideUnlessOpen)
+		{
+			MessageWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
 		MessageContainerPanel->AddChild(MessageWidget);
 	}
+
+	MessageContainerPanel->ScrollToEnd();
 }
 
 void UGameChatWidget::Open()
 {
 	Opened = true;
 	MessagePanel->SetVisibility(ESlateVisibility::Visible);
+	MessageContainerPanel->SetVisibility(ESlateVisibility::Visible);
 	MessageBox->SetFocus();
 	
 	// Show all old messages
@@ -107,11 +114,26 @@ void UGameChatWidget::Close()
 {
 	Opened = false;
 	MessagePanel->SetVisibility(ESlateVisibility::Collapsed);
+
+	if (HideUnlessOpen)
+	{
+		MessageContainerPanel->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 bool UGameChatWidget::IsOpen() const
 {
 	return Opened;
+}
+
+void UGameChatWidget::SetHideUnlessOpen(bool InHideUnlessOpen)
+{
+	HideUnlessOpen = InHideUnlessOpen;
+}
+
+bool UGameChatWidget::GetHideUnlessOpen() const
+{
+	return HideUnlessOpen;
 }
 
 void UGameChatWidget::OnMessageBoxTextCommitted(const FText& MessageBoxText, ETextCommit::Type CommitMethod)

@@ -6,7 +6,7 @@ public class Despawner : ModuleRules
 {
     public Despawner(ReadOnlyTargetRules Target) : base(Target)
     {
-        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "SaveSystem" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "SavableObject" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "WorldGeneration" });
     }
 }

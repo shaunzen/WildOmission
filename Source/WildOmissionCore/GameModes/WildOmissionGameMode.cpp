@@ -2,16 +2,16 @@
 
 
 #include "WildOmissionGameMode.h"
-#include "SaveHandler.h"
-#include "Components/PlayerSaveHandlerComponent.h"
+#include "SaveManager.h"
+#include "Components/PlayerSaveManagerComponent.h"
 #include "Deployables/Bed.h"
-#include "WorldGenerationHandler.h"
-#include "TimeOfDayHandler.h"
-#include "Interfaces/RequiredForLoad.h"
-#include "WeatherHandler.h"
-#include "AnimalSpawnHandler.h"
-#include "MonsterSpawnHandler.h"
-#include "GameChatHandler.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
+#include "TimeOfDayManager.h"
+#include "WeatherManager.h"
+#include "AnimalSpawnManager.h"
+#include "MonsterSpawnManager.h"
+#include "GameChatManager.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
 #include "WildOmissionCore/WildOmissionGameState.h"
@@ -29,28 +29,28 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	FString SaveFile = UGameplayStatics::ParseOption(Options, "SaveGame");
 	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
 	
-	SaveHandler = GetWorld()->SpawnActor<ASaveHandler>();
-	WorldGenerationHandler = GetWorld()->SpawnActor<AWorldGenerationHandler>();
-	TimeOfDayHandler = GetWorld()->SpawnActor<ATimeOfDayHandler>();
-	WeatherHandler = GetWorld()->SpawnActor<AWeatherHandler>();
-	AnimalSpawnHandler = GetWorld()->SpawnActor<AAnimalSpawnHandler>();
-	MonsterSpawnHandler = GetWorld()->SpawnActor<AMonsterSpawnHandler>();
-	ChatHandler = GetWorld()->SpawnActor<AGameChatHandler>();
+	SaveManager = GetWorld()->SpawnActor<ASaveManager>();
+	ChunkManager = GetWorld()->SpawnActor<AChunkManager>();
+	TimeOfDayManager = GetWorld()->SpawnActor<ATimeOfDayManager>();
+	WeatherManager = GetWorld()->SpawnActor<AWeatherManager>();
+	AnimalSpawnManager = GetWorld()->SpawnActor<AAnimalSpawnManager>();
+	MonsterSpawnManager = GetWorld()->SpawnActor<AMonsterSpawnManager>();
+	ChatManager = GetWorld()->SpawnActor<AGameChatManager>();
 	
-	if (SaveHandler == nullptr)
+	if (SaveManager == nullptr)
 	{
 		return;
 	}
 
-	SaveHandler->SetGameSaveLoadController(Cast<IGameSaveLoadController>(GetGameInstance()));
-	SaveHandler->SetSaveFile(SaveFile);
+	SaveManager->SetGameSaveLoadController(Cast<IGameSaveLoadController>(GetGameInstance()));
+	SaveManager->SetSaveFile(SaveFile);
 }
 
 void AWildOmissionGameMode::StartPlay()
 {
 	Super::StartPlay();
 
-	SaveHandler->LoadWorld();
+	SaveManager->LoadWorld();
 }
 
 void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
@@ -74,8 +74,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 		return;
 	}
 
-	NewWildOmissionPlayer->Client_SetNumRequiredActors(IRequiredForLoad::GetNumRequiredActorsInWorld(GetWorld()));
-	SaveHandler->GetPlayerHandler()->Load(NewPlayer);
+	SaveManager->GetPlayerManager()->Load(NewPlayer);
 
 	if (GetWorld()->IsPlayInEditor())
 	{
@@ -83,12 +82,12 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
 	APlayerState* NewPlayerState = NewPlayer->GetPlayerState<APlayerState>();
-	if (ChatHandler == nullptr || NewPlayerState == nullptr)
+	if (ChatManager == nullptr || NewPlayerState == nullptr)
 	{
 		return;
 	}
 
-	ChatHandler->SendMessage(NewPlayerState, TEXT("Has Joined The Game."), true);
+	ChatManager->SendMessage(NewPlayerState, TEXT("Has Joined The Game."), true);
 }
 
 void AWildOmissionGameMode::Logout(AController* Exiting)
@@ -101,12 +100,12 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 	}
 
 	APlayerState* ExitingPlayerState = Exiting->GetPlayerState<APlayerState>();
-	if (ChatHandler == nullptr || ExitingPlayerState == nullptr)
+	if (ChatManager == nullptr || ExitingPlayerState == nullptr)
 	{
 		return;
 	}
 
-	ChatHandler->SendMessage(ExitingPlayerState, TEXT("Has Left The Game."), true);
+	ChatManager->SendMessage(ExitingPlayerState, TEXT("Has Left The Game."), true);
 }
 
 void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controller)
@@ -115,6 +114,12 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 	{
 		UE_LOG(LogGameMode, Warning, TEXT("Failed to spawn Human, PlayerController wasn't valid."));
 		return;
+	}
+
+	if (APawn* Pawn = Controller->GetPawnOrSpectator())
+	{
+		Controller->UnPossess();
+		Pawn->Destroy();
 	}
 
 	AWildOmissionPlayerController* WOPlayerController = Cast<AWildOmissionPlayerController>(Controller);
@@ -130,83 +135,220 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 
 void AWildOmissionGameMode::SaveGame()
 {
-	SaveHandler->SaveGame();
+	SaveManager->SaveGame();
 }
 
-void AWildOmissionGameMode::ResetLocationOfAllConnectedPlayers()
+
+void AWildOmissionGameMode::TeleportAllPlayersToSelf()
 {
+	APlayerController* SelfPlayerController = GetWorld()->GetFirstPlayerController();
+	if (SelfPlayerController == nullptr)
+	{
+		return;
+	}
+
+	APawn* SelfPlayerPawn = SelfPlayerController->GetPawn();
+	if (SelfPlayerPawn == nullptr)
+	{
+		return;
+	}
+	
+	const FVector TargetLocation = SelfPlayerPawn->GetActorLocation();
+
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		APlayerController* PlayerController = Iterator->Get();
-		if (PlayerController == nullptr || PlayerController->GetPawn() == nullptr)
+		if (PlayerController == nullptr)
+		{
+			continue;
+		}
+
+		APawn* PlayerPawn = PlayerController->GetPawn();
+		if (PlayerPawn == nullptr || PlayerPawn == SelfPlayerPawn)
+		{
+			continue;
+		}
+	
+		PlayerPawn->SetActorLocation(TargetLocation);
+	}
+}
+
+void AWildOmissionGameMode::GiveSelfGodMode()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerController* SelfPlayerController = World->GetFirstPlayerController();
+	if (SelfPlayerController == nullptr)
+	{
+		return;
+	}
+
+	AWildOmissionCharacter* SelfCharacter = Cast<AWildOmissionCharacter>(SelfPlayerController->GetPawn());
+	if (SelfCharacter == nullptr)
+	{
+		return;
+	}
+
+	SelfCharacter->SetGodMode(true);
+}
+
+void AWildOmissionGameMode::GiveAllPlayersGodMode()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
 		{
 			return;
 		}
 
-		FHitResult HitResult;
-		const FVector Start = FVector(0.0f, 0.0f, 5000.0f);
-		const FVector End = -(Start * 2.0f);
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+		AWildOmissionCharacter* PlayerCharacter = Cast<AWildOmissionCharacter>(PlayerController->GetPawn());
+		if (PlayerCharacter == nullptr)
 		{
-			PlayerController->GetPawn()->SetActorLocation(HitResult.ImpactPoint);
+			return;
 		}
+
+		PlayerCharacter->SetGodMode(true);
 	}
+}
+
+void AWildOmissionGameMode::RemoveSelfGodMode()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerController* SelfPlayerController = World->GetFirstPlayerController();
+	if (SelfPlayerController == nullptr)
+	{
+		return;
+	}
+
+	AWildOmissionCharacter* SelfCharacter = Cast<AWildOmissionCharacter>(SelfPlayerController->GetPawn());
+	if (SelfCharacter == nullptr)
+	{
+		return;
+	}
+
+	SelfCharacter->SetGodMode(false);
+}
+
+void AWildOmissionGameMode::RemoveAllPlayersGodMode()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
+		{
+			return;
+		}
+
+		AWildOmissionCharacter* PlayerCharacter = Cast<AWildOmissionCharacter>(PlayerController->GetPawn());
+		if (PlayerCharacter == nullptr)
+		{
+			return;
+		}
+
+		PlayerCharacter->SetGodMode(false);
+	}
+}
+
+void AWildOmissionGameMode::FreezeTime()
+{
+	if (TimeOfDayManager == nullptr)
+	{
+		return;
+	}
+
+	TimeOfDayManager->SetTimeFrozen(true);
+}
+
+void AWildOmissionGameMode::UnfreezeTime()
+{
+	if (TimeOfDayManager == nullptr)
+	{
+		return;
+	}
+
+	TimeOfDayManager->SetTimeFrozen(false);
 }
 
 void AWildOmissionGameMode::SetTime(float NormalizedTime)
 {
-	if (TimeOfDayHandler == nullptr)
+	if (TimeOfDayManager == nullptr)
 	{
 		return;
 	}
 
-	TimeOfDayHandler->SetNormalizedProgressThroughDay(NormalizedTime);
+	TimeOfDayManager->SetNormalizedProgressThroughDay(NormalizedTime);
 }
 
 void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 {
-	if (WeatherHandler == nullptr)
+	if (WeatherManager == nullptr)
 	{
 		return;
 	}
 
-	AStorm* SpawnedStorm = WeatherHandler->SpawnStorm(true);
+	AStorm* SpawnedStorm = WeatherManager->SpawnStorm(true);
 	
+	APawn* HostPlayer = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
 	if (WeatherToSet == TEXT("Rain"))
 	{
 		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
-		NewStormLocation.X = 0.0f;
-		NewStormLocation.Y = 0.0f;
+		NewStormLocation.X = HostPlayer->GetActorLocation().X - 10000.0f;
+		NewStormLocation.Y = HostPlayer->GetActorLocation().Y;
 		SpawnedStorm->SetActorLocation(NewStormLocation);
+		SpawnedStorm->SetMovementVector(FVector(1.0f, 0.0f, 0.0f));
 		SpawnedStorm->SetSeverity(30.0f);
 	}
 	else if (WeatherToSet == TEXT("Tornado"))
 	{
 		FVector NewStormLocation = SpawnedStorm->GetActorLocation();
-		NewStormLocation.X = 0.0f;
-		NewStormLocation.Y = 0.0f;
+		NewStormLocation.X = HostPlayer->GetActorLocation().X - 10000.0f;
+		NewStormLocation.Y = HostPlayer->GetActorLocation().Y;
 		SpawnedStorm->SetActorLocation(NewStormLocation);
+		SpawnedStorm->SetMovementVector(FVector(1.0f, 0.0f, 0.0f));
 		SpawnedStorm->SetSeverity(90.0f);
 	}
 	else if (WeatherToSet == TEXT("Clear"))
 	{
-		WeatherHandler->ClearStorm();
+		WeatherManager->ClearStorm();
 	}
 }
 
-ASaveHandler* AWildOmissionGameMode::GetSaveHandler() const
+ASaveManager* AWildOmissionGameMode::GetSaveManager() const
 {
-	return SaveHandler;
+	return SaveManager;
 }
 
-AWorldGenerationHandler* AWildOmissionGameMode::GetWorldGenerationHandler() const
+AChunkManager* AWildOmissionGameMode::GetChunkManager() const
 {
-	return WorldGenerationHandler;
+	return ChunkManager;
 }
 
-AWeatherHandler* AWildOmissionGameMode::GetWeatherHandler() const
+AWeatherManager* AWildOmissionGameMode::GetWeatherManager() const
 {
-	return WeatherHandler;
+	return WeatherManager;
 }
 
 void AWildOmissionGameMode::LogPlayerInventoryComponents()
@@ -259,21 +401,14 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 
 void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 {
-	AActor* StartSpot = FindPlayerStart(Controller);
-	if (StartSpot == nullptr && Controller->StartSpot != nullptr)
-	{
-		StartSpot = Controller->StartSpot.Get();
-	}
-
-	if (StartSpot == nullptr)
+	if (ChunkManager == nullptr)
 	{
 		return;
 	}
 
-	FRotator SpawnRotation = StartSpot->GetActorRotation();
+	const FVector SpawnLocation = ChunkManager->GetWorldSpawnPoint();
 
-	UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart %s"), (Controller && Controller->PlayerState) ? *Controller->PlayerState->GetPlayerName() : TEXT("Unknown"));
-
+	// Spawn there
 	if (MustSpectate(Cast<APlayerController>(Controller)))
 	{
 		UE_LOG(LogGameMode, Verbose, TEXT("RestartPlayerAtPlayerStart: Tried to restart a spectator-only player!"));
@@ -283,7 +418,7 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 	if (HumanCharacterClass != nullptr)
 	{
 		// Try to create a pawn to use of the default class for this player
-		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, StartSpot->GetActorLocation(), SpawnRotation);
+		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(HumanCharacterClass, SpawnLocation + FVector(0.0f, 0.0f, 100.0f), FRotator::ZeroRotator);
 		if (IsValid(NewPawn))
 		{
 			Controller->SetPawn(NewPawn);
@@ -296,10 +431,7 @@ void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)
 	}
 	else
 	{
-		// Tell the start spot it was used
-		InitStartSpot(StartSpot, Controller);
-
-		FinishRestartPlayer(Controller, SpawnRotation);
+		FinishRestartPlayer(Controller, FRotator::ZeroRotator);
 	}
 }
 

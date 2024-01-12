@@ -10,7 +10,7 @@
 class UPlayerInventoryComponent;
 class UEquipComponent;
 class UNiagaraComponent;
-class ATimeOfDayHandler;
+class ATimeOfDayManager;
 
 UCLASS()
 class MONSTERS_API AMonster : public AWildOmissionAICharacter
@@ -29,9 +29,7 @@ public:
 
 	virtual void Destroyed() override;
 
-	APawn* GetTargetPawn() const;
-
-	void Attack(AActor* Target);
+	void Attack();
 	void StopAttack();
 
 protected:
@@ -51,9 +49,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float MaxAttackRange;
-
-	UPROPERTY()
-	APawn* TargetPawn;
 
 	FTimerHandle BurnDamageTimerHandle;
 

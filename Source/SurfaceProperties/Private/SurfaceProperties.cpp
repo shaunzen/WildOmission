@@ -3,3 +3,10 @@
 
 #include "SurfaceProperties.h"
 
+FSurfaceProperties::FSurfaceProperties()
+{
+	FootstepSound = nullptr;
+	ImpactSound = nullptr;
+	ImpactParticles = nullptr;
+	ImpactDecal = nullptr;
+}

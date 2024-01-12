@@ -7,19 +7,20 @@
 #include "Structs/InventoryItem.h"
 #include "Enums/ToolType.h"
 #include "Interfaces/SavableObject.h"
-#include "Interfaces/RequiredForLoad.h"
 #include "HarvestableResource.generated.h"
 
 class UNavModifierComponent;
 
 UCLASS()
-class GATHERABLERESOURCES_API AHarvestableResource : public AActor, public ISavableObject, public IRequiredForLoad
+class GATHERABLERESOURCES_API AHarvestableResource : public AActor, public ISavableObject
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
 	AHarvestableResource();
+
+	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
 
 	virtual void OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool);
 	
@@ -35,6 +36,8 @@ public:
 
 
 protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FInventoryItem> CommonDrops;
 	UPROPERTY(EditDefaultsOnly)

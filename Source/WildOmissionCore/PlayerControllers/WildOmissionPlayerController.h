@@ -27,8 +27,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Begin ISavablePlayer Implementation
-	virtual FPlayerSave SavePlayer() override;
-	virtual void LoadPlayerSave(const FPlayerSave& PlayerSave) override;
+	virtual FPlayerSaveData SavePlayer() override;
+	virtual void LoadPlayerSave(const FPlayerSaveData& SaveData) override;
 	virtual bool IsStillLoading() const override;
 	virtual FString GetUniqueID() const override;
 	virtual bool IsHost() const override;
@@ -50,9 +50,6 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void Client_ShowDeathMenu();
-
-	UFUNCTION(Client, Reliable)
-	void Client_SetNumRequiredActors(const int32& InNum);
 
 	UFUNCTION(Server, Reliable)
 	void Server_Spawn();
@@ -81,21 +78,21 @@ private:
 	UPROPERTY(Replicated)
 	int32 BedUniqueID;
 
-	int32 NumRequiredActorsForLoad;
-	FTimerHandle ValidateWorldStateTimerHandle;
-	FTimerHandle UpdateClientRequiredActorCountTimerHandle;
-	void ValidateWorldState();
+	UPROPERTY(Replicated)
+	FIntVector2 SpawnChunk;
+
+	FTimerHandle CheckSpawnChunkValidTimerHandle;
 
 	UFUNCTION()
-	void CountRequiredActorsAndSendToClient();
-
+	void CheckSpawnChunkValid();
+	
 	void StopLoading();
 
 	// Used by the server to figure out if a player is still loading
 	// into the server, it will wait until the player if fully loaded before attempting
 	// to load their data from the save file.
 	bool bIsStillLoading;
-	FPlayerSave StoredPlayerSave;
+	FPlayerSaveData StoredPlayerSaveData;
 
 	UFUNCTION(Server, Reliable)
 	void Server_SendMessage(APlayerState* Sender, const FString& Message);

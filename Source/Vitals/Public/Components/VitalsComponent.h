@@ -66,6 +66,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetHunger() const;
 
+	void SetHealthCanDeplete(bool InCanDeplete);
 	void SetThirstCanDeplete(bool InCanDeplete);
 	void SetHungerCanDeplete(bool InCanDeplete);
 
@@ -74,6 +75,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsStarving() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetGodMode(bool InGodMode);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsGodMode() const;
 
 	FOnBeginThirstSignature OnBeginThirst;
 	FOnEndThirstSignature OnEndThirst;
@@ -134,6 +141,7 @@ private:
 	UPROPERTY(Replicated)
 	float CurrentHunger;
 
+	bool HealthCanDeplete;
 	bool ThirstCanDeplete;
 	bool HungerCanDeplete;
 

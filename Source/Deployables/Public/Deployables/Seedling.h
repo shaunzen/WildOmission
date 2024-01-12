@@ -10,6 +10,7 @@ UCLASS()
 class DEPLOYABLES_API ASeedling : public ADeployable
 {
 	GENERATED_BODY()
+
 public:
 	ASeedling();
 	

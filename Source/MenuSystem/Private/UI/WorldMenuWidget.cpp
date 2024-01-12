@@ -17,6 +17,7 @@ UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) 
 {
 	Title = nullptr;
 	PlayButton = nullptr;
+	PlayButtonTextBlock = nullptr;
 	RenameButton = nullptr;
 	DeleteButton = nullptr;
 	CancelButton = nullptr;
@@ -69,18 +70,33 @@ void UWorldMenuWidget::Open(const FString& InWorldName)
 	}
 	PlaceholderServerName = FString::Printf(TEXT("%s's Server"), *PlayerState->GetPlayerName());
 	ServerNameInputBox->SetText(FText::FromString(PlaceholderServerName));
+
+	// If this is an old world, prevent it from being played
+	if (GetWorldVersion() < 2)
+	{
+		PlayButton->SetIsEnabled(false);
+		PlayButtonTextBlock->SetColorAndOpacity(FSlateColor(FColor::Red));
+		PlayButtonTextBlock->SetText(FText::FromString(TEXT("This world can only be played on an older version of Wild Omission")));
+	}
+}
+
+int32 UWorldMenuWidget::GetWorldVersion() const
+{
+	// Get the save file
+	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
+	if (SaveFile == nullptr)
+	{
+		return -1;
+	}
+
+	// Return the version
+	return SaveFile->Version;
 }
 
 TEnumAsByte<EGameDifficulty> UWorldMenuWidget::GetWorldDifficulty() const
 {
 	// Get the save file
-	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
-	if (SaveFile == nullptr)
-	{
-		return EGameDifficulty::EGD_Normal;
-	}
-
-	SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
+	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
 	if (SaveFile == nullptr)
 	{
 		return EGameDifficulty::EGD_Normal;

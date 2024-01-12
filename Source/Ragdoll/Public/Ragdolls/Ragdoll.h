@@ -27,7 +27,13 @@ public:
 
 	USkeletalMeshComponent* GetMeshComponent() const;
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* RagdollRootComponent;
+
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* MeshComponent;
 
@@ -39,5 +45,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	FName Identifier;
+
+	void HandleInWater();
+	void UpdateAttachedChunk();
 
 };

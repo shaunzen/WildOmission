@@ -2,7 +2,6 @@
 
 
 #include "Deployables/Seedling.h"
-#include "Actors/HarvestableResource.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASeedling::ASeedling()
@@ -46,6 +45,12 @@ void ASeedling::Tick(float DeltaTime)
 
 void ASeedling::GrowUp()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	// Decide which tree we will become
 	int32 MatureStateIndex = FMath::RandRange(0, MatureStates.Num() - 1);
 
@@ -56,8 +61,9 @@ void ASeedling::GrowUp()
 	}
 
 	// Spawn it
-	GetWorld()->SpawnActor<AActor>(MatureStates[MatureStateIndex], this->GetActorLocation(), this->GetActorRotation());
+	World->SpawnActor<AActor>(MatureStates[MatureStateIndex], this->GetActorLocation(), this->GetActorRotation());
 
 	// Destroy us
+	Multi_PlayDestructionEffects();
 	this->Destroy();
 }

@@ -4,6 +4,8 @@
 #include "Deployables/Deployable.h"
 #include "Components/BuildAnchorComponent.h"
 #include "Actors/DeployablePreview.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "NiagaraSystem.h"
@@ -12,6 +14,7 @@
 #include "NavModifierComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/DamageEvents.h"
+#include "ChunkManager.h"
 #include "UObject/ConstructorHelpers.h"
 
 static UNiagaraSystem* DustSystem = nullptr;
@@ -22,9 +25,10 @@ ADeployable::ADeployable()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
-	bAlwaysRelevant = true;
+	bAlwaysRelevant = false;
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = DORM_DormantAll;
+	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
 
 	DeployableRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DeployableRootComponent"));
 	DeployableRootComponent->SetMobility(EComponentMobility::Type::Stationary);
@@ -90,6 +94,23 @@ void ADeployable::OnLoadComplete_Implementation()
 
 void ADeployable::OnSpawn()
 {
+	int32 ChunkLocationX = this->GetActorLocation().X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale());
+	int32 ChunkLocationY = this->GetActorLocation().Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale());
+
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	FSpawnedChunk SpawnedChunk;
+	if (!ChunkManager->GetSpawnedChunk(FIntVector2(ChunkLocationX, ChunkLocationY), SpawnedChunk) || !IsValid(SpawnedChunk.Chunk))
+	{
+		return;
+	}
+
+	this->AttachToActor(SpawnedChunk.Chunk, FAttachmentTransformRules::KeepWorldTransform);
+
 	// Broadcast Overlap
 	TArray<UPrimitiveComponent*> OverlappingComponents;
 	GetOverlappingComponents(OverlappingComponents);
@@ -110,6 +131,17 @@ void ADeployable::OnSpawn()
 	Multi_PlayPlacementEffects();
 }
 
+bool ADeployable::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
+{
+	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
+
+	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
+	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
+	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
+
+	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+}
+
 void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -123,14 +155,13 @@ void ADeployable::Serialize(FArchive& Ar)
 	{
 		NormalizedDurability = CurrentDurability / MaxDurability;
 	}
+
 	Super::Serialize(Ar);
 }
 
 void ADeployable::Destroyed()
 {
 	Super::Destroyed();
-	
-	PlayDestructionEffects();
 }
 
 void ADeployable::ApplyWindDamage(AActor* WindCauser, float DamageMultiplier)
@@ -148,6 +179,7 @@ float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEven
 	
 	if (CurrentDurability < KINDA_SMALL_NUMBER)
 	{
+		Multi_PlayDestructionEffects();
 		this->Destroy();
 	}
 
@@ -230,7 +262,7 @@ void ADeployable::Multi_PlayPlacementEffects_Implementation()
 	SpawnDustEffects();
 }
 
-void ADeployable::PlayDestructionEffects()
+void ADeployable::Multi_PlayDestructionEffects_Implementation()
 {
 	if (DestructionSound)
 	{

@@ -59,6 +59,11 @@ void UPlayerHUDWidget::ShowCrosshair(bool Show)
 	Crosshair->SetVisibility(Show ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
+void UPlayerHUDWidget::SetHideChatUnlessOpen(bool HideChatUnlessOpen)
+{
+	Chat->SetHideUnlessOpen(HideChatUnlessOpen);
+}
+
 void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)
 {
 	if (!IsMenuOpen() || ForceOpen == true)

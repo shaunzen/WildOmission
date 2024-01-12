@@ -6,7 +6,7 @@ public class SaveSystem: ModuleRules
 {
     public SaveSystem(ReadOnlyTargetRules Target) : base(Target)
     {
-        PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "TimeOfDay", "WorldGeneration" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Weather", "WorldGeneration" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "TimeOfDay" });
     }
 }
