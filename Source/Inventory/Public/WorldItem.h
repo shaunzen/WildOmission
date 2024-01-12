@@ -48,6 +48,9 @@ private:
 	UTimerDespawnComponent* DespawnComponent;
 
 	UPROPERTY(VisibleAnywhere)
+	USceneComponent* ItemRootComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY()
@@ -55,6 +58,8 @@ private:
 
 	UPROPERTY()
 	USoundBase* PickupSound;
+
+	void UpdateAttachedChunk();
 
 	UFUNCTION()
 	void OnRep_Item();

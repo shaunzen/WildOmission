@@ -17,7 +17,8 @@ public class Ragdoll : ModuleRules
             "GatherableResources",
             "Interaction",
             "Inventory",
-            "SavableObject"
+            "SavableObject",
+            "WorldGeneration"
         });
     }
 }

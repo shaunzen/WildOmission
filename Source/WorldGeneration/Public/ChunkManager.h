@@ -27,7 +27,7 @@ public:
 	bool GetChunkData(const FIntVector2& ChunkLocation, FChunkData& OutChunkData) const;
 
 	TArray<FSpawnedChunk> GetSpawnedChunks() const;
-	bool GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunk& OutSpawnedChunks) const;
+	bool GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunk& OutSpawnedChunk) const;
 	void AddSpawnedChunk(const FSpawnedChunk& InSpawnedChunk);
 	void RemoveSpawnedChunk(const FSpawnedChunk& InSpawnedChunk);
 
@@ -75,7 +75,7 @@ private:
 	void SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy = false);
 
 	void RemoveOutOfRangeChunks();
-	void SpawnChunksForPlayer(APlayerController* PlayerController);
+	void SpawnChunksAtLocation(const FVector& Location);
 
 	// When Passing Chunk Data in, make sure to populate grid location, it is what will be used when generating the chunk.
 	void SpawnChunk(FSpawnedChunk& OutSpawnedChunkData) const;

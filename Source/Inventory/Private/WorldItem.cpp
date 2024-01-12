@@ -6,6 +6,8 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "Components/TimerDespawnComponent.h"
+#include "Actors/Chunk.h"
+#include "ChunkManager.h"
 #include "Structs/ItemStat.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -25,9 +27,12 @@ AWorldItem::AWorldItem()
 	Item.Name = TEXT("Item");
 	Item.Quantity = 1;
 
+	ItemRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ItemRootComponent"));
+	RootComponent = ItemRootComponent;
+
 	// Create static mesh component
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	RootComponent = MeshComponent;
+	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetStaticMesh(nullptr);
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
@@ -64,6 +69,8 @@ void AWorldItem::BeginPlay()
 
 	MeshComponent->SetMassOverrideInKg(NAME_None, 20.0f);
 	MeshComponent->OnComponentHit.AddDynamic(this, &AWorldItem::OnComponentHit);
+
+	UpdateAttachedChunk();
 }
 
 void AWorldItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -126,6 +133,28 @@ void AWorldItem::AddImpulse(FVector Impulse)
 FInventoryItem AWorldItem::GetItem() const
 {
 	return Item;
+}
+
+void AWorldItem::UpdateAttachedChunk()
+{
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+	const FVector ThisLocation(this->GetActorLocation());
+	const FIntVector2 ThisChunkLocation(ThisLocation.X / ChunkSize, ThisLocation.Y / ChunkSize);
+
+	FSpawnedChunk SpawnedChunk;
+	ChunkManager->GetSpawnedChunk(ThisChunkLocation, SpawnedChunk);
+	if (SpawnedChunk.Chunk == nullptr)
+	{
+		return;
+	}
+
+	this->AttachToActor(SpawnedChunk.Chunk, FAttachmentTransformRules::KeepWorldTransform);
 }
 
 void AWorldItem::OnRep_Item()

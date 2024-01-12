@@ -42,11 +42,30 @@ void AChunkManager::Tick(float DeltaTime)
 		return;
 	}
 
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	RemoveOutOfRangeChunks();
 
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
-		SpawnChunksForPlayer(Iterator->Get());
+		// Get and validate the player controller
+		APlayerController* PlayerController = Iterator->Get();
+		if (!IsValid(PlayerController))
+		{
+			return;
+		}
+
+		// Get player location
+		FVector PlayerLocation = FVector::ZeroVector;
+		FRotator PlayerRotation = FRotator::ZeroRotator;
+		PlayerController->GetPlayerViewPoint(PlayerLocation, PlayerRotation);
+
+		// Spawn the chunks
+		SpawnChunksAtLocation(PlayerLocation);
 	}
 }
 
@@ -332,7 +351,9 @@ void AChunkManager::RemoveOutOfRangeChunks()
 			continue;
 		}
 		
-		int32 DistanceFromClosestPlayer = -1;
+		int32 DistanceFromChunkInvoker = -1;
+
+		// Get the weather and see if a storm or tornado is invoking chunks
 
 		// Gets the distance from closest player
 		for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
@@ -351,15 +372,15 @@ void AChunkManager::RemoveOutOfRangeChunks()
 				PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
 
 			const int32 DistanceFromPlayer = SpawnedChunk.Distance(PlayerChunkLocation);
-			if (DistanceFromClosestPlayer >= 0 && DistanceFromPlayer > DistanceFromClosestPlayer)
+			if (DistanceFromChunkInvoker >= 0 && DistanceFromPlayer > DistanceFromChunkInvoker)
 			{
 				continue;
 			}
 
-			DistanceFromClosestPlayer = DistanceFromPlayer;
+			DistanceFromChunkInvoker = DistanceFromPlayer;
 		}
 
-		if (DistanceFromClosestPlayer == INDEX_NONE || DistanceFromClosestPlayer <= RENDER_DISTANCE)
+		if (DistanceFromChunkInvoker == INDEX_NONE || DistanceFromChunkInvoker <= RENDER_DISTANCE)
 		{
 			continue;
 		}
@@ -373,20 +394,10 @@ void AChunkManager::RemoveOutOfRangeChunks()
 	SpawnedChunks = NewSpawnedChunks;
 }
 
-void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
+void AChunkManager::SpawnChunksAtLocation(const FVector& Location)
 {
-	if (!IsValid(PlayerController))
-	{
-		return;
-	}
-
-	// Get Player Location
-	FVector PlayerLocation = FVector::ZeroVector;
-	FRotator PlayerRotation = FRotator::ZeroRotator;
-	PlayerController->GetPlayerViewPoint(PlayerLocation, PlayerRotation);
-
-	const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
-		PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
+	const FIntVector2 ChunkLocation(Location.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
+		Location.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
 	
 	// Generate/load new in range chunks
 	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
@@ -394,8 +405,8 @@ void AChunkManager::SpawnChunksForPlayer(APlayerController* PlayerController)
 		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
 		{
 			FSpawnedChunk SpawnedChunk;
-			SpawnedChunk.GridLocation = FIntVector2(RenderX, RenderY) + PlayerChunkLocation;
-			if (SpawnedChunk.Distance(PlayerChunkLocation) > RENDER_DISTANCE)
+			SpawnedChunk.GridLocation = FIntVector2(RenderX, RenderY) + ChunkLocation;
+			if (SpawnedChunk.Distance(ChunkLocation) > RENDER_DISTANCE)
 			{
 				continue;
 			}
