@@ -3,6 +3,8 @@
 
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
+#include "WeatherManager.h"
+#include "Actors/Storm.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
@@ -66,6 +68,21 @@ void AChunkManager::Tick(float DeltaTime)
 
 		// Spawn the chunks
 		SpawnChunksAtLocation(PlayerLocation);
+	}
+
+	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+	if (WeatherManager)
+	{
+		AStorm* CurrentStorm = WeatherManager->GetCurrentStorm();
+		if (CurrentStorm)
+		{
+			ATornado* CurrentTornado = CurrentStorm->GetSpawnedTornado();
+			if (CurrentTornado)
+			{
+				const FVector CurrentTornadoLocation(CurrentTornado->GetActorLocation());
+				SpawnChunksAtLocation(CurrentTornadoLocation);
+			}
+		}
 	}
 }
 
@@ -351,11 +368,9 @@ void AChunkManager::RemoveOutOfRangeChunks()
 			continue;
 		}
 		
-		int32 DistanceFromChunkInvoker = -1;
+		int32 DistanceFromClosestChunkInvoker = -1;
 
-		// Get the weather and see if a storm or tornado is invoking chunks
-
-		// Gets the distance from closest player
+		// Get the distance from closest player
 		for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
 		{
 			APlayerController* PlayerController = Iterator->Get();
@@ -372,20 +387,44 @@ void AChunkManager::RemoveOutOfRangeChunks()
 				PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
 
 			const int32 DistanceFromPlayer = SpawnedChunk.Distance(PlayerChunkLocation);
-			if (DistanceFromChunkInvoker >= 0 && DistanceFromPlayer > DistanceFromChunkInvoker)
+			if (DistanceFromClosestChunkInvoker >= 0 && DistanceFromPlayer > DistanceFromClosestChunkInvoker)
 			{
 				continue;
 			}
 
-			DistanceFromChunkInvoker = DistanceFromPlayer;
+			DistanceFromClosestChunkInvoker = DistanceFromPlayer;
 		}
 
-		if (DistanceFromChunkInvoker == INDEX_NONE || DistanceFromChunkInvoker <= RENDER_DISTANCE)
+		// Get the weather and see if a storm or tornado is invoking chunks
+		AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+		if (WeatherManager)
+		{
+			// todo this is really, really bad code. it also needs to change if multiple storm support is added.
+			AStorm* CurrentStorm = WeatherManager->GetCurrentStorm();
+			if (CurrentStorm)
+			{
+				ATornado* CurrentTornado = CurrentStorm->GetSpawnedTornado();
+				if (CurrentTornado)
+				{
+					const FVector CurrentTornadoLocation(CurrentTornado->GetActorLocation());
+					const FIntVector2 CurrentTornadoChunkLocation(CurrentTornadoLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
+						CurrentTornadoLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
+
+					const int32 DistanceFromTornado = SpawnedChunk.Distance(CurrentTornadoChunkLocation);
+
+					if (DistanceFromClosestChunkInvoker < 0 || DistanceFromTornado <= DistanceFromClosestChunkInvoker)
+					{
+						DistanceFromClosestChunkInvoker = DistanceFromTornado;
+					}
+				}
+			}
+		}
+
+		if (DistanceFromClosestChunkInvoker == INDEX_NONE || DistanceFromClosestChunkInvoker <= RENDER_DISTANCE)
 		{
 			continue;
 		}
 
-		// TODO does this automatically shrink?
 		NewSpawnedChunks.Remove(SpawnedChunk);
 
 		SaveChunkData(SpawnedChunk.Chunk, true);
