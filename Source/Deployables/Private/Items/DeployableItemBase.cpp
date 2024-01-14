@@ -148,13 +148,13 @@ FTransform ADeployableItemBase::GetFreehandPlacementTransform()
 {
 	if (DeployableActorClass == nullptr)
 	{
-		return;
+		return FTransform::Identity;
 	}
 
 	ADeployable* DefaultDeployableActorClass = DeployableActorClass.GetDefaultObject();
 	if (DefaultDeployableActorClass == nullptr)
 	{
-		return;
+		return FTransform::Identity;
 	}
 
 	FVector PlacementLocation = FVector::ZeroVector;
