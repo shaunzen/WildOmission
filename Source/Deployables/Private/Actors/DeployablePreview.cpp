@@ -9,6 +9,10 @@ static UMaterialInstance* PreviewMaterial = nullptr;
 
 ADeployablePreview::ADeployablePreview()
 {
+	PrimaryActorTick.bCanEverTick = false;
+
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
 	SetMobility(EComponentMobility::Movable);
 	GetStaticMeshComponent()->SetCollisionProfileName(TEXT("NoCollision"));
 	CollisionCheckMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CollisionMeshComponent"));

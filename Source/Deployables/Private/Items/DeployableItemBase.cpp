@@ -101,23 +101,36 @@ void ADeployableItemBase::OnPlace()
 
 bool ADeployableItemBase::LineTraceOnChannel(TEnumAsByte<ECollisionChannel> ChannelToTrace, FHitResult& OutHitResult) const
 {
-	if (GetOwnerPawn() == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr)
 	{
 		return false;
 	}
 
-	FVector Start = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation();
-	FVector End = Start + (UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation()) * DeployableRange);	// In this case the replicated rotation isnt needed,
+	APawn* OwnerPawn = GetOwnerPawn();
+	if (OwnerPawn == nullptr)
+	{
+		return false;
+	}
+
+	UCameraComponent* PawnCameraComponent = OwnerPawn->FindComponentByClass<UCameraComponent>();
+	if (PawnCameraComponent == nullptr)
+	{
+		return false;
+	}
+
+	FVector Start = PawnCameraComponent->GetComponentLocation();
+	FVector End = Start + (UKismetMathLibrary::GetForwardVector(OwnerPawn->GetControlRotation()) * DeployableRange);	// In this case the replicated rotation isnt needed,
 	FCollisionQueryParams Params;																							// this is because the autonomys proxy and the authority are the only ones
 																															// who will be reading this data, both are well aware of the control rotatation
-	Params.AddIgnoredActor(GetOwner());
+	Params.AddIgnoredActor(OwnerPawn);
 	Params.AddIgnoredActor(this);
 	if (PreviewActor)
 	{
 		Params.AddIgnoredActor(PreviewActor);
 	}
 
-	if (GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ChannelToTrace, Params))
+	if (World->LineTraceSingleByChannel(OutHitResult, Start, End, ChannelToTrace, Params))
 	{
 		return true;
 	}
@@ -133,6 +146,17 @@ bool ADeployableItemBase::GetPlacementTransform(FTransform& OutPlacementTransfor
 
 FTransform ADeployableItemBase::GetFreehandPlacementTransform()
 {
+	if (DeployableActorClass == nullptr)
+	{
+		return;
+	}
+
+	ADeployable* DefaultDeployableActorClass = DeployableActorClass.GetDefaultObject();
+	if (DefaultDeployableActorClass == nullptr)
+	{
+		return;
+	}
+
 	FVector PlacementLocation = FVector::ZeroVector;
 	FRotator PlacementRotation = FRotator::ZeroRotator;
 	FVector PlacementUp = FVector::UpVector;
@@ -141,14 +165,14 @@ FTransform ADeployableItemBase::GetFreehandPlacementTransform()
 	if (LineTraceOnChannel(ECC_Visibility, HitResult))
 	{
 		PlacementLocation = HitResult.ImpactPoint;
-		if (DeployableActorClass && DeployableActorClass.GetDefaultObject()->FollowsSurfaceNormal())
+		if (DeployableActorClass && DefaultDeployableActorClass->FollowsSurfaceNormal())
 		{
 			PlacementUp = HitResult.ImpactNormal;
 		}
 	}
 	else
 	{
-		PlacementLocation = GetOwnerPawn()->FindComponentByClass<UCameraComponent>()->GetComponentLocation() + (UKismetMathLibrary::GetForwardVector(GetOwnerPawn()->GetControlRotation()) * DeployableRange);
+		PlacementLocation = GetLocationInFrontOfPlayer();
 	}
 
 	PlacementRotation = GetFacePlayerRotation(PlacementLocation, PlacementUp);
@@ -160,9 +184,35 @@ FTransform ADeployableItemBase::GetFreehandPlacementTransform()
 	return PlacementTransform;
 }
 
+FVector ADeployableItemBase::GetLocationInFrontOfPlayer() const
+{
+	APawn* OwnerPawn = GetOwnerPawn();
+	if (OwnerPawn == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
+	UCameraComponent* PawnCameraComponent = OwnerPawn->FindComponentByClass<UCameraComponent>();
+	if (PawnCameraComponent == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
+	const FVector PawnCameraLocation = PawnCameraComponent->GetComponentLocation();
+	const FVector PawnForwardVector = UKismetMathLibrary::GetForwardVector(OwnerPawn->GetControlRotation());
+
+	return PawnCameraLocation + (PawnForwardVector * DeployableRange);
+}
+
 FRotator ADeployableItemBase::GetFacePlayerRotation(const FVector& PlacementLocation, const FVector& Up) const
 {
-	const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetOwnerPawn()->GetActorLocation(), PlacementLocation);
+	APawn* OwnerPawn = GetOwnerPawn();
+	if (OwnerPawn == nullptr)
+	{
+		return FRotator::ZeroRotator;
+	}
+
+	const FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(OwnerPawn->GetActorLocation(), PlacementLocation);
 
 	const FVector PlacementForward = -UKismetMathLibrary::GetForwardVector(FRotator(90.0f - Up.Rotation().Pitch, LookAtRotation.Yaw, 0.0f));
 	const FVector PlacementRight = -UKismetMathLibrary::GetRightVector(FRotator(0.0f, LookAtRotation.Yaw, 0.0f));
@@ -239,6 +289,11 @@ void ADeployableItemBase::Client_SpawnPreview_Implementation()
 	}
 
 	PreviewActor = World->SpawnActor<ADeployablePreview>();
+	if (PreviewActor == nullptr)
+	{
+		return;
+	}
+
 	if (DeployableActorClass.GetDefaultObject() != nullptr)
 	{
 		PreviewActor->Setup(DeployableActorClass.GetDefaultObject());

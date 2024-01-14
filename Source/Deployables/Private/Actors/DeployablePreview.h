@@ -12,6 +12,7 @@ UCLASS()
 class DEPLOYABLES_API ADeployablePreview : public AStaticMeshActor
 {
 	GENERATED_BODY()
+
 public:
 	ADeployablePreview();
 	
