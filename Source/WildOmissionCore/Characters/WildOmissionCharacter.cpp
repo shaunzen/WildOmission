@@ -395,18 +395,6 @@ void AWildOmissionCharacter::Jump()
 {
 	Super::Jump();
 
-	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
-	if (OurCharacterMovement == nullptr)
-	{
-		return;
-	}
-
-	if (OurCharacterMovement->IsFlying())
-	{
-		const float UpwardSpeed = 5000000.0f;
-		OurCharacterMovement->AddForce(UpwardSpeed * FVector::UpVector);
-	}
-
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (IsLocallyControlled() && CanJump() && UserSettings && UserSettings->GetCameraShakeEnabled() && PlayerController && JumpCameraShake)
@@ -740,7 +728,9 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndSprint);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartCrouch);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndCrouch);
+	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::OnCrouchHeld);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
+	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::OnJumpHeld);
 	EnhancedInputComponent->BindAction(FlyAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::HandleFly);
 
 	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::PrimaryPressed);
@@ -866,17 +856,6 @@ void AWildOmissionCharacter::StartCrouch()
 		return;
 	}
 
-	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
-	if (OurCharacterMovement == nullptr)
-	{
-		return;
-	}
-
-	if (OurCharacterMovement->IsFlying())
-	{
-		const float DownwardSpeed = 5000000.0f;
-		OurCharacterMovement->AddForce(DownwardSpeed * -FVector::UpVector);
-	}
 	Crouch();
 }
 
@@ -888,6 +867,38 @@ void AWildOmissionCharacter::EndCrouch()
 	}
 
 	UnCrouch();
+}
+
+void AWildOmissionCharacter::OnJumpHeld()
+{
+	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
+	if (OurCharacterMovement == nullptr)
+	{
+		return;
+	}
+
+	if (!OurCharacterMovement->IsFlying())
+	{
+		return;
+	}
+	
+	AddMovementInput(FVector::UpVector);
+}
+
+void AWildOmissionCharacter::OnCrouchHeld()
+{
+	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
+	if (OurCharacterMovement == nullptr)
+	{
+		return;
+	}
+
+	if (!OurCharacterMovement->IsFlying())
+	{
+		return;
+	}
+
+	AddMovementInput(-FVector::UpVector);
 }
 
 void AWildOmissionCharacter::OnRep_MovementSpeed()

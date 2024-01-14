@@ -261,6 +261,11 @@ private:
 	UFUNCTION()
 	void EndCrouch();
 
+	UFUNCTION()
+	void OnJumpHeld();
+	UFUNCTION()
+	void OnCrouchHeld();
+
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MovementSpeed)
 	float DesiredMovementSpeed;
 
