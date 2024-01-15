@@ -66,19 +66,25 @@ void USpecialEffectsManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetOwner()->OnDestroyed.AddDynamic(this, &USpecialEffectsManagerComponent::OnOwnerDestroyed);
-
-	OwnerCamera = GetOwner()->FindComponentByClass<UCameraComponent>();
-
-	AActor* HeightFogActor = UGameplayStatics::GetActorOfClass(GetWorld(), AExponentialHeightFog::StaticClass());
-	if (HeightFogActor == nullptr)
+	UWorld* World = GetWorld();
+	AActor* OwnerActor = GetOwner();
+	if (World == nullptr || OwnerActor == nullptr)
 	{
 		return;
 	}
 
-	FogComponent = HeightFogActor->FindComponentByClass<UExponentialHeightFogComponent>();
+	OwnerActor->OnDestroyed.AddDynamic(this, &USpecialEffectsManagerComponent::OnOwnerDestroyed);
 
-	TimeOfDayManager = Cast<ATimeOfDayManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeOfDayManager::StaticClass()));
+	OwnerCamera = OwnerActor->FindComponentByClass<UCameraComponent>();
+
+	AActor* HeightFogActor = UGameplayStatics::GetActorOfClass(World, AExponentialHeightFog::StaticClass());
+	if (HeightFogActor)
+	{
+		FogComponent = HeightFogActor->FindComponentByClass<UExponentialHeightFogComponent>();
+	}
+
+
+	TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
 }
 
 
@@ -94,18 +100,19 @@ void USpecialEffectsManagerComponent::TickComponent(float DeltaTime, ELevelTick 
 
 void USpecialEffectsManagerComponent::HandleNightTimeGamma()
 {
-	if (OwnerCamera == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || OwnerCamera == nullptr)
 	{
 		return;
 	}
 	
 	if (TimeOfDayManager->IsNight())
 	{
-		NightGammaStrength = FMath::Clamp(NightGammaStrength + (0.1f * GetWorld()->GetDeltaSeconds()), 0.0f, 1.0f);
+		NightGammaStrength = FMath::Clamp(NightGammaStrength + (0.1f * World->GetDeltaSeconds()), 0.0f, 1.0f);
 	}
 	else
 	{
-		NightGammaStrength = FMath::Clamp(NightGammaStrength - (0.1f * GetWorld()->GetDeltaSeconds()), 0.0f, 1.0f);
+		NightGammaStrength = FMath::Clamp(NightGammaStrength - (0.1f * World->GetDeltaSeconds()), 0.0f, 1.0f);
 	}
 	
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
@@ -120,12 +127,13 @@ void USpecialEffectsManagerComponent::HandleNightTimeGamma()
 
 void USpecialEffectsManagerComponent::HandleLowHealthEffects()
 {
-	if (GetOwner() == nullptr || OwnerCamera == nullptr)
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr || OwnerCamera == nullptr)
 	{
 		return;
 	}
 
-	UVitalsComponent* OwnerVitalsComponent = GetOwner()->FindComponentByClass<UVitalsComponent>();
+	UVitalsComponent* OwnerVitalsComponent = OwnerActor->FindComponentByClass<UVitalsComponent>();
 	if (OwnerVitalsComponent == nullptr)
 	{
 		return;
@@ -169,10 +177,16 @@ void USpecialEffectsManagerComponent::HandleWeatherEffects()
 
 void USpecialEffectsManagerComponent::EnableRainfallEffects(float RainDensity)
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	FogComponent->SetFogDensity(0.05f);
 	FogComponent->SetFogHeightFalloff(0.001f);
 
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Effects, TEXT("FogIntensity"), RainDensity / 2200.0f);
+	UKismetMaterialLibrary::SetScalarParameterValue(World, MPC_Effects, TEXT("FogIntensity"), RainDensity / 2200.0f);
 	
 	if (SpawnedRainComponent == nullptr)
 	{
@@ -189,11 +203,11 @@ void USpecialEffectsManagerComponent::EnableRainfallEffects(float RainDensity)
 	FHitResult HitResult;
 	if (LineTraceIntoSkyOnChannel(ECollisionChannel::ECC_Visibility, HitResult) && CastToStorm(HitResult.GetActor()) == nullptr)
 	{
-		RainSoundCutoff = FMath::Clamp(FMath::Lerp(RainSoundCutoff, 500.0f, 5.0f * GetWorld()->GetDeltaSeconds()), 500.0f, 20000.0f);
+		RainSoundCutoff = FMath::Clamp(FMath::Lerp(RainSoundCutoff, 500.0f, 5.0f * World->GetDeltaSeconds()), 500.0f, 20000.0f);
 	}
 	else
 	{
-		RainSoundCutoff = FMath::Clamp(FMath::Lerp(RainSoundCutoff, 20000.0f, 5.0f * GetWorld()->GetDeltaSeconds()), 500.0f, 20000.0f);
+		RainSoundCutoff = FMath::Clamp(FMath::Lerp(RainSoundCutoff, 20000.0f, 5.0f * World->GetDeltaSeconds()), 500.0f, 20000.0f);
 	}
 
 	SpawnedRainAudioComponent->SetFloatParameter(TEXT("Cutoff"), RainSoundCutoff);
@@ -207,10 +221,16 @@ void USpecialEffectsManagerComponent::EnableRainfallEffects(float RainDensity)
 
 void USpecialEffectsManagerComponent::DisableRainfallEffects()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	FogComponent->SetFogDensity(0.02f);
 	FogComponent->SetFogHeightFalloff(0.2f);
 	
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Effects, TEXT("FogIntensity"), 0.0f);
+	UKismetMaterialLibrary::SetScalarParameterValue(World, MPC_Effects, TEXT("FogIntensity"), 0.0f);
 
 	if (SpawnedRainComponent)
 	{
@@ -237,12 +257,19 @@ AStorm* USpecialEffectsManagerComponent::CastToStorm(AActor* InActor)
 
 bool USpecialEffectsManagerComponent::LineTraceIntoSkyOnChannel(ECollisionChannel ChannelToTrace, FHitResult& OutHitResult) const
 {
+	UWorld* World = GetWorld();
+	AActor* OwnerActor = GetOwner();
+	if (World == nullptr || OwnerActor == nullptr)
+	{
+		return false;
+	}
+
 	FVector Start = GetComponentLocation();
 	FVector End = Start + FVector::UpVector * 100000.0f;
 	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(GetOwner());
+	Params.AddIgnoredActor(OwnerActor);
 
-	return GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ChannelToTrace, Params);
+	return World->LineTraceSingleByChannel(OutHitResult, Start, End, ChannelToTrace, Params);
 }
 
 void USpecialEffectsManagerComponent::OnOwnerDestroyed(AActor* DestroyedActor)
