@@ -39,8 +39,9 @@ public:
 	// End IPlayerControllerMessageSender Implementation
 
 	// Begin IBedController Implementation
-	virtual void SetBedUniqueID(const int32& InUniqueID) override;
+	virtual void SetCurrentBed(const int32& InBedUniqueID, const FVector& InBedWorldLocation) override;
 	virtual int32 GetBedUniqueID() const override;
+	virtual FVector GetBedWorldLocation() const override;
 	// End IBedController Implementation
 
 	void Save();
@@ -77,6 +78,8 @@ private:
 
 	UPROPERTY(Replicated)
 	int32 BedUniqueID;
+
+	FVector BedWorldLocation;
 
 	UPROPERTY(Replicated)
 	FIntVector2 SpawnChunk;

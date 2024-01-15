@@ -71,6 +71,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 
 	PlayerSaveData.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
 	PlayerSaveData.BedUniqueID = BedUniqueID;
+	PlayerSaveData.BedWorldLocation = BedWorldLocation;
 	PlayerSaveData.NewPlayer = false;
 	
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
@@ -99,6 +100,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSaveData& SaveData)
 {
 	BedUniqueID = SaveData.BedUniqueID;
+	BedWorldLocation = SaveData.BedWorldLocation;
 
 	StoredPlayerSaveData = SaveData;
 }
@@ -130,14 +132,20 @@ void AWildOmissionPlayerController::SendMessage(APlayerState* Sender, const FStr
 	Server_SendMessage(Sender, Message);
 }
 
-void AWildOmissionPlayerController::SetBedUniqueID(const int32& InUniqueID)
+void AWildOmissionPlayerController::SetCurrentBed(const int32& InBedUniqueID, const FVector& InBedWorldLocation)
 {
-	BedUniqueID = InUniqueID;
+	BedUniqueID = InBedUniqueID;
+	BedWorldLocation = InBedWorldLocation;
 }
 
 int32 AWildOmissionPlayerController::GetBedUniqueID() const
 {
 	return BedUniqueID;
+}
+
+FVector AWildOmissionPlayerController::GetBedWorldLocation() const
+{
+	return BedWorldLocation;
 }
 
 void AWildOmissionPlayerController::Save()

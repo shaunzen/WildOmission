@@ -444,13 +444,34 @@ void AWildOmissionGameMode::SpawnHumanAtBed(AController* Controller)
 		return;
 	}
 	
-	TArray<AActor*> BedActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABed::StaticClass(), BedActors);
+	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+	const FVector BedWorldLocation = WOPlayerController->GetBedWorldLocation();
+	const FIntVector2 BedChunkLocation(FMath::RoundToInt32(BedWorldLocation.X / ChunkSize), FMath::RoundToInt32(BedWorldLocation.Y / ChunkSize));
+
+	AChunk* BedChunk = ChunkManager->GenerateChunkAtLocation(BedChunkLocation);
+	if (BedChunk == nullptr)
+	{
+		return;
+	}
+
+	TArray<AActor*> ChunkAttachedActors;
+	BedChunk->GetAttachedActors(ChunkAttachedActors);
+
+	TArray<ABed*> ChunkBeds;
+	for (AActor* AttachedActor : ChunkAttachedActors)
+	{
+		ABed* AttachedBed = Cast<ABed>(AttachedActor);
+		if (AttachedBed == nullptr)
+		{
+			continue;
+		}
+
+		ChunkBeds.Add(AttachedBed);
+	}
 
 	ABed* SpawnBed = nullptr;
-	for (AActor* BedActor : BedActors)
+	for (ABed* Bed : ChunkBeds)
 	{
-		ABed* Bed = Cast<ABed>(BedActor);
 		if (Bed == nullptr)
 		{
 			continue;
