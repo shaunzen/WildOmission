@@ -25,7 +25,7 @@ AWeatherManager::AWeatherManager()
 	bAlwaysRelevant = true;
 	NetUpdateFrequency = 2.0f;
 	
-	SaveComponent = CreateDefaultSubobject<UWeatherSaveComponent>(TEXT("Save Component"));
+	SaveComponent = CreateDefaultSubobject<UWeatherSaveComponent>(TEXT("SaveComponent"));
 
 	StormsDisabled = false;
 

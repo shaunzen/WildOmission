@@ -109,13 +109,7 @@ TEnumAsByte<EGameDifficulty> UWorldMenuWidget::GetWorldDifficulty() const
 void UWorldMenuWidget::SetWorldDifficulty(const TEnumAsByte<EGameDifficulty>& NewDifficulty)
 {
 	// Get the save file
-	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
-	if (SaveFile == nullptr)
-	{
-		return;
-	}
-
-	SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
+	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
 	if (SaveFile == nullptr)
 	{
 		return;

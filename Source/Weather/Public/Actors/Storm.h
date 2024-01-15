@@ -46,6 +46,9 @@ public:
 	bool IsRaining(float& OutDensity) const;
 	void SetLocalPlayerUnderneath(bool IsUnder);
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* StormRootComponent;

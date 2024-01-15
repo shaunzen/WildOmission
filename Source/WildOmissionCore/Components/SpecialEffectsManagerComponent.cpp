@@ -209,7 +209,7 @@ void USpecialEffectsManagerComponent::DisableRainfallEffects()
 {
 	FogComponent->SetFogDensity(0.02f);
 	FogComponent->SetFogHeightFalloff(0.2f);
-
+	
 	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_Effects, TEXT("FogIntensity"), 0.0f);
 
 	if (SpawnedRainComponent)

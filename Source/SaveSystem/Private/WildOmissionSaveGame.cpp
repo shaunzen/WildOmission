@@ -20,6 +20,6 @@ UWildOmissionSaveGame::UWildOmissionSaveGame()
 	Difficulty = EGameDifficulty::EGD_Normal;
 	LevelFile = TEXT("LV_Procedural");
 	Seed = 0;
-	Version = 0;
+	Version = 3;
 	CheatsEnabled = false;
 }

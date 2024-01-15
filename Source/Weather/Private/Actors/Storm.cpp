@@ -322,6 +322,29 @@ void AStorm::SetLocalPlayerUnderneath(bool IsUnder)
 	LocalPlayerUnder = IsUnder;
 }
 
+void AStorm::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+	if (WeatherManager == nullptr)
+	{
+		return;
+	}
+
+	if (!WeatherManager->GetStormsDisabled())
+	{
+		return;
+	}
+
+	this->HandleDestruction();
+}
+
 void AStorm::SetSeverity(float NewSeverity)
 {
 	Severity = NewSeverity;
