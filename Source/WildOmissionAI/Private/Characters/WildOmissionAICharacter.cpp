@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/DamageEvents.h"
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
 
@@ -106,6 +107,34 @@ void AWildOmissionAICharacter::HandleDeath()
 		}
 	}
 	HandleDespawn();
+}
+
+void AWildOmissionAICharacter::Landed(const FHitResult& HitResult)
+{
+	Super::Landed(HitResult);
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	UCharacterMovementComponent* OurMovementComponent = GetCharacterMovement();
+	if (OurMovementComponent == nullptr || VitalsComponent == nullptr)
+	{
+		return;
+	}
+
+	const float DamageThreshold = 1000.0f;
+	const float FallVelocity = OurMovementComponent->GetLastUpdateVelocity().GetAbs().Z;
+	if (FallVelocity <= DamageThreshold)
+	{
+		return;
+	}
+
+	const float DamageToApply = FMath::Lerp(0.0f, VitalsComponent->GetMaxHealth(), (FallVelocity - DamageThreshold) / DamageThreshold);
+	FPointDamageEvent FallDamageEvent(DamageToApply, HitResult, -FVector::UpVector, nullptr);
+	this->TakeDamage(DamageToApply, FallDamageEvent, GetController(), this);
+	// TODO crunch sound
 }
 
 void AWildOmissionAICharacter::StartRunning()

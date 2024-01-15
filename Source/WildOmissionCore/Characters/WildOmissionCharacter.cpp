@@ -406,6 +406,7 @@ void AWildOmissionCharacter::Jump()
 void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 {
 	Super::Landed(HitResult);
+
 	if (!HasAuthority())
 	{
 		return;

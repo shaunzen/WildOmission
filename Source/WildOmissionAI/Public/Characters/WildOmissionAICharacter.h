@@ -32,6 +32,8 @@ public:
 
 	FOnAICharacterDespawnSignature OnDespawn;
 
+	virtual void Landed(const FHitResult& HitResult) override;
+
 	UFUNCTION()
 	virtual void StartRunning();
 
