@@ -29,7 +29,6 @@ void ABed::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProp
 
 void ABed::Interact(AActor* Interactor)
 {
-	// TODO if this isn't the players current spawn point, then set it as the current spawn point
 	APawn* InteractingPawn = Cast<APawn>(Interactor);
 	if (InteractingPawn == nullptr)
 	{
