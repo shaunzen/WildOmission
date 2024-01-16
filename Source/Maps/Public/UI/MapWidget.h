@@ -13,5 +13,20 @@ UCLASS()
 class MAPS_API UMapWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+public:
+	UMapWidget(const FObjectInitializer& ObjectInitializer);
+
+	virtual void NativeConstruct() override;
+
+	void Setup();
+	void Teardown();
+
+protected:
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+
+private:
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* CloseButton;
+
 };
