@@ -38,6 +38,12 @@ public:
 
 	USkeletalMeshComponent* GetFirstPersonItemComponent() const;
 
+	void SetFirstPersonArmLocationOffset(const FVector& InOffset);
+	void SetFirstPersonArmRotationOffset(const FRotator& InOffset);
+
+	FVector GetFirstPersonArmLocationOffset() const;
+	FRotator GetFirstPersonArmRotationOffset() const;
+
 	void PlayItemMontage(UAnimMontage* PlayerMontage, UAnimMontage* ItemMontage = nullptr);
 	void StopAllItemMontages();
 

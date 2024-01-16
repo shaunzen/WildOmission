@@ -18,6 +18,10 @@ AFirearmItem::AFirearmItem()
 	ReloadItemMontage = nullptr;
 
 	MuzzleFlashEffect = nullptr;
+	
+	AimArmLocationOffset = FVector::ZeroVector;
+	AimArmRotationOffset = FRotator::ZeroRotator;
+
 	RateOfFireRPM = 600;
 	CanFire = true;
 
@@ -131,6 +135,16 @@ void AFirearmItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 
 	Reload();
 	PlayReloadClimaxCameraShake();
+}
+
+FVector AFirearmItem::GetAimArmLocationOffset() const
+{
+	return AimArmLocationOffset;
+}
+
+FRotator AFirearmItem::GetAimArmRotationOffset() const
+{
+	return AimArmRotationOffset;
 }
 
 int32 AFirearmItem::GetRateOfFire() const

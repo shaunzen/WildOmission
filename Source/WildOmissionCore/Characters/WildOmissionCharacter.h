@@ -150,6 +150,9 @@ private:
 	void SetAiming(bool Aim);
 	void HandleAiming();
 
+	FVector GetAimArmLocationOffset() const;
+	FRotator GetAimArmRotationOffset() const;
+
 	UPROPERTY()
 	bool bUnderwater;
 
