@@ -19,7 +19,10 @@ public:
 
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
 	void Setup();
+
+	UFUNCTION()
 	void Teardown();
 
 protected:

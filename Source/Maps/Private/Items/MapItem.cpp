@@ -51,6 +51,10 @@ void AMapItem::BringUpMap()
 	}
 
 	OpenWidget = CreateWidget<UMapWidget>(OwnerPlayerController, MapWidgetClass);
+	if (OpenWidget == nullptr)
+	{
+		return;
+	}
 
-	OpenWidget->AddToViewport();
+	OpenWidget->Setup();
 }
