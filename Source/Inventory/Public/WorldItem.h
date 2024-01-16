@@ -34,6 +34,9 @@ public:
 	void SetItem(const FInventoryItem& InItem);
 	void AddImpulse(FVector Impulse);
 
+	void SetLastClump(AWorldItem* InLastClump);
+	AWorldItem* GetLastClump() const;
+
 	FInventoryItem GetItem() const;
 
 protected:
@@ -58,6 +61,9 @@ private:
 
 	UPROPERTY()
 	USoundBase* PickupSound;
+
+	UPROPERTY();
+	AWorldItem* LastClump;
 
 	void UpdateAttachedChunk();
 

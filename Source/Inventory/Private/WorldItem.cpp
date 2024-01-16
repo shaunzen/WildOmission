@@ -27,6 +27,8 @@ AWorldItem::AWorldItem()
 	Item.Name = TEXT("Item");
 	Item.Quantity = 1;
 
+	LastClump = nullptr;
+
 	ItemRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ItemRootComponent"));
 	RootComponent = ItemRootComponent;
 
@@ -118,7 +120,6 @@ FName AWorldItem::GetIdentifier() const
 	return TEXT("WorldItem");
 }
 
-// TODO on replicate update mesh why tf are we replicating the mesh and what item we are using wtf?
 void AWorldItem::SetItem(const FInventoryItem& InItem)
 {
 	Item = InItem;
@@ -128,6 +129,16 @@ void AWorldItem::SetItem(const FInventoryItem& InItem)
 void AWorldItem::AddImpulse(FVector Impulse)
 {
 	MeshComponent->AddImpulse(Impulse);
+}
+
+void AWorldItem::SetLastClump(AWorldItem* InLastClump)
+{
+	LastClump = InLastClump;
+}
+
+AWorldItem* AWorldItem::GetLastClump() const
+{
+	return LastClump;
 }
 
 FInventoryItem AWorldItem::GetItem() const
@@ -171,7 +182,7 @@ void AWorldItem::OnRep_Item()
 void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	AWorldItem* OtherWorldItem = Cast<AWorldItem>(OtherActor);
-	if (OtherWorldItem == nullptr)
+	if (OtherWorldItem == nullptr || OtherWorldItem == LastClump)
 	{
 		return;
 	}
@@ -194,6 +205,7 @@ void AWorldItem::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Other
 		
 		OtherItem.Quantity = RemainingQuantity;
 		OtherWorldItem->SetItem(OtherItem);
+		OtherWorldItem->SetLastClump(this);
 
 		this->SetItem(OurItem);
 	}
@@ -214,20 +226,22 @@ void AWorldItem::OnLoadComplete_Implementation()
 
 void AWorldItem::Multi_PlayClumpSound_Implementation()
 {
-	if (ClumpSound == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || ClumpSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ClumpSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(World, ClumpSound, GetActorLocation());
 }
 
 void AWorldItem::Multi_PlayPickupSound_Implementation()
 {
-	if (PickupSound == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || PickupSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PickupSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(World, PickupSound, GetActorLocation());
 }
