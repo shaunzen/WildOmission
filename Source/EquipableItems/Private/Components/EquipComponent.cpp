@@ -205,7 +205,6 @@ FVector UEquipComponent::GetFirstPersonArmLocationOffset() const
 	}
 
 	const FVector DefaultArmLocation = FVector(-5.0f, 0.0f, -160.0f);
-	// TODO might need to flip
 	return DefaultArmLocation - OwnerFirstPersonMesh->GetRelativeLocation();
 }
 
