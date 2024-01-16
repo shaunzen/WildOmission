@@ -326,14 +326,23 @@ void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& I
 			// Store the slot's item information
 			FInventoryItem MovingItem = UseServerState ? ServerState.Slots[Interaction.SlotIndex].Item : Slots[Interaction.SlotIndex].Item;
 
-			// Remove this slot's item
-			UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
-
 			// Find the best availible slot and add the item to it
 			const bool FromToolbar = Interaction.SlotIndex < 6;
 			int32 Remaining = 0; // THIS ISNT USED HERE
-
-			AddItemToSlots(MovingItem, Remaining, FromToolbar);
+			const bool AddedAll = AddItemToSlots(MovingItem, Remaining, FromToolbar);
+			
+			if (AddedAll)
+			{
+				// Remove this slot's item
+				UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
+			}
+			else
+			{
+				FInventoryItem NewItem = MovingItem;
+				NewItem.Quantity = Remaining;
+				UseServerState ? ServerState.Slots[Interaction.SlotIndex].SetItem(NewItem) : Slots[Interaction.SlotIndex].SetItem(NewItem);
+			}
+			
 		}
 	}
 	else if (ContainerOpen && !WithinPlayerInventory) // Interaction from within an open container to the player's inventory
