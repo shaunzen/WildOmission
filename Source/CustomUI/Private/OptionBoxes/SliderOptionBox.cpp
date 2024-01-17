@@ -81,4 +81,14 @@ void USliderOptionBox::OnSliderValueChanged(float Value)
 
 	TextBlock->SetText(FText::FromString(ValueString));
 	Slider->SetValue(Value);
+
+	if (OnValueChanged.IsBound())
+	{
+		OnValueChanged.Broadcast(Value);
+	}
+
+	if (OnValueChangedNoParams.IsBound())
+	{
+		OnValueChangedNoParams.Broadcast();
+	}
 }

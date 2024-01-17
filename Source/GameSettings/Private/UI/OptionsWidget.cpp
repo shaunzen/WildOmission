@@ -25,7 +25,6 @@ UOptionsWidget::UOptionsWidget(const FObjectInitializer& ObjectInitializer) : UU
 	WindowSettingsButton = nullptr;
 	PostProcessingSettingsButton = nullptr;
 	GraphicsSettingsButton = nullptr;
-	ApplyButton = nullptr;
 	ResetButton = nullptr;
 	BackButton = nullptr;
 }
@@ -41,7 +40,6 @@ void UOptionsWidget::NativeConstruct()
 	PostProcessingSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenPostProcessingSettings);
 	GraphicsSettingsButton->OnClicked.AddDynamic(this, &UOptionsWidget::OpenGraphicsSettings);
 
-	ApplyButton->OnClicked.AddDynamic(this, &UOptionsWidget::Apply);
 	ResetButton->OnClicked.AddDynamic(this, &UOptionsWidget::Reset);
 	BackButton->OnClicked.AddDynamic(this, &UOptionsWidget::Back);
 }

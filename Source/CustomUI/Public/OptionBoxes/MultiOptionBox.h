@@ -6,10 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "MultiOptionBox.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelectionChangeSignature, const FString&, NewSelection);
-
-class UButton;
-class UTextBlock;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMultiOptionBoxValueChangedSignature, const FString&, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMultiOptionBoxValueChangedNoParamsSignature);
 
 UCLASS()
 class CUSTOMUI_API UMultiOptionBox : public UUserWidget
@@ -26,18 +24,19 @@ public:
 	void SetSelectedIndex(const int32& NewIndex);
 	void ClearOptions();
 
-	FOnSelectionChangeSignature OnSelectionChange;
+	FOnMultiOptionBoxValueChangedSignature OnValueChanged;
+	FOnMultiOptionBoxValueChangedNoParamsSignature OnValueChangedNoParams;
 
 	FString GetSelectedOption() const;
 	int32 GetSelectedIndex() const;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UButton* NextButton;
+	class UButton* NextButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* PreviousButton;
+	class UButton* PreviousButton;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* SelectedTextBlock;
+	class UTextBlock* SelectedTextBlock;
 	
 	TArray<FString> Options;
 	int32 SelectedOptionIndex;

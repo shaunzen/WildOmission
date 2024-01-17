@@ -6,12 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "OptionsWidget.generated.h"
 
-class UVerticalBox;
-class UButton;
-class USliderOptionBox;
-class UWidgetSwitcher;
-class USettingsCategoryWidget;
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOptionsOnBackButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFieldOfViewChangedSignature);
 
@@ -19,8 +13,10 @@ UCLASS()
 class GAMESETTINGS_API UOptionsWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
 	UOptionsWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 	void Refresh();
 
@@ -29,42 +25,40 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UVerticalBox* CategoryButtonsVerticalBox;
+	class UVerticalBox* CategoryButtonsVerticalBox;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* AudioSettingsButton;
+	class UButton* AudioSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* GameplaySettingsButton;
+	class UButton* GameplaySettingsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* ControlsSettingsButton;
+	class UButton* ControlsSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* WindowSettingsButton;
+	class UButton* WindowSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* PostProcessingSettingsButton;
+	class UButton* PostProcessingSettingsButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* GraphicsSettingsButton;
+	class UButton* GraphicsSettingsButton;
 
 	UPROPERTY(Meta = (BindWidget))
-	UWidgetSwitcher* CategorySwitcher;
+	class UWidgetSwitcher* CategorySwitcher;
 
 	UPROPERTY(Meta = (BindWidget))
-	USettingsCategoryWidget* AudioSettings;
+	class USettingsCategoryWidget* AudioSettings;
 	UPROPERTY(Meta = (BindWidget))
-	USettingsCategoryWidget* GameplaySettings;
+	class USettingsCategoryWidget* GameplaySettings;
 	UPROPERTY(Meta = (BindWidget))
-	USettingsCategoryWidget* ControlsSettings;
+	class USettingsCategoryWidget* ControlsSettings;
 	UPROPERTY(Meta = (BindWidget))
-	USettingsCategoryWidget* WindowSettings;
+	class USettingsCategoryWidget* WindowSettings;
 	UPROPERTY(Meta = (BindWidget))
-	USettingsCategoryWidget* PostProcessingSettings;
+	class USettingsCategoryWidget* PostProcessingSettings;
 	UPROPERTY(Meta = (BindWidget))
-	USettingsCategoryWidget* GraphicsSettings;
+	class USettingsCategoryWidget* GraphicsSettings;
 
 	UPROPERTY(Meta = (BindWidget))
-	UButton* ApplyButton;
+	class UButton* ResetButton;
 	UPROPERTY(Meta = (BindWidget))
-	UButton* ResetButton;
-	UPROPERTY(Meta = (BindWidget))
-	UButton* BackButton;
+	class UButton* BackButton;
 
 	UFUNCTION()
 	void OpenAudioSettings();
@@ -79,7 +73,7 @@ private:
 	UFUNCTION()
 	void OpenGraphicsSettings();
 
-	void RefreshCategoryButtonColor(UButton* ButtonToRefresh);
+	void RefreshCategoryButtonColor(class UButton* ButtonToRefresh);
 
 	UFUNCTION()
 	void Apply();

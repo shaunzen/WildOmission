@@ -27,6 +27,16 @@ void UKeyOptionBox::SetSelectedKey(const FKey& NewSelectedKey)
 {
 	SelectedKey = NewSelectedKey;
 	RefreshTextBlock();
+
+	if (OnValueChanged.IsBound())
+	{
+		OnValueChanged.Broadcast(SelectedKey);
+	}
+
+	if (OnValueChangedNoParams.IsBound())
+	{
+		OnValueChangedNoParams.Broadcast();
+	}
 }
 
 FKey UKeyOptionBox::GetSelectedKey() const

@@ -15,7 +15,7 @@ void UGraphicsSettingsWidget::NativeConstruct()
 	// Setup Graphics Quality
 	OverallGraphicsQualityOptionBox->GiveQualityOptions();
 	OverallGraphicsQualityOptionBox->AddOption(TEXT("Custom"));
-	OverallGraphicsQualityOptionBox->OnSelectionChange.AddDynamic(this, &UGraphicsSettingsWidget::OnOverallQualityOptionChange);
+	OverallGraphicsQualityOptionBox->OnValueChanged.AddDynamic(this, &UGraphicsSettingsWidget::OnOverallQualityOptionChange);
 
 	// Setup Custom Settings
 	ViewDistanceQualityOptionBox->GiveQualityOptions();

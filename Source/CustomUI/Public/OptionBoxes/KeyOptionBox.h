@@ -6,8 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "KeyOptionBox.generated.h"
 
-class UBorder;
-class UTextBlock;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKeyOptionBoxValueChangedSignature, const FKey&, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnKeyOptionBoxValueChangedNoParamsSignature);
 
 UCLASS()
 class CUSTOMUI_API UKeyOptionBox : public UUserWidget
@@ -18,7 +18,10 @@ public:
 	UKeyOptionBox(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeConstruct() override;
-	
+
+	FOnKeyOptionBoxValueChangedSignature OnValueChanged;
+	FOnKeyOptionBoxValueChangedNoParamsSignature OnValueChangedNoParams;
+
 	void SetSelectedKey(const FKey& NewSelectedKey);
 	FKey GetSelectedKey() const;
 
@@ -31,9 +34,9 @@ protected:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UBorder* Border;
+	class UBorder* Border;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* TextBlock;
+	class UTextBlock* TextBlock;
 
 	FKey SelectedKey;
 	bool AwaitingInput;
