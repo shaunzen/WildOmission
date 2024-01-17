@@ -664,8 +664,9 @@ void AWildOmissionCharacter::SetAiming(bool Aim)
 void AWildOmissionCharacter::HandleAiming()
 {
 	UWorld* World = GetWorld();
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	if (World == nullptr || UserSettings == nullptr)
+	if (World == nullptr || PlayerController == nullptr || !PlayerController->IsLocalPlayerController() || UserSettings == nullptr)
 	{
 		return;
 	}
@@ -682,11 +683,13 @@ void AWildOmissionCharacter::HandleAiming()
 	float CurrentFOV = FirstPersonCameraComponent->FieldOfView;
 
 	// Calculate Arm Offset
-	const FVector AimArmLocationOffset = GetAimArmLocationOffset();
-	const FRotator AimArmRotationOffset = GetAimArmRotationOffset();
+	const FVector TargetAimArmLocationOffset = GetAimArmLocationOffset();
+	const FRotator TargetAimArmRotationOffset = GetAimArmRotationOffset();
 
 	const float ArmSpeed = 50.0f;
 	
+	const FVector DefaultArmLocation = FVector(-5.0f, 0.0f, -160.0f);
+
 	FVector CurrentArmLocationOffset = EquipComponent->GetFirstPersonArmLocationOffset();
 	FRotator CurrentArmRotationOffset = EquipComponent->GetFirstPersonArmRotationOffset();
 
@@ -696,20 +699,8 @@ void AWildOmissionCharacter::HandleAiming()
 		CurrentFOV = FMath::Clamp(CurrentFOV - FOVZoomSpeed * World->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
 		
 		// Move the arms
-		CurrentArmLocationOffset = FMath::Lerp(CurrentArmLocationOffset, AimArmLocationOffset, ArmSpeed * World->GetDeltaSeconds());
-		CurrentArmRotationOffset = FMath::Lerp(CurrentArmRotationOffset, AimArmRotationOffset, ArmSpeed * World->GetDeltaSeconds());
-
-		/*CurrentArmLocationOffset = FVector(
-			FMath::Clamp(CurrentArmLocationOffset.X + (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmLocationOffset.X),
-			FMath::Clamp(CurrentArmLocationOffset.Y + (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmLocationOffset.Y),
-			FMath::Clamp(CurrentArmLocationOffset.Z + (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmLocationOffset.Z)
-		);
-
-		CurrentArmRotationOffset = FRotator(
-			FMath::Clamp(CurrentArmRotationOffset.Pitch + (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmRotationOffset.Pitch),
-			FMath::Clamp(CurrentArmRotationOffset.Yaw + (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmRotationOffset.Yaw),
-			FMath::Clamp(CurrentArmRotationOffset.Roll + (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmRotationOffset.Roll)
-		);*/
+		CurrentArmLocationOffset = FMath::Lerp(CurrentArmLocationOffset, TargetAimArmLocationOffset, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
+		CurrentArmRotationOffset = FMath::Lerp(CurrentArmRotationOffset, TargetAimArmRotationOffset, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
 	}
 	else
 	{
@@ -717,23 +708,12 @@ void AWildOmissionCharacter::HandleAiming()
 		CurrentFOV = FMath::Clamp(CurrentFOV + FOVZoomSpeed * World->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
 
 		// Move the arms
-		CurrentArmLocationOffset = FMath::Lerp(CurrentArmLocationOffset, FVector::ZeroVector, ArmSpeed * World->GetDeltaSeconds());
-		CurrentArmRotationOffset = FMath::Lerp(CurrentArmRotationOffset, FRotator::ZeroRotator, ArmSpeed * World->GetDeltaSeconds());
-
-		//CurrentArmLocationOffset = FVector(
-		//	FMath::Clamp(CurrentArmLocationOffset.X - (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmLocationOffset.X),
-		//	FMath::Clamp(CurrentArmLocationOffset.Y - (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmLocationOffset.Y),
-		//	FMath::Clamp(CurrentArmLocationOffset.Z - (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmLocationOffset.Z)
-		//);
-
-		//CurrentArmRotationOffset = FRotator(
-		//	FMath::Clamp(CurrentArmRotationOffset.Pitch - (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmRotationOffset.Pitch),
-		//	FMath::Clamp(CurrentArmRotationOffset.Yaw - (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmRotationOffset.Yaw),
-		//	FMath::Clamp(CurrentArmRotationOffset.Roll - (ArmSpeed * World->GetDeltaSeconds()), 0.0f, AimArmRotationOffset.Roll)
-		//);
+		CurrentArmLocationOffset = FMath::Lerp(CurrentArmLocationOffset, FVector::ZeroVector, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
+		CurrentArmRotationOffset = FMath::Lerp(CurrentArmRotationOffset, FRotator::ZeroRotator, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
 	}
 
 	FirstPersonCameraComponent->FieldOfView = CurrentFOV;
+
 	EquipComponent->SetFirstPersonArmLocationOffset(CurrentArmLocationOffset);
 	EquipComponent->SetFirstPersonArmRotationOffset(CurrentArmRotationOffset);
 }

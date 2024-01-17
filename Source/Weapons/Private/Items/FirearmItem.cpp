@@ -75,7 +75,7 @@ void AFirearmItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPers
 void AFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
-
+	UE_LOG(LogTemp, Warning, TEXT("Primary Pressed, HasAuthority =  %i"), HasAuthority());
 }
 
 void AFirearmItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
@@ -95,6 +95,7 @@ void AFirearmItem::OnSecondaryPressed()
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Secondary Pressed, HasAuthority =  %i"), HasAuthority());
 	OwnerEquipComponent->StartAim();
 }
 
