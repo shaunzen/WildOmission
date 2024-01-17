@@ -63,6 +63,8 @@ void UPostProcessingSettingsWidget::OnApply()
 	CharacterSettingsInterface->ApplyPostProcessingSettings();
 
 	UserSettings->ApplySettings(false);
+
+	OnRefresh();
 }
 
 void UPostProcessingSettingsWidget::OnRefresh()

@@ -58,6 +58,8 @@ void UGameplaySettingsWidget::OnApply()
 	CharacterSettingsInterface->ApplyGameplaySettings();
 
 	UserSettings->ApplySettings(false);
+
+	OnRefresh();
 }
 
 void UGameplaySettingsWidget::OnRefresh()

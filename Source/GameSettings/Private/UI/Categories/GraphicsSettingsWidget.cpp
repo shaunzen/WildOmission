@@ -85,6 +85,8 @@ void UGraphicsSettingsWidget::OnApply()
 	}
 
 	UserSettings->ApplySettings(false);
+
+	OnRefresh();
 }
 
 void UGraphicsSettingsWidget::OnRefresh()

@@ -100,6 +100,8 @@ void UControlsSettingsWidget::OnApply()
 	CharacterSettingsInterface->ApplyInputSettings();
 
 	UserSettings->ApplySettings(false);
+
+	OnRefresh();
 }
 
 void UControlsSettingsWidget::OnRefresh()

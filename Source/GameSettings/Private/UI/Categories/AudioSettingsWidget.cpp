@@ -77,6 +77,8 @@ void UAudioSettingsWidget::OnApply()
 	GameSettingsInterface->ApplyAudioSettings();
 	
 	UserSettings->ApplySettings(false);
+
+	OnRefresh();
 }
 
 void UAudioSettingsWidget::OnRefresh()
