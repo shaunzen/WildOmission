@@ -6,6 +6,13 @@
 #include "WildOmissionGameUserSettings.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+UWindowSettingsWidget::UWindowSettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
+{
+	WindowModeOptionBox = nullptr;
+	ResolutionOptionBox = nullptr;
+	FrameRateLimitOptionBox = nullptr;
+}
+
 void UWindowSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

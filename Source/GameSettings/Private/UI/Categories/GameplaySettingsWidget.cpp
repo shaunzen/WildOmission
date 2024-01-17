@@ -23,6 +23,13 @@ void UGameplaySettingsWidget::NativeConstruct()
 	
 	FieldOfViewSliderOptionBox->SetMinValue(60.0f);
 	FieldOfViewSliderOptionBox->SetMaxValue(110.0f);
+
+	ShowBrandingCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
+	ShowCrosshairCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
+	HideChatUnlessOpenCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
+	HideHUDCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
+	CameraShakeEnabledCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
+	FieldOfViewSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
 }
 
 void UGameplaySettingsWidget::OnApply()
@@ -43,10 +50,14 @@ void UGameplaySettingsWidget::OnApply()
 	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
 
 	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
-	if (CharacterSettingsInterface)
+	if (CharacterSettingsInterface == nullptr)
 	{
-		CharacterSettingsInterface->ApplyGameplaySettings();
+		return;
 	}
+	
+	CharacterSettingsInterface->ApplyGameplaySettings();
+
+	UserSettings->ApplySettings(false);
 }
 
 void UGameplaySettingsWidget::OnRefresh()

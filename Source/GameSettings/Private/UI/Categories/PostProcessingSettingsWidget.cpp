@@ -7,6 +7,16 @@
 #include "OptionBoxes/CheckOptionBox.h"
 #include "Interfaces/CharacterSettingsInterface.h"
 
+UPostProcessingSettingsWidget::UPostProcessingSettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
+{
+	GammaSliderOptionBox = nullptr;
+	AutoExposureCheckOptionBox = nullptr;
+	MotionBlurCheckOptionBox = nullptr;
+	BloomCheckOptionBox = nullptr;
+	AmbientOcclusionCheckOptionBox = nullptr;
+	FilmGrainCheckOptionBox = nullptr;
+}
+
 void UPostProcessingSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -18,6 +28,13 @@ void UPostProcessingSettingsWidget::NativeConstruct()
 	BloomCheckOptionBox->SetChecked(true);
 	AmbientOcclusionCheckOptionBox->SetChecked(true);
 	FilmGrainCheckOptionBox->SetChecked(false);
+
+	GammaSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	AutoExposureCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	MotionBlurCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	BloomCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	AmbientOcclusionCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	FilmGrainCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
 }
 
 void UPostProcessingSettingsWidget::OnApply()
@@ -38,10 +55,14 @@ void UPostProcessingSettingsWidget::OnApply()
 	UserSettings->SetFilmGrainEnabled(FilmGrainCheckOptionBox->IsChecked());
 
 	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
-	if (CharacterSettingsInterface)
+	if (CharacterSettingsInterface == nullptr)
 	{
-		CharacterSettingsInterface->ApplyPostProcessingSettings();
+		return;
 	}
+	
+	CharacterSettingsInterface->ApplyPostProcessingSettings();
+
+	UserSettings->ApplySettings(false);
 }
 
 void UPostProcessingSettingsWidget::OnRefresh()

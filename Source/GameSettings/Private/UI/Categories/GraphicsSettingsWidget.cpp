@@ -6,6 +6,22 @@
 #include "OptionBoxes/MultiOptionBox.h"
 #include "WildOmissionGameUserSettings.h"
 
+UGraphicsSettingsWidget::UGraphicsSettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
+{
+	RunHardwareBenchmarkButton = nullptr;
+	OverallGraphicsQualityOptionBox = nullptr;
+	ViewDistanceQualityOptionBox = nullptr;
+	ShadowQualityOptionBox = nullptr;
+	GlobalIlluminationQualityOptionBox = nullptr;
+	ReflectionQualityOptionBox = nullptr;
+	AntiAliasingQualityOptionBox = nullptr;
+	TextureQualityOptionBox = nullptr;
+	VisualEffectQualityOptionBox = nullptr;
+	PostProcessingQualityOptionBox = nullptr;
+	FoliageQualityOptionBox = nullptr;
+	ShaderQualityOptionBox = nullptr;
+}
+
 void UGraphicsSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -28,6 +44,18 @@ void UGraphicsSettingsWidget::NativeConstruct()
 	PostProcessingQualityOptionBox->GiveQualityOptions();
 	FoliageQualityOptionBox->GiveQualityOptions();
 	ShaderQualityOptionBox->GiveQualityOptions();
+
+	OverallGraphicsQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	ViewDistanceQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	ShadowQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	GlobalIlluminationQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	ReflectionQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	AntiAliasingQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	TextureQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	VisualEffectQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	PostProcessingQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	FoliageQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
+	ShaderQualityOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGraphicsSettingsWidget::OnApply);
 }
 
 void UGraphicsSettingsWidget::OnApply()
@@ -55,6 +83,8 @@ void UGraphicsSettingsWidget::OnApply()
 	{
 		UserSettings->SetOverallScalabilityLevel(OverallGraphicsQualityOptionBox->GetSelectedIndex());
 	}
+
+	UserSettings->ApplySettings(false);
 }
 
 void UGraphicsSettingsWidget::OnRefresh()

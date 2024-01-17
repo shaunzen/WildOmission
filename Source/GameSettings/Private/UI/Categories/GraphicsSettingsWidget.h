@@ -6,44 +6,43 @@
 #include "SettingsCategoryWidget.h"
 #include "GraphicsSettingsWidget.generated.h"
 
-class UButton;
-class UMultiOptionBox;
-
 UCLASS()
 class UGraphicsSettingsWidget : public USettingsCategoryWidget
 {
 	GENERATED_BODY()
 	
 public:
+	UGraphicsSettingsWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 	virtual void OnApply() override;
 	virtual void OnRefresh() override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UButton* RunHardwareBenchmarkButton;
+	class UButton* RunHardwareBenchmarkButton;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* OverallGraphicsQualityOptionBox;
+	class UMultiOptionBox* OverallGraphicsQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ViewDistanceQualityOptionBox;
+	class UMultiOptionBox* ViewDistanceQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ShadowQualityOptionBox;
+	class UMultiOptionBox* ShadowQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* GlobalIlluminationQualityOptionBox;
+	class UMultiOptionBox* GlobalIlluminationQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ReflectionQualityOptionBox;
+	class UMultiOptionBox* ReflectionQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* AntiAliasingQualityOptionBox;
+	class UMultiOptionBox* AntiAliasingQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* TextureQualityOptionBox;
+	class UMultiOptionBox* TextureQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* VisualEffectQualityOptionBox;
+	class UMultiOptionBox* VisualEffectQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* PostProcessingQualityOptionBox;
+	class UMultiOptionBox* PostProcessingQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* FoliageQualityOptionBox;
+	class UMultiOptionBox* FoliageQualityOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UMultiOptionBox* ShaderQualityOptionBox;
+	class UMultiOptionBox* ShaderQualityOptionBox;
 	
 	void RefreshCustomGraphicsSettings(bool IsUsingCustomSettings);
 

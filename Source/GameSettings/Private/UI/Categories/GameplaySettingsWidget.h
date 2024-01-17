@@ -6,9 +6,6 @@
 #include "SettingsCategoryWidget.h"
 #include "GameplaySettingsWidget.generated.h"
 
-class UCheckOptionBox;
-class USliderOptionBox;
-
 UCLASS()
 class UGameplaySettingsWidget : public USettingsCategoryWidget
 {
@@ -23,16 +20,16 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* ShowBrandingCheckOptionBox;
+	class UCheckOptionBox* ShowBrandingCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* ShowCrosshairCheckOptionBox;
+	class UCheckOptionBox* ShowCrosshairCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* HideChatUnlessOpenCheckOptionBox;
+	class UCheckOptionBox* HideChatUnlessOpenCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* HideHUDCheckOptionBox;
+	class UCheckOptionBox* HideHUDCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* CameraShakeEnabledCheckOptionBox;
+	class UCheckOptionBox* CameraShakeEnabledCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* FieldOfViewSliderOptionBox;
+	class USliderOptionBox* FieldOfViewSliderOptionBox;
 	
 };

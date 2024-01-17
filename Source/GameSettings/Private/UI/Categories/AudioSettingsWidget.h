@@ -6,34 +6,34 @@
 #include "SettingsCategoryWidget.h"
 #include "AudioSettingsWidget.generated.h"
 
-class USliderOptionBox;
-
 UCLASS()
 class UAudioSettingsWidget : public USettingsCategoryWidget
 {
 	GENERATED_BODY()
 	
 public:
+	UAudioSettingsWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 	virtual void OnApply() override;
 	virtual void OnRefresh() override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* MasterVolumeSliderOptionBox;
+	class USliderOptionBox* MasterVolumeSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* MusicVolumeSliderOptionBox;
+	class USliderOptionBox* MusicVolumeSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* DeployablesVolumeSliderOptionBox;
+	class USliderOptionBox* DeployablesVolumeSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* EnvironmentVolumeSliderOptionBox;
+	class USliderOptionBox* EnvironmentVolumeSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* FriendlyCreaturesVolumeSliderOptionBox;
+	class USliderOptionBox* FriendlyCreaturesVolumeSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* HostileCreaturesVolumeSliderOptionBox;
+	class USliderOptionBox* HostileCreaturesVolumeSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* PlayersVolumeSliderOptionBox;
+	class USliderOptionBox* PlayersVolumeSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* WeatherVolumeSliderOptionBox;
+	class USliderOptionBox* WeatherVolumeSliderOptionBox;
 
 };
