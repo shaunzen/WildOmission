@@ -6,8 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "SliderOptionBox.generated.h"
 
-class USlider;
-class UTextBlock;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSliderOptionBoxValueChangedSignature, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSliderOptionBoxValueChangedNoParamsSignature);
 
 UCLASS()
 class CUSTOMUI_API USliderOptionBox : public UUserWidget
@@ -18,6 +18,9 @@ public:
 	USliderOptionBox(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeConstruct() override;
+
+	FOnSliderOptionBoxValueChangedSignature OnValueChanged;
+	FOnSliderOptionBoxValueChangedNoParamsSignature OnValueChangedNoParams;
 
 	void SetValue(float Value);
 	void SetMinValue(float Value);
@@ -32,9 +35,9 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	USlider* Slider;
+	class USlider* Slider;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* TextBlock;
+	class UTextBlock* TextBlock;
 
 	bool ShowDecimal;
 	bool RoundAfterValueChanged;

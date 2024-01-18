@@ -22,25 +22,25 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called when the item is equiped into the players hands
+	// Called when the item is equiped into the players hands. Note: Only Called On Server!
 	virtual void Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPersonMeshComponent, const FName& InItemName, const int8& InFromSlotIndex, const uint32& InUniqueID);
 
-	// Called before the item is unequiped
+	// Called before the item is unequiped. Note: Only Called On Server!
 	virtual void OnUnequip();
 
-	// Primary function of the item. example(Eat, Shoot, Heal)
+	// Primary function of the item. example(Eat, Shoot, Heal) Note: Called On Both Server and Client!
 	virtual void OnPrimaryPressed();
 	virtual void OnPrimaryHeld();
 	virtual void OnPrimaryReleased();
 	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance);
 
-	// Secondary function of the item. example(Nothing, Aim, Heal others)
+	// Secondary function of the item. example(Nothing, Aim, Heal others) Note: Called On Both Server and Client!
 	virtual void OnSecondaryPressed();
 	virtual void OnSecondaryHeld();
 	virtual void OnSecondaryReleased();
 	virtual void OnSecondaryAnimationClimax(bool FromFirstPersonInstance);
 
-	// Reload function of the item. example(Reload the magazine)
+	// Reload function of the item. example(Reload the magazine) Note: Called On Both Server and Client!
 	virtual void OnReloadPressed();
 	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance);
 

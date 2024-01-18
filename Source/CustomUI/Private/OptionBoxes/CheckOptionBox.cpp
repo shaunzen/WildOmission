@@ -64,5 +64,14 @@ void UCheckOptionBox::OnClicked()
 {
 	Checked = !Checked;
 	RefreshState();
-	OnCheckStateChanged.Broadcast(Checked);
+	
+	if (OnValueChanged.IsBound())
+	{
+		OnValueChanged.Broadcast(Checked);
+	}
+
+	if (OnValueChangedNoParams.IsBound())
+	{
+		OnValueChangedNoParams.Broadcast();
+	}
 }

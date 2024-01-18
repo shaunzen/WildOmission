@@ -135,6 +135,17 @@
 			]
 		},
 		{
+			"Name": "Maps",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"UMG",
+				"CoreUObject",
+				"EquipableItems"
+			]
+		},
+		{
 			"Name": "MenuSystem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",

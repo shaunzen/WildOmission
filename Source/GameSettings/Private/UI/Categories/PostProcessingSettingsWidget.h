@@ -6,31 +6,30 @@
 #include "SettingsCategoryWidget.h"
 #include "PostProcessingSettingsWidget.generated.h"
 
-class USliderOptionBox;
-class UCheckOptionBox;
-
 UCLASS()
 class UPostProcessingSettingsWidget : public USettingsCategoryWidget
 {
 	GENERATED_BODY()
 
 public:
+	UPostProcessingSettingsWidget(const FObjectInitializer& ObjectInitializer);
+
 	virtual void NativeConstruct() override;
 	virtual void OnApply() override;
 	virtual void OnRefresh() override;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	USliderOptionBox* GammaSliderOptionBox;
+	class USliderOptionBox* GammaSliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* AutoExposureCheckOptionBox;
+	class UCheckOptionBox* AutoExposureCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* MotionBlurCheckOptionBox;
+	class UCheckOptionBox* MotionBlurCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* BloomCheckOptionBox;
+	class UCheckOptionBox* BloomCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* AmbientOcclusionCheckOptionBox;
+	class UCheckOptionBox* AmbientOcclusionCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
-	UCheckOptionBox* FilmGrainCheckOptionBox;
+	class UCheckOptionBox* FilmGrainCheckOptionBox;
 	
 };

@@ -6,34 +6,33 @@
 #include "Blueprint/UserWidget.h"
 #include "CheckOptionBox.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCheckStateChangedSignature, bool, Checked);
-
-class UButton;
-class UImage;
-class UTextBlock;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCheckOptionBoxValueChangedSignature, bool, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCheckOptionBoxValueChangedNoParamsSignature);
 
 UCLASS()
 class CUSTOMUI_API UCheckOptionBox : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
 	UCheckOptionBox(const FObjectInitializer& ObjectInitializer);
 	virtual void NativeConstruct() override;
 
 	void SetChecked(bool IsChecked);
 
-	FOnCheckStateChangedSignature OnCheckStateChanged;
+	FOnCheckOptionBoxValueChangedSignature OnValueChanged;
+	FOnCheckOptionBoxValueChangedNoParamsSignature OnValueChangedNoParams;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsChecked() const;
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UButton* Button;
+	class UButton* Button;
 	UPROPERTY(Meta = (BindWidget))
-	UImage* Image;
+	class UImage* Image;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* TextBlock;
+	class UTextBlock* TextBlock;
 
 	UPROPERTY()
 	bool Checked;

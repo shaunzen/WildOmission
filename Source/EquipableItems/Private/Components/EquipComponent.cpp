@@ -176,6 +176,48 @@ USkeletalMeshComponent* UEquipComponent::GetFirstPersonItemComponent() const
 	return FirstPersonItemComponent;
 }
 
+void UEquipComponent::SetFirstPersonArmLocationOffset(const FVector& InOffset)
+{
+	if (OwnerFirstPersonMesh == nullptr)
+	{
+		return;
+	}
+	
+	const FVector DefaultArmLocation = FVector(-5.0f, 0.0f, -160.0f);
+	OwnerFirstPersonMesh->SetRelativeLocation(DefaultArmLocation + InOffset);
+}
+
+void UEquipComponent::SetFirstPersonArmRotationOffset(const FRotator& InOffset)
+{
+	if (OwnerFirstPersonMesh == nullptr)
+	{
+		return;
+	}
+
+	OwnerFirstPersonMesh->SetRelativeRotation(InOffset);
+}
+
+FVector UEquipComponent::GetFirstPersonArmLocationOffset() const
+{
+	if (OwnerFirstPersonMesh == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
+	const FVector DefaultArmLocation = FVector(-5.0f, 0.0f, -160.0f);
+	return OwnerFirstPersonMesh->GetRelativeLocation() - DefaultArmLocation;
+}
+
+FRotator UEquipComponent::GetFirstPersonArmRotationOffset() const
+{
+	if (OwnerFirstPersonMesh == nullptr)
+	{
+		return FRotator::ZeroRotator;
+	}
+
+	return OwnerFirstPersonMesh->GetRelativeRotation();
+}
+
 void UEquipComponent::PlayItemMontage(UAnimMontage* PlayerMontage, UAnimMontage* ItemMontage)
 {
 	if (OwnerPawn == nullptr)

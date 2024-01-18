@@ -6,6 +6,18 @@
 #include "WildOmissionGameUserSettings.h"
 #include "Interfaces/GameSettingsInterface.h"
 
+UAudioSettingsWidget::UAudioSettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
+{
+	MasterVolumeSliderOptionBox = nullptr;
+	MusicVolumeSliderOptionBox = nullptr;
+	DeployablesVolumeSliderOptionBox = nullptr;
+	EnvironmentVolumeSliderOptionBox = nullptr;
+	FriendlyCreaturesVolumeSliderOptionBox = nullptr;
+	HostileCreaturesVolumeSliderOptionBox = nullptr;
+	PlayersVolumeSliderOptionBox = nullptr;
+	WeatherVolumeSliderOptionBox = nullptr;
+}
+
 void UAudioSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -48,15 +60,30 @@ void UAudioSettingsWidget::OnApply()
 	UserSettings->SetWeatherVolume(WeatherVolumeSliderOptionBox->GetValue() / 100.0f);
 
 	IGameSettingsInterface* GameSettingsInterface = Cast<IGameSettingsInterface>(GetWorld()->GetGameInstance());
-	if (GameSettingsInterface)
+	if (GameSettingsInterface == nullptr)
 	{
-		GameSettingsInterface->ApplyAudioSettings();
+		return;
 	}
+
+	GameSettingsInterface->ApplyAudioSettings();
+	
+	UserSettings->ApplySettings(false);
+
+	OnRefresh();
 }
 
 void UAudioSettingsWidget::OnRefresh()
 {
 	Super::OnRefresh();
+
+	MasterVolumeSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UAudioSettingsWidget::OnApply);
+	MusicVolumeSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UAudioSettingsWidget::OnApply);
+	DeployablesVolumeSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UAudioSettingsWidget::OnApply);
+	EnvironmentVolumeSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UAudioSettingsWidget::OnApply);
+	FriendlyCreaturesVolumeSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UAudioSettingsWidget::OnApply);
+	HostileCreaturesVolumeSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UAudioSettingsWidget::OnApply);
+	PlayersVolumeSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UAudioSettingsWidget::OnApply);
+	WeatherVolumeSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UAudioSettingsWidget::OnApply);
 
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	if (UserSettings == nullptr)
@@ -72,4 +99,13 @@ void UAudioSettingsWidget::OnRefresh()
 	HostileCreaturesVolumeSliderOptionBox->SetValue(UserSettings->GetHostileCreaturesVolume() * 100.0f);
 	PlayersVolumeSliderOptionBox->SetValue(UserSettings->GetPlayersVolume() * 100.0f);
 	WeatherVolumeSliderOptionBox->SetValue(UserSettings->GetWeatherVolume() * 100.0f);
+
+	MasterVolumeSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UAudioSettingsWidget::OnApply);
+	MusicVolumeSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UAudioSettingsWidget::OnApply);
+	DeployablesVolumeSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UAudioSettingsWidget::OnApply);
+	EnvironmentVolumeSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UAudioSettingsWidget::OnApply);
+	FriendlyCreaturesVolumeSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UAudioSettingsWidget::OnApply);
+	HostileCreaturesVolumeSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UAudioSettingsWidget::OnApply);
+	PlayersVolumeSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UAudioSettingsWidget::OnApply);
+	WeatherVolumeSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UAudioSettingsWidget::OnApply);
 }

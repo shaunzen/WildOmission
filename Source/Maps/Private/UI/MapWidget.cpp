@@ -1,0 +1,67 @@
+// Copyright Telephone Studios. All Rights Reserved.
+
+
+#include "UI/MapWidget.h"
+#include "Components/Button.h"
+
+UMapWidget::UMapWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
+{
+	bIsFocusable = true;
+	CloseButton = nullptr;
+}
+
+void UMapWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (CloseButton)
+	{
+		CloseButton->OnClicked.AddDynamic(this, &UMapWidget::Teardown);
+	}
+}
+
+void UMapWidget::Setup()
+{
+	this->AddToViewport();
+
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	FInputModeUIOnly InputData;
+	InputData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	PlayerController->SetShowMouseCursor(true);
+	PlayerController->SetInputMode(InputData);
+
+	this->SetFocus();
+}
+
+void UMapWidget::Teardown()
+{
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	FInputModeGameOnly InputData;
+	PlayerController->SetShowMouseCursor(false);
+	PlayerController->SetInputMode(InputData);
+
+	// TODO broadcast this so we can set open widget to null in the map item
+	this->RemoveFromViewport();
+}
+
+FReply UMapWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+
+	if (InKeyEvent.GetKey() == EKeys::Escape)
+	{
+		this->Teardown();
+	}
+
+	return FReply::Handled();
+}

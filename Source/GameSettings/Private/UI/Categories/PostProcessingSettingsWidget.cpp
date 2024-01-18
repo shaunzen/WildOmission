@@ -7,6 +7,16 @@
 #include "OptionBoxes/CheckOptionBox.h"
 #include "Interfaces/CharacterSettingsInterface.h"
 
+UPostProcessingSettingsWidget::UPostProcessingSettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
+{
+	GammaSliderOptionBox = nullptr;
+	AutoExposureCheckOptionBox = nullptr;
+	MotionBlurCheckOptionBox = nullptr;
+	BloomCheckOptionBox = nullptr;
+	AmbientOcclusionCheckOptionBox = nullptr;
+	FilmGrainCheckOptionBox = nullptr;
+}
+
 void UPostProcessingSettingsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -38,15 +48,28 @@ void UPostProcessingSettingsWidget::OnApply()
 	UserSettings->SetFilmGrainEnabled(FilmGrainCheckOptionBox->IsChecked());
 
 	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
-	if (CharacterSettingsInterface)
+	if (CharacterSettingsInterface == nullptr)
 	{
-		CharacterSettingsInterface->ApplyPostProcessingSettings();
+		return;
 	}
+	
+	CharacterSettingsInterface->ApplyPostProcessingSettings();
+
+	UserSettings->ApplySettings(false);
+
+	OnRefresh();
 }
 
 void UPostProcessingSettingsWidget::OnRefresh()
 {
 	Super::OnRefresh();
+
+	GammaSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	AutoExposureCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	MotionBlurCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	BloomCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	AmbientOcclusionCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	FilmGrainCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UPostProcessingSettingsWidget::OnApply);
 
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	if (UserSettings == nullptr)
@@ -60,4 +83,11 @@ void UPostProcessingSettingsWidget::OnRefresh()
 	BloomCheckOptionBox->SetChecked(UserSettings->GetBloomEnabled());
 	AmbientOcclusionCheckOptionBox->SetChecked(UserSettings->GetAmbientOcclusionEnabled());
 	FilmGrainCheckOptionBox->SetChecked(UserSettings->GetFilmGrainEnabled());
+
+	GammaSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	AutoExposureCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	MotionBlurCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	BloomCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	AmbientOcclusionCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
+	FilmGrainCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UPostProcessingSettingsWidget::OnApply);
 }

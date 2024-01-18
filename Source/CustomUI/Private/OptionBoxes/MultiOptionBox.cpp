@@ -99,5 +99,14 @@ void UMultiOptionBox::Refresh()
 	}
 
 	SelectedTextBlock->SetText(FText::FromString(Options[SelectedOptionIndex]));
-	OnSelectionChange.Broadcast(Options[SelectedOptionIndex]);
+
+	if (OnValueChanged.IsBound())
+	{
+		OnValueChanged.Broadcast(Options[SelectedOptionIndex]);
+	}
+
+	if (OnValueChangedNoParams.IsBound())
+	{
+		OnValueChangedNoParams.Broadcast();
+	}
 }

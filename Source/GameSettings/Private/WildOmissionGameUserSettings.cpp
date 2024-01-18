@@ -42,6 +42,7 @@ static const float DEFAULT_MOUSESENSITIVITY = 1.0f;
 
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {
+    // Audio
     SetMasterVolume(DEFAULT_MASTERVOLUME);
     SetMusicVolume(DEFAULT_VOLUME);
     SetDeployablesVolume(DEFAULT_VOLUME);
@@ -51,6 +52,7 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
     SetPlayersVolume(DEFAULT_VOLUME);
     SetWeatherVolume(DEFAULT_VOLUME);
 
+    // Gameplay
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
     SetHideChatUnlessOpen(DEFAULT_HIDECHATUNLESSOPEN);
@@ -58,6 +60,7 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
     SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
     SetFieldOfView(DEFAULT_FIELDOFVIEW);
     
+    // Post Processing
     SetGamma(DEFAULT_GAMMA);
     SetAutoExposureEnabled(DEFAULT_AUTOEXPOSUREENABLED);
     SetMotionBlurEnabled(DEFAULT_MOTIONBLURENABLED);
@@ -65,6 +68,7 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
     SetAmbientOcclusionEnabled(DEFAULT_AMBIENTOCCLUSIONENABLED);
     SetFilmGrainEnabled(DEFAULT_FILMGRAINENABLED);
 
+    // Controls
     SetMoveForwardKey(DEFAULT_MOVEFORWARD);
     SetMoveBackwardKey(DEFAULT_MOVEBACKWARD);
     SetMoveLeftKey(DEFAULT_MOVELEFT);
@@ -92,6 +96,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
 {
     Super::SetToDefaults();
 
+    // Audio
     SetMasterVolume(DEFAULT_MASTERVOLUME);
     SetMusicVolume(DEFAULT_VOLUME);
     SetDeployablesVolume(DEFAULT_VOLUME);
@@ -101,6 +106,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
     SetPlayersVolume(DEFAULT_VOLUME);
     SetWeatherVolume(DEFAULT_VOLUME);
 
+    // Gameplay
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
     SetHideChatUnlessOpen(DEFAULT_HIDECHATUNLESSOPEN);
@@ -108,6 +114,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
     SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
     SetFieldOfView(DEFAULT_FIELDOFVIEW);
 
+    // Post Processing
     SetGamma(DEFAULT_GAMMA);
     SetAutoExposureEnabled(DEFAULT_AUTOEXPOSUREENABLED);
     SetMotionBlurEnabled(DEFAULT_MOTIONBLURENABLED);
@@ -115,6 +122,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
     SetAmbientOcclusionEnabled(DEFAULT_AMBIENTOCCLUSIONENABLED);
     SetFilmGrainEnabled(DEFAULT_FILMGRAINENABLED);
 
+    // Controls
     SetMoveForwardKey(DEFAULT_MOVEFORWARD);
     SetMoveBackwardKey(DEFAULT_MOVEBACKWARD);
     SetMoveLeftKey(DEFAULT_MOVELEFT);

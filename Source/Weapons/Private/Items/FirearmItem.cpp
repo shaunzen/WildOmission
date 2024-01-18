@@ -18,6 +18,10 @@ AFirearmItem::AFirearmItem()
 	ReloadItemMontage = nullptr;
 
 	MuzzleFlashEffect = nullptr;
+	
+	AimArmLocationOffset = FVector::ZeroVector;
+	AimArmRotationOffset = FRotator::ZeroRotator;
+
 	RateOfFireRPM = 600;
 	CanFire = true;
 
@@ -71,7 +75,7 @@ void AFirearmItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPers
 void AFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
-
+	UE_LOG(LogTemp, Warning, TEXT("Primary Pressed, HasAuthority =  %i"), HasAuthority());
 }
 
 void AFirearmItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
@@ -91,6 +95,7 @@ void AFirearmItem::OnSecondaryPressed()
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Secondary Pressed, HasAuthority =  %i"), HasAuthority());
 	OwnerEquipComponent->StartAim();
 }
 
@@ -131,6 +136,16 @@ void AFirearmItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 
 	Reload();
 	PlayReloadClimaxCameraShake();
+}
+
+FVector AFirearmItem::GetAimArmLocationOffset() const
+{
+	return AimArmLocationOffset;
+}
+
+FRotator AFirearmItem::GetAimArmRotationOffset() const
+{
+	return AimArmRotationOffset;
 }
 
 int32 AFirearmItem::GetRateOfFire() const

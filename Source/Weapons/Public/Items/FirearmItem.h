@@ -25,6 +25,10 @@ public:
 	virtual void OnReloadPressed() override;
 	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance) override;
 
+	// PEOPLE ARE SO IMPATIENT FOR FEATURES SO STUPID
+	FVector GetAimArmLocationOffset() const;
+	FRotator GetAimArmRotationOffset() const;
+
 	int32 GetRateOfFire() const;
 
 protected:
@@ -40,6 +44,12 @@ protected:
 	UAnimMontage* ReloadMontage;
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	UAnimMontage* ReloadItemMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Item")
+	FVector AimArmLocationOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Item")
+	FRotator AimArmRotationOffset;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	int32 RateOfFireRPM;

@@ -15,8 +15,11 @@ class USettingsCategoryWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UFUNCTION()
 	virtual void OnApply();
+	UFUNCTION()
 	virtual void OnReset();
+	UFUNCTION()
 	virtual void OnRefresh();
 
 };
