@@ -27,7 +27,6 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("Not a day off in over a year"),
 	TEXT("Played by FloppySword!"),
 	TEXT("Congatulations on 25K FloppySword!"),
-	TEXT("wellyesh <3"),
 	TEXT("NELSInfinity <3"),
 	TEXT("LifeOn30FPS <3"),
 	TEXT("rcjoe69 <3"),
@@ -36,7 +35,6 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("TyceMcMac <3"),
 	TEXT("Made entierly on a Model M Keyboard!"),
 	TEXT("Refined Metal is obtained from zombies, harvesting metal nodes with a metal pickaxe, or by crafting"),
-	TEXT("333"),
 	TEXT("Made by Larch"),
 	TEXT("Build without limits!"),
 	TEXT("Build a massive tower!"),
@@ -44,7 +42,8 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("96.7% C++"),
 	TEXT("1.8% C"),
 	TEXT("1.5% C#"),
-	TEXT("Updated Weekly!")
+	TEXT("Updated Weekly!"),
+	TEXT("3,000,000+ Lines Of Code.")
 };
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -180,6 +179,10 @@ void UMainMenuWidget::RefreshSplashText()
 	else if (TimeNow.GetMonth() == 12 && (TimeNow.GetDay() == 24 || TimeNow.GetDay() == 25))
 	{
 		SplashText = TEXT("Merry XMas!");
+	}
+	else if (TimeNow.GetHour12() == 3 && TimeNow.GetMinute() == 33)
+	{
+		SplashText = TEXT("333");
 	}
 
 	SplashTextBlock->SetText(FText::FromString(SplashText));
