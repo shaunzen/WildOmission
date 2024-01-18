@@ -27,7 +27,7 @@ const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
 
-const static FString GameVersion = TEXT("Alpha 1.1.1");
+const static FString GameVersion = TEXT("Alpha 1.1.1_01");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
