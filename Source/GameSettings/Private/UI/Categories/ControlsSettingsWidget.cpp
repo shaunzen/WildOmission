@@ -35,28 +35,7 @@ void UControlsSettingsWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	MouseSensitivitySliderOptionBox->SetMinValue(1.0f);
-	MouseSensitivitySliderOptionBox->SetMaxValue(20.0f);
-
-	InvertMouseYCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	MouseSensitivitySliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-
-	MoveForwardKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	MoveBackwardKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	MoveLeftKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	MoveRightKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	SprintKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	CrouchKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	JumpKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-
-	PrimaryKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	SecondaryKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	InteractKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	ReloadKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-
-	InventoryKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	CraftingKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	ChatKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
-	
+	MouseSensitivitySliderOptionBox->SetMaxValue(20.0f);	
 }
 
 void UControlsSettingsWidget::OnApply()
@@ -108,6 +87,26 @@ void UControlsSettingsWidget::OnRefresh()
 {
 	Super::OnRefresh();
 	
+	InvertMouseYCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	MouseSensitivitySliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+
+	MoveForwardKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	MoveBackwardKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	MoveLeftKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	MoveRightKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	SprintKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	CrouchKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	JumpKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+
+	PrimaryKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	SecondaryKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	InteractKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	ReloadKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+
+	InventoryKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	CraftingKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+	ChatKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
+
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	if (UserSettings == nullptr)
 	{
@@ -135,4 +134,24 @@ void UControlsSettingsWidget::OnRefresh()
 	InventoryKeyOptionBox->SetSelectedKey(UserSettings->GetInventoryKey());
 	CraftingKeyOptionBox->SetSelectedKey(UserSettings->GetCraftingKey());
 	ChatKeyOptionBox->SetSelectedKey(UserSettings->GetChatKey());
+
+	InvertMouseYCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	MouseSensitivitySliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+
+	MoveForwardKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	MoveBackwardKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	MoveLeftKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	MoveRightKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	SprintKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	CrouchKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	JumpKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+
+	PrimaryKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	SecondaryKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	InteractKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	ReloadKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+
+	InventoryKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	CraftingKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	ChatKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
 }

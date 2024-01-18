@@ -42,10 +42,6 @@ void UWindowSettingsWidget::NativeConstruct()
 	FrameRateLimitOptionBox->AddOption(TEXT("120"));
 	FrameRateLimitOptionBox->AddOption(TEXT("144"));
 	FrameRateLimitOptionBox->AddOption(TEXT("240"));
-
-	WindowModeOptionBox->OnValueChangedNoParams.AddDynamic(this, &UWindowSettingsWidget::OnApply);
-	ResolutionOptionBox->OnValueChangedNoParams.AddDynamic(this, &UWindowSettingsWidget::OnApply);
-	FrameRateLimitOptionBox->OnValueChangedNoParams.AddDynamic(this, &UWindowSettingsWidget::OnApply);
 }
 
 void UWindowSettingsWidget::OnApply()
@@ -114,6 +110,10 @@ void UWindowSettingsWidget::OnRefresh()
 {
 	Super::OnRefresh();
 
+	WindowModeOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UWindowSettingsWidget::OnApply);
+	ResolutionOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UWindowSettingsWidget::OnApply);
+	FrameRateLimitOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UWindowSettingsWidget::OnApply);
+
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	if (UserSettings == nullptr)
 	{
@@ -148,4 +148,8 @@ void UWindowSettingsWidget::OnRefresh()
 		FrameRateLimitOptionBox->SetSelectedOption(FrameLimitString);
 		break;
 	}
+
+	WindowModeOptionBox->OnValueChangedNoParams.AddDynamic(this, &UWindowSettingsWidget::OnApply);
+	ResolutionOptionBox->OnValueChangedNoParams.AddDynamic(this, &UWindowSettingsWidget::OnApply);
+	FrameRateLimitOptionBox->OnValueChangedNoParams.AddDynamic(this, &UWindowSettingsWidget::OnApply);
 }

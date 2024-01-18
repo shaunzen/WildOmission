@@ -169,6 +169,7 @@ void UOptionsWidget::Reset()
 	}
 
 	UserSettings->SetToDefaults();
+	UserSettings->ApplySettings(false);
 	Refresh();
 }
 
