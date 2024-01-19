@@ -601,9 +601,7 @@ FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
 
 	const int32 TempatureIndex = FMath::RoundToInt32(Tempature / 0.25f);
 	const int32 HumidityIndex = FMath::RoundToInt32(Humidity / 0.25f);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Temp %i, Humi %i"), TempatureIndex, HumidityIndex);
-
+	
 	FName BiomeName = NAME_None;
 	if (Contenentalness > MinShore && Contenentalness < MaxShore)
 	{
@@ -652,7 +650,6 @@ FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
 			break;
 		case 4:
 			BiomeName = TEXT("Desert");
-			UE_LOG(LogTemp, Warning, TEXT("Desert."));
 			break;
 		default:
 			BiomeName = TEXT("Plains");

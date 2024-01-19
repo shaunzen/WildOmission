@@ -30,6 +30,7 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 	SpawnChunk = FIntVector2();
 
 	BedUniqueID = -1;
+	BedWorldLocation = FVector::ZeroVector;
 
 	MusicPlayerComponent = nullptr;
 
@@ -58,7 +59,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 {
 	FPlayerSaveData PlayerSaveData;
 
-	if (HasAuthority() == false)
+	if (!HasAuthority())
 	{
 		return PlayerSaveData;
 	}
@@ -150,14 +151,20 @@ FVector AWildOmissionPlayerController::GetBedWorldLocation() const
 
 void AWildOmissionPlayerController::Save()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	Server_AddToPendingSaves();
 
-	if (HasAuthority() == false)
+	if (!HasAuthority())
 	{
 		return;
 	}
 	
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(World->GetAuthGameMode());
 	if (GameMode == nullptr)
 	{
 		return;
@@ -177,13 +184,19 @@ bool AWildOmissionPlayerController::IsEditorPlayer() const
 
 void AWildOmissionPlayerController::Server_AddToPendingSaves_Implementation()
 {
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode == nullptr)
+	ASaveManager* SaveManager = ASaveManager::GetSaveManager();
+	if (SaveManager == nullptr)
 	{
 		return;
 	}
 
-	GameMode->GetSaveManager()->GetPlayerManager()->AddToPending(this);
+	UPlayerSaveManagerComponent* PlayerSaveManager = SaveManager->GetPlayerManager();
+	if (PlayerSaveManager == nullptr)
+	{
+		return;
+	}
+
+	PlayerSaveManager->AddToPending(this);
 }
 
 void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
@@ -240,25 +253,7 @@ void AWildOmissionPlayerController::BeginPlay()
 
 	if (HasAuthority())
 	{
-		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
-		if (ChunkManager == nullptr)
-		{
-			return;
-		}
-
-		const bool UseDefaultSpawn = StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true;
-		const FVector SpawnPoint = UseDefaultSpawn ? ChunkManager->GetWorldSpawnPoint() : StoredPlayerSaveData.WorldLocation;
-
-		ASpectatorPawn* SpecPawn = GetWorld()->SpawnActor<ASpectatorPawn>(ASpectatorPawn::StaticClass(), SpawnPoint, FRotator::ZeroRotator);
-		if (SpecPawn)
-		{
-			this->Possess(SpecPawn);
-		}
-
-		const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
-		SpawnChunk = FIntVector2(
-			FMath::RoundToInt32(SpawnPoint.X / ChunkSize),
-			FMath::RoundToInt32(SpawnPoint.Y / ChunkSize));
+		SetupPlayerOnServer();
 	}
 
 	if (!IsLocalController())
@@ -266,38 +261,11 @@ void AWildOmissionPlayerController::BeginPlay()
 		return;
 	}
 	
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
-	if (GameInstance)
-	{
-		GameInstance->StartLoading();
-		GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
-		UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Brought up loading screen."));
-	}
+	StartLoading();
 
-	if (MusicPlayerComponent == nullptr)
-	{
-		MusicPlayerComponent = NewObject<UMusicPlayerComponent>(this, UMusicPlayerComponent::StaticClass(), TEXT("MusicPlayerComponent"));
-		if (MusicPlayerComponent)
-		{
-			MusicPlayerComponent->RegisterComponent();
-		}
-	}
+	SetupMusicPlayerComponent();
 
-	if (HasAuthority())
-	{
-		FTimerHandle LoadTimerHandle;
-		FTimerDelegate LoadTimerDelegate;
-		LoadTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::StopLoading);
-		GetWorld()->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 2.0f, false);
-		UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Setup load timer."));
-	}
-	else
-	{
-		FTimerDelegate CheckSpawnChunkValidTimerDelegate;
-		CheckSpawnChunkValidTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::CheckSpawnChunkValid);
-		GetWorld()->GetTimerManager().SetTimer(CheckSpawnChunkValidTimerHandle, CheckSpawnChunkValidTimerDelegate, 2.0f, true);
-		UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Setup check spawn chunk timer."));
-	}
+	HasAuthority() ? SetupLocalAsHost() : SetupLocalAsClient();
 }
 
 void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
@@ -310,22 +278,122 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 	}
 
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(aPawn);
-
 	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true)
 	{
 		return;
 	}
 
 	WildOmissionCharacter->SetActorLocation(StoredPlayerSaveData.WorldLocation);
-	
-	WildOmissionCharacter->GetVitalsComponent()->SetHealth(StoredPlayerSaveData.Vitals.Health);
-	WildOmissionCharacter->GetVitalsComponent()->SetHunger(StoredPlayerSaveData.Vitals.Hunger);
-	WildOmissionCharacter->GetVitalsComponent()->SetThirst(StoredPlayerSaveData.Vitals.Thirst);
 
-	WildOmissionCharacter->GetInventoryComponent()->Load(StoredPlayerSaveData.Inventory.ByteData);
-	WildOmissionCharacter->GetInventoryManipulatorComponent()->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSaveData.SelectedItemByteData);
+	UVitalsComponent* CharacterVitalsComponent = WildOmissionCharacter->GetVitalsComponent();
+	if (CharacterVitalsComponent == nullptr)
+	{
+		return;
+	}
+
+	CharacterVitalsComponent->SetHealth(StoredPlayerSaveData.Vitals.Health);
+	CharacterVitalsComponent->SetHunger(StoredPlayerSaveData.Vitals.Hunger);
+	CharacterVitalsComponent->SetThirst(StoredPlayerSaveData.Vitals.Thirst);
+
+	UInventoryComponent* CharacterInventoryComponent = WildOmissionCharacter->GetInventoryComponent();
+	UInventoryManipulatorComponent* CharacterInventoryManipulatorComponent = WildOmissionCharacter->GetInventoryManipulatorComponent();
+	if (CharacterInventoryComponent == nullptr || CharacterInventoryManipulatorComponent == nullptr)
+	{
+		return;
+	}
+
+	CharacterInventoryComponent->Load(StoredPlayerSaveData.Inventory.ByteData);
+	CharacterInventoryManipulatorComponent->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSaveData.SelectedItemByteData);
 
 	StoredPlayerSaveData = FPlayerSaveData();
+}
+
+void AWildOmissionPlayerController::SetupPlayerOnServer()
+{
+	UWorld* World = GetWorld();
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (World == nullptr || ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	const bool UseDefaultSpawn = StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true;
+	const FVector SpawnPoint = UseDefaultSpawn ? ChunkManager->GetWorldSpawnPoint() : StoredPlayerSaveData.WorldLocation;
+
+	ASpectatorPawn* SpecPawn = World->SpawnActor<ASpectatorPawn>(ASpectatorPawn::StaticClass(), SpawnPoint, FRotator::ZeroRotator);
+	if (SpecPawn)
+	{
+		this->Possess(SpecPawn);
+	}
+
+	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+	SpawnChunk = FIntVector2(
+		FMath::RoundToInt32(SpawnPoint.X / ChunkSize),
+		FMath::RoundToInt32(SpawnPoint.Y / ChunkSize));
+}
+
+void AWildOmissionPlayerController::StartLoading()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	UWildOmissionGameInstance* GameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(World);
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+
+	GameInstance->StartLoading();
+	GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
+	UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Brought up loading screen."));
+}
+
+void AWildOmissionPlayerController::SetupMusicPlayerComponent()
+{
+	if (MusicPlayerComponent != nullptr)
+	{
+		return;
+	}
+
+	MusicPlayerComponent = NewObject<UMusicPlayerComponent>(this, UMusicPlayerComponent::StaticClass(), TEXT("MusicPlayerComponent"));
+	if (MusicPlayerComponent == nullptr)
+	{
+		return;
+	}
+	
+	MusicPlayerComponent->RegisterComponent();
+}
+
+void AWildOmissionPlayerController::SetupLocalAsHost()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	FTimerHandle LoadTimerHandle;
+	FTimerDelegate LoadTimerDelegate;
+	LoadTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::StopLoading);
+	World->GetTimerManager().SetTimer(LoadTimerHandle, LoadTimerDelegate, 2.0f, false);
+	UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Setup load timer."));
+}
+
+void AWildOmissionPlayerController::SetupLocalAsClient()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	FTimerDelegate CheckSpawnChunkValidTimerDelegate;
+	CheckSpawnChunkValidTimerDelegate.BindUObject(this, &AWildOmissionPlayerController::CheckSpawnChunkValid);
+	World->GetTimerManager().SetTimer(CheckSpawnChunkValidTimerHandle, CheckSpawnChunkValidTimerDelegate, 2.0f, true);
+	UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Setup check spawn chunk timer."));
 }
 
 void AWildOmissionPlayerController::CheckSpawnChunkValid()
@@ -355,13 +423,21 @@ void AWildOmissionPlayerController::CheckSpawnChunkValid()
 
 void AWildOmissionPlayerController::StopLoading()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	Server_Spawn();
-	UWildOmissionGameInstance* GameInstance = Cast<UWildOmissionGameInstance>(GetWorld()->GetGameInstance());
+	
+	UWildOmissionGameInstance* GameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(World);
 	if (GameInstance == nullptr)
 	{
 		UE_LOG(LogPlayerController, Warning, TEXT("Couldnt Stop Loading, GameInstance returned a nullptr."));
 		return;
 	}
+
 	GameInstance->StopLoading();
 }
 
@@ -378,7 +454,13 @@ void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerSta
 
 void AWildOmissionPlayerController::Server_Spawn_Implementation()
 {
-	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(GetWorld()->GetAuthGameMode());
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	AWildOmissionGameMode* GameMode = Cast<AWildOmissionGameMode>(World->GetAuthGameMode());
 	if (GameMode && (StoredPlayerSaveData.IsAlive || StoredPlayerSaveData.NewPlayer))
 	{
 		GameMode->SpawnHumanForController(this);
@@ -388,28 +470,31 @@ void AWildOmissionPlayerController::Server_Spawn_Implementation()
 		Client_ShowDeathMenu();
 	}
 
-	// TODO why is this here, im confused, this whole loading thing goes all over the place
 	if (bIsStillLoading == true)
 	{
-		OnFinishedLoading.Broadcast(this);
 		bIsStillLoading = false;
 	}
 }
 
 void AWildOmissionPlayerController::Client_ShowDeathMenu_Implementation()
 {
-	if (!IsLocalController())
+	UWorld* World = GetWorld();
+	if (World == nullptr || !IsLocalController())
 	{
 		return;
 	}
 
 	// Make Sure to Close Pause Menu So it Doesn't Get Stuck on Screen!
-	UWildOmissionGameInstance* WOGameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(GetWorld());
-	if (WOGameInstance && WOGameInstance->GetGameplayMenuWidget() != nullptr)
+	UWildOmissionGameInstance* WOGameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(World);
+	if (WOGameInstance)
 	{
-		WOGameInstance->GetGameplayMenuWidget()->Teardown();
+		UGameplayMenuWidget* OpenGameplayMenu = WOGameInstance->GetGameplayMenuWidget();
+		if (OpenGameplayMenu)
+		{
+			OpenGameplayMenu->Teardown();
+		}
 	}
-
+	
 	UE_LOG(LogPlayerController, Verbose, TEXT("Bringing Up Death Menu."));
 
 	UDeathMenuWidget* DeathMenu = CreateWidget<UDeathMenuWidget>(this, DeathMenuWidgetClass);
