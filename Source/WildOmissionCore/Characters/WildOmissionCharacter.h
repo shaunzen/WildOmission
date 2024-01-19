@@ -150,15 +150,6 @@ private:
 	bool bSprinting;
 
 	UPROPERTY()
-	bool bAiming;
-
-	UFUNCTION()
-	void StartAiming();
-	
-	UFUNCTION()
-	void StopAiming();
-
-	UPROPERTY()
 	bool bUnderwater;
 
 	void HandleUnderwater();
@@ -242,8 +233,7 @@ private:
 	class UInputAction* ToggleChatAction;
 
 	bool LookUpInverted;
-	float LookSensitivity;
-
+	
 	UFUNCTION()
 	void MoveForward();
 

@@ -19,7 +19,7 @@
 #include "Components/InventoryManipulatorComponent.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
-#include "Components/PlayerAimComponent.h"
+#include "WildOmissionCore/Components/PlayerAimComponent.h"
 #include "Components/CraftingComponent.h"
 #include "Components/BuilderComponent.h"
 #include "GameFramework/PlayerState.h"
@@ -98,7 +98,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	
 	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
 
-	bAiming = false;
 	bSprinting = false;
 	bUnderwater = false;
 
@@ -118,7 +117,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	AimMovementSpeed = 100.0f;
 
 	LookUpInverted = false;
-	LookSensitivity = 1.0f;
 
 	static ConstructorHelpers::FClassFinder<UCameraShakeBase> JumpCameraShakeBlueprint(TEXT("/Game/WildOmissionCore/Characters/Human/Effects/CS_Jump"));
 	if (JumpCameraShakeBlueprint.Succeeded())
@@ -343,7 +341,6 @@ void AWildOmissionCharacter::BeginPlay()
 
 	if (EquipComponent && AimComponent)
 	{
-		// TODO bind to playeraimcomp
 		EquipComponent->OnStartAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StartAiming);
 		EquipComponent->OnStopAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StopAiming);
 	}
@@ -493,7 +490,6 @@ void AWildOmissionCharacter::ApplyInputSettings()
 
 	DefaultMappingContext->UnmapAll();
 	LookUpInverted = UserSettings->GetInvertedMouseY();
-	LookSensitivity = UserSettings->GetMouseSensitivity();
 	DefaultMappingContext->MapKey(MoveForwardAction, UserSettings->GetMoveForwardKey());
 	DefaultMappingContext->MapKey(MoveBackwardAction, UserSettings->GetMoveBackwardKey());
 	DefaultMappingContext->MapKey(MoveLeftAction, UserSettings->GetMoveLeftKey());
@@ -780,6 +776,8 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 	}
 
 	FVector2D LookAxis = Value.Get<FVector2D>();
+
+	const float LookSensitivity = AimComponent->GetLookSensitivity();
 
 	AddControllerYawInput(LookAxis.X * LookSensitivity);
 	const float Invert = LookUpInverted ? 1.0f : -1.0f;
@@ -1097,7 +1095,7 @@ bool AWildOmissionCharacter::IsSprinting() const
 
 bool AWildOmissionCharacter::IsAiming() const
 {
-	return bAiming;
+	return AimComponent->IsAiming();
 }
 
 bool AWildOmissionCharacter::IsUnderwater() const

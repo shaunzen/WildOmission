@@ -62,7 +62,7 @@ void UPlayerAimComponent::GetCurrentArmOffset(FVector& OutCurrentLocationOffset,
 	OutCurrentRotationOffset = EquipComponent->GetCurrentArmRotationOffset();
 }
 
-void UPlayerAimComponent::SetCurrentArmOffset(const FVector& InNewLocationOffset, const FRotator& InNewRotationOffset)
+void UPlayerAimComponent::SetArmOffset(const FVector& InNewLocationOffset, const FRotator& InNewRotationOffset)
 {
 	AActor* OwnerActor = GetOwner();
 	if (OwnerActor == nullptr)
@@ -204,7 +204,7 @@ void UPlayerAimComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	SetCameraFOV(CurrentFOV);
 
-	// TODO set offset
+	SetArmOffset(CurrentArmLocationOffset, CurrentArmRotationOffset);
 }
 
 float UPlayerAimComponent::GetLookSensitivity() const

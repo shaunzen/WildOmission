@@ -42,7 +42,7 @@ private:
 	void SetCameraFOV(float NewFOV);
 
 	void GetCurrentArmOffset(FVector& OutCurrentLocationOffset, FRotator& OutCurrentRotationOffset) const;
-	void SetCurrentArmOffset(const FVector& InNewLocationOffset, const FRotator& InNewRotationOffset);
+	void SetArmOffset(const FVector& InNewLocationOffset, const FRotator& InNewRotationOffset);
 
 	float GetCurrentCameraFOV() const;
 	FVector GetTargetArmLocationOffset() const;
