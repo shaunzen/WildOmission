@@ -19,6 +19,7 @@
 #include "Components/InventoryManipulatorComponent.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
+#include "Components/PlayerAimComponent.h"
 #include "Components/CraftingComponent.h"
 #include "Components/BuilderComponent.h"
 #include "GameFramework/PlayerState.h"
@@ -70,15 +71,17 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonArmsMeshComponent->SetVisibility(false);
 	FirstPersonArmsMeshComponent->SetCastShadow(false);
 
-	EquipComponent = CreateDefaultSubobject<UEquipComponent>(TEXT("EquipComponent"));
-	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
-	EquipComponent->Setup(FirstPersonArmsMeshComponent, this->GetMesh());
-
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
 
 	InventoryManipulatorComponent = CreateDefaultSubobject<UInventoryManipulatorComponent>(TEXT("InventoryManipulatorComponent"));
 
 	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(TEXT("InventoryComponent"));
+
+	EquipComponent = CreateDefaultSubobject<UEquipComponent>(TEXT("EquipComponent"));
+	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
+	EquipComponent->Setup(FirstPersonArmsMeshComponent, this->GetMesh());
+
+	AimComponent = CreateDefaultSubobject<UPlayerAimComponent>(TEXT("AimComponent"));
 
 	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(TEXT("CraftingComponent"));
 
@@ -130,13 +133,13 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	}
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerArmsMeshObject(TEXT("/Game/WildOmissionCore/Art/Characters/SK_HumanFirstPersonArms"));
-	if (PlayerArmsMeshObject.Succeeded())
+	if (PlayerArmsMeshObject.Succeeded() && FirstPersonArmsMeshComponent)
 	{
 		FirstPersonArmsMeshComponent->SetSkeletalMesh(PlayerArmsMeshObject.Object);
 	}
 
 	static ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerArmsAnimBlueprintClass(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/ABP_Human_FirstPerson"));
-	if (PlayerArmsAnimBlueprintClass.Succeeded())
+	if (PlayerArmsAnimBlueprintClass.Succeeded() && FirstPersonArmsMeshComponent)
 	{
 		FirstPersonArmsMeshComponent->SetAnimClass(PlayerArmsAnimBlueprintClass.Class);
 	}
@@ -336,9 +339,14 @@ void AWildOmissionCharacter::BeginPlay()
 	ApplyGameplaySettings();
 	ApplyPostProcessingSettings();
 	SetupLocalComponents();
-	EndSprint();
+	StopSprinting();
 
-	EquipComponent->OnAim.AddDynamic(this, &AWildOmissionCharacter::SetAiming);
+	if (EquipComponent && AimComponent)
+	{
+		// TODO bind to playeraimcomp
+		EquipComponent->OnStartAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StartAiming);
+		EquipComponent->OnStopAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StopAiming);
+	}
 
 	if (HasAuthority())
 	{
@@ -351,8 +359,6 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	EquipComponent->UpdateControlRotation(GetReplicatedControlRotation());
-
-	HandleAiming();
 
 	if (!HasAuthority())
 	{
@@ -655,101 +661,6 @@ void AWildOmissionCharacter::SetGodMode(bool GodMode)
 	VitalsComponent->SetGodMode(GodMode);
 }
 
-void AWildOmissionCharacter::SetAiming(bool Aim)
-{
-	bAiming = Aim;
-	RefreshDesiredMovementSpeed();
-}
-
-void AWildOmissionCharacter::HandleAiming()
-{
-	UWorld* World = GetWorld();
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	if (World == nullptr || PlayerController == nullptr || !PlayerController->IsLocalPlayerController() || UserSettings == nullptr)
-	{
-		return;
-	}
-
-	// Calculate Sensitivity
-	const float SettingsSensitivity = UserSettings->GetMouseSensitivity();
-	const float SensitivityAimMultiplier = bAiming ? 0.25f : 1.0f;
-	LookSensitivity = SettingsSensitivity * SensitivityAimMultiplier;
-
-	// Calculate FOV
-	const float SettingsFOV = UserSettings->GetFieldOfView();
-	const float MaxFOVZoom = 10.0f;
-	const float FOVZoomSpeed = 50.0f;
-	float CurrentFOV = FirstPersonCameraComponent->FieldOfView;
-
-	// Calculate Arm Offset
-	const FVector TargetAimArmLocationOffset = GetAimArmLocationOffset();
-	const FRotator TargetAimArmRotationOffset = GetAimArmRotationOffset();
-
-	const float ArmSpeed = 50.0f;
-	
-	const FVector DefaultArmLocation = FVector(-5.0f, 0.0f, -160.0f);
-
-	FVector CurrentArmLocationOffset = EquipComponent->GetFirstPersonArmLocationOffset();
-	FRotator CurrentArmRotationOffset = EquipComponent->GetFirstPersonArmRotationOffset();
-
-	if (bAiming)
-	{
-		// Update fov
-		CurrentFOV = FMath::Clamp(CurrentFOV - FOVZoomSpeed * World->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
-		
-		// Move the arms
-		CurrentArmLocationOffset = FMath::Lerp(CurrentArmLocationOffset, TargetAimArmLocationOffset, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
-		CurrentArmRotationOffset = FMath::Lerp(CurrentArmRotationOffset, TargetAimArmRotationOffset, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
-	}
-	else
-	{
-		// Update fov
-		CurrentFOV = FMath::Clamp(CurrentFOV + FOVZoomSpeed * World->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
-
-		// Move the arms
-		CurrentArmLocationOffset = FMath::Lerp(CurrentArmLocationOffset, FVector::ZeroVector, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
-		CurrentArmRotationOffset = FMath::Lerp(CurrentArmRotationOffset, FRotator::ZeroRotator, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
-	}
-
-	FirstPersonCameraComponent->FieldOfView = CurrentFOV;
-
-	EquipComponent->SetFirstPersonArmLocationOffset(CurrentArmLocationOffset);
-	EquipComponent->SetFirstPersonArmRotationOffset(CurrentArmRotationOffset);
-}
-
-FVector AWildOmissionCharacter::GetAimArmLocationOffset() const
-{
-	if (EquipComponent == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	AFirearmItem* EquipedFirearm = Cast<AFirearmItem>(EquipComponent->GetEquipedItem());
-	if (EquipedFirearm == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	return EquipedFirearm->GetAimArmLocationOffset();
-}
-
-FRotator AWildOmissionCharacter::GetAimArmRotationOffset() const
-{
-	if (EquipComponent == nullptr)
-	{
-		return FRotator::ZeroRotator;
-	}
-
-	AFirearmItem* EquipedFirearm = Cast<AFirearmItem>(EquipComponent->GetEquipedItem());
-	if (EquipedFirearm == nullptr)
-	{
-		return FRotator::ZeroRotator;
-	}
-
-	return EquipedFirearm->GetAimArmRotationOffset();
-}
-
 void AWildOmissionCharacter::HandleUnderwater()
 {
 	FHitResult HitResult;
@@ -784,10 +695,10 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(MoveLeftAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveLeft);
 	EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveRight);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::Look);
-	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartSprint);
-	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndSprint);
-	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartCrouch);
-	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndCrouch);
+	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartSprinting);
+	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::StopSprinting);
+	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartCrouching);
+	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::StopCrouching);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::OnCrouchHeld);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::OnJumpHeld);
@@ -875,7 +786,7 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput((LookAxis.Y * LookSensitivity) * Invert);
 }
 
-void AWildOmissionCharacter::StartSprint()
+void AWildOmissionCharacter::StartSprinting()
 {
 	if (GetOwner() == nullptr)
 	{
@@ -892,7 +803,7 @@ void AWildOmissionCharacter::StartSprint()
 	RefreshDesiredMovementSpeed();
 }
 
-void AWildOmissionCharacter::EndSprint()
+void AWildOmissionCharacter::StopSprinting()
 {
 	if (GetOwner() == nullptr)
 	{
@@ -909,7 +820,7 @@ void AWildOmissionCharacter::EndSprint()
 	RefreshDesiredMovementSpeed();
 }
 
-void AWildOmissionCharacter::StartCrouch()
+void AWildOmissionCharacter::StartCrouching()
 {
 	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
 	{
@@ -919,7 +830,7 @@ void AWildOmissionCharacter::StartCrouch()
 	Crouch();
 }
 
-void AWildOmissionCharacter::EndCrouch()
+void AWildOmissionCharacter::StopCrouching()
 {
 	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
 	{
@@ -968,11 +879,11 @@ void AWildOmissionCharacter::OnRep_MovementSpeed()
 
 void AWildOmissionCharacter::RefreshDesiredMovementSpeed()
 {
-	if (bAiming)
+	if (IsAiming())
 	{
 		DesiredMovementSpeed = AimMovementSpeed;
 	}
-	else if (bSprinting)
+	else if (IsSprinting())
 	{
 		DesiredMovementSpeed = SprintMovementSpeed;
 	}
@@ -1177,6 +1088,11 @@ FRotator AWildOmissionCharacter::GetReplicatedControlRotation() const
 	}
 	
 	return GetControlRotation();
+}
+
+bool AWildOmissionCharacter::IsSprinting() const
+{
+	return bSprinting;
 }
 
 bool AWildOmissionCharacter::IsAiming() const

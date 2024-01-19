@@ -54,6 +54,9 @@ public:
 	FRotator GetReplicatedControlRotation() const;
 
 	UFUNCTION()
+	bool IsSprinting() const;
+
+	UFUNCTION()
 	bool IsAiming() const;
 
 	UFUNCTION()
@@ -108,6 +111,9 @@ private:
 	class UEquipComponent* EquipComponent;
 	
 	UPROPERTY(VisibleAnywhere)
+	class UPlayerAimComponent* AimComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	class UCraftingComponent* CraftingComponent;
 
 	UPROPERTY(VisibleAnywhere)
@@ -147,11 +153,10 @@ private:
 	bool bAiming;
 
 	UFUNCTION()
-	void SetAiming(bool Aim);
-	void HandleAiming();
-
-	FVector GetAimArmLocationOffset() const;
-	FRotator GetAimArmRotationOffset() const;
+	void StartAiming();
+	
+	UFUNCTION()
+	void StopAiming();
 
 	UPROPERTY()
 	bool bUnderwater;
@@ -255,14 +260,14 @@ private:
 	void Look(const struct FInputActionValue& Value);
 
 	UFUNCTION()
-	void StartSprint();
+	void StartSprinting();
 	UFUNCTION()
-	void EndSprint();
+	void StopSprinting();
 
 	UFUNCTION()
-	void StartCrouch();
+	void StartCrouching();
 	UFUNCTION()
-	void EndCrouch();
+	void StopCrouching();
 
 	UFUNCTION()
 	void OnJumpHeld();

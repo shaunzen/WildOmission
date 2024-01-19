@@ -95,8 +95,7 @@ void AFirearmItem::OnSecondaryPressed()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Secondary Pressed, HasAuthority =  %i"), HasAuthority());
-	OwnerEquipComponent->StartAim();
+	OwnerEquipComponent->StartAiming();
 }
 
 void AFirearmItem::OnSecondaryReleased()
@@ -109,7 +108,7 @@ void AFirearmItem::OnSecondaryReleased()
 		return;
 	}
 
-	OwnerEquipComponent->StopAim();
+	OwnerEquipComponent->StopAiming();
 }
 
 void AFirearmItem::OnReloadPressed()
