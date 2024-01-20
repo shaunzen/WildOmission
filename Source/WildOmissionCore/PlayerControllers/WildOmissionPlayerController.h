@@ -19,6 +19,8 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void Tick(float DeltaTime) override;
+
 	// Begin ISavablePlayer Implementation
 	virtual FPlayerSaveData SavePlayer() override;
 	virtual void LoadPlayerSave(const FPlayerSaveData& SaveData) override;
@@ -62,6 +64,9 @@ protected:
 	virtual void OnPossess(APawn* aPawn) override;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	class UChunkInvokerComponent* ChunkInvokerComponent;
+
 	UPROPERTY(VisibleAnywhere)
 	class UMusicPlayerComponent* MusicPlayerComponent;
 

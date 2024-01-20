@@ -5,6 +5,7 @@
 #include "GameFramework/SpectatorPawn.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
 #include "ChunkManager.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Actors/Chunk.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
@@ -32,6 +33,9 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 	BedUniqueID = -1;
 	BedWorldLocation = FVector::ZeroVector;
 
+	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
+	ChunkInvokerComponent->SetupAttachment(RootComponent);
+
 	MusicPlayerComponent = nullptr;
 
 	static ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmissionCore/UI/Player/WBP_DeathMenu"));
@@ -47,6 +51,17 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SpawnChunk, COND_OwnerOnly);
+}
+
+void AWildOmissionPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	FVector PlayerViewLocation;
+	FRotator PlayerViewRotation;
+	GetPlayerViewPoint(PlayerViewLocation, PlayerViewRotation);
+	// TODO refine this later
+	ChunkInvokerComponent->SetWorldLocation(PlayerViewLocation);
 }
 
 FPlayerSaveData AWildOmissionPlayerController::SavePlayer()

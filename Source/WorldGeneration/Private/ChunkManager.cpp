@@ -41,12 +41,6 @@ void AChunkManager::Tick(float DeltaTime)
 		return;
 	}
 
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
-
 	TArray<UChunkInvokerComponent*> ChunkInvokers = UChunkInvokerComponent::GetAllInvokers();
 
 	RemoveOutOfRangeChunks(ChunkInvokers);
@@ -114,7 +108,7 @@ void AChunkManager::SpawnInRangeChunks(const TArray<UChunkInvokerComponent*>& Ch
 		{
 			continue;
 		}
-
+		UE_LOG(LogTemp, Warning, TEXT("Invoker Location %s"), *ChunkInvoker->GetComponentLocation().ToString());
 		SpawnChunksAtLocation(ChunkInvoker->GetComponentLocation(), ChunkInvoker->GetRenderDistance());
 	}
 }

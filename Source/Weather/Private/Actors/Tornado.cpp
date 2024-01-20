@@ -22,6 +22,9 @@ ATornado::ATornado()
 	MeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	RootComponent = MeshComponent;
 
+	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
+	ChunkInvokerComponent->SetupAttachment(RootComponent);
+
 	SuctionAnchor = CreateDefaultSubobject<USceneComponent>(TEXT("SuctionAnchor"));
 	SuctionAnchor->SetupAttachment(MeshComponent);
 	SuctionAnchor->SetRelativeLocation(FVector(0.0f, 0.0f, 3000.0f));

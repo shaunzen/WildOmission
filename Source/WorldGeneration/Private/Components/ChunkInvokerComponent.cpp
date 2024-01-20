@@ -24,7 +24,7 @@ void UChunkInvokerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Invokers.AddUnique(this);
+	Invokers.Add(this);
 }
 
 void UChunkInvokerComponent::EndPlay(EEndPlayReason::Type Reason)

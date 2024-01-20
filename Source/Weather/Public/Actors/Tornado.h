@@ -65,6 +65,9 @@ private:
 	UStaticMeshComponent* MeshComponent;
 	
 	UPROPERTY(VisibleAnywhere)
+	class UChunkInvokerComponent* ChunkInvokerComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	USceneComponent* SuctionAnchor;
 
 	UPROPERTY(VisibleAnywhere)
