@@ -39,7 +39,7 @@ bool AHarvestableResource::IsNetRelevantFor(const AActor* RealViewer, const AAct
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
-	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
+	UChunkInvokerComponent* ChunkInvoker = RealViewer->FindComponentByClass<UChunkInvokerComponent>();
 	if (ChunkInvoker == nullptr)
 	{
 		return false;

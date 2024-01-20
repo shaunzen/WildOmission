@@ -41,7 +41,7 @@ bool ACollectableProjectile::IsNetRelevantFor(const AActor* RealViewer, const AA
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
-	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
+	UChunkInvokerComponent* ChunkInvoker = RealViewer->FindComponentByClass<UChunkInvokerComponent>();
 	if (ChunkInvoker == nullptr)
 	{
 		return false;
