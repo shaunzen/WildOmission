@@ -19,17 +19,11 @@ public:
 
 	FOnDespawnConditionMetSignature OnDespawnConditionMet;
 
-	float GetDespawnDistance() const;
-	void SetDespawnDistance(const float& NewDespawnDistance);
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:	
-	UPROPERTY(EditDefaultsOnly)
-	float DespawnDistance;
-
 	UFUNCTION()
 	void CheckDespawnConditions();
 
