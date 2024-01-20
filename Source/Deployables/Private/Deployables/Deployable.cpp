@@ -28,7 +28,6 @@ ADeployable::ADeployable()
 	bAlwaysRelevant = false;
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = DORM_DormantAll;
-	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
 
 	DeployableRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DeployableRootComponent"));
 	DeployableRootComponent->SetMobility(EComponentMobility::Type::Stationary);
@@ -139,7 +138,9 @@ bool ADeployable::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewT
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
-	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	// TODO make this the chunk invokers render distance
+	return true;
+	//return Distance < AChunkManager::GetRenderDistanceCentimeters();
 }
 
 void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

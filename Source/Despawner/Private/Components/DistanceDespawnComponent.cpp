@@ -11,8 +11,9 @@ UDistanceDespawnComponent::UDistanceDespawnComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+	// TODO use the invokers render distance
 	// In the future this should be tied to render distance
-	DespawnDistance = AChunkManager::GetRenderDistanceCentimeters();
+	DespawnDistance = AChunkManager::GetDefaultRenderDistanceCentimeters();
 }
 
 // Called when the game starts

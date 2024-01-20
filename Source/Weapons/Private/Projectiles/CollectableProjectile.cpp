@@ -42,7 +42,9 @@ bool ACollectableProjectile::IsNetRelevantFor(const AActor* RealViewer, const AA
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
-	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	// TODO use the chunk invoker render distance
+	return true;
+	// return Distance < AChunkManager::GetRenderDistanceCentimeters();
 }
 
 void ACollectableProjectile::Interact(AActor* Interactor)

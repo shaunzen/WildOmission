@@ -49,8 +49,8 @@ void ASaveManager::SaveGame()
 	if (ChunkManager)
 	{
 		SaveFile->Seed = ChunkManager->GetGenerationSeed();
-		ChunkManager->SaveAllLoadedChunks();
-		SaveFile->ChunkData = ChunkManager->GetChunksData();
+		ChunkManager->SaveAllSpawnedChunks();
+		SaveFile->ChunkData = ChunkManager->GetAllChunkData();
 	}
 
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();

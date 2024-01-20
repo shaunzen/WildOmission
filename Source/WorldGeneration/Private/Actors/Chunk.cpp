@@ -92,7 +92,9 @@ bool AChunk::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
-	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	// TODO use the chunk invokers render distance
+	return true;
+	//return Distance < AChunkManager::GetRenderDistanceCentimeters();
 }
 
 void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -129,7 +131,9 @@ void AChunk::Tick(float DeltaTime)
 	const FVector FlattenedChunkLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 
 	float Distance = FVector::Distance(FlattenedPawnLocation, FlattenedChunkLocation);
-	if (Distance > AChunkManager::GetRenderDistanceCentimeters())
+
+	// TODO use the invoker render distance
+	if (Distance > AChunkManager::GetDefaultRenderDistanceCentimeters())
 	{
 		SetChunkHidden(true);
 	}

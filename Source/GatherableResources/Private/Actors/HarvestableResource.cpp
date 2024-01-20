@@ -42,7 +42,10 @@ bool AHarvestableResource::IsNetRelevantFor(const AActor* RealViewer, const AAct
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
-	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+
+	// TODO use the invokers render distance
+	return true;
+	//return Distance < AChunkManager::GetRenderDistanceCentimeters();
 }
 
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool)

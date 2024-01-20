@@ -12,7 +12,8 @@
 static AChunkManager* Instance = nullptr;
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
-const static int32 RENDER_DISTANCE = 16;
+// TODO at some point this will become user customizable
+const static int32 DEFAULT_RENDER_DISTANCE = 16;
 
 // Sets default values
 AChunkManager::AChunkManager()
@@ -91,7 +92,7 @@ void AChunkManager::SetChunkData(const TArray<FChunkData> InChunkData)
 	ChunkData = InChunkData;
 }
 
-void AChunkManager::SaveAllLoadedChunks()
+void AChunkManager::SaveAllSpawnedChunks()
 {
 	for (const FSpawnedChunk& SpawnedChunk : SpawnedChunks)
 	{
@@ -114,7 +115,7 @@ void AChunkManager::SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy)
 	ChunkData[ChunkIndex] = ChunkSaveData;
 }
 
-TArray<FChunkData> AChunkManager::GetChunksData() const
+TArray<FChunkData> AChunkManager::GetAllChunkData() const
 {
 	return ChunkData;
 }
@@ -134,7 +135,7 @@ bool AChunkManager::GetChunkData(const FIntVector2& ChunkLocation, FChunkData& O
 	return true;
 }
 
-TArray<FSpawnedChunk> AChunkManager::GetSpawnedChunks() const
+TArray<FSpawnedChunk> AChunkManager::GetAllSpawnedChunks() const
 {
 	return SpawnedChunks;
 }
@@ -169,7 +170,7 @@ void AChunkManager::RemoveSpawnedChunk(const FSpawnedChunk& InSpawnedChunk)
 	SpawnedChunks.Remove(InSpawnedChunk);
 }
 
-AChunk* AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
+AChunk* AChunkManager::GetChunkAtLocation(const FIntVector2& ChunkLocation)
 {
 	FSpawnedChunk SpawnedChunk;
 	SpawnedChunk.GridLocation = ChunkLocation;
@@ -235,7 +236,7 @@ FVector AChunkManager::GetWorldSpawnPoint()
 	FHitResult HitResult;
 
 	// Ensure the chunk we want to start at exists
-	(void*)GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
+	(void*)GetChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
 	const FVector ValidChunkWorldLocation((ValidChunk.X * ChunkSize) - (ChunkSize * 0.5f), (ValidChunk.Y * ChunkSize) - (ChunkSize * 0.5f), 0.0f);
 
 	// Loop through all points on chunk to see if there is a good spot
@@ -308,14 +309,14 @@ FBiomeGenerationData* AChunkManager::GetBiomeAtLocation(const FVector& TestLocat
 	return AChunk::GetBiomeAtLocation(FVector2D(TestLocation.X, TestLocation.Y));
 }
 
-float AChunkManager::GetRenderDistanceCentimeters()
+float AChunkManager::GetDefaultRenderDistanceCentimeters()
 {
-	return AChunk::GetVertexSize() * (AChunk::GetVertexDistanceScale() * 0.5f) * RENDER_DISTANCE;
+	return AChunk::GetVertexSize() * (AChunk::GetVertexDistanceScale() * 0.5f) * DEFAULT_RENDER_DISTANCE;
 }
 
-int32 AChunkManager::GetRenderDistance()
+int32 AChunkManager::GetDefaultRenderDistance()
 {
-	return RENDER_DISTANCE;
+	return DEFAULT_RENDER_DISTANCE;
 }
 
 void AChunkManager::SetGenerationSeed(const uint32& Seed)
@@ -351,9 +352,6 @@ void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AChunkManager::RemoveOutOfRangeChunks()
 {
-	// This seems to destroy and replace chunks over and over every frame?
-	// I need to figure out why
-
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -369,6 +367,8 @@ void AChunkManager::RemoveOutOfRangeChunks()
 		}
 		
 		int32 DistanceFromClosestChunkInvoker = -1;
+
+		// TODO use chunk invokers
 
 		// Get the distance from closest player
 		for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
@@ -420,7 +420,7 @@ void AChunkManager::RemoveOutOfRangeChunks()
 			}
 		}
 
-		if (DistanceFromClosestChunkInvoker == INDEX_NONE || DistanceFromClosestChunkInvoker <= RENDER_DISTANCE)
+		if (DistanceFromClosestChunkInvoker == INDEX_NONE || DistanceFromClosestChunkInvoker <= DEFAULT_RENDER_DISTANCE)
 		{
 			continue;
 		}
@@ -439,13 +439,13 @@ void AChunkManager::SpawnChunksAtLocation(const FVector& Location)
 		Location.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
 	
 	// Generate/load new in range chunks
-	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
+	for (int32 RenderX = -DEFAULT_RENDER_DISTANCE; RenderX <= DEFAULT_RENDER_DISTANCE; ++RenderX)
 	{
-		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
+		for (int32 RenderY = -DEFAULT_RENDER_DISTANCE; RenderY <= DEFAULT_RENDER_DISTANCE; ++RenderY)
 		{
 			FSpawnedChunk SpawnedChunk;
 			SpawnedChunk.GridLocation = FIntVector2(RenderX, RenderY) + ChunkLocation;
-			if (SpawnedChunk.Distance(ChunkLocation) > RENDER_DISTANCE)
+			if (SpawnedChunk.Distance(ChunkLocation) > DEFAULT_RENDER_DISTANCE)
 			{
 				continue;
 			}
@@ -500,12 +500,14 @@ void AChunkManager::SpawnChunk(FSpawnedChunk& OutSpawnedChunk) const
 
 void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const
 {
+	// Ensure we are prossesing valid chunk
 	if (!IsValid(InSpawnedChunk.Chunk))
 	{
 		return;
 	}
 
-	// We need to get neighbors from save file, because they might not be spawned when we are generating this chunk
+	// We get neighbors from ChunkData instead of SpawnedChunks
+	// because they might not be spawned when we are generating this chunk
 
 	// Neighbors
 	TArray<FChunkData> NeighborsData{
@@ -527,6 +529,7 @@ void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const
 		InSpawnedChunk.GridLocation + FIntVector2(1, -1)
 	};
 	
+	// Populate NeighborData
 	for (FChunkData& NeighborData : NeighborsData)
 	{
 		const int32 NeighborIndex = ChunkData.Find(NeighborData);
@@ -539,7 +542,7 @@ void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const
 		NeighborData = ChunkData[NeighborIndex];
 	}
 
-	// Pass neighbors
+	// Pass neighbors to new chunk for generation
 	InSpawnedChunk.Chunk->Generate(NeighborsData);
 }
 
@@ -551,29 +554,6 @@ void AChunkManager::LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkD
 	}
 
 	InSpawnedChunk.Chunk->Load(InChunkData);
-}
-
-FVector AChunkManager::GetFirstPlayerLocation() const
-{
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	APlayerController* PlayerController = World->GetFirstPlayerController();
-	if (PlayerController == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	APawn* PlayerPawn = PlayerController->GetPawn();
-	if (PlayerPawn == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	return PlayerPawn->GetActorLocation();
 }
 
 TArray<FBiomeGenerationData*> AChunkManager::GetAllPossibleBiomes()
