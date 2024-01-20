@@ -17,8 +17,6 @@ class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerControl
 public:
 	AWildOmissionPlayerController();
 
-	virtual void PlayerTick(float DeltaTime) override;
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Begin ISavablePlayer Implementation

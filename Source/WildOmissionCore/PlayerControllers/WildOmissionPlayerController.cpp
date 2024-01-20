@@ -41,12 +41,6 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 	}
 }
 
-void AWildOmissionPlayerController::PlayerTick(float DeltaTime)
-{
-	Super::PlayerTick(DeltaTime);
-
-}
-
 void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
