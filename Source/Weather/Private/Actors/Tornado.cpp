@@ -4,6 +4,7 @@
 #include "Actors/Tornado.h"
 #include "Actors/Storm.h"
 #include "Components/WindSuckerComponent.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Interfaces/DamagedByWind.h"
 #include "Interfaces/InteractsWithTornado.h"
 #include "Log.h"

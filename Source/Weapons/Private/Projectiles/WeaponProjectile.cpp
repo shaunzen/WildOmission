@@ -12,6 +12,7 @@
 #include "SurfaceHelpers.h"
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "NiagaraFunctionLibrary.h"
@@ -68,13 +69,17 @@ bool AWeaponProjectile::IsNetRelevantFor(const AActor* RealViewer, const AActor*
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
+	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return false;
+	}
+
 	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 	
-	// TODO use the chunk invoker render distance
-	return true;
-	//return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
 }
 
 void AWeaponProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

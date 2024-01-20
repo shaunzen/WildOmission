@@ -41,10 +41,6 @@ public:
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
 
-	// Render Distance
-	static float GetDefaultRenderDistanceCentimeters();
-	static int32 GetDefaultRenderDistance();
-
 	// Seed
 	static void SetGenerationSeed(const uint32& Seed);
 	static uint32 GetGenerationSeed();
@@ -70,8 +66,9 @@ private:
 
 	void SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy = false);
 
-	void RemoveOutOfRangeChunks();
-	void SpawnChunksAtLocation(const FVector& Location);
+	void RemoveOutOfRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
+	void SpawnInRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
+	void SpawnChunksAtLocation(const FVector& Location, const uint8& RenderDistance);
 
 	// Generates a chunk at the location pre populated in the struct
 	// sets structs chunk to the chunk spawned if successful

@@ -5,6 +5,7 @@
 #include "Components/BuildAnchorComponent.h"
 #include "Actors/DeployablePreview.h"
 #include "ChunkManager.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Actors/Chunk.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -134,13 +135,17 @@ bool ADeployable::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewT
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
+	UChunkInvokerComponent* ChunkInvoker = RealViewer->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return false;
+	}
+
 	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
-	// TODO make this the chunk invokers render distance
-	return true;
-	//return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
 }
 
 void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

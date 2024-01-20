@@ -5,6 +5,7 @@
 #include "ProceduralMeshComponent.h"
 #include "Components/ChunkSaveComponent.h"
 #include "ChunkManager.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Structs/SpawnQuery.h"
 #include "Curves/CurveFloat.h"
 #include "Noise/PerlinNoise.hpp"
@@ -88,13 +89,17 @@ bool AChunk::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
+	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return false;
+	}
+
 	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
-	// TODO use the chunk invokers render distance
-	return true;
-	//return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
 }
 
 void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -127,13 +132,18 @@ void AChunk::Tick(float DeltaTime)
 		return;
 	}
 
-	const FVector FlattenedPawnLocation(LocalPawn->GetActorLocation().X, LocalPawn->GetActorLocation().Y, 0.0f);
+	UChunkInvokerComponent* ChunkInvoker = LocalPawn->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return;
+	}
+
+	const FVector FlattenedInvokerLocation(ChunkInvoker->GetComponentLocation().X, ChunkInvoker->GetComponentLocation().Y, 0.0f);
 	const FVector FlattenedChunkLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 
-	float Distance = FVector::Distance(FlattenedPawnLocation, FlattenedChunkLocation);
+	float Distance = FVector::Distance(FlattenedInvokerLocation, FlattenedChunkLocation);
 
-	// TODO use the invoker render distance
-	if (Distance > AChunkManager::GetDefaultRenderDistanceCentimeters())
+	if (Distance >= ChunkInvoker->GetRenderDistanceCentimeters())
 	{
 		SetChunkHidden(true);
 	}
