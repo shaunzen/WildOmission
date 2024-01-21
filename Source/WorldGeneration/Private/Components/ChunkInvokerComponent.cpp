@@ -14,8 +14,6 @@ UChunkInvokerComponent::UChunkInvokerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	Invokers = TArray<UChunkInvokerComponent*>();
-
 	RenderDistance = DEFAULT_RENDER_DISTANCE;
 }
 

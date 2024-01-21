@@ -128,10 +128,10 @@ void AChunkManager::SpawnChunksAtLocation(const FVector& Location, const uint8& 
 			FSpawnedChunk SpawnedChunk;
 			SpawnedChunk.GridLocation = FIntVector2(RenderX, RenderY) + ChunkLocation;
 			// TODO refine the distance calculation
-			/*if (SpawnedChunk.Distance(ChunkLocation) > RenderDistance)
+			if (SpawnedChunk.Distance(ChunkLocation) > RenderDistance)
 			{
 				continue;
-			}*/
+			}
 
 			if (!SpawnedChunks.Contains(SpawnedChunk))
 			{
