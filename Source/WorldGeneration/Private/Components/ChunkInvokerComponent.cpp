@@ -3,6 +3,7 @@
 
 #include "Components/ChunkInvokerComponent.h"
 #include "Actors/Chunk.h"
+#include "Log.h"
 
 static TArray<UChunkInvokerComponent*> Invokers;
 static const uint8 DEFAULT_RENDER_DISTANCE = 16;
@@ -30,7 +31,7 @@ void UChunkInvokerComponent::BeginPlay()
 
 	const int32 Index = Invokers.Add(this);
 
-	UE_LOG(LogTemp, Warning, TEXT("Adding Invoker with owner %s, Added at index %i, New Invoker count %i"), *GetOwner()->GetActorNameOrLabel(), Index, Invokers.Num());
+	UE_LOG(LogWorldGeneration, Verbose, TEXT("Adding Invoker %s at index %i. New Invoker count %i"), *OwnerActor->GetActorNameOrLabel(), Index, Invokers.Num());
 }
 
 void UChunkInvokerComponent::EndPlay(EEndPlayReason::Type Reason)
@@ -43,15 +44,9 @@ void UChunkInvokerComponent::EndPlay(EEndPlayReason::Type Reason)
 		return;
 	}
 
-	int32 ThisIndex = INDEX_NONE;
-	if (!Invokers.Find(this, ThisIndex))
-	{
-		return;
-	}
-	
-	Invokers.RemoveAt(ThisIndex);
+	Invokers.Remove(this);
 
-	UE_LOG(LogTemp, Warning, TEXT("Removing Invoker with owner %s, Removed at index %i, New Invoker count %i"), *GetOwner()->GetActorNameOrLabel(), ThisIndex, Invokers.Num());
+	UE_LOG(LogWorldGeneration, Verbose, TEXT("Removing Invoker %s. New Invoker count %i"), *OwnerActor->GetActorNameOrLabel(), Invokers.Num());
 }
 
 void UChunkInvokerComponent::SetRenderDistance(const uint8& InRenderDistance)
