@@ -66,8 +66,11 @@ private:
 
 	void SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy = false);
 
+	UFUNCTION()
 	void RemoveOutOfRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
+	UFUNCTION()
 	void SpawnInRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
+	UFUNCTION()
 	void SpawnChunksAtLocation(const FVector& Location, const uint8& RenderDistance);
 
 	// Generates a chunk at the location pre populated in the struct

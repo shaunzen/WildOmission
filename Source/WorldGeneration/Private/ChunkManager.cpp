@@ -117,8 +117,10 @@ void AChunkManager::SpawnInRangeChunks(const TArray<UChunkInvokerComponent*>& Ch
 
 void AChunkManager::SpawnChunksAtLocation(const FVector& Location, const uint8& RenderDistance)
 {
-	const FIntVector2 ChunkLocation(Location.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
-		Location.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
+	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+	const FVector FlattenedLocation(Location.X, Location.Y, 0.0f);
+	const FIntVector2 ChunkLocation(Location.X / ChunkSize,
+		Location.Y / ChunkSize);
 
 	// Generate/load new in range chunks
 	for (int32 RenderX = -RenderDistance; RenderX <= RenderDistance; ++RenderX)
@@ -127,11 +129,20 @@ void AChunkManager::SpawnChunksAtLocation(const FVector& Location, const uint8& 
 		{
 			FSpawnedChunk SpawnedChunk;
 			SpawnedChunk.GridLocation = FIntVector2(RenderX, RenderY) + ChunkLocation;
-			// TODO refine the distance calculation
-			if (SpawnedChunk.Distance(ChunkLocation) > RenderDistance)
+			
+			const FVector ChunkWorldLocation(SpawnedChunk.GridLocation.X * ChunkSize,
+				SpawnedChunk.GridLocation.Y * ChunkSize, 0.0f);
+			
+			if (FVector::Distance(FlattenedLocation, ChunkWorldLocation) >= (RenderDistance * ChunkSize))
 			{
 				continue;
 			}
+
+			// TODO refine the distance calculation
+			/*if (SpawnedChunk.Distance(ChunkLocation) > RenderDistance)
+			{
+				continue;
+			}*/
 
 			if (!SpawnedChunks.Contains(SpawnedChunk))
 			{
