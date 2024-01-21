@@ -58,6 +58,8 @@ public:
 	static float GetVertexDistanceScale();
 	static float GetMaxHeight();
 
+	static float FastDistance(const FVector& V1, const FVector& V2);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

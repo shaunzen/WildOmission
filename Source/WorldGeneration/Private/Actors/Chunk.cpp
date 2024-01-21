@@ -361,6 +361,15 @@ float AChunk::GetMaxHeight()
 	return MAX_HEIGHT;
 }
 
+float AChunk::FastDistance(const FVector& V1, const FVector& V2)
+{
+	const float X = V1.X - V2.X;
+	const float Y = V1.Y - V2.Y;
+	const float Z = V1.Z - V2.Z;
+
+	return FMath::Sqrt((X * X) + (Y * Y) + (Z * Z));
+}
+
 // Called when the game starts or when spawned
 void AChunk::BeginPlay()
 {

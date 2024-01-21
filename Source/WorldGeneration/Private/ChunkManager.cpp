@@ -76,9 +76,7 @@ void AChunkManager::RemoveOutOfRangeChunks(const TArray<UChunkInvokerComponent*>
 
 			const FVector InvokerLocation = ChunkInvoker->GetComponentLocation();
 
-			const float ChunkDistanceFromInvoker = FVector::Distance(InvokerLocation, ChunkWorldLocation);
-
-			if (ChunkDistanceFromInvoker >= ChunkInvoker->GetRenderDistanceCentimeters())
+			if (AChunk::FastDistance(InvokerLocation, ChunkWorldLocation) >= (ChunkInvoker->GetRenderDistanceCentimeters() * 0.5f))
 			{
 				continue;
 			}
@@ -102,15 +100,13 @@ void AChunkManager::RemoveOutOfRangeChunks(const TArray<UChunkInvokerComponent*>
 
 void AChunkManager::SpawnInRangeChunks(const TArray<UChunkInvokerComponent*>& ChunkInvokers)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("InvokerCount %i"), ChunkInvokers.Num());
-
 	for (UChunkInvokerComponent* ChunkInvoker : ChunkInvokers)
 	{
 		if (ChunkInvoker == nullptr)
 		{
 			continue;
 		}
-		//UE_LOG(LogTemp, Warning, TEXT("Invoker Location %s"), *ChunkInvoker->GetComponentLocation().ToString());
+
 		SpawnChunksAtLocation(ChunkInvoker->GetComponentLocation(), ChunkInvoker->GetRenderDistance());
 	}
 }
@@ -129,11 +125,11 @@ void AChunkManager::SpawnChunksAtLocation(const FVector& Location, const uint8& 
 		{
 			FSpawnedChunk SpawnedChunk;
 			SpawnedChunk.GridLocation = FIntVector2(RenderX, RenderY) + ChunkLocation;
-			
+
 			const FVector ChunkWorldLocation(SpawnedChunk.GridLocation.X * ChunkSize,
 				SpawnedChunk.GridLocation.Y * ChunkSize, 0.0f);
-			
-			if (FVector::Distance(FlattenedLocation, ChunkWorldLocation) >= (RenderDistance * ChunkSize))
+
+			if (AChunk::FastDistance(FlattenedLocation, ChunkWorldLocation) >= (RenderDistance * ChunkSize * 0.5f))
 			{
 				continue;
 			}
@@ -172,7 +168,6 @@ void AChunkManager::SpawnChunksAtLocation(const FVector& Location, const uint8& 
 		}
 	}
 }
-
 
 void AChunkManager::SetChunkData(const TArray<FChunkData> InChunkData)
 {
