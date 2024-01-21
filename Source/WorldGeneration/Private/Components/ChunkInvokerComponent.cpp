@@ -24,14 +24,36 @@ void UChunkInvokerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Invokers.Add(this);
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr || !OwnerActor->HasAuthority())
+	{
+		return;
+	}
+
+	const int32 Index = Invokers.Add(this);
+
+	UE_LOG(LogTemp, Warning, TEXT("Adding Invoker with owner %s, Added at index %i, New Invoker count %i"), *GetOwner()->GetActorNameOrLabel(), Index, Invokers.Num());
 }
 
 void UChunkInvokerComponent::EndPlay(EEndPlayReason::Type Reason)
 {
 	Super::EndPlay(Reason);
 
-	Invokers.Remove(this);
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr || !OwnerActor->HasAuthority())
+	{
+		return;
+	}
+
+	int32 ThisIndex = INDEX_NONE;
+	if (!Invokers.Find(this, ThisIndex))
+	{
+		return;
+	}
+	
+	Invokers.RemoveAt(ThisIndex);
+
+	UE_LOG(LogTemp, Warning, TEXT("Removing Invoker with owner %s, Removed at index %i, New Invoker count %i"), *GetOwner()->GetActorNameOrLabel(), ThisIndex, Invokers.Num());
 }
 
 void UChunkInvokerComponent::SetRenderDistance(const uint8& InRenderDistance)

@@ -14,6 +14,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Components/VitalsComponent.h"
 #include "Components/InteractionComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
@@ -71,6 +72,9 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonArmsMeshComponent->SetRelativeScale3D(FVector(0.95f, 0.95f, 0.95f));
 	FirstPersonArmsMeshComponent->SetVisibility(false);
 	FirstPersonArmsMeshComponent->SetCastShadow(false);
+
+	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
+	ChunkInvokerComponent->SetupAttachment(RootComponent);
 
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
 

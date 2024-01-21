@@ -96,6 +96,9 @@ private:
 	class USpringArmComponent* FirstPersonSpringArmComponent;
 
 	UPROPERTY(VisibleAnywhere)
+	class UChunkInvokerComponent* ChunkInvokerComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	class UVitalsComponent* VitalsComponent;
 
 	UPROPERTY(VisibleAnywhere)

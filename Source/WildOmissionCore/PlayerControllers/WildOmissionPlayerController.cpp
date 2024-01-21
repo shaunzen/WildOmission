@@ -2,8 +2,8 @@
 
 
 #include "WildOmissionPlayerController.h"
-#include "GameFramework/SpectatorPawn.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
+#include "WildOmissionCore/Characters/WildOmissionSpectatorPawn.h"
 #include "ChunkManager.h"
 #include "Components/ChunkInvokerComponent.h"
 #include "Actors/Chunk.h"
@@ -33,9 +33,6 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 	BedUniqueID = -1;
 	BedWorldLocation = FVector::ZeroVector;
 
-	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
-	ChunkInvokerComponent->SetupAttachment(RootComponent);
-
 	MusicPlayerComponent = nullptr;
 
 	static ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmissionCore/UI/Player/WBP_DeathMenu"));
@@ -51,17 +48,6 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SpawnChunk, COND_OwnerOnly);
-}
-
-void AWildOmissionPlayerController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	FVector PlayerViewLocation;
-	FRotator PlayerViewRotation;
-	GetPlayerViewPoint(PlayerViewLocation, PlayerViewRotation);
-	// TODO refine this later
-	ChunkInvokerComponent->SetWorldLocation(PlayerViewLocation);
 }
 
 FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
@@ -329,7 +315,8 @@ void AWildOmissionPlayerController::SetupPlayerOnServer()
 	const bool UseDefaultSpawn = StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true;
 	const FVector SpawnPoint = UseDefaultSpawn ? ChunkManager->GetWorldSpawnPoint() : StoredPlayerSaveData.WorldLocation;
 
-	ASpectatorPawn* SpecPawn = World->SpawnActor<ASpectatorPawn>(ASpectatorPawn::StaticClass(), SpawnPoint, FRotator::ZeroRotator);
+	// TODO custom spectator class with chunk invoker
+	AWildOmissionSpectatorPawn* SpecPawn = World->SpawnActor<AWildOmissionSpectatorPawn>(AWildOmissionSpectatorPawn::StaticClass(), SpawnPoint, FRotator::ZeroRotator);
 	if (SpecPawn)
 	{
 		this->Possess(SpecPawn);
