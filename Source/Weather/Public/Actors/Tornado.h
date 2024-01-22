@@ -4,40 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Structs/TornadoData.h"
 #include "Tornado.generated.h"
-
-USTRUCT()
-struct FTornadoData
-{
-	GENERATED_BODY()
-
-	FTornadoData();
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	bool WasSpawned;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	FTransform Transform;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RotationSpeed;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float MovementSpeed;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	FVector TargetLocation;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float TotalLifetime;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RemainingLifetime;
-
-};
-
-class AStorm;
-class UWindSuckerComponent;
 
 UCLASS()
 class WEATHER_API ATornado : public AActor
@@ -50,11 +18,11 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void HandleSpawn(AStorm* OwnerStorm, bool SpawnedFromCommand = false);
+	void HandleSpawn(class AStorm* OwnerStorm, bool SpawnedFromCommand = false);
 
 	FTornadoData GetTornadoData();
 
-	void LoadTornadoData(const FTornadoData& InTornadoData, AStorm* OwnerStorm);
+	void LoadTornadoData(const FTornadoData& InTornadoData, class AStorm* OwnerStorm);
 
 protected:
 	// Called when the game starts or when spawned
@@ -71,15 +39,15 @@ private:
 	USceneComponent* SuctionAnchor;
 
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* CloseSuctionComponent1;
+	class UWindSuckerComponent* CloseSuctionComponent1;
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* CloseSuctionComponent2;
+	class UWindSuckerComponent* CloseSuctionComponent2;
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* CloseSuctionComponent3;
+	class UWindSuckerComponent* CloseSuctionComponent3;
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* CloseSuctionComponent4;
+	class UWindSuckerComponent* CloseSuctionComponent4;
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* FarSuctionComponent;
+	class UWindSuckerComponent* FarSuctionComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	float RotationSpeed;
@@ -100,7 +68,7 @@ private:
 	float TotalLifetime;
 
 	UPROPERTY()
-	AStorm* OwnerStorm;
+	class AStorm* OwnerStorm;
 
 	FVector GetRandomLocationInStorm();
 

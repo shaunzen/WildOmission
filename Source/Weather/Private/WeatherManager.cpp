@@ -3,6 +3,8 @@
 
 #include "WeatherManager.h"
 #include "Actors/Storm.h"
+#include "Actors/Tornado.h"
+#include "Structs/WindParameters.h"
 #include "TimeOfDayManager.h"
 #include "Components/WeatherSaveComponent.h"
 #include "UObject/ConstructorHelpers.h"

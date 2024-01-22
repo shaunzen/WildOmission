@@ -6,27 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "WeatherManager.generated.h"
 
-class AStorm;
-
-USTRUCT()
-struct FWindParameters
-{
-	GENERATED_BODY()
-	
-	UPROPERTY()
-	float GlobalWindStrength = 0.3f;
-
-	UPROPERTY()
-	FVector2D GlobalWindDirection = FVector2D(1.0f, 0.0f);
-
-	UPROPERTY()
-	float TornadoOnGround = 0.0f;
-
-	UPROPERTY()
-	FVector2D TornadoLocation = FVector2D::ZeroVector;
-
-};
-
 UCLASS()
 class WEATHER_API AWeatherManager : public AActor
 {
@@ -49,11 +28,11 @@ public:
 	void SetStormsDisabled(bool InStormsDisabled);
 	bool GetStormsDisabled() const;
 
-	AStorm* SpawnStorm(bool FromCommand = false);
+	class AStorm* SpawnStorm(bool FromCommand = false);
 	void ClearStorm();
 	
-	AStorm* GetCurrentStorm() const;
-	void SetCurrentStorm(AStorm* NewCurrentStorm);
+	class AStorm* GetCurrentStorm() const;
+	void SetCurrentStorm(class AStorm* NewCurrentStorm);
 	
 protected:
 	// Called when the game starts or when spawned
@@ -86,16 +65,16 @@ private:
 	void AttemptMidnightStorm();
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AStorm> StormClass;
+	TSubclassOf<class AStorm> StormClass;
 	
 	bool StormsDisabled;
 
 	UPROPERTY(Replicated)
-	AStorm* CurrentStorm;
+	class AStorm* CurrentStorm;
 
 	bool CanSpawnStorm() const;
 
 	void CalculateWindParameters();
-	void ApplyWindParameters(const FWindParameters& NewParameters);
+	void ApplyWindParameters(const struct FWindParameters& NewParameters);
 
 };

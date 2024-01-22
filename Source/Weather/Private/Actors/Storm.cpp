@@ -2,6 +2,7 @@
 
 
 #include "Actors/Storm.h"
+#include "Actors/Tornado.h"
 #include "WeatherManager.h"
 #include "Actors/Lightning.h"
 #include "Net/UnrealNetwork.h"

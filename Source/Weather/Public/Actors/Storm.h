@@ -4,12 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Tornado.h"
+#include "Structs/TornadoData.h"
 #include "Storm.generated.h"
-
-class AWeatherManager;
-class ALightning;
-class UNiagaraComponent;
 
 UCLASS()
 class WEATHER_API AStorm : public AActor
@@ -40,7 +36,7 @@ public:
 	void SetMovementVector(const FVector& InMovementVector);
 
 	FVector GetMovementVector() const;
-	ATornado* GetSpawnedTornado() const;
+	class ATornado* GetSpawnedTornado() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsRaining(float& OutDensity) const;
@@ -55,12 +51,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CloudMeshComponent;
 	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* RainHazeComponent;
+	class UNiagaraComponent* RainHazeComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ALightning> LightningClass;
+	TSubclassOf<class ALightning> LightningClass;
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ATornado> TornadoClass;
+	TSubclassOf<class ATornado> TornadoClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	float RainSeverityThreshold;
@@ -83,7 +79,7 @@ private:
 	bool HasSpawnedTornado;
 
 	UPROPERTY(Replicated)
-	ATornado* SpawnedTornado;
+	class ATornado* SpawnedTornado;
 
 	bool WasSpawnedFromCommand;
 
