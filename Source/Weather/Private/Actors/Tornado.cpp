@@ -24,6 +24,7 @@ ATornado::ATornado()
 
 	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
 	ChunkInvokerComponent->SetupAttachment(RootComponent);
+	ChunkInvokerComponent->SetRenderDistance(8);
 
 	SuctionAnchor = CreateDefaultSubobject<USceneComponent>(TEXT("SuctionAnchor"));
 	SuctionAnchor->SetupAttachment(MeshComponent);

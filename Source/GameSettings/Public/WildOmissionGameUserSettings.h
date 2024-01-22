@@ -12,6 +12,7 @@ class GAMESETTINGS_API UWildOmissionGameUserSettings : public UGameUserSettings
 	GENERATED_UCLASS_BODY()
 
 public:
+	virtual void LoadSettings(bool bForceReload = false) override;
 	virtual void SetToDefaults() override;
 
 	UFUNCTION()
@@ -63,6 +64,18 @@ public:
 	float GetWeatherVolume() const;
 
 	UFUNCTION()
+	void SetFieldOfView(float NewFieldOfView);
+
+	UFUNCTION()
+	float GetFieldOfView() const;
+
+	UFUNCTION()
+	void SetRenderDistance(const uint8& NewRenderDistance);
+
+	UFUNCTION()
+	uint8 GetRenderDistance() const;
+
+	UFUNCTION()
 	void SetShowBranding(bool Show);
 
 	UFUNCTION()
@@ -91,12 +104,6 @@ public:
 
 	UFUNCTION()
 	bool GetCameraShakeEnabled() const;
-
-	UFUNCTION()
-	void SetFieldOfView(float NewFieldOfView);
-	
-	UFUNCTION()
-	float GetFieldOfView() const;
 
 	UFUNCTION()
 	void SetGamma(float NewGamma);
@@ -244,6 +251,9 @@ public:
 
 private:
 	UPROPERTY(Config)
+	int32 SettingsVersion;
+
+	UPROPERTY(Config)
 	float MasterVolume;
 	UPROPERTY(Config)
 	float MusicVolume;
@@ -262,6 +272,10 @@ private:
 
 
 	UPROPERTY(Config)
+	float FieldOfView;
+	UPROPERTY(Config)
+	uint8 RenderDistance;
+	UPROPERTY(Config)
 	bool ShowBranding;
 	UPROPERTY(Config)
 	bool ShowCrosshair;
@@ -271,8 +285,6 @@ private:
 	bool HideHUD;
 	UPROPERTY(Config)
 	bool CameraShakeEnabled;
-	UPROPERTY(Config)
-	float FieldOfView;
 	
 	UPROPERTY(Config)
 	float Gamma;

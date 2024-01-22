@@ -75,6 +75,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
 	ChunkInvokerComponent->SetupAttachment(RootComponent);
+	ChunkInvokerComponent->SetRenderDistance(8);
 
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
 
@@ -551,13 +552,15 @@ void AWildOmissionCharacter::ApplyInputSettings()
 void AWildOmissionCharacter::ApplyGameplaySettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	if (!IsLocallyControlled() || UserSettings == nullptr || FirstPersonCameraComponent == nullptr || PlayerHUDWidget == nullptr)
+	if (!IsLocallyControlled() || UserSettings == nullptr
+		|| FirstPersonCameraComponent == nullptr
+		|| ChunkInvokerComponent == nullptr || PlayerHUDWidget == nullptr)
 	{
 		return;
 	}
 
 	FirstPersonCameraComponent->SetFieldOfView(UserSettings->GetFieldOfView());
-
+	ChunkInvokerComponent->SetRenderDistance(UserSettings->GetRenderDistance());
 	PlayerHUDWidget->ShowBranding(UserSettings->GetShowBranding());
 	PlayerHUDWidget->ShowCrosshair(UserSettings->GetShowCrosshair());
 	PlayerHUDWidget->SetHideChatUnlessOpen(UserSettings->GetHideChatUnlessOpen());
