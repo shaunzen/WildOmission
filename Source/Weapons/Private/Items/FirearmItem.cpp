@@ -75,7 +75,7 @@ void AFirearmItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThirdPers
 void AFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
-	UE_LOG(LogTemp, Warning, TEXT("Primary Pressed, HasAuthority =  %i"), HasAuthority());
+
 }
 
 void AFirearmItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
