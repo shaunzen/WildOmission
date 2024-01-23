@@ -154,6 +154,8 @@ void UChunkSaveComponent::Load(const FChunkData& InChunkData)
 
 		ISavableObject::Execute_OnLoadComplete(SpawnedActor);
 	}
+
+	OwnerChunk->OnLoadedTerrainData();
 }
 
 UClass* UChunkSaveComponent::FindSavableObjectClassUsingIdentifier(const FName& Identifier)

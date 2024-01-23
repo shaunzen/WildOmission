@@ -155,8 +155,7 @@ void AChunk::Tick(float DeltaTime)
 
 void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 {
-	GenerateTerrainShape(Neighbors);
-	GenerateBiome();
+	GenerateTerrain(Neighbors);
 	GenerateDecorations();
 }
 
@@ -201,9 +200,14 @@ void AChunk::SetChunkHidden(bool Hidden)
 	ChunkHidden = Hidden;
 }
 
-void AChunk::OnLoadFromSaveComplete()
+void AChunk::OnLoadedTerrainData()
 {
-	CreateMesh();
+	if (HeightData.IsEmpty() || SurfaceData.IsEmpty())
+	{
+		return;
+	}
+
+	CreateTerrainMesh();
 }
 
 void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
@@ -214,7 +218,7 @@ void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 void AChunk::Load(const FChunkData& InChunkData)
 {
 	SaveComponent->Load(InChunkData);
-	OnLoadFromSaveComplete();
+	OnLoadedTerrainData();
 }
 
 void AChunk::SetGenerationSeed(const uint32& InSeed)
@@ -256,8 +260,8 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 	const float StoneSurfaceDifferenceThreshold = 100.0f;
 	const float DirtSurfaceDifferenceThreshold = 50.0f;
 
-	const bool ShouldBeStone = ArePointsOutsideOfThreshold(TestPoints, OutHeight - StoneSurfaceDifferenceThreshold, OutHeight + StoneSurfaceDifferenceThreshold);
-	const bool ShouldBeDirt = ArePointsOutsideOfThreshold(TestPoints, OutHeight - DirtSurfaceDifferenceThreshold, OutHeight + DirtSurfaceDifferenceThreshold);
+	const bool ShouldBeStone = !IsWithinThreshold(TestPoints, OutHeight - StoneSurfaceDifferenceThreshold, OutHeight + StoneSurfaceDifferenceThreshold);
+	const bool ShouldBeDirt = !IsWithinThreshold(TestPoints, OutHeight - DirtSurfaceDifferenceThreshold, OutHeight + DirtSurfaceDifferenceThreshold);
 
 	// Ground Color
 	if (BiomeName.StartsWith("Snow_"))
@@ -422,25 +426,10 @@ void AChunk::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	ChunkManager->RemoveSpawnedChunk(SpawnedChunk);
 }
 
-void AChunk::OnRep_MeshData()
+void AChunk::GenerateTerrain(const TArray<FChunkData>& Neighbors)
 {
-	if (HeightData.IsEmpty() || SurfaceData.IsEmpty())
-	{
-		return;
-	}
-
-	CreateMesh();
-}
-
-void AChunk::GenerateTerrainShape(const TArray<FChunkData>& Neighbors)
-{
-	GenerateHeightData(Neighbors);
-	CreateMesh();	
-}
-
-// TODO this isn't even used?
-void AChunk::GenerateBiome()
-{
+	GenerateTerrainData(Neighbors);
+	CreateTerrainMesh();
 }
 
 void AChunk::GenerateDecorations()
@@ -518,15 +507,27 @@ void AChunk::GenerateDecorations()
 	}
 }
 
-// TODO what the fuck, why is there so many unused functions?
-void AChunk::GenerateSpawnableActors(const TArray<FSpawnQuery>& SpawnQueryList)
+bool AChunk::IsWithinThreshold(float TestValue, float MinThreshold, float MaxThreshold)
 {
-	if (SpawnQueryList.IsEmpty())
+	if (TestValue < MinThreshold || TestValue > MaxThreshold)
 	{
-		return;
+		return false;
 	}
 
-	
+	return true;
+}
+
+bool AChunk::IsWithinThreshold(const TArray<float>& TestValues, float MinThreshold, float MaxThreshold)
+{
+	for (float TestValue : TestValues)
+	{
+		if (!IsWithinThreshold(TestValue, MinThreshold, MaxThreshold))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 float AChunk::GetContinentalnessAtLocation(const FVector2D& Location, bool UseRawValue)
@@ -572,7 +573,7 @@ float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRa
 	return UseRawValue ? RawValue : PeaksAndValleysHeightCurve->GetFloatValue(RawValue);
 }
 
-void AChunk::CreateMesh()
+void AChunk::CreateTerrainMesh()
 {
 	TArray<FVector> Vertices;
 	TArray<FColor> VertexColors;
@@ -581,8 +582,7 @@ void AChunk::CreateMesh()
 	TArray<FVector> Normals;
 	TArray<FProcMeshTangent> Tangents;
 
-	CreateVertices(Vertices, VertexColors, UV0);
-	CreateTriangles(Triangles);
+	GenerateTerrainRuntimeData(Vertices, Triangles, VertexColors, UV0);
 
 	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices, Triangles, UV0, Normals, Tangents);
 
@@ -590,7 +590,6 @@ void AChunk::CreateMesh()
 	MeshComponent->SetMaterial(0, ChunkMaterial);
 }
 
-// TODO is this even used?
 bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 {
 	const float X = FMath::RandRange(0, VERTEX_SIZE);
@@ -608,21 +607,6 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 	float ChunkOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
 	OutTransform.SetLocation(FVector((X * VERTEX_DISTANCE_SCALE) - ChunkOffset, (Y * VERTEX_DISTANCE_SCALE) - ChunkOffset, Z) + GetActorLocation());
 	return true;
-}
-
-// TODO Is float within threshold is a better name
-// also change the logic so that it matches that discription
-bool AChunk::ArePointsOutsideOfThreshold(const TArray<float>& TestPoints, float MinThreshold, float MaxThreshold)
-{
-	for (const float& TestPoint : TestPoints)
-	{
-		if (TestPoint > MaxThreshold || TestPoint < MinThreshold)
-		{
-			return true;
-		}
-	}
-
-	return false;
 }
 
 FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
@@ -689,9 +673,7 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location)
 	return AChunkManager::GetBiomeGenerationData(BiomeName);
 }
 
-// TODO this name is deceptive, this isn't just generating height data, it also populates the surface data
-// generateterraindata is a better name
-void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
+void AChunk::GenerateTerrainData(const TArray<FChunkData>& Neighbors)
 {
 	TArray<float> TopNeighborHeightData;
 	TArray<float> BottomNeighborHeightData;
@@ -817,10 +799,12 @@ void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
 }
 
 // TODO create runtime terrain data is a better name
-void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV)
+void AChunk::GenerateTerrainRuntimeData(TArray<FVector>& OutVertices, TArray<int32>& OutTriangles, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV)
 {
-	OutVertices.Empty();
-	OutUV.Empty();
+	OutVertices.Reset();
+	OutTriangles.Reset();
+	OutColors.Reset();
+	OutUV.Reset();
 
 	const float VertexOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
 
@@ -863,11 +847,6 @@ void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutCol
 			OutUV.Add(FVector2D(X * UV_SCALE, Y * UV_SCALE));
 		}
 	}
-}
-
-void AChunk::CreateTriangles(TArray<int32>& OutTriangles)
-{
-	OutTriangles.Empty();
 
 	uint32 Vertex = 0;
 	for (uint32 X = 0; X < VERTEX_SIZE; ++X)
