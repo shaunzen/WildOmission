@@ -100,6 +100,10 @@ private:
 
 	bool ChunkHidden;
 	
+	//***************************************************************************************
+	//	Chunk Generation
+	//***************************************************************************************
+
 	// Generates the terrain (Height, Surface Type)
 	void GenerateTerrain(const TArray<FChunkData>& Neighbors);
 
