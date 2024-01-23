@@ -170,8 +170,14 @@ void AChunk::SetChunkHidden(bool Hidden)
 		return;
 	}
 
-	MeshComponent->SetVisibility(!Hidden);
-	WaterMeshComponent->SetVisibility(!Hidden);
+	if (MeshComponent)
+	{
+		MeshComponent->SetVisibility(!Hidden);
+	}
+	if (WaterMeshComponent)
+	{
+		WaterMeshComponent->SetVisibility(!Hidden);
+	}
 
 	TArray<AActor*> AttachedActors;
 	this->GetAttachedActors(AttachedActors);
@@ -182,6 +188,7 @@ void AChunk::SetChunkHidden(bool Hidden)
 		{
 			continue;
 		}
+	
 		UStaticMeshComponent* AttachedActorMeshComponent = AttachedActor->FindComponentByClass<UStaticMeshComponent>();
 		if (AttachedActorMeshComponent == nullptr)
 		{
@@ -375,40 +382,44 @@ void AChunk::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!HasAuthority())
+	if (HasAuthority())
 	{
-		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
-		if (ChunkManager == nullptr)
-		{
-			return;
-		}
-
-		FSpawnedChunk SpawnedChunk;
-		SpawnedChunk.GridLocation = GetChunkLocation();
-		SpawnedChunk.Chunk = this;
-
-		ChunkManager->AddSpawnedChunk(SpawnedChunk);
+		return;
 	}
+
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	FSpawnedChunk SpawnedChunk;
+	SpawnedChunk.GridLocation = GetChunkLocation();
+	SpawnedChunk.Chunk = this;
+
+	ChunkManager->AddSpawnedChunk(SpawnedChunk);
 }
 
 void AChunk::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 	
-	if (!HasAuthority())
+	if (HasAuthority())
 	{
-		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
-		if (ChunkManager == nullptr)
-		{
-			return;
-		}
-
-		FSpawnedChunk SpawnedChunk;
-		SpawnedChunk.GridLocation = this->GetChunkLocation();
-		SpawnedChunk.Chunk = this;
-
-		ChunkManager->RemoveSpawnedChunk(SpawnedChunk);
+		return;
 	}
+
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	FSpawnedChunk SpawnedChunk;
+	SpawnedChunk.GridLocation = this->GetChunkLocation();
+	SpawnedChunk.Chunk = this;
+
+	ChunkManager->RemoveSpawnedChunk(SpawnedChunk);
 }
 
 void AChunk::OnRep_MeshData()
@@ -427,6 +438,7 @@ void AChunk::GenerateTerrainShape(const TArray<FChunkData>& Neighbors)
 	CreateMesh();	
 }
 
+// TODO this isn't even used?
 void AChunk::GenerateBiome()
 {
 }
@@ -506,6 +518,7 @@ void AChunk::GenerateDecorations()
 	}
 }
 
+// TODO what the fuck, why is there so many unused functions?
 void AChunk::GenerateSpawnableActors(const TArray<FSpawnQuery>& SpawnQueryList)
 {
 	if (SpawnQueryList.IsEmpty())
@@ -577,6 +590,7 @@ void AChunk::CreateMesh()
 	MeshComponent->SetMaterial(0, ChunkMaterial);
 }
 
+// TODO is this even used?
 bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 {
 	const float X = FMath::RandRange(0, VERTEX_SIZE);
@@ -596,6 +610,8 @@ bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
 	return true;
 }
 
+// TODO Is float within threshold is a better name
+// also change the logic so that it matches that discription
 bool AChunk::ArePointsOutsideOfThreshold(const TArray<float>& TestPoints, float MinThreshold, float MaxThreshold)
 {
 	for (const float& TestPoint : TestPoints)
@@ -625,38 +641,17 @@ FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
 	const int32 TempatureIndex = FMath::RoundToInt32(Tempature / 0.25f);
 	const int32 HumidityIndex = FMath::RoundToInt32(Humidity / 0.25f);
 	
+	// TODO implement other biomes like beaches and mountains later
 	FName BiomeName = NAME_None;
 	if (Contenentalness > MinShore && Contenentalness < MaxShore)
 	{
 		// Beach biome
-
 		BiomeName = TEXT("Beach");
 
-		// TODO implement other biomes later
-		//if (HumidityIndex == 4)
-		//{
-
-		//}
-		//switch (TempatureIndex)
-		//{
-		//case 0:
-		//	BiomeName = TEXT("IceBeach");
-		//	break;
-		//case 1:
-		//	BiomeName = TEXT("Beach");
-		//	break;
-		//case 2:
-		//	BiomeName = TEXT("Beach");
-		//	break;
-		//case 3:
-		//	BiomeName = TEXT("DriftwoodBeach");
-		//	break;
-		//}
 	}
 	else if (Contenentalness >= MaxShore)
 	{
 		// Middle biome
-
 		switch (TempatureIndex)
 		{
 		case 0:
@@ -678,14 +673,8 @@ FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
 			BiomeName = TEXT("Plains");
 			break;
 		}
-
 	}
-	// Temp High, Humidity Low = Desert
-	// Temp High, Humidity High = Swamp
-	// Temp Low, Humidity Low = Tundra
-	// Temp Low, Humidity High = Snow Forest
-	// Temp ~, Humidity ~ = Plains/Forest
-
+	
 	return BiomeName;
 }
 
@@ -700,6 +689,8 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location)
 	return AChunkManager::GetBiomeGenerationData(BiomeName);
 }
 
+// TODO this name is deceptive, this isn't just generating height data, it also populates the surface data
+// generateterraindata is a better name
 void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
 {
 	TArray<float> TopNeighborHeightData;
@@ -825,6 +816,7 @@ void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
 	}
 }
 
+// TODO create runtime terrain data is a better name
 void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV)
 {
 	OutVertices.Empty();
