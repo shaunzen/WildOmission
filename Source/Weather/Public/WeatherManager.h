@@ -34,7 +34,6 @@ public:
 	bool CanSpawnStorm() const;
 	bool GetStormsDisabled() const;
 	
-	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
