@@ -113,7 +113,7 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 void AChunk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -218,7 +218,6 @@ void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 void AChunk::Load(const FChunkData& InChunkData)
 {
 	SaveComponent->Load(InChunkData);
-	OnLoadedTerrainData();
 }
 
 void AChunk::SetGenerationSeed(const uint32& InSeed)

@@ -100,7 +100,10 @@ private:
 
 	bool ChunkHidden;
 	
+	// Generates the terrain (Height, Surface Type)
 	void GenerateTerrain(const TArray<FChunkData>& Neighbors);
+
+	// Generates the decorations (Trees, Rocks, Plants)
 	void GenerateDecorations();
 	
 	void GenerateTerrainData(const TArray<FChunkData>& Neighbors);
