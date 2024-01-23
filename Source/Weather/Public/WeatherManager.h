@@ -25,14 +25,15 @@ public:
 	void Save(struct FWeatherData& OutWeatherData);
 	void Load(const struct FWeatherData& InWeatherData);
 
-	void SetStormsDisabled(bool InStormsDisabled);
-	bool GetStormsDisabled() const;
-
 	class AStorm* SpawnStorm(bool FromCommand = false);
 	void ClearStorm();
+	void SetCurrentStorm(class AStorm* NewCurrentStorm);
+	void SetStormsDisabled(bool InStormsDisabled);
 	
 	class AStorm* GetCurrentStorm() const;
-	void SetCurrentStorm(class AStorm* NewCurrentStorm);
+	bool CanSpawnStorm() const;
+	bool GetStormsDisabled() const;
+	
 	
 protected:
 	// Called when the game starts or when spawned
@@ -44,25 +45,10 @@ private:
 	class UWeatherSaveComponent* SaveComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	float SunriseStormSpawnChance;
-	UPROPERTY(EditDefaultsOnly)
-	float NoonStormSpawnChance;
-	UPROPERTY(EditDefaultsOnly)
-	float SunsetStormSpawnChance;
-	UPROPERTY(EditDefaultsOnly)
-	float MidnightStormSpawnChance;
-
+	TArray<float> StormSpawnChances;
+	
 	UFUNCTION()
-	void AttemptSunriseStorm();
-
-	UFUNCTION()
-	void AttemptNoonStorm();
-
-	UFUNCTION()
-	void AttemptSunsetStorm();
-
-	UFUNCTION()
-	void AttemptMidnightStorm();
+	void AttemptToSpawnStorm();
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AStorm> StormClass;
@@ -72,9 +58,7 @@ private:
 	UPROPERTY(Replicated)
 	class AStorm* CurrentStorm;
 
-	bool CanSpawnStorm() const;
-
-	void CalculateWindParameters();
+	void UpdateWindParameters();
 	void ApplyWindParameters(const struct FWindParameters& NewParameters);
 
 };

@@ -1,6 +1,6 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-
+// TODO clean this
 #include "WeatherManager.h"
 #include "Actors/Storm.h"
 #include "Actors/Tornado.h"
@@ -32,10 +32,13 @@ AWeatherManager::AWeatherManager()
 	StormsDisabled = false;
 
 	CurrentStorm = nullptr;
-	SunriseStormSpawnChance = 0.1f;
-	NoonStormSpawnChance = 0.25f;
-	SunsetStormSpawnChance = 0.3f;
-	MidnightStormSpawnChance = 0.2f;
+	StormSpawnChances = TArray<float>
+	{
+		0.1f,	// SunriseStormSpawnChance 
+		0.25f,	// NoonStormSpawnChance
+		0.3f,	// SunsetStormSpawnChance 
+		0.2f	// MidnightStormSpawnChance 
+	};
 
 	static ConstructorHelpers::FClassFinder<AStorm> StormBlueprint(TEXT("/Game/Weather/Actors/BP_Storm"));
 	if (StormBlueprint.Succeeded())
@@ -78,10 +81,10 @@ void AWeatherManager::BeginPlay()
 		return;
 	}
 
-	TimeOfDayManager->OnTimeSunrise.AddDynamic(this, &AWeatherManager::AttemptSunriseStorm);
-	TimeOfDayManager->OnTimeNoon.AddDynamic(this, &AWeatherManager::AttemptNoonStorm);
-	TimeOfDayManager->OnTimeSunset.AddDynamic(this, &AWeatherManager::AttemptSunsetStorm);
-	TimeOfDayManager->OnTimeMidnight.AddDynamic(this, &AWeatherManager::AttemptMidnightStorm);
+	TimeOfDayManager->OnTimeSunrise.AddDynamic(this, &AWeatherManager::AttemptToSpawnStorm);
+	TimeOfDayManager->OnTimeNoon.AddDynamic(this, &AWeatherManager::AttemptToSpawnStorm);
+	TimeOfDayManager->OnTimeSunset.AddDynamic(this, &AWeatherManager::AttemptToSpawnStorm);
+	TimeOfDayManager->OnTimeMidnight.AddDynamic(this, &AWeatherManager::AttemptToSpawnStorm);
 }
 
 void AWeatherManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -91,48 +94,12 @@ void AWeatherManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Instance = nullptr;
 }
 
-void AWeatherManager::AttemptSunriseStorm()
+// Called every frame
+void AWeatherManager::Tick(float DeltaTime)
 {
-	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(SunriseStormSpawnChance);
-	if (ShouldSpawn == false)
-	{
-		return;
-	}
+	Super::Tick(DeltaTime);
 
-	SpawnStorm();
-}
-
-void AWeatherManager::AttemptNoonStorm()
-{
-	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(NoonStormSpawnChance);
-	if (ShouldSpawn == false)
-	{
-		return;
-	}
-
-	SpawnStorm();
-}
-
-void AWeatherManager::AttemptSunsetStorm()
-{
-	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(SunsetStormSpawnChance);
-	if (ShouldSpawn == false)
-	{
-		return;
-	}
-
-	SpawnStorm();
-}
-
-void AWeatherManager::AttemptMidnightStorm()
-{
-	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(MidnightStormSpawnChance);
-	if (ShouldSpawn == false)
-	{
-		return;
-	}
-
-	SpawnStorm();
+	UpdateWindParameters();
 }
 
 void AWeatherManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -140,14 +107,6 @@ void AWeatherManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeatherManager, CurrentStorm);
-}
-
-// Called every frame
-void AWeatherManager::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	CalculateWindParameters();
 }
 
 void AWeatherManager::Save(FWeatherData& OutWeatherData)
@@ -168,16 +127,6 @@ void AWeatherManager::Load(const FWeatherData& InWeatherData)
 	}
 
 	SaveComponent->Load(InWeatherData);
-}
-
-void AWeatherManager::SetStormsDisabled(bool InStormsDisabled)
-{
-	StormsDisabled = InStormsDisabled;
-}
-
-bool AWeatherManager::GetStormsDisabled() const
-{
-	return StormsDisabled;
 }
 
 AStorm* AWeatherManager::SpawnStorm(bool FromCommand)
@@ -204,12 +153,42 @@ void AWeatherManager::ClearStorm()
 	CurrentStorm = nullptr;
 }
 
-bool AWeatherManager::CanSpawnStorm() const
+void AWeatherManager::SetCurrentStorm(AStorm* NewCurrentStorm)
 {
-	return !StormsDisabled && CurrentStorm == nullptr;
+	if (CurrentStorm)
+	{
+		CurrentStorm->HandleDestruction();
+		CurrentStorm = nullptr;
+	}
+
+	CurrentStorm = NewCurrentStorm;
 }
 
-void AWeatherManager::CalculateWindParameters()
+void AWeatherManager::SetStormsDisabled(bool InStormsDisabled)
+{
+	StormsDisabled = InStormsDisabled;
+}
+
+void AWeatherManager::AttemptToSpawnStorm()
+{
+	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
+	if (TimeOfDayManager == nullptr)
+	{
+		return;
+	}
+
+	const float SpawnChance = StormSpawnChances[FMath::RoundToInt32(TimeOfDayManager->GetNormalizedProgressThroughDay() / 0.25f)];
+
+	const bool ShouldSpawn = UKismetMathLibrary::RandomBoolWithWeight(SpawnChance);
+	if (ShouldSpawn == false)
+	{
+		return;
+	}
+
+	SpawnStorm();
+}
+
+void AWeatherManager::UpdateWindParameters()
 {
 	FWindParameters NewParams;
 
@@ -246,9 +225,10 @@ void AWeatherManager::CalculateWindParameters()
 	NewParams.TornadoOnGround = 0.0f;
 	NewParams.TornadoLocation = FVector2D::ZeroVector;
 
-	if (CurrentStorm->GetSpawnedTornado() != nullptr)
+	ATornado* SpawnedTornado = CurrentStorm->GetSpawnedTornado();
+	if (SpawnedTornado)
 	{
-		NewParams.TornadoLocation = FVector2D(CurrentStorm->GetSpawnedTornado()->GetActorLocation().X, CurrentStorm->GetSpawnedTornado()->GetActorLocation().Y);
+		NewParams.TornadoLocation = FVector2D(SpawnedTornado->GetActorLocation().X, SpawnedTornado->GetActorLocation().Y);
 		NewParams.TornadoOnGround = 1.0f;
 	}
 
@@ -257,10 +237,16 @@ void AWeatherManager::CalculateWindParameters()
 
 void AWeatherManager::ApplyWindParameters(const FWindParameters& NewParameters)
 {
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, TEXT("GlobalWindStrength"), NewParameters.GlobalWindStrength);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, TEXT("GlobalWindDirection"), FLinearColor(NewParameters.GlobalWindDirection.X, NewParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
-	UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPC_WindCollection, TEXT("TornadoOnGround"), NewParameters.TornadoOnGround);
-	UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), MPC_WindCollection, TEXT("TornadoLocation"), FLinearColor(NewParameters.TornadoLocation.X, NewParameters.TornadoLocation.Y, 0.0f, 1.0f));
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	UKismetMaterialLibrary::SetScalarParameterValue(World, MPC_WindCollection, TEXT("GlobalWindStrength"), NewParameters.GlobalWindStrength);
+	UKismetMaterialLibrary::SetVectorParameterValue(World, MPC_WindCollection, TEXT("GlobalWindDirection"), FLinearColor(NewParameters.GlobalWindDirection.X, NewParameters.GlobalWindDirection.Y, 0.0f, 1.0f));
+	UKismetMaterialLibrary::SetScalarParameterValue(World, MPC_WindCollection, TEXT("TornadoOnGround"), NewParameters.TornadoOnGround);
+	UKismetMaterialLibrary::SetVectorParameterValue(World, MPC_WindCollection, TEXT("TornadoLocation"), FLinearColor(NewParameters.TornadoLocation.X, NewParameters.TornadoLocation.Y, 0.0f, 1.0f));
 }
 
 AStorm* AWeatherManager::GetCurrentStorm() const
@@ -268,13 +254,12 @@ AStorm* AWeatherManager::GetCurrentStorm() const
 	return CurrentStorm;
 }
 
-void AWeatherManager::SetCurrentStorm(AStorm* NewCurrentStorm)
+bool AWeatherManager::CanSpawnStorm() const
 {
-	if (CurrentStorm)
-	{
-		CurrentStorm->HandleDestruction();
-		CurrentStorm = nullptr;
-	}
+	return !StormsDisabled && CurrentStorm == nullptr;
+}
 
-	CurrentStorm = NewCurrentStorm;
+bool AWeatherManager::GetStormsDisabled() const
+{
+	return StormsDisabled;
 }
