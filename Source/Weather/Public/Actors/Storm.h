@@ -87,13 +87,15 @@ private:
 	void GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector) const;
 
 	// Client-Side Logic
-	void HandleCloudAppearance();
+	void UpdateCloudAppearance();
 
 	// Server-Side Logic
-	void HandleMovement();
-	void HandleSeverity();
+	void UpdateLocation();
+	void UpdateSeverity();
 	void SpawnTornado(bool bFromSave = false);
 	
+
+	// TODO lightning should be a multicast type of thing
 	void HandleLightning();
 	void SpawnLightning();
 

@@ -234,8 +234,13 @@ void AStorm::GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector)
 }
 
 // TODO update cloud appearance is a better name
-void AStorm::HandleCloudAppearance()
+void AStorm::UpdateCloudAppearance()
 {
+	if (CloudMeshComponent == nullptr || RainHazeComponent == nullptr)
+	{
+		return;
+	}
+
 	FVector CloudScale = FVector::ZeroVector;
 	CloudScale.X = FMath::Lerp(1.0f, 2.0f, Severity / 100.0f);
 	CloudScale.Y = FMath::Lerp(1.0f, 2.0f, Severity / 100.0f);
@@ -246,16 +251,19 @@ void AStorm::HandleCloudAppearance()
 	RainHazeComponent->SetActive(Severity > RainSeverityThreshold && LocalPlayerUnder == false);
 }
 
-// TODO update movement
-void AStorm::HandleMovement()
+void AStorm::UpdateLocation()
 {
-	const FVector CurrentLocation = GetActorLocation();
-
-	const FVector NewLocation = CurrentLocation + (MovementVector * MovementSpeed * GetWorld()->GetDeltaSeconds());
-	SetActorLocation(NewLocation);
-
-	if (GetDistanceTraveled() >= GetTravelDistance())
+	UWorld* World = GetWorld();
+	if (World == nullptr)
 	{
+		return;
+	}
+
+	this->SetActorLocation(this->GetActorLocation() + (MovementVector * MovementSpeed * World->GetDeltaSeconds()));
+
+	if (this->GetDistanceTraveled() >= this->GetTravelDistance())
+	{
+		// TODO this is breaking rules, should be a delegate
 		AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
 		if (WeatherManager == nullptr)
 		{
@@ -266,19 +274,24 @@ void AStorm::HandleMovement()
 	}
 }
 
-// TODO update severity
-void AStorm::HandleSeverity()
+void AStorm::UpdateSeverity()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	// Update severity values
-	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
+	Severity = FMath::Clamp(Severity + (SeverityMultiplier * World->GetDeltaSeconds()), 0.0f, 100.0f);
 
 	if (Severity > TornadoSeverityThreshold && SpawnedTornado == nullptr && HasSpawnedTornado == false)
 	{
-		SpawnTornado();
+		this->SpawnTornado();
 	}
 }
 
-// TODO this needs a lookover
+// TODO this needs a lookover, yeah lots of null dereferencing, crash waiting to happen
 void AStorm::SpawnTornado(bool bFromSave)
 {
 	FActorSpawnParameters TornadoSpawnParams;
