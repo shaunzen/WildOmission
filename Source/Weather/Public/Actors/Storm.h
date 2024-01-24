@@ -16,31 +16,29 @@ public:
 	// Sets default values for this actor's properties
 	AStorm();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void Serialize(FArchive& Ar) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void Serialize(FArchive& Ar) override;
 	void OnLoadComplete();
 
-	void HandleSpawn(bool SpawnedFromCommand = false);
-	void HandleDestruction();
+	void Setup(bool SpawnedFromCommand = false);
+	void Cleanup();
 
-	float GetSeverity() const;
 	void SetSeverity(float NewSeverity);
-
-	FVector GetStormTargetLocation() const;
-	float GetTravelDistance() const;
-	float GetDistanceTraveled() const;
-
 	void SetMovementVector(const FVector& InMovementVector);
 
-	FVector GetMovementVector() const;
-	class ATornado* GetSpawnedTornado() const;
+	void SetLocalPlayerUnderneath(bool IsUnder);
 
 	UFUNCTION(BlueprintCallable)
 	bool IsRaining(float& OutDensity) const;
-	void SetLocalPlayerUnderneath(bool IsUnder);
+	float GetSeverity() const;
+	FVector GetMovementVector() const;
+	FVector GetStormTargetLocation() const;
+	float GetTravelDistance() const;
+	float GetDistanceTraveled() const;
+	class ATornado* GetSpawnedTornado() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -94,8 +92,9 @@ private:
 	// Server-Side Logic
 	void HandleMovement();
 	void HandleSeverity();
+	void SpawnTornado(bool bFromSave = false);
+	
 	void HandleLightning();
 	void SpawnLightning();
-	void SpawnTornado(bool bFromSave = false);
 
 };

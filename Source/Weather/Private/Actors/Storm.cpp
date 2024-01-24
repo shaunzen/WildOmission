@@ -1,6 +1,6 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-
+// TODO clean this up
 #include "Actors/Storm.h"
 #include "Actors/Tornado.h"
 #include "WeatherManager.h"
@@ -59,11 +59,13 @@ AStorm::AStorm()
 	{
 		TornadoClass = TornadoBlueprint.Class;
 	}
+	
 	static ConstructorHelpers::FClassFinder<ALightning> LightningBlueprint(TEXT("/Game/Weather/Actors/BP_Lightning"));
 	if (LightningBlueprint.Succeeded())
 	{
 		LightningClass = LightningBlueprint.Class;
 	}
+
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> RainHazeBlueprint(TEXT("/Game/Weather/Art/NS_RainHaze"));
 	if (RainHazeBlueprint.Succeeded())
 	{
@@ -71,7 +73,95 @@ AStorm::AStorm()
 	}
 }
 
-void AStorm::HandleSpawn(bool SpawnedFromCommand)
+void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStorm, SpawnedTornado);
+	DOREPLIFETIME(AStorm, Severity);
+	DOREPLIFETIME_CONDITION(AStorm, MovementVector, COND_InitialOnly);
+}
+
+// TODO this is going against convention, the storm should know nothing about the weather manager, the weather manager should ensure no storm spawns if storms are disabled
+void AStorm::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+	if (WeatherManager == nullptr)
+	{
+		return;
+	}
+
+	if (!WeatherManager->GetStormsDisabled())
+	{
+		return;
+	}
+
+	this->Cleanup();
+}
+
+// Called every frame
+void AStorm::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	HandleCloudAppearance();
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	HandleMovement();
+	HandleSeverity();
+	HandleLightning();
+}
+
+void AStorm::Serialize(FArchive& Ar)
+{
+	if (Ar.IsSaving())
+	{
+		if (SpawnedTornado == nullptr)
+		{
+			TornadoData = FTornadoData();
+		}
+		else
+		{
+			TornadoData = SpawnedTornado->GetTornadoData();
+			TornadoData.WasSpawned = true;
+		}
+	}
+	Super::Serialize(Ar);
+}
+
+// TODO once again this is bad, we shouldn't know what a weather manager is, we are just the storm
+void AStorm::OnLoadComplete()
+{
+	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+	if (WeatherManager == nullptr)
+	{
+		return;
+	}
+
+	if (WeatherManager->GetStormsDisabled())
+	{
+		this->Cleanup();
+		return;
+	}
+
+	if (TornadoData.WasSpawned)
+	{
+		this->SpawnTornado(true);
+	}
+}
+
+void AStorm::Setup(bool SpawnedFromCommand)
 {
 	WasSpawnedFromCommand = SpawnedFromCommand;
 
@@ -87,24 +177,7 @@ void AStorm::HandleSpawn(bool SpawnedFromCommand)
 	UE_LOG(LogWeather, Verbose, TEXT("Spawned Storm with MovementSpeed: %f, and SeverityMultiplier: %f"), MovementSpeed, SeverityMultiplier);
 }
 
-// Called every frame
-void AStorm::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	HandleCloudAppearance();
-
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	HandleMovement();
-	HandleSeverity();
-	HandleLightning();
-}
-
-void AStorm::HandleDestruction()
+void AStorm::Cleanup()
 {
 	// If there is any tornados, destroy them
 	if (SpawnedTornado != nullptr)
@@ -112,100 +185,10 @@ void AStorm::HandleDestruction()
 		SpawnedTornado->Destroy();
 	}
 
-	Destroy();
+	this->Destroy();
 }
 
-void AStorm::HandleCloudAppearance()
-{
-	FVector CloudScale = FVector::ZeroVector;
-	CloudScale.X = FMath::Lerp(1.0f, 2.0f, Severity / 100.0f);
-	CloudScale.Y = FMath::Lerp(1.0f, 2.0f, Severity / 100.0f);
-	CloudScale.Z = FMath::Lerp(1.0f, 7.0f, Severity / 100.0f);
-	CloudMeshComponent->SetWorldScale3D(CloudScale);
-
-	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
-	RainHazeComponent->SetActive(Severity > RainSeverityThreshold && LocalPlayerUnder == false);
-}
-
-void AStorm::HandleMovement()
-{
-	const FVector CurrentLocation = GetActorLocation();
-
-	const FVector NewLocation = CurrentLocation + (MovementVector * MovementSpeed * GetWorld()->GetDeltaSeconds());
-	SetActorLocation(NewLocation);
-
-	if (GetDistanceTraveled() >= GetTravelDistance())
-	{
-		AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
-		if (WeatherManager == nullptr)
-		{
-			return;
-		}
-
-		WeatherManager->ClearStorm();
-	}
-}
-
-void AStorm::HandleSeverity()
-{
-	// Update severity values
-	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
-
-	if (Severity > TornadoSeverityThreshold && SpawnedTornado == nullptr && HasSpawnedTornado == false)
-	{
-		SpawnTornado();
-	}
-}
-
-void AStorm::HandleLightning()
-{
-	NextLightningStrikeTime -= GetWorld()->GetDeltaSeconds();
-	if (NextLightningStrikeTime > KINDA_SMALL_NUMBER)
-	{
-		return;
-	}
-
-	NextLightningStrikeTime = FMath::RandRange(1.0f, 30.0f);
-	SpawnLightning();
-}
-
-void AStorm::SpawnLightning()
-{
-	if (LightningClass == nullptr)
-	{
-		return;
-	}
-
-	FVector Origin;
-	FVector BoxExtent;
-	GetActorBounds(true, Origin, BoxExtent);
-	float HalfStormRadius = (BoxExtent.Length() - (BoxExtent.Length() * 0.2f) * 0.5f);
-	FVector LocationToSpawn = GetActorLocation();
-	LocationToSpawn.X = FMath::RandRange(-HalfStormRadius, HalfStormRadius) + GetActorLocation().X;
-	LocationToSpawn.Y = FMath::RandRange(-HalfStormRadius, HalfStormRadius) + GetActorLocation().Y;
-	
-	FRotator RotationToSpawn = FRotator::ZeroRotator;
-	RotationToSpawn.Pitch = FMath::RandRange(120.0f, 240.0f);
-	RotationToSpawn.Roll = FMath::RandRange(0.0f, 360.0f);
-	GetWorld()->SpawnActor<ALightning>(LightningClass, LocationToSpawn, RotationToSpawn);
-}
-
-void AStorm::SpawnTornado(bool bFromSave)
-{
-	FActorSpawnParameters TornadoSpawnParams;
-	TornadoSpawnParams.Owner = this;
-	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass, FVector(0.0f, 0.0f, 999999.0f), FRotator::ZeroRotator, TornadoSpawnParams);
-	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
-	if (bFromSave)
-	{
-		SpawnedTornado->LoadTornadoData(TornadoData, this);
-		return;
-	}
-
-	SpawnedTornado->HandleSpawn(this, WasSpawnedFromCommand);
-	HasSpawnedTornado = true;
-}
-
+// TODO this looks kinda ugly and doesn't allow for much flexability (diaginal storm movement would be nice)
 void AStorm::GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector) const
 {
 	const float SpawnDistance = 1000000.0f;
@@ -250,50 +233,97 @@ void AStorm::GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector)
 	return;
 }
 
-void AStorm::Serialize(FArchive& Ar)
+// TODO update cloud appearance is a better name
+void AStorm::HandleCloudAppearance()
 {
-	if (Ar.IsSaving())
-	{
-		if (SpawnedTornado == nullptr)
-		{
-			TornadoData = FTornadoData();
-		}
-		else
-		{
-			TornadoData = SpawnedTornado->GetTornadoData();
-			TornadoData.WasSpawned = true;
-		}
-	}
-	Super::Serialize(Ar);
+	FVector CloudScale = FVector::ZeroVector;
+	CloudScale.X = FMath::Lerp(1.0f, 2.0f, Severity / 100.0f);
+	CloudScale.Y = FMath::Lerp(1.0f, 2.0f, Severity / 100.0f);
+	CloudScale.Z = FMath::Lerp(1.0f, 7.0f, Severity / 100.0f);
+	CloudMeshComponent->SetWorldScale3D(CloudScale);
+
+	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
+	RainHazeComponent->SetActive(Severity > RainSeverityThreshold && LocalPlayerUnder == false);
 }
 
-void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+// TODO update movement
+void AStorm::HandleMovement()
 {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	const FVector CurrentLocation = GetActorLocation();
 
-	DOREPLIFETIME(AStorm, SpawnedTornado);
-	DOREPLIFETIME(AStorm, Severity);
-	DOREPLIFETIME_CONDITION(AStorm, MovementVector, COND_InitialOnly);
+	const FVector NewLocation = CurrentLocation + (MovementVector * MovementSpeed * GetWorld()->GetDeltaSeconds());
+	SetActorLocation(NewLocation);
+
+	if (GetDistanceTraveled() >= GetTravelDistance())
+	{
+		AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+		if (WeatherManager == nullptr)
+		{
+			return;
+		}
+
+		WeatherManager->ClearStorm();
+	}
 }
 
-void AStorm::OnLoadComplete()
+// TODO update severity
+void AStorm::HandleSeverity()
 {
-	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
-	if (WeatherManager == nullptr)
+	// Update severity values
+	Severity = FMath::Clamp(Severity + (SeverityMultiplier * GetWorld()->GetDeltaSeconds()), 0.0f, 100.0f);
+
+	if (Severity > TornadoSeverityThreshold && SpawnedTornado == nullptr && HasSpawnedTornado == false)
 	{
-		return;
+		SpawnTornado();
 	}
-	
-	if (WeatherManager->GetStormsDisabled())
+}
+
+// TODO this needs a lookover
+void AStorm::SpawnTornado(bool bFromSave)
+{
+	FActorSpawnParameters TornadoSpawnParams;
+	TornadoSpawnParams.Owner = this;
+	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass, FVector(0.0f, 0.0f, 999999.0f), FRotator::ZeroRotator, TornadoSpawnParams);
+	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	if (bFromSave)
 	{
-		HandleDestruction();
+		SpawnedTornado->LoadTornadoData(TornadoData, this);
 		return;
 	}
 
-	if (TornadoData.WasSpawned)
-	{
-		SpawnTornado(true);
-	}
+	SpawnedTornado->HandleSpawn(this, WasSpawnedFromCommand);
+	HasSpawnedTornado = true;
+}
+
+void AStorm::SetSeverity(float NewSeverity)
+{
+	Severity = NewSeverity;
+}
+
+void AStorm::SetMovementVector(const FVector& InMovementVector)
+{
+	MovementVector = InMovementVector;
+}
+
+void AStorm::SetLocalPlayerUnderneath(bool IsUnder)
+{
+	LocalPlayerUnder = IsUnder;
+}
+
+bool AStorm::IsRaining(float& OutDensity) const
+{
+	OutDensity = FMath::Lerp(100.0f, 2000.0f, Severity / 100.0f);
+	return Severity > RainSeverityThreshold;
+}
+
+float AStorm::GetSeverity() const
+{
+	return Severity;
+}
+
+FVector AStorm::GetMovementVector() const
+{
+	return MovementVector;
 }
 
 FVector AStorm::GetStormTargetLocation() const
@@ -312,61 +342,42 @@ float AStorm::GetDistanceTraveled() const
 	return FVector::Distance(GetActorLocation(), SpawnLocation);
 }
 
-bool AStorm::IsRaining(float& OutDensity) const
-{
-	OutDensity = FMath::Lerp(100.0f, 2000.0f, Severity / 100.0f);
-	return Severity > RainSeverityThreshold;
-}
-
-void AStorm::SetLocalPlayerUnderneath(bool IsUnder)
-{
-	LocalPlayerUnder = IsUnder;
-}
-
-void AStorm::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
-	if (WeatherManager == nullptr)
-	{
-		return;
-	}
-
-	if (!WeatherManager->GetStormsDisabled())
-	{
-		return;
-	}
-
-	this->HandleDestruction();
-}
-
-void AStorm::SetSeverity(float NewSeverity)
-{
-	Severity = NewSeverity;
-}
-
-float AStorm::GetSeverity() const
-{
-	return Severity;
-}
-
-void AStorm::SetMovementVector(const FVector& InMovementVector)
-{
-	MovementVector = InMovementVector;
-}
-
-FVector AStorm::GetMovementVector() const
-{
-	return MovementVector;
-}
-
 ATornado* AStorm::GetSpawnedTornado() const
 {
 	return SpawnedTornado;
+}
+
+// TODO update lightning, although we might want to look into a better way of doing something like this
+void AStorm::HandleLightning()
+{
+	NextLightningStrikeTime -= GetWorld()->GetDeltaSeconds();
+	if (NextLightningStrikeTime > KINDA_SMALL_NUMBER)
+	{
+		return;
+	}
+
+	NextLightningStrikeTime = FMath::RandRange(1.0f, 30.0f);
+	SpawnLightning();
+}
+
+// TODO also might want to find a better method that is more reliable
+void AStorm::SpawnLightning()
+{
+	if (LightningClass == nullptr)
+	{
+		return;
+	}
+
+	FVector Origin;
+	FVector BoxExtent;
+	GetActorBounds(true, Origin, BoxExtent);
+	float HalfStormRadius = (BoxExtent.Length() - (BoxExtent.Length() * 0.2f) * 0.5f);
+	FVector LocationToSpawn = GetActorLocation();
+	LocationToSpawn.X = FMath::RandRange(-HalfStormRadius, HalfStormRadius) + GetActorLocation().X;
+	LocationToSpawn.Y = FMath::RandRange(-HalfStormRadius, HalfStormRadius) + GetActorLocation().Y;
+
+	FRotator RotationToSpawn = FRotator::ZeroRotator;
+	RotationToSpawn.Pitch = FMath::RandRange(120.0f, 240.0f);
+	RotationToSpawn.Roll = FMath::RandRange(0.0f, 360.0f);
+	GetWorld()->SpawnActor<ALightning>(LightningClass, LocationToSpawn, RotationToSpawn);
 }
