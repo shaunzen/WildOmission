@@ -18,11 +18,14 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void Setup(class AStorm* OwnerStorm, bool SpawnedFromCommand = false);
+	void Setup(bool SpawnedFromCommand = false);
 
-	FTornadoData GetTornadoData();
+	void SetBoundsRadius(float InBoundsRadius);
+	float GetBoundsRadius() const;
 
-	void LoadTornadoData(const FTornadoData& InTornadoData, class AStorm* OwnerStorm);
+	FTornadoData GetTornadoData() const;
+
+	void LoadTornadoData(const FTornadoData& InTornadoData);
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,6 +38,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UChunkInvokerComponent* ChunkInvokerComponent;
 
+	//*********************************************************
+	//	Suction Components
+	//*********************************************************
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* SuctionAnchor;
 
@@ -49,41 +55,34 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UWindSuckerComponent* FarSuctionComponent;
 
+	//*********************************************************
+	//	Movement Parameters
+	//*********************************************************
 	UPROPERTY(VisibleAnywhere)
 	float RotationSpeed;
-
 	UPROPERTY(VisibleAnywhere)
 	float MovementSpeed;
-
 	UPROPERTY(VisibleAnywhere)
 	FVector TargetLocation;
-
 	UPROPERTY(VisibleAnywhere)
-	float StormRadius;
-
+	float BoundsRadius;
 	UPROPERTY(VisibleAnywhere)
 	float RemainingLifetime;
-
 	UPROPERTY(VisibleAnywhere)
 	float TotalLifetime;
 
-	UPROPERTY()
-	class AStorm* OwnerStorm;
+	FVector GetRandomLocationInBounds() const;
 
-	FVector GetRandomLocationInStorm();
+	UFUNCTION()
+	void UpdateMovement();
+	UFUNCTION()
+	void UpdateDamage();
+	UFUNCTION()
+	void UpdateRotation();
+
+	bool HasLineOfSightTo(AActor* InActor) const;
 
 	UFUNCTION()
 	void OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void HandleMovement();
-	UFUNCTION()
-	void HandleDamage();
-	UFUNCTION()
-	void HandleRotation();
-
-	void GetStormRadius();
-
-	bool HasLineOfSightTo(AActor* InActor) const;
 
 };

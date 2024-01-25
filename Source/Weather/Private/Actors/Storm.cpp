@@ -211,6 +211,17 @@ void AStorm::UpdateCloudAppearance()
 
 	CloudMeshComponent->SetCustomPrimitiveDataFloat(0, Severity);
 	RainHazeComponent->SetActive(Severity > RainSeverityThreshold && LocalPlayerUnder == false);
+
+	if (!HasAuthority() || SpawnedTornado == nullptr)
+	{
+		return;
+	}
+
+	FVector Origin;
+	FVector BoxExtent;
+	this->GetActorBounds(true, Origin, BoxExtent);
+
+	SpawnedTornado->SetBoundsRadius(BoxExtent.Length() - (BoxExtent.Length() * 0.2f));
 }
 
 void AStorm::UpdateLocation()
@@ -265,11 +276,11 @@ void AStorm::SpawnTornado(bool bFromSave)
 	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	if (bFromSave)
 	{
-		SpawnedTornado->LoadTornadoData(TornadoData, this);
+		SpawnedTornado->LoadTornadoData(TornadoData);
 		return;
 	}
 
-	SpawnedTornado->Setup(this, WasSpawnedFromCommand);
+	SpawnedTornado->Setup(WasSpawnedFromCommand);
 	HasSpawnedTornado = true;
 }
 
