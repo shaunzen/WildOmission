@@ -96,8 +96,9 @@ private:
 	void SpawnTornado(bool bFromSave = false);
 	
 
-	// TODO lightning should be a multicast type of thing
-	void HandleLightning();
-	void SpawnLightning();
+	void UpdateLightning();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SpawnLightning(const FVector& LightningSpawnLocation, const FRotator& LightningSpawnRotation);
 
 };

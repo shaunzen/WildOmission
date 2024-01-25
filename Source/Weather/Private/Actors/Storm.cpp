@@ -86,6 +86,7 @@ void AStorm::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Client
 	UpdateCloudAppearance();
 
 	if (!HasAuthority())
@@ -93,9 +94,10 @@ void AStorm::Tick(float DeltaTime)
 		return;
 	}
 
+	// Server
 	UpdateLocation();
 	UpdateSeverity();
-	HandleLightning();
+	UpdateLightning();
 }
 
 void AStorm::Serialize(FArchive& Ar)
@@ -170,8 +172,10 @@ void AStorm::GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector)
 	const float SpawnDistance = 1000000.0f;
 	const float StormAltitude = 20000.0f;
 
-	// TODO random player
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(World, 0);
+	// Get a random player to spawn the storm at
+	const int32 PlayerIndex = FMath::RandRange(0, World->GetNumPlayerControllers() - 1);
+	
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(World, PlayerIndex);
 	if (PlayerPawn == nullptr)
 	{
 		return;
@@ -179,6 +183,7 @@ void AStorm::GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector)
 
 	const FVector PlayerLocation = PlayerPawn->GetActorLocation();
 
+	// Random directional vector
 	const float DirX = FMath::RandRange(-1, 1);
 	const float DirY = FMath::RandRange(-1, 1);
 
@@ -320,38 +325,49 @@ ATornado* AStorm::GetSpawnedTornado() const
 	return SpawnedTornado;
 }
 
-// TODO make multicast
-// TODO update lightning, although we might want to look into a better way of doing something like this
-void AStorm::HandleLightning()
+void AStorm::UpdateLightning()
 {
-	NextLightningStrikeTime -= GetWorld()->GetDeltaSeconds();
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	NextLightningStrikeTime -= World->GetDeltaSeconds();
 	if (NextLightningStrikeTime > KINDA_SMALL_NUMBER)
 	{
 		return;
 	}
 
 	NextLightningStrikeTime = FMath::RandRange(1.0f, 30.0f);
-	SpawnLightning();
+
+	FVector Origin;
+	FVector BoxExtent;
+	this->GetActorBounds(true, Origin, BoxExtent);
+
+	float HalfStormRadius = (BoxExtent.Length() - (BoxExtent.Length() * 0.2f) * 0.5f);
+
+	const FVector LightningSpawnLocation(
+		FMath::RandRange(-HalfStormRadius, HalfStormRadius) + Origin.X,
+		FMath::RandRange(-HalfStormRadius, HalfStormRadius) + Origin.Y,
+		0.0f);
+	
+	const FRotator LightningSpawnRotation(
+		0.0f,
+		FMath::RandRange(120.0f, 240.0f),
+		FMath::RandRange(0.0f, 360.0f));
+
+	Multi_SpawnLightning(LightningSpawnLocation, LightningSpawnRotation);
 }
 
-// TODO also might want to find a better method that is more reliable
-void AStorm::SpawnLightning()
+void AStorm::Multi_SpawnLightning_Implementation(const FVector& LightningSpawnLocation, const FRotator& LightningSpawnRotation)
 {
-	if (LightningClass == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || LightningClass == nullptr)
 	{
 		return;
 	}
 
-	FVector Origin;
-	FVector BoxExtent;
-	GetActorBounds(true, Origin, BoxExtent);
-	float HalfStormRadius = (BoxExtent.Length() - (BoxExtent.Length() * 0.2f) * 0.5f);
-	FVector LocationToSpawn = GetActorLocation();
-	LocationToSpawn.X = FMath::RandRange(-HalfStormRadius, HalfStormRadius) + GetActorLocation().X;
-	LocationToSpawn.Y = FMath::RandRange(-HalfStormRadius, HalfStormRadius) + GetActorLocation().Y;
-
-	FRotator RotationToSpawn = FRotator::ZeroRotator;
-	RotationToSpawn.Pitch = FMath::RandRange(120.0f, 240.0f);
-	RotationToSpawn.Roll = FMath::RandRange(0.0f, 360.0f);
-	GetWorld()->SpawnActor<ALightning>(LightningClass, LocationToSpawn, RotationToSpawn);
+	
+	World->SpawnActor<ALightning>(LightningClass, LightningSpawnLocation, LightningSpawnRotation);
 }
