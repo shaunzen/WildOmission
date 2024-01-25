@@ -57,6 +57,9 @@ private:
 	UPROPERTY(Replicated)
 	class AStorm* CurrentStorm;
 
+	UFUNCTION()
+	void OnStormCleanup();
+
 	void UpdateWindParameters();
 	void ApplyWindParameters(const struct FWindParameters& NewParameters);
 

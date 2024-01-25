@@ -7,6 +7,8 @@
 #include "Structs/TornadoData.h"
 #include "Storm.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStormCleanupSignature);
+
 UCLASS()
 class WEATHER_API AStorm : public AActor
 {
@@ -26,6 +28,8 @@ public:
 	void Setup(bool SpawnedFromCommand = false);
 	void Cleanup();
 
+	FOnStormCleanupSignature OnCleanup;
+
 	void SetSeverity(float NewSeverity);
 	void SetMovementVector(const FVector& InMovementVector);
 
@@ -39,9 +43,6 @@ public:
 	float GetTravelDistance() const;
 	float GetDistanceTraveled() const;
 	class ATornado* GetSpawnedTornado() const;
-
-protected:
-	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(VisibleAnywhere)

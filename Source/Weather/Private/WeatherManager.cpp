@@ -131,13 +131,20 @@ void AWeatherManager::Load(const FWeatherData& InWeatherData)
 
 AStorm* AWeatherManager::SpawnStorm(bool FromCommand)
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr || StormsDisabled || StormClass == nullptr)
+	{
+		return nullptr;
+	}
+
 	if (CurrentStorm)
 	{
 		return CurrentStorm;
 	}
 
-	CurrentStorm = GetWorld()->SpawnActor<AStorm>(StormClass);
-	CurrentStorm->HandleSpawn(FromCommand);
+	CurrentStorm = World->SpawnActor<AStorm>(StormClass);
+	CurrentStorm->Setup(FromCommand);
+	CurrentStorm->OnCleanup.AddDynamic(this, &AWeatherManager::OnStormCleanup);
 
 	return CurrentStorm;
 }
@@ -149,16 +156,14 @@ void AWeatherManager::ClearStorm()
 		return;
 	}
 
-	CurrentStorm->HandleDestruction();
-	CurrentStorm = nullptr;
+	CurrentStorm->Cleanup();
 }
 
 void AWeatherManager::SetCurrentStorm(AStorm* NewCurrentStorm)
 {
 	if (CurrentStorm)
 	{
-		CurrentStorm->HandleDestruction();
-		CurrentStorm = nullptr;
+		CurrentStorm->Cleanup();
 	}
 
 	CurrentStorm = NewCurrentStorm;
@@ -186,6 +191,11 @@ void AWeatherManager::AttemptToSpawnStorm()
 	}
 
 	SpawnStorm();
+}
+
+void AWeatherManager::OnStormCleanup()
+{
+	CurrentStorm = nullptr;
 }
 
 void AWeatherManager::UpdateWindParameters()

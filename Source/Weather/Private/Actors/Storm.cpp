@@ -3,7 +3,6 @@
 // TODO clean this up
 #include "Actors/Storm.h"
 #include "Actors/Tornado.h"
-#include "WeatherManager.h"
 #include "Actors/Lightning.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
@@ -82,44 +81,20 @@ void AStorm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME_CONDITION(AStorm, MovementVector, COND_InitialOnly);
 }
 
-// TODO this is going against convention, the storm should know nothing about the weather manager, the weather manager should ensure no storm spawns if storms are disabled
-void AStorm::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
-	if (WeatherManager == nullptr)
-	{
-		return;
-	}
-
-	if (!WeatherManager->GetStormsDisabled())
-	{
-		return;
-	}
-
-	this->Cleanup();
-}
-
 // Called every frame
 void AStorm::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	HandleCloudAppearance();
+	UpdateCloudAppearance();
 
 	if (!HasAuthority())
 	{
 		return;
 	}
 
-	HandleMovement();
-	HandleSeverity();
+	UpdateLocation();
+	UpdateSeverity();
 	HandleLightning();
 }
 
@@ -140,25 +115,14 @@ void AStorm::Serialize(FArchive& Ar)
 	Super::Serialize(Ar);
 }
 
-// TODO once again this is bad, we shouldn't know what a weather manager is, we are just the storm
 void AStorm::OnLoadComplete()
 {
-	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
-	if (WeatherManager == nullptr)
+	if (!TornadoData.WasSpawned)
 	{
 		return;
 	}
-
-	if (WeatherManager->GetStormsDisabled())
-	{
-		this->Cleanup();
-		return;
-	}
-
-	if (TornadoData.WasSpawned)
-	{
-		this->SpawnTornado(true);
-	}
+	
+	this->SpawnTornado(true);
 }
 
 void AStorm::Setup(bool SpawnedFromCommand)
@@ -185,55 +149,48 @@ void AStorm::Cleanup()
 		SpawnedTornado->Destroy();
 	}
 
+	// Broadcast that we are cleaning up
+	if (OnCleanup.IsBound())
+	{
+		OnCleanup.Broadcast();
+	}
+
+	// Destroy this instance
 	this->Destroy();
 }
 
-// TODO this looks kinda ugly and doesn't allow for much flexability (diaginal storm movement would be nice)
 void AStorm::GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector) const
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	const float SpawnDistance = 1000000.0f;
 	const float StormAltitude = 20000.0f;
 
-	const int32 WorldSide = FMath::RandRange(0, 3);
-
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	// TODO random player
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(World, 0);
 	if (PlayerPawn == nullptr)
 	{
 		return;
 	}
 
 	const FVector PlayerLocation = PlayerPawn->GetActorLocation();
-	FVector OutLocation = FVector::ZeroVector;
-	switch (WorldSide)
-	{
-	case 0: // Top
-		OutSpawnLocation.X = PlayerLocation.X + SpawnDistance;
-		OutSpawnLocation.Y = PlayerLocation.Y;
-		OutMovementVector = FVector::ForwardVector;
-		break;
-	case 1: // Bottom
-		OutSpawnLocation.X = PlayerLocation.X - SpawnDistance;
-		OutSpawnLocation.Y = PlayerLocation.Y;
-		OutMovementVector = -FVector::ForwardVector;
-		break;
-	case 2:	// Left
-		OutSpawnLocation.X = PlayerLocation.X;
-		OutSpawnLocation.Y = PlayerLocation.Y - SpawnDistance;
-		OutMovementVector = -FVector::RightVector;
-		break;
-	case 3: // Right
-		OutSpawnLocation.X = PlayerLocation.X;
-		OutSpawnLocation.Y = PlayerLocation.Y + SpawnDistance;
-		OutMovementVector = FVector::RightVector;
-		break;
-	}
 
+	const float DirX = FMath::RandRange(-1, 1);
+	const float DirY = FMath::RandRange(-1, 1);
+
+	OutSpawnLocation.X = (-DirX * SpawnDistance) + PlayerLocation.X;
+	OutSpawnLocation.Y = (-DirY * SpawnDistance) + PlayerLocation.Y;
 	OutSpawnLocation.Z = StormAltitude;
+
+	OutMovementVector = FVector(DirX, DirY, 0.0f);
 
 	return;
 }
 
-// TODO update cloud appearance is a better name
 void AStorm::UpdateCloudAppearance()
 {
 	if (CloudMeshComponent == nullptr || RainHazeComponent == nullptr)
@@ -263,14 +220,7 @@ void AStorm::UpdateLocation()
 
 	if (this->GetDistanceTraveled() >= this->GetTravelDistance())
 	{
-		// TODO this is breaking rules, should be a delegate
-		AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
-		if (WeatherManager == nullptr)
-		{
-			return;
-		}
-
-		WeatherManager->ClearStorm();
+		this->Cleanup();
 	}
 }
 
@@ -291,7 +241,6 @@ void AStorm::UpdateSeverity()
 	}
 }
 
-// TODO this needs a lookover, yeah lots of null dereferencing, crash waiting to happen
 void AStorm::SpawnTornado(bool bFromSave)
 {
 	UWorld* World = GetWorld();
@@ -371,6 +320,7 @@ ATornado* AStorm::GetSpawnedTornado() const
 	return SpawnedTornado;
 }
 
+// TODO make multicast
 // TODO update lightning, although we might want to look into a better way of doing something like this
 void AStorm::HandleLightning()
 {
