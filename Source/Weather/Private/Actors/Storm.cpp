@@ -294,9 +294,20 @@ void AStorm::UpdateSeverity()
 // TODO this needs a lookover, yeah lots of null dereferencing, crash waiting to happen
 void AStorm::SpawnTornado(bool bFromSave)
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	FActorSpawnParameters TornadoSpawnParams;
 	TornadoSpawnParams.Owner = this;
-	SpawnedTornado = GetWorld()->SpawnActor<ATornado>(TornadoClass, FVector(0.0f, 0.0f, 999999.0f), FRotator::ZeroRotator, TornadoSpawnParams);
+	SpawnedTornado = World->SpawnActor<ATornado>(TornadoClass, FVector(0.0f, 0.0f, 999999.0f), FRotator::ZeroRotator, TornadoSpawnParams);
+	if (SpawnedTornado == nullptr)
+	{
+		return;
+	}
+
 	SpawnedTornado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	if (bFromSave)
 	{
