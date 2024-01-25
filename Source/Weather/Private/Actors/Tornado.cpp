@@ -68,7 +68,7 @@ void ATornado::BeginPlay()
 	}
 }
 
-void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnedFromCommand)
+void ATornado::Setup(AStorm* InOwnerStorm, bool SpawnedFromCommand)
 {
 	OwnerStorm = InOwnerStorm;
 

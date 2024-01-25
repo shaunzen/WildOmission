@@ -295,7 +295,7 @@ void AStorm::UpdateSeverity()
 void AStorm::SpawnTornado(bool bFromSave)
 {
 	UWorld* World = GetWorld();
-	if (World == nullptr)
+	if (World == nullptr || TornadoClass == nullptr)
 	{
 		return;
 	}
@@ -315,7 +315,7 @@ void AStorm::SpawnTornado(bool bFromSave)
 		return;
 	}
 
-	SpawnedTornado->HandleSpawn(this, WasSpawnedFromCommand);
+	SpawnedTornado->Setup(this, WasSpawnedFromCommand);
 	HasSpawnedTornado = true;
 }
 
