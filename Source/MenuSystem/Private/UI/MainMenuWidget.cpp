@@ -27,6 +27,7 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("Not a day off in over a year"),
 	TEXT("Played by FloppySword!"),
 	TEXT("Congatulations on 25K FloppySword!"),
+	TEXT("wellyesh <3"),
 	TEXT("NELSInfinity <3"),
 	TEXT("LifeOn30FPS <3"),
 	TEXT("rcjoe69 <3"),
