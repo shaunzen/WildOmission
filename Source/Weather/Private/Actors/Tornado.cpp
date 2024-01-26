@@ -152,7 +152,6 @@ void ATornado::OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AA
 	}
 }
 
-// TODO lots of dereferencing without checking happening here
 void ATornado::UpdateMovement()
 {
 	const UWorld* World = GetWorld();

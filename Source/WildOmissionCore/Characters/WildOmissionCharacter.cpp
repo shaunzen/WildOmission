@@ -1,40 +1,43 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-
+// Character Core
 #include "WildOmissionCharacter.h"
-#include "InputActionValue.h"
-#include "InputMappingContext.h"
-#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "HumanAnimInstance.h"
-#include "Net/UnrealNetwork.h"
-#include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "UObject/ConstructorHelpers.h"
+#include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "HumanAnimInstance.h"
+#include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
+#include "GameFramework/PlayerState.h"
+
+// Wild Omission Components
 #include "Components/ChunkInvokerComponent.h"
 #include "Components/VitalsComponent.h"
 #include "Components/InteractionComponent.h"
-#include "Components/InventoryManipulatorComponent.h"
 #include "Components/PlayerInventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "Components/EquipComponent.h"
 #include "WildOmissionCore/Components/PlayerAimComponent.h"
 #include "Components/CraftingComponent.h"
 #include "Components/BuilderComponent.h"
-#include "GameFramework/PlayerState.h"
-#include "Items/FirearmItem.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsManagerComponent.h"
 #include "Components/LockModifierComponent.h"
+
+// Wild Omission Stuff
+#include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "WildOmissionGameUserSettings.h"
-#include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
-#include "UI/InventoryMenuWidget.h"
 #include "Deployables/ItemContainerBase.h"
 #include "Ragdolls/LootableRagdoll.h"
-#include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
+
+// Engine Stuff
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Engine/DamageEvents.h"
+#include "Net/UnrealNetwork.h"
+
 
 //********************************
 // Setup/General Actor Functionality

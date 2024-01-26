@@ -1,19 +1,17 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-// TODO clean this
+
 #include "WeatherManager.h"
 #include "Actors/Storm.h"
 #include "Actors/Tornado.h"
 #include "Structs/WindParameters.h"
 #include "TimeOfDayManager.h"
 #include "Components/WeatherSaveComponent.h"
-#include "UObject/ConstructorHelpers.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Net/UnrealNetwork.h"
-#include "Log.h"
+#include "UObject/ConstructorHelpers.h"
 
 static AWeatherManager* Instance = nullptr;
 static UMaterialParameterCollection* MPC_WindCollection = nullptr;

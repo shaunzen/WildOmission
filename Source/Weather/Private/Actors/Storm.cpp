@@ -1,13 +1,13 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-// TODO clean this up
+
 #include "Actors/Storm.h"
 #include "Actors/Tornado.h"
 #include "Actors/Lightning.h"
-#include "Net/UnrealNetwork.h"
-#include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 

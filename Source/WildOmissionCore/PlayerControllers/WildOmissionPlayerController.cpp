@@ -1,28 +1,29 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-
+// Player Controller Core
 #include "WildOmissionPlayerController.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
 #include "WildOmissionCore/Characters/WildOmissionSpectatorPawn.h"
-#include "ChunkManager.h"
-#include "Components/ChunkInvokerComponent.h"
-#include "Actors/Chunk.h"
-#include "Components/PlayerInventoryComponent.h"
-#include "Components/InventoryManipulatorComponent.h"
-#include "Components/VitalsComponent.h"
 #include "GameFramework/PlayerState.h"
+
+// Wild Omission Components
+#include "Components/VitalsComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
+#include "Components/PlayerInventoryComponent.h"
+#include "Components/PlayerSaveManagerComponent.h"
+#include "Components/MusicPlayerComponent.h"
+
+// Wild Omission Stuff
+#include "WildOmissionCore/WildOmissionGameInstance.h"
 #include "WildOmissionCore/GameModes/WildOmissionGameMode.h"
 #include "SaveManager.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "GameChatManager.h"
-#include "Components/PlayerSaveManagerComponent.h"
-#include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
-#include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
 #include "UI/GameplayMenuWidget.h"
-#include "Components/MusicPlayerComponent.h"
-#include "WildOmissionCore/WildOmissionStatics.h"
-#include "WildOmissionCore/WildOmissionGameState.h"
-#include "WildOmissionCore/WildOmissionGameInstance.h"
-#include "UObject/ConstructorHelpers.h"
+#include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
+
+// Engine Stuff
 #include "Net/UnrealNetwork.h"
 
 AWildOmissionPlayerController::AWildOmissionPlayerController()
@@ -82,6 +83,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 	PlayerSaveData.IsAlive = true;
 	PlayerSaveData.IsHost = IsHost();
 
+	// TODO this is a no no
 	PlayerSaveData.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
 	PlayerSaveData.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
 	PlayerSaveData.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
