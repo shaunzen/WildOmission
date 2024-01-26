@@ -6,6 +6,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
+#include "Interfaces/OnlineAchievementsInterface.h"
 #include "SocketSubsystem.h"
 #include "Sockets.h"
 #include "Serialization/ArrayWriter.h"
@@ -136,7 +137,6 @@ void UWildOmissionGameInstance::Init()
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
 
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
-
 	if (Subsystem == nullptr)
 	{
 		return;
@@ -144,6 +144,7 @@ void UWildOmissionGameInstance::Init()
 
 	SessionInterface = Subsystem->GetSessionInterface();
 	FriendsInterface = Subsystem->GetFriendsInterface();
+	AchievementsInterface = Subsystem->GetAchievementsInterface();
 
 	if (!SessionInterface.IsValid() || GEngine == 0)
 	{
@@ -198,6 +199,7 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	GameplayMenuWidget->SetMenuInterface(this);
 	GameplayMenuWidget->OnClosed.AddDynamic(this, &UWildOmissionGameInstance::ClearGameplayMenuWidget);
 
+	// TODO dereferencing the world??
 	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
@@ -206,6 +208,7 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 
 void UWildOmissionGameInstance::ClearGameplayMenuWidget()
 {
+	// TODO dereferencing the world??
 	GameplayMenuWidget = nullptr;
 
 	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
@@ -641,6 +644,11 @@ void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetD
 IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const
 {
 	return FriendsInterface;
+}
+
+IOnlineAchievementsPtr UWildOmissionGameInstance::GetAchievementsInterface() const
+{
+	return AchievementsInterface;
 }
 
 FString UWildOmissionGameInstance::GetVersion() const
