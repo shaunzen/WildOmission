@@ -23,3 +23,8 @@ UWildOmissionSaveGame::UWildOmissionSaveGame()
 	Version = 3;
 	CheatsEnabled = false;
 }
+
+int32 UWildOmissionSaveGame::GetCurrentVersion()
+{
+	return CURRENT_SAVE_FILE_VERSION;
+}
