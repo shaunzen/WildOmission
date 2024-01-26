@@ -82,12 +82,11 @@ void ATornado::Setup(bool SpawnedFromCommand)
 	if (SpawnedFromCommand)
 	{
 		this->SetActorRelativeLocation(FVector(-BoundsRadius * 0.25f, 0.0f, 0.0f));
-		TargetLocation = FVector(BoundsRadius* 0.25f, 0.0f, 0.0f);
+		TargetLocation = FVector(BoundsRadius * 0.25f, 0.0f, 0.0f);
 	}
 	
 	TotalLifetime = FMath::RandRange(120.0f, 300.0f);
 	RemainingLifetime = TotalLifetime;
-
 }
 
 void ATornado::SetBoundsRadius(float InBoundsRadius)
