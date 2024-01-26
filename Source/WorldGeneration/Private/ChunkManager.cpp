@@ -133,12 +133,6 @@ void AChunkManager::SpawnChunksAtLocation(const FVector& Location, const uint8& 
 				continue;
 			}
 
-			// TODO refine the distance calculation
-			/*if (SpawnedChunk.Distance(ChunkLocation) > RenderDistance)
-			{
-				continue;
-			}*/
-
 			if (!SpawnedChunks.Contains(SpawnedChunk))
 			{
 				SpawnChunk(SpawnedChunk);
@@ -150,7 +144,8 @@ void AChunkManager::SpawnChunksAtLocation(const FVector& Location, const uint8& 
 
 				SpawnedChunks.Add(SpawnedChunk);
 
-				// TODO check if we have existing data to load
+				// Check if existing chuck, then load
+				// otherwise generate.
 				FChunkData ChunkSaveData;
 				ChunkSaveData.GridLocation = SpawnedChunk.GridLocation;
 				const int32 SaveIndex = ChunkData.Find(ChunkSaveData);
@@ -363,7 +358,6 @@ uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
 	const AChunk* TestChunk = SpawnedChunks[SpawnedChunkIndex].Chunk;
 	if (TestChunk == nullptr)
 	{
-		// TODO this is causing the snow to break
 		return 0;
 	}
 

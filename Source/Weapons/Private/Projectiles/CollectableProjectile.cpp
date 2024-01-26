@@ -8,8 +8,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
-// TODO this needs to attach to the nearest chunk!
-
 // Sets default values
 ACollectableProjectile::ACollectableProjectile()
 {

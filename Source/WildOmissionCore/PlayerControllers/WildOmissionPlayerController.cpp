@@ -317,7 +317,7 @@ void AWildOmissionPlayerController::SetupPlayerOnServer()
 	const bool UseDefaultSpawn = StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true;
 	const FVector SpawnPoint = UseDefaultSpawn ? ChunkManager->GetWorldSpawnPoint() : StoredPlayerSaveData.WorldLocation;
 
-	// TODO custom spectator class with chunk invoker
+	// Spawn Wild Omission spectator (Has chunk invoker)
 	AWildOmissionSpectatorPawn* SpecPawn = World->SpawnActor<AWildOmissionSpectatorPawn>(AWildOmissionSpectatorPawn::StaticClass(), SpawnPoint, FRotator::ZeroRotator);
 	if (SpecPawn)
 	{

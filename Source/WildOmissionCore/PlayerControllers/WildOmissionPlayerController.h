@@ -53,7 +53,7 @@ public:
 	UFUNCTION(Exec)
 	void Kill();
 
-	// TODO This isn't really used anymore
+	// This isn't really used anymore
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
 

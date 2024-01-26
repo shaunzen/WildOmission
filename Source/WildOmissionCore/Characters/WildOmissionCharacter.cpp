@@ -661,7 +661,6 @@ void AWildOmissionCharacter::HandleDeath()
 	GetAttachedActors(AttachedActors);
 
 	// Create lootable container with inventory
-	// TODO Is Spawning kinda in the air, might want to fix that
 	ALootableRagdoll* SpawnedRagdoll = World->SpawnActor<ALootableRagdoll>(RagdollClass, GetActorTransform());
 	if (SpawnedRagdoll == nullptr)
 	{

@@ -129,7 +129,9 @@ void AWeaponProjectile::BeginPlay()
 
 void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor == GetOwner())
+	UWorld* World = GetWorld();
+	AActor* OwnerActor = GetOwner();
+	if (World == nullptr || OwnerActor == nullptr || OtherActor == OwnerActor)
 	{
 		return;
 	}
@@ -156,7 +158,7 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	bool ProjectileIntact = UKismetMathLibrary::RandomBoolWithWeight(0.75f);
 	if (ProjectileIntact && CollectableClass)
 	{
-		ACollectableProjectile* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableProjectile>(CollectableClass, GetActorLocation(), GetActorRotation());
+		ACollectableProjectile* SpawnedCollectable = World->SpawnActor<ACollectableProjectile>(CollectableClass, GetActorLocation(), GetActorRotation());
 		if (SpawnedCollectable == nullptr)
 		{
 			return;
