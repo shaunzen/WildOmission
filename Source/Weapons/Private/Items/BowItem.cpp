@@ -56,7 +56,7 @@ void ABowItem::OnSecondaryPressed()
 	Reload();
 
 	GetOwnerEquipComponent()->PlayItemMontage(DrawMontage, DrawItemMontage);
-	GetOwnerEquipComponent()->StartAim();
+	GetOwnerEquipComponent()->StartAiming();
 }
 
 void ABowItem::OnSecondaryAnimationClimax(bool FromFirstPersonInstance)
@@ -71,7 +71,7 @@ void ABowItem::OnSecondaryReleased()
 {
 	Super::OnSecondaryReleased();
 	
-	GetOwnerEquipComponent()->StopAim();
+	GetOwnerEquipComponent()->StopAiming();
 
 	if (!Drawn)
 	{

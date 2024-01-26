@@ -10,13 +10,11 @@ ALightning::ALightning()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
-	bAlwaysRelevant = true;
 
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("MeshComponent"));
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
 	
-	LightComponent = CreateDefaultSubobject<UPointLightComponent>(FName("LightComponent"));
+	LightComponent = CreateDefaultSubobject<UPointLightComponent>(TEXT("LightComponent"));
 	LightComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 500.0f));
 	LightComponent->SetUseTemperature(true);
 	LightComponent->SetTemperature(30000.0f);
@@ -32,11 +30,13 @@ void ALightning::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (ThunderSound == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || ThunderSound == nullptr)
 	{
 		return;
 	}
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ThunderSound, GetActorLocation());
+
+	UGameplayStatics::PlaySoundAtLocation(World, ThunderSound, this->GetActorLocation());
 }
 
 // Called every frame
@@ -48,7 +48,7 @@ void ALightning::Tick(float DeltaTime)
 
 	if (KillTimer < KINDA_SMALL_NUMBER)
 	{
-		Destroy();
+		this->Destroy();
 	}
 }
 

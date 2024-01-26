@@ -55,8 +55,9 @@ void ASwingableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
 	Super::OnPrimaryAnimationClimax(FromFirstPersonInstance);
 
+	const UWorld* World = GetWorld();
 	const UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
-	if (OwnerEquipComponent == nullptr)
+	if (World == nullptr || OwnerEquipComponent == nullptr)
 	{
 		return;
 	}
@@ -75,7 +76,7 @@ void ASwingableItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 	const FVector Start = GetTraceStart();
 	const FVector End = Start + (OwnerCharacterLookVector * EffectiveRangeCentimeters);
 
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
+	if (!World->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
 		UE_LOG(LogEquipableItems, Verbose, TEXT("Nothing was hit by tool."));
 		return;
@@ -100,6 +101,12 @@ void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& O
 
 	if (DealDamageToActors)
 	{
+		APawn* OwnerPawn = GetOwnerPawn();
+		if (OwnerPawn == nullptr)
+		{
+			return;
+		}
+
 		AActor* HitActor = HitResult.GetActor();
 		APawn* HitPawn = Cast<APawn>(HitActor);
 		if (HitPawn)
@@ -117,14 +124,14 @@ void ASwingableItem::OnSwingImpact(const FHitResult& HitResult, const FVector& O
 			}
 
 			FPointDamageEvent HitByToolEvent((100.0f + HeadshotDamage) * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
-			HitPawn->TakeDamage((100.0f + HeadshotDamage) * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+			HitPawn->TakeDamage((100.0f + HeadshotDamage) * DamageMultiplier, HitByToolEvent, OwnerPawn->GetController(), this);
 		}
 		else if (HitActor)
 		{
 			float DamageAmount = 10.0f;
 
 			FPointDamageEvent HitByToolEvent(DamageAmount * DamageMultiplier, HitResult, OwnerCharacterLookVector, nullptr);
-			HitActor->TakeDamage(DamageAmount * DamageMultiplier, HitByToolEvent, GetOwnerPawn()->GetController(), this);
+			HitActor->TakeDamage(DamageAmount * DamageMultiplier, HitByToolEvent, OwnerPawn->GetController(), this);
 		}
 	}
 

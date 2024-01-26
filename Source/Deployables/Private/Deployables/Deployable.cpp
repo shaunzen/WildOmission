@@ -5,6 +5,7 @@
 #include "Components/BuildAnchorComponent.h"
 #include "Actors/DeployablePreview.h"
 #include "ChunkManager.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Actors/Chunk.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -28,7 +29,6 @@ ADeployable::ADeployable()
 	bAlwaysRelevant = false;
 	NetUpdateFrequency = 5.0f;
 	NetDormancy = DORM_DormantAll;
-	NetCullDistanceSquared = AChunkManager::GetRenderDistanceCentimeters() * AChunkManager::GetRenderDistanceCentimeters();
 
 	DeployableRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DeployableRootComponent"));
 	DeployableRootComponent->SetMobility(EComponentMobility::Type::Stationary);
@@ -135,11 +135,17 @@ bool ADeployable::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewT
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
+	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return false;
+	}
+
 	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
-	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
 }
 
 void ADeployable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

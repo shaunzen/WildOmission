@@ -3,16 +3,13 @@
 
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
-#include "WeatherManager.h"
-#include "Actors/Storm.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
 static AChunkManager* Instance = nullptr;
 static UDataTable* BiomeGenerationDataTable = nullptr;
-
-const static int32 RENDER_DISTANCE = 16;
 
 // Sets default values
 AChunkManager::AChunkManager()
@@ -44,43 +41,123 @@ void AChunkManager::Tick(float DeltaTime)
 		return;
 	}
 
+	TArray<UChunkInvokerComponent*> ChunkInvokers = UChunkInvokerComponent::GetAllInvokers();
+
+	RemoveOutOfRangeChunks(ChunkInvokers);
+	SpawnInRangeChunks(ChunkInvokers);
+	
+}
+
+void AChunkManager::RemoveOutOfRangeChunks(const TArray<UChunkInvokerComponent*>& ChunkInvokers)
+{
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
 		return;
 	}
 
-	RemoveOutOfRangeChunks();
-
-	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	TArray<FSpawnedChunk> NewSpawnedChunks = SpawnedChunks;
+	for (const FSpawnedChunk& SpawnedChunk : SpawnedChunks)
 	{
-		// Get and validate the player controller
-		APlayerController* PlayerController = Iterator->Get();
-		if (!IsValid(PlayerController))
+		if (!IsValid(SpawnedChunk.Chunk))
 		{
-			return;
+			continue;
 		}
 
-		// Get player location
-		FVector PlayerLocation = FVector::ZeroVector;
-		FRotator PlayerRotation = FRotator::ZeroRotator;
-		PlayerController->GetPlayerViewPoint(PlayerLocation, PlayerRotation);
+		const FVector ChunkWorldLocation = SpawnedChunk.Chunk->GetActorLocation();
 
-		// Spawn the chunks
-		SpawnChunksAtLocation(PlayerLocation);
+		bool InRangeOfInvoker = false;
+		for (UChunkInvokerComponent* ChunkInvoker : ChunkInvokers)
+		{
+			if (ChunkInvoker == nullptr)
+			{
+				continue;
+			}
+
+			const FVector FlattenedInvokerLocation(ChunkInvoker->GetComponentLocation().X, ChunkInvoker->GetComponentLocation().Y, 0.0f);
+			if (AChunk::FastDistance(FlattenedInvokerLocation, ChunkWorldLocation) >= (ChunkInvoker->GetRenderDistanceCentimeters()))
+			{
+				continue;
+			}
+
+			InRangeOfInvoker = true;
+			break;
+		}
+
+		if (InRangeOfInvoker)
+		{
+			continue;
+		}
+
+		NewSpawnedChunks.Remove(SpawnedChunk);
+
+		SaveChunkData(SpawnedChunk.Chunk, true);
 	}
 
-	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
-	if (WeatherManager)
+	SpawnedChunks = NewSpawnedChunks;
+}
+
+void AChunkManager::SpawnInRangeChunks(const TArray<UChunkInvokerComponent*>& ChunkInvokers)
+{
+	for (UChunkInvokerComponent* ChunkInvoker : ChunkInvokers)
 	{
-		AStorm* CurrentStorm = WeatherManager->GetCurrentStorm();
-		if (CurrentStorm)
+		if (ChunkInvoker == nullptr)
 		{
-			ATornado* CurrentTornado = CurrentStorm->GetSpawnedTornado();
-			if (CurrentTornado)
+			continue;
+		}
+
+		SpawnChunksAtLocation(ChunkInvoker->GetComponentLocation(), ChunkInvoker->GetRenderDistance());
+	}
+}
+
+void AChunkManager::SpawnChunksAtLocation(const FVector& Location, const uint8& RenderDistance)
+{
+	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+	const FVector FlattenedLocation(Location.X, Location.Y, 0.0f);
+	const FIntVector2 ChunkLocation(Location.X / ChunkSize,
+		Location.Y / ChunkSize);
+
+	// Generate/load new in range chunks
+	for (int32 RenderX = -RenderDistance; RenderX <= RenderDistance; ++RenderX)
+	{
+		for (int32 RenderY = -RenderDistance; RenderY <= RenderDistance; ++RenderY)
+		{
+			FSpawnedChunk SpawnedChunk;
+			SpawnedChunk.GridLocation = FIntVector2(RenderX, RenderY) + ChunkLocation;
+
+			const FVector ChunkWorldLocation(SpawnedChunk.GridLocation.X * ChunkSize,
+				SpawnedChunk.GridLocation.Y * ChunkSize, 0.0f);
+
+			if (AChunk::FastDistance(FlattenedLocation, ChunkWorldLocation) >= (RenderDistance * ChunkSize))
 			{
-				const FVector CurrentTornadoLocation(CurrentTornado->GetActorLocation());
-				SpawnChunksAtLocation(CurrentTornadoLocation);
+				continue;
+			}
+
+			if (!SpawnedChunks.Contains(SpawnedChunk))
+			{
+				SpawnChunk(SpawnedChunk);
+
+				if (!IsValid(SpawnedChunk.Chunk))
+				{
+					continue;
+				}
+
+				SpawnedChunks.Add(SpawnedChunk);
+
+				// Check if existing chuck, then load
+				// otherwise generate.
+				FChunkData ChunkSaveData;
+				ChunkSaveData.GridLocation = SpawnedChunk.GridLocation;
+				const int32 SaveIndex = ChunkData.Find(ChunkSaveData);
+				if (SaveIndex != INDEX_NONE)
+				{
+					LoadChunk(SpawnedChunk, ChunkData[SaveIndex]);
+				}
+				else
+				{
+					GenerateChunk(SpawnedChunk);
+				}
+
 			}
 		}
 	}
@@ -91,7 +168,7 @@ void AChunkManager::SetChunkData(const TArray<FChunkData> InChunkData)
 	ChunkData = InChunkData;
 }
 
-void AChunkManager::SaveAllLoadedChunks()
+void AChunkManager::SaveAllSpawnedChunks()
 {
 	for (const FSpawnedChunk& SpawnedChunk : SpawnedChunks)
 	{
@@ -114,7 +191,7 @@ void AChunkManager::SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy)
 	ChunkData[ChunkIndex] = ChunkSaveData;
 }
 
-TArray<FChunkData> AChunkManager::GetChunksData() const
+TArray<FChunkData> AChunkManager::GetAllChunkData() const
 {
 	return ChunkData;
 }
@@ -134,7 +211,7 @@ bool AChunkManager::GetChunkData(const FIntVector2& ChunkLocation, FChunkData& O
 	return true;
 }
 
-TArray<FSpawnedChunk> AChunkManager::GetSpawnedChunks() const
+TArray<FSpawnedChunk> AChunkManager::GetAllSpawnedChunks() const
 {
 	return SpawnedChunks;
 }
@@ -169,7 +246,7 @@ void AChunkManager::RemoveSpawnedChunk(const FSpawnedChunk& InSpawnedChunk)
 	SpawnedChunks.Remove(InSpawnedChunk);
 }
 
-AChunk* AChunkManager::GenerateChunkAtLocation(const FIntVector2& ChunkLocation)
+AChunk* AChunkManager::GetChunkAtLocation(const FIntVector2& ChunkLocation)
 {
 	FSpawnedChunk SpawnedChunk;
 	SpawnedChunk.GridLocation = ChunkLocation;
@@ -235,7 +312,7 @@ FVector AChunkManager::GetWorldSpawnPoint()
 	FHitResult HitResult;
 
 	// Ensure the chunk we want to start at exists
-	(void*)GenerateChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
+	(void*)GetChunkAtLocation(FIntVector2(ValidChunk.X, ValidChunk.Y));
 	const FVector ValidChunkWorldLocation((ValidChunk.X * ChunkSize) - (ChunkSize * 0.5f), (ValidChunk.Y * ChunkSize) - (ChunkSize * 0.5f), 0.0f);
 
 	// Loop through all points on chunk to see if there is a good spot
@@ -281,7 +358,6 @@ uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
 	const AChunk* TestChunk = SpawnedChunks[SpawnedChunkIndex].Chunk;
 	if (TestChunk == nullptr)
 	{
-		// TODO this is causing the snow to break
 		return 0;
 	}
 
@@ -306,16 +382,6 @@ uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
 FBiomeGenerationData* AChunkManager::GetBiomeAtLocation(const FVector& TestLocation)
 {
 	return AChunk::GetBiomeAtLocation(FVector2D(TestLocation.X, TestLocation.Y));
-}
-
-float AChunkManager::GetRenderDistanceCentimeters()
-{
-	return AChunk::GetVertexSize() * (AChunk::GetVertexDistanceScale() * 0.5f) * RENDER_DISTANCE;
-}
-
-int32 AChunkManager::GetRenderDistance()
-{
-	return RENDER_DISTANCE;
 }
 
 void AChunkManager::SetGenerationSeed(const uint32& Seed)
@@ -349,136 +415,6 @@ void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Instance = nullptr;
 }
 
-void AChunkManager::RemoveOutOfRangeChunks()
-{
-	// This seems to destroy and replace chunks over and over every frame?
-	// I need to figure out why
-
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
-
-	TArray<FSpawnedChunk> NewSpawnedChunks = SpawnedChunks;
-	for (const FSpawnedChunk& SpawnedChunk : SpawnedChunks)
-	{
-		if (!IsValid(SpawnedChunk.Chunk))
-		{
-			continue;
-		}
-		
-		int32 DistanceFromClosestChunkInvoker = -1;
-
-		// Get the distance from closest player
-		for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
-		{
-			APlayerController* PlayerController = Iterator->Get();
-			if (!IsValid(PlayerController))
-			{
-				continue;
-			}
-
-			FVector PlayerLocation = FVector::ZeroVector;
-			FRotator PlayerRotation = FRotator::ZeroRotator;
-			PlayerController->GetPlayerViewPoint(PlayerLocation, PlayerRotation);
-
-			const FIntVector2 PlayerChunkLocation(PlayerLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
-				PlayerLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
-
-			const int32 DistanceFromPlayer = SpawnedChunk.Distance(PlayerChunkLocation);
-			if (DistanceFromClosestChunkInvoker >= 0 && DistanceFromPlayer > DistanceFromClosestChunkInvoker)
-			{
-				continue;
-			}
-
-			DistanceFromClosestChunkInvoker = DistanceFromPlayer;
-		}
-
-		// Get the weather and see if a storm or tornado is invoking chunks
-		AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
-		if (WeatherManager)
-		{
-			// todo this is really, really bad code. it also needs to change if multiple storm support is added.
-			AStorm* CurrentStorm = WeatherManager->GetCurrentStorm();
-			if (CurrentStorm)
-			{
-				ATornado* CurrentTornado = CurrentStorm->GetSpawnedTornado();
-				if (CurrentTornado)
-				{
-					const FVector CurrentTornadoLocation(CurrentTornado->GetActorLocation());
-					const FIntVector2 CurrentTornadoChunkLocation(CurrentTornadoLocation.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
-						CurrentTornadoLocation.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
-
-					const int32 DistanceFromTornado = SpawnedChunk.Distance(CurrentTornadoChunkLocation);
-
-					if (DistanceFromClosestChunkInvoker < 0 || DistanceFromTornado <= DistanceFromClosestChunkInvoker)
-					{
-						DistanceFromClosestChunkInvoker = DistanceFromTornado;
-					}
-				}
-			}
-		}
-
-		if (DistanceFromClosestChunkInvoker == INDEX_NONE || DistanceFromClosestChunkInvoker <= RENDER_DISTANCE)
-		{
-			continue;
-		}
-
-		NewSpawnedChunks.Remove(SpawnedChunk);
-
-		SaveChunkData(SpawnedChunk.Chunk, true);
-	}
-
-	SpawnedChunks = NewSpawnedChunks;
-}
-
-void AChunkManager::SpawnChunksAtLocation(const FVector& Location)
-{
-	const FIntVector2 ChunkLocation(Location.X / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()),
-		Location.Y / (AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale()));
-	
-	// Generate/load new in range chunks
-	for (int32 RenderX = -RENDER_DISTANCE; RenderX <= RENDER_DISTANCE; ++RenderX)
-	{
-		for (int32 RenderY = -RENDER_DISTANCE; RenderY <= RENDER_DISTANCE; ++RenderY)
-		{
-			FSpawnedChunk SpawnedChunk;
-			SpawnedChunk.GridLocation = FIntVector2(RenderX, RenderY) + ChunkLocation;
-			if (SpawnedChunk.Distance(ChunkLocation) > RENDER_DISTANCE)
-			{
-				continue;
-			}
-
-			if (!SpawnedChunks.Contains(SpawnedChunk))
-			{
-				SpawnChunk(SpawnedChunk);
-
-				if (!IsValid(SpawnedChunk.Chunk))
-				{
-					continue;
-				}
-
-				SpawnedChunks.Add(SpawnedChunk);
-
-				// TODO check if we have existing data to load
-				FChunkData ChunkSaveData;
-				ChunkSaveData.GridLocation = SpawnedChunk.GridLocation;
-				const int32 SaveIndex = ChunkData.Find(ChunkSaveData);
-				if (SaveIndex != INDEX_NONE)
-				{
-					LoadChunk(SpawnedChunk, ChunkData[SaveIndex]);
-				}
-				else
-				{
-					GenerateChunk(SpawnedChunk);
-				}
-
-			}
-		}
-	}
-}
-
 void AChunkManager::SpawnChunk(FSpawnedChunk& OutSpawnedChunk) const
 {
 	UWorld* World = GetWorld();
@@ -500,12 +436,14 @@ void AChunkManager::SpawnChunk(FSpawnedChunk& OutSpawnedChunk) const
 
 void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const
 {
+	// Ensure we are prossesing valid chunk
 	if (!IsValid(InSpawnedChunk.Chunk))
 	{
 		return;
 	}
 
-	// We need to get neighbors from save file, because they might not be spawned when we are generating this chunk
+	// We get neighbors from ChunkData instead of SpawnedChunks
+	// because they might not be spawned when we are generating this chunk
 
 	// Neighbors
 	TArray<FChunkData> NeighborsData{
@@ -527,6 +465,7 @@ void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const
 		InSpawnedChunk.GridLocation + FIntVector2(1, -1)
 	};
 	
+	// Populate NeighborData
 	for (FChunkData& NeighborData : NeighborsData)
 	{
 		const int32 NeighborIndex = ChunkData.Find(NeighborData);
@@ -539,7 +478,7 @@ void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const
 		NeighborData = ChunkData[NeighborIndex];
 	}
 
-	// Pass neighbors
+	// Pass neighbors to new chunk for generation
 	InSpawnedChunk.Chunk->Generate(NeighborsData);
 }
 
@@ -551,29 +490,6 @@ void AChunkManager::LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkD
 	}
 
 	InSpawnedChunk.Chunk->Load(InChunkData);
-}
-
-FVector AChunkManager::GetFirstPlayerLocation() const
-{
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	APlayerController* PlayerController = World->GetFirstPlayerController();
-	if (PlayerController == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	APawn* PlayerPawn = PlayerController->GetPawn();
-	if (PlayerPawn == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	return PlayerPawn->GetActorLocation();
 }
 
 TArray<FBiomeGenerationData*> AChunkManager::GetAllPossibleBiomes()

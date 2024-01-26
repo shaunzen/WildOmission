@@ -12,6 +12,7 @@
 #include "SurfaceHelpers.h"
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "NiagaraFunctionLibrary.h"
@@ -68,11 +69,17 @@ bool AWeaponProjectile::IsNetRelevantFor(const AActor* RealViewer, const AActor*
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
+	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return false;
+	}
+
 	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
-
-	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	
+	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
 }
 
 void AWeaponProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -122,7 +129,9 @@ void AWeaponProjectile::BeginPlay()
 
 void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor == GetOwner())
+	UWorld* World = GetWorld();
+	AActor* OwnerActor = GetOwner();
+	if (World == nullptr || OwnerActor == nullptr || OtherActor == OwnerActor)
 	{
 		return;
 	}
@@ -149,7 +158,7 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	bool ProjectileIntact = UKismetMathLibrary::RandomBoolWithWeight(0.75f);
 	if (ProjectileIntact && CollectableClass)
 	{
-		ACollectableProjectile* SpawnedCollectable = GetWorld()->SpawnActor<ACollectableProjectile>(CollectableClass, GetActorLocation(), GetActorRotation());
+		ACollectableProjectile* SpawnedCollectable = World->SpawnActor<ACollectableProjectile>(CollectableClass, GetActorLocation(), GetActorRotation());
 		if (SpawnedCollectable == nullptr)
 		{
 			return;

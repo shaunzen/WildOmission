@@ -20,6 +20,10 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
+	class USliderOptionBox* FieldOfViewSliderOptionBox;
+	UPROPERTY(Meta = (BindWidget))
+	class USliderOptionBox* RenderDistanceSliderOptionBox;
+	UPROPERTY(Meta = (BindWidget))
 	class UCheckOptionBox* ShowBrandingCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	class UCheckOptionBox* ShowCrosshairCheckOptionBox;
@@ -29,7 +33,5 @@ private:
 	class UCheckOptionBox* HideHUDCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	class UCheckOptionBox* CameraShakeEnabledCheckOptionBox;
-	UPROPERTY(Meta = (BindWidget))
-	class USliderOptionBox* FieldOfViewSliderOptionBox;
 	
 };

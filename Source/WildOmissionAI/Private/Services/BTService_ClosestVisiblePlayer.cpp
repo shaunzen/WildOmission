@@ -15,12 +15,19 @@ void UBTService_ClosestVisiblePlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	// Get AI Controller and Pawn
 	AAIController* OwnerController = OwnerComp.GetAIOwner();
 	if (OwnerController == nullptr)
 	{
 		return;
 	}
+
 	APawn* OwnerPawn = OwnerController->GetPawn();
 	if (OwnerPawn == nullptr)
 	{
@@ -29,7 +36,7 @@ void UBTService_ClosestVisiblePlayer::TickNode(UBehaviorTreeComponent& OwnerComp
 
 	// Create a list of all visible players from this AI
 	TArray<APawn*> VisiblePlayers;
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		APlayerController* PlayerController = Iterator->Get();
 		if (PlayerController == nullptr)

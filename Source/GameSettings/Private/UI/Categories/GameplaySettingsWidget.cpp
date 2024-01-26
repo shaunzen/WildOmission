@@ -9,12 +9,13 @@
 
 UGameplaySettingsWidget::UGameplaySettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
 {
+	FieldOfViewSliderOptionBox = nullptr;
+	RenderDistanceSliderOptionBox = nullptr;
 	ShowBrandingCheckOptionBox = nullptr;
 	ShowCrosshairCheckOptionBox = nullptr;
 	HideChatUnlessOpenCheckOptionBox = nullptr;
 	HideHUDCheckOptionBox = nullptr;
 	CameraShakeEnabledCheckOptionBox = nullptr;
-	FieldOfViewSliderOptionBox = nullptr;
 }
 
 void UGameplaySettingsWidget::NativeConstruct()
@@ -23,6 +24,9 @@ void UGameplaySettingsWidget::NativeConstruct()
 	
 	FieldOfViewSliderOptionBox->SetMinValue(60.0f);
 	FieldOfViewSliderOptionBox->SetMaxValue(110.0f);
+	RenderDistanceSliderOptionBox->SetMinValue(4.0f);
+	RenderDistanceSliderOptionBox->SetMaxValue(32.0f);
+	RenderDistanceSliderOptionBox->SetShowDecimal(false);
 }
 
 void UGameplaySettingsWidget::OnApply()
@@ -35,12 +39,13 @@ void UGameplaySettingsWidget::OnApply()
 		return;
 	}
 
+	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
+	UserSettings->SetRenderDistance(FMath::RoundToInt32(RenderDistanceSliderOptionBox->GetValue()));
 	UserSettings->SetShowBranding(ShowBrandingCheckOptionBox->IsChecked());
 	UserSettings->SetShowCrosshair(ShowCrosshairCheckOptionBox->IsChecked());
 	UserSettings->SetHideChatUnlessOpen(HideChatUnlessOpenCheckOptionBox->IsChecked());
 	UserSettings->SetHideHUD(HideHUDCheckOptionBox->IsChecked());
 	UserSettings->SetCameraShakeEnabled(CameraShakeEnabledCheckOptionBox->IsChecked());
-	UserSettings->SetFieldOfView(FieldOfViewSliderOptionBox->GetValue());
 
 	ICharacterSettingsInterface* CharacterSettingsInterface = GetOwningPlayerPawn<ICharacterSettingsInterface>();
 	if (CharacterSettingsInterface == nullptr)
@@ -59,12 +64,13 @@ void UGameplaySettingsWidget::OnRefresh()
 {
 	Super::OnRefresh();
 	
+	FieldOfViewSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UGameplaySettingsWidget::OnApply);
+	RenderDistanceSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UGameplaySettingsWidget::OnApply);
 	ShowBrandingCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UGameplaySettingsWidget::OnApply);
 	ShowCrosshairCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UGameplaySettingsWidget::OnApply);
 	HideChatUnlessOpenCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UGameplaySettingsWidget::OnApply);
 	HideHUDCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UGameplaySettingsWidget::OnApply);
 	CameraShakeEnabledCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UGameplaySettingsWidget::OnApply);
-	FieldOfViewSliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UGameplaySettingsWidget::OnApply);
 
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	if (UserSettings == nullptr)
@@ -72,19 +78,19 @@ void UGameplaySettingsWidget::OnRefresh()
 		return;
 	}
 
-	float FieldOfView = UserSettings->GetFieldOfView();
-
+	FieldOfViewSliderOptionBox->SetValue(UserSettings->GetFieldOfView());
+	RenderDistanceSliderOptionBox->SetValue(static_cast<float>(UserSettings->GetRenderDistance()));
 	ShowBrandingCheckOptionBox->SetChecked(UserSettings->GetShowBranding());
 	ShowCrosshairCheckOptionBox->SetChecked(UserSettings->GetShowCrosshair());
 	HideChatUnlessOpenCheckOptionBox->SetChecked(UserSettings->GetHideChatUnlessOpen());
 	HideHUDCheckOptionBox->SetChecked(UserSettings->GetHideHUD());
 	CameraShakeEnabledCheckOptionBox->SetChecked(UserSettings->GetCameraShakeEnabled());
-	FieldOfViewSliderOptionBox->SetValue(FieldOfView);
 
+	FieldOfViewSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
+	RenderDistanceSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
 	ShowBrandingCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
 	ShowCrosshairCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
 	HideChatUnlessOpenCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
 	HideHUDCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
 	CameraShakeEnabledCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
-	FieldOfViewSliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UGameplaySettingsWidget::OnApply);
 }

@@ -10,7 +10,7 @@
 #include "Enums/GameDifficulty.h"
 #include "WildOmissionSaveGame.generated.h"
 
-const int32 CURRENT_SAVE_FILE_VERSION = 2;
+static const int32 CURRENT_SAVE_FILE_VERSION = 2;
 
 USTRUCT()
 struct FWildOmissionSaveCreationInformation
@@ -43,6 +43,8 @@ class SAVESYSTEM_API UWildOmissionSaveGame : public USaveGame
 
 public:
 	UWildOmissionSaveGame();
+
+	static int32 GetCurrentVersion();
 
 	UPROPERTY()
 	uint32 DaysPlayed;

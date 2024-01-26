@@ -3,15 +3,18 @@
 
 #include "WildOmissionGameUserSettings.h"
 
+static const int32 CURRENT_SETTINGS_VERSION = 0;
+
 static const float DEFAULT_MASTERVOLUME = 1.0f;
 static const float DEFAULT_VOLUME = 1.0f;
 
+static const float DEFAULT_FIELDOFVIEW = 90.0f;
+static const uint8 DEFAULT_RENDERDISTANCE = 16;
 static const bool DEFAULT_SHOWBRANDING = true;
 static const bool DEFAULT_SHOWCROSSHAIR = true;
 static const bool DEFAULT_HIDECHATUNLESSOPEN = false;
 static const bool DEFAULT_HIDEHUD = false;
 static const bool DEFAULT_CAMERASHAKEENABLED = true;
-static const float DEFAULT_FIELDOFVIEW = 90.0f;
 
 static const float DEFAULT_GAMMA = 100.0f;
 static const bool DEFAULT_AUTOEXPOSUREENABLED = true;
@@ -42,6 +45,8 @@ static const float DEFAULT_MOUSESENSITIVITY = 1.0f;
 
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {
+    SettingsVersion = -1;
+
     // Audio
     SetMasterVolume(DEFAULT_MASTERVOLUME);
     SetMusicVolume(DEFAULT_VOLUME);
@@ -53,12 +58,13 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
     SetWeatherVolume(DEFAULT_VOLUME);
 
     // Gameplay
+    SetFieldOfView(DEFAULT_FIELDOFVIEW);
+    SetRenderDistance(DEFAULT_RENDERDISTANCE);
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
     SetHideChatUnlessOpen(DEFAULT_HIDECHATUNLESSOPEN);
     SetHideHUD(DEFAULT_HIDEHUD);
     SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
-    SetFieldOfView(DEFAULT_FIELDOFVIEW);
     
     // Post Processing
     SetGamma(DEFAULT_GAMMA);
@@ -92,9 +98,23 @@ UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitia
     SetHasRunAutoConfig(false);
 }
 
+void UWildOmissionGameUserSettings::LoadSettings(bool bForceReload)
+{
+    Super::LoadSettings(bForceReload);
+
+    if (SettingsVersion == CURRENT_SETTINGS_VERSION)
+    {
+        return;
+    }
+
+    SetToDefaults();
+}
+
 void UWildOmissionGameUserSettings::SetToDefaults()
 {
     Super::SetToDefaults();
+
+    SettingsVersion = CURRENT_SETTINGS_VERSION;
 
     // Audio
     SetMasterVolume(DEFAULT_MASTERVOLUME);
@@ -107,12 +127,13 @@ void UWildOmissionGameUserSettings::SetToDefaults()
     SetWeatherVolume(DEFAULT_VOLUME);
 
     // Gameplay
+    SetFieldOfView(DEFAULT_FIELDOFVIEW);
+    SetRenderDistance(DEFAULT_RENDERDISTANCE);
     SetShowBranding(DEFAULT_SHOWBRANDING);
     SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
     SetHideChatUnlessOpen(DEFAULT_HIDECHATUNLESSOPEN);
     SetHideHUD(DEFAULT_HIDEHUD);
     SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
-    SetFieldOfView(DEFAULT_FIELDOFVIEW);
 
     // Post Processing
     SetGamma(DEFAULT_GAMMA);
@@ -283,6 +304,16 @@ void UWildOmissionGameUserSettings::SetFieldOfView(float NewFieldOfView)
 float UWildOmissionGameUserSettings::GetFieldOfView() const
 {
     return FieldOfView;
+}
+
+void UWildOmissionGameUserSettings::SetRenderDistance(const uint8& NewRenderDistance)
+{
+    RenderDistance = NewRenderDistance;
+}
+
+uint8 UWildOmissionGameUserSettings::GetRenderDistance() const
+{
+    return RenderDistance;
 }
 
 void UWildOmissionGameUserSettings::SetGamma(float NewGamma)

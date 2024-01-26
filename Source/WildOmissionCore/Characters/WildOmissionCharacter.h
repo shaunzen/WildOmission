@@ -54,6 +54,9 @@ public:
 	FRotator GetReplicatedControlRotation() const;
 
 	UFUNCTION()
+	bool IsSprinting() const;
+
+	UFUNCTION()
 	bool IsAiming() const;
 
 	UFUNCTION()
@@ -93,6 +96,9 @@ private:
 	class USpringArmComponent* FirstPersonSpringArmComponent;
 
 	UPROPERTY(VisibleAnywhere)
+	class UChunkInvokerComponent* ChunkInvokerComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	class UVitalsComponent* VitalsComponent;
 
 	UPROPERTY(VisibleAnywhere)
@@ -107,6 +113,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UEquipComponent* EquipComponent;
 	
+	UPROPERTY(VisibleAnywhere)
+	class UPlayerAimComponent* AimComponent;
+
 	UPROPERTY(VisibleAnywhere)
 	class UCraftingComponent* CraftingComponent;
 
@@ -142,16 +151,6 @@ private:
 
 	UPROPERTY()
 	bool bSprinting;
-
-	UPROPERTY()
-	bool bAiming;
-
-	UFUNCTION()
-	void SetAiming(bool Aim);
-	void HandleAiming();
-
-	FVector GetAimArmLocationOffset() const;
-	FRotator GetAimArmRotationOffset() const;
 
 	UPROPERTY()
 	bool bUnderwater;
@@ -237,8 +236,7 @@ private:
 	class UInputAction* ToggleChatAction;
 
 	bool LookUpInverted;
-	float LookSensitivity;
-
+	
 	UFUNCTION()
 	void MoveForward();
 
@@ -255,14 +253,14 @@ private:
 	void Look(const struct FInputActionValue& Value);
 
 	UFUNCTION()
-	void StartSprint();
+	void StartSprinting();
 	UFUNCTION()
-	void EndSprint();
+	void StopSprinting();
 
 	UFUNCTION()
-	void StartCrouch();
+	void StartCrouching();
 	UFUNCTION()
-	void EndCrouch();
+	void StopCrouching();
 
 	UFUNCTION()
 	void OnJumpHeld();

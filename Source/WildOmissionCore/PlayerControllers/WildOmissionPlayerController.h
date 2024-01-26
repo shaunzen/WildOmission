@@ -9,11 +9,6 @@
 #include "Interfaces/BedController.h"
 #include "WildOmissionPlayerController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFinishedLoadingSignature, AWildOmissionPlayerController*, LoadedController);
-
-class UMusicPlayerComponent;
-class UDeathMenuWidget;
-
 UCLASS()
 class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer, public IPlayerControllerMessageSender, public IBedController
 {
@@ -21,8 +16,6 @@ class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerControl
 
 public:
 	AWildOmissionPlayerController();
-
-	virtual void PlayerTick(float DeltaTime) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -55,13 +48,12 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_Spawn();
 
-	FOnFinishedLoadingSignature OnFinishedLoading;
-
 	//*****************************
 	// Console functions
 	UFUNCTION(Exec)
 	void Kill();
 
+	// This isn't really used anymore
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
 
@@ -71,20 +63,27 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	UMusicPlayerComponent* MusicPlayerComponent;
+	class UMusicPlayerComponent* MusicPlayerComponent;
 
 	UPROPERTY()
-	TSubclassOf<UDeathMenuWidget> DeathMenuWidgetClass;
+	TSubclassOf<class UDeathMenuWidget> DeathMenuWidgetClass;
 
 	UPROPERTY(Replicated)
 	int32 BedUniqueID;
 
+	UPROPERTY()
 	FVector BedWorldLocation;
 
 	UPROPERTY(Replicated)
 	FIntVector2 SpawnChunk;
 
 	FTimerHandle CheckSpawnChunkValidTimerHandle;
+
+	void SetupPlayerOnServer();
+	void StartLoading();
+	void SetupMusicPlayerComponent();
+	void SetupLocalAsHost();
+	void SetupLocalAsClient();
 
 	UFUNCTION()
 	void CheckSpawnChunkValid();

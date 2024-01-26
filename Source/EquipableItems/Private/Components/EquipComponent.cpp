@@ -131,7 +131,7 @@ void UEquipComponent::Disarm()
 		OnRep_EquipedItem();
 	}
 
-	StopAim();
+	StopAiming();
 	StopAllItemMontages();
 }
 
@@ -176,7 +176,7 @@ USkeletalMeshComponent* UEquipComponent::GetFirstPersonItemComponent() const
 	return FirstPersonItemComponent;
 }
 
-void UEquipComponent::SetFirstPersonArmLocationOffset(const FVector& InOffset)
+void UEquipComponent::SetArmLocationOffset(const FVector& InOffset)
 {
 	if (OwnerFirstPersonMesh == nullptr)
 	{
@@ -187,7 +187,7 @@ void UEquipComponent::SetFirstPersonArmLocationOffset(const FVector& InOffset)
 	OwnerFirstPersonMesh->SetRelativeLocation(DefaultArmLocation + InOffset);
 }
 
-void UEquipComponent::SetFirstPersonArmRotationOffset(const FRotator& InOffset)
+void UEquipComponent::SetArmRotationOffset(const FRotator& InOffset)
 {
 	if (OwnerFirstPersonMesh == nullptr)
 	{
@@ -197,7 +197,7 @@ void UEquipComponent::SetFirstPersonArmRotationOffset(const FRotator& InOffset)
 	OwnerFirstPersonMesh->SetRelativeRotation(InOffset);
 }
 
-FVector UEquipComponent::GetFirstPersonArmLocationOffset() const
+FVector UEquipComponent::GetCurrentArmLocationOffset() const
 {
 	if (OwnerFirstPersonMesh == nullptr)
 	{
@@ -208,7 +208,7 @@ FVector UEquipComponent::GetFirstPersonArmLocationOffset() const
 	return OwnerFirstPersonMesh->GetRelativeLocation() - DefaultArmLocation;
 }
 
-FRotator UEquipComponent::GetFirstPersonArmRotationOffset() const
+FRotator UEquipComponent::GetCurrentArmRotationOffset() const
 {
 	if (OwnerFirstPersonMesh == nullptr)
 	{
@@ -554,24 +554,24 @@ void UEquipComponent::ReloadPressed()
 	EquipedItem->OnReloadPressed();
 }
 
-void UEquipComponent::StartAim()
+void UEquipComponent::StartAiming()
 {
-	if (!OnAim.IsBound())
+	if (!OnStartAiming.IsBound())
 	{
 		return;
 	}
 
-	OnAim.Broadcast(true);
+	OnStartAiming.Broadcast();
 }
 
-void UEquipComponent::StopAim()
+void UEquipComponent::StopAiming()
 {
-	if (!OnAim.IsBound())
+	if (!OnStopAiming.IsBound())
 	{
 		return;
 	}
 
-	OnAim.Broadcast(false);
+	OnStopAiming.Broadcast();
 }
 
 void UEquipComponent::Client_PlayHitmarkerSound_Implementation()

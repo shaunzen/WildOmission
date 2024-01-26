@@ -70,9 +70,13 @@ void UChunkSaveComponent::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 		AttachedActor->Serialize(ActorArchive);
 
 		TArray<UActorComponent*> SavableComponents = AttachedActor->GetComponentsByInterface(USavableObject::StaticClass());
-		// TODO make const
 		for (UActorComponent* ActorComponent : SavableComponents)
 		{
+			if (!IsValid(ActorComponent))
+			{
+				continue;
+			}
+
 			FActorComponentSaveData ComponentSaveData;
 			ComponentSaveData.Name = ActorComponent->GetFName();
 			ComponentSaveData.Class = ActorComponent->GetClass();
@@ -102,8 +106,9 @@ void UChunkSaveComponent::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 
 void UChunkSaveComponent::Load(const FChunkData& InChunkData)
 {
+	UWorld* World = GetWorld();
 	AChunk* OwnerChunk = GetOwnerChunk();
-	if (!IsValid(OwnerChunk))
+	if (World == nullptr || !IsValid(OwnerChunk))
 	{
 		return;
 	}
@@ -125,7 +130,7 @@ void UChunkSaveComponent::Load(const FChunkData& InChunkData)
 			continue;
 		}
 
-		AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(ActorClass, ActorSaveData.Transform);
+		AActor* SpawnedActor = World->SpawnActor<AActor>(ActorClass, ActorSaveData.Transform);
 		if (SpawnedActor == nullptr)
 		{
 			UE_LOG(LogWorldGeneration, Warning, TEXT("Failed to load actor from save file: %s"), *ActorSaveData.Identifier.ToString());
@@ -140,9 +145,13 @@ void UChunkSaveComponent::Load(const FChunkData& InChunkData)
 		SpawnedActor->Serialize(ActorArchive);
 
 		TArray<UActorComponent*> SavableComponents = SpawnedActor->GetComponentsByInterface(USavableObject::StaticClass());
-		// TODO make const
 		for (UActorComponent* ActorComponent : SavableComponents)
 		{
+			if (!IsValid(ActorComponent))
+			{
+				continue;
+			}
+
 			FActorComponentSaveData ComponentSaveData = FindComponentDataByName(ActorSaveData.ComponentData, ActorComponent->GetFName(), ActorComponent->GetClass());
 			FMemoryReader ComponentMemoryReader(ComponentSaveData.ByteData);
 			FObjectAndNameAsStringProxyArchive ComponentArchive(ComponentMemoryReader, true);
@@ -154,6 +163,8 @@ void UChunkSaveComponent::Load(const FChunkData& InChunkData)
 
 		ISavableObject::Execute_OnLoadComplete(SpawnedActor);
 	}
+
+	OwnerChunk->OnLoadedTerrainData();
 }
 
 UClass* UChunkSaveComponent::FindSavableObjectClassUsingIdentifier(const FName& Identifier)

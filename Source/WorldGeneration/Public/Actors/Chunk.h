@@ -14,11 +14,8 @@ class WORLDGENERATION_API AChunk : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AChunk();
-
 	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
-
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
@@ -28,35 +25,57 @@ public:
 	void SetChunkHidden(bool Hidden);
 
 	UFUNCTION()
-	void OnLoadFromSaveComplete();
+	void OnLoadedTerrainData();
 
 	void Save(struct FChunkData& OutChunkData, bool AlsoDestroy = false);
 	void Load(const struct FChunkData& InChunkData);
 
-	static void SetGenerationSeed(const uint32& InSeed);
-	static uint32 GetGenerationSeed();
-
+	//***************************************************************************************
+	//	Noise
+	//***************************************************************************************
 	static float GetContinentalnessAtLocation(const FVector2D& Location, bool UseRawValue = false);
 	static float GetErosionAtLocation(const FVector2D& Location, bool UseRawValue = false);
 	static float GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRawValue = false);
 
-	static void GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, uint8& OutSurface);
-	static float GetTerrainHeightAtLocation(const FVector2D& Location);
+	//***************************************************************************************
+	//	Chunk Setters
+	//***************************************************************************************
+	static void SetGenerationSeed(const uint32& InSeed);
+
 	void SetChunkLocation(const FIntVector2& InLocation);
-	FIntVector2 GetChunkLocation() const;
+	void SetHeightData(const TArray<float>& InHeightData);
+	void SetSurfaceData(const TArray<uint8>& InSurfaceData);
+
+	//***************************************************************************************
+	//	Chunk Getters
+	//***************************************************************************************
+	static uint32 GetGenerationSeed();
 
 	static FName GetBiomeNameAtLocation(const FVector2D& Location);
 	static struct FBiomeGenerationData* GetBiomeAtLocation(const FVector2D& Location);
-
-	void SetHeightData(const TArray<float>& InHeightData);
+	
+	static void GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, uint8& OutSurface);
+	static float GetTerrainHeightAtLocation(const FVector2D& Location);
+	
+	FIntVector2 GetChunkLocation() const;
 	TArray<float> GetHeightData() const;
-
-	void SetSurfaceData(const TArray<uint8>& InSurfaceData);
 	TArray<uint8> GetSurfaceData() const;
 
 	static int32 GetVertexSize();
 	static float GetVertexDistanceScale();
 	static float GetMaxHeight();
+
+	//***************************************************************************************
+	//	Chunk Helpers
+	//***************************************************************************************
+	static float FastDistance(const FVector& V1, const FVector& V2);
+
+	bool GetRandomPointOnTerrain(FTransform& OutTransform) const;
+
+	// Return if the TestValue is within the range of the Threshold
+	static bool IsWithinThreshold(float TestValue, float MinThreshold, float MaxThreshold);
+	// Returns false if only one element is outside of the given range
+	static bool IsWithinThreshold(const TArray<float>& TestValues, float MinThreshold, float MaxThreshold);
 
 protected:
 	// Called when the game starts or when spawned
@@ -73,30 +92,28 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UChunkSaveComponent* SaveComponent;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MeshData)
+	UPROPERTY(Replicated, ReplicatedUsing = OnLoadedTerrainData)
 	TArray<float> HeightData;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_MeshData)
+	UPROPERTY(Replicated, ReplicatedUsing = OnLoadedTerrainData)
 	TArray<uint8> SurfaceData;
 
 	bool ChunkHidden;
-
-	UFUNCTION()
-	void OnRep_MeshData();
 	
-	void GenerateTerrainShape(const TArray<FChunkData>& Neighbors);
-	void GenerateBiome();
+	//***************************************************************************************
+	//	Chunk Generation
+	//***************************************************************************************
+
+	// Generates the terrain (Height, Surface Type)
+	void GenerateTerrain(const TArray<FChunkData>& Neighbors);
+
+	// Generates the decorations (Trees, Rocks, Plants)
 	void GenerateDecorations();
-	void GenerateSpawnableActors(const TArray<struct FSpawnQuery>& SpawnQueryList);
+	
+	void GenerateTerrainData(const TArray<FChunkData>& Neighbors);
+	void GenerateTerrainRuntimeData(TArray<FVector>& OutVertices, TArray<int32>& OutTriangles, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV);
 
-	bool GetRandomPointOnTerrain(FTransform& OutTransform) const;
+	void CreateTerrainMesh();
 
-	static bool ArePointsOutsideOfThreshold(const TArray<float>& TestPoints, float MinThreshold, float MaxThreshold);
-
-	void GenerateHeightData(const TArray<FChunkData>& Neighbors);
-	void CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV);
-
-	void CreateTriangles(TArray<int32>& OutTriangle);
-	void CreateMesh();
 
 };

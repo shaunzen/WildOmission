@@ -5,6 +5,7 @@
 #include "Components/InventoryComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ChunkManager.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "NavModifierComponent.h"
 #include "Log.h"
 
@@ -38,11 +39,17 @@ bool AHarvestableResource::IsNetRelevantFor(const AActor* RealViewer, const AAct
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
+	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return false;
+	}
+
 	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
-	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
 }
 
 void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool)

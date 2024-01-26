@@ -1,53 +1,59 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
-
+// Character Core
 #include "WildOmissionCharacter.h"
-#include "InputActionValue.h"
-#include "InputMappingContext.h"
-#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "HumanAnimInstance.h"
-#include "Net/UnrealNetwork.h"
-#include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "UObject/ConstructorHelpers.h"
+#include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "HumanAnimInstance.h"
+#include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
+#include "GameFramework/PlayerState.h"
+
+// Wild Omission Components
+#include "Components/ChunkInvokerComponent.h"
 #include "Components/VitalsComponent.h"
 #include "Components/InteractionComponent.h"
-#include "Components/InventoryManipulatorComponent.h"
 #include "Components/PlayerInventoryComponent.h"
+#include "Components/InventoryManipulatorComponent.h"
 #include "Components/EquipComponent.h"
+#include "WildOmissionCore/Components/PlayerAimComponent.h"
 #include "Components/CraftingComponent.h"
 #include "Components/BuilderComponent.h"
-#include "GameFramework/PlayerState.h"
-#include "Items/FirearmItem.h"
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsManagerComponent.h"
 #include "Components/LockModifierComponent.h"
+
+// Wild Omission Stuff
+#include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
 #include "WildOmissionGameUserSettings.h"
-#include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
-#include "UI/InventoryMenuWidget.h"
 #include "Deployables/ItemContainerBase.h"
 #include "Ragdolls/LootableRagdoll.h"
-#include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
+
+// Engine Stuff
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Engine/DamageEvents.h"
+#include "Net/UnrealNetwork.h"
+
 
 //********************************
 // Setup/General Actor Functionality
 //********************************
 AWildOmissionCharacter::AWildOmissionCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	PlayerHUDWidget = nullptr;
 
 	RagdollClass = nullptr;
 
-	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
-	GetMesh()->SetRelativeScale3D(FVector(0.95f, 0.95f, 0.95f));
+	USkeletalMeshComponent* ThirdPersonMeshComponent = GetMesh();
+	ThirdPersonMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	ThirdPersonMeshComponent->SetRelativeScale3D(FVector(0.95f, 0.95f, 0.95f));
 
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(RootComponent);
@@ -70,15 +76,21 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	FirstPersonArmsMeshComponent->SetVisibility(false);
 	FirstPersonArmsMeshComponent->SetCastShadow(false);
 
-	EquipComponent = CreateDefaultSubobject<UEquipComponent>(TEXT("EquipComponent"));
-	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
-	EquipComponent->Setup(FirstPersonArmsMeshComponent, this->GetMesh());
+	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
+	ChunkInvokerComponent->SetupAttachment(RootComponent);
+	ChunkInvokerComponent->SetRenderDistance(8);
 
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
 
 	InventoryManipulatorComponent = CreateDefaultSubobject<UInventoryManipulatorComponent>(TEXT("InventoryManipulatorComponent"));
 
 	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>(TEXT("InventoryComponent"));
+
+	EquipComponent = CreateDefaultSubobject<UEquipComponent>(TEXT("EquipComponent"));
+	EquipComponent->SetupAttachment(FirstPersonCameraComponent);
+	EquipComponent->Setup(FirstPersonArmsMeshComponent, ThirdPersonMeshComponent);
+
+	AimComponent = CreateDefaultSubobject<UPlayerAimComponent>(TEXT("AimComponent"));
 
 	CraftingComponent = CreateDefaultSubobject<UCraftingComponent>(TEXT("CraftingComponent"));
 
@@ -95,19 +107,20 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	
 	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
 
-	bAiming = false;
 	bSprinting = false;
 	bUnderwater = false;
+	
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	CharacterMovementComponent->GravityScale = 1.5f;
+	CharacterMovementComponent->MaxAcceleration = 10000.0f;
+	CharacterMovementComponent->GroundFriction = 10.0f;
+	CharacterMovementComponent->AirControl = 0.0f;
+	CharacterMovementComponent->AirControlBoostMultiplier = 0.0f;
+	CharacterMovementComponent->FallingLateralFriction = 0.3f;
 
-	GetCharacterMovement()->GravityScale = 1.5f;
-	GetCharacterMovement()->MaxAcceleration = 10000.0f;
-	GetCharacterMovement()->GroundFriction = 10.0f;
-	GetCharacterMovement()->AirControl = 0.0f;
-	GetCharacterMovement()->AirControlBoostMultiplier = 0.0f;
-	GetCharacterMovement()->FallingLateralFriction = 0.3f;
+	CharacterMovementComponent->JumpZVelocity = 550.0f;
+	CharacterMovementComponent->MaxWalkSpeed = 300.0f;
 
-	GetCharacterMovement()->JumpZVelocity = 550.0f;
-	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	DesiredMovementSpeed = 300.0f;
 	
 	WalkMovementSpeed = 300.0f;
@@ -115,7 +128,6 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	AimMovementSpeed = 100.0f;
 
 	LookUpInverted = false;
-	LookSensitivity = 1.0f;
 
 	static ConstructorHelpers::FClassFinder<UCameraShakeBase> JumpCameraShakeBlueprint(TEXT("/Game/WildOmissionCore/Characters/Human/Effects/CS_Jump"));
 	if (JumpCameraShakeBlueprint.Succeeded())
@@ -144,13 +156,13 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerThirdPersonMeshObject(TEXT("/Game/WildOmissionCore/Art/Characters/SK_Human"));
 	if (PlayerThirdPersonMeshObject.Succeeded())
 	{
-		GetMesh()->SetSkeletalMesh(PlayerThirdPersonMeshObject.Object);
+		ThirdPersonMeshComponent->SetSkeletalMesh(PlayerThirdPersonMeshObject.Object);
 	}
 
 	static ConstructorHelpers::FClassFinder<UHumanAnimInstance> PlayerThirdPersonAnimBlueprintClass(TEXT("/Game/WildOmissionCore/Characters/Human/Animation/ABP_Human_ThirdPerson"));
 	if (PlayerThirdPersonAnimBlueprintClass.Succeeded())
 	{
-		GetMesh()->SetAnimClass(PlayerThirdPersonAnimBlueprintClass.Class);
+		ThirdPersonMeshComponent->SetAnimClass(PlayerThirdPersonAnimBlueprintClass.Class);
 	}
 	
 	static ConstructorHelpers::FClassFinder<ALootableRagdoll> PlayerRagdollBlueprint(TEXT("/Game/WildOmissionCore/Characters/Human/BP_Human_Ragdoll"));
@@ -336,11 +348,15 @@ void AWildOmissionCharacter::BeginPlay()
 	ApplyGameplaySettings();
 	ApplyPostProcessingSettings();
 	SetupLocalComponents();
-	EndSprint();
+	StopSprinting();
 
-	EquipComponent->OnAim.AddDynamic(this, &AWildOmissionCharacter::SetAiming);
+	if (EquipComponent && AimComponent)
+	{
+		EquipComponent->OnStartAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StartAiming);
+		EquipComponent->OnStopAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StopAiming);
+	}
 
-	if (HasAuthority())
+	if (HasAuthority() && VitalsComponent)
 	{
 		VitalsComponent->OnHealthDepleted.AddDynamic(this, &AWildOmissionCharacter::HandleDeath);
 	}
@@ -350,9 +366,12 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	EquipComponent->UpdateControlRotation(GetReplicatedControlRotation());
+	if (EquipComponent == nullptr)
+	{
+		return;
+	}
 
-	HandleAiming();
+	EquipComponent->UpdateControlRotation(GetReplicatedControlRotation());
 
 	if (!HasAuthority())
 	{
@@ -361,7 +380,8 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 
 	ReplicatedControlRotation = GetControlRotation();
 
-	if (GetCharacterMovement()->IsSwimming())
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent && CharacterMovementComponent->IsSwimming())
 	{
 		HandleUnderwater();
 	}
@@ -383,6 +403,11 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 void AWildOmissionCharacter::UnPossessed()
 {
 	Super::UnPossessed();
+
+	if (EquipComponent == nullptr)
+	{
+		return;
+	}
 
 	EquipComponent->DestroyEquipedItem();
 }
@@ -413,7 +438,13 @@ void AWildOmissionCharacter::Landed(const FHitResult& HitResult)
 		return;
 	}
 
-	float FallVelocity = GetCharacterMovement()->GetLastUpdateVelocity().GetAbs().Z;
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	float FallVelocity = CharacterMovementComponent->GetLastUpdateVelocity().GetAbs().Z;
 
 	if (FallVelocity > 1000.0f)
 	{
@@ -443,15 +474,15 @@ void AWildOmissionCharacter::HandleFly()
 		return;
 	}
 
-	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
-	if (OurCharacterMovement == nullptr)
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
 	{
 		return;
 	}
 
-	const bool AlreadyFlying = OurCharacterMovement->IsFlying();
-	AlreadyFlying ? OurCharacterMovement->SetMovementMode(EMovementMode::MOVE_Walking)
-		: OurCharacterMovement->SetMovementMode(EMovementMode::MOVE_Flying);
+	const bool AlreadyFlying = CharacterMovementComponent->IsFlying();
+	AlreadyFlying ? CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking)
+		: CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
 }
 
 void AWildOmissionCharacter::SetupEnhancedInputSubsystem()
@@ -473,21 +504,28 @@ void AWildOmissionCharacter::SetupEnhancedInputSubsystem()
 
 void AWildOmissionCharacter::SetupMesh()
 {
-	GetMesh()->SetVisibility(!IsLocallyControlled());
-	FirstPersonArmsMeshComponent->SetVisibility(IsLocallyControlled());
+	USkeletalMeshComponent* ThirdPersonMeshComponent = GetMesh();
+	if (ThirdPersonMeshComponent)
+	{
+		ThirdPersonMeshComponent->SetVisibility(!IsLocallyControlled());
+	}
+
+	if (FirstPersonArmsMeshComponent)
+	{
+		FirstPersonArmsMeshComponent->SetVisibility(IsLocallyControlled());
+	}
 }
 
 void AWildOmissionCharacter::ApplyInputSettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	if (!IsLocallyControlled() || UserSettings == nullptr)
+	if (!IsLocallyControlled() || UserSettings == nullptr || DefaultMappingContext == nullptr)
 	{
 		return;
 	}
 
 	DefaultMappingContext->UnmapAll();
 	LookUpInverted = UserSettings->GetInvertedMouseY();
-	LookSensitivity = UserSettings->GetMouseSensitivity();
 	DefaultMappingContext->MapKey(MoveForwardAction, UserSettings->GetMoveForwardKey());
 	DefaultMappingContext->MapKey(MoveBackwardAction, UserSettings->GetMoveBackwardKey());
 	DefaultMappingContext->MapKey(MoveLeftAction, UserSettings->GetMoveLeftKey());
@@ -517,26 +555,25 @@ void AWildOmissionCharacter::ApplyInputSettings()
 void AWildOmissionCharacter::ApplyGameplaySettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	if (!IsLocallyControlled() || UserSettings == nullptr)
+	if (!IsLocallyControlled() || UserSettings == nullptr
+		|| FirstPersonCameraComponent == nullptr
+		|| ChunkInvokerComponent == nullptr || PlayerHUDWidget == nullptr)
 	{
 		return;
 	}
 
 	FirstPersonCameraComponent->SetFieldOfView(UserSettings->GetFieldOfView());
-
-	if (PlayerHUDWidget)
-	{
-		PlayerHUDWidget->ShowBranding(UserSettings->GetShowBranding());
-		PlayerHUDWidget->ShowCrosshair(UserSettings->GetShowCrosshair());
-		PlayerHUDWidget->SetHideChatUnlessOpen(UserSettings->GetHideChatUnlessOpen());
-		PlayerHUDWidget->SetVisibility(UserSettings->GetHideHUD() ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
-	}
+	ChunkInvokerComponent->SetRenderDistance(UserSettings->GetRenderDistance());
+	PlayerHUDWidget->ShowBranding(UserSettings->GetShowBranding());
+	PlayerHUDWidget->ShowCrosshair(UserSettings->GetShowCrosshair());
+	PlayerHUDWidget->SetHideChatUnlessOpen(UserSettings->GetHideChatUnlessOpen());
+	PlayerHUDWidget->SetVisibility(UserSettings->GetHideHUD() ? ESlateVisibility::Hidden : ESlateVisibility::Visible);
 }
 
 void AWildOmissionCharacter::ApplyPostProcessingSettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	if (!IsLocallyControlled() || UserSettings == nullptr)
+	if (!IsLocallyControlled() || UserSettings == nullptr || FirstPersonCameraComponent == nullptr)
 	{
 		return;
 	}
@@ -569,26 +606,27 @@ void AWildOmissionCharacter::SetupPlayerHUD()
 
 void AWildOmissionCharacter::SetupLocalComponents()
 {
-	if (!IsLocallyControlled())
+	if (!IsLocallyControlled() || SpecialEffectsManagerComponent != nullptr)
 	{
 		return;
 	}
 
+	SpecialEffectsManagerComponent = NewObject<USpecialEffectsManagerComponent>(this, USpecialEffectsManagerComponent::StaticClass(), TEXT("SpecialEffectsManagerComponent"));
 	if (SpecialEffectsManagerComponent == nullptr)
 	{
-		SpecialEffectsManagerComponent = NewObject<USpecialEffectsManagerComponent>(this, USpecialEffectsManagerComponent::StaticClass(), TEXT("SpecialEffectsManagerComponent"));
-		if (SpecialEffectsManagerComponent)
-		{
-			SpecialEffectsManagerComponent->RegisterComponent();
-			SpecialEffectsManagerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		}
+		return;
 	}
+
+	SpecialEffectsManagerComponent->RegisterComponent();
+	SpecialEffectsManagerComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
 }
 
 void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
+	// UnOccupy any open container
 	if (InventoryManipulatorComponent && InventoryManipulatorComponent->GetOpenContainer())
 	{
 		AItemContainerBase* OpenItemContainer = Cast<AItemContainerBase>(InventoryManipulatorComponent->GetOpenContainer()->GetOwner());
@@ -598,22 +636,23 @@ void AWildOmissionCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		}
 	}
 
-	if (PlayerHUDWidget == nullptr)
+	// Remove the hud
+	if (PlayerHUDWidget)
 	{
-		return;
+		PlayerHUDWidget->RemoveFromParent();
+		PlayerHUDWidget = nullptr;
 	}
-	
-	PlayerHUDWidget->RemoveFromParent();
-	PlayerHUDWidget = nullptr;
 }
 
 void AWildOmissionCharacter::HandleDeath()
 {
+	UWorld* World = GetWorld();
 	AWildOmissionPlayerController* OurController = Cast<AWildOmissionPlayerController>(Controller);
-	if (OurController == nullptr)
+	if (World == nullptr || OurController == nullptr)
 	{
 		return;
 	}
+
 	OurController->Save();
 	OurController->Client_ShowDeathMenu();
 
@@ -622,8 +661,7 @@ void AWildOmissionCharacter::HandleDeath()
 	GetAttachedActors(AttachedActors);
 
 	// Create lootable container with inventory
-	// Is Spawning kinda in the air, might want to fix that
-	ALootableRagdoll* SpawnedRagdoll = GetWorld()->SpawnActor<ALootableRagdoll>(RagdollClass, GetActorTransform());
+	ALootableRagdoll* SpawnedRagdoll = World->SpawnActor<ALootableRagdoll>(RagdollClass, GetActorTransform());
 	if (SpawnedRagdoll == nullptr)
 	{
 		return;
@@ -645,7 +683,13 @@ void AWildOmissionCharacter::HandleDeath()
 	}
 
 	// Set Items to be this players items
-	SpawnedRagdoll->GetInventoryComponent()->Load(InventoryComponent->Save());
+	UInventoryComponent* RagdollInventoryComponent = SpawnedRagdoll->GetInventoryComponent();
+	if (RagdollInventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	RagdollInventoryComponent->Load(InventoryComponent->Save());
 	
 	this->Destroy();
 }
@@ -655,108 +699,20 @@ void AWildOmissionCharacter::SetGodMode(bool GodMode)
 	VitalsComponent->SetGodMode(GodMode);
 }
 
-void AWildOmissionCharacter::SetAiming(bool Aim)
-{
-	bAiming = Aim;
-	RefreshDesiredMovementSpeed();
-}
-
-void AWildOmissionCharacter::HandleAiming()
+void AWildOmissionCharacter::HandleUnderwater()
 {
 	UWorld* World = GetWorld();
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	if (World == nullptr || PlayerController == nullptr || !PlayerController->IsLocalPlayerController() || UserSettings == nullptr)
+	if (World == nullptr)
 	{
 		return;
 	}
 
-	// Calculate Sensitivity
-	const float SettingsSensitivity = UserSettings->GetMouseSensitivity();
-	const float SensitivityAimMultiplier = bAiming ? 0.25f : 1.0f;
-	LookSensitivity = SettingsSensitivity * SensitivityAimMultiplier;
-
-	// Calculate FOV
-	const float SettingsFOV = UserSettings->GetFieldOfView();
-	const float MaxFOVZoom = 10.0f;
-	const float FOVZoomSpeed = 50.0f;
-	float CurrentFOV = FirstPersonCameraComponent->FieldOfView;
-
-	// Calculate Arm Offset
-	const FVector TargetAimArmLocationOffset = GetAimArmLocationOffset();
-	const FRotator TargetAimArmRotationOffset = GetAimArmRotationOffset();
-
-	const float ArmSpeed = 50.0f;
-	
-	const FVector DefaultArmLocation = FVector(-5.0f, 0.0f, -160.0f);
-
-	FVector CurrentArmLocationOffset = EquipComponent->GetFirstPersonArmLocationOffset();
-	FRotator CurrentArmRotationOffset = EquipComponent->GetFirstPersonArmRotationOffset();
-
-	if (bAiming)
-	{
-		// Update fov
-		CurrentFOV = FMath::Clamp(CurrentFOV - FOVZoomSpeed * World->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
-		
-		// Move the arms
-		CurrentArmLocationOffset = FMath::Lerp(CurrentArmLocationOffset, TargetAimArmLocationOffset, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
-		CurrentArmRotationOffset = FMath::Lerp(CurrentArmRotationOffset, TargetAimArmRotationOffset, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
-	}
-	else
-	{
-		// Update fov
-		CurrentFOV = FMath::Clamp(CurrentFOV + FOVZoomSpeed * World->GetDeltaSeconds(), SettingsFOV - MaxFOVZoom, SettingsFOV);
-
-		// Move the arms
-		CurrentArmLocationOffset = FMath::Lerp(CurrentArmLocationOffset, FVector::ZeroVector, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
-		CurrentArmRotationOffset = FMath::Lerp(CurrentArmRotationOffset, FRotator::ZeroRotator, FMath::Clamp(ArmSpeed * World->GetDeltaSeconds(), 0.0f, 1.0f));
-	}
-
-	FirstPersonCameraComponent->FieldOfView = CurrentFOV;
-
-	EquipComponent->SetFirstPersonArmLocationOffset(CurrentArmLocationOffset);
-	EquipComponent->SetFirstPersonArmRotationOffset(CurrentArmRotationOffset);
-}
-
-FVector AWildOmissionCharacter::GetAimArmLocationOffset() const
-{
-	if (EquipComponent == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	AFirearmItem* EquipedFirearm = Cast<AFirearmItem>(EquipComponent->GetEquipedItem());
-	if (EquipedFirearm == nullptr)
-	{
-		return FVector::ZeroVector;
-	}
-
-	return EquipedFirearm->GetAimArmLocationOffset();
-}
-
-FRotator AWildOmissionCharacter::GetAimArmRotationOffset() const
-{
-	if (EquipComponent == nullptr)
-	{
-		return FRotator::ZeroRotator;
-	}
-
-	AFirearmItem* EquipedFirearm = Cast<AFirearmItem>(EquipComponent->GetEquipedItem());
-	if (EquipedFirearm == nullptr)
-	{
-		return FRotator::ZeroRotator;
-	}
-
-	return EquipedFirearm->GetAimArmRotationOffset();
-}
-
-void AWildOmissionCharacter::HandleUnderwater()
-{
 	FHitResult HitResult;
 	FVector Start = FirstPersonCameraComponent->GetComponentLocation();
 	FVector End = Start + FVector(0.0f, 0.0f, 1000.0f);
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel3))
+	// TODO this is where we should add status effect for underwater
+	if (World->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel3))
 	{
 		bUnderwater = true;
 		HandleDeath();
@@ -777,6 +733,10 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 	// Cast PlayerInputComponent to UEnhancedPlayerInputComponent
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (EnhancedInputComponent == nullptr)
+	{
+		return;
+	}
 
 	// Bind function callbacks to input actions
 	EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveForward);
@@ -784,10 +744,10 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(MoveLeftAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveLeft);
 	EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveRight);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::Look);
-	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartSprint);
-	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndSprint);
-	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartCrouch);
-	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::EndCrouch);
+	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartSprinting);
+	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::StopSprinting);
+	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartCrouching);
+	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::StopCrouching);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::OnCrouchHeld);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::Jump);
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::OnJumpHeld);
@@ -814,7 +774,13 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 void AWildOmissionCharacter::MoveForward()
 {
-	if (!GetCharacterMovement()->IsSwimming())
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	if (!CharacterMovementComponent->IsSwimming())
 	{
 		AddMovementInput(GetActorForwardVector(), 1.0f);
 	}
@@ -826,7 +792,13 @@ void AWildOmissionCharacter::MoveForward()
 
 void AWildOmissionCharacter::MoveBackward()
 {
-	if (!GetCharacterMovement()->IsSwimming())
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	if (!CharacterMovementComponent->IsSwimming())
 	{
 		AddMovementInput(GetActorForwardVector(), -1.0f);
 	}
@@ -838,7 +810,13 @@ void AWildOmissionCharacter::MoveBackward()
 
 void AWildOmissionCharacter::MoveLeft()
 {
-	if (!GetCharacterMovement()->IsSwimming())
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	if (!CharacterMovementComponent->IsSwimming())
 	{
 		AddMovementInput(GetActorRightVector(), -1.0f);
 	}
@@ -851,7 +829,13 @@ void AWildOmissionCharacter::MoveLeft()
 
 void AWildOmissionCharacter::MoveRight()
 {
-	if (!GetCharacterMovement()->IsSwimming())
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	if (!CharacterMovementComponent->IsSwimming())
 	{
 		AddMovementInput(GetActorRightVector(), 1.0f);
 	}
@@ -863,25 +847,22 @@ void AWildOmissionCharacter::MoveRight()
 
 void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen())
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || AimComponent == nullptr)
 	{
 		return;
 	}
 
 	FVector2D LookAxis = Value.Get<FVector2D>();
 
+	const float LookSensitivity = AimComponent->GetLookSensitivity();
+
 	AddControllerYawInput(LookAxis.X * LookSensitivity);
 	const float Invert = LookUpInverted ? 1.0f : -1.0f;
 	AddControllerPitchInput((LookAxis.Y * LookSensitivity) * Invert);
 }
 
-void AWildOmissionCharacter::StartSprint()
+void AWildOmissionCharacter::StartSprinting()
 {
-	if (GetOwner() == nullptr)
-	{
-		return;
-	}
-
 	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
@@ -892,13 +873,8 @@ void AWildOmissionCharacter::StartSprint()
 	RefreshDesiredMovementSpeed();
 }
 
-void AWildOmissionCharacter::EndSprint()
+void AWildOmissionCharacter::StopSprinting()
 {
-	if (GetOwner() == nullptr)
-	{
-		return;
-	}
-
 	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
 	{
 		return;
@@ -909,7 +885,7 @@ void AWildOmissionCharacter::EndSprint()
 	RefreshDesiredMovementSpeed();
 }
 
-void AWildOmissionCharacter::StartCrouch()
+void AWildOmissionCharacter::StartCrouching()
 {
 	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
 	{
@@ -919,7 +895,7 @@ void AWildOmissionCharacter::StartCrouch()
 	Crouch();
 }
 
-void AWildOmissionCharacter::EndCrouch()
+void AWildOmissionCharacter::StopCrouching()
 {
 	if (PlayerHUDWidget && PlayerHUDWidget->IsMenuOpen())
 	{
@@ -931,29 +907,19 @@ void AWildOmissionCharacter::EndCrouch()
 
 void AWildOmissionCharacter::OnJumpHeld()
 {
-	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
-	if (OurCharacterMovement == nullptr)
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr || !CharacterMovementComponent->IsFlying())
 	{
 		return;
 	}
 
-	if (!OurCharacterMovement->IsFlying())
-	{
-		return;
-	}
-	
 	AddMovementInput(FVector::UpVector);
 }
 
 void AWildOmissionCharacter::OnCrouchHeld()
 {
-	UCharacterMovementComponent* OurCharacterMovement = GetCharacterMovement();
-	if (OurCharacterMovement == nullptr)
-	{
-		return;
-	}
-
-	if (!OurCharacterMovement->IsFlying())
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr || !CharacterMovementComponent->IsFlying())
 	{
 		return;
 	}
@@ -963,16 +929,22 @@ void AWildOmissionCharacter::OnCrouchHeld()
 
 void AWildOmissionCharacter::OnRep_MovementSpeed()
 {
-	GetCharacterMovement()->MaxWalkSpeed = DesiredMovementSpeed;
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	CharacterMovementComponent->MaxWalkSpeed = DesiredMovementSpeed;
 }
 
 void AWildOmissionCharacter::RefreshDesiredMovementSpeed()
 {
-	if (bAiming)
+	if (IsAiming())
 	{
 		DesiredMovementSpeed = AimMovementSpeed;
 	}
-	else if (bSprinting)
+	else if (IsSprinting())
 	{
 		DesiredMovementSpeed = SprintMovementSpeed;
 	}
@@ -1003,7 +975,9 @@ void AWildOmissionCharacter::Multi_PlayFallCrunchSound_Implementation()
 
 void AWildOmissionCharacter::PrimaryPressed()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->PrimaryEnabled() || GetCharacterMovement()->IsSwimming())
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->PrimaryEnabled()
+		|| CharacterMovementComponent == nullptr || CharacterMovementComponent->IsSwimming())
 	{
 		return;
 	}
@@ -1018,7 +992,9 @@ void AWildOmissionCharacter::PrimaryReleased()
 
 void AWildOmissionCharacter::SecondaryPressed()
 {
-	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->SecondaryEnabled() || GetCharacterMovement()->IsSwimming())
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (PlayerHUDWidget == nullptr || PlayerHUDWidget->IsMenuOpen() || !EquipComponent->SecondaryEnabled()
+		|| CharacterMovementComponent == nullptr || CharacterMovementComponent->IsSwimming())
 	{
 		return;
 	}
@@ -1179,9 +1155,14 @@ FRotator AWildOmissionCharacter::GetReplicatedControlRotation() const
 	return GetControlRotation();
 }
 
+bool AWildOmissionCharacter::IsSprinting() const
+{
+	return bSprinting;
+}
+
 bool AWildOmissionCharacter::IsAiming() const
 {
-	return bAiming;
+	return AimComponent->IsAiming();
 }
 
 bool AWildOmissionCharacter::IsUnderwater() const

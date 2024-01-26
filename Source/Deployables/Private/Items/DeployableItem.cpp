@@ -13,7 +13,6 @@ void ADeployableItem::OnPlace()
 		return;
 	}
 
-
 	FTransform PlacementTransform;
 	if (!GetPlacementTransform(PlacementTransform))
 	{

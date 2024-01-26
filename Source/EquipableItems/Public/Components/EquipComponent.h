@@ -7,7 +7,8 @@
 #include "EquipComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshEquipedSlotUISignature, const uint8&, SlotIndex);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAimSignature, bool, Aim);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartAimingSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStopAimingSignature);
 
 class AEquipableItem;
 
@@ -38,11 +39,11 @@ public:
 
 	USkeletalMeshComponent* GetFirstPersonItemComponent() const;
 
-	void SetFirstPersonArmLocationOffset(const FVector& InOffset);
-	void SetFirstPersonArmRotationOffset(const FRotator& InOffset);
+	void SetArmLocationOffset(const FVector& InOffset);
+	void SetArmRotationOffset(const FRotator& InOffset);
 
-	FVector GetFirstPersonArmLocationOffset() const;
-	FRotator GetFirstPersonArmRotationOffset() const;
+	FVector GetCurrentArmLocationOffset() const;
+	FRotator GetCurrentArmRotationOffset() const;
 
 	void PlayItemMontage(UAnimMontage* PlayerMontage, UAnimMontage* ItemMontage = nullptr);
 	void StopAllItemMontages();
@@ -58,7 +59,9 @@ public:
 	void OnReloadAnimationClimax(bool FirstPerson);
 
 	FRefreshEquipedSlotUISignature RefreshEquipedSlotUI;
-	FOnAimSignature OnAim;
+	
+	FOnStartAimingSignature OnStartAiming;
+	FOnStopAimingSignature OnStopAiming;
 
 	UFUNCTION(BlueprintCallable)
 	AEquipableItem* GetEquipedItem() const;
@@ -86,8 +89,8 @@ public:
 
 	void ReloadPressed();
 
-	void StartAim();
-	void StopAim();
+	void StartAiming();
+	void StopAiming();
 
 	UFUNCTION(Client, Reliable)
 	void Client_PlayHitmarkerSound();

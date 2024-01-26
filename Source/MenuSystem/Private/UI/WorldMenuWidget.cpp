@@ -71,12 +71,20 @@ void UWorldMenuWidget::Open(const FString& InWorldName)
 	PlaceholderServerName = FString::Printf(TEXT("%s's Server"), *PlayerState->GetPlayerName());
 	ServerNameInputBox->SetText(FText::FromString(PlaceholderServerName));
 
+	const int32 WorldVersion = GetWorldVersion();
+
 	// If this is an old world, prevent it from being played
-	if (GetWorldVersion() < 2)
+	if (WorldVersion < 2)
 	{
 		PlayButton->SetIsEnabled(false);
 		PlayButtonTextBlock->SetColorAndOpacity(FSlateColor(FColor::Red));
 		PlayButtonTextBlock->SetText(FText::FromString(TEXT("This world can only be played on an older version of Wild Omission")));
+	}
+	else if (WorldVersion > UWildOmissionSaveGame::GetCurrentVersion())
+	{
+		PlayButton->SetIsEnabled(false);
+		PlayButtonTextBlock->SetColorAndOpacity(FSlateColor(FColor::Red));
+		PlayButtonTextBlock->SetText(FText::FromString(TEXT("This world can only be played on a newer version of Wild Omission")));
 	}
 }
 

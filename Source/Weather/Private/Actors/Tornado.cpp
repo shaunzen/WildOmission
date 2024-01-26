@@ -2,8 +2,8 @@
 
 
 #include "Actors/Tornado.h"
-#include "Actors/Storm.h"
 #include "Components/WindSuckerComponent.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Interfaces/DamagedByWind.h"
 #include "Interfaces/InteractsWithTornado.h"
 #include "Log.h"
@@ -20,6 +20,10 @@ ATornado::ATornado()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	RootComponent = MeshComponent;
+
+	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
+	ChunkInvokerComponent->SetupAttachment(RootComponent);
+	ChunkInvokerComponent->SetRenderDistance(8);
 
 	SuctionAnchor = CreateDefaultSubobject<USceneComponent>(TEXT("SuctionAnchor"));
 	SuctionAnchor->SetupAttachment(MeshComponent);
@@ -50,6 +54,10 @@ ATornado::ATornado()
 
 	RotationSpeed = 30.0f;
 	MovementSpeed = 1000.0f;
+	TargetLocation = FVector::ZeroVector;
+	BoundsRadius = 0.0f;
+	RemainingLifetime = 0.0f;
+	TotalLifetime = 0.0f;
 }
 
 // Called when the game starts or when spawned
@@ -57,35 +65,41 @@ void ATornado::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority())
+	if (!HasAuthority())
 	{
-		MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ATornado::OnActorOverlapVortex);
+		return;
 	}
+
+	MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ATornado::OnActorOverlapVortex);
 }
 
-void ATornado::HandleSpawn(AStorm* InOwnerStorm, bool SpawnedFromCommand)
+void ATornado::Setup(bool SpawnedFromCommand)
 {
-	OwnerStorm = InOwnerStorm;
-
-	// TODO refactor both this class and the storm
-	GetStormRadius();
+	this->SetActorRelativeLocation(GetRandomLocationInBounds());
 	
-	SetActorRelativeLocation(GetRandomLocationInStorm());
-	
-	TargetLocation = GetRandomLocationInStorm();
+	TargetLocation = GetRandomLocationInBounds();
 
 	if (SpawnedFromCommand)
 	{
-		SetActorRelativeLocation(FVector(-StormRadius * 0.25f, 0.0f, 0.0f));
-		TargetLocation = FVector(StormRadius * 0.25f, 0.0f, 0.0f);
+		this->SetActorRelativeLocation(FVector(-BoundsRadius * 0.25f, 0.0f, 0.0f));
+		TargetLocation = FVector(BoundsRadius * 0.25f, 0.0f, 0.0f);
 	}
 	
 	TotalLifetime = FMath::RandRange(120.0f, 300.0f);
 	RemainingLifetime = TotalLifetime;
-
 }
 
-FTornadoData ATornado::GetTornadoData()
+void ATornado::SetBoundsRadius(float InBoundsRadius)
+{
+	BoundsRadius = InBoundsRadius;
+}
+
+float ATornado::GetBoundsRadius() const
+{
+	return BoundsRadius;
+}
+
+FTornadoData ATornado::GetTornadoData() const
 {
 	FTornadoData NewData;
 	NewData.Transform = MeshComponent->GetRelativeTransform();
@@ -98,10 +112,8 @@ FTornadoData ATornado::GetTornadoData()
 	return NewData;
 }
 
-void ATornado::LoadTornadoData(const FTornadoData& InTornadoData, AStorm* InOwnerStorm)
+void ATornado::LoadTornadoData(const FTornadoData& InTornadoData)
 {
-	OwnerStorm = InOwnerStorm;
-
 	MeshComponent->SetRelativeTransform(InTornadoData.Transform);
 	MovementSpeed = InTornadoData.MovementSpeed;
 	TotalLifetime = InTornadoData.TotalLifetime;
@@ -115,19 +127,21 @@ void ATornado::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HasAuthority())
-	{
-		HandleMovement();
-		HandleDamage();
-		RemainingLifetime -= DeltaTime;
+	UpdateRotation();
 
-		if (RemainingLifetime < KINDA_SMALL_NUMBER)
-		{
-			Destroy();
-		}
+	if (!HasAuthority())
+	{
+		return;
 	}
-	
-	HandleRotation();
+
+	UpdateMovement();
+	UpdateDamage();
+	RemainingLifetime -= DeltaTime;
+
+	if (RemainingLifetime < KINDA_SMALL_NUMBER)
+	{
+		this->Destroy();
+	}
 }
 
 void ATornado::OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -138,21 +152,28 @@ void ATornado::OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AA
 	}
 }
 
-void ATornado::HandleMovement()
+void ATornado::UpdateMovement()
 {
-	FVector CurrentLocation = FVector(MeshComponent->GetRelativeLocation().X, MeshComponent->GetRelativeLocation().Y, 0.0f);
-	FVector VectorTowardTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
-	const float GroundLevelZ = -GetOwner()->GetActorLocation().Z;
-	float DistanceFromTarget = FVector::Distance(TargetLocation, CurrentLocation);
+	const UWorld* World = GetWorld();
+	const AActor* OwnerActor = GetOwner();
+	if (World == nullptr || OwnerActor == nullptr || MeshComponent == nullptr)
+	{
+		return;
+	}
+
+	const FVector CurrentLocation(MeshComponent->GetRelativeLocation().X, MeshComponent->GetRelativeLocation().Y, 0.0f);
+	const FVector VectorTowardTarget((TargetLocation - CurrentLocation).GetSafeNormal());
+	const float GroundLevelZ = -OwnerActor->GetActorLocation().Z;
+	const float DistanceFromTarget = FVector::Distance(TargetLocation, CurrentLocation);
 	
 	if (DistanceFromTarget < 100.0f)
 	{
 		UE_LOG(LogWeather, Verbose, TEXT("Getting New Target Location For Tornado."));
-		TargetLocation = GetRandomLocationInStorm();
+		TargetLocation = GetRandomLocationInBounds();
 	}
 
-	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * GetWorld()->GetDeltaSeconds());
-	float TotalTimeAlive = TotalLifetime - RemainingLifetime;
+	const float TotalTimeAlive = TotalLifetime - RemainingLifetime;
+	FVector NewLocation = CurrentLocation + (VectorTowardTarget * MovementSpeed * World->GetDeltaSeconds());
 
 	float ZAxis = GroundLevelZ;
 	if (TotalTimeAlive < 5.0f)
@@ -169,9 +190,13 @@ void ATornado::HandleMovement()
 	MeshComponent->SetRelativeLocation(NewLocation);
 }
 
-void ATornado::HandleDamage()
+void ATornado::UpdateDamage()
 {
-	UE_LOG(LogWeather, Verbose, TEXT("Handling Tornado Damage."));
+	const UWorld* World = GetWorld();
+	if (World == nullptr || FarSuctionComponent == nullptr)
+	{
+		return;
+	}
 
 	TArray<FOverlapResult> Overlaps;
 	FVector WindOrigin = FarSuctionComponent->GetComponentLocation();
@@ -180,7 +205,7 @@ void ATornado::HandleDamage()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());
 
-	GetWorld()->OverlapMultiByObjectType(Overlaps, WindOrigin, FQuat::Identity, ObjectParams, FCollisionShape::MakeSphere(WindRadius), Params);
+	World->OverlapMultiByObjectType(Overlaps, WindOrigin, FQuat::Identity, ObjectParams, FCollisionShape::MakeSphere(WindRadius), Params);
 
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
@@ -190,16 +215,22 @@ void ATornado::HandleDamage()
 			continue;
 		}
 
-		float DistanceFromOrigin = FVector::Distance(Overlap.GetActor()->GetActorLocation(), WindOrigin);
-		float DamageMultiplier = FMath::Clamp(((DistanceFromOrigin - WindRadius) / WindRadius) * -1, 0.0f, 1.0f);
+		const float DistanceFromOrigin = FVector::Distance(Overlap.GetActor()->GetActorLocation(), WindOrigin);
+		const float DamageMultiplier = FMath::Clamp(((DistanceFromOrigin - WindRadius) / WindRadius) * -1, 0.0f, 1.0f);
 		DamagedByWindActor->ApplyWindDamage(this, DamageMultiplier);
 	}
 }
 
-void ATornado::HandleRotation()
+void ATornado::UpdateRotation()
 {
-	float NewYaw = MeshComponent->GetRelativeRotation().Yaw - (RotationSpeed * GetWorld()->GetDeltaSeconds());
-	float NewSuctionYaw = SuctionAnchor->GetRelativeRotation().Yaw - ((RotationSpeed * 4) * GetWorld()->GetDeltaSeconds());
+	const UWorld* World = GetWorld();
+	if (World == nullptr || MeshComponent == nullptr || SuctionAnchor == nullptr)
+	{
+		return;
+	}
+
+	float NewYaw = MeshComponent->GetRelativeRotation().Yaw - (RotationSpeed * World->GetDeltaSeconds());
+	float NewSuctionYaw = SuctionAnchor->GetRelativeRotation().Yaw - ((RotationSpeed * 4) * World->GetDeltaSeconds());
 
 	if (NewYaw < -360.0f)
 	{
@@ -215,38 +246,22 @@ void ATornado::HandleRotation()
 	SuctionAnchor->SetRelativeRotation(FRotator(0.0f, NewSuctionYaw, 0.0f));
 }
 
-FVector ATornado::GetRandomLocationInStorm()
+FVector ATornado::GetRandomLocationInBounds() const
 {
-	float HalfRadius = StormRadius * 0.5f;
-	float X, Y;
-	X = FMath::RandRange(-HalfRadius, HalfRadius);
-	Y = FMath::RandRange(-HalfRadius, HalfRadius);
-
-	return FVector(X, Y, 0.0f);
-}
-
-void ATornado::GetStormRadius()
-{
-	if (OwnerStorm == nullptr)
-	{
-		return;
-	}
-
-	FVector Origin;
-	FVector BoxExtent;
-	OwnerStorm->GetActorBounds(true, Origin, BoxExtent);
-	
-	StormRadius = BoxExtent.Length() - (BoxExtent.Length() * 0.2f);
+	const float HalfRadius = BoundsRadius * 0.5f;
+	return FVector(FMath::RandRange(-HalfRadius, HalfRadius), FMath::RandRange(-HalfRadius, HalfRadius), 0.0f);
 }
 
 bool ATornado::HasLineOfSightTo(AActor* InActor) const
 {
-	if (InActor == nullptr)
+	const UWorld* World = GetWorld();
+	if (World == nullptr || InActor == nullptr)
 	{
 		return false;
 	}
+
 	const FVector InActorLocation = InActor->GetActorLocation();
-	const FVector CurrentLocation = GetActorLocation();
+	const FVector CurrentLocation = this->GetActorLocation();
 
 	FHitResult HitResult;
 	const FVector TraceStart = FVector(CurrentLocation.X, CurrentLocation.Y, InActorLocation.Z);
@@ -255,27 +270,11 @@ bool ATornado::HasLineOfSightTo(AActor* InActor) const
 	const FVector TraceEnd = TraceStart + (TowardComponentVector * DistanceFromComponent);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
-
-	if (!GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, Params))
+	if (!World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, Params))
 	{
 		return false;
 	}
 
-	if (HitResult.GetActor() == nullptr)
-	{
-		return false;
-	}
-
-	return HitResult.GetActor() == InActor;
-}
-
-FTornadoData::FTornadoData()
-{
-	WasSpawned = false;
-	Transform = FTransform();
-	RotationSpeed = 0.0f;
-	MovementSpeed = 0.0f;
-	TargetLocation = FVector::ZeroVector;
-	TotalLifetime = 0.0f;
-	RemainingLifetime = 0.0f;
+	AActor* HitActor = HitResult.GetActor();
+	return HitActor == InActor;
 }

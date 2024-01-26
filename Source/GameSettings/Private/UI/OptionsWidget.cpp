@@ -156,7 +156,6 @@ void UOptionsWidget::Apply()
 	PostProcessingSettings->OnApply();
 	GraphicsSettings->OnApply();
 
-	UserSettings->ApplySettings(false);
 	Refresh();
 }
 
@@ -169,8 +168,14 @@ void UOptionsWidget::Reset()
 	}
 
 	UserSettings->SetToDefaults();
-	UserSettings->ApplySettings(false);
 	Refresh();
+
+	AudioSettings->OnApply();
+	GameplaySettings->OnApply();
+	ControlsSettings->OnApply();
+	WindowSettings->OnApply();
+	PostProcessingSettings->OnApply();
+	GraphicsSettings->OnApply();
 }
 
 void UOptionsWidget::Back()

@@ -72,10 +72,15 @@ UInventoryComponent* ALootableRagdoll::GetInventoryComponent() const
 	return InventoryComponent;
 }
 
-// TODO hmm this could be done better i think
 void ALootableRagdoll::OnContainerClosed()
 {
-	UInventoryManipulatorComponent* OwnerInventoryManipulator = GetOwner()->FindComponentByClass<UInventoryManipulatorComponent>();
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UInventoryManipulatorComponent* OwnerInventoryManipulator = OwnerActor->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (OwnerInventoryManipulator == nullptr)
 	{
 		return;

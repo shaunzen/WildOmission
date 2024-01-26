@@ -5,6 +5,7 @@
 #include "ProceduralMeshComponent.h"
 #include "Components/ChunkSaveComponent.h"
 #include "ChunkManager.h"
+#include "Components/ChunkInvokerComponent.h"
 #include "Structs/SpawnQuery.h"
 #include "Curves/CurveFloat.h"
 #include "Noise/PerlinNoise.hpp"
@@ -84,15 +85,66 @@ AChunk::AChunk()
 	}
 }
 
+// Called when the game starts or when spawned
+void AChunk::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		return;
+	}
+
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	FSpawnedChunk SpawnedChunk;
+	SpawnedChunk.GridLocation = GetChunkLocation();
+	SpawnedChunk.Chunk = this;
+
+	ChunkManager->AddSpawnedChunk(SpawnedChunk);
+}
+
+void AChunk::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (HasAuthority())
+	{
+		return;
+	}
+
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	FSpawnedChunk SpawnedChunk;
+	SpawnedChunk.GridLocation = this->GetChunkLocation();
+	SpawnedChunk.Chunk = this;
+
+	ChunkManager->RemoveSpawnedChunk(SpawnedChunk);
+}
+
 bool AChunk::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
+
+	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return false;
+	}
 
 	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
 	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
-	return Distance < AChunkManager::GetRenderDistanceCentimeters();
+	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
 }
 
 void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -106,7 +158,7 @@ void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 void AChunk::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -125,11 +177,18 @@ void AChunk::Tick(float DeltaTime)
 		return;
 	}
 
-	const FVector FlattenedPawnLocation(LocalPawn->GetActorLocation().X, LocalPawn->GetActorLocation().Y, 0.0f);
+	UChunkInvokerComponent* ChunkInvoker = LocalPawn->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return;
+	}
+
+	const FVector FlattenedInvokerLocation(ChunkInvoker->GetComponentLocation().X, ChunkInvoker->GetComponentLocation().Y, 0.0f);
 	const FVector FlattenedChunkLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
 
-	float Distance = FVector::Distance(FlattenedPawnLocation, FlattenedChunkLocation);
-	if (Distance > AChunkManager::GetRenderDistanceCentimeters())
+	float Distance = FVector::Distance(FlattenedInvokerLocation, FlattenedChunkLocation);
+
+	if (Distance >= ChunkInvoker->GetRenderDistanceCentimeters())
 	{
 		SetChunkHidden(true);
 	}
@@ -141,8 +200,7 @@ void AChunk::Tick(float DeltaTime)
 
 void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 {
-	GenerateTerrainShape(Neighbors);
-	GenerateBiome();
+	GenerateTerrain(Neighbors);
 	GenerateDecorations();
 }
 
@@ -156,8 +214,14 @@ void AChunk::SetChunkHidden(bool Hidden)
 		return;
 	}
 
-	MeshComponent->SetVisibility(!Hidden);
-	WaterMeshComponent->SetVisibility(!Hidden);
+	if (MeshComponent)
+	{
+		MeshComponent->SetVisibility(!Hidden);
+	}
+	if (WaterMeshComponent)
+	{
+		WaterMeshComponent->SetVisibility(!Hidden);
+	}
 
 	TArray<AActor*> AttachedActors;
 	this->GetAttachedActors(AttachedActors);
@@ -168,6 +232,7 @@ void AChunk::SetChunkHidden(bool Hidden)
 		{
 			continue;
 		}
+	
 		UStaticMeshComponent* AttachedActorMeshComponent = AttachedActor->FindComponentByClass<UStaticMeshComponent>();
 		if (AttachedActorMeshComponent == nullptr)
 		{
@@ -180,9 +245,14 @@ void AChunk::SetChunkHidden(bool Hidden)
 	ChunkHidden = Hidden;
 }
 
-void AChunk::OnLoadFromSaveComplete()
+void AChunk::OnLoadedTerrainData()
 {
-	CreateMesh();
+	if (HeightData.IsEmpty() || SurfaceData.IsEmpty())
+	{
+		return;
+	}
+
+	CreateTerrainMesh();
 }
 
 void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
@@ -193,9 +263,57 @@ void AChunk::Save(FChunkData& OutChunkData, bool AlsoDestroy)
 void AChunk::Load(const FChunkData& InChunkData)
 {
 	SaveComponent->Load(InChunkData);
-	OnLoadFromSaveComplete();
 }
 
+//***************************************************************************************
+//	Noise
+//***************************************************************************************
+float AChunk::GetContinentalnessAtLocation(const FVector2D& Location, bool UseRawValue)
+{
+	if (ContinentalnessHeightCurve == nullptr)
+	{
+		return 0.0f;
+	}
+
+	const float ContinentalnessScale = 0.000005f;
+	const float RawValue = Noise.octave2D(Location.X * ContinentalnessScale, Location.Y * ContinentalnessScale, 3);
+
+	return UseRawValue ? RawValue : ContinentalnessHeightCurve->GetFloatValue(RawValue);
+}
+
+float AChunk::GetErosionAtLocation(const FVector2D& Location, bool UseRawValue)
+{
+	if (ErosionHeightCurve == nullptr)
+	{
+		return 0.0f;
+	}
+
+	const float ErosionScale = 0.00005f;
+	const float ErosionOffset = 50000.0f;
+	const FVector2D TestLocation = Location + ErosionOffset;
+
+	const float RawValue = Noise.octave2D(TestLocation.X * ErosionScale, TestLocation.Y * ErosionScale, 3);
+
+	return UseRawValue ? RawValue : ErosionHeightCurve->GetFloatValue(RawValue);
+}
+
+float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRawValue)
+{
+	if (PeaksAndValleysHeightCurve == nullptr)
+	{
+		return 0.0f;
+	}
+
+	const float PeaksAndValleysScale = 0.00005f;
+	const float PeaksAndValleysOffset = -50000.0f;
+	const FVector2D TestLocation = Location + PeaksAndValleysOffset;
+	const float RawValue = Noise.octave2D(TestLocation.X * PeaksAndValleysScale, TestLocation.Y * PeaksAndValleysScale, 3);
+	return UseRawValue ? RawValue : PeaksAndValleysHeightCurve->GetFloatValue(RawValue);
+}
+
+//***************************************************************************************
+//	Chunk Setters
+//***************************************************************************************
 void AChunk::SetGenerationSeed(const uint32& InSeed)
 {
 	Seed = InSeed;
@@ -203,9 +321,91 @@ void AChunk::SetGenerationSeed(const uint32& InSeed)
 	FMath::RandInit(InSeed);
 }
 
+void AChunk::SetChunkLocation(const FIntVector2& InLocation)
+{
+	SetActorLocation(FVector(InLocation.X * CHUNK_SIZE_CENTIMETERS, InLocation.Y * CHUNK_SIZE_CENTIMETERS, 0.0f));
+}
+
+void AChunk::SetHeightData(const TArray<float>& InHeightData)
+{
+	HeightData = InHeightData;
+}
+
+void AChunk::SetSurfaceData(const TArray<uint8>& InSurfaceData)
+{
+	SurfaceData = InSurfaceData;
+}
+
+//***************************************************************************************
+//	Chunk Getters
+//***************************************************************************************
 uint32 AChunk::GetGenerationSeed()
 {
 	return Seed;
+}
+
+FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
+{
+	const float Contenentalness = GetContinentalnessAtLocation(Location, true);
+
+	const float TempatureScale = 0.00001f;
+	const float HumidityScale = 0.00005f;
+
+	const float Tempature = (Noise.noise2D(Location.X * TempatureScale, Location.Y * TempatureScale) + 1.0f) * 0.5f;
+	const float Humidity = (Noise.noise2D(Location.X * HumidityScale, Location.Y * TempatureScale) + 1.0f) * 0.5f;
+
+	const float MinShore = -0.05f;
+	const float MaxShore = 0.0f;
+
+	const int32 TempatureIndex = FMath::RoundToInt32(Tempature / 0.25f);
+	const int32 HumidityIndex = FMath::RoundToInt32(Humidity / 0.25f);
+
+	// TODO implement other biomes like beaches and mountains later
+	FName BiomeName = NAME_None;
+	if (Contenentalness > MinShore && Contenentalness < MaxShore)
+	{
+		// Beach biome
+		BiomeName = TEXT("Beach");
+
+	}
+	else if (Contenentalness >= MaxShore)
+	{
+		// Middle biome
+		switch (TempatureIndex)
+		{
+		case 0:
+			BiomeName = HumidityIndex < 2 ? TEXT("Snow_Plains") : TEXT("Snow_Forest");
+			break;
+		case 1:
+			BiomeName = HumidityIndex < 2 ? TEXT("Snow_Plains") : TEXT("Snow_Forest");
+			break;
+		case 2:
+			BiomeName = HumidityIndex < 2 ? TEXT("Plains") : TEXT("Forest");
+			break;
+		case 3:
+			BiomeName = HumidityIndex < 2 ? TEXT("Desert") : TEXT("Birch_Forest");
+			break;
+		case 4:
+			BiomeName = TEXT("Desert");
+			break;
+		default:
+			BiomeName = TEXT("Plains");
+			break;
+		}
+	}
+
+	return BiomeName;
+}
+
+FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location)
+{
+	const FName BiomeName = GetBiomeNameAtLocation(Location);
+	if (BiomeName == NAME_None)
+	{
+		return nullptr;
+	}
+
+	return AChunkManager::GetBiomeGenerationData(BiomeName);
 }
 
 void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, uint8& OutSurface)
@@ -235,8 +435,8 @@ void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeigh
 	const float StoneSurfaceDifferenceThreshold = 100.0f;
 	const float DirtSurfaceDifferenceThreshold = 50.0f;
 
-	const bool ShouldBeStone = ArePointsOutsideOfThreshold(TestPoints, OutHeight - StoneSurfaceDifferenceThreshold, OutHeight + StoneSurfaceDifferenceThreshold);
-	const bool ShouldBeDirt = ArePointsOutsideOfThreshold(TestPoints, OutHeight - DirtSurfaceDifferenceThreshold, OutHeight + DirtSurfaceDifferenceThreshold);
+	const bool ShouldBeStone = !IsWithinThreshold(TestPoints, OutHeight - StoneSurfaceDifferenceThreshold, OutHeight + StoneSurfaceDifferenceThreshold);
+	const bool ShouldBeDirt = !IsWithinThreshold(TestPoints, OutHeight - DirtSurfaceDifferenceThreshold, OutHeight + DirtSurfaceDifferenceThreshold);
 
 	// Ground Color
 	if (BiomeName.StartsWith("Snow_"))
@@ -301,30 +501,15 @@ float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location)
 	return Height;
 }
 
-void AChunk::SetChunkLocation(const FIntVector2& InLocation)
-{
-	SetActorLocation(FVector(InLocation.X * CHUNK_SIZE_CENTIMETERS, InLocation.Y * CHUNK_SIZE_CENTIMETERS, 0.0f));
-}
-
 FIntVector2 AChunk::GetChunkLocation() const
 {
 	const FVector WorldLocation = GetActorLocation();
 	return FIntVector2(WorldLocation.X / CHUNK_SIZE_CENTIMETERS, WorldLocation.Y / CHUNK_SIZE_CENTIMETERS);
 }
 
-void AChunk::SetHeightData(const TArray<float>& InHeightData)
-{
-	HeightData = InHeightData;
-}
-
 TArray<float> AChunk::GetHeightData() const
 {
 	return HeightData;
-}
-
-void AChunk::SetSurfaceData(const TArray<uint8>& InSurfaceData)
-{
-	SurfaceData = InSurfaceData;
 }
 
 TArray<uint8> AChunk::GetSurfaceData() const
@@ -347,65 +532,67 @@ float AChunk::GetMaxHeight()
 	return MAX_HEIGHT;
 }
 
-// Called when the game starts or when spawned
-void AChunk::BeginPlay()
+//***************************************************************************************
+//	Chunk Helpers
+//***************************************************************************************
+float AChunk::FastDistance(const FVector& V1, const FVector& V2)
 {
-	Super::BeginPlay();
+	const float X = V1.X - V2.X;
+	const float Y = V1.Y - V2.Y;
+	const float Z = V1.Z - V2.Z;
 
-	if (!HasAuthority())
+	return FMath::Sqrt((X * X) + (Y * Y) + (Z * Z));
+}
+
+bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
+{
+	const float X = FMath::RandRange(0, VERTEX_SIZE);
+	const float Y = FMath::RandRange(0, VERTEX_SIZE);
+	const float Z = HeightData[(X * (VERTEX_SIZE + 1)) + Y];
+
+	const FVector ThisChunkLocation = GetActorLocation();
+	const FVector2D ContinentalnessTestPoint = FVector2D(X + ThisChunkLocation.X, Y + ThisChunkLocation.Y);
+	const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
+	if (Continentalness < 0.01f)
 	{
-		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
-		if (ChunkManager == nullptr)
+		return false;
+	}
+
+	float ChunkOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
+	OutTransform.SetLocation(FVector((X * VERTEX_DISTANCE_SCALE) - ChunkOffset, (Y * VERTEX_DISTANCE_SCALE) - ChunkOffset, Z) + GetActorLocation());
+	return true;
+}
+
+bool AChunk::IsWithinThreshold(float TestValue, float MinThreshold, float MaxThreshold)
+{
+	if (TestValue < MinThreshold || TestValue > MaxThreshold)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool AChunk::IsWithinThreshold(const TArray<float>& TestValues, float MinThreshold, float MaxThreshold)
+{
+	for (float TestValue : TestValues)
+	{
+		if (!IsWithinThreshold(TestValue, MinThreshold, MaxThreshold))
 		{
-			return;
+			return false;
 		}
-
-		FSpawnedChunk SpawnedChunk;
-		SpawnedChunk.GridLocation = GetChunkLocation();
-		SpawnedChunk.Chunk = this;
-
-		ChunkManager->AddSpawnedChunk(SpawnedChunk);
-	}
-}
-
-void AChunk::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-	
-	if (!HasAuthority())
-	{
-		AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
-		if (ChunkManager == nullptr)
-		{
-			return;
-		}
-
-		FSpawnedChunk SpawnedChunk;
-		SpawnedChunk.GridLocation = this->GetChunkLocation();
-		SpawnedChunk.Chunk = this;
-
-		ChunkManager->RemoveSpawnedChunk(SpawnedChunk);
-	}
-}
-
-void AChunk::OnRep_MeshData()
-{
-	if (HeightData.IsEmpty() || SurfaceData.IsEmpty())
-	{
-		return;
 	}
 
-	CreateMesh();
+	return true;
 }
 
-void AChunk::GenerateTerrainShape(const TArray<FChunkData>& Neighbors)
+//***************************************************************************************
+//	Chunk Generation
+//***************************************************************************************
+void AChunk::GenerateTerrain(const TArray<FChunkData>& Neighbors)
 {
-	GenerateHeightData(Neighbors);
-	CreateMesh();	
-}
-
-void AChunk::GenerateBiome()
-{
+	GenerateTerrainData(Neighbors);
+	CreateTerrainMesh();
 }
 
 void AChunk::GenerateDecorations()
@@ -483,204 +670,7 @@ void AChunk::GenerateDecorations()
 	}
 }
 
-void AChunk::GenerateSpawnableActors(const TArray<FSpawnQuery>& SpawnQueryList)
-{
-	if (SpawnQueryList.IsEmpty())
-	{
-		return;
-	}
-
-	
-}
-
-float AChunk::GetContinentalnessAtLocation(const FVector2D& Location, bool UseRawValue)
-{
-	if (ContinentalnessHeightCurve == nullptr)
-	{
-		return 0.0f;
-	}
-	
-	const float ContinentalnessScale = 0.000005f;
-	const float RawValue = Noise.octave2D(Location.X * ContinentalnessScale, Location.Y * ContinentalnessScale, 3);
-
-	return UseRawValue ? RawValue : ContinentalnessHeightCurve->GetFloatValue(RawValue);
-}
-
-float AChunk::GetErosionAtLocation(const FVector2D& Location, bool UseRawValue)
-{
-	if (ErosionHeightCurve == nullptr)
-	{
-		return 0.0f;
-	}
-
-	const float ErosionScale = 0.00005f;
-	const float ErosionOffset = 50000.0f;
-	const FVector2D TestLocation = Location + ErosionOffset;
-
-	const float RawValue = Noise.octave2D(TestLocation.X * ErosionScale, TestLocation.Y * ErosionScale, 3);
-
-	return UseRawValue ? RawValue : ErosionHeightCurve->GetFloatValue(RawValue);
-}
-
-float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRawValue)
-{
-	if (PeaksAndValleysHeightCurve == nullptr)
-	{
-		return 0.0f;
-	}
-
-	const float PeaksAndValleysScale = 0.00005f;
-	const float PeaksAndValleysOffset = -50000.0f;
-	const FVector2D TestLocation = Location + PeaksAndValleysOffset;
-	const float RawValue = Noise.octave2D(TestLocation.X * PeaksAndValleysScale, TestLocation.Y * PeaksAndValleysScale, 3);
-	return UseRawValue ? RawValue : PeaksAndValleysHeightCurve->GetFloatValue(RawValue);
-}
-
-void AChunk::CreateMesh()
-{
-	TArray<FVector> Vertices;
-	TArray<FColor> VertexColors;
-	TArray<FVector2D> UV0;
-	TArray<int32> Triangles;
-	TArray<FVector> Normals;
-	TArray<FProcMeshTangent> Tangents;
-
-	CreateVertices(Vertices, VertexColors, UV0);
-	CreateTriangles(Triangles);
-
-	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices, Triangles, UV0, Normals, Tangents);
-
-	MeshComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UV0, VertexColors, Tangents, true);
-	MeshComponent->SetMaterial(0, ChunkMaterial);
-}
-
-bool AChunk::GetRandomPointOnTerrain(FTransform& OutTransform) const
-{
-	const float X = FMath::RandRange(0, VERTEX_SIZE);
-	const float Y = FMath::RandRange(0, VERTEX_SIZE);
-	const float Z = HeightData[(X * (VERTEX_SIZE + 1)) + Y];
-
-	const FVector ThisChunkLocation = GetActorLocation();
-	const FVector2D ContinentalnessTestPoint = FVector2D(X + ThisChunkLocation.X, Y + ThisChunkLocation.Y);
-	const float Continentalness = GetContinentalnessAtLocation(ContinentalnessTestPoint, true);
-	if (Continentalness < 0.01f)
-	{
-		return false;
-	}
-
-	float ChunkOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
-	OutTransform.SetLocation(FVector((X * VERTEX_DISTANCE_SCALE) - ChunkOffset, (Y * VERTEX_DISTANCE_SCALE) - ChunkOffset, Z) + GetActorLocation());
-	return true;
-}
-
-bool AChunk::ArePointsOutsideOfThreshold(const TArray<float>& TestPoints, float MinThreshold, float MaxThreshold)
-{
-	for (const float& TestPoint : TestPoints)
-	{
-		if (TestPoint > MaxThreshold || TestPoint < MinThreshold)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-FName AChunk::GetBiomeNameAtLocation(const FVector2D& Location)
-{
-	const float Contenentalness = GetContinentalnessAtLocation(Location, true);
-
-	const float TempatureScale = 0.00001f;
-	const float HumidityScale = 0.00005f;
-
-	const float Tempature = (Noise.noise2D(Location.X * TempatureScale, Location.Y * TempatureScale) + 1.0f) * 0.5f;
-	const float Humidity = (Noise.noise2D(Location.X * HumidityScale, Location.Y * TempatureScale) + 1.0f) * 0.5f;
-
-	const float MinShore = -0.05f;
-	const float MaxShore = 0.0f;
-
-	const int32 TempatureIndex = FMath::RoundToInt32(Tempature / 0.25f);
-	const int32 HumidityIndex = FMath::RoundToInt32(Humidity / 0.25f);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Temp %i, Humi %i"), TempatureIndex, HumidityIndex);
-
-	FName BiomeName = NAME_None;
-	if (Contenentalness > MinShore && Contenentalness < MaxShore)
-	{
-		// Beach biome
-
-		BiomeName = TEXT("Beach");
-
-		// TODO implement other biomes later
-		//if (HumidityIndex == 4)
-		//{
-
-		//}
-		//switch (TempatureIndex)
-		//{
-		//case 0:
-		//	BiomeName = TEXT("IceBeach");
-		//	break;
-		//case 1:
-		//	BiomeName = TEXT("Beach");
-		//	break;
-		//case 2:
-		//	BiomeName = TEXT("Beach");
-		//	break;
-		//case 3:
-		//	BiomeName = TEXT("DriftwoodBeach");
-		//	break;
-		//}
-	}
-	else if (Contenentalness >= MaxShore)
-	{
-		// Middle biome
-
-		switch (TempatureIndex)
-		{
-		case 0:
-			BiomeName = HumidityIndex < 2 ? TEXT("Snow_Plains") : TEXT("Snow_Forest");
-			break;
-		case 1:
-			BiomeName = HumidityIndex < 2 ? TEXT("Snow_Plains") : TEXT("Snow_Forest");
-			break;
-		case 2:
-			BiomeName = HumidityIndex < 2 ? TEXT("Plains") : TEXT("Forest");
-			break;
-		case 3:
-			BiomeName = HumidityIndex < 2 ? TEXT("Desert") : TEXT("Birch_Forest");
-			break;
-		case 4:
-			BiomeName = TEXT("Desert");
-			UE_LOG(LogTemp, Warning, TEXT("Desert."));
-			break;
-		default:
-			BiomeName = TEXT("Plains");
-			break;
-		}
-
-	}
-	// Temp High, Humidity Low = Desert
-	// Temp High, Humidity High = Swamp
-	// Temp Low, Humidity Low = Tundra
-	// Temp Low, Humidity High = Snow Forest
-	// Temp ~, Humidity ~ = Plains/Forest
-
-	return BiomeName;
-}
-
-FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location)
-{
-	const FName BiomeName = GetBiomeNameAtLocation(Location);
-	if (BiomeName == NAME_None)
-	{
-		return nullptr;
-	}
-
-	return AChunkManager::GetBiomeGenerationData(BiomeName);
-}
-
-void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
+void AChunk::GenerateTerrainData(const TArray<FChunkData>& Neighbors)
 {
 	TArray<float> TopNeighborHeightData;
 	TArray<float> BottomNeighborHeightData;
@@ -805,10 +795,12 @@ void AChunk::GenerateHeightData(const TArray<FChunkData>& Neighbors)
 	}
 }
 
-void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV)
+void AChunk::GenerateTerrainRuntimeData(TArray<FVector>& OutVertices, TArray<int32>& OutTriangles, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV)
 {
-	OutVertices.Empty();
-	OutUV.Empty();
+	OutVertices.Reset();
+	OutTriangles.Reset();
+	OutColors.Reset();
+	OutUV.Reset();
 
 	const float VertexOffset = (VERTEX_SIZE * VERTEX_DISTANCE_SCALE) * 0.5f;
 
@@ -851,11 +843,6 @@ void AChunk::CreateVertices(TArray<FVector>& OutVertices, TArray<FColor>& OutCol
 			OutUV.Add(FVector2D(X * UV_SCALE, Y * UV_SCALE));
 		}
 	}
-}
-
-void AChunk::CreateTriangles(TArray<int32>& OutTriangles)
-{
-	OutTriangles.Empty();
 
 	uint32 Vertex = 0;
 	for (uint32 X = 0; X < VERTEX_SIZE; ++X)
@@ -874,4 +861,21 @@ void AChunk::CreateTriangles(TArray<int32>& OutTriangles)
 		}
 		++Vertex;
 	}
+}
+
+void AChunk::CreateTerrainMesh()
+{
+	TArray<FVector> Vertices;
+	TArray<FColor> VertexColors;
+	TArray<FVector2D> UV0;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FProcMeshTangent> Tangents;
+
+	GenerateTerrainRuntimeData(Vertices, Triangles, VertexColors, UV0);
+
+	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices, Triangles, UV0, Normals, Tangents);
+
+	MeshComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UV0, VertexColors, Tangents, true);
+	MeshComponent->SetMaterial(0, ChunkMaterial);
 }

@@ -84,7 +84,6 @@ void UNotificationPanelWidget::NativeConstruct()
 	// Bind builder updates to create notifications
 	if (UBuilderComponent* OwnerBuilderComponent = OwnerPawn->FindComponentByClass<UBuilderComponent>())
 	{
-		// TODO bind delegates
 		OwnerBuilderComponent->OnAddBuildingPrivilegeNotification.AddDynamic(this, &UNotificationPanelWidget::AddBuildingPrivilegeNotification);
 		OwnerBuilderComponent->OnClearBuildingPrivilegeNotification.AddDynamic(this, &UNotificationPanelWidget::ClearBuildingPrivilegeNotification);
 	}

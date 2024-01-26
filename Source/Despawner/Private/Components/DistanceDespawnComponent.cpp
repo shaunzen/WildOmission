@@ -2,7 +2,7 @@
 
 
 #include "Components/DistanceDespawnComponent.h"
-#include "ChunkManager.h"
+#include "Components/ChunkInvokerComponent.h"
 
 // Sets default values for this component's properties
 UDistanceDespawnComponent::UDistanceDespawnComponent()
@@ -11,8 +11,6 @@ UDistanceDespawnComponent::UDistanceDespawnComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// In the future this should be tied to render distance
-	DespawnDistance = AChunkManager::GetRenderDistanceCentimeters();
 }
 
 // Called when the game starts
@@ -20,7 +18,9 @@ void UDistanceDespawnComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!GetOwner()->HasAuthority())
+	UWorld* World = GetWorld();
+	AActor* OwnerActor = GetOwner();
+	if (World == nullptr || OwnerActor == nullptr || !OwnerActor->HasAuthority())
 	{
 		return;
 	}
@@ -28,47 +28,34 @@ void UDistanceDespawnComponent::BeginPlay()
 	FTimerHandle CheckDespawnConditionTimerHandle;
 	FTimerDelegate CheckDespawnConditionTimerDelegate;
 	CheckDespawnConditionTimerDelegate.BindUObject(this, &UDistanceDespawnComponent::CheckDespawnConditions);
-	GetWorld()->GetTimerManager().SetTimer(CheckDespawnConditionTimerHandle, CheckDespawnConditionTimerDelegate, 30.0f, true);
-}
-
-float UDistanceDespawnComponent::GetDespawnDistance() const
-{
-	return DespawnDistance;
-}
-
-void UDistanceDespawnComponent::SetDespawnDistance(const float& NewDespawnDistance)
-{
-	DespawnDistance = NewDespawnDistance;
+	World->GetTimerManager().SetTimer(CheckDespawnConditionTimerHandle, CheckDespawnConditionTimerDelegate, 30.0f, true);
 }
 
 void UDistanceDespawnComponent::CheckDespawnConditions()
 {
-	float DistanceFromClosestPlayer = -1.0f;
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	bool ShouldDespawn = true;
+	TArray<UChunkInvokerComponent*> ChunkInvokers = UChunkInvokerComponent::GetAllInvokers();
+	for (UChunkInvokerComponent* ChunkInvoker : ChunkInvokers)
 	{
-		APlayerController* PlayerController = Iterator->Get();
-		if (PlayerController == nullptr)
+		if (ChunkInvoker == nullptr)
+		{
+			continue;
+		}
+		
+		const FVector FlattenedComponentLocation(this->GetComponentLocation().X, this->GetComponentLocation().Y, 0.0f);
+		const FVector FlattenedInvokerLocation(ChunkInvoker->GetComponentLocation().X, ChunkInvoker->GetComponentLocation().Y, 0.0f);
+
+		const float DistanceFromInvoker = FVector::Distance(FlattenedInvokerLocation, FlattenedComponentLocation);
+		if (DistanceFromInvoker >= ChunkInvoker->GetRenderDistanceCentimeters())
 		{
 			continue;
 		}
 
-		APawn* Pawn = PlayerController->GetPawn();
-		if (Pawn == nullptr)
-		{
-			continue;
-		}
-
-		const FVector CorrectedPawnLocation(Pawn->GetActorLocation().X, Pawn->GetActorLocation().Y, 0.0f);
-		const FVector CorrectedComponentLocation(this->GetComponentLocation().X, this->GetComponentLocation().Y, 0.0f);
-
-		const float DistanceFromThisPlayer = FVector::Distance(CorrectedPawnLocation, CorrectedComponentLocation);
-		if (DistanceFromThisPlayer < DistanceFromClosestPlayer || DistanceFromClosestPlayer == -1.0f)
-		{
-			DistanceFromClosestPlayer = DistanceFromThisPlayer;
-		}
+		ShouldDespawn = false;
+		break;
 	}
 
-	if (DistanceFromClosestPlayer > DespawnDistance && OnDespawnConditionMet.IsBound())
+	if (ShouldDespawn && OnDespawnConditionMet.IsBound())
 	{
 		OnDespawnConditionMet.Broadcast();
 	}

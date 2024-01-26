@@ -20,34 +20,32 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void SetChunkData(const TArray<FChunkData> InChunkData);
+	// Gets existing chunk if present, or returns the generated/loaded chunk at the given location
+	class AChunk* GetChunkAtLocation(const FIntVector2& ChunkLocation);
 
-	void SaveAllLoadedChunks();
-	TArray<FChunkData> GetChunksData() const;
+	// Chunk Data	
+	void SetChunkData(const TArray<FChunkData> InChunkData);
+	TArray<FChunkData> GetAllChunkData() const;
 	bool GetChunkData(const FIntVector2& ChunkLocation, FChunkData& OutChunkData) const;
 
-	TArray<FSpawnedChunk> GetSpawnedChunks() const;
+	// Spawned Chunk
+	void SaveAllSpawnedChunks();
+	TArray<FSpawnedChunk> GetAllSpawnedChunks() const;
 	bool GetSpawnedChunk(const FIntVector2& ChunkLocation, FSpawnedChunk& OutSpawnedChunk) const;
 	void AddSpawnedChunk(const FSpawnedChunk& InSpawnedChunk);
 	void RemoveSpawnedChunk(const FSpawnedChunk& InSpawnedChunk);
 
-	// Returns Chunk that was existing/generated/loaded
-	AChunk* GenerateChunkAtLocation(const FIntVector2& ChunkLocation);
-
-	FVector GetWorldSpawnPoint();
-
+	// Surface/Biome
 	uint8 GetSurfaceTypeAtLocation(const FVector& TestLocation) const;
 	static FBiomeGenerationData* GetBiomeAtLocation(const FVector& TestLocation);
-
-	static float GetRenderDistanceCentimeters();
-	static int32 GetRenderDistance();
-
-	static void SetGenerationSeed(const uint32& Seed);
-	static uint32 GetGenerationSeed();
-
 	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
 	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
 
+	// Seed
+	static void SetGenerationSeed(const uint32& Seed);
+	static uint32 GetGenerationSeed();
+
+	FVector GetWorldSpawnPoint();
 	static AChunkManager* GetChunkManager();
 
 protected:
@@ -59,29 +57,30 @@ private:
 	UPROPERTY()
 	TSubclassOf<class AChunk> ChunkClass;
 
-
-	// Chunk Data contains stuff like, the grid location for query, the spawn data for actors on that chunk
-	// shape of the terrain, if it has been generated or dormant, just about anything that the system needs 
-	// to know to load/unload the chunk properly. The save system can load its save data into the FChunkData
-	// format for the chunk manager to handle
-
-	// Chunk data contains data for all chunks (save data weather an area was generated or not ect).
+	// Array of all chunk data
 	TArray<FChunkData> ChunkData;
 	
-	// Spawned Chunk Data contains grid location information 
-	// about spawned chunks, as well as a pointer to the spawned chunk object.
+	// Array of all currently spawned chunks
 	TArray<FSpawnedChunk> SpawnedChunks;
+
 
 	void SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy = false);
 
-	void RemoveOutOfRangeChunks();
-	void SpawnChunksAtLocation(const FVector& Location);
+	UFUNCTION()
+	void RemoveOutOfRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
+	UFUNCTION()
+	void SpawnInRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
+	UFUNCTION()
+	void SpawnChunksAtLocation(const FVector& Location, const uint8& RenderDistance);
 
-	// When Passing Chunk Data in, make sure to populate grid location, it is what will be used when generating the chunk.
+	// Generates a chunk at the location pre populated in the struct
+	// sets structs chunk to the chunk spawned if successful
 	void SpawnChunk(FSpawnedChunk& OutSpawnedChunkData) const;
-	void GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const;
-	void LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkData& InChunkData) const;
 
-	FVector GetFirstPlayerLocation() const;
+	// Handles generation of the passed SpawnedChunk
+	void GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const;
+
+	// Handles loading data on the passed SpawnedChunk
+	void LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkData& InChunkData) const;
 
 };

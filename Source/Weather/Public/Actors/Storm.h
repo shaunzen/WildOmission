@@ -4,12 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Tornado.h"
+#include "Structs/TornadoData.h"
 #include "Storm.generated.h"
 
-class AWeatherManager;
-class ALightning;
-class UNiagaraComponent;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStormCleanupSignature);
 
 UCLASS()
 class WEATHER_API AStorm : public AActor
@@ -20,34 +18,31 @@ public:
 	// Sets default values for this actor's properties
 	AStorm();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void Serialize(FArchive& Ar) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void Serialize(FArchive& Ar) override;
 	void OnLoadComplete();
 
-	void HandleSpawn(bool SpawnedFromCommand = false);
-	void HandleDestruction();
+	void Setup(bool SpawnedFromCommand = false);
+	void Cleanup();
 
-	float GetSeverity() const;
+	FOnStormCleanupSignature OnCleanup;
+
 	void SetSeverity(float NewSeverity);
-
-	FVector GetStormTargetLocation() const;
-	float GetTravelDistance() const;
-	float GetDistanceTraveled() const;
-
 	void SetMovementVector(const FVector& InMovementVector);
 
-	FVector GetMovementVector() const;
-	ATornado* GetSpawnedTornado() const;
+	void SetLocalPlayerUnderneath(bool IsUnder);
 
 	UFUNCTION(BlueprintCallable)
 	bool IsRaining(float& OutDensity) const;
-	void SetLocalPlayerUnderneath(bool IsUnder);
-
-protected:
-	virtual void BeginPlay() override;
+	float GetSeverity() const;
+	FVector GetMovementVector() const;
+	FVector GetStormTargetLocation() const;
+	float GetTravelDistance() const;
+	float GetDistanceTraveled() const;
+	class ATornado* GetSpawnedTornado() const;
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -55,12 +50,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CloudMeshComponent;
 	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* RainHazeComponent;
+	class UNiagaraComponent* RainHazeComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ALightning> LightningClass;
+	TSubclassOf<class ALightning> LightningClass;
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ATornado> TornadoClass;
+	TSubclassOf<class ATornado> TornadoClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	float RainSeverityThreshold;
@@ -83,7 +78,7 @@ private:
 	bool HasSpawnedTornado;
 
 	UPROPERTY(Replicated)
-	ATornado* SpawnedTornado;
+	class ATornado* SpawnedTornado;
 
 	bool WasSpawnedFromCommand;
 
@@ -93,13 +88,17 @@ private:
 	void GetSpawnData(FVector& OutSpawnLocation, FVector& OutMovementVector) const;
 
 	// Client-Side Logic
-	void HandleCloudAppearance();
+	void UpdateCloudAppearance();
 
 	// Server-Side Logic
-	void HandleMovement();
-	void HandleSeverity();
-	void HandleLightning();
-	void SpawnLightning();
+	void UpdateLocation();
+	void UpdateSeverity();
 	void SpawnTornado(bool bFromSave = false);
+	
+
+	void UpdateLightning();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SpawnLightning(const FVector& LightningSpawnLocation, const FRotator& LightningSpawnRotation);
 
 };

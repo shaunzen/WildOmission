@@ -4,40 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Structs/TornadoData.h"
 #include "Tornado.generated.h"
-
-USTRUCT()
-struct FTornadoData
-{
-	GENERATED_BODY()
-
-	FTornadoData();
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	bool WasSpawned;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	FTransform Transform;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RotationSpeed;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float MovementSpeed;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	FVector TargetLocation;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float TotalLifetime;
-
-	UPROPERTY(VisibleAnywhere, SaveGame)
-	float RemainingLifetime;
-
-};
-
-class AStorm;
-class UWindSuckerComponent;
 
 UCLASS()
 class WEATHER_API ATornado : public AActor
@@ -50,11 +18,14 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void HandleSpawn(AStorm* OwnerStorm, bool SpawnedFromCommand = false);
+	void Setup(bool SpawnedFromCommand = false);
 
-	FTornadoData GetTornadoData();
+	void SetBoundsRadius(float InBoundsRadius);
+	float GetBoundsRadius() const;
 
-	void LoadTornadoData(const FTornadoData& InTornadoData, AStorm* OwnerStorm);
+	FTornadoData GetTornadoData() const;
+
+	void LoadTornadoData(const FTornadoData& InTornadoData);
 
 protected:
 	// Called when the game starts or when spawned
@@ -65,54 +36,53 @@ private:
 	UStaticMeshComponent* MeshComponent;
 	
 	UPROPERTY(VisibleAnywhere)
+	class UChunkInvokerComponent* ChunkInvokerComponent;
+
+	//*********************************************************
+	//	Suction Components
+	//*********************************************************
+	UPROPERTY(VisibleAnywhere)
 	USceneComponent* SuctionAnchor;
 
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* CloseSuctionComponent1;
+	class UWindSuckerComponent* CloseSuctionComponent1;
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* CloseSuctionComponent2;
+	class UWindSuckerComponent* CloseSuctionComponent2;
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* CloseSuctionComponent3;
+	class UWindSuckerComponent* CloseSuctionComponent3;
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* CloseSuctionComponent4;
+	class UWindSuckerComponent* CloseSuctionComponent4;
 	UPROPERTY(VisibleAnywhere)
-	UWindSuckerComponent* FarSuctionComponent;
+	class UWindSuckerComponent* FarSuctionComponent;
 
+	//*********************************************************
+	//	Movement Parameters
+	//*********************************************************
 	UPROPERTY(VisibleAnywhere)
 	float RotationSpeed;
-
 	UPROPERTY(VisibleAnywhere)
 	float MovementSpeed;
-
 	UPROPERTY(VisibleAnywhere)
 	FVector TargetLocation;
-
 	UPROPERTY(VisibleAnywhere)
-	float StormRadius;
-
+	float BoundsRadius;
 	UPROPERTY(VisibleAnywhere)
 	float RemainingLifetime;
-
 	UPROPERTY(VisibleAnywhere)
 	float TotalLifetime;
 
-	UPROPERTY()
-	AStorm* OwnerStorm;
+	FVector GetRandomLocationInBounds() const;
 
-	FVector GetRandomLocationInStorm();
+	UFUNCTION()
+	void UpdateMovement();
+	UFUNCTION()
+	void UpdateDamage();
+	UFUNCTION()
+	void UpdateRotation();
+
+	bool HasLineOfSightTo(AActor* InActor) const;
 
 	UFUNCTION()
 	void OnActorOverlapVortex(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void HandleMovement();
-	UFUNCTION()
-	void HandleDamage();
-	UFUNCTION()
-	void HandleRotation();
-
-	void GetStormRadius();
-
-	bool HasLineOfSightTo(AActor* InActor) const;
 
 };
