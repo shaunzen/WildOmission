@@ -15,6 +15,7 @@
 #include "UI/LoadingMenuWidget.h"
 #include "WildOmissionSaveGame.h"
 #include "WildOmissionGameUserSettings.h"
+#include "AchievementManager.h"
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundMix.h"
 #include "Sound/SoundClass.h"
@@ -42,13 +43,32 @@ static USoundClass* WeatherSoundClass = nullptr;
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
-	LoadingMenuWidget = nullptr;
+	MainMenuWidgetBlueprintClass = nullptr;
 	MainMenuWidget = nullptr;
+
+	GameplayMenuWidgetBlueprintClass = nullptr;
 	GameplayMenuWidget = nullptr;
-	Loading = false;
+
+	LoadingMenuWidgetBlueprintClass = nullptr;
+	LoadingMenuWidget = nullptr;
+
+	SessionInterface = nullptr;
+	SessionSearch = nullptr;
+
+	FriendsInterface = nullptr;
+	AchievementsInterface = nullptr;
+
+	AchievementManager = nullptr;
+
+	DesiredServerName = TEXT("Server");
+	WorldToLoad = TEXT("NAN");
 	FriendsOnlySession = false;
 	DesiredMaxPlayerCount = 8;
+
 	OnMainMenu = false;
+	Loading = false;
+	LoadingTitle = TEXT("Loading Title.");
+	LoadingSubtitle = TEXT("Loading Subtitle.");
 
 	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_MainMenu"));
 	if (MainMenuBlueprint.Succeeded())
@@ -151,7 +171,7 @@ void UWildOmissionGameInstance::Init()
 	FriendsInterface = Subsystem->GetFriendsInterface();
 	AchievementsInterface = Subsystem->GetAchievementsInterface();
 
-	if (!SessionInterface.IsValid() || GEngine == 0)
+	if (!SessionInterface.IsValid() || !AchievementsInterface.IsValid() || GEngine == 0)
 	{
 		return;
 	}
@@ -161,6 +181,15 @@ void UWildOmissionGameInstance::Init()
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
+
+	AchievementManager = NewObject<UAchievementManager>(this);
+	if (AchievementManager == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to create achievement manager."));
+		return;
+	}
+
+	AchievementManager->OnCreation(this->AchievementsInterface);
 
 	RunAutoConfigQualitySettings();
 }
