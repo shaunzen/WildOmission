@@ -125,6 +125,11 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 
 UWildOmissionGameInstance* UWildOmissionGameInstance::GetWildOmissionGameInstance(UWorld* WorldContextObject)
 {
+	if (WorldContextObject == nullptr)
+	{
+		return nullptr;
+	}
+
 	return Cast<UWildOmissionGameInstance>(WorldContextObject->GetGameInstance());
 }
 
@@ -162,9 +167,8 @@ void UWildOmissionGameInstance::Init()
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()
 {
-	if (MainMenuWidgetBlueprintClass == nullptr)
+	if (MainMenuWidget || MainMenuWidgetBlueprintClass == nullptr)
 	{
-		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the main menu widget, blueprint class was nullptr"));
 		return;
 	}
 
@@ -172,7 +176,7 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 	if (MainMenuWidget == nullptr)
 	{
 		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the main menu widget"))
-			return;
+		return;
 	}
 
 	MainMenuWidget->Setup(this);
@@ -181,9 +185,8 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 
 void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 {
-	if (GameplayMenuWidgetBlueprintClass == nullptr)
+	if (GameplayMenuWidget || GameplayMenuWidgetBlueprintClass == nullptr)
 	{
-		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the gameplay menu widget, blueprint class was nullptr"));
 		return;
 	}
 
@@ -199,8 +202,8 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	GameplayMenuWidget->SetMenuInterface(this);
 	GameplayMenuWidget->OnClosed.AddDynamic(this, &UWildOmissionGameInstance::ClearGameplayMenuWidget);
 
-	// TODO dereferencing the world??
-	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
+	UWorld* World = GetWorld();
+	if (World && World->GetNetMode() == ENetMode::NM_Standalone)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 	}
@@ -208,12 +211,12 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 
 void UWildOmissionGameInstance::ClearGameplayMenuWidget()
 {
-	// TODO dereferencing the world??
 	GameplayMenuWidget = nullptr;
 
-	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
+	UWorld* World = GetWorld();
+	if (World && World->GetNetMode() == ENetMode::NM_Standalone)
 	{
-		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		UGameplayStatics::SetGamePaused(World, false);
 	}
 }
 
@@ -360,16 +363,27 @@ void UWildOmissionGameInstance::RefreshServerList()
 
 void UWildOmissionGameInstance::ApplyAudioSettings()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+	
 	UWildOmissionGameUserSettings* WOUserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MasterSoundClass, WOUserSettings->GetMasterVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MusicSoundClass, WOUserSettings->GetMusicVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, DeployablesSoundClass, WOUserSettings->GetDeployablesVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, EnvironmentSoundClass, WOUserSettings->GetEnvironmentVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, FriendlyCreaturesSoundClass, WOUserSettings->GetFriendlyCreaturesVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, HostileCreaturesSoundClass, WOUserSettings->GetHostileCreaturesVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, PlayersSoundClass, WOUserSettings->GetPlayersVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, WeatherSoundClass, WOUserSettings->GetWeatherVolume(), 1.0f, 0.2f);
-	UGameplayStatics::PushSoundMixModifier(GetWorld(), MasterSoundMixModifier);
+	if (WOUserSettings == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, MasterSoundClass, WOUserSettings->GetMasterVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, MusicSoundClass, WOUserSettings->GetMusicVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, DeployablesSoundClass, WOUserSettings->GetDeployablesVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, EnvironmentSoundClass, WOUserSettings->GetEnvironmentVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, FriendlyCreaturesSoundClass, WOUserSettings->GetFriendlyCreaturesVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, HostileCreaturesSoundClass, WOUserSettings->GetHostileCreaturesVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, PlayersSoundClass, WOUserSettings->GetPlayersVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, WeatherSoundClass, WOUserSettings->GetWeatherVolume(), 1.0f, 0.2f);
+	UGameplayStatics::PushSoundMixModifier(World, MasterSoundMixModifier);
 }
 
 //****************************
