@@ -2,20 +2,22 @@
 
 
 #include "AchievementManager.h"
+#include "OnlineSubsystem.h"
 #include "Interfaces/OnlineAchievementsInterface.h"
+#include "Interfaces/OnlineIdentityInterface.h"
 #include "Log.h"
 
 static UAchievementManager* Instance = nullptr;
 
 UAchievementManager::UAchievementManager()
 {
-	AchievementsInterface = nullptr;
 }
 
-void UAchievementManager::OnCreation(IOnlineAchievementsPtr InAchievementsInterface)
+void UAchievementManager::OnCreation()
 {
-	AchievementsInterface = InAchievementsInterface;
 	Instance = this;
+
+	WriteAchievement(TEXT("ACH_OPEN_GAME"), 100.0f);
 }
 
 void UAchievementManager::BeginDestroy()
@@ -30,13 +32,27 @@ UAchievementManager* UAchievementManager::GetAchievementManager()
 	return Instance;
 }
 
-void UAchievementManager::UnlockAchievement()
+void UAchievementManager::WriteAchievement(const FName& AchievementName, float Progress)
 {
-	if (!AchievementsInterface.IsValid())
+	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+	if (Subsystem == nullptr)
+	{
+		return;
+	}
+
+	IOnlineIdentityPtr IdentityInterface = Subsystem->GetIdentityInterface();
+	IOnlineAchievementsPtr AchievementsInterface = Subsystem->GetAchievementsInterface();
+
+	if (!AchievementsInterface.IsValid() || !IdentityInterface.IsValid())
 	{
 		UE_LOG(LogAchievements, Error, TEXT("UAchievementManager::UnlockAchievement, AchievementsInterface not valid!"));
 		return;
 	}
 
-	// TODO implement logic here
+	TSharedPtr<const FUniqueNetId> LocalUserId = IdentityInterface->GetUniquePlayerId(0);
+
+	FOnlineAchievementsWriteRef Achievement = MakeShareable(new FOnlineAchievementsWrite());
+	Achievement->Properties.Add(AchievementName, Progress);
+
+	AchievementsInterface->WriteAchievements(*LocalUserId, Achievement);
 }

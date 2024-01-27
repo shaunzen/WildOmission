@@ -73,7 +73,6 @@ public:
 	// End IGameSettingsInterface Implementation
 
 	IOnlineFriendsPtr GetFriendsInterface() const;
-	IOnlineAchievementsPtr GetAchievementsInterface() const;
 
 	UFUNCTION(BlueprintCallable)
 	FString GetVersion() const;
@@ -109,7 +108,6 @@ private:
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 
 	IOnlineFriendsPtr FriendsInterface;
-	IOnlineAchievementsPtr AchievementsInterface;
 
 	UPROPERTY()
 	class UAchievementManager* AchievementManager;

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "OnlineSubsystem.h"
 #include "AchievementManager.generated.h"
 
 /**
@@ -18,14 +17,13 @@ class ACHIEVEMENTS_API UAchievementManager : public UObject
 public:
 	UAchievementManager();
 	
-	void OnCreation(IOnlineAchievementsPtr InAchievementsInterface);
+	void OnCreation();
 	virtual void BeginDestroy() override;
 
 	static UAchievementManager* GetAchievementManager();
 
-	void UnlockAchievement();
+	void WriteAchievement(const FName& AchievementName, float Progress);
 
 private:
-	IOnlineAchievementsPtr AchievementsInterface;
 
 };

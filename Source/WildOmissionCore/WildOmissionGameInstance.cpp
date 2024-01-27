@@ -6,7 +6,6 @@
 #include "UObject/ConstructorHelpers.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
-#include "Interfaces/OnlineAchievementsInterface.h"
 #include "SocketSubsystem.h"
 #include "Sockets.h"
 #include "Serialization/ArrayWriter.h"
@@ -56,7 +55,6 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 	SessionSearch = nullptr;
 
 	FriendsInterface = nullptr;
-	AchievementsInterface = nullptr;
 
 	AchievementManager = nullptr;
 
@@ -169,9 +167,8 @@ void UWildOmissionGameInstance::Init()
 
 	SessionInterface = Subsystem->GetSessionInterface();
 	FriendsInterface = Subsystem->GetFriendsInterface();
-	AchievementsInterface = Subsystem->GetAchievementsInterface();
-
-	if (!SessionInterface.IsValid() || !AchievementsInterface.IsValid() || GEngine == 0)
+	
+	if (!SessionInterface.IsValid() || GEngine == 0)
 	{
 		return;
 	}
@@ -189,7 +186,7 @@ void UWildOmissionGameInstance::Init()
 		return;
 	}
 
-	AchievementManager->OnCreation(this->AchievementsInterface);
+	AchievementManager->OnCreation();
 
 	RunAutoConfigQualitySettings();
 }
@@ -687,11 +684,6 @@ void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetD
 IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const
 {
 	return FriendsInterface;
-}
-
-IOnlineAchievementsPtr UWildOmissionGameInstance::GetAchievementsInterface() const
-{
-	return AchievementsInterface;
 }
 
 FString UWildOmissionGameInstance::GetVersion() const
