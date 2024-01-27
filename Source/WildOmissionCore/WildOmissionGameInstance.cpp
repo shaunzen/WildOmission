@@ -193,7 +193,7 @@ void UWildOmissionGameInstance::Init()
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()
 {
-	if (MainMenuWidget || MainMenuWidgetBlueprintClass == nullptr)
+	if (MainMenuWidgetBlueprintClass == nullptr)
 	{
 		return;
 	}

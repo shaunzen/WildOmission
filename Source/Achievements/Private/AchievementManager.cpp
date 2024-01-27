@@ -17,7 +17,7 @@ void UAchievementManager::OnCreation()
 {
 	Instance = this;
 
-	WriteAchievement(TEXT("ACH_OPEN_GAME"), 100.0f);
+	QueryAchievements();
 }
 
 void UAchievementManager::BeginDestroy()
@@ -32,27 +32,82 @@ UAchievementManager* UAchievementManager::GetAchievementManager()
 	return Instance;
 }
 
-void UAchievementManager::WriteAchievement(const FName& AchievementName, float Progress)
+void UAchievementManager::QueryAchievements()
 {
-	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
-	if (Subsystem == nullptr)
+	//Get the online sub system
+	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+
+	if (OnlineSub)
 	{
-		return;
+		//Get the Identity from the sub system 
+		//Meaning our player's profile and various online services
+		IOnlineIdentityPtr Identity = OnlineSub->GetIdentityInterface();
+
+		if (Identity.IsValid())
+		{
+			//Get a thread-safe pointer (for more info check out this link: https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Templates/TSharedPtr/index.html )
+			TSharedPtr<const FUniqueNetId> UserId = Identity->GetUniquePlayerId(0);
+
+			//Get the achievements interface for this platform
+			IOnlineAchievementsPtr Achievements = OnlineSub->GetAchievementsInterface();
+
+			if (Achievements.IsValid())
+			{
+				//Cache all the game's achievements for future use and bind the OnQueryAchievementsComplete function to fire when we're finished caching
+				Achievements->QueryAchievements(*UserId.Get(), FOnQueryAchievementsCompleteDelegate::CreateUObject(this, &UAchievementManager::OnQueryAchievementsComplete));
+			}
+		}
 	}
+}
 
-	IOnlineIdentityPtr IdentityInterface = Subsystem->GetIdentityInterface();
-	IOnlineAchievementsPtr AchievementsInterface = Subsystem->GetAchievementsInterface();
+void UAchievementManager::UpdateAchievementProgress(const FString& Id, float Percent)
+{
+	//Get the online sub system
+	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
 
-	if (!AchievementsInterface.IsValid() || !IdentityInterface.IsValid())
+	if (OnlineSub)
 	{
-		UE_LOG(LogAchievements, Error, TEXT("UAchievementManager::UnlockAchievement, AchievementsInterface not valid!"));
-		return;
+		//Get the Identity from the sub system 
+		//Meaning our player's profile and various online services
+		IOnlineIdentityPtr Identity = OnlineSub->GetIdentityInterface();
+
+		if (Identity.IsValid())
+		{
+			//Get a thread-safe pointer (for more info check out this link: https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Templates/TSharedPtr/index.html )
+			TSharedPtr<const FUniqueNetId> UserId = Identity->GetUniquePlayerId(0);
+
+			//Get the achievements interface for this platform
+			IOnlineAchievementsPtr Achievements = OnlineSub->GetAchievementsInterface();
+
+
+			if (Achievements.IsValid() && (!AchievementsWriteObjectPtr.IsValid() || !AchievementsWriteObjectPtr->WriteState != EOnlineAsyncTaskState::InProgress))
+			{
+				//Make a shared pointer for achievement writing
+				AchievementsWriteObjectPtr = MakeShareable(new FOnlineAchievementsWrite());
+
+				//Sets the progress of the desired achievement - does nothing if the id is not valid
+				AchievementsWriteObjectPtr->SetFloatStat(*Id, Percent);
+				FOnAchievementsWrittenDelegate WrittenDelegate;
+				WrittenDelegate.BindUObject(this, &UAchievementManager::OnUpdateAchievementsProgressComplete);
+				//Write the achievements progress
+				FOnlineAchievementsWriteRef AchievementsWriteObjectRef = AchievementsWriteObjectPtr.ToSharedRef();
+				Achievements->WriteAchievements(*UserId, AchievementsWriteObjectRef);
+			}
+		}
 	}
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("WriteAchievement %s, %f"), *Id, Percent));
+}
 
-	TSharedPtr<const FUniqueNetId> LocalUserId = IdentityInterface->GetUniquePlayerId(0);
+void UAchievementManager::OnQueryAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful)
+{
+	FString Display = FString::Printf(TEXT("QueryAchievementsComplete UniqueId %s, Success %i"), *PlayerId.ToString(), bWasSuccessful);
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, Display);
 
-	FOnlineAchievementsWriteRef Achievement = MakeShareable(new FOnlineAchievementsWrite());
-	Achievement->Properties.Add(AchievementName, Progress);
+	UpdateAchievementProgress(TEXT("ACH_OPEN_GAME"), 100.0f);
+}
 
-	AchievementsInterface->WriteAchievements(*LocalUserId, Achievement);
+void UAchievementManager::OnUpdateAchievementsProgressComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful)
+{
+	FString Display = FString::Printf(TEXT("WriteAchievementsComplete, UniqueId %s, Success %i"), *PlayerId.ToString(), bWasSuccessful);
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, Display);
 }

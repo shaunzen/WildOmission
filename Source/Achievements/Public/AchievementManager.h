@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "OnlineStats.h"
 #include "AchievementManager.generated.h"
 
 /**
@@ -22,8 +23,11 @@ public:
 
 	static UAchievementManager* GetAchievementManager();
 
-	void WriteAchievement(const FName& AchievementName, float Progress);
+	void QueryAchievements();
+	void UpdateAchievementProgress(const FString& Id, float Percent);
 
 private:
-
+	FOnlineAchievementsWritePtr AchievementsWriteObjectPtr;
+	void OnQueryAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
+	void OnUpdateAchievementsProgressComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
 };
