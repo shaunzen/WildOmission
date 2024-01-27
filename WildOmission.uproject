@@ -15,6 +15,15 @@
 			]
 		},
 		{
+			"Name": "Achievements",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"CoreUObject"
+			]
+		},
+		{
 			"Name": "Animals",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
