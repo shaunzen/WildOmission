@@ -104,7 +104,7 @@ void UAchievementManager::UnlockAchievement(const FString& AchievementID)
 
 	// Write the achievements progress
 	FOnlineAchievementsWriteRef AchievementsWriteObjectRef = AchievementsWriteObjectPtr.ToSharedRef();
-	AchievementsInterface->WriteAchievements(*UserId, AchievementsWriteObjectRef, FOnAchievementsWrittenDelegate::CreateUObject(this, &UAchievementManager::OnWriteAchievementsComplete);
+	AchievementsInterface->WriteAchievements(*UserId, AchievementsWriteObjectRef, FOnAchievementsWrittenDelegate::CreateUObject(this, &UAchievementManager::OnWriteAchievementsComplete));
 
 	// TODO remove this after achievements are completed
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Writing Achievement %s"), *AchievementID));
