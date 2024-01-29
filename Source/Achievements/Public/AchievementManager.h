@@ -29,6 +29,6 @@ private:
 	FOnlineAchievementsWritePtr AchievementsWriteObjectPtr;
 	
 	void OnQueryAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
-	void OnWriteAchievemetnsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
+	void OnWriteAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
 	
 };
