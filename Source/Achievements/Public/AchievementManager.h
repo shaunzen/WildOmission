@@ -24,15 +24,11 @@ public:
 	static UAchievementManager* GetAchievementManager();
 
 	void QueryAchievements();
-	void QueryLeaderboard();
-	void UpdateAchievementProgress(const FString& Id, float Percent);
-	void IncrementLeaderboardValue(const FString& Id);
-
+	void UnlockAchievement(const FString& AchievementID);
 private:
 	FOnlineAchievementsWritePtr AchievementsWriteObjectPtr;
 	
 	void OnQueryAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
-	
-	void OnUpdateAchievementsProgressComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
+	void OnWriteAchievemetnsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
 	
 };
