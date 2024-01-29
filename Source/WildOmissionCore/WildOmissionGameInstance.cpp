@@ -159,14 +159,14 @@ void UWildOmissionGameInstance::Init()
 
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
 
-	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
-	if (Subsystem == nullptr)
+	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+	if (OnlineSubsystem == nullptr)
 	{
 		return;
 	}
 
-	SessionInterface = Subsystem->GetSessionInterface();
-	FriendsInterface = Subsystem->GetFriendsInterface();
+	SessionInterface = OnlineSubsystem->GetSessionInterface();
+	FriendsInterface = OnlineSubsystem->GetFriendsInterface();
 	
 	if (!SessionInterface.IsValid() || GEngine == 0)
 	{
