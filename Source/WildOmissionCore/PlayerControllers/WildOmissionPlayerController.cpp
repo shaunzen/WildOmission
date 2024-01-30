@@ -12,6 +12,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/PlayerSaveManagerComponent.h"
 #include "Components/MusicPlayerComponent.h"
+#include "Components/InGameAchievementsComponent.h"
 
 // Wild Omission Stuff
 #include "WildOmissionCore/WildOmissionGameInstance.h"

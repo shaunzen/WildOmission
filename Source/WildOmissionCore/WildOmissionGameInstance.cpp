@@ -14,7 +14,7 @@
 #include "UI/LoadingMenuWidget.h"
 #include "WildOmissionSaveGame.h"
 #include "WildOmissionGameUserSettings.h"
-#include "AchievementManager.h"
+#include "AchievementsManager.h"
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundMix.h"
 #include "Sound/SoundClass.h"
@@ -56,7 +56,7 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 
 	FriendsInterface = nullptr;
 
-	AchievementManager = nullptr;
+	AchievementsManager = nullptr;
 
 	DesiredServerName = TEXT("Server");
 	WorldToLoad = TEXT("NAN");
@@ -179,14 +179,14 @@ void UWildOmissionGameInstance::Init()
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
 
-	AchievementManager = NewObject<UAchievementManager>(this);
-	if (AchievementManager == nullptr)
+	AchievementsManager = NewObject<UAchievementsManager>(this);
+	if (AchievementsManager == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to create achievement manager."));
 		return;
 	}
 
-	AchievementManager->OnCreation();
+	AchievementsManager->OnCreation();
 
 	RunAutoConfigQualitySettings();
 }

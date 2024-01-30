@@ -1,39 +1,39 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "AchievementManager.h"
+#include "AchievementsManager.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineAchievementsInterface.h"
 #include "Log.h"
 
-static UAchievementManager* Instance = nullptr;
+static UAchievementsManager* Instance = nullptr;
 
-UAchievementManager::UAchievementManager()
+UAchievementsManager::UAchievementsManager()
 {
 	AchievementsWriteObjectPtr = nullptr;
 }
 
-void UAchievementManager::OnCreation()
+void UAchievementsManager::OnCreation()
 {
 	Instance = this;
 
 	QueryAchievements();
 }
 
-void UAchievementManager::BeginDestroy()
+void UAchievementsManager::BeginDestroy()
 {
 	Super::BeginDestroy();
 
 	Instance = nullptr;
 }
 
-UAchievementManager* UAchievementManager::GetAchievementManager()
+UAchievementsManager* UAchievementsManager::GetAchievementsManager()
 {
 	return Instance;
 }
 
-void UAchievementManager::QueryAchievements()
+void UAchievementsManager::QueryAchievements()
 {
 	// Get the online sub system
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
@@ -63,10 +63,10 @@ void UAchievementManager::QueryAchievements()
 	}
 
 	// Cache all the game's achievements for future use and bind the OnQueryAchievementsComplete function to fire when we're finished caching
-	AchievementsInterface->QueryAchievements(*UserId.Get(), FOnQueryAchievementsCompleteDelegate::CreateUObject(this, &UAchievementManager::OnQueryAchievementsComplete));
+	AchievementsInterface->QueryAchievements(*UserId.Get(), FOnQueryAchievementsCompleteDelegate::CreateUObject(this, &UAchievementsManager::OnQueryAchievementsComplete));
 }
 
-void UAchievementManager::UnlockAchievement(const FString& AchievementID)
+void UAchievementsManager::UnlockAchievement(const FString& AchievementID)
 {
 	// Get the online sub system
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
@@ -104,13 +104,13 @@ void UAchievementManager::UnlockAchievement(const FString& AchievementID)
 
 	// Write the achievements progress
 	FOnlineAchievementsWriteRef AchievementsWriteObjectRef = AchievementsWriteObjectPtr.ToSharedRef();
-	AchievementsInterface->WriteAchievements(*UserId, AchievementsWriteObjectRef, FOnAchievementsWrittenDelegate::CreateUObject(this, &UAchievementManager::OnWriteAchievementsComplete));
+	AchievementsInterface->WriteAchievements(*UserId, AchievementsWriteObjectRef, FOnAchievementsWrittenDelegate::CreateUObject(this, &UAchievementsManager::OnWriteAchievementsComplete));
 
 	// TODO remove this after achievements are completed
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Writing Achievement %s"), *AchievementID));
 }
 
-void UAchievementManager::OnQueryAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful)
+void UAchievementsManager::OnQueryAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful)
 {
 	FString Display = FString::Printf(TEXT("QueryAchievementsComplete UniqueId %s, Success %i"), *PlayerId.ToString(), bWasSuccessful);
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, Display);
@@ -118,7 +118,7 @@ void UAchievementManager::OnQueryAchievementsComplete(const FUniqueNetId& Player
 	UnlockAchievement(TEXT("ACH_OPEN_GAME"));
 }
 
-void UAchievementManager::OnWriteAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful)
+void UAchievementsManager::OnWriteAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful)
 {
 	FString Display = FString::Printf(TEXT("WriteAchievementsComplete, UniqueId %s, Success %i"), *PlayerId.ToString(), bWasSuccessful);
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, Display);

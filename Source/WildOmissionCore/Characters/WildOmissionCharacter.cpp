@@ -25,6 +25,7 @@
 #include "WildOmissionCore/Components/NameTagComponent.h"
 #include "WildOmissionCore/Components/SpecialEffectsManagerComponent.h"
 #include "Components/LockModifierComponent.h"
+#include "WildOmissionCore/Components/WOInGameAchievementsComponent.h"
 
 // Wild Omission Stuff
 #include "WildOmissionCore/UI/Player/PlayerHUDWidget.h"
@@ -106,6 +107,8 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	SpecialEffectsManagerComponent = nullptr;
 	
 	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
+
+	AchievementsComponent = CreateDefaultSubobject<UWOInGameAchievementsComponent>(TEXT("AchievementsComponent"));
 
 	bSprinting = false;
 	bUnderwater = false;
@@ -691,6 +694,11 @@ void AWildOmissionCharacter::HandleDeath()
 
 	RagdollInventoryComponent->Load(InventoryComponent->Save());
 	
+	if (OnPlayerDeath.IsBound())
+	{
+		OnPlayerDeath.Broadcast();
+	}
+
 	this->Destroy();
 }
 
@@ -1198,4 +1206,9 @@ UPlayerInventoryComponent* AWildOmissionCharacter::GetInventoryComponent() const
 UCraftingComponent* AWildOmissionCharacter::GetCraftingComponent() const
 {
 	return CraftingComponent;
+}
+
+UInGameAchievementsComponent* AWildOmissionCharacter::GetAchievementsComponent() const
+{
+	return AchievementsComponent;
 }

@@ -5,23 +5,23 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "OnlineStats.h"
-#include "AchievementManager.generated.h"
+#include "AchievementsManager.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ACHIEVEMENTS_API UAchievementManager : public UObject
+class ACHIEVEMENTS_API UAchievementsManager : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UAchievementManager();
+	UAchievementsManager();
 	
 	void OnCreation();
 	virtual void BeginDestroy() override;
 
-	static UAchievementManager* GetAchievementManager();
+	static UAchievementsManager* GetAchievementsManager();
 
 	void QueryAchievements();
 	void UnlockAchievement(const FString& AchievementID);

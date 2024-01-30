@@ -7,6 +7,8 @@
 #include "Interfaces/CharacterSettingsInterface.h"
 #include "WildOmissionCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeathSignature);
+
 UCLASS()
 class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public ICharacterSettingsInterface
 {
@@ -40,6 +42,8 @@ public:
 
 	UFUNCTION()
 	void HandleDeath();
+
+	FOnPlayerDeathSignature OnPlayerDeath;
 	
 	UFUNCTION()
 	void SetGodMode(bool GodMode);
@@ -79,6 +83,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	class UCraftingComponent* GetCraftingComponent() const;
+
+	UFUNCTION(BlueprintCallable)
+	class UInGameAchievementsComponent* GetAchievementsComponent() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -130,6 +137,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class ULockModifierComponent* LockModifierComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	class UWOInGameAchievementsComponent* AchievementsComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> JumpCameraShake;

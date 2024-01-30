@@ -110,7 +110,7 @@ private:
 	IOnlineFriendsPtr FriendsInterface;
 
 	UPROPERTY()
-	class UAchievementManager* AchievementManager;
+	class UAchievementsManager* AchievementsManager;
 
 	void OnCreateSessionComplete(FName SessionName, bool Success);
 	void OnDestroySessionComplete(FName SessionName, bool Success);
