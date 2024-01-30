@@ -13,17 +13,35 @@ struct ACHIEVEMENTS_API FAchievementStatsData
 
 	FAchievementStatsData();
 
-	UPROPERTY()
-	int32 WoodCollected;
+	// TODO make one of these for all harvestable resources, just for the future in case we add more achievements
+	// or just want to make a stat menu.
 
 	UPROPERTY()
-	int32 StoneCollected;
+	int32 WoodHarvested;
 
 	UPROPERTY()
-	int32 GoldCollected;
+	int32 StoneHarvested;
 
 	UPROPERTY()
-	int32 RefinedMetalCollected;
+	int32 MetalOreHarvested;
+
+	UPROPERTY()
+	int32 SulfurOreHarvested;
+
+	UPROPERTY()
+	int32 GoldHarvested;
+
+	UPROPERTY()
+	int32 RefinedMetalHarvested;
+
+	UPROPERTY()
+	int32 LeatherHarvested;
+
+	UPROPERTY()
+	int32 BerriesHarvested;
+
+	UPROPERTY()
+	int32 ClothHarvested;
 
 	UPROPERTY()
 	int32 BuildingBlocksPlaced;

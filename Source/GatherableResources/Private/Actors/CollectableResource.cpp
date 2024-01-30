@@ -64,7 +64,7 @@ void ACollectableResource::Interact(AActor* Interactor)
 	// Add resource to collectors inventory
 	for (const FInventoryItem& YieldItem : Yield)
 	{
-		InteractorInventoryComponent->AddItem(YieldItem);
+		InteractorInventoryComponent->AddItem(YieldItem, true);
 	}
 
 	// Play Collect sound

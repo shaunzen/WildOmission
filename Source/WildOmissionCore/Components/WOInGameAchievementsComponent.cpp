@@ -5,6 +5,7 @@
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
 
 // Wild Omission Components
+#include "Components/PlayerInventoryComponent.h"
 #include "Components/CraftingComponent.h"
 
 // List of defined in-game achievements
@@ -58,6 +59,12 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 	// Character specific delegates
 	OwnerCharacter->OnPlayerDeath.AddDynamic(this, &UWOInGameAchievementsComponent::GiveDeathAchievement);
 
+	UPlayerInventoryComponent* OwnerInventoryComponent = OwnerCharacter->FindComponentByClass<UPlayerInventoryComponent>();
+	if (OwnerInventoryComponent)
+	{
+		OwnerInventoryComponent->OnItemHarvested.AddDynamic(this, &UWOInGameAchievementsComponent::OnItemHarvested);
+	}
+
 	UCraftingComponent* OwnerCraftingComponent = OwnerCharacter->FindComponentByClass<UCraftingComponent>();
 	if (OwnerCraftingComponent)
 	{
@@ -69,6 +76,56 @@ void UWOInGameAchievementsComponent::GiveDeathAchievement()
 {
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Player Death occured."));
 	this->UnlockAchievement(ACH_RIP);
+}
+
+void UWOInGameAchievementsComponent::OnItemHarvested(const FInventoryItem& ItemHarvested)
+{
+	// Wood Achievements
+	if (ItemHarvested.Name == TEXT("wood"))
+	{
+		StatsData.WoodHarvested += ItemHarvested.Quantity;
+		if (StatsData.WoodHarvested >= 1000)
+		{
+			this->UnlockAchievement(ACH_WOOD_COLLECTOR);
+		}
+	}
+	// Stone Achievements
+	else if (ItemHarvested.Name == TEXT("stone"))
+	{
+		StatsData.StoneHarvested += ItemHarvested.Quantity;
+		if (StatsData.StoneHarvested >= 1000)
+		{
+			this->UnlockAchievement(ACH_STONE_COLLECTOR);
+		}
+	}
+	// Metal Ore Achievements
+	else if (ItemHarvested.Name == TEXT("metal.ore"))
+	{
+		StatsData.MetalOreHarvested += ItemHarvested.Quantity;
+	}
+	// Sulfur Ore Achievements
+	else if (ItemHarvested.Name == TEXT("sulfur.ore"))
+	{
+		StatsData.SulfurOreHarvested += ItemHarvested.Quantity;
+	}
+	// Refined Metal Achievements
+	else if (ItemHarvested.Name == TEXT("metal.refined"))
+	{
+		StatsData.RefinedMetalHarvested += ItemHarvested.Quantity;
+		if (StatsData.RefinedMetalHarvested >= 10)
+		{
+			this->UnlockAchievement(ACH_ITS_GLOWING_BLUE);
+		}
+	}
+	// Gold Achievements
+	else if (ItemHarvested.Name == TEXT("gold"))
+	{
+		StatsData.GoldHarvested += ItemHarvested.Quantity;
+		if (StatsData.GoldHarvested >= 10)
+		{
+			this->UnlockAchievement(ACH_SHINY);
+		}
+	}
 }
 
 void UWOInGameAchievementsComponent::CheckCraftAchievementConditions(const FName& ItemID)

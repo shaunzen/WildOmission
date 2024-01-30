@@ -24,7 +24,10 @@ private:
 
 	UFUNCTION()
 	void GiveDeathAchievement();
-	
+
+	UFUNCTION()
+	void OnItemHarvested(const struct FInventoryItem& ItemHarvested);
+
 	UFUNCTION()
 	void CheckCraftAchievementConditions(const FName& ItemID);
 

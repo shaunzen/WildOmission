@@ -5,10 +5,11 @@
 
 FAchievementStatsData::FAchievementStatsData()
 {
-	WoodCollected = 0;
-	StoneCollected = 0;
-	GoldCollected = 0;
-	RefinedMetalCollected = 0;
+	WoodHarvested = 0;
+	StoneHarvested = 0;
+	GoldHarvested = 0;
+	RefinedMetalHarvested = 0;
+
 	BuildingBlocksPlaced = 0;
 
 	RangedHeadshots = 0;
