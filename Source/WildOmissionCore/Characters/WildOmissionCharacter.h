@@ -84,9 +84,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	class UCraftingComponent* GetCraftingComponent() const;
 
-	UFUNCTION(BlueprintCallable)
-	class UInGameAchievementsComponent* GetAchievementsComponent() const;
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -137,9 +134,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class ULockModifierComponent* LockModifierComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	class UWOInGameAchievementsComponent* AchievementsComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> JumpCameraShake;
