@@ -12,7 +12,7 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/PlayerSaveManagerComponent.h"
 #include "Components/MusicPlayerComponent.h"
-#include "Components/InGameAchievementsComponent.h"
+#include "WildOmissionCore/Components/WOInGameAchievementsComponent.h"
 
 // Wild Omission Stuff
 #include "WildOmissionCore/WildOmissionGameInstance.h"
@@ -36,6 +36,8 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 	BedWorldLocation = FVector::ZeroVector;
 
 	MusicPlayerComponent = nullptr;
+
+	AchievementsComponent = CreateDefaultSubobject<UWOInGameAchievementsComponent>(TEXT("AchievementsComponent"));
 
 	static ConstructorHelpers::FClassFinder<UDeathMenuWidget> DeathMenuWidgetBlueprint(TEXT("/Game/WildOmissionCore/UI/Player/WBP_DeathMenu"));
 	if (DeathMenuWidgetBlueprint.Succeeded())
@@ -70,6 +72,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 	PlayerSaveData.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
 	PlayerSaveData.BedUniqueID = BedUniqueID;
 	PlayerSaveData.BedWorldLocation = BedWorldLocation;
+	PlayerSaveData.AchievementStatsData = AchievementsComponent->GetStatsData();
 	PlayerSaveData.NewPlayer = false;
 	
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
@@ -100,6 +103,7 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSaveData& SaveDa
 {
 	BedUniqueID = SaveData.BedUniqueID;
 	BedWorldLocation = SaveData.BedWorldLocation;
+	AchievementsComponent->SetStatsData(SaveData.AchievementStatsData);
 
 	StoredPlayerSaveData = SaveData;
 }

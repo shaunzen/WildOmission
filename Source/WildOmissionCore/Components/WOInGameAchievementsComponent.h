@@ -17,6 +17,12 @@ protected:
 
 private:
 	UFUNCTION()
+	void OnOwnerPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+
+	UFUNCTION()
 	void GiveDeathAchievement();
+	
+	UFUNCTION()
+	void CheckCraftAchievementConditions(const FName& ItemID);
 
 };

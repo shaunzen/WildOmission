@@ -65,6 +65,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UMusicPlayerComponent* MusicPlayerComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	class UWOInGameAchievementsComponent* AchievementsComponent;
+
 	UPROPERTY()
 	TSubclassOf<class UDeathMenuWidget> DeathMenuWidgetClass;
 

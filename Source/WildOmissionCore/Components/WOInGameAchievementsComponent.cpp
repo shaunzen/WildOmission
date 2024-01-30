@@ -4,6 +4,9 @@
 #include "WOInGameAchievementsComponent.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
 
+// Wild Omission Components
+#include "Components/CraftingComponent.h"
+
 // List of defined in-game achievements
 const static FString ACH_HEY_IM_UP_HERE(TEXT("ACH_HEY_IM_UP_HERE"));
 const static FString ACH_UPGRADED_TOOL(TEXT("ACH_UPGRADED_TOOL"));
@@ -25,21 +28,49 @@ const static FString ACH_BUILDER(TEXT("ACH_BUILDER"));
 void UWOInGameAchievementsComponent::BeginPlay()
 {
 	// TODO setup delegates to call achievements
-	AActor* OwnerActor = GetOwner();
-	if (OwnerActor == nullptr)
+	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwner());
+	if (OwnerPlayerController == nullptr)
 	{
 		return;
 	}
 
-	// Player Death is created, just bind
-	if (AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(OwnerActor))
+	// Non character specific delegates
+	OwnerPlayerController->OnPossessedPawnChanged.AddDynamic(this, &UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged);
+}
+
+void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn)
+{
+	AWildOmissionCharacter* OwnerCharacter = Cast<AWildOmissionCharacter>(NewPawn);
+	if (OwnerCharacter == nullptr)
 	{
-		OwnerCharacter->OnPlayerDeath.AddDynamic(this, &UWOInGameAchievementsComponent::GiveDeathAchievement);
+		return;
 	}
 
+	// Character specific achievements
+	OwnerCharacter->OnPlayerDeath.AddDynamic(this, &UWOInGameAchievementsComponent::GiveDeathAchievement);
+
+	UCraftingComponent* OwnerCraftingComponent = OwnerCharacter->GetCraftingComponent();
+	if (OwnerCraftingComponent)
+	{
+		OwnerCraftingComponent->OnItemCrafted.AddDynamic(this, &UWOInGameAchievementsComponent::CheckCraftAchievementConditions);
+	}
 }
 
 void UWOInGameAchievementsComponent::GiveDeathAchievement()
 {
 	this->UnlockAchievement(ACH_RIP);
+}
+
+void UWOInGameAchievementsComponent::CheckCraftAchievementConditions(const FName& ItemID)
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("crafted %s"), *ItemID.ToString()));
+
+	if (ItemID == TEXT("pickaxe") || ItemID == TEXT("hatchet"))
+	{
+		this->UnlockAchievement(ACH_UPGRADED_TOOL);
+	}
+	else if (ItemID == TEXT("pickaxe.stone") || ItemID == TEXT("hatchet.stone"))
+	{
+		this->UnlockAchievement(ACH_BETTER_THAN_A_ROCK);
+	}
 }

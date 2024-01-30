@@ -25,13 +25,14 @@ UCraftingComponent::UCraftingComponent()
 
 void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraft)
 {
+	AActor* OwnerActor = GetOwner();
 	FCraftingRecipe* RecipeData = GetRecipe(ItemToCraft);
-	if (RecipeData == nullptr)
+	if (OwnerActor == nullptr || RecipeData == nullptr)
 	{
 		return;
 	}
 
-	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
+	UInventoryComponent* OwnerInventoryComponent = OwnerActor->FindComponentByClass<UInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)
 	{
 		return;
@@ -57,6 +58,11 @@ void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraf
 	Yield.Quantity = RecipeData->YieldQuantity;
 
 	OwnerInventoryComponent->AddItem(Yield);
+
+	if (OnItemCrafted.IsBound())
+	{
+		OnItemCrafted.Broadcast(ItemToCraft);
+	}
 }
 
 TArray<FName> UCraftingComponent::GetAllRecipes()
