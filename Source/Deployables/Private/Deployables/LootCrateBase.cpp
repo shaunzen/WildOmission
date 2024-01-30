@@ -34,7 +34,7 @@ void ALootCrateBase::SpawnItems()
 	int32 DropCount = FMath::RandRange(1, GetInventoryComponent()->GetSlotCount());
 	for (int32 i = 0; i < DropCount; ++i)
 	{
-		GetInventoryComponent()->AddItem(GetDrop(), GetOwner());
+		GetInventoryComponent()->AddItem(GetDrop(), false, GetOwner());
 	}
 }
 

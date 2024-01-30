@@ -69,7 +69,7 @@ void UInventoryComponent::BeginPlay()
 	OnRep_ServerState();
 }
 
-void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems, bool ForceClientUpdate)
+void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, bool FromHarvesting, AActor* ActorToSpawnDropedItems, bool ForceClientUpdate)
 {
 	AActor* OwningActor = GetOwner();
 	if (OwningActor == nullptr)
@@ -100,6 +100,14 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* Actor
 	// Calculate how many were added and add that amount to our contents
 	AmountAdded = ItemToAdd.Quantity - Remaining;
 	UseServerState ? ServerState.Contents.AddItem(ItemToAdd.Name, AmountAdded) : Contents.AddItem(ItemToAdd.Name, AmountAdded);
+
+	if (FromHarvesting && OnItemHarvested.IsBound())
+	{
+		FInventoryItem ItemHarvested;
+		ItemHarvested.Name = ItemToAdd.Name;
+		ItemHarvested.Quantity = AmountAdded;
+		OnItemHarvested.Broadcast(ItemHarvested);
+	}
 
 	if (UseServerState == true && AddSuccess == false)
 	{
@@ -319,7 +327,7 @@ void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& I
 			UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
 
 			// Add item to the container's inventory
-			Interaction.Manipulator->GetOpenContainer()->AddItem(MovingItem, GetOwner());
+			Interaction.Manipulator->GetOpenContainer()->AddItem(MovingItem, false, GetOwner());
 		}
 		else // Move within the player's inventory
 		{

@@ -31,14 +31,14 @@ void UInGameAchievementsComponent::TickComponent(float DeltaTime, ELevelTick Tic
 void UInGameAchievementsComponent::UnlockAchievement(const FString& AchievementID)
 {
 	// If owner is not local, fire client rpc which will call this
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (OwnerPawn == nullptr)
+	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwner());
+	if (OwnerPlayerController == nullptr)
 	{
-		UE_LOG(LogAchievements, Warning, TEXT("UInGameAchievementsComponent::UnlockAchievement Failed to give achievement %s, OwnerPawn was nullptr."), *AchievementID);
+		UE_LOG(LogAchievements, Warning, TEXT("UInGameAchievementsComponent::UnlockAchievement Failed to give achievement %s, OwnerPlayerController was nullptr."), *AchievementID);
 		return;
 	}
 	
-	if (OwnerPawn->HasAuthority() && !OwnerPawn->IsLocallyControlled())
+	if (OwnerPlayerController->HasAuthority() && !OwnerPlayerController->IsLocalPlayerController())
 	{
 		UE_LOG(LogAchievements, Display, TEXT("UInGameAchievementsComponent::UnlockAchievement a client has unlocked achievement %s, sending rpc."), *AchievementID);
 		Client_UnlockAchievement(AchievementID);

@@ -12,6 +12,9 @@ class WILDOMISSIONCORE_API UWOInGameAchievementsComponent : public UInGameAchiev
 {
 	GENERATED_BODY()
 	
+public:
+	UWOInGameAchievementsComponent();
+
 protected:
 	virtual void BeginPlay() override;
 

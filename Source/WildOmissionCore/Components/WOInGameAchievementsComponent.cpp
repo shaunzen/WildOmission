@@ -25,11 +25,16 @@ const static FString ACH_STONE_COLLECTOR(TEXT("ACH_STONE_COLLECTOR"));
 const static FString ACH_IM_A_MURDERER(TEXT("ACH_IM_A_MURDERER"));
 const static FString ACH_BUILDER(TEXT("ACH_BUILDER"));
 
+UWOInGameAchievementsComponent::UWOInGameAchievementsComponent()
+{
+}
+
 void UWOInGameAchievementsComponent::BeginPlay()
 {
-	// TODO setup delegates to call achievements
+	Super::BeginPlay();
+
 	APlayerController* OwnerPlayerController = Cast<APlayerController>(GetOwner());
-	if (OwnerPlayerController == nullptr)
+	if (OwnerPlayerController == nullptr || !OwnerPlayerController->HasAuthority())
 	{
 		return;
 	}
@@ -46,10 +51,14 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 		return;
 	}
 
-	// Character specific achievements
+	// Well this is perhaps the most bizzar thing that has ever happened in my programming career thus far
+	// Character Components were constantly returning nullptrs, I didn't change anything, and then all the sudden
+	// it's working as intended. I read something about a solar storm this morning(1/30/24), as of right now that's my only guess.
+
+	// Character specific delegates
 	OwnerCharacter->OnPlayerDeath.AddDynamic(this, &UWOInGameAchievementsComponent::GiveDeathAchievement);
 
-	UCraftingComponent* OwnerCraftingComponent = OwnerCharacter->GetCraftingComponent();
+	UCraftingComponent* OwnerCraftingComponent = OwnerCharacter->FindComponentByClass<UCraftingComponent>();
 	if (OwnerCraftingComponent)
 	{
 		OwnerCraftingComponent->OnItemCrafted.AddDynamic(this, &UWOInGameAchievementsComponent::CheckCraftAchievementConditions);
@@ -58,6 +67,7 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 
 void UWOInGameAchievementsComponent::GiveDeathAchievement()
 {
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Player Death occured."));
 	this->UnlockAchievement(ACH_RIP);
 }
 
