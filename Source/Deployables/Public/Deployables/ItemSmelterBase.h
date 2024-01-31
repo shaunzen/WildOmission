@@ -33,12 +33,7 @@ struct FSmeltResult
 
 };
 
-class UPointLightComponent;
-class UNiagaraComponent;
-
-// TODO for the smelting achievements
-// On smelt fire a delegate, that triggers on whoever "owns" this smelter
-// In the achievement component we can use to to determine what is going on
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemSmeltedSignature, const FInventoryItem&, RawItem, const FInventoryItem&, SmeltedItem);
 
 UCLASS()
 class DEPLOYABLES_API AItemSmelterBase : public AItemContainerBase
@@ -50,10 +45,16 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
 
+	// Begin IInteractable Interface
+	virtual void Interact(AActor* Interactor) override;
+	// End IInteractable Interface
+
 	UFUNCTION(Server, Reliable)
 	void Server_ToggleState(bool NewState);
 	
 	bool IsTurnedOn() const;
+
+	FOnItemSmeltedSignature OnItemSmelted;
 
 protected:
 	virtual void BeginPlay() override;
@@ -79,10 +80,10 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	UPointLightComponent* LightComponent;
+	class UPointLightComponent* LightComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* ParticlesComponent;
+	class UNiagaraComponent* ParticlesComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;

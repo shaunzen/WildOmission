@@ -5,6 +5,7 @@
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
 
 // Wild Omission Components
+#include "Components/InventoryManipulatorComponent.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/EquipComponent.h"
 #include "Components/CraftingComponent.h"
@@ -15,6 +16,7 @@
 
 // Wild Omission Deployables
 #include "Deployables/BuildingBlock.h"
+#include "Deployables/ItemSmelterBase.h"
 
 // List of defined in-game achievements
 const static FString ACH_HEY_IM_UP_HERE(TEXT("ACH_HEY_IM_UP_HERE"));
@@ -25,7 +27,7 @@ const static FString ACH_SLAYER(TEXT("ACH_SLAYER"));
 const static FString ACH_BITE_THE_HAND(TEXT("ACH_BITE_THE_HAND"));
 const static FString ACH_ITS_GLOWING_BLUE(TEXT("ACH_ITS_GLOWING_BLUE"));
 const static FString ACH_SHINY(TEXT("ACH_SHINY"));
-const static FString ACH_THE_BLACKSMITH(TEXT("ACH_THE_BLACKSMITH"));
+const static FString ACH_THE_SMELTER(TEXT("ACH_THE_SMELTER"));
 const static FString ACH_THE_MARKSMAN(TEXT("ACH_THE_MARKSMAN"));
 const static FString ACH_RIP(TEXT("ACH_RIP"));
 const static FString ACH_WOOD_COLLECTOR(TEXT("ACH_WOOD_COLLECTOR"));
@@ -66,6 +68,12 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 	// Character specific delegates
 	OwnerCharacter->OnPlayerDeath.AddDynamic(this, &UWOInGameAchievementsComponent::GiveDeathAchievement);
 
+	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = OwnerCharacter->FindComponentByClass<UInventoryManipulatorComponent>();
+	if (OwnerInventoryManipulatorComponent)
+	{
+		OwnerInventoryManipulatorComponent->OnOpenContainerChanged.AddDynamic(this, &UWOInGameAchievementsComponent::OnOpenContainerChanged);
+	}
+
 	UPlayerInventoryComponent* OwnerInventoryComponent = OwnerCharacter->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventoryComponent)
 	{
@@ -89,6 +97,48 @@ void UWOInGameAchievementsComponent::GiveDeathAchievement()
 {
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Player Death occured."));
 	this->UnlockAchievement(ACH_RIP);
+}
+
+void UWOInGameAchievementsComponent::OnOpenContainerChanged(UInventoryComponent* NewContainerInventory)
+{
+	if (NewContainerInventory == nullptr)
+	{
+		return;
+	}
+
+	AItemSmelterBase* ItemSmelter = Cast<AItemSmelterBase>(NewContainerInventory->GetOwner());
+	if (ItemSmelter == nullptr)
+	{
+		return;
+	}
+
+	ItemSmelter->OnItemSmelted.AddDynamic(this, &UWOInGameAchievementsComponent::OnItemSmelted);
+}
+
+void UWOInGameAchievementsComponent::OnItemSmelted(const FInventoryItem& RawItem, const FInventoryItem& SmeltedItem)
+{
+	FString SmeltedName = SmeltedItem.Name.ToString();
+	if (SmeltedName.Contains(TEXT("Cooked")))
+	{
+		StatsData.FoodCooked += SmeltedItem.Quantity;
+		if (StatsData.FoodCooked >= 1)
+		{
+			this->UnlockAchievement(ACH_KISS_THE_CHEF);
+		}
+	}
+	else if (SmeltedItem.Name == TEXT("metal"))
+	{
+		StatsData.MetalSmelted += SmeltedItem.Quantity;	
+	}
+	else if (SmeltedItem.Name == TEXT("sulfur"))
+	{
+		StatsData.SulfurSmelted += SmeltedItem.Quantity;
+	}
+
+	if ((StatsData.MetalSmelted + StatsData.SulfurSmelted) >= 100)
+	{
+		this->UnlockAchievement(ACH_THE_SMELTER);
+	}
 }
 
 void UWOInGameAchievementsComponent::OnItemEquiped(AEquipableItem* NewItem)

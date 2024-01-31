@@ -26,6 +26,12 @@ private:
 	void GiveDeathAchievement();
 
 	UFUNCTION()
+	void OnOpenContainerChanged(class UInventoryComponent* NewContainerInventory);
+
+	UFUNCTION()
+	void OnItemSmelted(const struct FInventoryItem& RawItem, const struct FInventoryItem& SmeltedItem);
+
+	UFUNCTION()
 	void OnItemEquiped(class AEquipableItem* NewItem);
 
 	UFUNCTION()

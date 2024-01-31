@@ -696,6 +696,15 @@ void AWildOmissionCharacter::HandleDeath()
 		OnPlayerDeath.Broadcast();
 	}
 
+	AController* LastDamageCauser = LastHitBy;
+	if (AWildOmissionCharacter* LastDamageCauserCharacter = Cast<AWildOmissionCharacter>(LastDamageCauser->GetPawn()))
+	{
+		if (LastDamageCauserCharacter->OnKilledAnotherPlayerSignature.IsBound())
+		{
+			LastDamageCauserCharacter->OnKilledAnotherPlayerSiganture.Broadcast(Cast<APlayerController>(this->GetController()));
+		}
+	}
+
 	this->Destroy();
 }
 

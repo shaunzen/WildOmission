@@ -47,6 +47,15 @@ struct ACHIEVEMENTS_API FAchievementStatsData
 	int32 BuildingBlocksPlaced;
 
 	UPROPERTY()
+	int32 FoodCooked;
+
+	UPROPERTY()
+	int32 MetalSmelted;
+
+	UPROPERTY()
+	int32 SulfurSmelted;
+
+	UPROPERTY()
 	int32 RangedHeadshots;
 
 	UPROPERTY()

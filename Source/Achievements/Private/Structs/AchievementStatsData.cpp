@@ -17,6 +17,11 @@ FAchievementStatsData::FAchievementStatsData()
 
 	BuildingBlocksPlaced = 0;
 
+	FoodCooked = 0;
+
+	MetalSmelted = 0;
+	SulfurSmelted = 0;
+
 	RangedHeadshots = 0;
 	RangedBodyshots = 0;
 
