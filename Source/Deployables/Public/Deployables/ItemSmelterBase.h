@@ -36,6 +36,10 @@ struct FSmeltResult
 class UPointLightComponent;
 class UNiagaraComponent;
 
+// TODO for the smelting achievements
+// On smelt fire a delegate, that triggers on whoever "owns" this smelter
+// In the achievement component we can use to to determine what is going on
+
 UCLASS()
 class DEPLOYABLES_API AItemSmelterBase : public AItemContainerBase
 {
