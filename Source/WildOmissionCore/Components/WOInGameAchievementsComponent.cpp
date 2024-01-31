@@ -185,10 +185,14 @@ void UWOInGameAchievementsComponent::CheckCraftAchievementConditions(const FName
 
 void UWOInGameAchievementsComponent::OnDeployablePlaced(ADeployable* DeployablePlaced)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Something Placed."));
-
-	if (DeployablePlaced->StaticClass() == ABuildingBlock::StaticClass())
+	if (ABuildingBlock* BuildingBlockPlaced = Cast<ABuildingBlock>(DeployablePlaced))
 	{
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Building Block Placed."));
+		++StatsData.BuildingBlocksPlaced;
+
+		if (StatsData.BuildingBlocksPlaced >= 25)
+		{
+			this->UnlockAchievement(ACH_BUILDER);
+		}
 	}
 }
