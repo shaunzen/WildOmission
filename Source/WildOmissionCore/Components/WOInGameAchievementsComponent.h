@@ -26,9 +26,15 @@ private:
 	void GiveDeathAchievement();
 
 	UFUNCTION()
+	void OnItemEquiped(class AEquipableItem* NewItem);
+
+	UFUNCTION()
 	void OnItemHarvested(const struct FInventoryItem& ItemHarvested);
 
 	UFUNCTION()
 	void CheckCraftAchievementConditions(const FName& ItemID);
+
+	UFUNCTION()
+	void OnDeployablePlaced(class ADeployable* DeployablePlaced);
 
 };

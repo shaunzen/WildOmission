@@ -29,10 +29,10 @@ struct ACHIEVEMENTS_API FAchievementStatsData
 	int32 SulfurOreHarvested;
 
 	UPROPERTY()
-	int32 GoldHarvested;
+	int32 RefinedMetalHarvested;
 
 	UPROPERTY()
-	int32 RefinedMetalHarvested;
+	int32 GoldHarvested;
 
 	UPROPERTY()
 	int32 LeatherHarvested;

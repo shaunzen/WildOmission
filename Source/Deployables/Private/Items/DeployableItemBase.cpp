@@ -82,6 +82,11 @@ void ADeployableItemBase::OnPrimaryPressed()
 	OnPlace();
 }
 
+UClass* ADeployableItemBase::GetDeployableActorClass() const
+{
+	return DeployableActorClass;
+}
+
 void ADeployableItemBase::OnPlace()
 {
 	AActor* OwnerActor = GetOwner();

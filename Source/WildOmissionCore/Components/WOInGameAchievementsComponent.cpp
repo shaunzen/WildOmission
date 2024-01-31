@@ -6,7 +6,15 @@
 
 // Wild Omission Components
 #include "Components/PlayerInventoryComponent.h"
+#include "Components/EquipComponent.h"
 #include "Components/CraftingComponent.h"
+
+// Wild Omission Items
+#include "Items/EquipableItem.h"
+#include "Items/DeployableItem.h"
+
+// Wild Omission Deployables
+#include "Deployables/BuildingBlock.h"
 
 // List of defined in-game achievements
 const static FString ACH_HEY_IM_UP_HERE(TEXT("ACH_HEY_IM_UP_HERE"));
@@ -14,7 +22,6 @@ const static FString ACH_UPGRADED_TOOL(TEXT("ACH_UPGRADED_TOOL"));
 const static FString ACH_KISS_THE_CHEF(TEXT("ACH_KISS_THE_CHEF"));
 const static FString ACH_BETTER_THAN_A_ROCK(TEXT("ACH_BETTER_THAN_A_ROCK"));
 const static FString ACH_SLAYER(TEXT("ACH_SLAYER"));
-const static FString ACH_IM_THE_REAL_LIFE(TEXT("ACH_IM_THE_REAL_LIFE"));
 const static FString ACH_BITE_THE_HAND(TEXT("ACH_BITE_THE_HAND"));
 const static FString ACH_ITS_GLOWING_BLUE(TEXT("ACH_ITS_GLOWING_BLUE"));
 const static FString ACH_SHINY(TEXT("ACH_SHINY"));
@@ -65,6 +72,12 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 		OwnerInventoryComponent->OnItemHarvested.AddDynamic(this, &UWOInGameAchievementsComponent::OnItemHarvested);
 	}
 
+	UEquipComponent* OwnerEquipComponent = OwnerCharacter->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent)
+	{
+		OwnerEquipComponent->OnItemEquiped.AddDynamic(this, &UWOInGameAchievementsComponent::OnItemEquiped);
+	}
+
 	UCraftingComponent* OwnerCraftingComponent = OwnerCharacter->FindComponentByClass<UCraftingComponent>();
 	if (OwnerCraftingComponent)
 	{
@@ -76,6 +89,19 @@ void UWOInGameAchievementsComponent::GiveDeathAchievement()
 {
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Player Death occured."));
 	this->UnlockAchievement(ACH_RIP);
+}
+
+void UWOInGameAchievementsComponent::OnItemEquiped(AEquipableItem* NewItem)
+{
+	// TODO in here we can cast NewItem and use it to bind delegates
+	if (ADeployableItem* DeployableItem = Cast<ADeployableItem>(NewItem))
+	{
+		DeployableItem->OnDeployablePlaced.AddDynamic(this, &UWOInGameAchievementsComponent::OnDeployablePlaced);
+
+		//UClass* DeployableClass = DeployableItem->GetDeployableActorClass();
+		//// TODO use something like this to check if everything is right
+		//(DeployableClass->GetSuperClass()->StaticClass() == ABuildingBlock::StaticClass());
+	}
 }
 
 void UWOInGameAchievementsComponent::OnItemHarvested(const FInventoryItem& ItemHarvested)
@@ -126,6 +152,21 @@ void UWOInGameAchievementsComponent::OnItemHarvested(const FInventoryItem& ItemH
 			this->UnlockAchievement(ACH_SHINY);
 		}
 	}
+	// Leather Achievements
+	else if (ItemHarvested.Name == TEXT("leather"))
+	{
+		StatsData.LeatherHarvested += ItemHarvested.Quantity;
+	}
+	// Berries Achievements
+	else if (ItemHarvested.Name == TEXT("berries"))
+	{
+		StatsData.BerriesHarvested += ItemHarvested.Quantity;
+	}
+	// Cloth Achievements
+	else if (ItemHarvested.Name == TEXT("cloth"))
+	{
+		StatsData.ClothHarvested += ItemHarvested.Quantity;
+	}
 }
 
 void UWOInGameAchievementsComponent::CheckCraftAchievementConditions(const FName& ItemID)
@@ -139,5 +180,15 @@ void UWOInGameAchievementsComponent::CheckCraftAchievementConditions(const FName
 	else if (ItemID == TEXT("pickaxe.stone") || ItemID == TEXT("hatchet.stone"))
 	{
 		this->UnlockAchievement(ACH_BETTER_THAN_A_ROCK);
+	}
+}
+
+void UWOInGameAchievementsComponent::OnDeployablePlaced(ADeployable* DeployablePlaced)
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Something Placed."));
+
+	if (DeployablePlaced->StaticClass() == ABuildingBlock::StaticClass())
+	{
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Building Block Placed."));
 	}
 }

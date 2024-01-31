@@ -7,10 +7,9 @@
 #include "EquipComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshEquipedSlotUISignature, const uint8&, SlotIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemEquipedSignature, AEquipableItem*, NewItem);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartAimingSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStopAimingSignature);
-
-class AEquipableItem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EQUIPABLEITEMS_API UEquipComponent : public USceneComponent
@@ -27,7 +26,7 @@ public:
 
 	void Setup(USkeletalMeshComponent* FirstPersonMeshComponent, USkeletalMeshComponent* ThirdPersonMeshComponent);
 
-	void EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID);
+	void EquipItem(const FName& ItemName, TSubclassOf<class AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID);
 
 	void Disarm();
 
@@ -59,12 +58,13 @@ public:
 	void OnReloadAnimationClimax(bool FirstPerson);
 
 	FRefreshEquipedSlotUISignature RefreshEquipedSlotUI;
-	
+	FOnItemEquipedSignature OnItemEquiped;
+
 	FOnStartAimingSignature OnStartAiming;
 	FOnStopAimingSignature OnStopAiming;
 
 	UFUNCTION(BlueprintCallable)
-	AEquipableItem* GetEquipedItem() const;
+	class AEquipableItem* GetEquipedItem() const;
 
 	UFUNCTION(BlueprintCallable)
 	UAnimSequence* GetEquipedItemPose() const;
@@ -106,10 +106,10 @@ private:
 	USkeletalMeshComponent* FirstPersonItemComponent;
 	
 	UPROPERTY(Replicated, ReplicatedUsing = OnRep_EquipedItem)
-	AEquipableItem* EquipedItem;
+	class AEquipableItem* EquipedItem;
 
 	UPROPERTY()
-	AEquipableItem* LocalEquipedItemDefaultClass;
+	class AEquipableItem* LocalEquipedItemDefaultClass;
 
 	UPROPERTY()
 	APawn* OwnerPawn;
@@ -132,7 +132,7 @@ private:
 	UFUNCTION()
 	void OnRep_EquipedItem();
 
-	void EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> ItemClass, const uint32& UniqueID);
+	void EquipFirstPersonViewModel(TSubclassOf<class AEquipableItem> ItemClass, const uint32& UniqueID);
 
 	UFUNCTION()
 	void RefreshEquip(const int8& NewSlotIndex, const FInventorySlot& NewSlot);
