@@ -26,6 +26,9 @@ private:
 	void GiveDeathAchievement();
 
 	UFUNCTION()
+	void OnKilledAnotherPlayer(APlayerController* KilledPlayer);
+
+	UFUNCTION()
 	void OnOpenContainerChanged(class UInventoryComponent* NewContainerInventory);
 
 	UFUNCTION()

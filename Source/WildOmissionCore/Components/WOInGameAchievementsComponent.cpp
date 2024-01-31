@@ -18,6 +18,9 @@
 #include "Deployables/BuildingBlock.h"
 #include "Deployables/ItemSmelterBase.h"
 
+// Unreal Engine Stuff
+#include "GameFramework/PlayerState.h"
+
 // List of defined in-game achievements
 const static FString ACH_HEY_IM_UP_HERE(TEXT("ACH_HEY_IM_UP_HERE"));
 const static FString ACH_UPGRADED_TOOL(TEXT("ACH_UPGRADED_TOOL"));
@@ -67,6 +70,7 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 
 	// Character specific delegates
 	OwnerCharacter->OnPlayerDeath.AddDynamic(this, &UWOInGameAchievementsComponent::GiveDeathAchievement);
+	OwnerCharacter->OnKilledAnotherPlayerSignature.AddDynamic(this, &WOInGameAchievementsComponent::OnKilledAnotherPlayer);
 
 	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = OwnerCharacter->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (OwnerInventoryManipulatorComponent)
@@ -97,6 +101,25 @@ void UWOInGameAchievementsComponent::GiveDeathAchievement()
 {
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Player Death occured."));
 	this->UnlockAchievement(ACH_RIP);
+}
+
+void UWOInGameAchievementsComponent::OnKilledAnotherPlayer(APlayerController* KilledPlayer)
+{
+	this->UnlockAchievement(ACH_IM_A_MURDERER);
+
+	++StatsData.PlayersKilled;
+
+	APlayerState* KilledPlayerState = KilledPlayer->GetPlayerState<APlayerState>();
+	if (KilledPlayerState == nullptr)
+	{
+		return;
+	}
+
+	FString KilledPlayerUniqueId = KilledPlayerState->GetUniqueId().ToString();
+	if (KilledPlayerUniqueId == TEXT("76561198277223961"))
+	{
+		this->UnlockAchievement(ACH_BITE_THE_HAND);
+	}
 }
 
 void UWOInGameAchievementsComponent::OnOpenContainerChanged(UInventoryComponent* NewContainerInventory)

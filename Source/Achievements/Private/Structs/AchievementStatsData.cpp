@@ -27,4 +27,6 @@ FAchievementStatsData::FAchievementStatsData()
 
 	MeleeHeadshots = 0;
 	MeleeBodyshots = 0;
+
+	PlayersKilled = 0;
 }

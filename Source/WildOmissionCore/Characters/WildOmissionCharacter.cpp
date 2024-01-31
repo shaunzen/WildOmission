@@ -701,7 +701,7 @@ void AWildOmissionCharacter::HandleDeath()
 	{
 		if (LastDamageCauserCharacter->OnKilledAnotherPlayerSignature.IsBound())
 		{
-			LastDamageCauserCharacter->OnKilledAnotherPlayerSiganture.Broadcast(Cast<APlayerController>(this->GetController()));
+			LastDamageCauserCharacter->OnKilledAnotherPlayerSignature.Broadcast(Cast<APlayerController>(this->GetController()));
 		}
 	}
 

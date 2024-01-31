@@ -13,9 +13,6 @@ struct ACHIEVEMENTS_API FAchievementStatsData
 
 	FAchievementStatsData();
 
-	// TODO make one of these for all harvestable resources, just for the future in case we add more achievements
-	// or just want to make a stat menu.
-
 	UPROPERTY()
 	int32 WoodHarvested;
 
@@ -66,5 +63,8 @@ struct ACHIEVEMENTS_API FAchievementStatsData
 
 	UPROPERTY()
 	int32 MeleeBodyshots;
+
+	UPROPERTY()
+	int32 PlayersKilled;
 
 };

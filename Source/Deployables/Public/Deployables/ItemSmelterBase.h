@@ -45,10 +45,6 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Tick(float DeltaTime) override;
 
-	// Begin IInteractable Interface
-	virtual void Interact(AActor* Interactor) override;
-	// End IInteractable Interface
-
 	UFUNCTION(Server, Reliable)
 	void Server_ToggleState(bool NewState);
 	
