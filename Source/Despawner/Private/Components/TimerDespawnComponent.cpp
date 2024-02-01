@@ -18,7 +18,8 @@ void UTimerDespawnComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!GetOwner()->HasAuthority())
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr || !OwnerActor->HasAuthority())
 	{
 		return;
 	}
@@ -27,7 +28,7 @@ void UTimerDespawnComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 	if (DespawnTimeSeconds < KINDA_SMALL_NUMBER)
 	{
-		GetOwner()->Destroy();
+		OwnerActor->Destroy();
 	}
 }
 
