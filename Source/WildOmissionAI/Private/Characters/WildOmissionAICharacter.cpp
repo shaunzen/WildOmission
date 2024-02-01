@@ -106,6 +106,7 @@ void AWildOmissionAICharacter::HandleDeath()
 			AttachedActor->AttachToComponent(SpawnedRagdoll->GetMeshComponent(), FAttachmentTransformRules::KeepRelativeTransform, Socket);
 		}
 	}
+
 	HandleDespawn();
 }
 

@@ -697,11 +697,14 @@ void AWildOmissionCharacter::HandleDeath()
 	}
 
 	AController* LastDamageCauser = LastHitBy;
-	if (AWildOmissionCharacter* LastDamageCauserCharacter = Cast<AWildOmissionCharacter>(LastDamageCauser->GetPawn()))
+	if (IsValid(LastDamageCauser))
 	{
-		if (LastDamageCauserCharacter->OnKilledAnotherPlayerSignature.IsBound())
+		if (AWildOmissionCharacter* LastDamageCauserCharacter = Cast<AWildOmissionCharacter>(LastDamageCauser->GetPawn()))
 		{
-			LastDamageCauserCharacter->OnKilledAnotherPlayerSignature.Broadcast(Cast<APlayerController>(this->GetController()));
+			if (LastDamageCauserCharacter->OnKilledAnotherPlayerSignature.IsBound())
+			{
+				LastDamageCauserCharacter->OnKilledAnotherPlayerSignature.Broadcast(Cast<APlayerController>(this->GetController()));
+			}
 		}
 	}
 
