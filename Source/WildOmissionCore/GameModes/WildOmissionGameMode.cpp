@@ -17,6 +17,7 @@
 #include "WildOmissionCore/WildOmissionGameState.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
+#include "WildOmissionCore/Components/WOInGameAchievementsComponent.h"
 #include "AchievementsManager.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -339,6 +340,32 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 	}
 }
 
+void AWildOmissionGameMode::GiveAllPlayersAchievement(const FString& AchievementID)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
+		{
+			continue;
+		}
+
+		UWOInGameAchievementsComponent* AchievementsComponent = PlayerController->FindComponentByClass<UWOInGameAchievementsComponent>();
+		if (AchievementsComponent == nullptr)
+		{
+			continue;
+		}
+
+		AchievementsComponent->UnlockAchievement(AchievementID);
+	}
+}
+
 ASaveManager* AWildOmissionGameMode::GetSaveManager() const
 {
 	return SaveManager;
@@ -404,7 +431,8 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 
 void AWildOmissionGameMode::ProcessMultiplayerJoinAchievement(AWildOmissionPlayerController* NewWildOmissionPlayer)
 {
-	if (NewWildOmissionPlayer == nullptr || NewWildOmissionPlayer->IsLocalPlayerController())
+	UWorld* World = GetWorld();
+	if (World == nullptr || NewWildOmissionPlayer == nullptr || NewWildOmissionPlayer->IsLocalPlayerController())
 	{
 		return;
 	}
@@ -421,11 +449,11 @@ void AWildOmissionGameMode::ProcessMultiplayerJoinAchievement(AWildOmissionPlaye
 	const FString NewPlayerUniqueId = NewPlayerState->GetUniqueId().ToString();
 	if (NewPlayerUniqueId == TEXT("76561198277223961")) // Larch's Steam ID
 	{
-		AchievementsManager->UnlockAchievement(TEXT("ACH_IM_THE_REAL_LARCH"));
+		GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_LARCH"));
 	}
 	else if (NewPlayerUniqueId == TEXT("76561198242206838")) // LifeOn30FPS's Steam ID
 	{
-		AchievementsManager->UnlockAchievement(TEXT("ACH_IM_THE_REAL_LIFE"));
+		GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_LIFE"));
 	}
 }
 

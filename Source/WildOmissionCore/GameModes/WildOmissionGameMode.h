@@ -63,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void Weather(const FString& WeatherToSet);
 
+	UFUNCTION(BlueprintCallable, Exec)
+	void GiveAllPlayersAchievement(const FString& AchievementID);
+
 	ASaveManager* GetSaveManager() const;
 	AChunkManager* GetChunkManager() const;
 	AWeatherManager* GetWeatherManager() const;
