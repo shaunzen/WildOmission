@@ -53,16 +53,10 @@ struct ACHIEVEMENTS_API FAchievementStatsData
 	int32 SulfurSmelted;
 
 	UPROPERTY()
-	int32 RangedHeadshots;
+	int32 Headshots;
 
 	UPROPERTY()
-	int32 RangedBodyshots;
-
-	UPROPERTY()
-	int32 MeleeHeadshots;
-
-	UPROPERTY()
-	int32 MeleeBodyshots;
+	int32 Bodyshots;
 
 	UPROPERTY()
 	int32 PlayersKilled;

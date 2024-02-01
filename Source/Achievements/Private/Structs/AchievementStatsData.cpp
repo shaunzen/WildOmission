@@ -22,11 +22,8 @@ FAchievementStatsData::FAchievementStatsData()
 	MetalSmelted = 0;
 	SulfurSmelted = 0;
 
-	RangedHeadshots = 0;
-	RangedBodyshots = 0;
-
-	MeleeHeadshots = 0;
-	MeleeBodyshots = 0;
+	Headshots = 0;
+	Bodyshots = 0;
 
 	PlayersKilled = 0;
 }

@@ -575,6 +575,26 @@ void UEquipComponent::StopAiming()
 	OnStopAiming.Broadcast();
 }
 
+void UEquipComponent::HandleHeadshot()
+{
+	if (OnHitmarker.IsBound())
+	{
+		OnHitmarker.Broadcast(true);
+	}
+
+	Client_PlayHeadshotHitmarkerSound();
+}
+
+void UEquipComponent::HandleBodyshot()
+{
+	if (OnHitmarker.IsBound())
+	{
+		OnHitmarker.Broadcast(false);
+	}
+
+	Client_PlayHitmarkerSound();
+}
+
 void UEquipComponent::Client_PlayHitmarkerSound_Implementation()
 {
 	UWorld* World = GetWorld();

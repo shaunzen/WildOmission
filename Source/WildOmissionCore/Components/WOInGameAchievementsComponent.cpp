@@ -88,6 +88,7 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 	if (OwnerEquipComponent)
 	{
 		OwnerEquipComponent->OnItemEquiped.AddDynamic(this, &UWOInGameAchievementsComponent::OnItemEquiped);
+		OwnerEquipComponent->OnHitmarker.AddDynamic(this, &UWOInGameAchievementsComponent::OnHitmarker);
 	}
 
 	UCraftingComponent* OwnerCraftingComponent = OwnerCharacter->FindComponentByClass<UCraftingComponent>();
@@ -267,5 +268,15 @@ void UWOInGameAchievementsComponent::OnDeployablePlaced(ADeployable* DeployableP
 		{
 			this->UnlockAchievement(ACH_BUILDER);
 		}
+	}
+}
+
+void UWOInGameAchievementsComponent::OnHitmarker(bool IsHeadshot)
+{
+	IsHeadshot ? ++StatsData.Headshots : ++StatsData.Bodyshots;
+
+	if (StatsData.Headshots >= 100)
+	{
+		this->UnlockAchievement(ACH_THE_MARKSMAN);
 	}
 }

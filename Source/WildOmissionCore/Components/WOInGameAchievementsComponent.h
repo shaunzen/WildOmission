@@ -46,4 +46,7 @@ private:
 	UFUNCTION()
 	void OnDeployablePlaced(class ADeployable* DeployablePlaced);
 
+	UFUNCTION()
+	void OnHitmarker(bool IsHeadshot);
+
 };

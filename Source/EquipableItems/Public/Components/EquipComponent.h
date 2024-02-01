@@ -8,8 +8,10 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshEquipedSlotUISignature, const uint8&, SlotIndex);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemEquipedSignature, AEquipableItem*, NewItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHitmarkerSignature, bool, IsHeadshot);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartAimingSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStopAimingSignature);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EQUIPABLEITEMS_API UEquipComponent : public USceneComponent
@@ -63,6 +65,8 @@ public:
 	FOnStartAimingSignature OnStartAiming;
 	FOnStopAimingSignature OnStopAiming;
 
+	FOnHitmarkerSignature OnHitmarker;
+	
 	UFUNCTION(BlueprintCallable)
 	class AEquipableItem* GetEquipedItem() const;
 
@@ -92,11 +96,10 @@ public:
 	void StartAiming();
 	void StopAiming();
 
-	UFUNCTION(Client, Reliable)
-	void Client_PlayHitmarkerSound();
-
-	UFUNCTION(Client, Reliable)
-	void Client_PlayHeadshotHitmarkerSound();
+	UFUNCTION()
+	void HandleHeadshot();
+	UFUNCTION()
+	void HandleBodyshot();
 
 protected:
 	virtual void BeginPlay() override;
@@ -128,6 +131,12 @@ private:
 
 	UPROPERTY()
 	USoundBase* HeadshotHitmarkerSound;
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayHitmarkerSound();
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayHeadshotHitmarkerSound();
 
 	UFUNCTION()
 	void OnRep_EquipedItem();
