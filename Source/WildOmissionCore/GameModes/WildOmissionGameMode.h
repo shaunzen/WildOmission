@@ -100,6 +100,8 @@ private:
 	UPROPERTY()
 	AGameChatManager* ChatManager;
 
+	void ProcessMultiplayerJoinAchievement(class AWildOmissionPlayerController* NewWildOmissionPlayer);
+
 	void SpawnHumanAtStartSpot(AController* Controller);
 	void SpawnHumanAtBed(AController* Controller);
 

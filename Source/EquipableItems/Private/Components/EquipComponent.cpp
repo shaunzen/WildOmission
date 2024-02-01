@@ -575,24 +575,13 @@ void UEquipComponent::StopAiming()
 	OnStopAiming.Broadcast();
 }
 
-void UEquipComponent::HandleHeadshot()
+void UEquipComponent::HandleHitmarker(bool IsHeadshot)
 {
 	if (OnHitmarker.IsBound())
 	{
-		OnHitmarker.Broadcast(true);
+		OnHitmarker.Broadcast(IsHeadshot);
 	}
-
-	Client_PlayHeadshotHitmarkerSound();
-}
-
-void UEquipComponent::HandleBodyshot()
-{
-	if (OnHitmarker.IsBound())
-	{
-		OnHitmarker.Broadcast(false);
-	}
-
-	Client_PlayHitmarkerSound();
+	IsHeadshot ? Client_PlayHeadshotHitmarkerSound() : Client_PlayHitmarkerSound();
 }
 
 void UEquipComponent::Client_PlayHitmarkerSound_Implementation()

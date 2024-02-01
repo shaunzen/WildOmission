@@ -97,10 +97,8 @@ public:
 	void StopAiming();
 
 	UFUNCTION()
-	void HandleHeadshot();
-	UFUNCTION()
-	void HandleBodyshot();
-
+	void HandleHitmarker(bool IsHeadshot);
+	
 protected:
 	virtual void BeginPlay() override;
 

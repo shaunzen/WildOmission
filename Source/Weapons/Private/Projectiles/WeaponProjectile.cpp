@@ -192,8 +192,7 @@ void AWeaponProjectile::PlayHitmarkerSound(bool Headshot)
 		return;
 	}
 	
-	Headshot ? OwnerEquipComponent->Client_PlayHeadshotHitmarkerSound()
-		: OwnerEquipComponent->Client_PlayHitmarkerSound();
+	OwnerEquipComponent->HandleHitmarker(Headshot);
 }
 
 void AWeaponProjectile::Multi_SpawnImpactEffects_Implementation(const FHitResult& HitResult)

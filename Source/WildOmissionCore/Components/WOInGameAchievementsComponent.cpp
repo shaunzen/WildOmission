@@ -70,7 +70,7 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 
 	// Character specific delegates
 	OwnerCharacter->OnPlayerDeath.AddDynamic(this, &UWOInGameAchievementsComponent::GiveDeathAchievement);
-	OwnerCharacter->OnKilledAnotherPlayerSignature.AddDynamic(this, &WOInGameAchievementsComponent::OnKilledAnotherPlayer);
+	OwnerCharacter->OnKilledAnotherPlayerSignature.AddDynamic(this, &UWOInGameAchievementsComponent::OnKilledAnotherPlayer);
 
 	UInventoryManipulatorComponent* OwnerInventoryManipulatorComponent = OwnerCharacter->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (OwnerInventoryManipulatorComponent)
