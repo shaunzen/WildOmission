@@ -17,6 +17,7 @@ AItemSmelterBase::AItemSmelterBase()
 	bFollowsSurfaceNormal = true;
 
 	SmeltTimeSeconds = 5.0f;
+	SmeltCounter = 0.0f;
 	ContainerName = TEXT("Item Smelter");
 
 	GetInventoryComponent()->SetDisplayName(TEXT("Item Smelter"));
@@ -48,7 +49,13 @@ void AItemSmelterBase::Tick(float DeltaTime)
 		return;
 	}
 
-	SmeltingTick();
+	SmeltCounter += DeltaTime;
+
+	if (SmeltCounter >= SmeltTimeSeconds)
+	{
+		OnSmelt();
+		SmeltCounter = 0.0f;
+	}
 }
 
 bool AItemSmelterBase::IsTurnedOn() const
@@ -63,14 +70,8 @@ void AItemSmelterBase::BeginPlay()
 	OnRep_TurnedOn();
 }
 
-void AItemSmelterBase::SmeltingTick()
+void AItemSmelterBase::OnSmelt()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr || World->GetTimerManager().IsTimerActive(SmeltTimerHandle))
-	{
-		return;
-	}
-	
 	UInventoryComponent* SmelterInventoryComponent = GetInventoryComponent();
 	if (SmelterInventoryComponent == nullptr)
 	{
@@ -90,11 +91,6 @@ void AItemSmelterBase::SmeltingTick()
 		return;
 	}
 
-	World->GetTimerManager().SetTimer(SmeltTimerHandle, this, &AItemSmelterBase::OnSmelt, SmeltTimeSeconds, false);
-}
-
-void AItemSmelterBase::OnSmelt()
-{
 	if (!BurnFuel())
 	{
 		return;
@@ -208,12 +204,6 @@ void AItemSmelterBase::OnLoadComplete_Implementation()
 void AItemSmelterBase::Server_ToggleState_Implementation(bool NewState)
 {
 	bTurnedOn = NewState;
-
-	UWorld* World = GetWorld();
-	if (World && bTurnedOn == false)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(SmeltTimerHandle);
-	}
 
 	OnRep_TurnedOn();
 }

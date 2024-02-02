@@ -56,9 +56,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	virtual void SmeltingTick();
-
-	UFUNCTION()
 	virtual void OnSmelt();
 
 	virtual void OnTurnedOn();
@@ -86,8 +83,9 @@ private:
 
 	UPROPERTY(Replicated, ReplicatedUsing = "OnRep_TurnedOn", SaveGame)
 	bool bTurnedOn;
-
-	FTimerHandle SmeltTimerHandle;
+	
+	UPROPERTY()
+	float SmeltCounter;
 
 	bool BurnFuel();
 	void SmeltAllSmeltables();
