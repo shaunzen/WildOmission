@@ -691,6 +691,23 @@ void AWildOmissionCharacter::HandleDeath()
 
 	RagdollInventoryComponent->Load(InventoryComponent->Save());
 	
+	if (OnPlayerDeath.IsBound())
+	{
+		OnPlayerDeath.Broadcast();
+	}
+
+	AController* LastDamageCauser = LastHitBy;
+	if (IsValid(LastDamageCauser))
+	{
+		if (AWildOmissionCharacter* LastDamageCauserCharacter = Cast<AWildOmissionCharacter>(LastDamageCauser->GetPawn()))
+		{
+			if (LastDamageCauserCharacter->OnKilledAnotherPlayerSignature.IsBound())
+			{
+				LastDamageCauserCharacter->OnKilledAnotherPlayerSignature.Broadcast(Cast<APlayerController>(this->GetController()));
+			}
+		}
+	}
+
 	this->Destroy();
 }
 

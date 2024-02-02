@@ -13,8 +13,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryUpdateSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryItemUpdateSignature, const FInventoryItemUpdate&, ItemUpdate);
-
-class UUserWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemHarvestedSignature, const FInventoryItem&, ItemHarvested);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class INVENTORY_API UInventoryComponent : public UActorComponent, public ISavableObject
@@ -29,7 +28,7 @@ public:
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable)
-	void AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems = nullptr, bool ForceClientUpdate = false);
+	void AddItem(const FInventoryItem& ItemToAdd, bool FromHarvesting = false, AActor* ActorToSpawnDropedItems = nullptr, bool ForceClientUpdate = false);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem(const FInventoryItem& ItemToRemove);	
@@ -41,6 +40,7 @@ public:
 
 	FInventoryUpdateSignature OnUpdate;
 	FOnInventoryItemUpdateSignature OnItemUpdate;
+	FOnItemHarvestedSignature OnItemHarvested;
 
 	FInventoryItem* FindItemWithUniqueID(const uint32& UniqueID);
 	FInventorySlot* FindSlotContainingItem(const FName& ItemToFind);	
@@ -78,7 +78,7 @@ protected:
 	FInventoryState ServerState;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> WidgetClass;
+	TSubclassOf<class UUserWidget> WidgetClass;
 
 	UFUNCTION()
 	virtual void OnRep_ServerState();

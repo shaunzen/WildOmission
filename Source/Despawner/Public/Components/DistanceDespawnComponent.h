@@ -17,13 +17,14 @@ public:
 	// Sets default values for this component's properties
 	UDistanceDespawnComponent();
 
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	FOnDespawnConditionMetSignature OnDespawnConditionMet;
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
 private:	
+	UPROPERTY()
+	float ConditionCheckCounter;
+
 	UFUNCTION()
 	void CheckDespawnConditions();
 

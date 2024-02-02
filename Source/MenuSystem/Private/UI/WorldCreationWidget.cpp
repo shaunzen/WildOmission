@@ -8,6 +8,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Widget.h"
 #include "Interfaces/GameSaveLoadController.h"
+#include "AchievementsManager.h"
 #include "Log.h"
 
 UWorldCreationWidget::UWorldCreationWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -129,6 +130,14 @@ void UWorldCreationWidget::CreateWorld()
 	}
 
 	OnOpenWorldMenuRequested.Broadcast(NewWorldName);
+
+	UAchievementsManager* AchievementsManager = UAchievementsManager::GetAchievementsManager();
+	if (AchievementsManager == nullptr)
+	{
+		return;
+	}
+
+	AchievementsManager->UnlockAchievement(TEXT("ACH_INFINITE_POSSIBILITIES"));
 }
 
 void UWorldCreationWidget::BroadcastOnCancelButtonClicked()

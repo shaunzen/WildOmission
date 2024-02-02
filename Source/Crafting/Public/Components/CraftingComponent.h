@@ -7,6 +7,8 @@
 #include "Structs/CraftingRecipe.h"
 #include "CraftingComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemCraftedSignature, const FName&, ItemID);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CRAFTING_API UCraftingComponent : public UActorComponent
 {
@@ -18,6 +20,8 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_CraftItem(const FName& ItemToCraft);
+
+	FOnItemCraftedSignature OnItemCrafted;
 
 	static TArray<FName> GetAllRecipes();
 

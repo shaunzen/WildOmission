@@ -154,7 +154,12 @@ void AItemSmelterBase::SmeltAllSmeltables()
 		}
 
 		SmelterInventoryComponent->RemoveItem(Smeltable.RawItem);
-		SmelterInventoryComponent->AddItem(Smeltable.SmeltedItem, this);
+		SmelterInventoryComponent->AddItem(Smeltable.SmeltedItem, false, this);
+
+		if (OnItemSmelted.IsBound())
+		{
+			OnItemSmelted.Broadcast(Smeltable.RawItem, Smeltable.SmeltedItem);
+		}
 	}
 }
 

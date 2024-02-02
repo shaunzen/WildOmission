@@ -27,6 +27,11 @@ void ADeployableItem::OnPlace()
 
 	SpawnedDeployable->OnSpawn();
 
+	if (OnDeployablePlaced.IsBound())
+	{
+		OnDeployablePlaced.Broadcast(SpawnedDeployable);
+	}
+
 	Super::OnPlace();
 }
 

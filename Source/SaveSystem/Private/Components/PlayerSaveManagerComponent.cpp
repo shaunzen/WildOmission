@@ -20,6 +20,8 @@ UPlayerSaveManagerComponent::UPlayerSaveManagerComponent()
 void UPlayerSaveManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// TODO world dereferencing is a no no
 	
 	FTimerHandle UpdatePendingTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveManagerComponent::AddAllToPending, 60.0f, true);

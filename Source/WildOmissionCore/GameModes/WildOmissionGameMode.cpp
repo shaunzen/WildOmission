@@ -17,6 +17,8 @@
 #include "WildOmissionCore/WildOmissionGameState.h"
 #include "WildOmissionCore/PlayerControllers/WildOmissionPlayerController.h"
 #include "WildOmissionCore/Characters/WildOmissionCharacter.h"
+#include "WildOmissionCore/Components/WOInGameAchievementsComponent.h"
+#include "AchievementsManager.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
@@ -67,12 +69,14 @@ void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Addr
 void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	
+
 	AWildOmissionPlayerController* NewWildOmissionPlayer = Cast<AWildOmissionPlayerController>(NewPlayer);
 	if (NewWildOmissionPlayer == nullptr)
 	{
 		return;
 	}
+
+	ProcessMultiplayerJoinAchievement(NewWildOmissionPlayer);
 
 	SaveManager->GetPlayerManager()->Load(NewPlayer);
 
@@ -336,6 +340,32 @@ void AWildOmissionGameMode::Weather(const FString& WeatherToSet)
 	}
 }
 
+void AWildOmissionGameMode::GiveAllPlayersAchievement(const FString& AchievementID)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController == nullptr)
+		{
+			continue;
+		}
+
+		UWOInGameAchievementsComponent* AchievementsComponent = PlayerController->FindComponentByClass<UWOInGameAchievementsComponent>();
+		if (AchievementsComponent == nullptr)
+		{
+			continue;
+		}
+
+		AchievementsComponent->UnlockAchievement(AchievementID);
+	}
+}
+
 ASaveManager* AWildOmissionGameMode::GetSaveManager() const
 {
 	return SaveManager;
@@ -396,6 +426,51 @@ void AWildOmissionGameMode::LogPlayerInventorySlots()
 			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Index: %i, Item: %s, Quantity: %i"), Slot.Index, *Slot.Item.Name.ToString(), Slot.Item.Quantity));
 		}
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: "), *Character->GetActorNameOrLabel()));
+	}
+}
+
+void AWildOmissionGameMode::ProcessMultiplayerJoinAchievement(AWildOmissionPlayerController* NewWildOmissionPlayer)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || NewWildOmissionPlayer == nullptr || NewWildOmissionPlayer->IsLocalPlayerController())
+	{
+		return;
+	}
+
+	APlayerState* NewPlayerState = NewWildOmissionPlayer->GetPlayerState<APlayerState>();
+	UAchievementsManager* AchievementsManager = UAchievementsManager::GetAchievementsManager();
+	if (NewPlayerState == nullptr || AchievementsManager == nullptr)
+	{
+		return;
+	}
+
+	AchievementsManager->UnlockAchievement(TEXT("ACH_I_HAVE_FRIENDS"));
+
+	APlayerController* HostPlayerController = World->GetFirstPlayerController();
+	if (HostPlayerController == nullptr)
+	{
+		return;
+	}
+
+	APlayerState* HostPlayerState = HostPlayerController->GetPlayerState<APlayerState>();
+	if (HostPlayerState == nullptr)
+	{
+		return;
+	}
+
+	const FString LarchUniqueId = TEXT("76561198277223961");
+	const FString LifeUniqueId = TEXT("76561198242206838");
+
+	const FString NewPlayerUniqueId = NewPlayerState->GetUniqueId().ToString();
+	const FString HostPlayerUniqueId = HostPlayerState->GetUniqueId().ToString();
+
+	if (HostPlayerUniqueId == LarchUniqueId || NewPlayerUniqueId == LarchUniqueId)
+	{
+		GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_LARCH"));
+	}
+	else if (HostPlayerUniqueId == LifeUniqueId || NewPlayerUniqueId == LifeUniqueId)
+	{
+		GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_LIFE"));
 	}
 }
 

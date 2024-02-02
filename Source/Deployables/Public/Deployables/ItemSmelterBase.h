@@ -33,8 +33,7 @@ struct FSmeltResult
 
 };
 
-class UPointLightComponent;
-class UNiagaraComponent;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemSmeltedSignature, const FInventoryItem&, RawItem, const FInventoryItem&, SmeltedItem);
 
 UCLASS()
 class DEPLOYABLES_API AItemSmelterBase : public AItemContainerBase
@@ -50,6 +49,8 @@ public:
 	void Server_ToggleState(bool NewState);
 	
 	bool IsTurnedOn() const;
+
+	FOnItemSmeltedSignature OnItemSmelted;
 
 protected:
 	virtual void BeginPlay() override;
@@ -75,10 +76,10 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	UPointLightComponent* LightComponent;
+	class UPointLightComponent* LightComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* ParticlesComponent;
+	class UNiagaraComponent* ParticlesComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComponent;

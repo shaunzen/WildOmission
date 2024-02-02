@@ -6,9 +6,6 @@
 #include "Items/EquipableItem.h"
 #include "DeployableItemBase.generated.h"
 
-class ADeployable;
-class ADeployablePreview;
-
 UCLASS()
 class DEPLOYABLES_API ADeployableItemBase : public AEquipableItem
 {
@@ -26,9 +23,11 @@ public:
 
 	virtual void OnPrimaryPressed() override;
 
+	UClass* GetDeployableActorClass() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ADeployable> DeployableActorClass;
+	TSubclassOf<class ADeployable> DeployableActorClass;
 
 	UPROPERTY(EditDefaultsOnly)
 	float DeployableRange;
@@ -58,7 +57,7 @@ protected:
 	void Client_DestroyPreview();
 
 	UPROPERTY()
-	ADeployablePreview* PreviewActor;
+	class ADeployablePreview* PreviewActor;
 
 private:
 	void UpdatePreview();

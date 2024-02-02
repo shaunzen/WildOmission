@@ -9,6 +9,7 @@
 #include "Components/ExponentialHeightFogComponent.h"
 #include "TimeOfDayManager.h"
 #include "WildOmissionGameUserSettings.h"
+#include "AchievementsManager.h"
 #include "Components/PostProcessComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
@@ -217,6 +218,11 @@ void USpecialEffectsManagerComponent::EnableRainfallEffects(float RainDensity)
 		PreviouslyHitStorm->SetLocalPlayerUnderneath(true);
 	}
 
+	UAchievementsManager* AchievementsManager = UAchievementsManager::GetAchievementsManager();
+	if (AchievementsManager)
+	{
+		AchievementsManager->UnlockAchievement(TEXT("ACH_ITS_STORMING"));
+	}
 }
 
 void USpecialEffectsManagerComponent::DisableRainfallEffects()

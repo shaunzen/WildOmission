@@ -63,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable, Exec)
 	void Weather(const FString& WeatherToSet);
 
+	UFUNCTION(BlueprintCallable, Exec)
+	void GiveAllPlayersAchievement(const FString& AchievementID);
+
 	ASaveManager* GetSaveManager() const;
 	AChunkManager* GetChunkManager() const;
 	AWeatherManager* GetWeatherManager() const;
@@ -99,6 +102,8 @@ private:
 	
 	UPROPERTY()
 	AGameChatManager* ChatManager;
+
+	void ProcessMultiplayerJoinAchievement(class AWildOmissionPlayerController* NewWildOmissionPlayer);
 
 	void SpawnHumanAtStartSpot(AController* Controller);
 	void SpawnHumanAtBed(AController* Controller);

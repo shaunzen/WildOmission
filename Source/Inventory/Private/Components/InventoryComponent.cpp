@@ -69,7 +69,7 @@ void UInventoryComponent::BeginPlay()
 	OnRep_ServerState();
 }
 
-void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* ActorToSpawnDropedItems, bool ForceClientUpdate)
+void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, bool FromHarvesting, AActor* ActorToSpawnDropedItems, bool ForceClientUpdate)
 {
 	AActor* OwningActor = GetOwner();
 	if (OwningActor == nullptr)
@@ -100,6 +100,14 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, AActor* Actor
 	// Calculate how many were added and add that amount to our contents
 	AmountAdded = ItemToAdd.Quantity - Remaining;
 	UseServerState ? ServerState.Contents.AddItem(ItemToAdd.Name, AmountAdded) : Contents.AddItem(ItemToAdd.Name, AmountAdded);
+
+	if (FromHarvesting && OnItemHarvested.IsBound())
+	{
+		FInventoryItem ItemHarvested;
+		ItemHarvested.Name = ItemToAdd.Name;
+		ItemHarvested.Quantity = AmountAdded;
+		OnItemHarvested.Broadcast(ItemHarvested);
+	}
 
 	if (UseServerState == true && AddSuccess == false)
 	{
@@ -208,7 +216,6 @@ void UInventoryComponent::SpawnWorldItem(UWorld* WorldContextObject, const FInve
 	{
 		return;
 	}
-
 
 	// Update world items properties
 	WorldItem->SetItem(ItemToSpawn);
@@ -319,29 +326,20 @@ void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& I
 			UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
 
 			// Add item to the container's inventory
-			Interaction.Manipulator->GetOpenContainer()->AddItem(MovingItem, GetOwner());
+			Interaction.Manipulator->GetOpenContainer()->AddItem(MovingItem, false, GetOwner());
 		}
 		else // Move within the player's inventory
 		{
 			// Store the slot's item information
 			FInventoryItem MovingItem = UseServerState ? ServerState.Slots[Interaction.SlotIndex].Item : Slots[Interaction.SlotIndex].Item;
+			
+			// Clear this slot before performing quick move
+			UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
 
 			// Find the best availible slot and add the item to it
 			const bool FromToolbar = Interaction.SlotIndex < 6;
-			int32 Remaining = 0; // THIS ISNT USED HERE
+			int32 Remaining = 0;
 			const bool AddedAll = AddItemToSlots(MovingItem, Remaining, FromToolbar);
-			
-			if (AddedAll)
-			{
-				// Remove this slot's item
-				UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
-			}
-			else
-			{
-				FInventoryItem NewItem = MovingItem;
-				NewItem.Quantity = Remaining;
-				UseServerState ? ServerState.Slots[Interaction.SlotIndex].SetItem(NewItem) : Slots[Interaction.SlotIndex].SetItem(NewItem);
-			}
 			
 		}
 	}
@@ -600,6 +598,8 @@ void UInventoryComponent::BroadcastItemUpdate(const FInventoryItemUpdate& ItemUp
 
 bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining, const int32& RowsToSkip)
 {
+	Remaining = ItemToAdd.Quantity;
+
 	FItemData* ItemData = GetItemData(ItemToAdd.Name);
 	if (ItemData == nullptr)
 	{
@@ -607,7 +607,6 @@ bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32&
 	}
 
 	uint32 UniqueID = FMath::RandRange(1, 999999);
-	Remaining = ItemToAdd.Quantity;
 	
 	// if the item stats are empty populate with defaults
 	TArray<FItemStat> ItemStats;
@@ -639,7 +638,6 @@ bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const
 	const bool UseServerState = OwningActor->HasAuthority();
 
 	TArray<FInventorySlot>& SlotArray = UseServerState ? ServerState.Slots : Slots;
-	// TODO might need to decrement before using?
 	const int32 StartIndex = RowsToSkip * 6;
 	for (int32 i = StartIndex; i < SlotArray.Num(); i++)
 	{
@@ -649,7 +647,7 @@ bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const
 			break;
 		}
 
-		if (Slot.Item.Quantity == GetItemData(ItemName)->StackSize || Slot.Item.Name != ItemName)
+		if (Slot.Item.Name != ItemName || Slot.Item.Quantity == 0 || Slot.Item.Quantity >= GetItemData(ItemName)->StackSize)
 		{
 			continue;
 		}
@@ -685,6 +683,7 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, const int
 	const bool UseServerState = OwningActor->HasAuthority();
 	TArray<FInventorySlot>& SlotArray = UseServerState ? ServerState.Slots : Slots;
 	const int32 StartIndex = RowsToSkip * 6;
+
 	for (int32 i = StartIndex; i < SlotArray.Num(); i++)
 	{
 		FInventorySlot& Slot = SlotArray[i];
@@ -693,6 +692,7 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, const int
 		{
 			break;
 		}
+
 		if (Slot.Item.Quantity > 0)
 		{
 			continue;

@@ -7,6 +7,9 @@
 #include "Interfaces/CharacterSettingsInterface.h"
 #include "WildOmissionCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeathSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledAnotherPlayerSignature, APlayerController*, KilledPlayer);
+
 UCLASS()
 class WILDOMISSIONCORE_API AWildOmissionCharacter : public ACharacter, public ICharacterSettingsInterface
 {
@@ -40,6 +43,9 @@ public:
 
 	UFUNCTION()
 	void HandleDeath();
+
+	FOnPlayerDeathSignature OnPlayerDeath;
+	FOnKilledAnotherPlayerSignature OnKilledAnotherPlayerSignature;
 	
 	UFUNCTION()
 	void SetGodMode(bool GodMode);

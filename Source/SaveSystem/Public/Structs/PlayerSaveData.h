@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "VitalsSaveData.h"
 #include "InventorySaveData.h"
+#include "Structs/AchievementStatsData.h"
 #include "PlayerSaveData.generated.h"
 
 USTRUCT()
@@ -42,5 +43,8 @@ struct SAVESYSTEM_API FPlayerSaveData
 
 	UPROPERTY()
 	TArray<uint8> SelectedItemByteData;
+
+	UPROPERTY()
+	FAchievementStatsData AchievementStatsData;
 
 };

@@ -11,6 +11,16 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"UMG",
+				"CoreUObject",
+				"Achievements"
+			]
+		},
+		{
+			"Name": "Achievements",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
 				"CoreUObject"
 			]
 		},

@@ -40,14 +40,14 @@ void UHarvestableComponent::OnHarvest(AActor* HarvestingActor, float GatherMulti
 	TArray<FInventoryItem>& DropList = GiveQualityToolDrop ? QualityToolDrops : CommonDrops;
 
 	FInventoryItem Drop = HandleYieldFromList(DropList, GatherMultiplier);
-	HarvestingInventoryComponent->AddItem(Drop);
+	HarvestingInventoryComponent->AddItem(Drop, true);
 
 	// Calculate Rare Drops
 	const bool GiveRareDrop = !RareDrops.IsEmpty() && UKismetMathLibrary::RandomBoolWithWeight(NormalizedRareDropChance);
 	if (GiveRareDrop)
 	{
 		FInventoryItem RareDrop = HandleYieldFromList(RareDrops, GatherMultiplier);
-		HarvestingInventoryComponent->AddItem(RareDrop);
+		HarvestingInventoryComponent->AddItem(RareDrop, true);
 	}
 
 	Durability--;

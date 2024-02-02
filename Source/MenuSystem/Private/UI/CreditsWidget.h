@@ -22,6 +22,9 @@ public:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* AboutTextBlock;
+	
+	UPROPERTY(Meta = (BindWidget))
 	class UButton* BackButton;
 
 	UFUNCTION()

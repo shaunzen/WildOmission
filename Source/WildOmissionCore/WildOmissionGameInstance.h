@@ -109,6 +109,9 @@ private:
 
 	IOnlineFriendsPtr FriendsInterface;
 
+	UPROPERTY()
+	class UAchievementsManager* AchievementsManager;
+
 	void OnCreateSessionComplete(FName SessionName, bool Success);
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);

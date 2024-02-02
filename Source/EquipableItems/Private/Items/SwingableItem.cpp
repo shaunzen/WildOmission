@@ -324,8 +324,7 @@ void ASwingableItem::PlayHitmarkerSound(bool Headshot)
 		return;
 	}
 
-	Headshot ? OwnerEquipComponent->Client_PlayHeadshotHitmarkerSound()
-		: OwnerEquipComponent->Client_PlayHitmarkerSound();
+	OwnerEquipComponent->HandleHitmarker(Headshot);
 }
 
 FVector ASwingableItem::GetTraceStart() const

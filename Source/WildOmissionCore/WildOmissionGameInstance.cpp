@@ -14,6 +14,7 @@
 #include "UI/LoadingMenuWidget.h"
 #include "WildOmissionSaveGame.h"
 #include "WildOmissionGameUserSettings.h"
+#include "AchievementsManager.h"
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundMix.h"
 #include "Sound/SoundClass.h"
@@ -27,7 +28,7 @@ const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
 
-const static FString GameVersion = TEXT("Alpha 1.1.2");
+const static FString GameVersion = TEXT("Alpha 1.1.3");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -41,13 +42,31 @@ static USoundClass* WeatherSoundClass = nullptr;
 
 UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& ObjectIntializer)
 {
-	LoadingMenuWidget = nullptr;
+	MainMenuWidgetBlueprintClass = nullptr;
 	MainMenuWidget = nullptr;
+
+	GameplayMenuWidgetBlueprintClass = nullptr;
 	GameplayMenuWidget = nullptr;
-	Loading = false;
+
+	LoadingMenuWidgetBlueprintClass = nullptr;
+	LoadingMenuWidget = nullptr;
+
+	SessionInterface = nullptr;
+	SessionSearch = nullptr;
+
+	FriendsInterface = nullptr;
+
+	AchievementsManager = nullptr;
+
+	DesiredServerName = TEXT("Server");
+	WorldToLoad = TEXT("NAN");
 	FriendsOnlySession = false;
 	DesiredMaxPlayerCount = 8;
+
 	OnMainMenu = false;
+	Loading = false;
+	LoadingTitle = TEXT("Loading Title.");
+	LoadingSubtitle = TEXT("Loading Subtitle.");
 
 	static ConstructorHelpers::FClassFinder<UMainMenuWidget> MainMenuBlueprint(TEXT("/Game/MenuSystem/UI/WBP_MainMenu"));
 	if (MainMenuBlueprint.Succeeded())
@@ -124,6 +143,11 @@ UWildOmissionGameInstance::UWildOmissionGameInstance(const FObjectInitializer& O
 
 UWildOmissionGameInstance* UWildOmissionGameInstance::GetWildOmissionGameInstance(UWorld* WorldContextObject)
 {
+	if (WorldContextObject == nullptr)
+	{
+		return nullptr;
+	}
+
 	return Cast<UWildOmissionGameInstance>(WorldContextObject->GetGameInstance());
 }
 
@@ -135,16 +159,15 @@ void UWildOmissionGameInstance::Init()
 
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
 
-	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
-
-	if (Subsystem == nullptr)
+	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+	if (OnlineSubsystem == nullptr)
 	{
 		return;
 	}
 
-	SessionInterface = Subsystem->GetSessionInterface();
-	FriendsInterface = Subsystem->GetFriendsInterface();
-
+	SessionInterface = OnlineSubsystem->GetSessionInterface();
+	FriendsInterface = OnlineSubsystem->GetFriendsInterface();
+	
 	if (!SessionInterface.IsValid() || GEngine == 0)
 	{
 		return;
@@ -156,6 +179,15 @@ void UWildOmissionGameInstance::Init()
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
 
+	AchievementsManager = NewObject<UAchievementsManager>(this);
+	if (AchievementsManager == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to create achievement manager."));
+		return;
+	}
+
+	AchievementsManager->OnCreation();
+
 	RunAutoConfigQualitySettings();
 }
 
@@ -163,7 +195,6 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 {
 	if (MainMenuWidgetBlueprintClass == nullptr)
 	{
-		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the main menu widget, blueprint class was nullptr"));
 		return;
 	}
 
@@ -171,7 +202,7 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 	if (MainMenuWidget == nullptr)
 	{
 		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the main menu widget"))
-			return;
+		return;
 	}
 
 	MainMenuWidget->Setup(this);
@@ -180,9 +211,8 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 
 void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 {
-	if (GameplayMenuWidgetBlueprintClass == nullptr)
+	if (GameplayMenuWidget || GameplayMenuWidgetBlueprintClass == nullptr)
 	{
-		UE_LOG(LogPlayerController, Error, TEXT("Failed to create the gameplay menu widget, blueprint class was nullptr"));
 		return;
 	}
 
@@ -198,7 +228,8 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	GameplayMenuWidget->SetMenuInterface(this);
 	GameplayMenuWidget->OnClosed.AddDynamic(this, &UWildOmissionGameInstance::ClearGameplayMenuWidget);
 
-	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
+	UWorld* World = GetWorld();
+	if (World && World->GetNetMode() == ENetMode::NM_Standalone)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 	}
@@ -208,9 +239,10 @@ void UWildOmissionGameInstance::ClearGameplayMenuWidget()
 {
 	GameplayMenuWidget = nullptr;
 
-	if (GetWorld() && GetWorld()->GetNetMode() == ENetMode::NM_Standalone)
+	UWorld* World = GetWorld();
+	if (World && World->GetNetMode() == ENetMode::NM_Standalone)
 	{
-		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		UGameplayStatics::SetGamePaused(World, false);
 	}
 }
 
@@ -357,16 +389,27 @@ void UWildOmissionGameInstance::RefreshServerList()
 
 void UWildOmissionGameInstance::ApplyAudioSettings()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+	
 	UWildOmissionGameUserSettings* WOUserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MasterSoundClass, WOUserSettings->GetMasterVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, MusicSoundClass, WOUserSettings->GetMusicVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, DeployablesSoundClass, WOUserSettings->GetDeployablesVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, EnvironmentSoundClass, WOUserSettings->GetEnvironmentVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, FriendlyCreaturesSoundClass, WOUserSettings->GetFriendlyCreaturesVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, HostileCreaturesSoundClass, WOUserSettings->GetHostileCreaturesVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, PlayersSoundClass, WOUserSettings->GetPlayersVolume(), 1.0f, 0.2f);
-	UGameplayStatics::SetSoundMixClassOverride(GetWorld(), MasterSoundMixModifier, WeatherSoundClass, WOUserSettings->GetWeatherVolume(), 1.0f, 0.2f);
-	UGameplayStatics::PushSoundMixModifier(GetWorld(), MasterSoundMixModifier);
+	if (WOUserSettings == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, MasterSoundClass, WOUserSettings->GetMasterVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, MusicSoundClass, WOUserSettings->GetMusicVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, DeployablesSoundClass, WOUserSettings->GetDeployablesVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, EnvironmentSoundClass, WOUserSettings->GetEnvironmentVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, FriendlyCreaturesSoundClass, WOUserSettings->GetFriendlyCreaturesVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, HostileCreaturesSoundClass, WOUserSettings->GetHostileCreaturesVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, PlayersSoundClass, WOUserSettings->GetPlayersVolume(), 1.0f, 0.2f);
+	UGameplayStatics::SetSoundMixClassOverride(World, MasterSoundMixModifier, WeatherSoundClass, WOUserSettings->GetWeatherVolume(), 1.0f, 0.2f);
+	UGameplayStatics::PushSoundMixModifier(World, MasterSoundMixModifier);
 }
 
 //****************************
