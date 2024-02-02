@@ -217,7 +217,6 @@ void UInventoryComponent::SpawnWorldItem(UWorld* WorldContextObject, const FInve
 		return;
 	}
 
-
 	// Update world items properties
 	WorldItem->SetItem(ItemToSpawn);
 
@@ -336,7 +335,7 @@ void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& I
 
 			// Find the best availible slot and add the item to it
 			const bool FromToolbar = Interaction.SlotIndex < 6;
-			int32 Remaining = 0; // THIS ISNT USED HERE
+			int32 Remaining = 0;
 			const bool AddedAll = AddItemToSlots(MovingItem, Remaining, FromToolbar);
 			
 			if (AddedAll)
@@ -350,7 +349,6 @@ void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& I
 				NewItem.Quantity = Remaining;
 				UseServerState ? ServerState.Slots[Interaction.SlotIndex].SetItem(NewItem) : Slots[Interaction.SlotIndex].SetItem(NewItem);
 			}
-			
 		}
 	}
 	else if (ContainerOpen && !WithinPlayerInventory) // Interaction from within an open container to the player's inventory
@@ -608,6 +606,8 @@ void UInventoryComponent::BroadcastItemUpdate(const FInventoryItemUpdate& ItemUp
 
 bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32& Remaining, const int32& RowsToSkip)
 {
+	Remaining = ItemToAdd.Quantity;
+
 	FItemData* ItemData = GetItemData(ItemToAdd.Name);
 	if (ItemData == nullptr)
 	{
@@ -615,7 +615,6 @@ bool UInventoryComponent::AddItemToSlots(const FInventoryItem& ItemToAdd, int32&
 	}
 
 	uint32 UniqueID = FMath::RandRange(1, 999999);
-	Remaining = ItemToAdd.Quantity;
 	
 	// if the item stats are empty populate with defaults
 	TArray<FItemStat> ItemStats;
@@ -657,7 +656,7 @@ bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const
 			break;
 		}
 
-		if (Slot.Item.Quantity == GetItemData(ItemName)->StackSize || Slot.Item.Name != ItemName)
+		if (Slot.Item.Name != ItemName || Slot.Item.Quantity == 0 || Slot.Item.Quantity >= GetItemData(ItemName)->StackSize)
 		{
 			continue;
 		}

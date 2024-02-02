@@ -104,22 +104,10 @@ void UAchievementsManager::UnlockAchievement(const FString& AchievementID)
 
 	// Write the achievements progress
 	FOnlineAchievementsWriteRef AchievementsWriteObjectRef = AchievementsWriteObjectPtr.ToSharedRef();
-	AchievementsInterface->WriteAchievements(*UserId, AchievementsWriteObjectRef, FOnAchievementsWrittenDelegate::CreateUObject(this, &UAchievementsManager::OnWriteAchievementsComplete));
-
-	// TODO remove this after achievements are completed
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Writing Achievement %s"), *AchievementID));
+	AchievementsInterface->WriteAchievements(*UserId, AchievementsWriteObjectRef);
 }
 
 void UAchievementsManager::OnQueryAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful)
 {
-	FString Display = FString::Printf(TEXT("QueryAchievementsComplete UniqueId %s, Success %i"), *PlayerId.ToString(), bWasSuccessful);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, Display);
-
 	UnlockAchievement(TEXT("ACH_OPEN_GAME"));
-}
-
-void UAchievementsManager::OnWriteAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful)
-{
-	FString Display = FString::Printf(TEXT("WriteAchievementsComplete, UniqueId %s, Success %i"), *PlayerId.ToString(), bWasSuccessful);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, Display);
 }

@@ -25,10 +25,10 @@ public:
 
 	void QueryAchievements();
 	void UnlockAchievement(const FString& AchievementID);
+
 private:
 	FOnlineAchievementsWritePtr AchievementsWriteObjectPtr;
 	
 	void OnQueryAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
-	void OnWriteAchievementsComplete(const FUniqueNetId& PlayerId, const bool bWasSuccessful);
 	
 };

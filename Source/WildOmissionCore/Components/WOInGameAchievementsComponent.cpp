@@ -100,7 +100,6 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 
 void UWOInGameAchievementsComponent::GiveDeathAchievement()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Player Death occured."));
 	this->UnlockAchievement(ACH_RIP);
 }
 
@@ -245,8 +244,6 @@ void UWOInGameAchievementsComponent::OnItemHarvested(const FInventoryItem& ItemH
 
 void UWOInGameAchievementsComponent::CheckCraftAchievementConditions(const FName& ItemID)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("crafted %s"), *ItemID.ToString()));
-
 	if (ItemID == TEXT("pickaxe") || ItemID == TEXT("hatchet"))
 	{
 		this->UnlockAchievement(ACH_UPGRADED_TOOL);
@@ -261,7 +258,6 @@ void UWOInGameAchievementsComponent::OnDeployablePlaced(ADeployable* DeployableP
 {
 	if (ABuildingBlock* BuildingBlockPlaced = Cast<ABuildingBlock>(DeployablePlaced))
 	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Building Block Placed."));
 		++StatsData.BuildingBlocksPlaced;
 
 		if (StatsData.BuildingBlocksPlaced >= 25)
