@@ -332,23 +332,15 @@ void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& I
 		{
 			// Store the slot's item information
 			FInventoryItem MovingItem = UseServerState ? ServerState.Slots[Interaction.SlotIndex].Item : Slots[Interaction.SlotIndex].Item;
+			
+			// Clear this slot before performing quick move
+			UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
 
 			// Find the best availible slot and add the item to it
 			const bool FromToolbar = Interaction.SlotIndex < 6;
 			int32 Remaining = 0;
 			const bool AddedAll = AddItemToSlots(MovingItem, Remaining, FromToolbar);
 			
-			if (AddedAll)
-			{
-				// Remove this slot's item
-				UseServerState ? ServerState.Slots[Interaction.SlotIndex].ClearItem() : Slots[Interaction.SlotIndex].ClearItem();
-			}
-			else
-			{
-				FInventoryItem NewItem = MovingItem;
-				NewItem.Quantity = Remaining;
-				UseServerState ? ServerState.Slots[Interaction.SlotIndex].SetItem(NewItem) : Slots[Interaction.SlotIndex].SetItem(NewItem);
-			}
 		}
 	}
 	else if (ContainerOpen && !WithinPlayerInventory) // Interaction from within an open container to the player's inventory
@@ -646,7 +638,6 @@ bool UInventoryComponent::FindAndAddToPopulatedSlot(const FName& ItemName, const
 	const bool UseServerState = OwningActor->HasAuthority();
 
 	TArray<FInventorySlot>& SlotArray = UseServerState ? ServerState.Slots : Slots;
-	// TODO might need to decrement before using?
 	const int32 StartIndex = RowsToSkip * 6;
 	for (int32 i = StartIndex; i < SlotArray.Num(); i++)
 	{
@@ -692,6 +683,7 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, const int
 	const bool UseServerState = OwningActor->HasAuthority();
 	TArray<FInventorySlot>& SlotArray = UseServerState ? ServerState.Slots : Slots;
 	const int32 StartIndex = RowsToSkip * 6;
+
 	for (int32 i = StartIndex; i < SlotArray.Num(); i++)
 	{
 		FInventorySlot& Slot = SlotArray[i];
@@ -700,6 +692,7 @@ bool UInventoryComponent::FindAndAddToEmptySlot(const FName& ItemName, const int
 		{
 			break;
 		}
+
 		if (Slot.Item.Quantity > 0)
 		{
 			continue;

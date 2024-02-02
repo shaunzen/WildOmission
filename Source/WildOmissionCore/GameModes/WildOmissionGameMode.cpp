@@ -446,12 +446,29 @@ void AWildOmissionGameMode::ProcessMultiplayerJoinAchievement(AWildOmissionPlaye
 
 	AchievementsManager->UnlockAchievement(TEXT("ACH_I_HAVE_FRIENDS"));
 
+	APlayerController* HostPlayerController = World->GetFirstPlayerController();
+	if (HostPlayerController == nullptr)
+	{
+		return;
+	}
+
+	APlayerState* HostPlayerState = HostPlayerController->GetPlayerState<APlayerState>();
+	if (HostPlayerState == nullptr)
+	{
+		return;
+	}
+
+	const FString LarchUniqueId = TEXT("76561198277223961");
+	const FString LifeUniqueId = TEXT("76561198242206838");
+
 	const FString NewPlayerUniqueId = NewPlayerState->GetUniqueId().ToString();
-	if (NewPlayerUniqueId == TEXT("76561198277223961")) // Larch's Steam ID
+	const FString HostPlayerUniqueId = HostPlayerState->GetUniqueId().ToString();
+
+	if (HostPlayerUniqueId == LarchUniqueId || NewPlayerUniqueId == LarchUniqueId)
 	{
 		GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_LARCH"));
 	}
-	else if (NewPlayerUniqueId == TEXT("76561198242206838")) // LifeOn30FPS's Steam ID
+	else if (HostPlayerUniqueId == LifeUniqueId || NewPlayerUniqueId == LifeUniqueId)
 	{
 		GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_LIFE"));
 	}
