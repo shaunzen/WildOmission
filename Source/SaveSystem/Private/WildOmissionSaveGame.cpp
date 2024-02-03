@@ -24,6 +24,7 @@ UWildOmissionSaveGame::UWildOmissionSaveGame()
 	Seed = 0;
 	Version = 3;
 	CheatsEnabled = false;
+	PlayerSpawnChunk = FPlayerSpawnChunk();
 }
 
 int32 UWildOmissionSaveGame::GetCurrentVersion()

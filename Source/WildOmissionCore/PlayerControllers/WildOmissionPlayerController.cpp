@@ -172,7 +172,7 @@ void AWildOmissionPlayerController::Save()
 		return;
 	}
 
-	GameMode->SaveGame();
+	GameMode->SaveWorld();
 }
 
 bool AWildOmissionPlayerController::IsEditorPlayer() const

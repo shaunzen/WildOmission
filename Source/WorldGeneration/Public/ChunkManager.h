@@ -7,6 +7,7 @@
 #include "Structs/BiomeGenerationData.h"
 #include "Structs/ChunkData.h"
 #include "Structs/SpawnedChunk.h"
+#include "Structs/PlayerSpawnChunk.h"
 #include "ChunkManager.generated.h"
 
 UCLASS()
@@ -46,6 +47,8 @@ public:
 	static uint32 GetGenerationSeed();
 
 	FVector GetWorldSpawnPoint();
+	FPlayerSpawnChunk GetPlayerSpawnChunk() const;
+	void SetPlayerSpawnChunk(const FPlayerSpawnChunk& InPlayerSpawnChunk);
 	static AChunkManager* GetChunkManager();
 
 protected:
@@ -63,6 +66,7 @@ private:
 	// Array of all currently spawned chunks
 	TArray<FSpawnedChunk> SpawnedChunks;
 
+	FPlayerSpawnChunk PlayerSpawnChunk;
 
 	void SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy = false);
 

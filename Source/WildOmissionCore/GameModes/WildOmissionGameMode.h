@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "WildOmissionGameMode.generated.h"
 
+// TODO oh hell no
 class ASaveManager;
 class AChunkManager;
 class ATimeOfDayManager;
@@ -34,7 +35,7 @@ public:
 	void SpawnHumanForController(APlayerController* Controller);
 
 	UFUNCTION(BlueprintCallable, Exec)
-	void SaveGame();
+	void SaveWorld();
 
 	UFUNCTION(BlueprintCallable, Exec)
 	void TeleportAllPlayersToSelf();

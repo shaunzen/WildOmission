@@ -31,13 +31,19 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	FString SaveFile = UGameplayStatics::ParseOption(Options, "SaveGame");
 	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
 	
-	SaveManager = GetWorld()->SpawnActor<ASaveManager>();
-	ChunkManager = GetWorld()->SpawnActor<AChunkManager>();
-	TimeOfDayManager = GetWorld()->SpawnActor<ATimeOfDayManager>();
-	WeatherManager = GetWorld()->SpawnActor<AWeatherManager>();
-	AnimalSpawnManager = GetWorld()->SpawnActor<AAnimalSpawnManager>();
-	MonsterSpawnManager = GetWorld()->SpawnActor<AMonsterSpawnManager>();
-	ChatManager = GetWorld()->SpawnActor<AGameChatManager>();
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	SaveManager = World->SpawnActor<ASaveManager>();
+	ChunkManager = World->SpawnActor<AChunkManager>();
+	TimeOfDayManager = World->SpawnActor<ATimeOfDayManager>();
+	WeatherManager = World->SpawnActor<AWeatherManager>();
+	AnimalSpawnManager = World->SpawnActor<AAnimalSpawnManager>();
+	MonsterSpawnManager = World->SpawnActor<AMonsterSpawnManager>();
+	ChatManager = World->SpawnActor<AGameChatManager>();
 	
 	if (SaveManager == nullptr)
 	{
@@ -46,19 +52,27 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 
 	SaveManager->SetGameSaveLoadController(Cast<IGameSaveLoadController>(GetGameInstance()));
 	SaveManager->SetSaveFile(SaveFile);
+
+	SaveManager->LoadWorld();
 }
 
 void AWildOmissionGameMode::StartPlay()
 {
 	Super::StartPlay();
 
-	SaveManager->LoadWorld();
 }
 
 void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	UWildOmissionGameInstance* GameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(GetWorld());
-	if (FriendsOnly && !GameInstance->GetFriendsInterface()->IsFriend(0, *UniqueId.GetUniqueNetId().Get(), FString()))
+	UE_LOG(LogTemp, Warning, TEXT("PreLogin"));
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	UWildOmissionGameInstance* GameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(World);
+	if (FriendsOnly && GameInstance && !GameInstance->GetFriendsInterface()->IsFriend(0, *UniqueId.GetUniqueNetId().Get(), FString()))
 	{
 		ErrorMessage = TEXT("Player not friend, revoking connection attempt.");
 	}
@@ -70,6 +84,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
+	UE_LOG(LogTemp, Warning, TEXT("PostLogin"));
 	AWildOmissionPlayerController* NewWildOmissionPlayer = Cast<AWildOmissionPlayerController>(NewPlayer);
 	if (NewWildOmissionPlayer == nullptr)
 	{
@@ -78,6 +93,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 
 	ProcessMultiplayerJoinAchievement(NewWildOmissionPlayer);
 
+	// TODO this is a no no
 	SaveManager->GetPlayerManager()->Load(NewPlayer);
 
 	if (GetWorld()->IsPlayInEditor())
@@ -98,6 +114,7 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 
+	// TODO this is a no no
 	if (GetWorld()->IsPlayInEditor())
 	{
 		return;
@@ -137,11 +154,10 @@ void AWildOmissionGameMode::SpawnHumanForController(APlayerController* Controlle
 	}
 }
 
-void AWildOmissionGameMode::SaveGame()
+void AWildOmissionGameMode::SaveWorld()
 {
-	SaveManager->SaveGame();
+	SaveManager->SaveWorld();
 }
-
 
 void AWildOmissionGameMode::TeleportAllPlayersToSelf()
 {
