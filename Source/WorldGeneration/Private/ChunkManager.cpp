@@ -284,30 +284,46 @@ AChunk* AChunkManager::GetChunkAtLocation(const FIntVector2& ChunkLocation)
 
 FVector AChunkManager::GetWorldSpawnPoint()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return FVector::ZeroVector;
+	}
+
 	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
 
 	const int32 TestRadius = 128;
 	FIntVector2 ValidChunk(0, 0);
-	for (int32 X = -TestRadius; X < TestRadius; ++X)
+	if (PlayerSpawnChunk.IsSet == false)
 	{
-		for (int32 Y = -TestRadius; Y < TestRadius; ++Y)
+		for (int32 X = -TestRadius; X < TestRadius; ++X)
 		{
-			const FVector2D TestLocation(
-				X * ChunkSize,
-				Y * ChunkSize
-			);
-			const float Continentalness = AChunk::GetContinentalnessAtLocation(TestLocation, true);
-			if (Continentalness > 0.0f || Continentalness < -0.05f)
+			for (int32 Y = -TestRadius; Y < TestRadius; ++Y)
 			{
-				// If not pick a new starting point and keep going
-				continue;
+				const FVector2D TestLocation(
+					X * ChunkSize,
+					Y * ChunkSize
+				);
+				const float Continentalness = AChunk::GetContinentalnessAtLocation(TestLocation, true);
+				if (Continentalness > 0.0f || Continentalness < -0.05f)
+				{
+					// If not pick a new starting point and keep going
+					continue;
+				}
+
+				ValidChunk = FIntVector2(X, Y);
+				break;
 			}
-
-			ValidChunk = FIntVector2(X, Y);
-			break;
 		}
-	}
 
+		PlayerSpawnChunk.ChunkLocation = ValidChunk;
+		PlayerSpawnChunk.IsSet = true;
+	}
+	else
+	{
+		ValidChunk = PlayerSpawnChunk.ChunkLocation;
+	}
+	
 	// Line trace down to find ground
 	FHitResult HitResult;
 
@@ -322,7 +338,7 @@ FVector AChunkManager::GetWorldSpawnPoint()
 		{
 			const FVector Start((X * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.X, (Y * AChunk::GetVertexDistanceScale()) + ValidChunkWorldLocation.Y, AChunk::GetMaxHeight());
 			const FVector End(Start.X, Start.Y, -AChunk::GetMaxHeight());
-			if (!GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
+			if (!World->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility))
 			{
 				continue;
 			}
@@ -338,6 +354,16 @@ FVector AChunkManager::GetWorldSpawnPoint()
 	}
 
 	return HitResult.ImpactPoint;
+}
+
+FPlayerSpawnChunk AChunkManager::GetPlayerSpawnChunk() const
+{
+	return PlayerSpawnChunk;
+}
+
+void AChunkManager::SetPlayerSpawnChunk(const FPlayerSpawnChunk& InPlayerSpawnChunk)
+{
+	this->PlayerSpawnChunk = InPlayerSpawnChunk;
 }
 
 uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const

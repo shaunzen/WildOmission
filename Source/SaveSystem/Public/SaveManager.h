@@ -19,7 +19,7 @@ public:
 
 	static ASaveManager* GetSaveManager();
 
-	void SaveGame();
+	void SaveWorld();
 	void SetSaveFile(const FString& SaveFileName);
 	void LoadWorld();
 

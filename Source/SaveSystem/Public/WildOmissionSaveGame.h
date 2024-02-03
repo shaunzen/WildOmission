@@ -6,6 +6,7 @@
 #include "GameFramework/SaveGame.h"
 #include "Structs/PlayerSaveData.h"
 #include "Structs/ChunkData.h"
+#include "Structs/PlayerSpawnChunk.h"
 #include "Structs/WeatherData.h"
 #include "Enums/GameDifficulty.h"
 #include "WildOmissionSaveGame.generated.h"
@@ -74,6 +75,9 @@ public:
 	UPROPERTY()
 	bool CheatsEnabled;
 
+	UPROPERTY()
+	FPlayerSpawnChunk PlayerSpawnChunk;
+	
 	UPROPERTY()
 	TArray<FChunkData> ChunkData;
 

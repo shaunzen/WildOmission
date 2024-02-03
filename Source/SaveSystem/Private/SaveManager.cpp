@@ -35,7 +35,7 @@ ASaveManager* ASaveManager::GetSaveManager()
 	return Instance;
 }
 
-void ASaveManager::SaveGame()
+void ASaveManager::SaveWorld()
 {
 	UWildOmissionSaveGame* SaveFile = GetSaveFile();
 	if (SaveFile == nullptr)
@@ -43,11 +43,13 @@ void ASaveManager::SaveGame()
 		UE_LOG(LogSaveSystem, Error, TEXT("Aborting save, SaveFile was nullptr."));
 		return;
 	}
+
 	SaveFile->LastPlayedTime = FDateTime::Now();
 
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager)
 	{
+		SaveFile->PlayerSpawnChunk = ChunkManager->GetPlayerSpawnChunk();
 		SaveFile->Seed = ChunkManager->GetGenerationSeed();
 		ChunkManager->SaveAllSpawnedChunks();
 		SaveFile->ChunkData = ChunkManager->GetAllChunkData();
@@ -92,12 +94,7 @@ void ASaveManager::LoadWorld()
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
-		//FDateTime Now = FDateTime::Now();
-		//const int32 SeedRandInit =
-		//	Now.GetMillisecond() + Now.GetSecond()
-		//	+ Now.GetMinute() + Now.GetHour()
-		//	+ Now.GetDay() + Now.GetMonth() + Now.GetYear();
-		//FMath::RandInit(SeedRandInit);
+
 		const uint32 GenerationSeed = FMath::RandRange(0, 999999999);
 		AChunkManager::SetGenerationSeed(GenerationSeed);
 
@@ -117,6 +114,7 @@ void ASaveManager::LoadWorld()
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager)
 	{
+		ChunkManager->SetPlayerSpawnChunk(SaveFile->PlayerSpawnChunk);
 		ChunkManager->SetGenerationSeed(SaveFile->Seed);
 		ChunkManager->SetChunkData(SaveFile->ChunkData);
 	}
@@ -146,7 +144,7 @@ void ASaveManager::BeginPlay()
 	Instance = this;
 
 	FTimerHandle AutoSaveTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveManager::SaveGame, 90.0f, true);
+	World->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveManager::SaveWorld, 90.0f, true);
 }
 
 void ASaveManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
