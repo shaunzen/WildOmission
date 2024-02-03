@@ -28,7 +28,7 @@ const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
 
-const static FString GameVersion = TEXT("Alpha 1.1.3_01");
+const static FString GameVersion = TEXT("Alpha 1.1.3_02");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -211,9 +211,15 @@ void UWildOmissionGameInstance::ShowMainMenuWidget()
 
 void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 {
-	if (GameplayMenuWidget || GameplayMenuWidgetBlueprintClass == nullptr)
+	if (GameplayMenuWidgetBlueprintClass == nullptr)
 	{
 		return;
+	}
+
+	if (IsValid(GameplayMenuWidget))
+	{
+		GameplayMenuWidget->Teardown();
+		GameplayMenuWidget = nullptr;
 	}
 
 	GameplayMenuWidget = CreateWidget<UGameplayMenuWidget>(this, GameplayMenuWidgetBlueprintClass);
@@ -231,7 +237,7 @@ void UWildOmissionGameInstance::ShowGameplayMenuWidget()
 	UWorld* World = GetWorld();
 	if (World && World->GetNetMode() == ENetMode::NM_Standalone)
 	{
-		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		UGameplayStatics::SetGamePaused(World, true);
 	}
 }
 
@@ -323,7 +329,7 @@ void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
 	NewSaveGame->LastPlayedTime = Time;
 
 	NewSaveGame->LevelFile = TEXT("LV_Procedural");
-	NewSaveGame->Version = CURRENT_SAVE_FILE_VERSION;
+	NewSaveGame->Version = UWildOmissionSaveGame::GetCurrentVersion();
 
 	NewSaveGame->CreationInformation.Name = WorldName;
 	NewSaveGame->CreationInformation.Day = Time.GetDay();

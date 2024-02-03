@@ -10,8 +10,6 @@
 #include "Enums/GameDifficulty.h"
 #include "WildOmissionSaveGame.generated.h"
 
-static const int32 CURRENT_SAVE_FILE_VERSION = 2;
-
 USTRUCT()
 struct FWildOmissionSaveCreationInformation
 {

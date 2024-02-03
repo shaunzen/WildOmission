@@ -141,8 +141,6 @@ void UGameplayMenuWidget::Teardown()
 		OnClosed.Broadcast();
 	}
 
-	RemoveFromParent();
-	
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr)
 	{
@@ -152,6 +150,8 @@ void UGameplayMenuWidget::Teardown()
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = false;
+
+	RemoveFromParent();
 }
 
 void UGameplayMenuWidget::OpenHelpGuide()
@@ -200,12 +200,8 @@ void UGameplayMenuWidget::SetupSavingText(bool PlayerHasAuthority)
 		return;
 	}
 
+	SavingTextBlock->SetVisibility(ESlateVisibility::Visible);
 	SavingTextBlock->SetText(FText::FromString(TEXT("Saving...")));
-
-	FTimerHandle HideSavingTextTimerHandle;
-	FTimerDelegate HideSavingTextTimerDelegate;
-	HideSavingTextTimerDelegate.BindUObject(this, &UGameplayMenuWidget::HideSavingText);
-	World->GetTimerManager().SetTimer(HideSavingTextTimerHandle, HideSavingTextTimerDelegate, 1.0f, false);
 }
 
 void UGameplayMenuWidget::HideSavingText()
@@ -215,7 +211,7 @@ void UGameplayMenuWidget::HideSavingText()
 		return;
 	}
 
-	SavingTextBlock->SetText(FText::FromString(TEXT("")));
+	SavingTextBlock->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UGameplayMenuWidget::SetQuitButtonText(bool PlayerHasAuthority)

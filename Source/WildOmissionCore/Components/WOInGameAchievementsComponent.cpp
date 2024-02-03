@@ -135,7 +135,7 @@ void UWOInGameAchievementsComponent::OnOpenContainerChanged(UInventoryComponent*
 		return;
 	}
 
-	ItemSmelter->OnItemSmelted.AddDynamic(this, &UWOInGameAchievementsComponent::OnItemSmelted);
+	ItemSmelter->OnItemSmelted.AddUniqueDynamic(this, &UWOInGameAchievementsComponent::OnItemSmelted);
 }
 
 void UWOInGameAchievementsComponent::OnItemSmelted(const FInventoryItem& RawItem, const FInventoryItem& SmeltedItem)

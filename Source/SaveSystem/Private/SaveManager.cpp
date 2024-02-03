@@ -68,7 +68,7 @@ void ASaveManager::SaveGame()
 
 	PlayerSaveManagerComponent->Save(SaveFile->PlayerData);
 	
-	SaveFile->Version = CURRENT_SAVE_FILE_VERSION;
+	SaveFile->Version = UWildOmissionSaveGame::GetCurrentVersion();
 
 	UpdateSaveFile(SaveFile);
 }
