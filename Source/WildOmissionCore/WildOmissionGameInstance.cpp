@@ -171,25 +171,17 @@ void UWildOmissionGameInstance::Init()
 		return;
 	}
 
-	// Check if this is a server before handling client end stuff
-	if (this->IsDedicatedServerInstance() && GetWorld())
-	{
-		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateDedicatedSessionComplete);
-
-		//FTimerHandle CreateSessionTimerHandle;
-		//FTimerDelegate CreateSessionTimerDelegate;
-		//CreateSessionTimerDelegate.BindUObject(this, &UWildOmissionGameInstance::CreateDedicatedServerSession);
-		//GetWorld()->GetTimerManager().SetTimer(CreateSessionTimerHandle, CreateSessionTimerDelegate, 5.0f, false);
-		// Create the server session
-		CreateDedicatedServerSession();
-		return;
-	}
-
 	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateSessionComplete);
 	//SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnDestroySessionComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
+
+	// Check if this is a server before handling client end stuff
+	if (this->IsDedicatedServerInstance())
+	{
+		return;
+	}
 
 	AchievementsManager = NewObject<UAchievementsManager>(this);
 	if (AchievementsManager == nullptr)
@@ -657,6 +649,7 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	{
 		return;
 	}
+
 	FString FriendsOnlyString = FString::Printf(TEXT("%i"), FriendsOnlySession);
 	FString LevelFileString = SaveGame->LevelFile;
 	FString LoadString = FString::Printf(TEXT("/Game/WildOmissionCore/Levels/%s?listen?savegame=%s?friendsonly="), *LevelFileString, *WorldToLoad, *FriendsOnlyString);
@@ -774,7 +767,37 @@ IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const
 	return FriendsInterface;
 }
 
-FString UWildOmissionGameInstance::GetVersion() const
+FName UWildOmissionGameInstance::GetSessionName()
+{
+	return SESSION_NAME;
+}
+
+FName UWildOmissionGameInstance::GetServerNameSettingsKey()
+{
+	return SERVER_NAME_SETTINGS_KEY;
+}
+
+FName UWildOmissionGameInstance::GetFriendsOnlySettingsKey()
+{
+	return FRIENDS_ONLY_SETTINGS_KEY;
+}
+
+FName UWildOmissionGameInstance::GetLevelFileSettingsKey()
+{
+	return LEVEL_FILE_SETTINGS_KEY;
+}
+
+FName UWildOmissionGameInstance::GetGameVersionSettingsKey()
+{
+	return GAME_VERSION_SETTINGS_KEY;
+}
+
+FName UWildOmissionGameInstance::GetSearchPresence()
+{
+	return SEARCH_PRESENCE;
+}
+
+FString UWildOmissionGameInstance::GetVersion()
 {
 	return GameVersion;
 }

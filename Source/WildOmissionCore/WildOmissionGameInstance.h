@@ -77,8 +77,15 @@ public:
 
 	IOnlineFriendsPtr GetFriendsInterface() const;
 
+	static FName GetSessionName();
+	static FName GetServerNameSettingsKey();
+	static FName GetFriendsOnlySettingsKey();
+	static FName GetLevelFileSettingsKey();
+	static FName GetGameVersionSettingsKey();
+	static FName GetSearchPresence();
+
 	UFUNCTION(BlueprintCallable)
-	FString GetVersion() const;
+	static FString GetVersion();
 
 	UMainMenuWidget* GetMainMenuWidget() const;
 	UGameplayMenuWidget* GetGameplayMenuWidget() const;

@@ -35,14 +35,25 @@ void AWildOmissionGameSession::RegisterServer()
 		return;
 	}
 
-	FOnlineSessionSettings Settings;
-	Settings.NumPublicConnections = 3;
-	Settings.bShouldAdvertise = true;
-	Settings.bAllowJoinInProgress = true;
-	Settings.bIsLANMatch = true;
-	Settings.bUsesPresence = true;
-	Settings.bAllowJoinViaPresence = true;
+	FOnlineSessionSettings SessionSettings;
+	SessionSettings.bIsLANMatch = false;
+	SessionSettings.NumPublicConnections = 100;
+	SessionSettings.bAllowInvites = false;
+	SessionSettings.bIsDedicated = true;
+	SessionSettings.bShouldAdvertise = true;
+	SessionSettings.bUsesPresence = false;
+	SessionSettings.bUseLobbiesIfAvailable = false;
+	SessionSettings.bAllowJoinInProgress = true;
+	SessionSettings.bAllowJoinViaPresence = false;
+	SessionSettings.bAllowJoinViaPresenceFriendsOnly = false;
+	
+	const FString ServerName = TEXT("Dedicated Server (WIP)");
+	const FString LevelFile = TEXT("LV_Procedural");
 
-	SessionInterface->CreateSession(0, GameSessionName, Settings);
-	return;
+	SessionSettings.Set(UWildOmissionGameInstance::GetFriendsOnlySettingsKey(), false, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(UWildOmissionGameInstance::GetServerNameSettingsKey(), ServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(UWildOmissionGameInstance::GetLevelFileSettingsKey(), LevelFile, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(UWildOmissionGameInstance::GetGameVersionSettingsKey(), UWildOmissionGameInstance::GetVersion(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
+	SessionInterface->CreateSession(0, UWildOmissionGameInstance::GetSessionName(), SessionSettings);
 }
