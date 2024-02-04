@@ -10,7 +10,8 @@ public class WildOmissionServerTarget : TargetRules
 		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
+        bUseLoggingInShipping = true;
+        ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
 
 		GlobalDefinitions.Add("UE_PROJECT_STEAMSHIPPINGID=2348700");
 		GlobalDefinitions.Add("UE_PROJECT_STEAMPRODUCTNAME=\"Wild Omission\"");
