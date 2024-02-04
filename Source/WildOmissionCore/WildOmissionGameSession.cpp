@@ -41,7 +41,7 @@ void AWildOmissionGameSession::RegisterServer()
 	SessionSettings.bAllowInvites = true;
 	SessionSettings.bIsDedicated = true;
 	SessionSettings.bShouldAdvertise = true;
-	SessionSettings.bUsesPresence = true;
+	SessionSettings.bUsesPresence = false;
 	SessionSettings.bUseLobbiesIfAvailable = false;
 	SessionSettings.bAllowJoinInProgress = true;
 	SessionSettings.bAllowJoinViaPresence = true;
