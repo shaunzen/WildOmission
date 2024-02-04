@@ -13,5 +13,10 @@ public class WildOmissionTarget : TargetRules
 		bUsesSteam = true;
 
 		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
-	}
+
+        GlobalDefinitions.Add("UE_PROJECT_STEAMSHIPPINGID=2348700");
+        GlobalDefinitions.Add("UE_PROJECT_STEAMPRODUCTNAME=\"Wild Omission\"");
+        GlobalDefinitions.Add("UE_PROJECT_STEAMGAMEDIR=\"Wild Omission\"");
+        GlobalDefinitions.Add("UE_PROJECT_STEAMGAMEDESC=\"Wild Omission\"");
+    }
 }

@@ -22,7 +22,7 @@
 
 // Static session information
 const static FName SESSION_NAME = TEXT("Game");
-const static FName SERVER_NAME_SETTINGS_KEY = TEXT("SteamServerName");
+const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
@@ -616,15 +616,7 @@ void UWildOmissionGameInstance::OnCreateDedicatedSessionComplete(FName SessionNa
 
 	OnMainMenu = false;
 
-	//UWorld* World = GetWorld();
-	//if (World == nullptr)
-	//{
-	//	return;
-	//}
-
-	// Server travel to the game level
-	//
-	StartSession();
+	//StartSession();
 	UE_LOG(LogOnlineSession, Display, TEXT("Finished setting up dedicated server session."));
 }
 
