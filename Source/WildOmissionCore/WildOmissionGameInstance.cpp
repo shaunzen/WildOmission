@@ -171,15 +171,18 @@ void UWildOmissionGameInstance::Init()
 		return;
 	}
 
-	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateSessionComplete);
+	this->IsDedicatedServerInstance() ?
+	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateDedicatedSessionComplete)
+		: SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateSessionComplete);
 	//SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnDestroySessionComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
 
 	// Check if this is a server before handling client end stuff
-	if (this->IsDedicatedServerInstance())
+	if (this->IsDedicatedServerInstance() && GetWorld())
 	{
+		GetWorld()->ServerTravel(TEXT("/Game/WildOmissionCore/Levels/LV_Procedural?listen"), true);
 		return;
 	}
 
@@ -194,6 +197,13 @@ void UWildOmissionGameInstance::Init()
 
 	ApplyAudioSettings();
 	RunAutoConfigQualitySettings();
+}
+
+void UWildOmissionGameInstance::Shutdown()
+{
+	Super::Shutdown();
+
+	EndExistingSession();
 }
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()
@@ -607,21 +617,21 @@ void UWildOmissionGameInstance::OnCreateDedicatedSessionComplete(FName SessionNa
 {
 	if (Success == false)
 	{
-		UE_LOG(LogOnlineSession, Error, TEXT("Could not create session"));
+		UE_LOG(LogOnlineSession, Error, TEXT("Could not create session %s"), *SessionName.ToString());
 		return;
 	}
 
 	OnMainMenu = false;
 
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
+	//UWorld* World = GetWorld();
+	//if (World == nullptr)
+	//{
+	//	return;
+	//}
 
 	// Server travel to the game level
-	World->ServerTravel(TEXT("/Game/WildOmissionCore/Levels/LV_Procedural?listen?"));
-
+	//
+	StartSession();
 	UE_LOG(LogOnlineSession, Display, TEXT("Finished setting up dedicated server session."));
 }
 
@@ -797,7 +807,7 @@ FName UWildOmissionGameInstance::GetSearchPresence()
 	return SEARCH_PRESENCE;
 }
 
-FString UWildOmissionGameInstance::GetVersion()
+FString UWildOmissionGameInstance::GetVersion() const
 {
 	return GameVersion;
 }

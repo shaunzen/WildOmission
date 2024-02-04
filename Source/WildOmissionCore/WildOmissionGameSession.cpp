@@ -38,13 +38,13 @@ void AWildOmissionGameSession::RegisterServer()
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = false;
 	SessionSettings.NumPublicConnections = 100;
-	SessionSettings.bAllowInvites = false;
+	SessionSettings.bAllowInvites = true;
 	SessionSettings.bIsDedicated = true;
 	SessionSettings.bShouldAdvertise = true;
-	SessionSettings.bUsesPresence = false;
+	SessionSettings.bUsesPresence = true;
 	SessionSettings.bUseLobbiesIfAvailable = false;
 	SessionSettings.bAllowJoinInProgress = true;
-	SessionSettings.bAllowJoinViaPresence = false;
+	SessionSettings.bAllowJoinViaPresence = true;
 	SessionSettings.bAllowJoinViaPresenceFriendsOnly = false;
 	
 	const FString ServerName = TEXT("Dedicated Server (WIP)");
@@ -53,7 +53,8 @@ void AWildOmissionGameSession::RegisterServer()
 	SessionSettings.Set(UWildOmissionGameInstance::GetFriendsOnlySettingsKey(), false, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(UWildOmissionGameInstance::GetServerNameSettingsKey(), ServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(UWildOmissionGameInstance::GetLevelFileSettingsKey(), LevelFile, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	SessionSettings.Set(UWildOmissionGameInstance::GetGameVersionSettingsKey(), UWildOmissionGameInstance::GetVersion(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(TEXT("MAPNAME"), LevelFile, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(UWildOmissionGameInstance::GetGameVersionSettingsKey(), WildOmissionGameInstace->GetVersion(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	SessionInterface->CreateSession(0, UWildOmissionGameInstance::GetSessionName(), SessionSettings);
 }

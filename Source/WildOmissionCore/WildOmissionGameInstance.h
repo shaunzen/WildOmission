@@ -41,6 +41,7 @@ public:
 	static UWildOmissionGameInstance* GetWildOmissionGameInstance(UWorld* WorldContextObject);
 
 	virtual void Init() override;
+	virtual void Shutdown() override;
 
 	UFUNCTION(BlueprintCallable)
 	void ShowMainMenuWidget();
@@ -85,7 +86,7 @@ public:
 	static FName GetSearchPresence();
 
 	UFUNCTION(BlueprintCallable)
-	static FString GetVersion();
+	FString GetVersion() const;
 
 	UMainMenuWidget* GetMainMenuWidget() const;
 	UGameplayMenuWidget* GetGameplayMenuWidget() const;
