@@ -22,7 +22,7 @@
 
 // Static session information
 const static FName SESSION_NAME = TEXT("Game");
-const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
+const static FName SERVER_NAME_SETTINGS_KEY = TEXT("SteamServerName");
 const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
@@ -178,13 +178,6 @@ void UWildOmissionGameInstance::Init()
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
 	GEngine->OnNetworkFailure().AddUObject(this, &UWildOmissionGameInstance::OnNetworkFailure);
-
-	// Check if this is a server before handling client end stuff
-	if (this->IsDedicatedServerInstance() && GetWorld())
-	{
-		GetWorld()->ServerTravel(TEXT("/Game/WildOmissionCore/Levels/LV_Procedural?listen"), true);
-		return;
-	}
 
 	AchievementsManager = NewObject<UAchievementsManager>(this);
 	if (AchievementsManager == nullptr)

@@ -7,6 +7,8 @@
 #include "OnlineSessionSettings.h"
 #include "WildOmissionGameInstance.h"
 
+// TODO, will find a better way of handling this
+
 void AWildOmissionGameSession::RegisterServer()
 {
 	Super::RegisterServer();
@@ -28,7 +30,7 @@ void AWildOmissionGameSession::RegisterServer()
 	{
 		return;
 	}
-
+	
 	IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
 	if (!SessionInterface.IsValid())
 	{
@@ -55,6 +57,6 @@ void AWildOmissionGameSession::RegisterServer()
 	SessionSettings.Set(UWildOmissionGameInstance::GetLevelFileSettingsKey(), LevelFile, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(TEXT("MAPNAME"), LevelFile, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(UWildOmissionGameInstance::GetGameVersionSettingsKey(), WildOmissionGameInstace->GetVersion(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-
+	
 	SessionInterface->CreateSession(0, UWildOmissionGameInstance::GetSessionName(), SessionSettings);
 }
