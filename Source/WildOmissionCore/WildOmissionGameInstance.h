@@ -68,6 +68,9 @@ public:
 
 	void StartSession();
 
+	UFUNCTION(Exec)
+	void OpenLevel(const FString& Address);
+
 	// Begin IGameSettingsInterface Implementation
 	virtual void ApplyAudioSettings() override;
 	// End IGameSettingsInterface Implementation
@@ -112,6 +115,7 @@ private:
 	UPROPERTY()
 	class UAchievementsManager* AchievementsManager;
 
+	void OnCreateDedicatedSessionComplete(FName SessionName, bool Success);
 	void OnCreateSessionComplete(FName SessionName, bool Success);
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);
@@ -122,6 +126,9 @@ private:
 	FString WorldToLoad;
 	bool FriendsOnlySession;
 	int32 DesiredMaxPlayerCount;
+
+	UFUNCTION()
+	void CreateDedicatedServerSession();
 
 	UFUNCTION()
 	void CreateSession(FName SessionName = FName(""), bool Success = true);

@@ -3,11 +3,11 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class WildOmissionServerTarget : TargetRules
+public class WildOmissionClientTarget : TargetRules
 {
-	public WildOmissionServerTarget(TargetInfo Target) : base(Target)
+	public WildOmissionClientTarget(TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Server;
+		Type = TargetType.Client;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );

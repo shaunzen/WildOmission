@@ -184,8 +184,11 @@ void USpecialEffectsManagerComponent::EnableRainfallEffects(float RainDensity)
 		return;
 	}
 
-	FogComponent->SetFogDensity(0.05f);
-	FogComponent->SetFogHeightFalloff(0.001f);
+	if (FogComponent)
+	{
+		FogComponent->SetFogDensity(0.05f);
+		FogComponent->SetFogHeightFalloff(0.001f);
+	}
 
 	UKismetMaterialLibrary::SetScalarParameterValue(World, MPC_Effects, TEXT("FogIntensity"), RainDensity / 2200.0f);
 	
@@ -236,8 +239,11 @@ void USpecialEffectsManagerComponent::DisableRainfallEffects()
 	// Old values were
 	// Density = 0.02
 	// HeightFalloff = 0.2
-	FogComponent->SetFogDensity(0.005f);
-	FogComponent->SetFogHeightFalloff(0.5f);
+	if (FogComponent)
+	{
+		FogComponent->SetFogDensity(0.005f);
+		FogComponent->SetFogHeightFalloff(0.5f);
+	}
 	
 	UKismetMaterialLibrary::SetScalarParameterValue(World, MPC_Effects, TEXT("FogIntensity"), 0.0f);
 

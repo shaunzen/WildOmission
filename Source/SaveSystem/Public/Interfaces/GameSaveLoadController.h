@@ -23,6 +23,7 @@ class SAVESYSTEM_API IGameSaveLoadController
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual void StartLoading() = 0;
+	UFUNCTION(Exec)
 	virtual void StopLoading() = 0;
 	virtual void SetLoadingTitle(const FString& InLoadingTitle) = 0;
 	virtual void SetLoadingSubtitle(const FString& InLoadingSubtitle) = 0;
