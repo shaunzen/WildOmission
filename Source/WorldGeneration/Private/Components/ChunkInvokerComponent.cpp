@@ -49,6 +49,11 @@ void UChunkInvokerComponent::EndPlay(EEndPlayReason::Type Reason)
 	UE_LOG(LogWorldGeneration, Verbose, TEXT("Removing Invoker %s. New Invoker count %i"), *OwnerActor->GetActorNameOrLabel(), Invokers.Num());
 }
 
+void UChunkInvokerComponent::Server_SetRenderDistance_Implementation(const uint8& InRenderDistance)
+{
+	SetRenderDistance(InRenderDistance);
+}
+
 void UChunkInvokerComponent::SetRenderDistance(const uint8& InRenderDistance)
 {
 	RenderDistance = InRenderDistance;

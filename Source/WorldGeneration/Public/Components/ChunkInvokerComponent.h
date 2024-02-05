@@ -18,6 +18,8 @@ public:
 
 	virtual void EndPlay(EEndPlayReason::Type Reason) override;
 	
+	UFUNCTION(Server, Reliable)
+	void Server_SetRenderDistance(const uint8& InRenderDistance);
 	void SetRenderDistance(const uint8& InRenderDistance);
 	uint8 GetRenderDistance() const;
 	float GetRenderDistanceCentimeters() const;

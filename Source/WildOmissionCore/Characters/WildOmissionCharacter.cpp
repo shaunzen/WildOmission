@@ -563,7 +563,7 @@ void AWildOmissionCharacter::ApplyGameplaySettings()
 	}
 
 	FirstPersonCameraComponent->SetFieldOfView(UserSettings->GetFieldOfView());
-	ChunkInvokerComponent->SetRenderDistance(UserSettings->GetRenderDistance());
+	ChunkInvokerComponent->Server_SetRenderDistance(UserSettings->GetRenderDistance());
 	PlayerHUDWidget->ShowBranding(UserSettings->GetShowBranding());
 	PlayerHUDWidget->ShowCrosshair(UserSettings->GetShowCrosshair());
 	PlayerHUDWidget->SetHideChatUnlessOpen(UserSettings->GetHideChatUnlessOpen());
