@@ -401,7 +401,7 @@ void UWildOmissionGameInstance::QuitToMenu()
 	EndExistingSession();
 }
 
-void UWildOmissionGameInstance::RefreshServerList()
+void UWildOmissionGameInstance::RefreshServerList(bool IsDedicated)
 {
 	UE_LOG(LogOnlineSession, Display, TEXT("Refreshing server list."));
 

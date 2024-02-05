@@ -199,14 +199,14 @@ void UMainMenuWidget::JoinServer(const uint32& ServerIndex)
 	MenuInterface->JoinServer(ServerIndex);
 }
 
-void UMainMenuWidget::RefreshServerList()
+void UMainMenuWidget::RefreshServerList(bool IsDedicated)
 {
 	if (MenuInterface == nullptr)
 	{
 		return;
 	}
 
-	MenuInterface->RefreshServerList();
+	MenuInterface->RefreshServerList(IsDedicated);
 }
 
 void UMainMenuWidget::OpenMainMenu()

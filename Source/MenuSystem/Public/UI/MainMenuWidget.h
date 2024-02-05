@@ -102,6 +102,6 @@ private:
 	void JoinServer(const uint32& ServerIndex);
 
 	UFUNCTION()
-	void RefreshServerList();
+	void RefreshServerList(bool IsDedicated);
 
 };

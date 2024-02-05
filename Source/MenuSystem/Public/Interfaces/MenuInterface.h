@@ -34,7 +34,7 @@ public:
 	virtual void JoinServer(const uint32& Index) = 0;
 
 	UFUNCTION()
-	virtual void RefreshServerList() = 0;
+	virtual void RefreshServerList(bool IsDedicated) = 0;
 
 	UFUNCTION()
 	virtual void QuitToMenu() = 0;

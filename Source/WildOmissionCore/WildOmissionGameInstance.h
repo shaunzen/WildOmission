@@ -63,7 +63,7 @@ public:
 	virtual void StartSingleplayer(const FString& WorldName) override;
 	virtual void HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false, const int32& MaxPlayerCount = 8) override;
 	virtual void JoinServer(const uint32& Index) override;
-	virtual void RefreshServerList() override;
+	virtual void RefreshServerList(bool IsDedicated = false) override;
 	virtual void QuitToMenu() override;
 	// End IMenuInterface Implementation
 
