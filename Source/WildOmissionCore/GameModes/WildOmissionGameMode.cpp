@@ -88,6 +88,7 @@ void AWildOmissionGameMode::StartPlay()
 	}
 
 	FOnlineSessionSettings SessionSettings;
+	SessionSettings.NumPublicConnections = 100;
 	SessionSettings.bIsDedicated = true;
 	SessionSettings.bIsLANMatch = false;
 	SessionSettings.bUsesPresence = false;
@@ -102,7 +103,7 @@ void AWildOmissionGameMode::StartPlay()
 	SessionSettings.Set(UWildOmissionGameInstance::GetLevelFileSettingsKey(), LevelFile, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	SessionSettings.Set(TEXT("NAME"), ServerName, EOnlineDataAdvertisementType::Type::ViaOnlineServiceAndPing);
 	SessionSettings.Set(TEXT("MAPNAME"), LevelFile, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	//SessionSettings.Set(UWildOmissionGameInstance::GetGameVersionSettingsKey(), GameInstance->GetVersion(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(UWildOmissionGameInstance::GetGameVersionSettingsKey(), GameInstance->GetVersion(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	SessionInterface->CreateSession(0, UWildOmissionGameInstance::GetSessionName(), SessionSettings);
 }
