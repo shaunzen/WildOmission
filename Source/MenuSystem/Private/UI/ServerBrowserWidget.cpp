@@ -135,7 +135,7 @@ void UServerBrowserWidget::BroadcastRefreshButtonClicked()
 		return;
 	}
 
-	const FString WaitingString = FString("...");
+	const FString WaitingString = TEXT("...");
 	RefreshListButtonText->SetText(FText::FromString(WaitingString));
 	
 	SelectedServerIndex.Reset();
