@@ -27,6 +27,7 @@ const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
+const static FName SEARCH_DEDICATED_ONLY = TEXT("DEDICATEDONLY");
 
 const static FString GameVersion = TEXT("Alpha 1.2.0 - Dedicated Server Test 1");
 
@@ -404,6 +405,7 @@ void UWildOmissionGameInstance::RefreshServerList()
 {
 	UE_LOG(LogOnlineSession, Display, TEXT("Refreshing server list."));
 
+
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid() == false)
 	{
@@ -413,7 +415,6 @@ void UWildOmissionGameInstance::RefreshServerList()
 	// Uncomment for lan results using null
 	//SessionSearch->bIsLanQuery = true;
 	SessionSearch->MaxSearchResults = 100;
-
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }

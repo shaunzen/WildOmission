@@ -10,6 +10,7 @@ public class WildOmissionClientTarget : TargetRules
 		Type = TargetType.Client;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+		bUsesSteam = true;
 		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
 
         GlobalDefinitions.Add("UE_PROJECT_STEAMSHIPPINGID=2348700");

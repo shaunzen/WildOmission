@@ -10,6 +10,7 @@ public class WildOmissionTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+
 		bUsesSteam = true;
 
 		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );

@@ -88,16 +88,11 @@ void AWildOmissionGameMode::StartPlay()
 	}
 
 	FOnlineSessionSettings SessionSettings;
-	SessionSettings.bIsLANMatch = false;
-	SessionSettings.NumPublicConnections = 100;
-	SessionSettings.bAllowInvites = true;
 	SessionSettings.bIsDedicated = true;
-	SessionSettings.bShouldAdvertise = true;
+	SessionSettings.bIsLANMatch = false;
 	SessionSettings.bUsesPresence = false;
-	SessionSettings.bUseLobbiesIfAvailable = false;
-	SessionSettings.bAllowJoinInProgress = true;
-	SessionSettings.bAllowJoinViaPresence = true;
-	SessionSettings.bAllowJoinViaPresenceFriendsOnly = false;
+	SessionSettings.bShouldAdvertise = true;
+	SessionSettings.BuildUniqueId = 1;
 
 	const FString ServerName = TEXT("Dedicated Server (WIP)");
 	const FString LevelFile = TEXT("LV_Procedural");
