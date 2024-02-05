@@ -6,9 +6,22 @@
 #include "UObject/Object.h"
 #include "ServerAdministrators.generated.h"
 
-UCLASS()
+UCLASS(config=ServerAdministrators)
 class DEDICATEDSERVER_API UServerAdministrators : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	UServerAdministrators();
+
+	bool IsAdministrator(const FString& UniqueId) const;
+	bool IsAdministrator(const FUniqueNetId& UniqueId) const;
+
+	TArray<FString> GetAdministrators() const;
+	void SetAdministrators(const TArray<FString>& InAdministrators);
+
+private:
+	UPROPERTY(Config)
+	TArray<FString> Administrators;
 
 };

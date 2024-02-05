@@ -4,6 +4,7 @@
 #include "UI/PlayerRowWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "ServerAdministrators.h"
 #include "GameFramework/GameState.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/GameSession.h"
@@ -44,6 +45,8 @@ void UPlayerRowWidget::Setup(const FString& Name, const FString& InUniqueID)
 	{
 		return;
 	}
+	
+	// TODO interface with is player administrator function
 
 	if (OwningPlayerState->GetUniqueId().ToString() == InUniqueID || !OwningPlayerController->HasAuthority())
 	{
