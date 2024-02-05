@@ -136,9 +136,6 @@ private:
 	int32 DesiredMaxPlayerCount;
 
 	UFUNCTION()
-	void CreateDedicatedServerSession();
-
-	UFUNCTION()
 	void CreateSession(FName SessionName = FName(""), bool Success = true);
 
 	UFUNCTION()

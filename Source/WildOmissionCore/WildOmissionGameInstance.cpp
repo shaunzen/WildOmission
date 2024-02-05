@@ -415,7 +415,11 @@ void UWildOmissionGameInstance::RefreshServerList(bool IsDedicated)
 	// Uncomment for lan results using null
 	//SessionSearch->bIsLanQuery = true;
 	SessionSearch->MaxSearchResults = 100;
-	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+	
+	const FName SearchSetting = IsDedicated ? SEARCH_DEDICATED_ONLY : SEARCH_PRESENCE;
+
+	SessionSearch->QuerySettings.Set(SearchSetting, true, EOnlineComparisonOp::Equals);
+	
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
 
@@ -517,35 +521,6 @@ void UWildOmissionGameInstance::JoinServer(const uint32& Index)
 
 	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
 	UE_LOG(LogOnlineSession, Display, TEXT("Joining Server Index: %i"), Index);
-}
-
-void UWildOmissionGameInstance::CreateDedicatedServerSession()
-{
-	if (!SessionInterface.IsValid())
-	{
-		return;
-	}
-
-	FOnlineSessionSettings SessionSettings;
-	SessionSettings.bIsLANMatch = false;
-	SessionSettings.NumPublicConnections = 100;
-	SessionSettings.bIsDedicated = true;
-	SessionSettings.bShouldAdvertise = true;
-	SessionSettings.bUsesPresence = false;
-	SessionSettings.bUseLobbiesIfAvailable = true;
-	SessionSettings.bAllowJoinInProgress = true;
-	SessionSettings.bAllowJoinViaPresence = true;
-	SessionSettings.bAllowJoinViaPresenceFriendsOnly = false;
-
-	const FString DedicatedServerName = TEXT("Dedicated Server");
-	const FString DedicatedServerSaveFile = TEXT("LV_Procedural");
-
-	//SessionSettings.Set(FRIENDS_ONLY_SETTINGS_KEY, false, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DedicatedServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	SessionSettings.Set(LEVEL_FILE_SETTINGS_KEY, DedicatedServerSaveFile, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	SessionSettings.Set(GAME_VERSION_SETTINGS_KEY, GameVersion, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-
-	//SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
 
 void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
