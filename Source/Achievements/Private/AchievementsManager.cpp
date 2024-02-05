@@ -35,6 +35,23 @@ UAchievementsManager* UAchievementsManager::GetAchievementsManager()
 
 void UAchievementsManager::QueryAchievements()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	UGameInstance* GameInstance = World->GetGameInstance();
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+
+	if (GameInstance->IsDedicatedServerInstance())
+	{
+		return;
+	}
+
 	// Get the online sub system
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 
@@ -68,6 +85,23 @@ void UAchievementsManager::QueryAchievements()
 
 void UAchievementsManager::UnlockAchievement(const FString& AchievementID)
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	UGameInstance* GameInstance = World->GetGameInstance();
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+
+	if (GameInstance->IsDedicatedServerInstance())
+	{
+		return;
+	}
+
 	// Get the online sub system
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 

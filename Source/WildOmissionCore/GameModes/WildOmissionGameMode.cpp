@@ -118,7 +118,8 @@ void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Addr
 	}
 
 	UWildOmissionGameInstance* GameInstance = UWildOmissionGameInstance::GetWildOmissionGameInstance(World);
-	if (FriendsOnly && GameInstance && !GameInstance->GetFriendsInterface()->IsFriend(0, *UniqueId.GetUniqueNetId().Get(), FString()))
+	IOnlineFriendsPtr FriendsInterface = GameInstance->GetFriendsInterface();
+	if (FriendsOnly && GameInstance && FriendsInterface && !FriendsInterface->IsFriend(0, *UniqueId.GetUniqueNetId().Get(), FString()))
 	{
 		ErrorMessage = TEXT("Player not friend, revoking connection attempt.");
 	}
@@ -131,6 +132,7 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 
 	UE_LOG(LogTemp, Warning, TEXT("PostLogin"));
+
 	AWildOmissionPlayerController* NewWildOmissionPlayer = Cast<AWildOmissionPlayerController>(NewPlayer);
 	if (NewWildOmissionPlayer == nullptr)
 	{
@@ -139,10 +141,13 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 
 	ProcessMultiplayerJoinAchievement(NewWildOmissionPlayer);
 
-	// TODO this is a no no
-	SaveManager->GetPlayerManager()->Load(NewPlayer);
-
-	if (GetWorld()->IsPlayInEditor())
+	UPlayerSaveManagerComponent* PlayerSaveManager = SaveManager->GetPlayerManager();
+	if (PlayerSaveManager)
+	{
+		PlayerSaveManager->Load(NewPlayer);
+	}
+	
+	if (GetWorld() && GetWorld()->IsPlayInEditor())
 	{
 		return;
 	}
@@ -160,8 +165,7 @@ void AWildOmissionGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 
-	// TODO this is a no no
-	if (GetWorld()->IsPlayInEditor())
+	if (GetWorld() && GetWorld()->IsPlayInEditor())
 	{
 		return;
 	}
