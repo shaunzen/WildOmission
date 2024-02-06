@@ -121,6 +121,9 @@ private:
 	IOnlineFriendsPtr FriendsInterface;
 
 	UPROPERTY()
+	class UServerAdministrators* ServerAdministrators;
+
+	UPROPERTY()
 	class UAchievementsManager* AchievementsManager;
 
 	void OnCreateDedicatedSessionComplete(FName SessionName, bool Success);

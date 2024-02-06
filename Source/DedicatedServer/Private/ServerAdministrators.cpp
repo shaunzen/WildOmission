@@ -3,9 +3,28 @@
 
 #include "ServerAdministrators.h"
 
+static UServerAdministrators* Instance = nullptr;
+
 UServerAdministrators::UServerAdministrators()
 {
 	Administrators = TArray<FString>();
+}
+
+void UServerAdministrators::OnCreation()
+{
+	Instance = this;
+}
+
+void UServerAdministrators::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	Instance = nullptr;
+}
+
+UServerAdministrators* UServerAdministrators::Get()
+{
+	return Instance;
 }
 
 bool UServerAdministrators::IsAdministrator(const FString& UniqueId) const

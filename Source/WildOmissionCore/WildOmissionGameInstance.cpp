@@ -15,6 +15,7 @@
 #include "WildOmissionSaveGame.h"
 #include "WildOmissionGameUserSettings.h"
 #include "AchievementsManager.h"
+#include "ServerAdministrators.h"
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundMix.h"
 #include "Sound/SoundClass.h"
@@ -183,11 +184,20 @@ void UWildOmissionGameInstance::Init()
 	AchievementsManager = NewObject<UAchievementsManager>(this);
 	if (AchievementsManager == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to create achievement manager."));
+		UE_LOG(LogInit, Error, TEXT("Failed to create achievement manager."));
 		return;
 	}
 
 	AchievementsManager->OnCreation();
+
+	ServerAdministrators = NewObject<UServerAdministrators>(this);
+	if (ServerAdministrators == nullptr)
+	{
+		UE_LOG(LogInit, Error, TEXT("Failed to create server administrators"))
+		return;
+	}
+
+	ServerAdministrators->OnCreation();
 
 	ApplyAudioSettings();
 	RunAutoConfigQualitySettings();

@@ -4,6 +4,7 @@
 #include "WildOmissionGameMode.h"
 #include "SaveManager.h"
 #include "Components/PlayerSaveManagerComponent.h"
+#include "ServerAdministrators.h"
 #include "Deployables/Bed.h"
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
@@ -159,6 +160,16 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
 	ChatManager->SendMessage(NewPlayerState, TEXT("Has Joined The Game."), true);
+
+	UServerAdministrators* ServerAdministrators = UServerAdministrators::Get();
+	if (ServerAdministrators == nullptr)
+	{
+		return;
+	}
+
+	const bool IsNewPlayerHost = NewWildOmissionPlayer->IsHost();
+	const bool IsNewPlayerAdministrator = ServerAdministrators->IsAdministrator(NewPlayerState->GetUniqueId().ToString());
+	NewWildOmissionPlayer->SetAdministrator(IsNewPlayerHost || IsNewPlayerAdministrator);
 }
 
 void AWildOmissionGameMode::Logout(AController* Exiting)

@@ -7,10 +7,11 @@
 #include "Interfaces/SavablePlayer.h"
 #include "Interfaces/PlayerControllerMessageSender.h"
 #include "Interfaces/BedController.h"
+#include "Interfaces/ServerAdministrator.h"
 #include "WildOmissionPlayerController.generated.h"
 
 UCLASS()
-class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer, public IPlayerControllerMessageSender, public IBedController
+class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer, public IPlayerControllerMessageSender, public IBedController, public IServerAdministrator
 {
 	GENERATED_BODY()
 
@@ -36,6 +37,11 @@ public:
 	virtual int32 GetBedUniqueID() const override;
 	virtual FVector GetBedWorldLocation() const override;
 	// End IBedController Implementation
+
+	// Begin IServerAdministrator Implementation
+	virtual void SetAdministrator(bool InAdministrator) override;
+	virtual bool IsAdministrator() const override;
+	// End IServerAdministrator Implementation
 
 	void Save();
 
@@ -76,6 +82,9 @@ private:
 
 	UPROPERTY()
 	FVector BedWorldLocation;
+
+	UPROPERTY(Replicated)
+	bool Administrator;
 
 	UPROPERTY(Replicated)
 	FIntVector2 SpawnChunk;

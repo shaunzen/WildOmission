@@ -8,6 +8,7 @@
 #include "GameFramework/GameState.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/GameSession.h"
+#include "Interfaces/ServerAdministrator.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Log.h"
 
@@ -46,9 +47,13 @@ void UPlayerRowWidget::Setup(const FString& Name, const FString& InUniqueID)
 		return;
 	}
 	
-	// TODO interface with is player administrator function
+	IServerAdministrator* ServerAdministrator = Cast<IServerAdministrator>(OwningPlayerController);
+	if (ServerAdministrator == nullptr)
+	{
+		return;
+	}
 
-	if (OwningPlayerState->GetUniqueId().ToString() == InUniqueID || !OwningPlayerController->HasAuthority())
+	if (OwningPlayerState->GetUniqueId().ToString() == InUniqueID || !ServerAdministrator->IsAdministrator())
 	{
 		KickButton->SetIsEnabled(false);
 		KickButton->SetVisibility(ESlateVisibility::Collapsed);

@@ -14,6 +14,11 @@ class DEDICATEDSERVER_API UServerAdministrators : public UObject
 public:
 	UServerAdministrators();
 
+	void OnCreation();
+	virtual void BeginDestroy() override;
+
+	static UServerAdministrators* Get();
+
 	bool IsAdministrator(const FString& UniqueId) const;
 	bool IsAdministrator(const FUniqueNetId& UniqueId) const;
 

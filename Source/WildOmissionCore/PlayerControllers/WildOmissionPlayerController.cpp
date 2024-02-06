@@ -35,6 +35,8 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 	BedUniqueID = -1;
 	BedWorldLocation = FVector::ZeroVector;
 
+	Administrator = false;
+
 	MusicPlayerComponent = nullptr;
 
 	AchievementsComponent = CreateDefaultSubobject<UWOInGameAchievementsComponent>(TEXT("AchievementsComponent"));
@@ -52,6 +54,7 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SpawnChunk, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, Administrator, COND_OwnerOnly);
 }
 
 FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
@@ -149,6 +152,16 @@ int32 AWildOmissionPlayerController::GetBedUniqueID() const
 FVector AWildOmissionPlayerController::GetBedWorldLocation() const
 {
 	return BedWorldLocation;
+}
+
+void AWildOmissionPlayerController::SetAdministrator(bool InAdministrator)
+{
+	Administrator = InAdministrator;
+}
+
+bool AWildOmissionPlayerController::IsAdministrator() const
+{
+	return Administrator;
 }
 
 void AWildOmissionPlayerController::Save()
