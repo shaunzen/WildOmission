@@ -658,6 +658,7 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 	/*
 	Setup the server list
 	*/
+
 	TArray<FServerData> ServerNames;
 	for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
 	{
@@ -692,11 +693,17 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		Data.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
 		Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
 		Data.HostUsername = SearchResult.Session.OwningUserName;
-		
+		Data.IsDedicated = SearchResult.Session.SessionSettings.bIsDedicated;
+		Data.PingMS = SearchResult.PingInMs;
+
 		FString ServerName;
-		if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
+		if (!Data.IsDedicated && SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
 		{
 			Data.Name = ServerName;
+		}
+		else if (Data.IsDedicated)
+		{
+			Data.Name = Data.HostUsername;
 		}
 		else
 		{

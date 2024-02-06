@@ -173,6 +173,14 @@ void UMainMenuWidget::RefreshSplashText()
 	{
 		SplashText = TEXT("Happy Birthday Larch!");
 	}
+	else if (TimeNow.GetMonth() == 4 && TimeNow.GetDay() == 8)
+	{
+		SplashText = TEXT("Happy Birthday LifeOn30FPS!");
+	}
+	else if (TimeNow.GetMonth() == 5 && TimeNow.GetMonth() == 12)
+	{
+		SplashText = TEXT("Happy Birthday Tyce!");
+	}
 	else if (TimeNow.GetMonth() == 10 && TimeNow.GetDay() == 31)
 	{
 		SplashText = TEXT("Happy Halloween!");
@@ -184,6 +192,10 @@ void UMainMenuWidget::RefreshSplashText()
 	else if (TimeNow.GetHour12() == 3 && TimeNow.GetMinute() == 33)
 	{
 		SplashText = TEXT("333");
+	}
+	else if (TimeNow.GetMinute() == 13)
+	{
+		SplashText = TEXT("13");
 	}
 
 	SplashTextBlock->SetText(FText::FromString(SplashText));
