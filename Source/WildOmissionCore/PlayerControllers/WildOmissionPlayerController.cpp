@@ -301,9 +301,13 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 		return;
 	}
 
-	if (AWildOmissionSpectatorPawn* SpectatorPawn = Cast<AWildOmissionSpectatorPawn>(aPawn))
+	if (AWildOmissionSpectatorPawn* WildOmissionSpectatorPawn = Cast<AWildOmissionSpectatorPawn>(aPawn))
 	{
-		TempChunkInvoker = World->SpawnActor<AChunkInvokerActor>(AChunkInvokerActor::StaticClass(), SpectatorPawn->GetActorLocation(), SpectatorPawn->GetActorRotation());
+		TempChunkInvoker = 
+			World->SpawnActor<AChunkInvokerActor>
+			(AChunkInvokerActor::StaticClass(),
+			WildOmissionSpectatorPawn->GetActorLocation(),
+			WildOmissionSpectatorPawn->GetActorRotation());
 		return;
 	}
 

@@ -14,16 +14,22 @@ struct GAMECHAT_API FChatMessage
 {
 	GENERATED_BODY()
 
+	FChatMessage();
+	FChatMessage(const FString& InSenderName, const FString& InMessage, const bool& InSenderIsAdministrator, const double& InTimeRecieved, const bool& InConnectionUpdate = false);
+
 	UPROPERTY()
-	FString SenderName = TEXT("NAN");
+	FString SenderName;
 
 	UPROPERTY()
 	FString Message;
 
 	UPROPERTY()
-	double TimeRecieved = 0.0;
+	bool SenderIsAdminisrator;
 
 	UPROPERTY()
-	bool ConnectionUpdate = false;
+	double TimeRecieved;
+
+	UPROPERTY()
+	bool ConnectionUpdate;
 
 };

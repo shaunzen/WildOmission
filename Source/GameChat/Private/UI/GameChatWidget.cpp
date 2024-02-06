@@ -83,7 +83,7 @@ void UGameChatWidget::RefreshMessages()
 			continue;
 		}
 
-		MessageWidget->Setup(this, Message.SenderName, Message.Message, Message.TimeRecieved);
+		MessageWidget->Setup(this, Message);
 		if (HideUnlessOpen)
 		{
 			MessageWidget->SetVisibility(ESlateVisibility::Hidden);

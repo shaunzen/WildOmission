@@ -4,14 +4,19 @@
 #include "ChatMessageWidget.h"
 #include "UI/GameChatWidget.h"
 #include "Components/TextBlock.h"
+#include "Structs/ChatMessage.h"
+#include "UIColors.h"
 
-void UChatMessageWidget::Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeRecieved)
+void UChatMessageWidget::Setup(UGameChatWidget* InParent, const FChatMessage& InChatMessage)
 {
 	ParentChatWidget = InParent;
-	FString PlayerNameString = FString::Printf(TEXT("%s: "), *PlayerName);
+	FString PlayerNameString = FString::Printf(TEXT("%s: "), *InChatMessage.SenderName);
 	PlayerNameText->SetText(FText::FromString(PlayerNameString));
-	MessageText->SetText(FText::FromString(Message));
-	TimeRecieved = InTimeRecieved;
+
+	// TODO name color
+
+	MessageText->SetText(FText::FromString(InChatMessage.Message));
+	TimeRecieved = InChatMessage.TimeRecieved;
 }
 
 void UChatMessageWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
