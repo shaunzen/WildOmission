@@ -6,7 +6,7 @@
 #include "UObject/Object.h"
 #include "ServerAdministrators.generated.h"
 
-UCLASS(config=ServerAdministrators)
+UCLASS(Config=ServerAdministrators)
 class DEDICATEDSERVER_API UServerAdministrators : public UObject
 {
 	GENERATED_BODY()

@@ -7,7 +7,12 @@ static UServerAdministrators* Instance = nullptr;
 
 UServerAdministrators::UServerAdministrators()
 {
-	Administrators = TArray<FString>();
+	Administrators = TArray<FString>
+	{
+		TEXT("ADMIN_STEAM_ID_HERE")
+	};
+
+	LoadConfig();
 }
 
 void UServerAdministrators::OnCreation()
@@ -19,6 +24,8 @@ void UServerAdministrators::BeginDestroy()
 {
 	Super::BeginDestroy();
 
+	SaveConfig();
+	
 	Instance = nullptr;
 }
 
