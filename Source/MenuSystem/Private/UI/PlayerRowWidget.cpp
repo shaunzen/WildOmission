@@ -76,6 +76,8 @@ void UPlayerRowWidget::Kick()
 		return;
 	}
 
+	// todo this is handled by the player controller as an rpc to the server
+
 	AGameModeBase* GameMode = World->GetAuthGameMode();
 	if (GameMode == nullptr)
 	{

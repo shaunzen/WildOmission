@@ -86,6 +86,9 @@ private:
 	UPROPERTY(Replicated)
 	bool Administrator;
 
+	UPROPERTY()
+	class AChunkInvokerActor* TempChunkInvoker;
+
 	UPROPERTY(Replicated)
 	FIntVector2 SpawnChunk;
 

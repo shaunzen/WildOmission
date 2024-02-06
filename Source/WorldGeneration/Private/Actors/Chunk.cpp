@@ -44,7 +44,6 @@ AChunk::AChunk()
 
 	bReplicates = true;
 	NetUpdateFrequency = 2.0f;
-	NetPriority = 1.0f;
 	NetDormancy = ENetDormancy::DORM_DormantAll;
 	
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));

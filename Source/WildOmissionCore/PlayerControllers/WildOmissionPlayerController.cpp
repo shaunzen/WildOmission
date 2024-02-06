@@ -20,6 +20,7 @@
 #include "SaveManager.h"
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
+#include "Actors/ChunkInvokerActor.h"
 #include "GameChatManager.h"
 #include "UI/GameplayMenuWidget.h"
 #include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
@@ -31,6 +32,8 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 {
 	bIsStillLoading = true;
 	SpawnChunk = FIntVector2();
+
+	TempChunkInvoker = nullptr;
 
 	BedUniqueID = -1;
 	BedWorldLocation = FVector::ZeroVector;
@@ -292,6 +295,18 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 		return;
 	}
 
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	if (AWildOmissionSpectatorPawn* SpectatorPawn = Cast<AWildOmissionSpectatorPawn>(aPawn))
+	{
+		TempChunkInvoker = World->SpawnActor<AChunkInvokerActor>(AChunkInvokerActor::StaticClass(), SpectatorPawn->GetActorLocation(), SpectatorPawn->GetActorRotation());
+		return;
+	}
+
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(aPawn);
 	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true)
 	{
@@ -321,6 +336,14 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 	CharacterInventoryManipulatorComponent->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSaveData.SelectedItemByteData);
 
 	StoredPlayerSaveData = FPlayerSaveData();
+
+	if (TempChunkInvoker == nullptr)
+	{
+		return;
+	}
+
+	TempChunkInvoker->Destroy();
+	TempChunkInvoker = nullptr;
 }
 
 void AWildOmissionPlayerController::SetupPlayerOnServer()
