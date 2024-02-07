@@ -98,7 +98,7 @@ void UWOInGameAchievementsComponent::OnOwnerPossessedPawnChanged(APawn* OldPawn,
 	}
 }
 
-void UWOInGameAchievementsComponent::GiveDeathAchievement()
+void UWOInGameAchievementsComponent::GiveDeathAchievement(const FVector& DeathLocation)
 {
 	this->UnlockAchievement(ACH_RIP);
 }

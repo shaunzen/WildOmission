@@ -85,7 +85,7 @@ void ADeployable::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AChunkManager::HandleActorRenderDistanceVisibility(this);
+	//AChunkManager::HandleActorRenderDistanceVisibility(GetWorld(), this);
 }
 
 void ADeployable::OnLoadComplete_Implementation()

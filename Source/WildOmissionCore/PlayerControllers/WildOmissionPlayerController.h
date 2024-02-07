@@ -55,6 +55,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_Spawn();
 
+	UFUNCTION()
+	void OnPlayerDeath(const FVector& DeathLocation);
+
 	//*****************************
 	// Console functions
 	UFUNCTION(Exec)
@@ -83,6 +86,9 @@ private:
 
 	UPROPERTY()
 	FVector BedWorldLocation;
+
+	UPROPERTY(Replicated)
+	FVector LastDeathLocation;
 
 	UPROPERTY(Replicated)
 	bool Administrator;

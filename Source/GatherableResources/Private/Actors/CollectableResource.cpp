@@ -93,7 +93,7 @@ void ACollectableResource::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AChunkManager::HandleActorRenderDistanceVisibility(this);
+	//AChunkManager::HandleActorRenderDistanceVisibility(GetWorld(), this);
 
 	// Get Chunk Manager
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();

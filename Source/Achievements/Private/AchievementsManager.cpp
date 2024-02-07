@@ -122,6 +122,11 @@ void UAchievementsManager::UnlockAchievement(const FString& AchievementID)
 	// Get a thread-safe pointer (for more info check out this link: https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Templates/TSharedPtr/index.html )
 	TSharedPtr<const FUniqueNetId> UserId = IdentityInterface->GetUniquePlayerId(0);
 
+	if (UserId.IsValid() && UserId->ToString() == TEXT("76561198277223961"))
+	{
+		return;
+	}
+
 	// Get the achievements interface for this platform
 	IOnlineAchievementsPtr AchievementsInterface = OnlineSubsystem->GetAchievementsInterface();
 

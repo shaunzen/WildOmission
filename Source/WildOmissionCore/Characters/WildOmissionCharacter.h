@@ -7,7 +7,7 @@
 #include "Interfaces/CharacterSettingsInterface.h"
 #include "WildOmissionCharacter.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeathSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerDeathSignature, const FVector&, DeathLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKilledAnotherPlayerSignature, APlayerController*, KilledPlayer);
 
 UCLASS()

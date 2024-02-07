@@ -246,6 +246,17 @@ void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
 //*****************************
 // Console functions
 
+void AWildOmissionPlayerController::OnPlayerDeath(const FVector& DeathLocation)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	TempChunkInvoker = World->SpawnActor<AChunkInvokerActor>(AChunkInvokerActor::StaticClass(), DeathLocation, FRotator::ZeroRotator);
+}
+
 void AWildOmissionPlayerController::Kill()
 {
 	Server_KillThisPlayer();
@@ -318,7 +329,14 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 	}
 
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(aPawn);
-	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true)
+	if (WildOmissionCharacter == nullptr)
+	{
+		return;
+	}
+
+	WildOmissionCharacter->OnPlayerDeath.AddDynamic(this, &AWildOmissionPlayerController::OnPlayerDeath);
+
+	if (bIsStillLoading == false || StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true)
 	{
 		return;
 	}

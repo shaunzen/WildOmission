@@ -693,7 +693,7 @@ void AWildOmissionCharacter::HandleDeath()
 	
 	if (OnPlayerDeath.IsBound())
 	{
-		OnPlayerDeath.Broadcast();
+		OnPlayerDeath.Broadcast(this->GetActorLocation());
 	}
 
 	AController* LastDamageCauser = LastHitBy;

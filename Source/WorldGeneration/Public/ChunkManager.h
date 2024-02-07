@@ -23,7 +23,7 @@ public:
 
 	// Gets existing chunk if present, or returns the generated/loaded chunk at the given location
 	class AChunk* GetChunkAtLocation(const FIntVector2& ChunkLocation);
-	static void HandleActorRenderDistanceVisibility(AActor* InActor);
+	static void HandleActorRenderDistanceVisibility(UWorld* WorldContextObject, AActor* InActor);
 	static bool IsActorNetRelevent(const AActor* ActorToTest, const AActor* ViewingActor);
 
 	// Chunk Data	
