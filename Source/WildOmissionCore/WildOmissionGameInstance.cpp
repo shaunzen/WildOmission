@@ -15,6 +15,7 @@
 #include "WildOmissionSaveGame.h"
 #include "WildOmissionGameUserSettings.h"
 #include "AchievementsManager.h"
+#include "ServerAdministrators.h"
 #include "GameFramework/PlayerState.h"
 #include "Sound/SoundMix.h"
 #include "Sound/SoundClass.h"
@@ -27,8 +28,9 @@ const static FName FRIENDS_ONLY_SETTINGS_KEY = TEXT("FriendsOnlySession");
 const static FName LEVEL_FILE_SETTINGS_KEY = TEXT("LevelFile");
 const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
+const static FName SEARCH_DEDICATED_ONLY = TEXT("DEDICATEDONLY");
 
-const static FString GameVersion = TEXT("Alpha 1.1.4");
+const static FString GameVersion = TEXT("Alpha 1.2.0 - Dedicated Server Test 1");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -154,9 +156,7 @@ UWildOmissionGameInstance* UWildOmissionGameInstance::GetWildOmissionGameInstanc
 void UWildOmissionGameInstance::Init()
 {
 	Super::Init();
-
-	ApplyAudioSettings();
-
+	
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UWildOmissionGameInstance::LoadedNewMap);
 
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
@@ -167,13 +167,15 @@ void UWildOmissionGameInstance::Init()
 
 	SessionInterface = OnlineSubsystem->GetSessionInterface();
 	FriendsInterface = OnlineSubsystem->GetFriendsInterface();
-	
+
 	if (!SessionInterface.IsValid() || GEngine == 0)
 	{
 		return;
 	}
 
-	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateSessionComplete);
+	this->IsDedicatedServerInstance() ?
+	SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateDedicatedSessionComplete)
+		: SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnCreateSessionComplete);
 	//SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnDestroySessionComplete);
 	SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnFindSessionsComplete);
 	SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UWildOmissionGameInstance::OnJoinSessionComplete);
@@ -182,13 +184,30 @@ void UWildOmissionGameInstance::Init()
 	AchievementsManager = NewObject<UAchievementsManager>(this);
 	if (AchievementsManager == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to create achievement manager."));
+		UE_LOG(LogInit, Error, TEXT("Failed to create achievement manager."));
 		return;
 	}
 
 	AchievementsManager->OnCreation();
 
+	ServerAdministrators = NewObject<UServerAdministrators>(this);
+	if (ServerAdministrators == nullptr)
+	{
+		UE_LOG(LogInit, Error, TEXT("Failed to create server administrators"))
+		return;
+	}
+
+	ServerAdministrators->OnCreation();
+
+	ApplyAudioSettings();
 	RunAutoConfigQualitySettings();
+}
+
+void UWildOmissionGameInstance::Shutdown()
+{
+	Super::Shutdown();
+
+	EndExistingSession();
 }
 
 void UWildOmissionGameInstance::ShowMainMenuWidget()
@@ -367,6 +386,23 @@ void UWildOmissionGameInstance::StartSession()
 	SessionInterface->StartSession(SESSION_NAME);
 }
 
+void UWildOmissionGameInstance::OpenLevel(const FString& Address)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerController* LocalPlayerController = World->GetFirstPlayerController();
+	if (LocalPlayerController == nullptr)
+	{
+		return;
+	}
+
+	LocalPlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+}
+
 void UWildOmissionGameInstance::QuitToMenu()
 {
 	UE_LOG(LogPlayerController, Display, TEXT("Returning to main menu."));
@@ -375,9 +411,10 @@ void UWildOmissionGameInstance::QuitToMenu()
 	EndExistingSession();
 }
 
-void UWildOmissionGameInstance::RefreshServerList()
+void UWildOmissionGameInstance::RefreshServerList(bool IsDedicated)
 {
 	UE_LOG(LogOnlineSession, Display, TEXT("Refreshing server list."));
+
 
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid() == false)
@@ -388,8 +425,11 @@ void UWildOmissionGameInstance::RefreshServerList()
 	// Uncomment for lan results using null
 	//SessionSearch->bIsLanQuery = true;
 	SessionSearch->MaxSearchResults = 100;
+	
+	const FName SearchSetting = IsDedicated ? SEARCH_DEDICATED_ONLY : SEARCH_PRESENCE;
 
-	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+	SessionSearch->QuerySettings.Set(SearchSetting, true, EOnlineComparisonOp::Equals);
+	
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 }
 
@@ -503,6 +543,7 @@ void UWildOmissionGameInstance::CreateSession(FName SessionName, bool Success)
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = false;
 	SessionSettings.NumPublicConnections = DesiredMaxPlayerCount;
+	SessionSettings.bAllowInvites = true;
 	SessionSettings.bShouldAdvertise = true;
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.bUseLobbiesIfAvailable = true;
@@ -551,6 +592,20 @@ void UWildOmissionGameInstance::EndExistingSession()
 //****************************
 // Subsystem Delegates
 //****************************
+void UWildOmissionGameInstance::OnCreateDedicatedSessionComplete(FName SessionName, bool Success)
+{
+	if (Success == false)
+	{
+		UE_LOG(LogOnlineSession, Error, TEXT("Could not create session %s"), *SessionName.ToString());
+		return;
+	}
+
+	OnMainMenu = false;
+
+	//StartSession();
+	UE_LOG(LogOnlineSession, Display, TEXT("Finished setting up dedicated server session."));
+}
+
 void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 {
 	if (Success == false || MainMenuWidget == nullptr)
@@ -575,6 +630,7 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 	{
 		return;
 	}
+
 	FString FriendsOnlyString = FString::Printf(TEXT("%i"), FriendsOnlySession);
 	FString LevelFileString = SaveGame->LevelFile;
 	FString LoadString = FString::Printf(TEXT("/Game/WildOmissionCore/Levels/%s?listen?savegame=%s?friendsonly="), *LevelFileString, *WorldToLoad, *FriendsOnlyString);
@@ -602,6 +658,7 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 	/*
 	Setup the server list
 	*/
+
 	TArray<FServerData> ServerNames;
 	for (const FOnlineSessionSearchResult& SearchResult : SessionSearch->SearchResults)
 	{
@@ -636,11 +693,17 @@ void UWildOmissionGameInstance::OnFindSessionsComplete(bool Success)
 		Data.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
 		Data.CurrentPlayers = Data.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
 		Data.HostUsername = SearchResult.Session.OwningUserName;
-		
+		Data.IsDedicated = SearchResult.Session.SessionSettings.bIsDedicated;
+		Data.PingMS = SearchResult.PingInMs;
+
 		FString ServerName;
-		if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
+		if (!Data.IsDedicated && SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
 		{
 			Data.Name = ServerName;
+		}
+		else if (Data.IsDedicated)
+		{
+			Data.Name = Data.HostUsername;
 		}
 		else
 		{
@@ -690,6 +753,36 @@ void UWildOmissionGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetD
 IOnlineFriendsPtr UWildOmissionGameInstance::GetFriendsInterface() const
 {
 	return FriendsInterface;
+}
+
+FName UWildOmissionGameInstance::GetSessionName()
+{
+	return SESSION_NAME;
+}
+
+FName UWildOmissionGameInstance::GetServerNameSettingsKey()
+{
+	return SERVER_NAME_SETTINGS_KEY;
+}
+
+FName UWildOmissionGameInstance::GetFriendsOnlySettingsKey()
+{
+	return FRIENDS_ONLY_SETTINGS_KEY;
+}
+
+FName UWildOmissionGameInstance::GetLevelFileSettingsKey()
+{
+	return LEVEL_FILE_SETTINGS_KEY;
+}
+
+FName UWildOmissionGameInstance::GetGameVersionSettingsKey()
+{
+	return GAME_VERSION_SETTINGS_KEY;
+}
+
+FName UWildOmissionGameInstance::GetSearchPresence()
+{
+	return SEARCH_PRESENCE;
 }
 
 FString UWildOmissionGameInstance::GetVersion() const

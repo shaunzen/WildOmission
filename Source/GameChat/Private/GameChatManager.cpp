@@ -3,6 +3,8 @@
 
 #include "GameChatManager.h"
 #include "GameFramework/PlayerState.h"
+#include "Interfaces/ServerAdministrator.h"
+#include "Log.h"
 
 static AGameChatManager* Instance;
 
@@ -46,13 +48,24 @@ void AGameChatManager::SendMessage(APlayerState* SenderPlayerState, const FStrin
 {
 	if (SenderPlayerState == nullptr || Message.IsEmpty())
 	{
+		UE_LOG(LogGameChat, Warning, TEXT("Failed to send message, SenderPlayerState nullptr, or Message empty."));
+		return;
+	}
+
+	IServerAdministrator* ServerAdministrator = Cast<IServerAdministrator>(SenderPlayerState->GetPlayerController());
+	if (ServerAdministrator == nullptr)
+	{
+		UE_LOG(LogGameChat, Warning, TEXT("Failed to send message %s: %s, couldn't determine sender administrator status."), *SenderPlayerState->GetPlayerName(), *Message);
 		return;
 	}
 
 	FChatMessage ChatMessage;
 	ChatMessage.SenderName = SenderPlayerState->GetPlayerName();
 	ChatMessage.Message = Message;
+	ChatMessage.SenderIsAdminisrator = ServerAdministrator->IsAdministrator();
 	ChatMessage.ConnectionUpdate = ConnectionUpdate;
+
+	UE_LOG(LogGameChat, Display, TEXT("%s: %s"), *ChatMessage.SenderName, *ChatMessage.Message)
 
 	Multi_PushMessageToClients(ChatMessage);
 }

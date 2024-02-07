@@ -41,6 +41,7 @@ public:
 	static UWildOmissionGameInstance* GetWildOmissionGameInstance(UWorld* WorldContextObject);
 
 	virtual void Init() override;
+	virtual void Shutdown() override;
 
 	UFUNCTION(BlueprintCallable)
 	void ShowMainMenuWidget();
@@ -62,17 +63,27 @@ public:
 	virtual void StartSingleplayer(const FString& WorldName) override;
 	virtual void HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly = false, const int32& MaxPlayerCount = 8) override;
 	virtual void JoinServer(const uint32& Index) override;
-	virtual void RefreshServerList() override;
+	virtual void RefreshServerList(bool IsDedicated = false) override;
 	virtual void QuitToMenu() override;
 	// End IMenuInterface Implementation
 
 	void StartSession();
+
+	UFUNCTION(Exec)
+	void OpenLevel(const FString& Address);
 
 	// Begin IGameSettingsInterface Implementation
 	virtual void ApplyAudioSettings() override;
 	// End IGameSettingsInterface Implementation
 
 	IOnlineFriendsPtr GetFriendsInterface() const;
+
+	static FName GetSessionName();
+	static FName GetServerNameSettingsKey();
+	static FName GetFriendsOnlySettingsKey();
+	static FName GetLevelFileSettingsKey();
+	static FName GetGameVersionSettingsKey();
+	static FName GetSearchPresence();
 
 	UFUNCTION(BlueprintCallable)
 	FString GetVersion() const;
@@ -110,8 +121,12 @@ private:
 	IOnlineFriendsPtr FriendsInterface;
 
 	UPROPERTY()
+	class UServerAdministrators* ServerAdministrators;
+
+	UPROPERTY()
 	class UAchievementsManager* AchievementsManager;
 
+	void OnCreateDedicatedSessionComplete(FName SessionName, bool Success);
 	void OnCreateSessionComplete(FName SessionName, bool Success);
 	void OnDestroySessionComplete(FName SessionName, bool Success);
 	void OnFindSessionsComplete(bool Success);

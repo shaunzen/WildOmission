@@ -8,7 +8,7 @@
 #include "ServerBrowserWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerBrowserOnJoinButtonClickedSignature, const uint32&, SelectedIndex);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FServerBrowserOnRefreshButtonClickedSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerBrowserOnRefreshButtonClickedSignature, bool, IsDedicated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FServerBrowserOnCancelButtonClickedSignature);
 
 UCLASS()
@@ -31,6 +31,12 @@ public:
 	
 private:
 	UPROPERTY(Meta = (BindWidget))
+	class UButton* DedicatedServersButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* PlayerHostedWorldsButton;
+
+	UPROPERTY(Meta = (BindWidget))
 	class UPanelWidget* ServerList;
 	
 	UPROPERTY(Meta = (BindWidget))
@@ -49,6 +55,15 @@ private:
 
 	TOptional<uint32> SelectedServerIndex;
 	
+	UPROPERTY()
+	bool IsDedicatedList;
+
+	UFUNCTION()
+	void SwitchToDedicatedList();
+
+	UFUNCTION()
+	void SwitchToPlayerHostedWorldsList();
+
 	UFUNCTION()
 	void UpdateServerListChildren();
 	

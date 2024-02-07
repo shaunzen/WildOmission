@@ -20,11 +20,13 @@
 #include "SaveManager.h"
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
+#include "Actors/ChunkInvokerActor.h"
 #include "GameChatManager.h"
 #include "UI/GameplayMenuWidget.h"
 #include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
 
 // Engine Stuff
+#include "GameFramework/GameSession.h"
 #include "Net/UnrealNetwork.h"
 
 AWildOmissionPlayerController::AWildOmissionPlayerController()
@@ -32,8 +34,12 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 	bIsStillLoading = true;
 	SpawnChunk = FIntVector2();
 
+	TempChunkInvoker = nullptr;
+
 	BedUniqueID = -1;
 	BedWorldLocation = FVector::ZeroVector;
+
+	Administrator = false;
 
 	MusicPlayerComponent = nullptr;
 
@@ -52,6 +58,7 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SpawnChunk, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, Administrator, COND_OwnerOnly);
 }
 
 FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
@@ -151,6 +158,21 @@ FVector AWildOmissionPlayerController::GetBedWorldLocation() const
 	return BedWorldLocation;
 }
 
+void AWildOmissionPlayerController::SetAdministrator(bool InAdministrator)
+{
+	Administrator = InAdministrator;
+}
+
+bool AWildOmissionPlayerController::IsAdministrator() const
+{
+	return Administrator;
+}
+
+void AWildOmissionPlayerController::KickPlayer(APlayerController* PlayerControllerToKick)
+{
+	Server_KickPlayer(PlayerControllerToKick);
+}
+
 void AWildOmissionPlayerController::Save()
 {
 	UWorld* World = GetWorld();
@@ -224,6 +246,17 @@ void AWildOmissionPlayerController::Server_KillThisPlayer_Implementation()
 //*****************************
 // Console functions
 
+void AWildOmissionPlayerController::OnPlayerDeath(const FVector& DeathLocation)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	TempChunkInvoker = World->SpawnActor<AChunkInvokerActor>(AChunkInvokerActor::StaticClass(), DeathLocation, FRotator::ZeroRotator);
+}
+
 void AWildOmissionPlayerController::Kill()
 {
 	Server_KillThisPlayer();
@@ -279,8 +312,31 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 		return;
 	}
 
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	if (AWildOmissionSpectatorPawn* WildOmissionSpectatorPawn = Cast<AWildOmissionSpectatorPawn>(aPawn))
+	{
+		TempChunkInvoker = 
+			World->SpawnActor<AChunkInvokerActor>
+			(AChunkInvokerActor::StaticClass(),
+			WildOmissionSpectatorPawn->GetActorLocation(),
+			WildOmissionSpectatorPawn->GetActorRotation());
+		return;
+	}
+
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(aPawn);
-	if (WildOmissionCharacter == nullptr || bIsStillLoading == false || StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true)
+	if (WildOmissionCharacter == nullptr)
+	{
+		return;
+	}
+
+	WildOmissionCharacter->OnPlayerDeath.AddDynamic(this, &AWildOmissionPlayerController::OnPlayerDeath);
+
+	if (bIsStillLoading == false || StoredPlayerSaveData.IsAlive == false || StoredPlayerSaveData.NewPlayer == true)
 	{
 		return;
 	}
@@ -308,6 +364,14 @@ void AWildOmissionPlayerController::OnPossess(APawn* aPawn)
 	CharacterInventoryManipulatorComponent->LoadSelectedItemFromByteDataAndDropInWorld(StoredPlayerSaveData.SelectedItemByteData);
 
 	StoredPlayerSaveData = FPlayerSaveData();
+
+	if (TempChunkInvoker == nullptr)
+	{
+		return;
+	}
+
+	TempChunkInvoker->Destroy();
+	TempChunkInvoker = nullptr;
 }
 
 void AWildOmissionPlayerController::SetupPlayerOnServer()
@@ -453,6 +517,35 @@ void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerSta
 	}
 
 	ChatManager->SendMessage(Sender, Message, false);
+}
+
+void AWildOmissionPlayerController::Server_KickPlayer_Implementation(APlayerController* PlayerControllerToKick)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	AGameModeBase* GameMode = World->GetAuthGameMode();
+	if (GameMode == nullptr)
+	{
+		return;
+	}
+
+	AGameSession* GameSession = GameMode->GameSession.Get();
+	if (GameSession == nullptr)
+	{
+		return;
+	}
+
+	if (PlayerControllerToKick == nullptr)
+	{
+		UE_LOG(LogPlayerController, Warning, TEXT("Failed to kick player, couldn't get player controller."));
+		return;
+	}
+
+	GameSession->KickPlayer(PlayerControllerToKick, FText::FromString(TEXT("Kicked by Server Administrator.")));
 }
 
 void AWildOmissionPlayerController::Server_Spawn_Implementation()

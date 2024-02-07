@@ -6,15 +6,20 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/PanelWidget.h"
+#include "Color/UIColors.h"
 
 UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
+	DedicatedServersButton = nullptr;
+	PlayerHostedWorldsButton = nullptr;
 	ServerList = nullptr;
 	JoinButton = nullptr;
 	CancelButton = nullptr;
 	RefreshListButton = nullptr;
 	RefreshListButtonText = nullptr;
 	ServerRowWidgetClass = nullptr;
+
+	IsDedicatedList = true;
 
 	static ConstructorHelpers::FClassFinder<UServerRowWidget> ServerRowWidgetBPClass(TEXT("/Game/MenuSystem/UI/Server/WBP_ServerRow"));
 	if (ServerRowWidgetBPClass.Succeeded())
@@ -26,6 +31,11 @@ UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectIniti
 void UServerBrowserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	SwitchToDedicatedList();
+
+	DedicatedServersButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::SwitchToDedicatedList);
+	PlayerHostedWorldsButton->OnClicked.AddDynamic(this, &UServerBrowserWidget::SwitchToPlayerHostedWorldsList);
 
 	JoinButton->SetIsEnabled(false);
 
@@ -64,6 +74,40 @@ void UServerBrowserWidget::SetServerList(TArray<FServerData> ServerNames)
 	RefreshListButtonText->SetText(FText::FromString(RefreshString));
 }
 
+void UServerBrowserWidget::SwitchToDedicatedList()
+{
+	IsDedicatedList = true;
+
+	FUIColor* SelectedColor = UUIColors::GetBaseColor(TEXT("Blue"));
+	FUIColor* UnselectedColor = UUIColors::GetBaseColor(TEXT("Gray"));
+	if (SelectedColor == nullptr || UnselectedColor == nullptr)
+	{
+		return;
+	}
+
+	DedicatedServersButton->SetBackgroundColor(SelectedColor->Default);
+	PlayerHostedWorldsButton->SetBackgroundColor(UnselectedColor->Default);
+
+	BroadcastRefreshButtonClicked();
+}
+
+void UServerBrowserWidget::SwitchToPlayerHostedWorldsList()
+{
+	IsDedicatedList = false;
+
+	FUIColor* SelectedColor = UUIColors::GetBaseColor(TEXT("Blue"));
+	FUIColor* UnselectedColor = UUIColors::GetBaseColor(TEXT("Gray"));
+	if (SelectedColor == nullptr || UnselectedColor == nullptr)
+	{
+		return;
+	}
+
+	DedicatedServersButton->SetBackgroundColor(UnselectedColor->Default);
+	PlayerHostedWorldsButton->SetBackgroundColor(SelectedColor->Default);
+
+	BroadcastRefreshButtonClicked();
+}
+
 void UServerBrowserWidget::UpdateServerListChildren()
 {
 	for (int32 i = 0; i < ServerList->GetChildrenCount(); ++i)
@@ -91,13 +135,13 @@ void UServerBrowserWidget::BroadcastRefreshButtonClicked()
 		return;
 	}
 
-	const FString WaitingString = FString("...");
+	const FString WaitingString = TEXT("...");
 	RefreshListButtonText->SetText(FText::FromString(WaitingString));
 	
 	SelectedServerIndex.Reset();
 	JoinButton->SetIsEnabled(false);
 
-	OnRefreshButtonClicked.Broadcast();
+	OnRefreshButtonClicked.Broadcast(IsDedicatedList);
 }
 
 void UServerBrowserWidget::OnOpen()

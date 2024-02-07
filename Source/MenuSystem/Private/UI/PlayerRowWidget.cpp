@@ -4,9 +4,11 @@
 #include "UI/PlayerRowWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "ServerAdministrators.h"
 #include "GameFramework/GameState.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/GameSession.h"
+#include "Interfaces/ServerAdministrator.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Log.h"
 
@@ -44,8 +46,14 @@ void UPlayerRowWidget::Setup(const FString& Name, const FString& InUniqueID)
 	{
 		return;
 	}
+	
+	IServerAdministrator* ServerAdministrator = Cast<IServerAdministrator>(OwningPlayerController);
+	if (ServerAdministrator == nullptr)
+	{
+		return;
+	}
 
-	if (OwningPlayerState->GetUniqueId().ToString() == InUniqueID || !OwningPlayerController->HasAuthority())
+	if (OwningPlayerState->GetUniqueId().ToString() == InUniqueID || !ServerAdministrator->IsAdministrator())
 	{
 		KickButton->SetIsEnabled(false);
 		KickButton->SetVisibility(ESlateVisibility::Collapsed);
@@ -60,34 +68,14 @@ void UPlayerRowWidget::ViewProfile()
 
 void UPlayerRowWidget::Kick()
 {
-	UE_LOG(LogMenuSystem, Display, TEXT("Kicking player %s."), *UniqueID);
-
-	UWorld* World = GetWorld();
-	if (World == nullptr)
+	IServerAdministrator* OwnerServerAdministrator = Cast<IServerAdministrator>(GetOwningPlayer());
+	if (OwnerServerAdministrator == nullptr)
 	{
 		return;
 	}
 
-	AGameModeBase* GameMode = World->GetAuthGameMode();
-	if (GameMode == nullptr)
-	{
-		return;
-	}
+	OwnerServerAdministrator->KickPlayer(GetPlayerControllerForThis());
 
-	AGameSession* GameSession = GameMode->GameSession.Get();
-	if (GameSession == nullptr)
-	{
-		return;
-	}
-	APlayerController* PlayerControllerToKick = GetPlayerControllerForThis();
-	if (PlayerControllerToKick == nullptr)
-	{
-		UE_LOG(LogMenuSystem, Warning, TEXT("Failed to kick player, couldn't get player controller."));
-		return;
-	}
-
-	GameSession->KickPlayer(PlayerControllerToKick, FText::FromString(TEXT("Kicked by Host.")));
-	
 	if (OnRequestRefresh.IsBound())
 	{
 		OnRequestRefresh.Broadcast();

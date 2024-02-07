@@ -78,7 +78,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
 	ChunkInvokerComponent->SetupAttachment(RootComponent);
-	ChunkInvokerComponent->SetRenderDistance(8);
+	ChunkInvokerComponent->SetRenderDistance(16);
 
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
 
@@ -563,7 +563,7 @@ void AWildOmissionCharacter::ApplyGameplaySettings()
 	}
 
 	FirstPersonCameraComponent->SetFieldOfView(UserSettings->GetFieldOfView());
-	ChunkInvokerComponent->SetRenderDistance(UserSettings->GetRenderDistance());
+	ChunkInvokerComponent->Server_SetRenderDistance(UserSettings->GetRenderDistance());
 	PlayerHUDWidget->ShowBranding(UserSettings->GetShowBranding());
 	PlayerHUDWidget->ShowCrosshair(UserSettings->GetShowCrosshair());
 	PlayerHUDWidget->SetHideChatUnlessOpen(UserSettings->GetHideChatUnlessOpen());
@@ -693,7 +693,7 @@ void AWildOmissionCharacter::HandleDeath()
 	
 	if (OnPlayerDeath.IsBound())
 	{
-		OnPlayerDeath.Broadcast();
+		OnPlayerDeath.Broadcast(this->GetActorLocation());
 	}
 
 	AController* LastDamageCauser = LastHitBy;

@@ -23,7 +23,7 @@ private:
 	void OnOwnerPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
 
 	UFUNCTION()
-	void GiveDeathAchievement();
+	void GiveDeathAchievement(const FVector& DeathLocation);
 
 	UFUNCTION()
 	void OnKilledAnotherPlayer(APlayerController* KilledPlayer);

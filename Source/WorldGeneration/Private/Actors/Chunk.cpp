@@ -44,7 +44,6 @@ AChunk::AChunk()
 
 	bReplicates = true;
 	NetUpdateFrequency = 2.0f;
-	NetPriority = 1.0f;
 	NetDormancy = ENetDormancy::DORM_DormantAll;
 	
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("MeshComponent"));
@@ -134,17 +133,7 @@ bool AChunk::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
-	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
-	if (ChunkInvoker == nullptr)
-	{
-		return false;
-	}
-
-	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
-	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
-	float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
-
-	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
+	return AChunkManager::IsActorNetRelevent(this, ViewTarget);
 }
 
 void AChunk::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -505,6 +494,11 @@ FIntVector2 AChunk::GetChunkLocation() const
 {
 	const FVector WorldLocation = GetActorLocation();
 	return FIntVector2(WorldLocation.X / CHUNK_SIZE_CENTIMETERS, WorldLocation.Y / CHUNK_SIZE_CENTIMETERS);
+}
+
+bool AChunk::IsChunkHidden() const
+{
+	return ChunkHidden;
 }
 
 TArray<float> AChunk::GetHeightData() const

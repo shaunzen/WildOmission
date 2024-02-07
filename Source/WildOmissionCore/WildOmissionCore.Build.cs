@@ -12,7 +12,7 @@ public class WildOmissionCore : ModuleRules
 			"Core", "CoreUObject", "Engine",
 			"InputCore", "EnhancedInput", "UMG", 
 			"Niagara", "NavigationSystem", "MetasoundEngine", "Achievements", "Animals", "Animation", "Crafting",
-			"CustomUI", "Deployables", "Despawner", "Durability",
+			"CustomUI", "DedicatedServer", "Deployables", "Despawner", "Durability",
 			"EquipableItems", "GameChat", "GameMusic", "GameSettings", "GatherableResources",
 			"Interaction", "Inventory", "Locks", "MenuSystem", "Monsters", "Notifications", "Ragdoll", "SavableObject",
 			"SaveSystem", "SurfaceProperties", "TimeOfDay", "Vitals", "Weapons", "Weather",

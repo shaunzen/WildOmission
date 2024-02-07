@@ -3,16 +3,14 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class WildOmissionTarget : TargetRules
+public class WildOmissionClientTarget : TargetRules
 {
-	public WildOmissionTarget(TargetInfo Target) : base(Target)
+	public WildOmissionClientTarget(TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Game;
+		Type = TargetType.Client;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-
 		bUsesSteam = true;
-
 		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
 
         GlobalDefinitions.Add("UE_PROJECT_STEAMSHIPPINGID=2348700");

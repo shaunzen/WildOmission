@@ -202,6 +202,14 @@
 			]
 		},
 		{
+			"Name": "DedicatedServer",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"CoreUObject"
+			]
+		},
+		{
 			"Name": "SurfaceProperties",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",

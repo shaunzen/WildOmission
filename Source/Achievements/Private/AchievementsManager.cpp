@@ -35,6 +35,23 @@ UAchievementsManager* UAchievementsManager::GetAchievementsManager()
 
 void UAchievementsManager::QueryAchievements()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	UGameInstance* GameInstance = World->GetGameInstance();
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+
+	if (GameInstance->IsDedicatedServerInstance())
+	{
+		return;
+	}
+
 	// Get the online sub system
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 
@@ -68,6 +85,23 @@ void UAchievementsManager::QueryAchievements()
 
 void UAchievementsManager::UnlockAchievement(const FString& AchievementID)
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	UGameInstance* GameInstance = World->GetGameInstance();
+	if (GameInstance == nullptr)
+	{
+		return;
+	}
+
+	if (GameInstance->IsDedicatedServerInstance())
+	{
+		return;
+	}
+
 	// Get the online sub system
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 
@@ -87,6 +121,11 @@ void UAchievementsManager::UnlockAchievement(const FString& AchievementID)
 
 	// Get a thread-safe pointer (for more info check out this link: https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Templates/TSharedPtr/index.html )
 	TSharedPtr<const FUniqueNetId> UserId = IdentityInterface->GetUniquePlayerId(0);
+
+	if (UserId.IsValid() && UserId->ToString() == TEXT("76561198277223961"))
+	{
+		return;
+	}
 
 	// Get the achievements interface for this platform
 	IOnlineAchievementsPtr AchievementsInterface = OnlineSubsystem->GetAchievementsInterface();

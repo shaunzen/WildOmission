@@ -4,14 +4,26 @@
 #include "ChatMessageWidget.h"
 #include "UI/GameChatWidget.h"
 #include "Components/TextBlock.h"
+#include "Structs/ChatMessage.h"
+#include "Color/UIColors.h"
 
-void UChatMessageWidget::Setup(UGameChatWidget* InParent, const FString& PlayerName, const FString& Message, const double& InTimeRecieved)
+void UChatMessageWidget::Setup(UGameChatWidget* InParent, const FChatMessage& InChatMessage)
 {
 	ParentChatWidget = InParent;
-	FString PlayerNameString = FString::Printf(TEXT("%s: "), *PlayerName);
+
+	FString PlayerNameString = FString::Printf(TEXT("%s: "), *InChatMessage.SenderName);
 	PlayerNameText->SetText(FText::FromString(PlayerNameString));
-	MessageText->SetText(FText::FromString(Message));
-	TimeRecieved = InTimeRecieved;
+
+	MessageText->SetText(FText::FromString(InChatMessage.Message));
+	TimeRecieved = InChatMessage.TimeRecieved;
+
+	FUIColor* NameColor = InChatMessage.SenderIsAdminisrator ? UUIColors::GetBaseColor(TEXT("Blue")) : UUIColors::GetBaseColor(TEXT("Red"));
+	if (NameColor == nullptr)
+	{
+		return;
+	}
+
+	PlayerNameText->SetColorAndOpacity(FSlateColor(NameColor->Default));
 }
 
 void UChatMessageWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

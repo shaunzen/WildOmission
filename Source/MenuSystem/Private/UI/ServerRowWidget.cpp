@@ -32,7 +32,7 @@ void UServerRowWidget::Setup(const uint32& InIndex, const FServerData& ServerDat
 {
 	Index = InIndex;
 
-	const FString HostString = FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
+	const FString HostString = ServerData.IsDedicated ? FString::Printf(TEXT("Ping: %i"), ServerData.PingMS) : FString::Printf(TEXT("Host: %s"), *ServerData.HostUsername);
 	const FString FractionString = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
 	
 	ServerNameTextBlock->SetText(FText::FromString(ServerData.Name));

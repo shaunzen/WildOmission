@@ -58,6 +58,7 @@ public:
 	static float GetTerrainHeightAtLocation(const FVector2D& Location);
 	
 	FIntVector2 GetChunkLocation() const;
+	bool IsChunkHidden() const;
 	TArray<float> GetHeightData() const;
 	TArray<uint8> GetSurfaceData() const;
 

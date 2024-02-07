@@ -167,7 +167,7 @@ void ASaveManager::ValidateSave()
 		return;
 	}
 
-	CurrentSaveFileName = TEXT("PIE_Save");
+	CurrentSaveFileName = TEXT("New_World");
 	CreateWorld(CurrentSaveFileName);
 }
 
