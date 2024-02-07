@@ -78,7 +78,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 
 	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
 	ChunkInvokerComponent->SetupAttachment(RootComponent);
-	ChunkInvokerComponent->SetRenderDistance(8);
+	ChunkInvokerComponent->SetRenderDistance(16);
 
 	VitalsComponent = CreateDefaultSubobject<UVitalsComponent>(TEXT("VitalsComponent"));
 

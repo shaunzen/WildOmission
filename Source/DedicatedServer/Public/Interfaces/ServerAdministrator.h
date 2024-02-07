@@ -25,4 +25,6 @@ public:
 	virtual void SetAdministrator(bool InAdministrator) = 0;
 	virtual bool IsAdministrator() const = 0;
 
+	virtual void KickPlayer(APlayerController* PlayerControllerToKick) = 0;
+
 };

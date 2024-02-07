@@ -26,6 +26,7 @@
 #include "WildOmissionCore/UI/Player/DeathMenuWidget.h"
 
 // Engine Stuff
+#include "GameFramework/GameSession.h"
 #include "Net/UnrealNetwork.h"
 
 AWildOmissionPlayerController::AWildOmissionPlayerController()
@@ -165,6 +166,11 @@ void AWildOmissionPlayerController::SetAdministrator(bool InAdministrator)
 bool AWildOmissionPlayerController::IsAdministrator() const
 {
 	return Administrator;
+}
+
+void AWildOmissionPlayerController::KickPlayer(APlayerController* PlayerControllerToKick)
+{
+	Server_KickPlayer(PlayerControllerToKick);
 }
 
 void AWildOmissionPlayerController::Save()
@@ -493,6 +499,35 @@ void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerSta
 	}
 
 	ChatManager->SendMessage(Sender, Message, false);
+}
+
+void AWildOmissionPlayerController::Server_KickPlayer_Implementation(APlayerController* PlayerControllerToKick)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	AGameModeBase* GameMode = World->GetAuthGameMode();
+	if (GameMode == nullptr)
+	{
+		return;
+	}
+
+	AGameSession* GameSession = GameMode->GameSession.Get();
+	if (GameSession == nullptr)
+	{
+		return;
+	}
+
+	if (PlayerControllerToKick == nullptr)
+	{
+		UE_LOG(LogPlayerController, Warning, TEXT("Failed to kick player, couldn't get player controller."));
+		return;
+	}
+
+	GameSession->KickPlayer(PlayerControllerToKick, FText::FromString(TEXT("Kicked by Server Administrator.")));
 }
 
 void AWildOmissionPlayerController::Server_Spawn_Implementation()

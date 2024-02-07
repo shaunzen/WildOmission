@@ -41,6 +41,7 @@ public:
 	// Begin IServerAdministrator Implementation
 	virtual void SetAdministrator(bool InAdministrator) override;
 	virtual bool IsAdministrator() const override;
+	virtual void KickPlayer(APlayerController* PlayerControllerToKick) override;
 	// End IServerAdministrator Implementation
 
 	void Save();
@@ -116,6 +117,9 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();
+
+	UFUNCTION(Server, Reliable)
+	void Server_KickPlayer(APlayerController* PlayerControllerToKick);
 
 	UFUNCTION(Server, Reliable)
 	void Server_KillThisPlayer();

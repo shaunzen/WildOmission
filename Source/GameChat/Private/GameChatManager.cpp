@@ -55,7 +55,7 @@ void AGameChatManager::SendMessage(APlayerState* SenderPlayerState, const FStrin
 	IServerAdministrator* ServerAdministrator = Cast<IServerAdministrator>(SenderPlayerState->GetPlayerController());
 	if (ServerAdministrator == nullptr)
 	{
-		UE_LOG(LogGameChat, Warning, TEXT("Failed to send message %s: %s, couldn't determine administrator status."), *SenderPlayerState->GetPlayerName(), *Message);
+		UE_LOG(LogGameChat, Warning, TEXT("Failed to send message %s: %s, couldn't determine sender administrator status."), *SenderPlayerState->GetPlayerName(), *Message);
 		return;
 	}
 
