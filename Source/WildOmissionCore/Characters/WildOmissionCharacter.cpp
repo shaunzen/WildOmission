@@ -815,7 +815,7 @@ void AWildOmissionCharacter::MoveBackward()
 		return;
 	}
 
-	if (IsSprinting)
+	if (IsSprinting())
 	{
 		StopSprinting();
 	}
@@ -838,7 +838,7 @@ void AWildOmissionCharacter::MoveLeft()
 		return;
 	}
 
-	if (IsSprinting)
+	if (IsSprinting())
 	{
 		StopSprinting();
 	}
@@ -862,7 +862,7 @@ void AWildOmissionCharacter::MoveRight()
 		return;
 	}
 
-	if (IsSprinting)
+	if (IsSprinting())
 	{
 		StopSprinting();
 	}
