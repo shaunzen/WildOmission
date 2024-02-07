@@ -147,22 +147,11 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		PlayerSaveManager->Load(NewPlayer);
 	}
-	
-	if (GetWorld() && GetWorld()->IsPlayInEditor())
-	{
-		return;
-	}
+
 
 	APlayerState* NewPlayerState = NewPlayer->GetPlayerState<APlayerState>();
-	if (ChatManager == nullptr || NewPlayerState == nullptr)
-	{
-		return;
-	}
-
-	ChatManager->SendMessage(NewPlayerState, TEXT("Has Joined The Game."), true);
-
 	UServerAdministrators* ServerAdministrators = UServerAdministrators::Get();
-	if (ServerAdministrators == nullptr)
+	if (NewPlayerState == nullptr || ServerAdministrators == nullptr)
 	{
 		return;
 	}
@@ -170,6 +159,13 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	const bool IsNewPlayerHost = NewWildOmissionPlayer->IsHost();
 	const bool IsNewPlayerAdministrator = ServerAdministrators->IsAdministrator(NewPlayerState->GetUniqueId().ToString());
 	NewWildOmissionPlayer->SetAdministrator(IsNewPlayerHost || IsNewPlayerAdministrator);
+
+	if (ChatManager == nullptr || (GetWorld() && GetWorld()->IsPlayInEditor()))
+	{
+		return;
+	}
+
+	ChatManager->SendMessage(NewPlayerState, TEXT("Has Joined The Game."), true);
 }
 
 void AWildOmissionGameMode::Logout(AController* Exiting)

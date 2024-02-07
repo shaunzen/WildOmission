@@ -84,6 +84,7 @@ void UGameChatWidget::RefreshMessages()
 		}
 
 		MessageWidget->Setup(this, Message);
+
 		if (HideUnlessOpen)
 		{
 			MessageWidget->SetVisibility(ESlateVisibility::Hidden);
