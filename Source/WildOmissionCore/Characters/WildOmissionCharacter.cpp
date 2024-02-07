@@ -815,6 +815,11 @@ void AWildOmissionCharacter::MoveBackward()
 		return;
 	}
 
+	if (IsSprinting)
+	{
+		StopSprinting();
+	}
+
 	if (!CharacterMovementComponent->IsSwimming())
 	{
 		AddMovementInput(GetActorForwardVector(), -1.0f);
@@ -831,6 +836,11 @@ void AWildOmissionCharacter::MoveLeft()
 	if (CharacterMovementComponent == nullptr)
 	{
 		return;
+	}
+
+	if (IsSprinting)
+	{
+		StopSprinting();
 	}
 
 	if (!CharacterMovementComponent->IsSwimming())
@@ -850,6 +860,11 @@ void AWildOmissionCharacter::MoveRight()
 	if (CharacterMovementComponent == nullptr)
 	{
 		return;
+	}
+
+	if (IsSprinting)
+	{
+		StopSprinting();
 	}
 
 	if (!CharacterMovementComponent->IsSwimming())
