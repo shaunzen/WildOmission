@@ -69,17 +69,7 @@ bool AWeaponProjectile::IsNetRelevantFor(const AActor* RealViewer, const AActor*
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
-	UChunkInvokerComponent* ChunkInvoker = ViewTarget->FindComponentByClass<UChunkInvokerComponent>();
-	if (ChunkInvoker == nullptr)
-	{
-		return false;
-	}
-
-	const FVector CorrectedSrcLocation(SrcLocation.X, SrcLocation.Y, 0.0f);
-	const FVector CorrectedThisLocation(this->GetActorLocation().X, this->GetActorLocation().Y, 0.0f);
-	const float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
-	
-	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
+	return AChunkManager::IsActorNetRelevent(this, ViewTarget);
 }
 
 void AWeaponProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

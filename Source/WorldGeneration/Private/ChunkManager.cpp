@@ -282,6 +282,46 @@ AChunk* AChunkManager::GetChunkAtLocation(const FIntVector2& ChunkLocation)
 	return SpawnedChunks[SpawnedIndex].Chunk;
 }
 
+void AChunkManager::HandleActorRenderDistanceVisibility(AActor* InActor)
+{
+	if (Instance == nullptr || InActor == nullptr)
+	{
+		return;
+	}
+
+	const FVector ActorLocation = InActor->GetActorLocation();
+	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+	
+	AChunk* ActorChunk = Instance->GetChunkAtLocation(FIntVector2(ActorLocation.X / ChunkSize, ActorLocation.Y / ChunkSize));
+	if (ActorChunk == nullptr)
+	{
+		return;
+	}
+	
+	UStaticMeshComponent* ActorMeshComponent = InActor->FindComponentByClass<UStaticMeshComponent>();
+	if (ActorMeshComponent == nullptr)
+	{
+		return;
+	}
+
+	ActorMeshComponent->SetVisibility(!ActorChunk->IsChunkHidden());
+}
+
+bool AChunkManager::IsActorNetRelevent(const AActor* ActorToTest, const AActor* ViewingActor)
+{
+	UChunkInvokerComponent* ChunkInvoker = ViewingActor->FindComponentByClass<UChunkInvokerComponent>();
+	if (ChunkInvoker == nullptr)
+	{
+		return false;
+	}
+
+	const FVector CorrectedSrcLocation(ViewingActor->GetActorLocation().X, ViewingActor->GetActorLocation().Y, 0.0f);
+	const FVector CorrectedThisLocation(ActorToTest->GetActorLocation().X, ActorToTest->GetActorLocation().Y, 0.0f);
+	const float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
+
+	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
+}
+
 FVector AChunkManager::GetWorldSpawnPoint()
 {
 	UWorld* World = GetWorld();
