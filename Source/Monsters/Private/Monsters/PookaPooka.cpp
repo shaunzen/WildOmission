@@ -2,20 +2,34 @@
 
 
 #include "Monsters/PookaPooka.h"
+#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
-// TODO would be cool to have a sound effect when they land on the ground, like some kind of thud to make them sound heavy
-// TODO also would be cool if it caused nearby players cameras to shake
+
+// TODO would be cool if when they land it caused nearby players cameras to shake
 // TODO they shoot "Pook" at you and the sound is makes sounds like "Pook"
+
+// TODO they explode on death
+
+static USoundBase* LandSound = nullptr;
 
 APookaPooka::APookaPooka()
 {
+	MaxTimeBetweenIdleSoundSeconds = 10.0f;
+	MinTimeBetweenIdleSoundSeconds = 5.0f;
+
 	DefaultWalkSpeed = 400.0f;
 
 	static ConstructorHelpers::FObjectFinder<USoundBase> PookaPookaIdle(TEXT("/Game/Monsters/Audio/PookaPooka/PookaPooka_Idle_Cue"));
 	if (PookaPookaIdle.Succeeded())
 	{
 		IdleSound = PookaPookaIdle.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> LandSoundCue(TEXT("/Game/Monsters/Audio/PookaPooka/PookaPooka_Land_Cue"));
+	if (LandSoundCue.Succeeded())
+	{
+		LandSound = LandSoundCue.Object;
 	}
 }
 
@@ -35,4 +49,17 @@ void APookaPooka::Tick(float DeltaTime)
 	}
 
 	this->Jump();
+}
+
+void APookaPooka::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	UWorld* World = GetWorld();
+	if (World == nullptr || LandSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(World, LandSound, Hit.ImpactPoint);
 }

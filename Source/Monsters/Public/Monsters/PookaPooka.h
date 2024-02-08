@@ -19,4 +19,6 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void Landed(const FHitResult& Hit) override;
+
 };
