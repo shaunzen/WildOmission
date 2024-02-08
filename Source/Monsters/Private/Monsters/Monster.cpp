@@ -46,17 +46,6 @@ void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	// TODO this is zombie specific
-	FInventoryItem ZombieArmsItem;
-	ZombieArmsItem.Name = TEXT("zombie.arms");
-	ZombieArmsItem.Quantity = 1;
-	InventoryComponent->AddItem(ZombieArmsItem);
-	InventoryComponent->SetToolbarSelectionIndex(2);
 }
 
 void AMonster::SetFire()

@@ -14,4 +14,10 @@ class MONSTERS_API AZombie : public AMonster
 {
 	GENERATED_BODY()
 	
+public:
+	AZombie();
+
+protected:
+	virtual void BeginPlay() override;
+
 };
