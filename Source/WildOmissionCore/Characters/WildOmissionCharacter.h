@@ -159,6 +159,9 @@ private:
 	bool bSprinting;
 
 	UPROPERTY()
+	bool bSprintButtonHeld;
+
+	UPROPERTY()
 	bool bUnderwater;
 
 	void HandleUnderwater();
@@ -257,6 +260,11 @@ private:
 
 	UFUNCTION()
 	void Look(const struct FInputActionValue& Value);
+
+	UFUNCTION()
+	void OnSprintButtonPressed();
+	UFUNCTION()
+	void OnSprintButtonReleased();
 
 	UFUNCTION()
 	void StartSprinting();

@@ -78,6 +78,7 @@ void AMonster::SetBurnDamageTimer()
 {
 	FTimerDelegate BurnDamageTimerDelegate;
 	BurnDamageTimerDelegate.BindUObject(this, &AMonster::ApplyBurnDamage);
+	// TODO this could be causing a crash
 	GetWorld()->GetTimerManager().SetTimer(BurnDamageTimerHandle, BurnDamageTimerDelegate, 1.0f, false);
 }
 

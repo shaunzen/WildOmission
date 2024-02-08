@@ -108,6 +108,7 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
 
 	bSprinting = false;
+	bSprintButtonHeld = false;
 	bUnderwater = false;
 	
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
@@ -761,8 +762,8 @@ void AWildOmissionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	EnhancedInputComponent->BindAction(MoveLeftAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveLeft);
 	EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::MoveRight);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::Look);
-	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartSprinting);
-	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::StopSprinting);
+	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::OnSprintButtonPressed);
+	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::OnSprintButtonReleased);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AWildOmissionCharacter::StartCrouching);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AWildOmissionCharacter::StopCrouching);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AWildOmissionCharacter::OnCrouchHeld);
@@ -797,6 +798,11 @@ void AWildOmissionCharacter::MoveForward()
 		return;
 	}
 
+	if (bSprintButtonHeld && !IsSprinting())
+	{
+		StartSprinting();
+	}
+
 	if (!CharacterMovementComponent->IsSwimming())
 	{
 		AddMovementInput(GetActorForwardVector(), 1.0f);
@@ -813,6 +819,11 @@ void AWildOmissionCharacter::MoveBackward()
 	if (CharacterMovementComponent == nullptr)
 	{
 		return;
+	}
+
+	if (IsSprinting())
+	{
+		StopSprinting();
 	}
 
 	if (!CharacterMovementComponent->IsSwimming())
@@ -833,6 +844,11 @@ void AWildOmissionCharacter::MoveLeft()
 		return;
 	}
 
+	if (IsSprinting())
+	{
+		StopSprinting();
+	}
+
 	if (!CharacterMovementComponent->IsSwimming())
 	{
 		AddMovementInput(GetActorRightVector(), -1.0f);
@@ -850,6 +866,11 @@ void AWildOmissionCharacter::MoveRight()
 	if (CharacterMovementComponent == nullptr)
 	{
 		return;
+	}
+
+	if (IsSprinting())
+	{
+		StopSprinting();
 	}
 
 	if (!CharacterMovementComponent->IsSwimming())
@@ -876,6 +897,20 @@ void AWildOmissionCharacter::Look(const FInputActionValue& Value)
 	AddControllerYawInput(LookAxis.X * LookSensitivity);
 	const float Invert = LookUpInverted ? 1.0f : -1.0f;
 	AddControllerPitchInput((LookAxis.Y * LookSensitivity) * Invert);
+}
+
+void AWildOmissionCharacter::OnSprintButtonPressed()
+{
+	bSprintButtonHeld = true;
+	
+	StartSprinting();
+}
+
+void AWildOmissionCharacter::OnSprintButtonReleased()
+{
+	bSprintButtonHeld = false;
+
+	StopSprinting();
 }
 
 void AWildOmissionCharacter::StartSprinting()
