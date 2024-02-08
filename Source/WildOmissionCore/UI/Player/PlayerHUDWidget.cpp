@@ -26,11 +26,14 @@ UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) 
 	Chat = nullptr;
 	NotificationPanel = nullptr;
 	BrandingTextBlock = nullptr;
+	CoordinatesTextBlock = nullptr;
 }
 
 void UPlayerHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	CoordinatesTextBlock->SetVisibility(ESlateVisibility::Hidden);
 
 	UpdateBrandingText();
 
@@ -41,21 +44,74 @@ void UPlayerHUDWidget::NativeConstruct()
 	OpenCraftingButton->SetVisibility(ESlateVisibility::Hidden);
 	OpenInventoryButton->OnClicked.AddDynamic(this, &UPlayerHUDWidget::SwitchToInventoryMenu);
 
-	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = GetOwningPlayerPawn()->FindComponentByClass<UInventoryManipulatorComponent>();
+	APawn* OwnerPawn = GetOwningPlayerPawn();
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = OwnerPawn->FindComponentByClass<UInventoryManipulatorComponent>();
 	if (PlayerInventoryManipulatorComponent == nullptr)
 	{
 		return;
 	}
+	
 	PlayerInventoryManipulatorComponent->OnOpenContainerChanged.AddDynamic(this, &UPlayerHUDWidget::OnOpenContainerChanged);
+}
+
+void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	
+	if (CoordinatesTextBlock->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		return;
+	}
+
+	APawn* OwnerPawn = GetOwningPlayerPawn();
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	const FVector OwnerLocation = OwnerPawn->GetActorLocation() / 100.0f;
+
+	const FString CoordinatesString = FString::Printf(TEXT("XYZ: %i / %i / %i"),
+		FMath::RoundToInt32(OwnerLocation.X),
+		FMath::RoundToInt32(OwnerLocation.Y),
+		FMath::RoundToInt32(OwnerLocation.Z));
+
+	CoordinatesTextBlock->SetText(FText::FromString(CoordinatesString));
 }
 
 void UPlayerHUDWidget::ShowBranding(bool Show)
 {
-	BrandingTextBlock->SetVisibility(Show ? ESlateVisibility::Visible: ESlateVisibility::Hidden);
+	if (BrandingTextBlock == nullptr)
+	{
+		return;
+	}
+
+	BrandingTextBlock->SetVisibility(Show ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+}
+
+void UPlayerHUDWidget::ToggleCoordinates()
+{
+	if (CoordinatesTextBlock == nullptr)
+	{
+		return;
+	}
+
+	const bool Show = CoordinatesTextBlock->GetVisibility() == ESlateVisibility::Hidden;
+	CoordinatesTextBlock->SetVisibility(Show ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void UPlayerHUDWidget::ShowCrosshair(bool Show)
 {
+	if (Crosshair == nullptr)
+	{
+		return;
+	}
+
 	Crosshair->SetVisibility(Show ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 

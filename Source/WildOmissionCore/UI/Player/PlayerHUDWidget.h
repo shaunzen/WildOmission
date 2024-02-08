@@ -15,7 +15,8 @@ public:
 	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeConstruct() override;	
-	
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 	void ShowBranding(bool Show);
 	void ShowCrosshair(bool Show);
 	void SetHideChatUnlessOpen(bool HideChatUnlessOpen);
@@ -29,6 +30,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ToggleChatMenu();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleCoordinates();
 
 	UFUNCTION(BlueprintCallable)
 	bool IsMenuOpen() const;
@@ -77,6 +81,9 @@ private:
 
 	UPROPERTY(Meta = (BindWidget))
 	class UTextBlock* BrandingTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* CoordinatesTextBlock;
 
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* Crosshair;
