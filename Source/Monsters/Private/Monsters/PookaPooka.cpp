@@ -4,6 +4,10 @@
 #include "Monsters/PookaPooka.h"
 #include "UObject/ConstructorHelpers.h"
 
+// TODO would be cool to have a sound effect when they land on the ground, like some kind of thud to make them sound heavy
+// TODO also would be cool if it caused nearby players cameras to shake
+// TODO they shoot "Pook" at you and the sound is makes sounds like "Pook"
+
 APookaPooka::APookaPooka()
 {
 	DefaultWalkSpeed = 400.0f;
