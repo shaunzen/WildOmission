@@ -15,6 +15,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Log.h"
 
+float FireDamageCounter = 0.0f;
+
 // Sets default values
 AMonster::AMonster()
 {
@@ -31,7 +33,12 @@ AMonster::AMonster()
 	FireEffects->SetupAttachment(RootComponent);
 	FireEffects->SetAutoActivate(false);
 
+	DefaultWalkSpeed = 300.0f;
+	DefaultRunSpeed = 600.0f;
+
 	MaxAttackRange = 300.0f;
+
+	bCanBurnInLight = true;
 }
 
 // Called when the game starts or when spawned
@@ -44,6 +51,7 @@ void AMonster::BeginPlay()
 		return;
 	}
 
+	// TODO this is zombie specific
 	FInventoryItem ZombieArmsItem;
 	ZombieArmsItem.Name = TEXT("zombie.arms");
 	ZombieArmsItem.Quantity = 1;
@@ -51,41 +59,34 @@ void AMonster::BeginPlay()
 	InventoryComponent->SetToolbarSelectionIndex(2);
 }
 
-
 void AMonster::SetFire()
 {
-	FireEffects->Activate();
-
-	if (HasAuthority())
+	if (FireEffects == nullptr || FireEffects->IsActive())
 	{
-		SetBurnDamageTimer();
+		return;
 	}
+
+	FireEffects->Activate();
 }
 
 void AMonster::PutOutFire()
 {
-	if (FireEffects->IsActive())
+	if (FireEffects == nullptr || !FireEffects->IsActive())
 	{
-		FireEffects->Deactivate();
-		if (HasAuthority())
-		{
-			GetWorld()->GetTimerManager().ClearTimer(BurnDamageTimerHandle);
-		}
+		return;
 	}
-}
 
-void AMonster::SetBurnDamageTimer()
-{
-	FTimerDelegate BurnDamageTimerDelegate;
-	BurnDamageTimerDelegate.BindUObject(this, &AMonster::ApplyBurnDamage);
-	// TODO this could be causing a crash
-	GetWorld()->GetTimerManager().SetTimer(BurnDamageTimerHandle, BurnDamageTimerDelegate, 1.0f, false);
+	FireEffects->Deactivate();
 }
 
 void AMonster::ApplyBurnDamage()
 {
+	if (VitalsComponent == nullptr)
+	{
+		return;
+	}
+
 	VitalsComponent->AddHealth(-10.0f);
-	SetBurnDamageTimer();
 }
 
 // Called every frame
@@ -93,27 +94,59 @@ void AMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	UWorld* World = GetWorld();
+	if (World == nullptr || FireEffects == nullptr)
+	{
+		return;
+	}
+
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
-	if (TimeOfDayManager && TimeOfDayManager->IsDay() && FireEffects->IsActive() == false)
+	if (TimeOfDayManager && TimeOfDayManager->IsDay())
 	{
 		SetFire();
 	}
 
-	if (GetMovementComponent()->GetPhysicsVolume()->bWaterVolume == true)
+	UMovementComponent* MovementComponent = GetMovementComponent();
+	if (MovementComponent == nullptr)
+	{
+		return;
+	}
+
+	APhysicsVolume* CurrentPhysicsVolume = MovementComponent->GetPhysicsVolume();
+	if (CurrentPhysicsVolume == nullptr)
+	{
+		return;
+	}
+
+	if (CurrentPhysicsVolume->bWaterVolume == true)
 	{
 		PutOutFire();
 		AddMovementInput(FVector::UpVector);
 	}
 
 	FHitResult HitResult;
-	FVector Start = GetActorLocation();
+	FVector Start = this->GetActorLocation();
 	FVector End = Start + FVector(0.0f, 0.0f, 50000.0f);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
-	if (FireEffects->IsActive() && GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	if (World->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, Params))
 	{
 		PutOutFire();
 	}
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	FireDamageCounter += DeltaTime;
+	if (FireDamageCounter < 1.0f)
+	{
+		return;
+	}
+
+	ApplyBurnDamage();
+	FireDamageCounter = 0.0f;
 }
 
 // Called to bind functionality to input
@@ -135,10 +168,30 @@ void AMonster::Destroyed()
 
 void AMonster::Attack()
 {
+	if (EquipComponent == nullptr)
+	{
+		return;
+	}
+
 	EquipComponent->PrimaryPressed();
 }
 
 void AMonster::StopAttack()
 {
+	if (EquipComponent == nullptr)
+	{
+		return;
+	}
+
 	EquipComponent->PrimaryReleased();
+}
+
+bool AMonster::IsOnFire() const
+{
+	if (FireEffects == nullptr)
+	{
+		return false;
+	}
+
+	return FireEffects->IsActive();
 }

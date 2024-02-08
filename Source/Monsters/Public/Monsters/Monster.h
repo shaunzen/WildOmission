@@ -7,11 +7,6 @@
 #include "Structs/InventoryItem.h"
 #include "Monster.generated.h"
 
-class UPlayerInventoryComponent;
-class UEquipComponent;
-class UNiagaraComponent;
-class ATimeOfDayManager;
-
 UCLASS()
 class MONSTERS_API AMonster : public AWildOmissionAICharacter
 {
@@ -32,33 +27,31 @@ public:
 	void Attack();
 	void StopAttack();
 
+	bool IsOnFire() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-	
-private:
-	UPROPERTY(VisibleAnywhere)
-	UPlayerInventoryComponent* InventoryComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UEquipComponent* EquipComponent;
+	class UPlayerInventoryComponent* InventoryComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* FireEffects;
+	class UEquipComponent* EquipComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	class UNiagaraComponent* FireEffects;
 
 	UPROPERTY(EditDefaultsOnly)
 	float MaxAttackRange;
-
-	FTimerHandle BurnDamageTimerHandle;
 
 	void SetFire();
 	void PutOutFire();
 
 	UFUNCTION()
-	void SetBurnDamageTimer();
-	
-	UFUNCTION()
 	void ApplyBurnDamage();
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bCanBurnInLight;
 
 };
