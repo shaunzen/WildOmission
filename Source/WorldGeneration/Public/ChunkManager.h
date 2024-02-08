@@ -21,6 +21,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	void SetInstanceToThis();
+
 	// Gets existing chunk if present, or returns the generated/loaded chunk at the given location
 	class AChunk* GetChunkAtLocation(const FIntVector2& ChunkLocation);
 	static void HandleActorRenderDistanceVisibility(UWorld* WorldContextObject, AActor* InActor);

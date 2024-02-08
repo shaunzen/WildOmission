@@ -48,6 +48,11 @@ void AChunkManager::Tick(float DeltaTime)
 	
 }
 
+void AChunkManager::SetInstanceToThis()
+{
+	Instance = this;
+}
+
 void AChunkManager::RemoveOutOfRangeChunks(const TArray<UChunkInvokerComponent*>& ChunkInvokers)
 {
 	UWorld* World = GetWorld();
@@ -476,7 +481,7 @@ void AChunkManager::BeginPlay()
 		return;
 	}
 
-	Instance = this;
+	SetInstanceToThis();
 }
 
 void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)

@@ -43,6 +43,12 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 
 	SaveManager = World->SpawnActor<ASaveManager>();
 	ChunkManager = World->SpawnActor<AChunkManager>();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+	ChunkManager->SetInstanceToThis();
+
 	TimeOfDayManager = World->SpawnActor<ATimeOfDayManager>();
 	WeatherManager = World->SpawnActor<AWeatherManager>();
 	AnimalSpawnManager = World->SpawnActor<AAnimalSpawnManager>();
