@@ -123,7 +123,7 @@ void AMonster::Tick(float DeltaTime)
 		PutOutFire();
 	}
 
-	if (!HasAuthority())
+	if (!HasAuthority() || !FireEffects->IsActive())
 	{
 		return;
 	}
