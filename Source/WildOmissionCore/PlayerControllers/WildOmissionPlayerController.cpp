@@ -414,7 +414,10 @@ void AWildOmissionPlayerController::StartLoading()
 	}
 
 	GameInstance->StartLoading();
-	GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
+	if (!IsHost())
+	{
+		GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
+	}
 	UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Brought up loading screen."));
 }
 

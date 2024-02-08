@@ -12,7 +12,7 @@ AChunkInvokerActor::AChunkInvokerActor()
 
 	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
 	ChunkInvokerComponent->SetRenderDistance(4);
-
+	RootComponent = ChunkInvokerComponent;
 }
 
 void AChunkInvokerActor::SetRenderDistance(const uint8& InRenderDistance)

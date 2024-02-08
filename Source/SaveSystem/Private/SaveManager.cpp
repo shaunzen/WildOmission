@@ -51,8 +51,10 @@ void ASaveManager::SaveWorld()
 	{
 		SaveFile->PlayerSpawnChunk = ChunkManager->GetPlayerSpawnChunk();
 		SaveFile->Seed = ChunkManager->GetGenerationSeed();
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("World Seed Saved %i"), SaveFile->Seed));
 		ChunkManager->SaveAllSpawnedChunks();
 		SaveFile->ChunkData = ChunkManager->GetAllChunkData();
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Chunk Data Saved, Size %i"), SaveFile->ChunkData.Num()));
 	}
 
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
@@ -91,16 +93,22 @@ void ASaveManager::LoadWorld()
 	{
 		return;
 	}
+	
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
 
 		const uint32 GenerationSeed = FMath::RandRange(0, 999999999);
-		AChunkManager::SetGenerationSeed(GenerationSeed);
 
-		MarkSaveGenerated();
+		AChunkManager::SetGenerationSeed(GenerationSeed);
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("World Seed Generated %i"), GenerationSeed));
+
+		SaveFile->CreationInformation.LevelHasGenerated = true;
+		UpdateSaveFile(SaveFile);
 		return;
 	}
+
+	SetLoadingSubtitle(TEXT("Loading level."));
 
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
 	if (TimeOfDayManager)
@@ -109,14 +117,18 @@ void ASaveManager::LoadWorld()
 		TimeOfDayManager->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
 	}
 	
-	SetLoadingSubtitle(TEXT("Loading level."));
-
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager)
 	{
 		ChunkManager->SetPlayerSpawnChunk(SaveFile->PlayerSpawnChunk);
 		ChunkManager->SetGenerationSeed(SaveFile->Seed);
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("World Seed Loaded %i"), SaveFile->Seed));
 		ChunkManager->SetChunkData(SaveFile->ChunkData);
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, FString::Printf(TEXT("Chunk Data Loaded, Size %i"), SaveFile->ChunkData.Num()));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, TEXT("Something is really wrong, chunk manager nullptr"));
 	}
 
 	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
@@ -134,7 +146,7 @@ UWildOmissionSaveGame* ASaveManager::GetSaveFile() const
 void ASaveManager::BeginPlay()
 {
 	Super::BeginPlay();
-
+	// TODO something about this
 	UWorld* World = GetWorld();
 	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
 	{
@@ -169,18 +181,6 @@ void ASaveManager::ValidateSave()
 
 	CurrentSaveFileName = TEXT("New_World");
 	CreateWorld(CurrentSaveFileName);
-}
-
-void ASaveManager::MarkSaveGenerated()
-{
-	UWildOmissionSaveGame* SaveFile = GetSaveFile();
-	if (SaveFile == nullptr)
-	{
-		return;
-	}
-
-	SaveFile->CreationInformation.LevelHasGenerated = true;
-	UpdateSaveFile(SaveFile);
 }
 
 void ASaveManager::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)

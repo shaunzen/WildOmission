@@ -19,6 +19,8 @@ public:
 	// Sets default values for this actor's properties
 	AChunkManager();
 
+	void SetInstanceToThis();
+
 	virtual void Tick(float DeltaTime) override;
 
 	// Gets existing chunk if present, or returns the generated/loaded chunk at the given location

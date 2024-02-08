@@ -32,6 +32,11 @@ AChunkManager::AChunkManager()
 	}
 }
 
+void AChunkManager::SetInstanceToThis()
+{
+	Instance = this;
+}
+
 void AChunkManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -476,7 +481,7 @@ void AChunkManager::BeginPlay()
 		return;
 	}
 
-	Instance = this;
+	SetInstanceToThis();
 }
 
 void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)

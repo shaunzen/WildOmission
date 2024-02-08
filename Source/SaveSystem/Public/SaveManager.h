@@ -42,9 +42,6 @@ private:
 
 	void ValidateSave();
 
-	UFUNCTION()
-	void MarkSaveGenerated();
-
 	UPROPERTY()
 	class UWildOmissionSaveGame* CurrentSaveFile;
 
