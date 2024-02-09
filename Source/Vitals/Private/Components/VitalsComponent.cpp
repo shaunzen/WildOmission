@@ -305,6 +305,11 @@ bool UVitalsComponent::IsGodMode() const
 	return !HealthCanDeplete && !ThirstCanDeplete && !HungerCanDeplete;
 }
 
+void UVitalsComponent::SetHurtSound(USoundBase* InHurtSound)
+{
+	HurtSound = InHurtSound;
+}
+
 void UVitalsComponent::Client_PlayHurtSound_Implementation()
 {
 	if (HurtSound == nullptr)

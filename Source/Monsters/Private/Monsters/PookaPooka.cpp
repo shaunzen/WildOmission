@@ -2,6 +2,7 @@
 
 
 #include "Monsters/PookaPooka.h"
+#include "Components/VitalsComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -30,6 +31,12 @@ APookaPooka::APookaPooka()
 	if (LandSoundCue.Succeeded())
 	{
 		LandSound = LandSoundCue.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> PookaPookaHurt(TEXT("/Game/Monsters/Audio/PookaPooka/PookaPooka_Hurt_Cue"));
+	if (PookaPookaHurt.Succeeded() && VitalsComponent)
+	{
+		VitalsComponent->SetHurtSound(PookaPookaHurt.Object);
 	}
 }
 
