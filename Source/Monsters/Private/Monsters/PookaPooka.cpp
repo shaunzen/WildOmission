@@ -3,6 +3,7 @@
 
 #include "Monsters/PookaPooka.h"
 #include "Components/VitalsComponent.h"
+#include "Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -74,4 +75,15 @@ void APookaPooka::Landed(const FHitResult& Hit)
 	}
 
 	UGameplayStatics::PlaySoundAtLocation(World, LandSound, Hit.ImpactPoint);
+}
+
+void APookaPooka::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FInventoryItem PistolItem;
+	PistolItem.Name = TEXT("pistol.semi");
+	PistolItem.Quantity = 1;
+	InventoryComponent->AddItem(PistolItem);
+	InventoryComponent->SetToolbarSelectionIndex(2);
 }

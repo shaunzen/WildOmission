@@ -23,4 +23,7 @@ public:
 
 	virtual void Landed(const FHitResult& Hit) override;
 
+protected:
+	virtual void BeginPlay() override;
+
 };

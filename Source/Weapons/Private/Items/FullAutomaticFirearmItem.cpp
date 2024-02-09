@@ -1,13 +1,13 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Items/SemiAutomaticFirearmItem.h"
+#include "Items/FullAutomaticFirearmItem.h"
 #include "Components/EquipComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-void ASemiAutomaticFirearmItem::OnPrimaryPressed()
+void AFullAutomaticFirearmItem::OnPrimaryHeld()
 {
-	Super::OnPrimaryPressed();
+	Super::OnPrimaryHeld();
 
 	if (!CanFire)
 	{
@@ -20,12 +20,12 @@ void ASemiAutomaticFirearmItem::OnPrimaryPressed()
 		{
 			return;
 		}
-		
-		// TODO this could cause a crash
+
+		// TODO this could case a crash
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, GetOwner()->GetActorLocation());
 		return;
 	}
-
+	
 	// TODO this could cause a crash
 	GetOwnerEquipComponent()->PlayItemMontage(FireMontage, FireItemMontage);
 }
