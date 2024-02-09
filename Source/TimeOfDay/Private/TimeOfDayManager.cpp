@@ -42,6 +42,11 @@ ATimeOfDayManager::ATimeOfDayManager()
 	}
 }
 
+void ATimeOfDayManager::SetTimeOfDayManager(ATimeOfDayManager* NewInstance)
+{
+	Instance = NewInstance;
+}
+
 ATimeOfDayManager* ATimeOfDayManager::GetTimeOfDayManager()
 {
 	return Instance;
@@ -60,7 +65,7 @@ void ATimeOfDayManager::BeginPlay()
 		return;
 	}
 
-	Instance = this;
+	SetTimeOfDayManager(this);
 }
 
 void ATimeOfDayManager::EndPlay(const EEndPlayReason::Type EndPlayReason)

@@ -27,7 +27,7 @@ void AGameChatManager::BeginPlay()
 		return;
 	}
 
-	Instance = this;
+	SetGameChatManager(this);
 
 	APlayerController* PlayerController = World->GetFirstPlayerController();
 	if (PlayerController == nullptr)
@@ -92,6 +92,11 @@ void AGameChatManager::Multi_PushMessageToClients_Implementation(const FChatMess
 	{
 		OnMessageRecieved.Broadcast();
 	}
+}
+
+void AGameChatManager::SetGameChatManager(AGameChatManager* NewInstance)
+{
+	Instance = NewInstance;
 }
 
 AGameChatManager* AGameChatManager::GetGameChatManager()

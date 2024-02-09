@@ -20,6 +20,7 @@ public:
 	
 	void SendMessage(APlayerState* SenderPlayerState, const FString& Message, bool ConnectionUpdate = false);
 
+	static void SetGameChatManager(AGameChatManager* NewInstance);
 	static AGameChatManager* GetGameChatManager();
 
 	static bool IsValidMessage(const FChatMessage& ChatMessage);

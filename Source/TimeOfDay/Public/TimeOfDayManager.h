@@ -21,6 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	ATimeOfDayManager();
 
+	static void SetTimeOfDayManager(ATimeOfDayManager* NewInstance);
 	static ATimeOfDayManager* GetTimeOfDayManager();
 
 	// Called every frame

@@ -30,6 +30,11 @@ void ASaveManager::SetGameSaveLoadController(IGameSaveLoadController* InGameSave
 	GameSaveLoadController = InGameSaveLoadController;
 }
 
+void ASaveManager::SetSaveManager(ASaveManager* NewInstance)
+{
+	Instance = NewInstance;
+}
+
 ASaveManager* ASaveManager::GetSaveManager()
 {
 	return Instance;
@@ -146,14 +151,14 @@ UWildOmissionSaveGame* ASaveManager::GetSaveFile() const
 void ASaveManager::BeginPlay()
 {
 	Super::BeginPlay();
-	// TODO something about this
+
 	UWorld* World = GetWorld();
 	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
 	{
 		return;
 	}
 
-	Instance = this;
+	SetSaveManager(this);
 
 	FTimerHandle AutoSaveTimerHandle;
 	World->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveManager::SaveWorld, 90.0f, true);

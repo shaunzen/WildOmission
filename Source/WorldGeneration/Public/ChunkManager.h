@@ -19,7 +19,6 @@ public:
 	// Sets default values for this actor's properties
 	AChunkManager();
 
-	void SetInstanceToThis();
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -53,6 +52,8 @@ public:
 	FVector GetWorldSpawnPoint();
 	FPlayerSpawnChunk GetPlayerSpawnChunk() const;
 	void SetPlayerSpawnChunk(const FPlayerSpawnChunk& InPlayerSpawnChunk);
+
+	static void SetChunkManager(AChunkManager* NewInstance);
 	static AChunkManager* GetChunkManager();
 
 protected:

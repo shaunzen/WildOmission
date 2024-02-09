@@ -32,11 +32,6 @@ AChunkManager::AChunkManager()
 	}
 }
 
-void AChunkManager::SetInstanceToThis()
-{
-	Instance = this;
-}
-
 void AChunkManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -481,7 +476,7 @@ void AChunkManager::BeginPlay()
 		return;
 	}
 
-	SetInstanceToThis();
+	SetInstance(this);
 }
 
 void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -593,6 +588,11 @@ FBiomeGenerationData* AChunkManager::GetBiomeGenerationData(const FName& BiomeNa
 	static const FString ContextString(TEXT("Biome Generation Data Context"));
 
 	return BiomeGenerationDataTable->FindRow<FBiomeGenerationData>(BiomeName, ContextString, true);
+}
+
+void AChunkManager::SetChunkManager(AChunkManager* NewInstance)
+{
+	Instance = NewInstance;
 }
 
 AChunkManager* AChunkManager::GetChunkManager()

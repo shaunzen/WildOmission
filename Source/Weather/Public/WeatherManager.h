@@ -15,6 +15,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeatherManager();
 	
+	static void SetWeatherManager(AWeatherManager* NewInstance);
 	static AWeatherManager* GetWeatherManager();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

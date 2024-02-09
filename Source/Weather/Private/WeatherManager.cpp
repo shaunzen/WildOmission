@@ -50,6 +50,11 @@ AWeatherManager::AWeatherManager()
 	}
 }
 
+void AWeatherManager::SetWeatherManager(AWeatherManager* NewInstance)
+{
+	Instance = NewInstance;
+}
+
 AWeatherManager* AWeatherManager::GetWeatherManager()
 {
 	return Instance;
@@ -66,7 +71,7 @@ void AWeatherManager::BeginPlay()
 		return;
 	}
 
-	Instance = this;
+	SetWeatherManager(this);
 
 	if (!HasAuthority())
 	{
