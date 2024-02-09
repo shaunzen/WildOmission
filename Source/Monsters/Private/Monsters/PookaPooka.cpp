@@ -81,10 +81,10 @@ void APookaPooka::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FInventoryItem PistolItem;
-	PistolItem.Name = TEXT("pistol.semi");
-	PistolItem.Quantity = 1;
-	InventoryComponent->AddItem(PistolItem);
+	FInventoryItem PookaCannonItem;
+	PookaCannonItem.Name = TEXT("cannon.pooka");
+	PookaCannonItem.Quantity = 1;
+	InventoryComponent->AddItem(PookaCannonItem);
 	InventoryComponent->SetToolbarSelectionIndex(2);
 
 }

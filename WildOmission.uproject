@@ -174,7 +174,8 @@
 				"AIModule",
 				"CoreUObject",
 				"EquipableItems",
-				"WildOmissionAI"
+				"WildOmissionAI",
+				"Weapons"
 			]
 		},
 		{
