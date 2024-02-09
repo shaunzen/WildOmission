@@ -476,7 +476,7 @@ void AChunkManager::BeginPlay()
 		return;
 	}
 
-	SetInstance(this);
+	SetChunkManager(this);
 }
 
 void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
