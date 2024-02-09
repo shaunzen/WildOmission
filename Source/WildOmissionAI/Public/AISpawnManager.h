@@ -39,6 +39,9 @@ protected:
 	float SpawnChance;
 
 	UPROPERTY(EditDefaultsOnly)
+	bool SpawnsAll;
+
+	UPROPERTY(EditDefaultsOnly)
 	UDataTable* AISpawnDataTable;
 
 	TArray<AWildOmissionAICharacter*> SpawnedAICharacters;

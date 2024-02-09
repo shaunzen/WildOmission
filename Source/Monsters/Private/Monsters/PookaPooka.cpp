@@ -86,4 +86,5 @@ void APookaPooka::BeginPlay()
 	PistolItem.Quantity = 1;
 	InventoryComponent->AddItem(PistolItem);
 	InventoryComponent->SetToolbarSelectionIndex(2);
+
 }

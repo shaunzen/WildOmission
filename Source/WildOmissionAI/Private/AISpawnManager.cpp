@@ -22,6 +22,8 @@ AAISpawnManager::AAISpawnManager()
 	InnerSpawnRadiusCentimeters = 5000.0f;
 	SpawnChance = 1.0f;
 
+	SpawnsAll = false;
+
 	AISpawnDataTable = nullptr;
 }
 
@@ -123,29 +125,41 @@ void AAISpawnManager::SpawnAICharactersInRadiusFromOrigin(const FVector& Origin)
 
 	AISpawnDataTable->GetAllRows(AISpawnDataContextString, SpawnData);
 
-	int32 AICharacterToSpawn = FMath::RandRange(0, SpawnData.Num() - 1);
-
-	UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("Spawning AICharacter With An Index Of %i."), AICharacterToSpawn);
-	for (int32 i = 0; i < SpawnData[AICharacterToSpawn]->SpawnGroupSize; ++i)
+	if (SpawnsAll)
 	{
-		FTransform SpawnTransform;
-		if (!FindSpawnTransform(Origin, SpawnTransform))
+		for (FAISpawnData* AIData : SpawnData)
 		{
-			continue;
+			for (int32 i = 0; i < AIData->SpawnGroupSize; ++i)
+			{
+				FTransform SpawnTransform;
+				if (!FindSpawnTransform(Origin, SpawnTransform))
+				{
+					continue;
+				}
+				HandleAISpawn(AIData->Class, SpawnTransform);
+			}
 		}
-		HandleAISpawn(SpawnData[AICharacterToSpawn]->Class, SpawnTransform);
+	}
+	else
+	{
+		int32 AICharacterToSpawn = FMath::RandRange(0, SpawnData.Num() - 1);
+
+		UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("Spawning AICharacter With An Index Of %i."), AICharacterToSpawn);
+		for (int32 i = 0; i < SpawnData[AICharacterToSpawn]->SpawnGroupSize; ++i)
+		{
+			FTransform SpawnTransform;
+			if (!FindSpawnTransform(Origin, SpawnTransform))
+			{
+				continue;
+			}
+			HandleAISpawn(SpawnData[AICharacterToSpawn]->Class, SpawnTransform);
+		}
 	}
 }
 
 void AAISpawnManager::RemoveAICharacterFromList(AWildOmissionAICharacter* CharacterToRemove)
 {
-	const int32 AICharacterIndex = SpawnedAICharacters.IndexOfByKey(CharacterToRemove);
-	if (AICharacterIndex == INDEX_NONE)
-	{
-		return;
-	}
-
-	SpawnedAICharacters.RemoveAtSwap(AICharacterIndex, 1, false);
+	SpawnedAICharacters.Remove(CharacterToRemove);
 }
 
 bool AAISpawnManager::FindSpawnTransform(const FVector& Origin, FTransform& OutTransform) const
