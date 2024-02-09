@@ -23,4 +23,6 @@ protected:
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
+	virtual void OnValueChanged(bool ValueSet, UBehaviorTreeComponent& OwnerComp);
+
 };

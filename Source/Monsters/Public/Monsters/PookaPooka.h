@@ -17,6 +17,8 @@ class MONSTERS_API APookaPooka : public AMonster
 public:
 	APookaPooka();
 
+	void SetIsChasing(bool IsChasing);
+
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Landed(const FHitResult& Hit) override;

@@ -35,6 +35,8 @@ AWildOmissionAICharacter::AWildOmissionAICharacter()
 	DefaultWalkSpeed = 300.0f;
 	DefaultRunSpeed = 600.0f;
 
+	IdleSoundsEnabled = true;
+
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
@@ -150,26 +152,43 @@ void AWildOmissionAICharacter::StopRunning()
 	OnRep_DesiredMovementSpeed();
 }
 
+void AWildOmissionAICharacter::SetIdleSoundsEnabled(bool InEnabled)
+{
+	IdleSoundsEnabled = InEnabled;
+}
+
+bool AWildOmissionAICharacter::AreIdleSoundsEnabled() const
+{
+	return IdleSoundsEnabled;
+}
+
 void AWildOmissionAICharacter::SetIdleSoundTimer()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	FTimerHandle IdleSoundTimerHandle;
 	FTimerDelegate IdleSoundTimerDelegate;
 	const float IdleSoundDelay = FMath::RandRange(MinTimeBetweenIdleSoundSeconds, MaxTimeBetweenIdleSoundSeconds);
 
 	IdleSoundTimerDelegate.BindUObject(this, &AWildOmissionAICharacter::PlayIdleSound);
-	GetWorld()->GetTimerManager().SetTimer(IdleSoundTimerHandle, IdleSoundTimerDelegate, IdleSoundDelay, false);
+	World->GetTimerManager().SetTimer(IdleSoundTimerHandle, IdleSoundTimerDelegate, IdleSoundDelay, false);
 }
 
 void AWildOmissionAICharacter::PlayIdleSound()
 {
 	SetIdleSoundTimer();
 
-	if (GetWorld() == nullptr || IdleSound == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || IdleSound == nullptr || IdleSoundsEnabled == false)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), IdleSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(World, IdleSound, this->GetActorLocation());
 }
 
 void AWildOmissionAICharacter::OnRep_DesiredMovementSpeed()
@@ -188,6 +207,7 @@ void AWildOmissionAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// TODO possible crash here
 	if (GetMovementComponent()->GetPhysicsVolume()->bWaterVolume == true)
 	{
 		AddMovementInput(FVector::UpVector);

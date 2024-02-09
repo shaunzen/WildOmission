@@ -40,6 +40,11 @@ APookaPooka::APookaPooka()
 	}
 }
 
+void APookaPooka::SetIsChasing(bool IsChasing)
+{
+	IdleSoundsEnabled = IsChasing;
+}
+
 void APookaPooka::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
