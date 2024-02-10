@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Monsters/Monster.h"
-#include "Zombie.generated.h"
+#include "Lurker.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MONSTERS_API AZombie : public AMonster
+class MONSTERS_API ALurker : public AMonster
 {
 	GENERATED_BODY()
-	
-public:
-	AZombie();
 
+public:
+	ALurker();
+	
 };

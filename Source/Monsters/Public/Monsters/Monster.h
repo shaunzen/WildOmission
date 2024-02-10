@@ -43,6 +43,9 @@ protected:
 	class UNiagaraComponent* FireEffects;
 
 	UPROPERTY(EditDefaultsOnly)
+	FInventoryItem ItemToEquip;
+
+	UPROPERTY(EditDefaultsOnly)
 	float MaxAttackRange;
 
 	void SetFire();

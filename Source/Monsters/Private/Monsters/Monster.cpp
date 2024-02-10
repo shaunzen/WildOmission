@@ -45,7 +45,14 @@ AMonster::AMonster()
 void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (!HasAuthority() || ItemToEquip.IsZero())
+	{
+		return;
+	}
 
+	InventoryComponent->AddItem(ItemToEquip);
+	InventoryComponent->SetToolbarSelectionIndex(2);
 }
 
 void AMonster::SetFire()
