@@ -522,6 +522,16 @@ void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerSta
 	ChatManager->SendMessage(Sender, Message, false);
 }
 
+bool AWildOmissionPlayerController::Server_KickPlayer_Validate(APlayerController* PlayerControllerToKick)
+{
+	if (!this->IsAdministrator())
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void AWildOmissionPlayerController::Server_KickPlayer_Implementation(APlayerController* PlayerControllerToKick)
 {
 	UWorld* World = GetWorld();
