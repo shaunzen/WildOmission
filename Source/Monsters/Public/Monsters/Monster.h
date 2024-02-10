@@ -54,4 +54,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	bool bCanBurnInLight;
 
+	UPROPERTY()
+	bool bIsBurning;
+
 };

@@ -56,6 +56,7 @@ void AMonster::SetFire()
 	}
 
 	FireEffects->Activate();
+	bIsBurning = true;
 }
 
 void AMonster::PutOutFire()
@@ -66,6 +67,7 @@ void AMonster::PutOutFire()
 	}
 
 	FireEffects->Deactivate();
+	bIsBurning = false;
 }
 
 void AMonster::ApplyBurnDamage()
@@ -123,7 +125,7 @@ void AMonster::Tick(float DeltaTime)
 		PutOutFire();
 	}
 
-	if (!HasAuthority() || !FireEffects->IsActive())
+	if (!HasAuthority() || bIsBurning == false)
 	{
 		return;
 	}
