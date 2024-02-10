@@ -88,3 +88,13 @@ void APookaPooka::BeginPlay()
 	InventoryComponent->SetToolbarSelectionIndex(2);
 
 }
+
+void APookaPooka::HandleDeath()
+{
+	Super::HandleDeath();
+
+	FInventoryItem LootDrop;
+	LootDrop.Name = TEXT("metal.refined");
+	LootDrop.Quantity = FMath::RandRange(1, 3);
+	UInventoryComponent::SpawnWorldItem(GetWorld(), LootDrop, this);
+}

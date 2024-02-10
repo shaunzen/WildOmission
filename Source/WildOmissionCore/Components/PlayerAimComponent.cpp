@@ -220,10 +220,20 @@ bool UPlayerAimComponent::IsAiming() const
 void UPlayerAimComponent::StartAiming()
 {
 	Aiming = true;
+	
+	if (OnAimStateChanged.IsBound())
+	{
+		OnAimStateChanged.Broadcast();
+	}
 }
 
 void UPlayerAimComponent::StopAiming()
 {
 	Aiming = false;
+
+	if (OnAimStateChanged.IsBound())
+	{
+		OnAimStateChanged.Broadcast();
+	}
 }
 

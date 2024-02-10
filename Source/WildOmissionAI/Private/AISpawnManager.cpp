@@ -136,13 +136,19 @@ void AAISpawnManager::SpawnAICharactersInRadiusFromOrigin(const FVector& Origin)
 				{
 					continue;
 				}
-				HandleAISpawn(AIData->Class, SpawnTransform);
+
+				(void*)HandleAISpawn(AIData->Class, SpawnTransform);
 			}
 		}
 	}
 	else
 	{
 		int32 AICharacterToSpawn = FMath::RandRange(0, SpawnData.Num() - 1);
+
+		if (!SpawnData.IsValidIndex(AICharacterToSpawn))
+		{
+			return;
+		}
 
 		UE_LOG(LogWildOmissionAI, VeryVerbose, TEXT("Spawning AICharacter With An Index Of %i."), AICharacterToSpawn);
 		for (int32 i = 0; i < SpawnData[AICharacterToSpawn]->SpawnGroupSize; ++i)
@@ -152,7 +158,8 @@ void AAISpawnManager::SpawnAICharactersInRadiusFromOrigin(const FVector& Origin)
 			{
 				continue;
 			}
-			HandleAISpawn(SpawnData[AICharacterToSpawn]->Class, SpawnTransform);
+
+			(void*)HandleAISpawn(SpawnData[AICharacterToSpawn]->Class, SpawnTransform);
 		}
 	}
 }
@@ -203,7 +210,18 @@ FAISpawnData* AAISpawnManager::GetSpawnData(const FName& AIName)
 
 AWildOmissionAICharacter* AAISpawnManager::HandleAISpawn(UClass* Class, const FTransform& SpawnTransform)
 {
-	AWildOmissionAICharacter* SpawnedAICharacter = GetWorld()->SpawnActor<AWildOmissionAICharacter>(Class, SpawnTransform);
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return nullptr;
+	}
+
+	AWildOmissionAICharacter* SpawnedAICharacter = World->SpawnActor<AWildOmissionAICharacter>(Class, SpawnTransform);
+	if (SpawnedAICharacter == nullptr)
+	{
+		return nullptr;
+	}
+
 	SpawnedAICharacter->OnDespawn.AddDynamic(this, &AAISpawnManager::RemoveAICharacterFromList);
 	SpawnedAICharacters.Add(SpawnedAICharacter);
 	return SpawnedAICharacter;
