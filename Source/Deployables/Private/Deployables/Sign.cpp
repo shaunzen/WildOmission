@@ -11,8 +11,6 @@ ASign::ASign()
 
 void ASign::Interact(AActor* Interactor)
 {
-	Super::Interact(Interactor);
-
 	// TODO only allow to bring up if we have building priv
 	// TODO bring up control menu
 
@@ -20,7 +18,5 @@ void ASign::Interact(AActor* Interactor)
 
 FString ASign::PromptText()
 {
-	Super::PromptText();
-
 	return TEXT("");
 }
