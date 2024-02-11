@@ -101,9 +101,7 @@ void ASaveManager::LoadWorld()
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
 
-		const uint32 GenerationSeed = FMath::RandRange(0, 999999999);
-
-		AChunkManager::SetGenerationSeed(GenerationSeed);
+		AChunkManager::SetGenerationSeed(SaveFile->Seed);
 
 		SaveFile->CreationInformation.LevelHasGenerated = true;
 		UpdateSaveFile(SaveFile);

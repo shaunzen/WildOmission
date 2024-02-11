@@ -29,6 +29,8 @@ private:
 	class UButton* CancelButton;
 	UPROPERTY(Meta = (BindWidget))
 	class UEditableTextBox* WorldNameInputBox;
+	UPROPERTY(Meta = (BindWidget))
+	class UEditableTextBox* WorldSeedInputBox;
 
 	UPROPERTY(Meta = (BindWidget))
 	UWidget* InvalidWarningBorder;

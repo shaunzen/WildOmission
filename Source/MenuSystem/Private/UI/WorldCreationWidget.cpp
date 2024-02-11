@@ -16,7 +16,8 @@ UWorldCreationWidget::UWorldCreationWidget(const FObjectInitializer& ObjectIniti
 	CreateWorldButton = nullptr;
 	CancelButton = nullptr;
 	WorldNameInputBox = nullptr;
-	
+	WorldSeedInputBox = nullptr;
+
 	InvalidWarningBorder = nullptr;
 	InvalidWarningTextBlock = nullptr;	
 }
@@ -105,8 +106,8 @@ bool UWorldCreationWidget::WorldContainsInvalidCharacter(const FString& WorldNam
 void UWorldCreationWidget::CreateWorld()
 {
 	// Get the name of the save
-	FString NewWorldName;
-	NewWorldName = WorldNameInputBox->GetText().ToString();
+	const FString NewWorldName = WorldNameInputBox->GetText().ToString();
+	const FString NewWorldSeed = WorldSeedInputBox->GetText().ToString();
 
 	if (NewWorldName.IsEmpty() || WorldOfSameNameAlreadyExists(NewWorldName) || WorldContainsInvalidCharacter(NewWorldName))
 	{
@@ -121,7 +122,7 @@ void UWorldCreationWidget::CreateWorld()
 	}
 
 	// Create a new world with that name
-	GameSaveLoadController->CreateWorld(NewWorldName);
+	GameSaveLoadController->CreateWorld(NewWorldName, NewWorldSeed);
 
 	// To World Menu
 	if (!OnOpenWorldMenuRequested.IsBound())

@@ -52,6 +52,9 @@ private:
 	class UMultiOptionBox* DifficultyMultiOptionBox;
 
 	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* SeedTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
 	class UCheckOptionBox* MultiplayerCheckOptionBox;
 	
 	UPROPERTY(Meta = (BindWidget))
