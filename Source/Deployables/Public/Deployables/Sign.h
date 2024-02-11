@@ -14,4 +14,11 @@ class DEPLOYABLES_API ASign : public ADeployable
 {
 	GENERATED_BODY()
 	
+public:
+	ASign();
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	class UTextRenderComponent* TextRenderComponent;
+
 };

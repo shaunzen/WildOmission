@@ -65,13 +65,19 @@ void UInteractionComponent::UpdateInteractionPrompt()
 
 bool UInteractionComponent::LineTraceOnVisibility(FHitResult& OutHitResult) const
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return false;
+	}
+
 	const FVector Start = GetComponentLocation();
 	const FVector End = Start + (GetOwnerForwardVector() * InteractionRange);
 	const FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
 	FCollisionQueryParams Params;
 	Params.bTraceComplex = true;
 	Params.AddIgnoredActor(this->GetOwner());
-	return GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_Visibility, Sphere, Params);
+	return World->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_Visibility, Sphere, Params);
 }
 
 FVector UInteractionComponent::GetOwnerForwardVector() const
