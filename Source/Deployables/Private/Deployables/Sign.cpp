@@ -7,6 +7,7 @@
 ASign::ASign()
 {
 	TextRenderComponent = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
+	TextRenderComponent->SetupAttachment(MeshComponent);
 }
 
 void ASign::Interact(AActor* Interactor)
