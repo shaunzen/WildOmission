@@ -21,6 +21,7 @@ void USignWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	TextBox->OnTextChanged.AddDynamic(this, &USignWidget::OnTextBoxTextChanged);
 	DoneButton->OnClicked.AddDynamic(this, &USignWidget::OnDoneButtonClicked);
 	CancelButton->OnClicked.AddDynamic(this, &USignWidget::OnCancelButtonClicked);
 }
@@ -77,6 +78,29 @@ FReply USignWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent
 	}
 
 	return FReply::Handled();
+}
+
+void USignWidget::OnTextBoxTextChanged(const FText& Text)
+{
+	// TODO figure this shit out
+	TextBox->OnTextChanged.RemoveDynamic(this, &USignWidget::OnTextBoxTextChanged);
+	
+	const FString TextString = Text.ToString();
+
+	FString FormatedString = TEXT("");
+	for (int32 i = 0; i < TextString.Len(); ++i)
+	{
+		FormatedString.AppendChar(TextString[i]);
+		const FString CurrentLookAhead = FString::Printf(TEXT("%s%s%s%s"), TextString[i], TextString[i + 1], TextString[i + 2], TextString[i + 3]);
+		if (i % 22 == 0 && CurrentLookAhead != LINE_TERMINATOR)
+		{
+			FormatedString.Append(LINE_TERMINATOR);
+		}
+	}
+
+	TextBox->SetText(FText::FromString(FormatedString));
+
+	TextBox->OnTextChanged.AddDynamic(this, &USignWidget::OnTextBoxTextChanged);
 }
 
 void USignWidget::OnDoneButtonClicked()

@@ -42,6 +42,9 @@ private:
 	class ASign* Sign;
 
 	UFUNCTION()
+	void OnTextBoxTextChanged(const FText& Text);
+
+	UFUNCTION()
 	void OnDoneButtonClicked();
 
 	UFUNCTION()
