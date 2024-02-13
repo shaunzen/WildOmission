@@ -27,8 +27,8 @@ void UWorldRowWidget::Setup(const FWorldRowInformation& InInformation)
 {
 	WorldName = InInformation.Name;
 
-	FString DaysPlayedString = FString::Printf(TEXT("%i Days"), InInformation.DaysPlayed);
-	FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), InInformation.CreationMonth, InInformation.CreationDay, InInformation.CreationYear);
+	const FString DaysPlayedString = FString::Printf(TEXT("%i Days"), InInformation.DaysPlayed);
+	const FString CreationString = FString::Printf(TEXT("Created: %i/%i/%i"), InInformation.CreationMonth, InInformation.CreationDay, InInformation.CreationYear);
 
 	WorldNameTextBlock->SetText(FText::FromString(InInformation.Name));
 	DateCreatedTextBlock->SetText(FText::FromString(CreationString));

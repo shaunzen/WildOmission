@@ -3,7 +3,9 @@
 
 #include "Components/BuilderComponent.h"
 #include "UI/ToolCupboardWidget.h"
+#include "UI/SignWidget.h"
 #include "Deployables/ToolCupboard.h"
+#include "Deployables/Sign.h"
 #include "GameFramework/PlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -15,18 +17,31 @@ UBuilderComponent::UBuilderComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	ToolCupboardWidgetClass = nullptr;
+	SignWidgetClass = nullptr;
 	ToolCupboardWidget = nullptr;
+	SignWidget = nullptr;
 
 	static ConstructorHelpers::FClassFinder<UToolCupboardWidget> ToolCupboardWidgetBlueprint(TEXT("/Game/Deployables/UI/WBP_ToolCupboardMenu"));
 	if (ToolCupboardWidgetBlueprint.Succeeded())
 	{
 		ToolCupboardWidgetClass = ToolCupboardWidgetBlueprint.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<USignWidget> SignWidgetBlueprint(TEXT("/Game/Deployables/UI/WBP_SignMenu"));
+	if (SignWidgetBlueprint.Succeeded())
+	{
+		SignWidgetClass = SignWidgetBlueprint.Class;
+	}
 }
 
 void UBuilderComponent::OpenToolCupboardMenu(AToolCupboard* ToolCupboard)
 {
 	Client_OpenToolCupboardMenu(ToolCupboard);
+}
+
+void UBuilderComponent::OpenSignMenu(ASign* Sign)
+{
+	Client_OpenSignWidget(Sign);
 }
 
 void UBuilderComponent::Server_Deauthorize_Implementation(AToolCupboard* ToolCupboard)
@@ -89,6 +104,31 @@ void UBuilderComponent::Server_ClearAllAuthorized_Implementation(AToolCupboard* 
 	}
 
 	ToolCupboard->ClearAuthorizedPlayers();
+}
+
+bool UBuilderComponent::Server_ChangeSignText_Validate(ASign* SignToChange, const TArray<FString>& NewText)
+{
+	if (SignToChange == nullptr)
+	{
+		return false;
+	}
+
+	if (!HasBuildingPrivilege(SignToChange->GetActorLocation()))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void UBuilderComponent::Server_ChangeSignText_Implementation(ASign* SignToChange, const TArray<FString>& NewText)
+{
+	if (SignToChange == nullptr)
+	{
+		return;
+	}
+
+	SignToChange->SetText(NewText);
 }
 
 // Called when the game starts
@@ -200,4 +240,29 @@ void UBuilderComponent::Client_OpenToolCupboardMenu_Implementation(AToolCupboard
 
 	ToolCupboardWidget->Setup(ToolCupboard);
 	ToolCupboardWidget->OnTeardown.AddDynamic(this, &UBuilderComponent::OnToolCupboardWidgetTeardown);
+}
+
+void UBuilderComponent::OnSignWidgetTeardown()
+{
+	SignWidget = nullptr;
+}
+
+void UBuilderComponent::Client_OpenSignWidget_Implementation(ASign* Sign)
+{
+	UWorld* World = GetWorld();
+	
+	if (World == nullptr || Sign == nullptr || SignWidgetClass == nullptr || SignWidget != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("world %i, sign %i, signwidgetclass %i nullptr, or signwidget already exists %i."), World == nullptr, Sign == nullptr, SignWidgetClass == nullptr, SignWidget != nullptr);
+		return;
+	}
+
+	SignWidget = CreateWidget<USignWidget>(World, SignWidgetClass);
+	if (SignWidget == nullptr)
+	{
+		return;
+	}
+
+	SignWidget->Setup(Sign);
+	SignWidget->OnTeardown.AddDynamic(this, &UBuilderComponent::OnSignWidgetTeardown);
 }

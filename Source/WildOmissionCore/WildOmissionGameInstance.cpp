@@ -30,7 +30,7 @@ const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
 const static FName SEARCH_DEDICATED_ONLY = TEXT("DEDICATEDONLY");
 
-const static FString GameVersion = TEXT("Alpha 1.2.0");
+const static FString GameVersion = TEXT("Alpha 1.3.0");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -338,7 +338,7 @@ void UWildOmissionGameInstance::SetLoadingSubtitle(const FString& InLoadingSubti
 	}
 }
 
-void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
+void UWildOmissionGameInstance::CreateWorld(const FString& WorldName, const FString& SeedOverride)
 {
 	UWildOmissionSaveGame* NewSaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
 
@@ -354,6 +354,14 @@ void UWildOmissionGameInstance::CreateWorld(const FString& WorldName)
 	NewSaveGame->CreationInformation.Day = Time.GetDay();
 	NewSaveGame->CreationInformation.Month = Time.GetMonth();
 	NewSaveGame->CreationInformation.Year = Time.GetYear();
+
+	const int32 MinSeed = 0;
+	const int32 MaxSeed = 999999999;
+	const uint32 RandomSeed = FMath::RandRange(MinSeed, MaxSeed);
+	const uint32 CustomSeed = SeedOverride.IsNumeric() ? FCString::Atoi(*SeedOverride) : GetTypeHash(SeedOverride);
+	const uint32 Seed = SeedOverride.IsEmpty() ? RandomSeed : CustomSeed;
+
+	NewSaveGame->Seed = Seed;
 
 	UGameplayStatics::SaveGameToSlot(NewSaveGame, WorldName, 0);
 }

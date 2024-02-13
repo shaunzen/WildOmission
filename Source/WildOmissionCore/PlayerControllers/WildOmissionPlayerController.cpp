@@ -414,7 +414,10 @@ void AWildOmissionPlayerController::StartLoading()
 	}
 
 	GameInstance->StartLoading();
-	GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
+	if (!IsHost())
+	{
+		GameInstance->SetLoadingSubtitle(TEXT("Loading world state."));
+	}
 	UE_LOG(LogPlayerController, Verbose, TEXT("BeginPlay: Brought up loading screen."));
 }
 
@@ -517,6 +520,16 @@ void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerSta
 	}
 
 	ChatManager->SendMessage(Sender, Message, false);
+}
+
+bool AWildOmissionPlayerController::Server_KickPlayer_Validate(APlayerController* PlayerControllerToKick)
+{
+	if (!this->IsAdministrator())
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void AWildOmissionPlayerController::Server_KickPlayer_Implementation(APlayerController* PlayerControllerToKick)

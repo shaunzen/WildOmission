@@ -173,7 +173,9 @@
 				"Engine",
 				"AIModule",
 				"CoreUObject",
-				"EquipableItems"
+				"EquipableItems",
+				"WildOmissionAI",
+				"Weapons"
 			]
 		},
 		{

@@ -19,6 +19,8 @@ public:
 	UBuilderComponent();
 
 	void OpenToolCupboardMenu(class AToolCupboard* ToolCupboard);
+	
+	void OpenSignMenu(class ASign* Sign);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_Authorize(class AToolCupboard* ToolCupboard);
@@ -28,6 +30,9 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_ClearAllAuthorized(class AToolCupboard* ToolCupboard);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_ChangeSignText(class ASign* SignToChange, const TArray<FString>& NewText);
 
 	FOnAddBuildingPrivilegeNotificationSignature OnAddBuildingPrivilegeNotification;
 	FOnClearBuildingPrivilegeNotificationSignature OnClearBuildingPrivilegeNotification;
@@ -53,14 +58,26 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UToolCupboardWidget> ToolCupboardWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class USignWidget> SignWidgetClass;
 
 	UPROPERTY()
 	class UToolCupboardWidget* ToolCupboardWidget;
+
+	UPROPERTY()
+	class USignWidget* SignWidget;
 
 	UFUNCTION()
 	void OnToolCupboardWidgetTeardown();
 
 	UFUNCTION(Client, Reliable)
 	void Client_OpenToolCupboardMenu(class AToolCupboard* ToolCupboard);
+
+	UFUNCTION()
+	void OnSignWidgetTeardown();
+
+	UFUNCTION(Client, Reliable)
+	void Client_OpenSignWidget(class ASign* Sign);
 
 };

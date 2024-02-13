@@ -124,7 +124,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_AddToPendingSaves();
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_KickPlayer(APlayerController* PlayerControllerToKick);
 
 	UFUNCTION(Server, Reliable)

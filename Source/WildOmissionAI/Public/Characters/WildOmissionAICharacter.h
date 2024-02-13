@@ -40,6 +40,9 @@ public:
 	UFUNCTION()
 	virtual void StopRunning();
 
+	void SetIdleSoundsEnabled(bool InEnabled);
+	bool AreIdleSoundsEnabled() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -70,6 +73,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI Character")
 	float MaxTimeBetweenIdleSoundSeconds;
+
+	bool IdleSoundsEnabled;
 
 	UFUNCTION()
 	virtual void HandleDespawn();

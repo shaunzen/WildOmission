@@ -22,6 +22,7 @@ UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) 
 	DeleteButton = nullptr;
 	CancelButton = nullptr;
 	DifficultyMultiOptionBox = nullptr;
+	SeedTextBlock = nullptr;
 	MultiplayerCheckOptionBox = nullptr;
 	FriendsOnlyCheckOptionBox = nullptr;
 	MaxPlayersSliderOptionBox = nullptr;
@@ -56,10 +57,20 @@ void UWorldMenuWidget::Open(const FString& InWorldName)
 {
 	WorldName = InWorldName;
 
+	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::CreateSaveGameObject(UWildOmissionSaveGame::StaticClass()));
+	SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
+	if (SaveFile == nullptr)
+	{
+		return;
+	}
+
 	Title->SetText(FText::FromString(WorldName));
 
 	// Get Save File and select option
-	DifficultyMultiOptionBox->SetSelectedIndex(GetWorldDifficulty().GetIntValue());
+	DifficultyMultiOptionBox->SetSelectedIndex(SaveFile->Difficulty.GetIntValue());
+
+	// Set the seed text block
+	SeedTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Seed: %i"), SaveFile->Seed)));
 
 	// Set Placeholder Server Name
 	FString PlaceholderServerName;
@@ -71,7 +82,7 @@ void UWorldMenuWidget::Open(const FString& InWorldName)
 	PlaceholderServerName = FString::Printf(TEXT("%s's Server"), *PlayerState->GetPlayerName());
 	ServerNameInputBox->SetText(FText::FromString(PlaceholderServerName));
 
-	const int32 WorldVersion = GetWorldVersion();
+	const int32 WorldVersion = SaveFile->Version;
 
 	// If this is an old world, prevent it from being played
 	if (WorldVersion < 2)

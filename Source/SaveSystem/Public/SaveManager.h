@@ -17,6 +17,7 @@ public:
 
 	void SetGameSaveLoadController(class IGameSaveLoadController* InGameSaveLoadController);
 
+	static void SetSaveManager(ASaveManager* NewInstance);
 	static ASaveManager* GetSaveManager();
 
 	void SaveWorld();
@@ -41,9 +42,6 @@ private:
 	class IGameSaveLoadController* GameSaveLoadController;
 
 	void ValidateSave();
-
-	UFUNCTION()
-	void MarkSaveGenerated();
 
 	UPROPERTY()
 	class UWildOmissionSaveGame* CurrentSaveFile;

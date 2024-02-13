@@ -476,7 +476,7 @@ void AChunkManager::BeginPlay()
 		return;
 	}
 
-	Instance = this;
+	SetChunkManager(this);
 }
 
 void AChunkManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -588,6 +588,11 @@ FBiomeGenerationData* AChunkManager::GetBiomeGenerationData(const FName& BiomeNa
 	static const FString ContextString(TEXT("Biome Generation Data Context"));
 
 	return BiomeGenerationDataTable->FindRow<FBiomeGenerationData>(BiomeName, ContextString, true);
+}
+
+void AChunkManager::SetChunkManager(AChunkManager* NewInstance)
+{
+	Instance = NewInstance;
 }
 
 AChunkManager* AChunkManager::GetChunkManager()

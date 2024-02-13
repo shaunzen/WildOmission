@@ -24,6 +24,8 @@ AMonsterSpawnManager::AMonsterSpawnManager()
 	OuterSpawnRadiusCentimeters = 10000.0f;
 	SpawnChance = 1.0f;
 
+	SpawnsAll = true;
+
 	static ConstructorHelpers::FObjectFinder<UDataTable> MonsterSpawnDataTableObject(TEXT("/Game/Monsters/DataTables/DT_MonsterSpawnData"));
 	if (MonsterSpawnDataTableObject.Succeeded())
 	{

@@ -82,6 +82,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsGodMode() const;
 
+	void SetHurtSound(USoundBase* InHurtSound);
+
 	FOnBeginThirstSignature OnBeginThirst;
 	FOnEndThirstSignature OnEndThirst;
 

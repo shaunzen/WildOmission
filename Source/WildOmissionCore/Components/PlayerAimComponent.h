@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "PlayerAimComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAimStateChangedSignature);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WILDOMISSIONCORE_API UPlayerAimComponent : public UActorComponent
@@ -21,6 +22,8 @@ public:
 
 	float GetLookSensitivity() const;
 	bool IsAiming() const;
+
+	FOnAimStateChangedSignature OnAimStateChanged;
 
 	UFUNCTION()
 	void StartAiming();

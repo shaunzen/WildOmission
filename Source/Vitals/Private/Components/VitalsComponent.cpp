@@ -57,12 +57,13 @@ void UVitalsComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GetOwner() == nullptr)
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
 	{
 		return;
 	}
 	
-	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UVitalsComponent::OnOwnerTakeAnyDamage);
+	OwnerActor->OnTakeAnyDamage.AddDynamic(this, &UVitalsComponent::OnOwnerTakeAnyDamage);
 }
 
 // Called every frame
@@ -86,7 +87,9 @@ void UVitalsComponent::CalculateDepletion()
 {
 	HandleDelegates();
 
-	if (!GetOwner()->HasAuthority())
+	UWorld* World = GetWorld();
+	AActor* OwnerActor = GetOwner();
+	if (World == nullptr || OwnerActor == nullptr || !OwnerActor->HasAuthority())
 	{
 		return;
 	}
@@ -94,17 +97,17 @@ void UVitalsComponent::CalculateDepletion()
 	// Remove from thirst and hunger, and clamp to min and max value
 	if (ThirstCanDeplete)
 	{
-		CurrentThirst = FMath::Clamp(CurrentThirst - (ThirstDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxThirst);
+		CurrentThirst = FMath::Clamp(CurrentThirst - (ThirstDepletionRate * World->GetDeltaSeconds()), 0.0f, MaxThirst);
 	}
 	if (HungerCanDeplete)
 	{
-		CurrentHunger = FMath::Clamp(CurrentHunger - (HungerDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxHunger);
+		CurrentHunger = FMath::Clamp(CurrentHunger - (HungerDepletionRate * World->GetDeltaSeconds()), 0.0f, MaxHunger);
 	}
 	
 	// If Thirst or Hunger is below threshold start removing Health
 	if ((IsThirsty() || IsStarving()) && HealthCanDeplete)
 	{
-		CurrentHealth = FMath::Clamp(CurrentHealth - (HealthDepletionRate * GetWorld()->GetDeltaSeconds()), 0.0f, MaxHealth);
+		CurrentHealth = FMath::Clamp(CurrentHealth - (HealthDepletionRate * World->GetDeltaSeconds()), 0.0f, MaxHealth);
 	}
 
 	// If Health is too low kill the player
@@ -138,36 +141,39 @@ void UVitalsComponent::HandleDelegates()
 
 void UVitalsComponent::BroadcastBeginThirst()
 {
-	if (BeginThirstBroadcasted || !OnBeginThirst.IsBound())
+	UWorld* World = GetWorld();
+	if (World == nullptr || BeginThirstBroadcasted || !OnBeginThirst.IsBound())
 	{
 		return;
 	}
 
-	OnBeginThirst.Broadcast(GetWorld()->GetRealTimeSeconds());
+	OnBeginThirst.Broadcast(World->GetRealTimeSeconds());
 	BeginThirstBroadcasted = true;
 	EndThirstBroadcasted = false;
 }
 
 void UVitalsComponent::BroadcastEndThirst()
 {
-	if (EndThirstBroadcasted || !OnEndThirst.IsBound())
+	UWorld* World = GetWorld();
+	if (World == nullptr || EndThirstBroadcasted || !OnEndThirst.IsBound())
 	{
 		return;
 	}
 
-	OnEndThirst.Broadcast(GetWorld()->GetRealTimeSeconds());
+	OnEndThirst.Broadcast(World->GetRealTimeSeconds());
 	BeginThirstBroadcasted = false;
 	EndThirstBroadcasted = true;
 }
 
 void UVitalsComponent::BroadcastBeginStarving()
 {
-	if (BeginStarvingBroadcasted || !OnBeginStarving.IsBound())
+	UWorld* World = GetWorld();
+	if (World == nullptr || BeginStarvingBroadcasted || !OnBeginStarving.IsBound())
 	{
 		return;
 	}
 
-	OnBeginStarving.Broadcast(GetWorld()->GetRealTimeSeconds());
+	OnBeginStarving.Broadcast(World->GetRealTimeSeconds());
 	BeginStarvingBroadcasted = true;
 	EndStarvingBroadcasted = false;
 
@@ -175,12 +181,13 @@ void UVitalsComponent::BroadcastBeginStarving()
 
 void UVitalsComponent::BroadcastEndStarving()
 {
-	if (EndStarvingBroadcasted || !OnEndStarving.IsBound())
+	UWorld* World = GetWorld();
+	if (World == nullptr || EndStarvingBroadcasted || !OnEndStarving.IsBound())
 	{
 		return;
 	}
 
-	OnEndStarving.Broadcast(GetWorld()->GetRealTimeSeconds());
+	OnEndStarving.Broadcast(World->GetRealTimeSeconds());
 	BeginStarvingBroadcasted = false;
 	EndStarvingBroadcasted = true;
 }
@@ -305,6 +312,11 @@ bool UVitalsComponent::IsGodMode() const
 	return !HealthCanDeplete && !ThirstCanDeplete && !HungerCanDeplete;
 }
 
+void UVitalsComponent::SetHurtSound(USoundBase* InHurtSound)
+{
+	HurtSound = InHurtSound;
+}
+
 void UVitalsComponent::Client_PlayHurtSound_Implementation()
 {
 	if (HurtSound == nullptr)
@@ -317,7 +329,8 @@ void UVitalsComponent::Client_PlayHurtSound_Implementation()
 
 void UVitalsComponent::OnOwnerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	if (GetOwner() == nullptr || !GetOwner()->HasAuthority() || DamagedActor == nullptr)
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr || !OwnerActor->HasAuthority() || DamagedActor == nullptr)
 	{
 		return;
 	}

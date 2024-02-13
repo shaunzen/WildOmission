@@ -30,6 +30,11 @@ void ASaveManager::SetGameSaveLoadController(IGameSaveLoadController* InGameSave
 	GameSaveLoadController = InGameSaveLoadController;
 }
 
+void ASaveManager::SetSaveManager(ASaveManager* NewInstance)
+{
+	Instance = NewInstance;
+}
+
 ASaveManager* ASaveManager::GetSaveManager()
 {
 	return Instance;
@@ -91,16 +96,19 @@ void ASaveManager::LoadWorld()
 	{
 		return;
 	}
+	
 	if (SaveFile->CreationInformation.LevelHasGenerated == false)
 	{
 		SetLoadingSubtitle(TEXT("Generating level."));
 
-		const uint32 GenerationSeed = FMath::RandRange(0, 999999999);
-		AChunkManager::SetGenerationSeed(GenerationSeed);
+		AChunkManager::SetGenerationSeed(SaveFile->Seed);
 
-		MarkSaveGenerated();
+		SaveFile->CreationInformation.LevelHasGenerated = true;
+		UpdateSaveFile(SaveFile);
 		return;
 	}
+
+	SetLoadingSubtitle(TEXT("Loading level."));
 
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
 	if (TimeOfDayManager)
@@ -109,8 +117,6 @@ void ASaveManager::LoadWorld()
 		TimeOfDayManager->SetNormalizedProgressThroughDay(SaveFile->NormalizedProgressThroughDay);
 	}
 	
-	SetLoadingSubtitle(TEXT("Loading level."));
-
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager)
 	{
@@ -141,7 +147,7 @@ void ASaveManager::BeginPlay()
 		return;
 	}
 
-	Instance = this;
+	SetSaveManager(this);
 
 	FTimerHandle AutoSaveTimerHandle;
 	World->GetTimerManager().SetTimer(AutoSaveTimerHandle, this, &ASaveManager::SaveWorld, 90.0f, true);
@@ -169,18 +175,6 @@ void ASaveManager::ValidateSave()
 
 	CurrentSaveFileName = TEXT("New_World");
 	CreateWorld(CurrentSaveFileName);
-}
-
-void ASaveManager::MarkSaveGenerated()
-{
-	UWildOmissionSaveGame* SaveFile = GetSaveFile();
-	if (SaveFile == nullptr)
-	{
-		return;
-	}
-
-	SaveFile->CreationInformation.LevelHasGenerated = true;
-	UpdateSaveFile(SaveFile);
 }
 
 void ASaveManager::UpdateSaveFile(UWildOmissionSaveGame* UpdatedSaveFile)

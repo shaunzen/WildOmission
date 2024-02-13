@@ -20,10 +20,12 @@ void ASemiAutomaticFirearmItem::OnPrimaryPressed()
 		{
 			return;
 		}
-
+		
+		// TODO this could cause a crash
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, GetOwner()->GetActorLocation());
 		return;
 	}
 
+	// TODO this could cause a crash
 	GetOwnerEquipComponent()->PlayItemMontage(FireMontage, FireItemMontage);
 }

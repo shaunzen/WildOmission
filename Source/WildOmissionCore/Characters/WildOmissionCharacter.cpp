@@ -355,6 +355,7 @@ void AWildOmissionCharacter::BeginPlay()
 	{
 		EquipComponent->OnStartAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StartAiming);
 		EquipComponent->OnStopAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StopAiming);
+		AimComponent->OnAimStateChanged.AddDynamic(this, &AWildOmissionCharacter::RefreshDesiredMovementSpeed);
 	}
 
 	if (HasAuthority() && VitalsComponent)

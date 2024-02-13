@@ -42,13 +42,23 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	}
 
 	SaveManager = World->SpawnActor<ASaveManager>();
+	ASaveManager::SetSaveManager(SaveManager);
+
 	ChunkManager = World->SpawnActor<AChunkManager>();
+	AChunkManager::SetChunkManager(ChunkManager);
+
 	TimeOfDayManager = World->SpawnActor<ATimeOfDayManager>();
+	ATimeOfDayManager::SetTimeOfDayManager(TimeOfDayManager);
+
 	WeatherManager = World->SpawnActor<AWeatherManager>();
+	AWeatherManager::SetWeatherManager(WeatherManager);
+
 	AnimalSpawnManager = World->SpawnActor<AAnimalSpawnManager>();
 	MonsterSpawnManager = World->SpawnActor<AMonsterSpawnManager>();
-	ChatManager = World->SpawnActor<AGameChatManager>();
 	
+	ChatManager = World->SpawnActor<AGameChatManager>();
+	AGameChatManager::SetGameChatManager(ChatManager);
+
 	if (SaveManager == nullptr)
 	{
 		return;
@@ -56,14 +66,13 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 
 	SaveManager->SetGameSaveLoadController(Cast<IGameSaveLoadController>(GetGameInstance()));
 	SaveManager->SetSaveFile(SaveFile);
-
 	SaveManager->LoadWorld();
 }
 
 void AWildOmissionGameMode::StartPlay()
 {
 	Super::StartPlay();
-	
+
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
