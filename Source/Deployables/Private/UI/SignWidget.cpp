@@ -2,7 +2,7 @@
 
 
 #include "UI/SignWidget.h"
-#include "Components/MultiLineEditableTextBox.h"
+#include "Components/EditableTextBox.h"
 #include "Components/Button.h"
 #include "Components/BuilderComponent.h"
 #include "Deployables/Sign.h"
@@ -11,7 +11,11 @@ USignWidget::USignWidget(const FObjectInitializer& ObjectInitializer) : UUserWid
 {
 	SetIsFocusable(true);
 
-	TextBox = nullptr;
+	LineOneInputBox = nullptr;
+	LineTwoInputBox = nullptr;
+	LineThreeInputBox = nullptr;
+	LineFourInputBox = nullptr;
+
 	DoneButton = nullptr;
 	CancelButton = nullptr;
 	Sign = nullptr;
@@ -20,8 +24,12 @@ USignWidget::USignWidget(const FObjectInitializer& ObjectInitializer) : UUserWid
 void USignWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	
+	LineOneInputBox->OnTextChanged.AddDynamic(this, &USignWidget::OnLineOneInputBoxTextChanged);
+	LineTwoInputBox->OnTextChanged.AddDynamic(this, &USignWidget::OnLineTwoInputBoxTextChanged);
+	LineThreeInputBox->OnTextChanged.AddDynamic(this, &USignWidget::OnLineThreeInputBoxTextChanged);
+	LineFourInputBox->OnTextChanged.AddDynamic(this, &USignWidget::OnLineFourInputBoxTextChanged);
 
-	TextBox->OnTextChanged.AddDynamic(this, &USignWidget::OnTextBoxTextChanged);
 	DoneButton->OnClicked.AddDynamic(this, &USignWidget::OnDoneButtonClicked);
 	CancelButton->OnClicked.AddDynamic(this, &USignWidget::OnCancelButtonClicked);
 }
@@ -71,7 +79,7 @@ void USignWidget::Teardown()
 FReply USignWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
-	
+
 	if (InKeyEvent.GetKey() == EKeys::Escape)
 	{
 		this->Teardown();
@@ -80,27 +88,36 @@ FReply USignWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent
 	return FReply::Handled();
 }
 
-void USignWidget::OnTextBoxTextChanged(const FText& Text)
+void USignWidget::OnLineOneInputBoxTextChanged(const FText& Text)
 {
-	// TODO figure this shit out
-	TextBox->OnTextChanged.RemoveDynamic(this, &USignWidget::OnTextBoxTextChanged);
-	
-	const FString TextString = Text.ToString();
+	PerformLineTrimOnInputBox(LineOneInputBox, Text);
+}
 
-	FString FormatedString = TEXT("");
-	for (int32 i = 0; i < TextString.Len(); ++i)
+void USignWidget::OnLineTwoInputBoxTextChanged(const FText& Text)
+{
+	PerformLineTrimOnInputBox(LineTwoInputBox, Text);
+}
+
+void USignWidget::OnLineThreeInputBoxTextChanged(const FText& Text)
+{
+	PerformLineTrimOnInputBox(LineThreeInputBox, Text);
+}
+
+void USignWidget::OnLineFourInputBoxTextChanged(const FText& Text)
+{
+	PerformLineTrimOnInputBox(LineFourInputBox, Text);
+}
+
+void USignWidget::PerformLineTrimOnInputBox(UEditableTextBox* TextBox, const FText& Text)
+{
+	FString TextString = Text.ToString();
+	
+	if (TextString.Len() > 22)
 	{
-		FormatedString.AppendChar(TextString[i]);
-		const FString CurrentLookAhead = FString::Printf(TEXT("%s%s%s%s"), TextString[i], TextString[i + 1], TextString[i + 2], TextString[i + 3]);
-		if (i % 22 == 0 && CurrentLookAhead != LINE_TERMINATOR)
-		{
-			FormatedString.Append(LINE_TERMINATOR);
-		}
+		TextString = TextString.RightChop(1);
 	}
 
-	TextBox->SetText(FText::FromString(FormatedString));
-
-	TextBox->OnTextChanged.AddDynamic(this, &USignWidget::OnTextBoxTextChanged);
+	TextBox->SetText(FText::FromString(TextString));
 }
 
 void USignWidget::OnDoneButtonClicked()
@@ -117,7 +134,8 @@ void USignWidget::OnDoneButtonClicked()
 		return;
 	}
 
-	BuilderComponent->Server_ChangeSignText(Sign, TextBox->GetText().ToString());
+	
+	//BuilderComponent->Server_ChangeSignText(Sign, TextBox->GetText().ToString());
 }
 
 void USignWidget::OnCancelButtonClicked()
