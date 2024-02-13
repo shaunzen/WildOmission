@@ -106,12 +106,22 @@ void UBuilderComponent::Server_ClearAllAuthorized_Implementation(AToolCupboard* 
 	ToolCupboard->ClearAuthorizedPlayers();
 }
 
-bool UBuilderComponent::Server_ChangeSignText_Validate(ASign* SignToChange, const FString& NewText)
+bool UBuilderComponent::Server_ChangeSignText_Validate(ASign* SignToChange, const TArray<FString>& NewText)
 {
+	if (SignToChange == nullptr)
+	{
+		return false;
+	}
+
+	if (!HasBuildingPrivilege(SignToChange->GetActorLocation()))
+	{
+		return false;
+	}
+
 	return true;
 }
 
-void UBuilderComponent::Server_ChangeSignText_Implementation(ASign* SignToChange, const FString& NewText)
+void UBuilderComponent::Server_ChangeSignText_Implementation(ASign* SignToChange, const TArray<FString>& NewText)
 {
 	if (SignToChange == nullptr)
 	{

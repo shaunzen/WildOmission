@@ -20,20 +20,22 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void OnSpawn() override;
+	
 	// Begin IInteractable Implementation
 	virtual void Interact(AActor* Interactor) override;
 	virtual FString PromptText() override;
 	// End IInteractable Implementation
 
-	void SetText(const FString& NewText);
-	FString GetText() const;
+	void SetText(const TArray<FString>& NewText);
+	TArray<FString> GetText() const;
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	class UTextRenderComponent* TextRenderComponent;
 
 	UPROPERTY(SaveGame, Replicated, ReplicatedUsing = OnRep_Text)
-	FString Text;
+	TArray<FString> Text;
 
 	UFUNCTION()
 	void OnRep_Text();

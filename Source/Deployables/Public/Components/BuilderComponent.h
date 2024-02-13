@@ -32,7 +32,7 @@ public:
 	void Server_ClearAllAuthorized(class AToolCupboard* ToolCupboard);
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_ChangeSignText(class ASign* SignToChange, const FString& NewText);
+	void Server_ChangeSignText(class ASign* SignToChange, const TArray<FString>& NewText);
 
 	FOnAddBuildingPrivilegeNotificationSignature OnAddBuildingPrivilegeNotification;
 	FOnClearBuildingPrivilegeNotificationSignature OnClearBuildingPrivilegeNotification;

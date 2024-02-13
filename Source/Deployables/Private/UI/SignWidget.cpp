@@ -38,6 +38,30 @@ void USignWidget::Setup(ASign* InSign)
 {
 	Sign = InSign;
 
+	if (Sign == nullptr)
+	{
+		this->Teardown();
+		return;
+	}
+
+	const TArray<FString> SignText = Sign->GetText();
+	if (SignText.IsValidIndex(0))
+	{
+		LineOneInputBox->SetText(FText::FromString(SignText[0]));
+	}
+	if (SignText.IsValidIndex(1))
+	{
+		LineTwoInputBox->SetText(FText::FromString(SignText[1]));
+	}
+	if (SignText.IsValidIndex(2))
+	{
+		LineThreeInputBox->SetText(FText::FromString(SignText[2]));
+	}
+	if (SignText.IsValidIndex(3))
+	{
+		LineFourInputBox->SetText(FText::FromString(SignText[3]));
+	}
+
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
 	{
@@ -114,7 +138,7 @@ void USignWidget::PerformLineTrimOnInputBox(UEditableTextBox* TextBox, const FTe
 	
 	if (TextString.Len() > 22)
 	{
-		TextString = TextString.RightChop(1);
+		TextString = TextString.LeftChop(1);
 	}
 
 	TextBox->SetText(FText::FromString(TextString));
@@ -134,8 +158,18 @@ void USignWidget::OnDoneButtonClicked()
 		return;
 	}
 
-	
-	//BuilderComponent->Server_ChangeSignText(Sign, TextBox->GetText().ToString());
+	TArray<FString> SignString = { 
+		LineOneInputBox->GetText().ToString(),
+		LineTwoInputBox->GetText().ToString(),
+		LineThreeInputBox->GetText().ToString(),
+		LineFourInputBox->GetText().ToString() };
+
+	/*const FString SignString = LineOneInputBox->GetText().ToString() + LINE_TERMINATOR + LineTwoInputBox->GetText().ToString()
+		+ LINE_TERMINATOR + LineThreeInputBox->GetText().ToString() + LINE_TERMINATOR + LineFourInputBox->GetText().ToString();*/
+
+	BuilderComponent->Server_ChangeSignText(Sign, SignString);
+
+	this->Teardown();
 }
 
 void USignWidget::OnCancelButtonClicked()

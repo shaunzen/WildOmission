@@ -6,10 +6,13 @@
 #include "Components/BuilderComponent.h"
 #include "Net/UnrealNetwork.h"
 
+// TODO net relevancy
 ASign::ASign()
 {
 	TextRenderComponent = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
 	TextRenderComponent->SetupAttachment(MeshComponent);
+
+	Text.SetNum(4);
 }
 
 void ASign::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -17,6 +20,18 @@ void ASign::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASign, Text);
+}
+
+void ASign::OnSpawn()
+{
+	Super::OnSpawn();
+
+	if (TextRenderComponent == nullptr)
+	{
+		return;
+	}
+	
+	TextRenderComponent->SetText(FText());
 }
 
 void ASign::Interact(AActor* Interactor)
@@ -74,20 +89,34 @@ FString ASign::PromptText()
 	return TEXT("Modify Text");
 }
 
-void ASign::SetText(const FString& NewText)
+void ASign::SetText(const TArray<FString>& NewText)
 {
 	Text = NewText;
+	FlushNetDormancy();
 	OnRep_Text();
 }
 
-FString ASign::GetText() const
+TArray<FString> ASign::GetText() const
 {
 	return Text;
 }
 
 void ASign::OnRep_Text()
 {
-	TextRenderComponent->SetText(FText::FromString(Text));
+	FString SignString;
+	for (int32 i = 0; i < Text.Num(); ++i)
+	{
+		SignString.Append(Text[i]);
+		
+		if (i == Text.Num())
+		{
+			break;
+		}
+
+		SignString.Append(LINE_TERMINATOR);
+	}
+
+	TextRenderComponent->SetText(FText::FromString(SignString));
 }
 
 void ASign::OnLoadComplete_Implementation()
