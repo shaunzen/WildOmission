@@ -57,10 +57,16 @@ void ATimeOfDayManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	DirectionalLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
 
 	UWorld* World = GetWorld();
-	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	DirectionalLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(World, ADirectionalLight::StaticClass()));
+
+	if (IsValid(Instance))
 	{
 		return;
 	}
@@ -184,13 +190,14 @@ int32 ATimeOfDayManager::GetDaysPlayed() const
 
 void ATimeOfDayManager::SetNormalizedProgressThroughDay(float InProgress)
 {
+	NormalizedProgressThroughDay = InProgress;
+	
 	if (DirectionalLight == nullptr)
 	{
 		return;
 	}
 
 	DirectionalLight->SetActorRotation(FRotator(0.0f, 180.0f, 180.0f));
-	NormalizedProgressThroughDay = InProgress;
 	DirectionalLight->AddActorLocalRotation(FRotator(NormalizedProgressThroughDay * 360.0f, 0.0f, 0.0f));
 }
 

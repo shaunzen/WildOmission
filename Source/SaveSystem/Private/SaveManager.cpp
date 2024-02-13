@@ -110,7 +110,6 @@ void ASaveManager::LoadWorld()
 
 	SetLoadingSubtitle(TEXT("Loading level."));
 
-	// TODO bug bug
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
 	if (TimeOfDayManager)
 	{
