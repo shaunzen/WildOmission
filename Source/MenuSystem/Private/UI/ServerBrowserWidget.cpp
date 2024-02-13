@@ -28,7 +28,7 @@ UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectIniti
 		ServerRowWidgetClass = ServerRowWidgetBPClass.Class;
 	}
 
-	static ConstructorHelpers::FClassFinder<UTextBlock> TextBlockBlueprint(TEXT("/Game/CustomUI/WBP_UI_Text_Large"));
+	static ConstructorHelpers::FClassFinder<UTextBlock> TextBlockBlueprint(TEXT("/Game/CustomUI/WBP_UI_Text_Normal"));
 	if (TextBlockBlueprint.Succeeded())
 	{
 		TextBlockClass = TextBlockBlueprint.Class;
