@@ -32,7 +32,7 @@ void AMonsterArmsItem::Equip(APawn* InOwnerPawn, USkeletalMeshComponent* InThird
 
 	// 0 = peace, 1 = easy, 2 = normal, 3 = hard
 	const int8 DifficultyModifier = (SaveFile->Difficulty.GetIntValue() - 2) * 0.15f;
-	DamageMultiplier = FMath::Clamp(DamageMultiplier * DifficultyModifier, 0.1f, 1.0f);
+	DamageMultiplier = FMath::Clamp(DamageMultiplier + DifficultyModifier, 0.1f, 1.0f);
 }
 
 void AMonsterArmsItem::OnPrimaryHeld()
