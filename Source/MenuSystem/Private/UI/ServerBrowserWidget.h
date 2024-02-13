@@ -51,7 +51,11 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UTextBlock* RefreshListButtonText;
 
+	UPROPERTY()
 	TSubclassOf<class UServerRowWidget> ServerRowWidgetClass;
+
+	UPROPERTY()
+	TSubclassOf<class UTextBlock> TextBlockClass;
 
 	TOptional<uint32> SelectedServerIndex;
 	

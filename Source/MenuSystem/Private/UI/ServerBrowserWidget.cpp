@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/PanelWidget.h"
+#include "Blueprint/WidgetTree.h"
 #include "Color/UIColors.h"
 
 UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -25,6 +26,12 @@ UServerBrowserWidget::UServerBrowserWidget(const FObjectInitializer& ObjectIniti
 	if (ServerRowWidgetBPClass.Succeeded())
 	{
 		ServerRowWidgetClass = ServerRowWidgetBPClass.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UTextBlock> TextBlockBlueprint(TEXT("/Game/CustomUI/WBP_UI_Text_Large"));
+	if (TextBlockBlueprint.Succeeded())
+	{
+		TextBlockClass = TextBlockBlueprint.Class;
 	}
 }
 
@@ -130,16 +137,28 @@ void UServerBrowserWidget::SelectServerIndex(const uint32& SelectedIndex)
 
 void UServerBrowserWidget::BroadcastRefreshButtonClicked()
 {
+	if (TextBlockClass && WidgetTree)
+	{
+		UTextBlock* SearchingTextBlock = WidgetTree->ConstructWidget<UTextBlock>(TextBlockClass);//NewObject<UTextBlock>(this, TextBlockClass->StaticClass());
+		//SearchingTextBlock->Register
+		if (SearchingTextBlock)
+		{
+			ServerList->ClearChildren();
+			SearchingTextBlock->SetText(FText::FromString(TEXT("Searching for servers, please wait...")));
+			ServerList->AddChild(SearchingTextBlock);
+		}
+	}
+	
+	const FString WaitingString = TEXT("...");
+	RefreshListButtonText->SetText(FText::FromString(WaitingString));
+
+	SelectedServerIndex.Reset();
+	JoinButton->SetIsEnabled(false);
+
 	if (!OnRefreshButtonClicked.IsBound())
 	{
 		return;
 	}
-
-	const FString WaitingString = TEXT("...");
-	RefreshListButtonText->SetText(FText::FromString(WaitingString));
-	
-	SelectedServerIndex.Reset();
-	JoinButton->SetIsEnabled(false);
 
 	OnRefreshButtonClicked.Broadcast(IsDedicatedList);
 }
