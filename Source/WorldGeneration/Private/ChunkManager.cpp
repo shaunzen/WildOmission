@@ -178,6 +178,12 @@ void AChunkManager::SaveAllSpawnedChunks()
 
 void AChunkManager::SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy)
 {
+	if (ChunkToSave == nullptr)
+	{
+		UE_LOG(LogWorldGeneration, Warning, TEXT("Failed to save chunk, chunk was nullptr."));
+		return;
+	}
+
 	FChunkData ChunkSaveData;
 	ChunkToSave->Save(ChunkSaveData, AlsoDestroy);
 
@@ -185,6 +191,11 @@ void AChunkManager::SaveChunkData(AChunk* ChunkToSave, bool AlsoDestroy)
 	if (ChunkIndex == INDEX_NONE)
 	{
 		ChunkData.Add(ChunkSaveData);
+		return;
+	}
+
+	if (!ChunkData.IsValidIndex(ChunkIndex))
+	{
 		return;
 	}
 
@@ -471,7 +482,7 @@ void AChunkManager::BeginPlay()
 	Super::BeginPlay();
 
 	UWorld* World = GetWorld();
-	if (World == nullptr || World->IsEditorWorld() && IsValid(Instance))
+	if (World == nullptr || IsValid(Instance))
 	{
 		return;
 	}

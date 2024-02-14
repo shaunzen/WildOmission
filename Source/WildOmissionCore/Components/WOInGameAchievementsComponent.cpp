@@ -166,14 +166,9 @@ void UWOInGameAchievementsComponent::OnItemSmelted(const FInventoryItem& RawItem
 
 void UWOInGameAchievementsComponent::OnItemEquiped(AEquipableItem* NewItem)
 {
-	// TODO in here we can cast NewItem and use it to bind delegates
 	if (ADeployableItem* DeployableItem = Cast<ADeployableItem>(NewItem))
 	{
 		DeployableItem->OnDeployablePlaced.AddDynamic(this, &UWOInGameAchievementsComponent::OnDeployablePlaced);
-
-		//UClass* DeployableClass = DeployableItem->GetDeployableActorClass();
-		//// TODO use something like this to check if everything is right
-		//(DeployableClass->GetSuperClass()->StaticClass() == ABuildingBlock::StaticClass());
 	}
 }
 

@@ -71,7 +71,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 	}
 
 	APlayerState* CurrentPlayerState = PlayerState.Get();
-	if (CurrentPlayerState == nullptr)
+	if (CurrentPlayerState == nullptr || AchievementsComponent == nullptr)
 	{
 		return PlayerSaveData;
 	}
@@ -81,7 +81,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 	PlayerSaveData.BedWorldLocation = BedWorldLocation;
 	PlayerSaveData.AchievementStatsData = AchievementsComponent->GetStatsData();
 	PlayerSaveData.NewPlayer = false;
-	
+
 	AWildOmissionCharacter* WildOmissionCharacter = Cast<AWildOmissionCharacter>(GetCharacter());
 	if (WildOmissionCharacter == nullptr)
 	{
@@ -90,18 +90,29 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 	}
 
 	PlayerSaveData.WorldLocation = WildOmissionCharacter->GetActorLocation();
-	
+
 	PlayerSaveData.IsAlive = true;
 	PlayerSaveData.IsHost = IsHost();
 
-	// TODO this is a no no
-	PlayerSaveData.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
-	PlayerSaveData.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
-	PlayerSaveData.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
+	UVitalsComponent* PlayerVitalsComponent = WildOmissionCharacter->GetVitalsComponent();
+	if (PlayerVitalsComponent)
+	{
+		PlayerSaveData.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
+		PlayerSaveData.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
+		PlayerSaveData.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
+	}
 
-	PlayerSaveData.Inventory.ByteData = WildOmissionCharacter->GetInventoryComponent()->Save();
-	
-	PlayerSaveData.SelectedItemByteData = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItemAsByteData();
+	UPlayerInventoryComponent* PlayerInventoryComponent = WildOmissionCharacter->GetInventoryComponent();
+	if (PlayerInventoryComponent)
+	{
+		PlayerSaveData.Inventory.ByteData = WildOmissionCharacter->GetInventoryComponent()->Save();
+	}
+
+	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = WildOmissionCharacter->GetInventoryManipulatorComponent();
+	if (PlayerInventoryManipulatorComponent)
+	{
+		PlayerSaveData.SelectedItemByteData = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItemAsByteData();
+	}
 
 	return PlayerSaveData;
 }

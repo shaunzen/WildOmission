@@ -21,11 +21,14 @@ void UPlayerSaveManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// TODO world dereferencing is a no no
-	
-	FTimerHandle UpdatePendingTimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveManagerComponent::AddAllToPending, 60.0f, true);
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
 
+	FTimerHandle UpdatePendingTimerHandle;
+	World->GetTimerManager().SetTimer(UpdatePendingTimerHandle, this, &UPlayerSaveManagerComponent::AddAllToPending, 60.0f, true);
 }
 
 void UPlayerSaveManagerComponent::AddToPending(APlayerController* PlayerController)
@@ -161,7 +164,13 @@ TArray<APlayerController*> UPlayerSaveManagerComponent::GetAllPlayerControllers(
 {
 	TArray<APlayerController*> PlayerControllers;
 
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return PlayerControllers;
+	}
+
+	for (FConstPlayerControllerIterator Iterator = World->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		PlayerControllers.Add(Iterator->Get());
 	}

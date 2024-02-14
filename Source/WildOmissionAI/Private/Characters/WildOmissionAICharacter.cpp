@@ -207,11 +207,24 @@ void AWildOmissionAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// TODO possible crash here
-	if (GetMovementComponent()->GetPhysicsVolume()->bWaterVolume == true)
+	UMovementComponent* OurMovementComponent = GetMovementComponent();
+	if (OurMovementComponent == nullptr)
 	{
-		AddMovementInput(FVector::UpVector);
+		return;
 	}
+
+	APhysicsVolume* CurrentPhysicsVolume = OurMovementComponent->GetPhysicsVolume();
+	if (CurrentPhysicsVolume == nullptr)
+	{
+		return;
+	}
+
+	if (CurrentPhysicsVolume->bWaterVolume == false)
+	{
+		return;
+	}
+	
+	AddMovementInput(FVector::UpVector);
 }
 
 // Called to bind functionality to input

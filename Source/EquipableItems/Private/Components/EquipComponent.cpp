@@ -73,6 +73,12 @@ void UEquipComponent::Setup(USkeletalMeshComponent* FirstPersonMeshComponent, US
 {
 	OwnerFirstPersonMesh = FirstPersonMeshComponent;
 	OwnerThirdPersonMesh = ThirdPersonMeshComponent;
+	
+	if (FirstPersonItemComponent == nullptr)
+	{
+		return;
+	}
+
 	FirstPersonItemComponent->AttachToComponent(FirstPersonMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, TEXT("RightHandMountSocket"));
 }
 
@@ -81,11 +87,15 @@ void UEquipComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerPawn = Cast<APawn>(GetOwner());
-	
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
 	PrimaryHeld = false;
 	SecondaryHeld = false;
 
-	UPlayerInventoryComponent* OwnerInventory = GetOwner()->FindComponentByClass<UPlayerInventoryComponent>();
+	UPlayerInventoryComponent* OwnerInventory = OwnerPawn->FindComponentByClass<UPlayerInventoryComponent>();
 	if (OwnerInventory == nullptr)
 	{
 		return;
@@ -94,37 +104,45 @@ void UEquipComponent::BeginPlay()
 	OwnerInventory->OnToolbarSlotSelectionChange.AddDynamic(this, &UEquipComponent::RefreshEquip);
 }
 
-// TODO null dereferencing here
 void UEquipComponent::EquipItem(const FName& ItemName, TSubclassOf<AEquipableItem> ItemClass, const int8& FromSlotIndex, const uint32& UniqueID)
 {
-	if (OwnerPawn == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr || OwnerPawn == nullptr || ItemClass == nullptr)
 	{
 		return;
 	}
 
-	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController())
+	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled())
 	{
 		EquipFirstPersonViewModel(ItemClass, UniqueID);
 	}
 
-	if (GetOwner()->HasAuthority())
+	if (OwnerPawn->HasAuthority())
 	{	
-		EquipedItem = GetWorld()->SpawnActor<AEquipableItem>(ItemClass, OwnerPawn->GetActorLocation(), OwnerPawn->GetActorRotation());
+		EquipedItem = World->SpawnActor<AEquipableItem>(ItemClass, OwnerPawn->GetActorLocation(), OwnerPawn->GetActorRotation());
+		if (EquipedItem == nullptr)
+		{
+			return;
+		}
 
 		EquipedItem->Equip(OwnerPawn, OwnerThirdPersonMesh, ItemName, FromSlotIndex, UniqueID);
-
 		OnRep_EquipedItem();
 	}
 }
 
 void UEquipComponent::Disarm()
 {
-	if (OwnerPawn && OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController())
+	if (OwnerPawn == nullptr)
+	{
+		return;
+	}
+
+	if (OwnerPawn && OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled())
 	{
 		EquipFirstPersonViewModel(nullptr, 0);
 	}
 
-	if (GetOwner()->HasAuthority() && IsItemEquiped())
+	if (OwnerPawn->HasAuthority() && IsItemEquiped())
 	{
 		EquipedItem->OnUnequip();
 		DestroyEquipedItem();
@@ -154,9 +172,9 @@ void UEquipComponent::UpdateControlRotation(const FRotator& NewControlRotation)
 
 FRotator UEquipComponent::GetOwnerControlRotation() const
 {
-	if (OwnerReplicatedControlRotation == FRotator::ZeroRotator)
+	if (OwnerPawn && OwnerReplicatedControlRotation == FRotator::ZeroRotator)
 	{
-		return GetOwner()->GetActorRotation();
+		return OwnerPawn->GetActorRotation();
 	}
 
 	return OwnerReplicatedControlRotation;
@@ -367,10 +385,8 @@ UAnimSequence* UEquipComponent::GetEquipedItemPose() const
 	{
 		return nullptr;
 	}
-	AController* OwnerPawnController = OwnerPawn->GetController();
-	if (OwnerPawnController &&
-		OwnerPawn->IsLocallyControlled() &&
-		OwnerPawnController->IsPlayerController())
+
+	if (OwnerPawn->IsLocallyControlled() &&	OwnerPawn->IsPlayerControlled())
 	{
 		if (EquipedItem)
 		{
@@ -396,10 +412,7 @@ FRotator UEquipComponent::GetEquipedItemRightArmOffset() const
 		return FRotator::ZeroRotator;
 	}
 
-	AController* OwnerPawnController = OwnerPawn->GetController();
-	if (OwnerPawnController &&
-		OwnerPawn->IsLocallyControlled() &&
-		OwnerPawnController->IsPlayerController())
+	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled())
 	{
 		if (EquipedItem)
 		{
@@ -425,10 +438,7 @@ FRotator UEquipComponent::GetEquipedItemLeftArmOffset() const
 		return FRotator::ZeroRotator;
 	}
 
-	AController* OwnerPawnController = OwnerPawn->GetController();
-	if (OwnerPawnController &&
-		OwnerPawn->IsLocallyControlled() &&
-		OwnerPawnController->IsPlayerController())
+	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled())
 	{
 		if (EquipedItem)
 		{
@@ -716,7 +726,7 @@ void UEquipComponent::RefreshEquip(const int8& NewSlotIndex, const FInventorySlo
 
 bool UEquipComponent::IsEquipedItemValid() const
 {
-	if (OwnerPawn->IsLocallyControlled() && OwnerPawn->GetController()->IsPlayerController())
+	if (OwnerPawn && OwnerPawn->IsLocallyControlled() && OwnerPawn->IsPlayerControlled())
 	{
 		return EquipedItem != nullptr && LocalEquipedItemDefaultClass != nullptr && EquipedItem->GetClass() == LocalEquipedItemDefaultClass->GetClass();
 	}

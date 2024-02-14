@@ -9,7 +9,10 @@ void AFullAutomaticFirearmItem::OnPrimaryHeld()
 {
 	Super::OnPrimaryHeld();
 
-	if (!CanFire)
+	UWorld* World = GetWorld();
+	AActor* OwnerActor = GetOwner();
+	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
+	if (World == nullptr || OwnerActor == nullptr || OwnerEquipComponent == nullptr || !CanFire)
 	{
 		return;
 	}
@@ -21,11 +24,9 @@ void AFullAutomaticFirearmItem::OnPrimaryHeld()
 			return;
 		}
 
-		// TODO this could case a crash
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, GetOwner()->GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(World, OutOfAmmoSound, OwnerActor->GetActorLocation());
 		return;
 	}
 	
-	// TODO this could cause a crash
-	GetOwnerEquipComponent()->PlayItemMontage(FireMontage, FireItemMontage);
+	OwnerEquipComponent->PlayItemMontage(FireMontage, FireItemMontage);
 }
