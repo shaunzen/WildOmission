@@ -7,7 +7,13 @@
 #include "ChunkManager.h"
 #include "Components/ChunkInvokerComponent.h"
 #include "NavModifierComponent.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Log.h"
+
+static UNiagaraSystem* DustSystem = nullptr;
 
 // Sets default values
 AHarvestableResource::AHarvestableResource()
@@ -33,6 +39,12 @@ AHarvestableResource::AHarvestableResource()
 	RequiredToolType = EToolType::WOOD;
 
 	Durability = 10;
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DustSystemObject(TEXT("/Game/WildOmissionCore/Art/Effects/NS_BoundsDust"));
+	if (DustSystemObject.Succeeded())
+	{
+		DustSystem = DustSystemObject.Object;
+	}
 }
 
 bool AHarvestableResource::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
@@ -76,6 +88,7 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 
 	if (Durability <= 0)
 	{
+		Multi_PlayDestructionEffects();
 		Destroy();
 	}
 }
@@ -95,6 +108,35 @@ FInventoryItem AHarvestableResource::HandleYieldFromList(const TArray<FInventory
 	}
 
 	return Item;
+}
+
+void AHarvestableResource::PlayDestructionEffects()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr || DustSystem == nullptr || MeshComponent == nullptr)
+	{
+		return;
+	}
+
+	UStaticMesh* MeshComponentMesh = MeshComponent->GetStaticMesh();
+	if (MeshComponentMesh == nullptr)
+	{
+		return;
+	}
+
+	FVector Origin = MeshComponentMesh->GetBounds().Origin + GetActorLocation();
+	FVector BoxExtent = MeshComponentMesh->GetBounds().BoxExtent;
+	int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
+
+	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, DustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
+	if (SpawnedDust == nullptr)
+	{
+		return;
+	}
+
+	SpawnedDust->SetVectorParameter(TEXT("BoundingBox"), BoxExtent);
+	SpawnedDust->SetIntParameter(TEXT("BoundingBoxArea"), BoxSurfaceArea);
+	SpawnedDust->Activate(true);
 }
 
 TEnumAsByte<EToolType> AHarvestableResource::GetRequiredToolType() const
@@ -135,4 +177,9 @@ void AHarvestableResource::BeginPlay()
 
 	// Set property acordingly
 	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, static_cast<float>(SurfaceType == 6));
+}
+
+void AHarvestableResource::Multi_PlayDestructionEffects_Implementation()
+{
+	PlayDestructionEffects();
 }

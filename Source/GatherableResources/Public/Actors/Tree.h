@@ -22,6 +22,9 @@ public:
 	virtual void OnContactWithTornado() override;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	class UBoxComponent* DustBoundsComponent;
+
 	UPROPERTY(Replicated, ReplicatedUsing = UpdateMeshState, SaveGame)
 	bool bIsStump;
 
@@ -33,5 +36,7 @@ private:
 
 	UFUNCTION()
 	void UpdateMeshState();
+
+	virtual void PlayDestructionEffects() override;
 
 };

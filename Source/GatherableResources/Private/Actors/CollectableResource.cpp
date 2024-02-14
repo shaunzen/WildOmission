@@ -8,6 +8,11 @@
 #include "Components/ChunkInvokerComponent.h"
 #include "NavModifierComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+
+static UNiagaraSystem* DustSystem = nullptr;
 
 // Sets default values
 ACollectableResource::ACollectableResource()
@@ -31,6 +36,12 @@ ACollectableResource::ACollectableResource()
 	if (CollectSoundObject.Succeeded())
 	{
 		CollectSound = CollectSoundObject.Object;
+	}
+	
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DustSystemObject(TEXT("/Game/WildOmissionCore/Art/Effects/NS_BoundsDust"));
+	if (DustSystemObject.Succeeded())
+	{
+		DustSystem = DustSystemObject.Object;
 	}
 
 	Tags.Add(TEXT("Collectable"));
@@ -57,8 +68,8 @@ void ACollectableResource::Interact(AActor* Interactor)
 		InteractorInventoryComponent->AddItem(YieldItem, true);
 	}
 
-	// Play Collect sound
-	Client_PlayCollectSound();
+	// Play Collect effects
+	Multi_PlayCollectEffects();
 
 	// Destroy the collectable
 	Destroy();
@@ -109,12 +120,43 @@ void ACollectableResource::BeginPlay()
 	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, static_cast<float>(SurfaceType == 6));
 }
 
-void ACollectableResource::Client_PlayCollectSound_Implementation()
+void ACollectableResource::Multi_PlayCollectEffects_Implementation()
 {
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
 	if (CollectSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollectSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(World, CollectSound, GetActorLocation());
+
+	if (DustSystem == nullptr || MeshComponent == nullptr)
+	{
+		return;
+	}
+
+	UStaticMesh* MeshComponentMesh = MeshComponent->GetStaticMesh();
+	if (MeshComponentMesh == nullptr)
+	{
+		return;
+	}
+	
+	FVector Origin = MeshComponentMesh->GetBounds().Origin + GetActorLocation();
+	FVector BoxExtent = MeshComponentMesh->GetBounds().BoxExtent;
+	int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
+
+	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, DustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
+	if (SpawnedDust == nullptr)
+	{
+		return;
+	}
+
+	SpawnedDust->SetVectorParameter(TEXT("BoundingBox"), BoxExtent);
+	SpawnedDust->SetIntParameter(TEXT("BoundingBoxArea"), BoxSurfaceArea);
+	SpawnedDust->Activate(true);
 }
