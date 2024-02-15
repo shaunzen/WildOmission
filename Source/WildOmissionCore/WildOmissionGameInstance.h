@@ -55,6 +55,7 @@ public:
 	virtual void SetLoadingTitle(const FString& InLoadingTitle) override;
 	virtual void SetLoadingSubtitle(const FString& InLoadingSubtitle) override;
 	virtual void CreateWorld(const FString& WorldName, const FString& SeedOverride = TEXT("")) override;
+	virtual bool DoesWorldAlreadyExist(const FString& WorldName) const override;
 	virtual void RenameWorld(const FString& OldWorldName, const FString& NewWorldName) override;
 	virtual void DeleteWorld(const FString& WorldName) override;
 	// End IGameSaveLoadController Implementation
