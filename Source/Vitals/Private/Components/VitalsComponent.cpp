@@ -319,12 +319,19 @@ void UVitalsComponent::SetHurtSound(USoundBase* InHurtSound)
 
 void UVitalsComponent::Client_PlayHurtSound_Implementation()
 {
-	if (HurtSound == nullptr)
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HurtSound, GetOwner()->GetActorLocation());
+	USceneComponent* OwnerRootComponent = OwnerActor->GetRootComponent();
+	if (OwnerRootComponent == nullptr || HurtSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::SpawnSoundAttached(HurtSound, OwnerRootComponent);
 }
 
 void UVitalsComponent::OnOwnerTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
