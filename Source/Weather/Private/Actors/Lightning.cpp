@@ -30,13 +30,12 @@ void ALightning::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UWorld* World = GetWorld();
-	if (World == nullptr || ThunderSound == nullptr)
+	if (ThunderSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, ThunderSound, this->GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ThunderSound, this->GetActorLocation());
 }
 
 // Called every frame

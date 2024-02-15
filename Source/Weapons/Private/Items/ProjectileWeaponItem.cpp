@@ -124,12 +124,15 @@ void AProjectileWeaponItem::SpawnProjectile()
 
 void AProjectileWeaponItem::PlayFireSoundEffect()
 {
-	if (FireSound == nullptr)
+	UWorld* World = GetWorld();
+	AActor* OwnerActor = GetOwner();
+	if (World == nullptr || OwnerActor == nullptr || FireSound == nullptr)
 	{
 		return;
 	}
-	const FVector SoundLocation = GetOwner()->GetActorLocation() + (GetOwner()->GetActorForwardVector() * 100.0f);
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, SoundLocation);
+
+	const FVector SoundLocation = OwnerActor->GetActorLocation() + (OwnerActor->GetActorForwardVector() * 100.0f);
+	UGameplayStatics::PlaySoundAtLocation(World, FireSound, SoundLocation);
 }
 
 void AProjectileWeaponItem::Reload()

@@ -187,7 +187,6 @@ ULockComponent* ALock::GetOwnerLockComponent() const
 	return OwnerLockComponent;
 }
 
-
 void ALock::OnRep_Locked()
 {
 	MeshComponent->SetDefaultCustomPrimitiveDataFloat(0, static_cast<float>(Locked));
@@ -195,33 +194,30 @@ void ALock::OnRep_Locked()
 
 void ALock::Multi_PlaySuccessSound_Implementation()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr || SuccessSound == nullptr)
+	if (SuccessSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, SuccessSound, this->GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SuccessSound, this->GetActorLocation());
 }
 
 void ALock::Multi_PlayFailureSound_Implementation()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr || FailureSound == nullptr)
+	if (FailureSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, FailureSound, this->GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FailureSound, this->GetActorLocation());
 }
 
 void ALock::Multi_PlayPlacementSound_Implementation()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr || PlacementSound == nullptr)
+	if (PlacementSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, PlacementSound, this->GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlacementSound, this->GetActorLocation());
 }

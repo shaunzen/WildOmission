@@ -122,18 +122,12 @@ void ACollectableResource::BeginPlay()
 
 void ACollectableResource::Multi_PlayCollectEffects_Implementation()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
-
 	if (CollectSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, CollectSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollectSound, GetActorLocation());
 
 	if (DustSystem == nullptr || MeshComponent == nullptr)
 	{
@@ -150,7 +144,7 @@ void ACollectableResource::Multi_PlayCollectEffects_Implementation()
 	FVector BoxExtent = MeshComponentMesh->GetBounds().BoxExtent;
 	int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
 
-	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, DustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
+	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
 	if (SpawnedDust == nullptr)
 	{
 		return;

@@ -68,13 +68,12 @@ void APookaPooka::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	UWorld* World = GetWorld();
-	if (World == nullptr || LandSound == nullptr)
+	if (LandSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, LandSound, Hit.ImpactPoint);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LandSound, Hit.ImpactPoint);
 }
 
 void APookaPooka::BeginPlay()

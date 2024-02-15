@@ -49,13 +49,8 @@ void UWildOmissionAnimInstance::PlayMontage(UAnimMontage* Montage, float Montage
 void UWildOmissionAnimInstance::PlayFootstepSound()
 {
 	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
-
 	APawn* PawnOwner = TryGetPawnOwner();
-	if (PawnOwner == nullptr)
+	if (World == nullptr || PawnOwner == nullptr)
 	{
 		return;
 	}
@@ -112,7 +107,7 @@ void UWildOmissionAnimInstance::PlayFootstepSound()
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, FootstepSound, HitResult.ImpactPoint);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootstepSound, HitResult.ImpactPoint);
 }
 
 void UWildOmissionAnimInstance::CalculateSpeedAndAngle()

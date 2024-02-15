@@ -1017,13 +1017,12 @@ void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
 
 void AWildOmissionCharacter::Multi_PlayFallCrunchSound_Implementation()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr || FallCrunchSound == nullptr)
+	if (FallCrunchSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, FallCrunchSound, this->GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FallCrunchSound, this->GetActorLocation());
 }
 
 void AWildOmissionCharacter::PrimaryPressed()
