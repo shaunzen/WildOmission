@@ -7,7 +7,7 @@
 #include "GameSaveLoadController.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, NotBlueprintable)
 class UGameSaveLoadController : public UInterface
 {
 	GENERATED_BODY()
