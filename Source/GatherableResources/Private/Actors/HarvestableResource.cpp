@@ -13,8 +13,6 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
-static UNiagaraSystem* DustSystem = nullptr;
-
 // Sets default values
 AHarvestableResource::AHarvestableResource()
 {
@@ -40,10 +38,10 @@ AHarvestableResource::AHarvestableResource()
 
 	Durability = 10;
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DustSystemObject(TEXT("/Game/WildOmissionCore/Art/Effects/NS_BoundsDust"));
-	if (DustSystemObject.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DefaultDustSystem(TEXT("/Game/WildOmissionCore/Art/Effects/NS_BoundsDust"));
+	if (DefaultDustSystem.Succeeded())
 	{
-		DustSystem = DustSystemObject.Object;
+		DestructionParticleSystem = DefaultDustSystem.Object;
 	}
 }
 
@@ -113,7 +111,7 @@ FInventoryItem AHarvestableResource::HandleYieldFromList(const TArray<FInventory
 void AHarvestableResource::PlayDestructionEffects()
 {
 	UWorld* World = GetWorld();
-	if (World == nullptr || DustSystem == nullptr || MeshComponent == nullptr)
+	if (World == nullptr || DestructionParticleSystem == nullptr || MeshComponent == nullptr)
 	{
 		return;
 	}
@@ -128,7 +126,7 @@ void AHarvestableResource::PlayDestructionEffects()
 	FVector BoxExtent = MeshComponentMesh->GetBounds().BoxExtent;
 	int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
 
-	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, DustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
+	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, DestructionParticleSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
 	if (SpawnedDust == nullptr)
 	{
 		return;

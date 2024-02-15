@@ -9,8 +9,6 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
-static UNiagaraSystem* DustSystem = nullptr;
-
 ATree::ATree()
 {
 	bIsStump = false;
@@ -25,11 +23,6 @@ ATree::ATree()
 		StumpMesh = StumpMeshObject.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DustSystemObject(TEXT("/Game/WildOmissionCore/Art/Effects/NS_BoundsDust"));
-	if (DustSystemObject.Succeeded())
-	{
-		DustSystem = DustSystemObject.Object;
-	}
 }
 
 void ATree::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -68,7 +61,7 @@ void ATree::UpdateMeshState()
 void ATree::PlayDestructionEffects()
 {
 	UWorld* World = GetWorld();
-	if (World == nullptr || DustSystem == nullptr || DustBoundsComponent == nullptr)
+	if (World == nullptr || DestructionParticleSystem == nullptr || DustBoundsComponent == nullptr)
 	{
 		return;
 	}
@@ -77,7 +70,7 @@ void ATree::PlayDestructionEffects()
 	FVector BoxExtent = DustBoundsComponent->GetLocalBounds().BoxExtent;
 	int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
 
-	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, DustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
+	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, DestructionParticleSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
 	if (SpawnedDust == nullptr)
 	{
 		return;
