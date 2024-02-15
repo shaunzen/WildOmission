@@ -188,7 +188,7 @@ void AWildOmissionAICharacter::PlayIdleSound()
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, IdleSound, this->GetActorLocation());
+	UGameplayStatics::SpawnSoundAttached(IdleSound, RootComponent);
 }
 
 void AWildOmissionAICharacter::OnRep_DesiredMovementSpeed()
