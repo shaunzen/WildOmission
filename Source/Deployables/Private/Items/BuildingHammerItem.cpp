@@ -194,6 +194,24 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 	DecrementDurability();
 }
 
+void ABuildingHammerItem::Server_RotateCurrentDeployable_Implementation()
+{
+	FHitResult HitResult;
+	if (!LineTraceOnVisibility(HitResult))
+	{
+		return;
+	}
+
+	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
+	if (HitDeployable == nullptr || !HasBuildingPrivilege(HitDeployable->GetActorLocation()))
+	{
+		return;
+	}
+
+	HitDeployable->Rotate();
+	DecrementDurability();
+}
+
 bool ABuildingHammerItem::GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const
 {
 	if (GetOwnerPawn() == nullptr)

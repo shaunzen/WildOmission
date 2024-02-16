@@ -184,6 +184,12 @@ float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEven
 	return DamageAmount;
 }
 
+void ADeployable::Rotate()
+{
+	const FRotator CurrentRotation = this->GetActorRotation();
+	this->SetActorRotation(CurrentRotation + FRotator(0.0f, 90.0f, 0.0f));
+}
+
 UStaticMesh* ADeployable::GetMesh() const
 {
 	return MeshComponent->GetStaticMesh();

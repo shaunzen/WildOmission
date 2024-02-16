@@ -26,6 +26,8 @@ public:
 	void Server_UpgradeCurrentDeployable();
 	UFUNCTION(Server, Reliable)
 	void Server_DestroyCurrentDeployable();
+	UFUNCTION(Server, Reliable)
+	void Server_RotateCurrentDeployable();
 
 	bool GetLookingAtItemDurability(float& OutCurrentDurability, float& OutMaxDurability, FString& OutActorName) const;
 	
