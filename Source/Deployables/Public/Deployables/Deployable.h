@@ -43,6 +43,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayDestructionEffects();
 
+	UFUNCTION()
+	void Rotate();
+
 	UStaticMesh* GetMesh() const;
 	FTransform GetMeshTransform() const;
 

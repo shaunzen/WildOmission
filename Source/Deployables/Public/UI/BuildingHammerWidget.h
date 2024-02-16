@@ -8,18 +8,13 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBuildingHammerWidgetTeardownSignature);
 
-class UTextBlock;
-class ADeployable;
-class ABuildingHammerItem;
-class ABuildingBlock;
-
 UCLASS()
 class DEPLOYABLES_API UBuildingHammerWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
 public:
-	void Show(ABuildingHammerItem* BuildingHammer, ADeployable* InDeployable);
+	void Show(class ABuildingHammerItem* BuildingHammer, class ADeployable* InDeployable);
 	void Teardown();
 	
 	FOnBuildingHammerWidgetTeardownSignature OnTeardown;
@@ -32,33 +27,39 @@ protected:
 
 private:
 	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* UpgradePanel;
+	class UPanelWidget* UpgradePanel;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* UpgradeTextBlock;
+	class UTextBlock* UpgradeTextBlock;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* UpgradeCostTextBlock;
+	class UTextBlock* UpgradeCostTextBlock;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* UpgradeHasTextBlock;
+	class UTextBlock* UpgradeHasTextBlock;
 
 	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* DestroyPanel;
+	class UPanelWidget* DestroyPanel;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* DestroyTextBlock;
+	class UTextBlock* DestroyTextBlock;
 	UPROPERTY(Meta = (BindWidget))
-	UTextBlock* DestroyRefundTextBlock;
+	class UTextBlock* DestroyRefundTextBlock;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UPanelWidget* RotatePanel;
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* RotateTextBlock;
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* ButtonSound;
 	
 	UPROPERTY()
-	ABuildingHammerItem* OwnerBuildingHammer;
+	class ABuildingHammerItem* OwnerBuildingHammer;
 	UPROPERTY()
-	ADeployable* Deployable;
+	class ADeployable* Deployable;
 
 	void ScaleWidgetByBool(UWidget* WidgetToScale, bool Increase);
 
 	bool UpgradeSelected;
 	bool DestroySelected;
+	bool RotateSelected;
 
 	void HandleSelection();
 
@@ -66,6 +67,7 @@ private:
 
 	void SetupUpgradeText();
 	void SetupDestroyText();
+	void SetupRotateText();
 
 	void SetMouseCursorToCenter();
 

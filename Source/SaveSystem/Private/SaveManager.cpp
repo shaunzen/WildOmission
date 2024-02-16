@@ -174,6 +174,12 @@ void ASaveManager::ValidateSave()
 	}
 
 	CurrentSaveFileName = TEXT("New_World");
+	
+	if (DoesWorldAlreadExist(CurrentSaveFileName))
+	{
+		return;
+	}
+
 	CreateWorld(CurrentSaveFileName);
 }
 
@@ -236,4 +242,14 @@ void ASaveManager::CreateWorld(const FString& NewWorldName)
 	}
 
 	GameSaveLoadController->CreateWorld(NewWorldName);
+}
+
+bool ASaveManager::DoesWorldAlreadExist(const FString& WorldName) const
+{
+	if (GameSaveLoadController == nullptr)
+	{
+		return false;
+	}
+
+	return GameSaveLoadController->DoesWorldAlreadyExist(WorldName);
 }

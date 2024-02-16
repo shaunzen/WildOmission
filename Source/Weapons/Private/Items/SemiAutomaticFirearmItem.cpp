@@ -9,10 +9,9 @@ void ASemiAutomaticFirearmItem::OnPrimaryPressed()
 {
 	Super::OnPrimaryPressed();
 
-	UWorld* World = GetWorld();
 	AActor* OwnerActor = GetOwner();
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
-	if (World == nullptr || OwnerActor == nullptr || OwnerEquipComponent == nullptr || !CanFire)
+	if (OwnerActor == nullptr || OwnerEquipComponent == nullptr || !CanFire)
 	{
 		return;
 	}
@@ -24,7 +23,7 @@ void ASemiAutomaticFirearmItem::OnPrimaryPressed()
 			return;
 		}
 		
-		UGameplayStatics::PlaySoundAtLocation(World, OutOfAmmoSound, OwnerActor->GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, OwnerActor->GetActorLocation());
 		return;
 	}
 

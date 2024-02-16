@@ -73,7 +73,7 @@ ADeployable::ADeployable()
 		DestructionSound = DefaultDestructionSound .Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DustBlueprint(TEXT("/Game/Deployables/Art/NS_DeployableDust"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DustBlueprint(TEXT("/Game/WildOmissionCore/Art/Effects/NS_BoundsDust"));
 	if (DustBlueprint.Succeeded())
 	{
 		DustSystem = DustBlueprint.Object;
@@ -184,6 +184,12 @@ float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEven
 	return DamageAmount;
 }
 
+void ADeployable::Rotate()
+{
+	const FRotator CurrentRotation = this->GetActorRotation();
+	this->SetActorRotation(CurrentRotation + FRotator(0.0f, 90.0f, 0.0f));
+}
+
 UStaticMesh* ADeployable::GetMesh() const
 {
 	return MeshComponent->GetStaticMesh();
@@ -271,13 +277,19 @@ void ADeployable::Multi_PlayDestructionEffects_Implementation()
 
 void ADeployable::SpawnDustEffects()
 {
-	if (DustSystem == nullptr || MeshComponent->GetStaticMesh() == nullptr)
+	if (DustSystem == nullptr || MeshComponent == nullptr)
 	{
 		return;
 	}
 
-	FVector Origin = MeshComponent->GetStaticMesh()->GetBounds().Origin + GetActorLocation();
-	FVector BoxExtent = MeshComponent->GetStaticMesh()->GetBounds().BoxExtent;
+	UStaticMesh* MeshComponentMesh = MeshComponent->GetStaticMesh();
+	if (MeshComponentMesh == nullptr)
+	{
+		return;
+	}
+
+	FVector Origin = MeshComponentMesh->GetBounds().Origin + GetActorLocation();
+	FVector BoxExtent = MeshComponentMesh->GetBounds().BoxExtent;
 	int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
 
 	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DustSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);

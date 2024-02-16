@@ -30,7 +30,7 @@ const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
 const static FName SEARCH_DEDICATED_ONLY = TEXT("DEDICATEDONLY");
 
-const static FString GameVersion = TEXT("Alpha 1.3.4");
+const static FString GameVersion = TEXT("Alpha 1.3.5");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -364,6 +364,23 @@ void UWildOmissionGameInstance::CreateWorld(const FString& WorldName, const FStr
 	NewSaveGame->Seed = Seed;
 
 	UGameplayStatics::SaveGameToSlot(NewSaveGame, WorldName, 0);
+}
+
+bool UWildOmissionGameInstance::DoesWorldAlreadyExist(const FString& WorldName) const
+{
+	const TArray<FString> WorldNames = GetAllWorldNames();
+
+	for (const FString& CurrentWorldName : WorldNames)
+	{
+		if (CurrentWorldName != WorldName)
+		{
+			continue;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 void UWildOmissionGameInstance::RenameWorld(const FString& OldWorldName, const FString& NewWorldName)

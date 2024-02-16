@@ -226,22 +226,20 @@ void AWorldItem::OnLoadComplete_Implementation()
 
 void AWorldItem::Multi_PlayClumpSound_Implementation()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr || ClumpSound == nullptr)
+	if (ClumpSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, ClumpSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ClumpSound, GetActorLocation());
 }
 
 void AWorldItem::Multi_PlayPickupSound_Implementation()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr || PickupSound == nullptr)
+	if (PickupSound == nullptr)
 	{
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(World, PickupSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PickupSound, GetActorLocation());
 }

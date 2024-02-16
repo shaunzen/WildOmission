@@ -15,8 +15,9 @@ void UBuildingHammerWidget::Show(ABuildingHammerItem* BuildingHammer, ADeployabl
 	OwnerBuildingHammer = BuildingHammer;
 	Deployable = InDeployable;
 	APlayerController* PlayerController = GetOwningPlayer();
-	if (PlayerController == nullptr)
+	if (Deployable == nullptr || OwnerBuildingHammer == nullptr || PlayerController == nullptr)
 	{
+		this->Teardown();
 		return;
 	}
 
@@ -72,8 +73,10 @@ void UBuildingHammerWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 		return;
 	}
 
-	bool UpgradeAlreadySelected = UpgradeSelected;
-	bool DestroyAlreadySelected = DestroySelected;
+	const bool UpgradeAlreadySelected = UpgradeSelected;
+	const bool DestroyAlreadySelected = DestroySelected;
+	const bool RotateAlreadySelected = RotateSelected;
+
 	bool CanUpgradeIfUpgradeable = false;
 	ABuildingBlock* BuildingBlock = Cast<ABuildingBlock>(Deployable);
 	if (BuildingBlock)
@@ -97,8 +100,11 @@ void UBuildingHammerWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 	DestroySelected = FMath::RoundToInt32(MousePositionX) < (ViewportCenterX - 100);
 	ScaleWidgetByBool(DestroyPanel, DestroySelected);
 
+	RotateSelected = !UpgradeSelected && !DestroySelected && FMath::RoundToInt32(MousePositionY) > (ViewportCenterY + 100);
+	ScaleWidgetByBool(RotatePanel, RotateSelected);
+
 	if (ButtonSound &&
-		(UpgradeSelected && !UpgradeAlreadySelected && CanUpgradeIfUpgradeable) || (DestroySelected && !DestroyAlreadySelected))
+		(UpgradeSelected && !UpgradeAlreadySelected && CanUpgradeIfUpgradeable) || (DestroySelected && !DestroyAlreadySelected) || (RotateSelected && !RotateAlreadySelected))
 	{
 		PlaySound(ButtonSound);
 	}
@@ -149,6 +155,10 @@ void UBuildingHammerWidget::HandleSelection()
 	else if (OwnerBuildingHammer && DestroySelected)
 	{
 		OwnerBuildingHammer->Server_DestroyCurrentDeployable();
+	}
+	else if (OwnerBuildingHammer && RotateSelected)
+	{
+		OwnerBuildingHammer->Server_RotateCurrentDeployable();
 	}
 
 	this->Teardown();
@@ -287,6 +297,24 @@ void UBuildingHammerWidget::SetupDestroyText()
 	}
 
 	DestroyRefundTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Refund%s"), *RefundString)));
+}
+
+void UBuildingHammerWidget::SetupRotateText()
+{
+	if (Deployable == nullptr || RotatePanel == nullptr || RotateTextBlock == nullptr)
+	{
+		return;
+	}
+
+	if (!Deployable->CanRotate())
+	{
+		RotateTextBlock->SetText(FText::FromString(TEXT("Cannot Rotate")));
+		RotateTextBlock->SetIsEnabled(false);
+		return;
+	}
+
+	RotateTextBlock->SetText(FText::FromString(TEXT("Rotate")));
+	RotateTextBlock->SetIsEnabled(true);
 }
 
 void UBuildingHammerWidget::SetMouseCursorToCenter()

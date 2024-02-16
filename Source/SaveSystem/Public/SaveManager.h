@@ -61,4 +61,5 @@ private:
 	UFUNCTION()
 	void CreateWorld(const FString& NewWorldName);
 
+	bool DoesWorldAlreadExist(const FString& WorldName) const;
 };

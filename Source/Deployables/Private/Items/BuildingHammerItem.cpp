@@ -134,7 +134,13 @@ void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 		return;
 	}
 
-	UInventoryComponent* OwnerInventoryComponent = Cast<UInventoryComponent>(GetOwner()->FindComponentByClass<UInventoryComponent>());
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UInventoryComponent* OwnerInventoryComponent = Cast<UInventoryComponent>(OwnerActor->FindComponentByClass<UInventoryComponent>());
 	if (OwnerInventoryComponent == nullptr)
 	{
 		return;
@@ -148,7 +154,8 @@ void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 	
 	for (const FInventoryItem& CostItem : UpgradeCost)
 	{
-		if (OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
+		if (OwnerInventoryComponent->GetContents()
+			&& OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
 		{
 			return;
 		}
@@ -174,7 +181,13 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 		return;
 	}
 
-	UInventoryComponent* OwnerInventoryComponent = GetOwner()->FindComponentByClass<UInventoryComponent>();
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UInventoryComponent* OwnerInventoryComponent = OwnerActor->FindComponentByClass<UInventoryComponent>();
 	if (OwnerInventoryComponent == nullptr)
 	{
 		return;
@@ -191,6 +204,24 @@ void ABuildingHammerItem::Server_DestroyCurrentDeployable_Implementation()
 
 	HitDeployable->Multi_PlayDestructionEffects();
 	HitDeployable->Destroy();
+	DecrementDurability();
+}
+
+void ABuildingHammerItem::Server_RotateCurrentDeployable_Implementation()
+{
+	FHitResult HitResult;
+	if (!LineTraceOnVisibility(HitResult))
+	{
+		return;
+	}
+
+	ADeployable* HitDeployable = Cast<ADeployable>(HitResult.GetActor());
+	if (HitDeployable == nullptr || !HasBuildingPrivilege(HitDeployable->GetActorLocation()))
+	{
+		return;
+	}
+
+	HitDeployable->Rotate();
 	DecrementDurability();
 }
 

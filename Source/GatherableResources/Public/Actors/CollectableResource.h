@@ -51,6 +51,6 @@ private:
 	USoundBase* CollectSound;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Client_PlayCollectSound();
+	void Multi_PlayCollectEffects();
 
 };

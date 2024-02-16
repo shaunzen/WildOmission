@@ -12,6 +12,10 @@ void APookaCannon::OnPrimaryHeld()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Pooka cannon fire!"));
+	Multi_Fire();
+}
+
+void APookaCannon::Multi_Fire_Implementation()
+{
 	Fire();
 }

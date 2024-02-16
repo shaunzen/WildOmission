@@ -17,4 +17,8 @@ class MONSTERS_API APookaCannon : public AFirearmItem
 public:
 	virtual void OnPrimaryHeld() override;
 
+private:
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_Fire();
+
 };

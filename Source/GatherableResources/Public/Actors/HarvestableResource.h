@@ -9,8 +9,6 @@
 #include "Interfaces/SavableObject.h"
 #include "HarvestableResource.generated.h"
 
-class UNavModifierComponent;
-
 UCLASS()
 class GATHERABLERESOURCES_API AHarvestableResource : public AActor, public ISavableObject
 {
@@ -19,7 +17,7 @@ class GATHERABLERESOURCES_API AHarvestableResource : public AActor, public ISava
 public:	
 	// Sets default values for this actor's properties
 	AHarvestableResource();
-
+	
 	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
 
 	virtual void OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool);
@@ -66,8 +64,16 @@ protected:
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UNavModifierComponent* NavigationModifier;
+	class UNavModifierComponent* NavigationModifier;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UNiagaraSystem* DestructionParticleSystem;
 
 	FInventoryItem HandleYieldFromList(const TArray<FInventoryItem>& DropList, float GatherMultiplier);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayDestructionEffects();
+
+	virtual void PlayDestructionEffects();
 
 };
