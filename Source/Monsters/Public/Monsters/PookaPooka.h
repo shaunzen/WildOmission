@@ -24,7 +24,10 @@ public:
 	virtual void Landed(const FHitResult& Hit) override;
 
 protected:
-	virtual void BeginPlay() override;
 	virtual void HandleDeath() override;
+
+private:
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multi_PlayLandSound();
 
 };

@@ -22,6 +22,9 @@ APookaPooka::APookaPooka()
 
 	DefaultWalkSpeed = 400.0f;
 
+	ItemToEquip.Name = TEXT("cannon.pooka");
+	ItemToEquip.Quantity = 1;
+
 	static ConstructorHelpers::FObjectFinder<USoundBase> PookaPookaIdle(TEXT("/Game/Monsters/Audio/PookaPooka/PookaPooka_Idle_Cue"));
 	if (PookaPookaIdle.Succeeded())
 	{
@@ -68,24 +71,7 @@ void APookaPooka::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	if (LandSound == nullptr)
-	{
-		return;
-	}
-
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LandSound, Hit.ImpactPoint);
-}
-
-void APookaPooka::BeginPlay()
-{
-	Super::BeginPlay();
-
-	FInventoryItem PookaCannonItem;
-	PookaCannonItem.Name = TEXT("cannon.pooka");
-	PookaCannonItem.Quantity = 1;
-	InventoryComponent->AddItem(PookaCannonItem);
-	InventoryComponent->SetToolbarSelectionIndex(2);
-
+	Multi_PlayLandSound();
 }
 
 void APookaPooka::HandleDeath()
@@ -96,4 +82,14 @@ void APookaPooka::HandleDeath()
 	LootDrop.Name = TEXT("metal.refined");
 	LootDrop.Quantity = FMath::RandRange(1, 3);
 	UInventoryComponent::SpawnWorldItem(GetWorld(), LootDrop, this);
+}
+
+void APookaPooka::Multi_PlayLandSound_Implementation()
+{
+	if (LandSound == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LandSound, this->GetActorLocation());
 }
