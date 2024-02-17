@@ -27,7 +27,10 @@ protected:
 	virtual void HandleDeath() override;
 
 private:
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayLandSound();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayDeathExplosion();
 
 };
