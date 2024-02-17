@@ -165,6 +165,7 @@ void ASwingableItem::DecrementDurability()
 
 	if (NewDurability <= 0)
 	{
+		OwnerInventory->Multi_PlayItemBreakSound();
 		OwnerInventory->RemoveHeldItem();
 	}
 

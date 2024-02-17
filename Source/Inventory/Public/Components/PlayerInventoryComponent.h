@@ -18,6 +18,9 @@ public:
 	
 	virtual void BeginPlay() override;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlayItemBreakSound();
+
 	//**************************************************************
 	// General Management
 	//**************************************************************
@@ -45,9 +48,11 @@ protected:
 	virtual void OnRep_ServerState() override;
 
 private:
-
 	UPROPERTY()
 	int8 ToolbarSelectionIndex;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* ItemBreakSound;
 
 	//**************************************************************
 	// Slot Functions

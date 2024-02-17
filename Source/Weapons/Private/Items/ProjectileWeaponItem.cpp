@@ -172,6 +172,7 @@ void AProjectileWeaponItem::DecreaseAmmoAndDurability()
 	
 	if (Durability <= 0 && GetOwningPlayerInventory())
 	{
+		GetOwningPlayerInventory()->Multi_PlayItemBreakSound();
 		GetOwningPlayerInventory()->RemoveHeldItem();
 	}
 
