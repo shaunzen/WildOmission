@@ -10,6 +10,7 @@
 #include "UObject/ConstructorHelpers.h"
 
 static USoundBase* LandSound = nullptr;
+static USoundBase* ExplosionSound = nullptr;
 static UNiagaraSystem* DeathExplosionEffect = nullptr;
 
 APookaPooka::APookaPooka()
@@ -38,6 +39,12 @@ APookaPooka::APookaPooka()
 	if (PookaPookaHurt.Succeeded() && VitalsComponent)
 	{
 		VitalsComponent->SetHurtSound(PookaPookaHurt.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> ExplosionSoundBlueprint(TEXT("/Game/Weapons/Audio/Explosion/MS_Explosion_Small"));
+	if (ExplosionSoundBlueprint.Succeeded())
+	{
+		ExplosionSound = ExplosionSoundBlueprint.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DeathExplosionEffectBlueprint(TEXT("/Game/WildOmissionCore/Effects/NS_Explosion"));
@@ -91,20 +98,12 @@ void APookaPooka::HandleDeath()
 
 void APookaPooka::Multi_PlayLandSound_Implementation()
 {
-	if (LandSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LandSound, this->GetActorLocation());
 }
 
 void APookaPooka::Multi_PlayDeathExplosion_Implementation()
 {
-	if (DeathExplosionEffect == nullptr)
-	{
-		return;
-	}
-
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathExplosionEffect, this->GetActorLocation());
+	
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, this->GetActorLocation());
 }

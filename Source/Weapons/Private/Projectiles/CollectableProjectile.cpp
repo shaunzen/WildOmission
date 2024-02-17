@@ -78,10 +78,5 @@ FString ACollectableProjectile::PromptText()
 
 void ACollectableProjectile::Multi_PlayCollectSound_Implementation()
 {
-	if (GetWorld() == nullptr || CollectSound == nullptr)
-	{
-		return;
-	}
-	
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollectSound, GetActorLocation());
 }

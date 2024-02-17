@@ -200,12 +200,6 @@ void ASwingableItem::PlayImpactSound(const FHitResult& HitResult)
 
 	}
 
-	// Check if the sound is valid
-	if (ImpactSound == nullptr)
-	{
-		return;
-	}
-
 	// Play sound
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, HitResult.ImpactPoint);
 }

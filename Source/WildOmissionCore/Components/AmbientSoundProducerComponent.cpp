@@ -34,27 +34,26 @@ void UAmbientSoundProducerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
-	FTimerHandle TimerHandle;
-	float Rate = FMath::RandRange(1.0f, 5.0f);
-
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UAmbientSoundProducerComponent::PlaySoundCue, Rate, true);
-}
-
-void UAmbientSoundProducerComponent::PlaySoundCue()
-{
-	if (DayCue == nullptr || NightCue == nullptr)
+	UWorld* World = GetWorld();
+	if (World == nullptr)
 	{
 		return;
 	}
 
+	FTimerHandle TimerHandle;
+	const float Rate = FMath::RandRange(1.0f, 5.0f);
+
+	World->GetTimerManager().SetTimer(TimerHandle, this, &UAmbientSoundProducerComponent::PlaySoundCue, Rate, true);
+}
+
+void UAmbientSoundProducerComponent::PlaySoundCue()
+{
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
-	if (TimeOfDayManager && TimeOfDayManager->IsNight())
+	if (TimeOfDayManager == nullptr)
 	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), NightCue, GetComponentLocation());
+		return;
 	}
-	else
-	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DayCue, GetComponentLocation());
-	}
+	
+	TimeOfDayManager->IsNight() ? UGameplayStatics::PlaySoundAtLocation(GetWorld(), NightCue, GetComponentLocation()) :
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DayCue, GetComponentLocation());
 }

@@ -18,11 +18,6 @@ void ASemiAutomaticFirearmItem::OnPrimaryPressed()
 
 	if (!HasAmmo())
 	{
-		if (OutOfAmmoSound == nullptr)
-		{
-			return;
-		}
-		
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, OwnerActor->GetActorLocation());
 		return;
 	}

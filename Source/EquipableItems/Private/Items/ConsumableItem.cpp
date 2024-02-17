@@ -54,7 +54,8 @@ void AConsumableItem::OnPrimaryPressed()
 
 void AConsumableItem::Multi_PlayConsumeSound_Implementation()
 {
-	if (ConsumptionSound == nullptr || GetOwner() == nullptr)
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
 	{
 		return;
 	}
