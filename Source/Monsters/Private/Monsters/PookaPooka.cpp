@@ -41,13 +41,13 @@ APookaPooka::APookaPooka()
 		VitalsComponent->SetHurtSound(PookaPookaHurt.Object);
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> ExplosionSoundBlueprint(TEXT("/Game/Weapons/Audio/Explosion/MS_Explosion_Small"));
+	static ConstructorHelpers::FObjectFinder<USoundBase> ExplosionSoundBlueprint(TEXT("/Game/Weapons/Audio/Explosions/MS_Explosion_Small"));
 	if (ExplosionSoundBlueprint.Succeeded())
 	{
 		ExplosionSound = ExplosionSoundBlueprint.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DeathExplosionEffectBlueprint(TEXT("/Game/WildOmissionCore/Effects/NS_Explosion"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DeathExplosionEffectBlueprint(TEXT("/Game/WildOmissionCore/Art/Effects/NS_Explosion"));
 	if (DeathExplosionEffectBlueprint.Succeeded())
 	{
 		DeathExplosionEffect = DeathExplosionEffectBlueprint.Object;
@@ -86,14 +86,14 @@ void APookaPooka::Landed(const FHitResult& Hit)
 
 void APookaPooka::HandleDeath()
 {
-	Super::HandleDeath();
-
 	Multi_PlayDeathExplosion();
 
 	FInventoryItem LootDrop;
 	LootDrop.Name = TEXT("metal.refined");
 	LootDrop.Quantity = FMath::RandRange(1, 3);
 	UInventoryComponent::SpawnWorldItem(GetWorld(), LootDrop, this);
+
+	Super::HandleDeath();
 }
 
 void APookaPooka::Multi_PlayLandSound_Implementation()
@@ -103,7 +103,8 @@ void APookaPooka::Multi_PlayLandSound_Implementation()
 
 void APookaPooka::Multi_PlayDeathExplosion_Implementation()
 {
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathExplosionEffect, this->GetActorLocation());
-	
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, this->GetActorLocation());
+	
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathExplosionEffect, this->GetActorLocation());
+	UE_LOG(LogTemp, Warning, TEXT("PlayDeathExplosion"));
 }
