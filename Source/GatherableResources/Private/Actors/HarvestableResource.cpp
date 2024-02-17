@@ -10,6 +10,7 @@
 #include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
@@ -37,6 +38,9 @@ AHarvestableResource::AHarvestableResource()
 	RequiredToolType = EToolType::WOOD;
 
 	Durability = 10;
+
+	DestructionParticleSystem = nullptr;
+	DestructionSound = nullptr;
 
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DefaultDustSystem(TEXT("/Game/WildOmissionCore/Art/Effects/NS_BoundsDust"));
 	if (DefaultDustSystem.Succeeded())
@@ -180,4 +184,5 @@ void AHarvestableResource::BeginPlay()
 void AHarvestableResource::Multi_PlayDestructionEffects_Implementation()
 {
 	PlayDestructionEffects();
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, this->GetActorLocation());
 }

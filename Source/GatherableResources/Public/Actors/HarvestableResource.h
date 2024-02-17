@@ -69,6 +69,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	class UNiagaraSystem* DestructionParticleSystem;
 
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* DestructionSound;
+
 	FInventoryItem HandleYieldFromList(const TArray<FInventoryItem>& DropList, float GatherMultiplier);
 
 	UFUNCTION(NetMulticast, Reliable)
