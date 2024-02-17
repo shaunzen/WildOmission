@@ -12,6 +12,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Net/UnrealNetwork.h"
 #include "Log.h"
 
 // Sets default values
@@ -38,6 +39,7 @@ AHarvestableResource::AHarvestableResource()
 	RequiredToolType = EToolType::WOOD;
 
 	Durability = 10;
+	NormalizedDurability = 1.0f;
 
 	DestructionParticleSystem = nullptr;
 	DestructionSound = nullptr;
@@ -47,6 +49,13 @@ AHarvestableResource::AHarvestableResource()
 	{
 		DestructionParticleSystem = DefaultDustSystem.Object;
 	}
+}
+
+void AHarvestableResource::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AHarvestableResource, NormalizedDurability);
 }
 
 bool AHarvestableResource::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
@@ -86,13 +95,15 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 		HarvestingInventoryComponent->AddItem(RareDrop, true);
 	}
 
-	Durability--;
+	NormalizedDurability -= (1.0f / static_cast<float>(Durability));
 
-	if (Durability <= 0)
+	if (NormalizedDurability <= 0.0f)
 	{
 		Multi_PlayDestructionEffects();
 		Destroy();
 	}
+
+	OnRep_NormalizedDurability();
 }
 
 FInventoryItem AHarvestableResource::HandleYieldFromList(const TArray<FInventoryItem>& DropList, float GatherMultiplier)
@@ -139,6 +150,11 @@ void AHarvestableResource::PlayDestructionEffects()
 	SpawnedDust->SetVectorParameter(TEXT("BoundingBox"), BoxExtent);
 	SpawnedDust->SetIntParameter(TEXT("BoundingBoxArea"), BoxSurfaceArea);
 	SpawnedDust->Activate(true);
+}
+
+void AHarvestableResource::OnRep_NormalizedDurability()
+{
+
 }
 
 TEnumAsByte<EToolType> AHarvestableResource::GetRequiredToolType() const

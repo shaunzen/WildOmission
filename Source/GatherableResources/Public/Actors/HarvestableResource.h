@@ -18,6 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	AHarvestableResource();
 	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
 
 	virtual void OnHarvest(AActor* HarvestingActor, float GatherMultiplier, bool IsQualityTool);
@@ -54,8 +55,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EToolType> RequiredToolType;
 	
-	UPROPERTY(EditDefaultsOnly, SaveGame)
+	UPROPERTY(EditDefaultsOnly)
 	int32 Durability;
+
+	UPROPERTY(EditDefaultsOnly, SaveGame, Replicated, ReplicatedUsing = OnRep_NormalizedDurability);
+	float NormalizedDurability;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Save System")
 	FName Identifier;
@@ -77,6 +81,10 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayDestructionEffects();
 
+	UFUNCTION()
 	virtual void PlayDestructionEffects();
+
+	UFUNCTION()
+	virtual void OnRep_NormalizedDurability();
 
 };
