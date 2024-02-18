@@ -383,9 +383,19 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	ReplicatedControlRotation = GetControlRotation();
 
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
-	if (CharacterMovementComponent && CharacterMovementComponent->IsSwimming())
+	if (CharacterMovementComponent == nullptr)
 	{
-		HandleUnderwater();
+		return;
+	}
+
+	const FVector CurrentLocation = GetActorLocation();
+	if (CurrentLocation.Z < 0.0f && !CharacterMovementComponent->IsSwimming() && !CharacterMovementComponent->IsFlying())
+	{
+		CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Swimming);
+	}
+	else if (CurrentLocation.Z >= 0.0f && CharacterMovementComponent->IsSwimming())
+	{
+		CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking);
 	}
 }
 
