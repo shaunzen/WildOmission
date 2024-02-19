@@ -8,5 +8,7 @@ public class Weapons : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Inventory", "Interaction" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Niagara", "GameSettings", "SurfaceProperties", "WorldGeneration" });
+
+        SetupIrisSupport(Target);
     }
 }

@@ -8,5 +8,7 @@ public class Crafting: ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "Inventory" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "CustomUI" });
+
+        SetupIrisSupport(Target);
     }
 }

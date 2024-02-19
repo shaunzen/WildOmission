@@ -20,5 +20,7 @@ public class WildOmissionCore : ModuleRules
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "OnlineSubsystem", "OnlineSubsystemSteam" });
+
+		SetupIrisSupport(Target);
 	}
 }

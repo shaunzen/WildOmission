@@ -13,6 +13,7 @@ public class WildOmissionServerTarget : TargetRules
         
 		bUseLoggingInShipping = true;
 		bUsesSteam = true;
+        bUseIris = true;
         
 		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
 

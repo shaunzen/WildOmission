@@ -8,5 +8,7 @@ public class GameChat: ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Slate", "SlateCore", "CustomUI", "DedicatedServer" });
+
+        SetupIrisSupport(Target);
     }
 }
