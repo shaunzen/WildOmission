@@ -27,6 +27,7 @@ AHarvestableResource::AHarvestableResource()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
+	MeshComponent->SetMobility(EComponentMobility::Stationary);
 	RootComponent = MeshComponent;
 
 	Identifier = NAME_None;

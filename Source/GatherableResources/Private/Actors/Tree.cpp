@@ -15,6 +15,7 @@ ATree::ATree()
 
 	DustBoundsComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("DustBoundsComponent"));
 	DustBoundsComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DustBoundsComponent->SetMobility(EComponentMobility::Stationary);
 	DustBoundsComponent->SetupAttachment(MeshComponent);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> StumpMeshObject(TEXT("/Game/WildOmissionCore/Art/Environment/SM_Tree_Stump"));
