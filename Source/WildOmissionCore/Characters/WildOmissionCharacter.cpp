@@ -397,6 +397,8 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	{
 		CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking);
 	}
+
+	HandleUnderwater();
 }
 
 void AWildOmissionCharacter::PossessedBy(AController* NewController)
@@ -744,12 +746,14 @@ void AWildOmissionCharacter::HandleUnderwater()
 	if (World->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel3))
 	{
 		bUnderwater = true;
-		HandleDeath();
+		//HandleDeath();
 	}
 	else
 	{
 		bUnderwater = false;
 	}
+
+	// TODO post processing and sound stuff here
 }
 
 //********************************

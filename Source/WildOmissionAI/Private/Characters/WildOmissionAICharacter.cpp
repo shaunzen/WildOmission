@@ -207,11 +207,27 @@ void AWildOmissionAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (this->GetActorLocation().Z >= 0.0f)
+	UCharacterMovementComponent* OurMovementComponent = GetCharacterMovement();
+	if (OurMovementComponent == nullptr)
 	{
 		return;
 	}
 
+	const double CurrentZ = this->GetActorLocation().Z;
+	if (CurrentZ >= 0.0f && OurMovementComponent->IsSwimming())
+	{
+		OurMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
+	else if (CurrentZ < 0.0f && !OurMovementComponent->IsSwimming())
+	{
+		OurMovementComponent->SetMovementMode(EMovementMode::MOVE_Swimming);
+	}
+
+	if (!OurMovementComponent->IsSwimming())
+	{
+		return;
+	}
+	
 	AddMovementInput(FVector::UpVector);
 }
 
