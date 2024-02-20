@@ -54,17 +54,29 @@ void ASapling::GrowUp()
 	}
 	
 	// Get Biome
-	FBiomeGenerationData* Biome = AChunkManager::GetBiomeAtLocation(this->GetActorLocation());
+	const FBiomeGenerationData* Biome = AChunkManager::GetBiomeAtLocation(this->GetActorLocation());
 	if (Biome == nullptr || Biome->Trees.Spawnables.IsEmpty())
 	{
 		return;
 	}
 
 	// Decide which tree we will become
-	int32 MatureStateIndex = FMath::RandRange(0, Biome->Trees.Spawnables.Num() - 1);
+	const int32 MatureStateIndex = FMath::RandRange(0, Biome->Trees.Spawnables.Num() - 1);
 
 	// Spawn it
-	World->SpawnActor<AActor>(Biome->Trees.Spawnables[MatureStateIndex].BlueprintClass, this->GetActorLocation(), this->GetActorRotation());
+	AActor* MaturePlant = World->SpawnActor<AActor>(Biome->Trees.Spawnables[MatureStateIndex].BlueprintClass, this->GetActorLocation(), this->GetActorRotation());
+	if (MaturePlant == nullptr)
+	{
+		return;
+	}
+
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	MaturePlant->AttachToActor(ChunkManager->GetChunkAtLocation(this->GetActorLocation())
 
 	// Destroy us
 	Multi_PlayDestructionEffects();

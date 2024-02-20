@@ -2,6 +2,8 @@
 
 
 #include "Deployables/Seedling.h"
+#include "ChunkManager.h"
+#include "Actors/Chunk.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASeedling::ASeedling()
@@ -61,7 +63,19 @@ void ASeedling::GrowUp()
 	}
 
 	// Spawn it
-	World->SpawnActor<AActor>(MatureStates[MatureStateIndex], this->GetActorLocation(), this->GetActorRotation());
+	AActor* MaturePlant = World->SpawnActor<AActor>(MatureStates[MatureStateIndex], this->GetActorLocation(), this->GetActorRotation());
+	if (MaturePlant == nullptr)
+	{
+		return;
+	}
+
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	MaturePlant->AttachToActor(ChunkManager->GetChunkAtLocation(this->GetActorLocation());
 
 	// Destroy us
 	Multi_PlayDestructionEffects();
