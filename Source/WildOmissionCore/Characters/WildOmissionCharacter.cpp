@@ -375,6 +375,8 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 
 	EquipComponent->UpdateControlRotation(GetReplicatedControlRotation());
 
+	HandleUnderwater();
+
 	if (!HasAuthority())
 	{
 		return;
@@ -398,7 +400,6 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 		CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking);
 	}
 
-	HandleUnderwater();
 }
 
 void AWildOmissionCharacter::PossessedBy(AController* NewController)
@@ -732,28 +733,16 @@ void AWildOmissionCharacter::SetGodMode(bool GodMode)
 
 void AWildOmissionCharacter::HandleUnderwater()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
-
-	FHitResult HitResult;
-	FVector Start = FirstPersonCameraComponent->GetComponentLocation();
-	FVector End = Start + FVector(0.0f, 0.0f, 1000.0f);
-
-	// TODO this is where we should add status effect for underwater
-	if (World->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel3))
+	if (FirstPersonCameraComponent->GetComponentLocation().Z < 0.0f)
 	{
 		bUnderwater = true;
-		//HandleDeath();
+		FirstPersonCameraComponent->PostProcessSettings.SceneColorTint = FLinearColor(0.1f, 0.6f, 1.0f, 1.0f);
 	}
 	else
 	{
 		bUnderwater = false;
+		FirstPersonCameraComponent->PostProcessSettings.SceneColorTint = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
-
-	// TODO post processing and sound stuff here
 }
 
 //********************************
