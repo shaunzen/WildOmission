@@ -308,11 +308,6 @@ void ASwingableItem::PlayCameraShake()
 
 void ASwingableItem::PlayHitmarkerSound(bool Headshot)
 {
-	if (!IsOwnerOurPlayer())
-	{
-		return;
-	}
-
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr)
 	{

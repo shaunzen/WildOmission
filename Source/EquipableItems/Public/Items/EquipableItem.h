@@ -70,9 +70,6 @@ public:
 	bool PrimaryEnabled() const;
 	bool SecondaryEnabled() const;
 
-	static void PlayHitmarkerSound();
-	static void PlayHeadshotHitmarkerSound();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

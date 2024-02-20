@@ -106,5 +106,4 @@ void APookaPooka::Multi_PlayDeathExplosion_Implementation()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, this->GetActorLocation());
 	
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathExplosionEffect, this->GetActorLocation());
-	UE_LOG(LogTemp, Warning, TEXT("PlayDeathExplosion"));
 }

@@ -131,10 +131,7 @@ private:
 	USoundBase* HeadshotHitmarkerSound;
 
 	UFUNCTION(Client, Reliable)
-	void Client_PlayHitmarkerSound();
-
-	UFUNCTION(Client, Reliable)
-	void Client_PlayHeadshotHitmarkerSound();
+	void Client_PlayHitmarkerSound(bool IsHeadshot);
 
 	UFUNCTION()
 	void OnRep_EquipedItem();

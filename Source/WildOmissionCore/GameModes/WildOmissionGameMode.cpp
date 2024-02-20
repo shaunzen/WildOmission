@@ -120,7 +120,6 @@ void AWildOmissionGameMode::StartPlay()
 
 void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	UE_LOG(LogTemp, Warning, TEXT("PreLogin"));
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -140,8 +139,6 @@ void AWildOmissionGameMode::PreLogin(const FString& Options, const FString& Addr
 void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-
-	UE_LOG(LogTemp, Warning, TEXT("PostLogin"));
 
 	AWildOmissionPlayerController* NewWildOmissionPlayer = Cast<AWildOmissionPlayerController>(NewPlayer);
 	if (NewWildOmissionPlayer == nullptr)
