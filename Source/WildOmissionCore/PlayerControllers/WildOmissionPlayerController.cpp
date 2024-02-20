@@ -58,6 +58,7 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SpawnChunk, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, LastDeathLocation, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, Administrator, COND_OwnerOnly);
 }
 
