@@ -23,7 +23,6 @@ ATree::ATree()
 	{
 		StumpMesh = StumpMeshObject.Object;
 	}
-
 }
 
 void ATree::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -67,9 +66,9 @@ void ATree::PlayDestructionEffects()
 		return;
 	}
 
-	FVector Origin = DustBoundsComponent->GetLocalBounds().Origin + GetActorLocation();
-	FVector BoxExtent = DustBoundsComponent->GetLocalBounds().BoxExtent;
-	int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
+	const FVector Origin = DustBoundsComponent->GetLocalBounds().Origin + GetActorLocation();
+	const FVector BoxExtent = DustBoundsComponent->GetLocalBounds().BoxExtent;
+	const int32 BoxSurfaceArea = FMath::RoundToInt32(BoxExtent.X + BoxExtent.Y + BoxExtent.Z);
 
 	UNiagaraComponent* SpawnedDust = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, DestructionParticleSystem, Origin, GetActorRotation(), FVector(1.0f), true, false);
 	if (SpawnedDust == nullptr)

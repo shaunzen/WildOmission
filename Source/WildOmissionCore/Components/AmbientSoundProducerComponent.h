@@ -24,6 +24,8 @@ private:
 	USoundBase* DayCue;
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* NightCue;
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* WindCue;
 
 	UFUNCTION()
 	void PlaySoundCue();

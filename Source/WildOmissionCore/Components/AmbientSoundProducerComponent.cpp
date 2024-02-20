@@ -3,7 +3,9 @@
 
 #include "AmbientSoundProducerComponent.h"
 #include "TimeOfDayManager.h"
+#include "WeatherManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 
 // Sets default values for this component's properties
@@ -12,9 +14,11 @@ UAmbientSoundProducerComponent::UAmbientSoundProducerComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+
 	DayCue = nullptr;
 	NightCue = nullptr;
-	
+	WindCue = nullptr;
+
 	static ConstructorHelpers::FObjectFinder<USoundBase> DaySoundObject(TEXT("/Game/GatherableResources/Sounds/Birds/BirdCall_Cue"));
 	if (DaySoundObject.Succeeded())
 	{
@@ -25,6 +29,12 @@ UAmbientSoundProducerComponent::UAmbientSoundProducerComponent()
 	if (NightSoundObject.Succeeded())
 	{
 		NightCue = NightSoundObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> WindSoundObject(TEXT("/Game/GatherableResources/Sounds/Wind/WindHiss_Cue"));
+	if (WindSoundObject.Succeeded())
+	{
+		WindCue = WindSoundObject.Object;
 	}
 }
 
@@ -54,6 +64,12 @@ void UAmbientSoundProducerComponent::PlaySoundCue()
 		return;
 	}
 	
-	TimeOfDayManager->IsNight() ? UGameplayStatics::PlaySoundAtLocation(GetWorld(), NightCue, GetComponentLocation()) :
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DayCue, GetComponentLocation());
+	AWeatherManager* WeatherManager = AWeatherManager::GetWeatherManager();
+	if (WeatherManager && WeatherManager->GetCurrentStorm() && UKismetMathLibrary::RandomBoolWithWeight(0.1f))
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WindCue, this->GetComponentLocation());
+	}
+
+	TimeOfDayManager->IsNight() ? UGameplayStatics::PlaySoundAtLocation(GetWorld(), NightCue, this->GetComponentLocation()) :
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DayCue, this->GetComponentLocation());
 }
