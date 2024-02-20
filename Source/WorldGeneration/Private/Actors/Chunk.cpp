@@ -51,9 +51,10 @@ AChunk::AChunk()
 	RootComponent = MeshComponent;
 
 	WaterMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WaterMeshComponent"));
-	WaterMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	WaterMeshComponent->SetMobility(EComponentMobility::Stationary);
+	WaterMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WaterMeshComponent->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 	WaterMeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	WaterMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Block);
 	WaterMeshComponent->ComponentTags.Add(TEXT("Water"));
 	WaterMeshComponent->SetupAttachment(MeshComponent);
 
