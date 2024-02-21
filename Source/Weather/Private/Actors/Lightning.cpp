@@ -30,11 +30,6 @@ void ALightning::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (ThunderSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ThunderSound, this->GetActorLocation());
 }
 

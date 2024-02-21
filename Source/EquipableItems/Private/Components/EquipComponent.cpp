@@ -591,29 +591,14 @@ void UEquipComponent::HandleHitmarker(bool IsHeadshot)
 	{
 		OnHitmarker.Broadcast(IsHeadshot);
 	}
-	IsHeadshot ? Client_PlayHeadshotHitmarkerSound() : Client_PlayHitmarkerSound();
+	
+	Client_PlayHitmarkerSound(IsHeadshot);
 }
 
-void UEquipComponent::Client_PlayHitmarkerSound_Implementation()
+void UEquipComponent::Client_PlayHitmarkerSound_Implementation(bool IsHeadshot)
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr || HitmarkerSound == nullptr)
-	{
-		return;
-	}
-
-	UGameplayStatics::PlaySound2D(World, HitmarkerSound);
-}
-
-void UEquipComponent::Client_PlayHeadshotHitmarkerSound_Implementation()
-{
-	UWorld* World = GetWorld();
-	if (World == nullptr || HeadshotHitmarkerSound == nullptr)
-	{
-		return;
-	}
-
-	UGameplayStatics::PlaySound2D(World, HeadshotHitmarkerSound);
+	
+	IsHeadshot ? UGameplayStatics::PlaySound2D(GetWorld(), HeadshotHitmarkerSound) : UGameplayStatics::PlaySound2D(GetWorld(), HitmarkerSound);
 }
 
 void UEquipComponent::OnRep_EquipedItem()

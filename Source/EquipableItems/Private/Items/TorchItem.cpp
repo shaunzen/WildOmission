@@ -118,15 +118,8 @@ void ATorchItem::StartFireEffects()
 		return;
 	}
 
-	if (FireParticleSystem)
-	{
-		SpawnedFireParticles = UNiagaraFunctionLibrary::SpawnSystemAttached(FireParticleSystem, MeshComponentToAttachTo, TEXT("FireSocket"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true);
-	}
-
-	if (BurningSound)
-	{
-		SpawnedBurningSound = UGameplayStatics::SpawnSoundAttached(BurningSound, MeshComponentToAttachTo, TEXT("FireSocket"), FVector::ZeroVector, EAttachLocation::Type::SnapToTarget, true);
-	}
+	SpawnedFireParticles = UNiagaraFunctionLibrary::SpawnSystemAttached(FireParticleSystem, MeshComponentToAttachTo, TEXT("FireSocket"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true);	
+	SpawnedBurningSound = UGameplayStatics::SpawnSoundAttached(BurningSound, MeshComponentToAttachTo, TEXT("FireSocket"), FVector::ZeroVector, EAttachLocation::Type::SnapToTarget, true);
 
 	SpawnedLightComponent = NewObject<UPointLightComponent>(this, UPointLightComponent::StaticClass(), TEXT("PointLightComponent"));
 	if (SpawnedLightComponent)
@@ -142,11 +135,12 @@ void ATorchItem::StartFireEffects()
 		SpawnedLightComponent->SetRelativeLocation(FVector(20.0f, -10.0f, 0.0f));
 	}
 
-	if (HasAuthority())
+	UWorld* World = GetWorld();
+	if (World && HasAuthority())
 	{
 		FTimerDelegate DecrementDurabilityTimerDelegate;
 		DecrementDurabilityTimerDelegate.BindUObject(this, &ATorchItem::DecrementDurability);
-		GetWorld()->GetTimerManager().SetTimer(DecrementDurabilityTimerHandle, DecrementDurabilityTimerDelegate, 1.0f, true);
+		World->GetTimerManager().SetTimer(DecrementDurabilityTimerHandle, DecrementDurabilityTimerDelegate, 1.0f, true);
 	}
 
 	EquipPose = OnPose;
@@ -172,9 +166,10 @@ void ATorchItem::StopFireEffects()
 		SpawnedLightComponent = nullptr;
 	}
 
-	if (HasAuthority())
+	UWorld* World = GetWorld();
+	if (World && HasAuthority())
 	{
-		GetWorld()->GetTimerManager().ClearTimer(DecrementDurabilityTimerHandle);
+		World->GetTimerManager().ClearTimer(DecrementDurabilityTimerHandle);
 	}
 
 	EquipPose = OffPose;

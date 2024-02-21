@@ -257,22 +257,16 @@ bool ADeployable::CanRotate() const
 
 void ADeployable::Multi_PlayPlacementEffects_Implementation()
 {
-	if (PlacementSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlacementSound, GetActorLocation());
-	}
-
 	SpawnDustEffects();
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlacementSound, GetActorLocation());
 }
 
 void ADeployable::Multi_PlayDestructionEffects_Implementation()
 {
-	if (DestructionSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, GetActorLocation());
-	}
-	
 	SpawnDustEffects();
+	
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, GetActorLocation());
 }
 
 void ADeployable::SpawnDustEffects()

@@ -8,5 +8,7 @@ public class Inventory : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "Despawner", "Interaction", "SavableObject" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "InputCore", "Slate", "SlateCore", "CustomUI", "WorldGeneration" });
+
+        SetupIrisSupport(Target);
     }
 }

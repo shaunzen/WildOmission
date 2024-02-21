@@ -226,20 +226,10 @@ void AWorldItem::OnLoadComplete_Implementation()
 
 void AWorldItem::Multi_PlayClumpSound_Implementation()
 {
-	if (ClumpSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ClumpSound, GetActorLocation());
 }
 
 void AWorldItem::Multi_PlayPickupSound_Implementation()
 {
-	if (PickupSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PickupSound, GetActorLocation());
 }

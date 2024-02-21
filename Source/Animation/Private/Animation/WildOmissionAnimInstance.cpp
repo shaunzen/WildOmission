@@ -102,11 +102,6 @@ void UWildOmissionAnimInstance::PlayFootstepSound()
 		FootstepSound = USurfaceHelpers::GetFootstepSound(HitResult.PhysMaterial->SurfaceType);
 	}
 	
-	if (FootstepSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootstepSound, HitResult.ImpactPoint);
 }
 

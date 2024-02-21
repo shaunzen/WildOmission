@@ -96,20 +96,10 @@ FString ADoor::PromptText()
 
 void ADoor::Client_PlayOpenSound_Implementation()
 {
-	if (OpenSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), OpenSound, GetActorLocation());
 }
 
 void ADoor::Client_PlayCloseSound_Implementation()
 {
-	if (CloseSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CloseSound, GetActorLocation());
 }

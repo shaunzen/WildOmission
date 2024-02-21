@@ -194,30 +194,15 @@ void ALock::OnRep_Locked()
 
 void ALock::Multi_PlaySuccessSound_Implementation()
 {
-	if (SuccessSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SuccessSound, this->GetActorLocation());
 }
 
 void ALock::Multi_PlayFailureSound_Implementation()
 {
-	if (FailureSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FailureSound, this->GetActorLocation());
 }
 
 void ALock::Multi_PlayPlacementSound_Implementation()
 {
-	if (PlacementSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), PlacementSound, this->GetActorLocation());
 }

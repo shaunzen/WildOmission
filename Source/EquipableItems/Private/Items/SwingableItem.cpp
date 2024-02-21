@@ -165,6 +165,7 @@ void ASwingableItem::DecrementDurability()
 
 	if (NewDurability <= 0)
 	{
+		OwnerInventory->Multi_PlayItemBreakSound();
 		OwnerInventory->RemoveHeldItem();
 	}
 
@@ -198,12 +199,6 @@ void ASwingableItem::PlayImpactSound(const FHitResult& HitResult)
 
 		ImpactSound = USurfaceHelpers::GetImpactSound(HitResult.PhysMaterial->SurfaceType);
 
-	}
-
-	// Check if the sound is valid
-	if (ImpactSound == nullptr)
-	{
-		return;
 	}
 
 	// Play sound
@@ -313,11 +308,6 @@ void ASwingableItem::PlayCameraShake()
 
 void ASwingableItem::PlayHitmarkerSound(bool Headshot)
 {
-	if (!IsOwnerOurPlayer())
-	{
-		return;
-	}
-
 	UEquipComponent* OwnerEquipComponent = GetOwnerEquipComponent();
 	if (OwnerEquipComponent == nullptr)
 	{

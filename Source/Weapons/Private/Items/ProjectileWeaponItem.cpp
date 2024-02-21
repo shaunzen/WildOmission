@@ -124,15 +124,14 @@ void AProjectileWeaponItem::SpawnProjectile()
 
 void AProjectileWeaponItem::PlayFireSoundEffect()
 {
-	UWorld* World = GetWorld();
 	AActor* OwnerActor = GetOwner();
-	if (World == nullptr || OwnerActor == nullptr || FireSound == nullptr)
+	if (OwnerActor == nullptr)
 	{
 		return;
 	}
 
 	const FVector SoundLocation = OwnerActor->GetActorLocation() + (OwnerActor->GetActorForwardVector() * 100.0f);
-	UGameplayStatics::PlaySoundAtLocation(World, FireSound, SoundLocation);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, SoundLocation);
 }
 
 void AProjectileWeaponItem::Reload()
@@ -173,6 +172,7 @@ void AProjectileWeaponItem::DecreaseAmmoAndDurability()
 	
 	if (Durability <= 0 && GetOwningPlayerInventory())
 	{
+		GetOwningPlayerInventory()->Multi_PlayItemBreakSound();
 		GetOwningPlayerInventory()->RemoveHeldItem();
 	}
 

@@ -253,7 +253,6 @@ void UBuilderComponent::Client_OpenSignWidget_Implementation(ASign* Sign)
 	
 	if (World == nullptr || Sign == nullptr || SignWidgetClass == nullptr || SignWidget != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("world %i, sign %i, signwidgetclass %i nullptr, or signwidget already exists %i."), World == nullptr, Sign == nullptr, SignWidgetClass == nullptr, SignWidget != nullptr);
 		return;
 	}
 

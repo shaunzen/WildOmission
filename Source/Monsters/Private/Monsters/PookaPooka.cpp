@@ -5,15 +5,13 @@
 #include "Components/VitalsComponent.h"
 #include "Components/PlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "UObject/ConstructorHelpers.h"
 
-
-// TODO would be cool if when they land it caused nearby players cameras to shake
-// TODO they shoot "Pook" at you and the sound is makes sounds like "Pook"
-
-// TODO they explode on death
-
 static USoundBase* LandSound = nullptr;
+static USoundBase* ExplosionSound = nullptr;
+static UNiagaraSystem* DeathExplosionEffect = nullptr;
 
 APookaPooka::APookaPooka()
 {
@@ -41,6 +39,18 @@ APookaPooka::APookaPooka()
 	if (PookaPookaHurt.Succeeded() && VitalsComponent)
 	{
 		VitalsComponent->SetHurtSound(PookaPookaHurt.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> ExplosionSoundBlueprint(TEXT("/Game/Weapons/Audio/Explosions/MS_Explosion_Small"));
+	if (ExplosionSoundBlueprint.Succeeded())
+	{
+		ExplosionSound = ExplosionSoundBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DeathExplosionEffectBlueprint(TEXT("/Game/WildOmissionCore/Art/Effects/NS_Explosion"));
+	if (DeathExplosionEffectBlueprint.Succeeded())
+	{
+		DeathExplosionEffect = DeathExplosionEffectBlueprint.Object;
 	}
 }
 
@@ -76,20 +86,24 @@ void APookaPooka::Landed(const FHitResult& Hit)
 
 void APookaPooka::HandleDeath()
 {
-	Super::HandleDeath();
+	Multi_PlayDeathExplosion();
 
 	FInventoryItem LootDrop;
 	LootDrop.Name = TEXT("metal.refined");
 	LootDrop.Quantity = FMath::RandRange(1, 3);
 	UInventoryComponent::SpawnWorldItem(GetWorld(), LootDrop, this);
+
+	Super::HandleDeath();
 }
 
 void APookaPooka::Multi_PlayLandSound_Implementation()
 {
-	if (LandSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LandSound, this->GetActorLocation());
+}
+
+void APookaPooka::Multi_PlayDeathExplosion_Implementation()
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, this->GetActorLocation());
+	
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathExplosionEffect, this->GetActorLocation());
 }

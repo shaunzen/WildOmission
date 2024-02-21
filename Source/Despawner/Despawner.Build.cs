@@ -8,5 +8,7 @@ public class Despawner : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "SavableObject" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "WorldGeneration" });
+
+        SetupIrisSupport(Target);
     }
 }

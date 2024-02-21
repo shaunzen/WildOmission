@@ -122,11 +122,6 @@ void ACollectableResource::BeginPlay()
 
 void ACollectableResource::Multi_PlayCollectEffects_Implementation()
 {
-	if (CollectSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollectSound, GetActorLocation());
 
 	if (DustSystem == nullptr || MeshComponent == nullptr)

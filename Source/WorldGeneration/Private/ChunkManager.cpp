@@ -293,6 +293,13 @@ AChunk* AChunkManager::GetChunkAtLocation(const FIntVector2& ChunkLocation)
 	return SpawnedChunks[SpawnedIndex].Chunk;
 }
 
+AChunk* AChunkManager::GetChunkAtLocation(const FVector& ChunkLocation)
+{
+	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
+	const FIntVector2 ChunkGridLocation(FMath::RoundToInt32(ChunkLocation.X / ChunkSize), FMath::RoundToInt32(ChunkLocation.Y / ChunkSize));
+	return GetChunkAtLocation(ChunkGridLocation);
+}
+
 void AChunkManager::HandleActorRenderDistanceVisibility(UWorld* WorldContextObject, AActor* InActor)
 {
 	if (Instance == nullptr || WorldContextObject == nullptr || WorldContextObject->IsEditorWorld() || InActor == nullptr)

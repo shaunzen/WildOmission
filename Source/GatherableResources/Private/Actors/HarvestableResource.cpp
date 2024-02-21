@@ -10,7 +10,9 @@
 #include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Net/UnrealNetwork.h"
 #include "Log.h"
 
 // Sets default values
@@ -25,6 +27,7 @@ AHarvestableResource::AHarvestableResource()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
+	MeshComponent->SetMobility(EComponentMobility::Stationary);
 	RootComponent = MeshComponent;
 
 	Identifier = NAME_None;
@@ -37,12 +40,23 @@ AHarvestableResource::AHarvestableResource()
 	RequiredToolType = EToolType::WOOD;
 
 	Durability = 10;
+	NormalizedDurability = 1.0f;
+
+	DestructionParticleSystem = nullptr;
+	DestructionSound = nullptr;
 
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> DefaultDustSystem(TEXT("/Game/WildOmissionCore/Art/Effects/NS_BoundsDust"));
 	if (DefaultDustSystem.Succeeded())
 	{
 		DestructionParticleSystem = DefaultDustSystem.Object;
 	}
+}
+
+void AHarvestableResource::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AHarvestableResource, NormalizedDurability);
 }
 
 bool AHarvestableResource::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
@@ -82,13 +96,15 @@ void AHarvestableResource::OnHarvest(AActor* HarvestingActor, float GatherMultip
 		HarvestingInventoryComponent->AddItem(RareDrop, true);
 	}
 
-	Durability--;
+	NormalizedDurability -= (1.0f / static_cast<float>(Durability));
 
-	if (Durability <= 0)
+	if (NormalizedDurability <= 0.0f)
 	{
 		Multi_PlayDestructionEffects();
 		Destroy();
 	}
+
+	OnRep_NormalizedDurability();
 }
 
 FInventoryItem AHarvestableResource::HandleYieldFromList(const TArray<FInventoryItem>& DropList, float GatherMultiplier)
@@ -137,6 +153,11 @@ void AHarvestableResource::PlayDestructionEffects()
 	SpawnedDust->Activate(true);
 }
 
+void AHarvestableResource::OnRep_NormalizedDurability()
+{
+
+}
+
 TEnumAsByte<EToolType> AHarvestableResource::GetRequiredToolType() const
 {
 	return RequiredToolType;
@@ -180,4 +201,5 @@ void AHarvestableResource::BeginPlay()
 void AHarvestableResource::Multi_PlayDestructionEffects_Implementation()
 {
 	PlayDestructionEffects();
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, this->GetActorLocation());
 }

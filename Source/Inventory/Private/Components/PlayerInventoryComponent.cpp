@@ -4,6 +4,8 @@
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
 #include "WorldItem.h"
+#include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
@@ -12,6 +14,14 @@ UPlayerInventoryComponent::UPlayerInventoryComponent()
 
 	SlotCount = 30;
 	ToolbarSelectionIndex = -1;
+
+	ItemBreakSound = nullptr;
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> ItemBreakSoundBlueprint(TEXT("/Game/EquipableItems/Audio/A_Tool_Break_02"));
+	if (ItemBreakSoundBlueprint.Succeeded())
+	{
+		ItemBreakSound = ItemBreakSoundBlueprint.Object;
+	}
 }
 
 void UPlayerInventoryComponent::BeginPlay()
@@ -145,4 +155,15 @@ void UPlayerInventoryComponent::Server_SetToolbarSelectionIndex_Implementation(i
 	ToolbarSelectionIndex = SelectionIndex;
 
 	RefreshToolbarSelectionState();
+}
+
+void UPlayerInventoryComponent::Multi_PlayItemBreakSound_Implementation()
+{
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ItemBreakSound, OwnerActor->GetActorLocation());
 }

@@ -20,5 +20,7 @@ public class Ragdoll : ModuleRules
             "SavableObject",
             "WorldGeneration"
         });
+
+        SetupIrisSupport(Target);
     }
 }

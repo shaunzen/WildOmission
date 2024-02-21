@@ -38,7 +38,6 @@
 #include "Engine/DamageEvents.h"
 #include "Net/UnrealNetwork.h"
 
-
 //********************************
 // Setup/General Actor Functionality
 //********************************
@@ -106,6 +105,9 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	SpecialEffectsManagerComponent = nullptr;
 	
 	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
+
+	TimeToNextSpookySound = 300.0f;
+	SpookyCounter = 0.0f;
 
 	bSprinting = false;
 	bSprintButtonHeld = false;
@@ -176,6 +178,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	if (FallCrunchSoundObject.Succeeded())
 	{
 		FallCrunchSound = FallCrunchSoundObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> SpookySoundObject(TEXT("/Game/WildOmissionCore/Audio/Spooky/SpookySound_Cue"));
+	if (SpookySoundObject.Succeeded())
+	{
+		SpookySoundCue = SpookySoundObject.Object;
 	}
 	
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmissionCore/Input/MC_DefaultMappingContext"));
@@ -351,6 +359,8 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupLocalComponents();
 	StopSprinting();
 
+	TimeToNextSpookySound = FMath::RandRange(300.0f, 1000.0f);
+
 	if (EquipComponent && AimComponent)
 	{
 		EquipComponent->OnStartAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StartAiming);
@@ -368,12 +378,24 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (IsLocallyControlled())
+	{
+		SpookyCounter += DeltaTime;
+		if (SpookyCounter > TimeToNextSpookySound)
+		{
+			PlaySpookySound();
+			SpookyCounter = 0;
+		}
+	}
+
 	if (EquipComponent == nullptr)
 	{
 		return;
 	}
 
 	EquipComponent->UpdateControlRotation(GetReplicatedControlRotation());
+
+	HandleUnderwater();
 
 	if (!HasAuthority())
 	{
@@ -383,10 +405,21 @@ void AWildOmissionCharacter::Tick(float DeltaTime)
 	ReplicatedControlRotation = GetControlRotation();
 
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
-	if (CharacterMovementComponent && CharacterMovementComponent->IsSwimming())
+	if (CharacterMovementComponent == nullptr)
 	{
-		HandleUnderwater();
+		return;
 	}
+
+	const FVector CurrentLocation = GetActorLocation();
+	if (CurrentLocation.Z < 0.0f && !CharacterMovementComponent->IsSwimming() && !CharacterMovementComponent->IsFlying())
+	{
+		CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Swimming);
+	}
+	else if (CurrentLocation.Z >= 0.0f && CharacterMovementComponent->IsSwimming())
+	{
+		CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
+
 }
 
 void AWildOmissionCharacter::PossessedBy(AController* NewController)
@@ -720,26 +753,26 @@ void AWildOmissionCharacter::SetGodMode(bool GodMode)
 
 void AWildOmissionCharacter::HandleUnderwater()
 {
-	UWorld* World = GetWorld();
-	if (World == nullptr)
-	{
-		return;
-	}
-
-	FHitResult HitResult;
-	FVector Start = FirstPersonCameraComponent->GetComponentLocation();
-	FVector End = Start + FVector(0.0f, 0.0f, 1000.0f);
-
-	// TODO this is where we should add status effect for underwater
-	if (World->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_GameTraceChannel3))
+	if (FirstPersonCameraComponent->GetComponentLocation().Z < 0.0f)
 	{
 		bUnderwater = true;
-		HandleDeath();
+		FirstPersonCameraComponent->PostProcessSettings.SceneColorTint = FLinearColor(0.1f, 0.6f, 1.0f, 1.0f);
 	}
 	else
 	{
 		bUnderwater = false;
+		FirstPersonCameraComponent->PostProcessSettings.SceneColorTint = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
+}
+
+void AWildOmissionCharacter::PlaySpookySound()
+{
+	if (!IsLocallyControlled() || !UKismetMathLibrary::RandomBoolWithWeight(0.25f))
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SpookySoundCue, this->GetActorLocation());
 }
 
 //********************************
@@ -1017,11 +1050,6 @@ void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
 
 void AWildOmissionCharacter::Multi_PlayFallCrunchSound_Implementation()
 {
-	if (FallCrunchSound == nullptr)
-	{
-		return;
-	}
-
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FallCrunchSound, this->GetActorLocation());
 }
 
