@@ -13,7 +13,8 @@ public class WildOmissionServerTarget : TargetRules
         
 		bUseLoggingInShipping = true;
 		bUsesSteam = true;
-        
+        bUseIris = true;
+
 		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
 
         // The name of your game as you set it on the Steamworks webpage.

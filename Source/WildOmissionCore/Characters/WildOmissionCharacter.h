@@ -152,6 +152,12 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* FallCrunchSound;
 
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* SpookySoundCue;
+	
+	float TimeToNextSpookySound;
+	float SpookyCounter;
+
 	UPROPERTY(Replicated)
 	FRotator ReplicatedControlRotation;
 
@@ -165,6 +171,9 @@ private:
 	bool bUnderwater;
 
 	void HandleUnderwater();
+
+	UFUNCTION()
+	void PlaySpookySound();
 
 	//*****************************
 	// Input

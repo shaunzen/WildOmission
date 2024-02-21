@@ -8,5 +8,7 @@ public class Vitals : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject" });
+
+        SetupIrisSupport(Target);
     }
 }

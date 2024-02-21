@@ -38,7 +38,6 @@
 #include "Engine/DamageEvents.h"
 #include "Net/UnrealNetwork.h"
 
-
 //********************************
 // Setup/General Actor Functionality
 //********************************
@@ -106,6 +105,9 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	SpecialEffectsManagerComponent = nullptr;
 	
 	LockModifierComponent = CreateDefaultSubobject<ULockModifierComponent>(TEXT("LockModifierComponent"));
+
+	TimeToNextSpookySound = 300.0f;
+	SpookyCounter = 0.0f;
 
 	bSprinting = false;
 	bSprintButtonHeld = false;
@@ -176,6 +178,12 @@ AWildOmissionCharacter::AWildOmissionCharacter()
 	if (FallCrunchSoundObject.Succeeded())
 	{
 		FallCrunchSound = FallCrunchSoundObject.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundBase> SpookySoundObject(TEXT("/Game/WildOmissionCore/Audio/Spooky/SpookySound_Cue"));
+	if (SpookySoundObject.Succeeded())
+	{
+		SpookySoundCue = SpookySoundObject.Object;
 	}
 	
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMappingContextBlueprint(TEXT("/Game/WildOmissionCore/Input/MC_DefaultMappingContext"));
@@ -351,6 +359,8 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupLocalComponents();
 	StopSprinting();
 
+	TimeToNextSpookySound = FMath::RandRange(300.0f, 1000.0f);
+
 	if (EquipComponent && AimComponent)
 	{
 		EquipComponent->OnStartAiming.AddDynamic(AimComponent, &UPlayerAimComponent::StartAiming);
@@ -367,6 +377,16 @@ void AWildOmissionCharacter::BeginPlay()
 void AWildOmissionCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (IsLocallyControlled())
+	{
+		SpookyCounter += DeltaTime;
+		if (SpookyCounter > TimeToNextSpookySound)
+		{
+			PlaySpookySound();
+			SpookyCounter = 0;
+		}
+	}
 
 	if (EquipComponent == nullptr)
 	{
@@ -743,6 +763,16 @@ void AWildOmissionCharacter::HandleUnderwater()
 		bUnderwater = false;
 		FirstPersonCameraComponent->PostProcessSettings.SceneColorTint = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
+}
+
+void AWildOmissionCharacter::PlaySpookySound()
+{
+	if (!IsLocallyControlled() || !UKismetMathLibrary::RandomBoolWithWeight(0.25f))
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SpookySoundCue, this->GetActorLocation());
 }
 
 //********************************

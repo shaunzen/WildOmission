@@ -8,5 +8,7 @@ public class WildOmissionAI : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "GameplayTasks", "Ragdoll", "Vitals" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "NavigationSystem", "Despawner", "Durability", "GatherableResources", "Inventory", "SaveSystem" });
+
+        SetupIrisSupport(Target);
     }
 }

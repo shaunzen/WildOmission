@@ -8,5 +8,7 @@ public class Locks : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "SavableObject" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "EquipableItems", "Interaction", "Inventory" });
+
+        SetupIrisSupport(Target);
     }
 }

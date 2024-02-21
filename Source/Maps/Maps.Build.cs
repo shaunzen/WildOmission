@@ -8,5 +8,7 @@ public class Maps : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "SavableObject" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "InputCore", "Slate", "SlateCore", "EquipableItems", "WorldGeneration" });
+
+        SetupIrisSupport(Target);
     }
 }

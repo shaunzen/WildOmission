@@ -10,6 +10,9 @@ public class WildOmissionEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+
+		bUseIris = true;
+
 		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
 	}
 }

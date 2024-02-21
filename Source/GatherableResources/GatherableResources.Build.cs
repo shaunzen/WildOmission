@@ -8,5 +8,7 @@ public class GatherableResources: ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Interaction", "Inventory", "SavableObject", "Weather" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "NavigationSystem", "Niagara", "WorldGeneration" });
+
+        SetupIrisSupport(Target);
     }
 }
