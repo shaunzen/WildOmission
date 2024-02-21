@@ -76,7 +76,7 @@ void ASapling::GrowUp()
 		return;
 	}
 
-	MaturePlant->AttachToActor(ChunkManager->GetChunkAtLocation(this->GetActorLocation())
+	MaturePlant->AttachToActor(ChunkManager->GetChunkAtLocation(this->GetActorLocation()), FAttachmentTransformRules::KeepWorldTransform);
 
 	// Destroy us
 	Multi_PlayDestructionEffects();
