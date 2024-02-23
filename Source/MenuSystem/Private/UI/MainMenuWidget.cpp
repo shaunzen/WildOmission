@@ -357,7 +357,13 @@ void UMainMenuWidget::OpenCreditsMenu()
 
 void UMainMenuWidget::ExitGame()
 {
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
 	if (PlayerController == nullptr)
 	{
 		return;
