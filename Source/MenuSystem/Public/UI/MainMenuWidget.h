@@ -73,11 +73,17 @@ private:
 	class UTextBlock* SplashTextBlock;
 
 	UPROPERTY(Meta = (BindWidget))
-	UWidget* MainMenu;
+	class UWidget* MainMenuPanel;
+	UPROPERTY(Meta = (BindWidget))
+	class UWidget* MainMenu;
+	UPROPERTY(Meta = (BindWidget))
+	class UWidget* WorldSelectionMenuPanel;
 	UPROPERTY(Meta = (BindWidget))
 	class UWorldSelectionWidget* WorldSelectionMenu;
 	UPROPERTY(Meta = (BindWidget))
 	class UWorldCreationWidget* WorldCreationMenu;
+	UPROPERTY(Meta = (BindWidget))
+	class UWidget* WorldMenuPanel;
 	UPROPERTY(Meta = (BindWidget))
 	class UWorldMenuWidget* WorldMenu;
 	UPROPERTY(Meta = (BindWidget))
@@ -85,9 +91,15 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UDeleteWorldWidget* DeleteWorldMenu;
 	UPROPERTY(Meta = (BindWidget))
+	class UWidget* ServerBrowserMenuPanel;
+	UPROPERTY(Meta = (BindWidget))
 	class UServerBrowserWidget* ServerBrowserMenu;
 	UPROPERTY(Meta = (BindWidget))
+	class UWidget* OptionsMenuPanel;
+	UPROPERTY(Meta = (BindWidget))
 	class UOptionsWidget* OptionsMenu;
+	UPROPERTY(Meta = (BindWidget))
+	class UWidget* CreditsMenuPanel;
 	UPROPERTY(Meta = (BindWidget))
 	class UCreditsWidget* CreditsMenu;
 	UPROPERTY(Meta = (BindWidget))
