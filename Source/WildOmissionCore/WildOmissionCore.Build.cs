@@ -15,7 +15,7 @@ public class WildOmissionCore : ModuleRules
 			"CustomUI", "DedicatedServer", "Deployables", "Despawner", "Durability",
 			"EquipableItems", "GameChat", "GameMusic", "GameSettings", "GatherableResources",
 			"Interaction", "Inventory", "Locks", "MenuSystem", "Monsters", "Notifications", "Ragdoll", "SavableObject",
-			"SaveSystem", "SurfaceProperties", "TimeOfDay", "Vitals", "Weapons", "Weather",
+			"SaveSystem", "Structures", "SurfaceProperties", "TimeOfDay", "Vitals", "Weapons", "Weather",
 			"WildOmissionAI", "WorldGeneration"
 		});
 
