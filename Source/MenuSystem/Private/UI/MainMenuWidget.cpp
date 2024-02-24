@@ -26,7 +26,6 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("Not possible without you!"),
 	TEXT("Not a day off in over a year"),
 	TEXT("Played by FloppySword!"),
-	TEXT("Congatulations on 25K FloppySword!"),
 	TEXT("wellyesh <3"),
 	TEXT("NELSInfinity <3"),
 	TEXT("LifeOn30FPS <3"),
@@ -44,7 +43,8 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("1.8% C"),
 	TEXT("1.5% C#"),
 	TEXT("Updated Weekly!"),
-	TEXT("3,000,000+ Lines Of Code.")
+	TEXT("3,000,000+ Lines Of Code."),
+	TEXT("Also play DeadPoly!")
 };
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
