@@ -26,7 +26,6 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("Not possible without you!"),
 	TEXT("Not a day off in over a year"),
 	TEXT("Played by FloppySword!"),
-	TEXT("Congatulations on 25K FloppySword!"),
 	TEXT("wellyesh <3"),
 	TEXT("NELSInfinity <3"),
 	TEXT("LifeOn30FPS <3"),
@@ -44,7 +43,8 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("1.8% C"),
 	TEXT("1.5% C#"),
 	TEXT("Updated Weekly!"),
-	TEXT("3,000,000+ Lines Of Code.")
+	TEXT("3,000,000+ Lines Of Code."),
+	TEXT("Also play DeadPoly!")
 };
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
@@ -61,14 +61,21 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 	
 	SplashTextBlock = nullptr;
 
+	MainMenuPanel = nullptr;
 	MainMenu = nullptr;
+
+	WorldSelectionMenuPanel = nullptr;
 	WorldSelectionMenu = nullptr;
 	WorldCreationMenu = nullptr;
+	WorldMenuPanel = nullptr;
 	WorldMenu = nullptr;
 	RenameWorldMenu = nullptr;
 	DeleteWorldMenu = nullptr;
+	ServerBrowserMenuPanel = nullptr;
 	ServerBrowserMenu = nullptr;
+	OptionsMenuPanel = nullptr;
 	OptionsMenu = nullptr;
+	CreditsMenuPanel = nullptr;
 	CreditsMenu = nullptr;
 	ErrorMessagePrompt = nullptr;
 	MenuInterface = nullptr;
@@ -223,24 +230,25 @@ void UMainMenuWidget::RefreshServerList(bool IsDedicated)
 
 void UMainMenuWidget::OpenMainMenu()
 {
-	if (MenuSwitcher == nullptr || MainMenu == nullptr)
+	if (MenuSwitcher == nullptr || MainMenuPanel == nullptr)
 	{
 		UE_LOG(LogMenuSystem, Warning, TEXT("Failed to switch to main menu"));
 		return;
 	}
 	UE_LOG(LogMenuSystem, Verbose, TEXT("Switching to main menu"));
-	MenuSwitcher->SetActiveWidget(MainMenu);
+	MenuSwitcher->SetActiveWidget(MainMenuPanel);
 }
 
 void UMainMenuWidget::OpenWorldSelectionMenu()
 {
-	if (MenuSwitcher == nullptr || WorldSelectionMenu == nullptr || MenuInterface == nullptr)
+	if (MenuSwitcher == nullptr || WorldSelectionMenuPanel == nullptr 
+		|| WorldSelectionMenu == nullptr || MenuInterface == nullptr)
 	{
 		return;
 	}
 
 	WorldSelectionMenu->SetWorldList(MenuInterface->GetAllWorldNames());
-	MenuSwitcher->SetActiveWidget(WorldSelectionMenu);
+	MenuSwitcher->SetActiveWidget(WorldSelectionMenuPanel);
 }
 
 void UMainMenuWidget::OpenWorldCreationMenu()
@@ -265,7 +273,13 @@ void UMainMenuWidget::OpenWorldMenu()
 
 void UMainMenuWidget::OpenWorldMenuForWorld(const FString& WorldName)
 {
-	MenuSwitcher->SetActiveWidget(WorldMenu);
+	if (MenuSwitcher == nullptr || WorldMenuPanel == nullptr
+		|| WorldMenu == nullptr)
+	{
+		return;
+	}
+
+	MenuSwitcher->SetActiveWidget(WorldMenuPanel);
 	WorldMenu->Open(WorldName);
 }
 
@@ -303,23 +317,25 @@ void UMainMenuWidget::OpenDeleteWorldMenu()
 
 void UMainMenuWidget::OpenServerBrowserMenu()
 {
-	if (MenuSwitcher == nullptr || ServerBrowserMenu == nullptr)
+	if (MenuSwitcher == nullptr || ServerBrowserMenuPanel == nullptr
+		|| ServerBrowserMenu == nullptr)
 	{
 		return;
 	}
 
-	MenuSwitcher->SetActiveWidget(ServerBrowserMenu);
+	MenuSwitcher->SetActiveWidget(ServerBrowserMenuPanel);
 	ServerBrowserMenu->OnOpen();
 }
 
 void UMainMenuWidget::OpenOptionsMenu()
 {
-	if (MenuSwitcher == nullptr || OptionsMenu == nullptr)
+	if (MenuSwitcher == nullptr || OptionsMenuPanel == nullptr
+		|| OptionsMenu == nullptr)
 	{
 		return;
 	}
 
-	MenuSwitcher->SetActiveWidget(OptionsMenu);
+	MenuSwitcher->SetActiveWidget(OptionsMenuPanel);
 	OptionsMenu->Refresh();
 }
 
@@ -330,17 +346,24 @@ void UMainMenuWidget::OpenFeedbackPage()
 
 void UMainMenuWidget::OpenCreditsMenu()
 {
-	if (MenuSwitcher == nullptr || CreditsMenu == nullptr)
+	if (MenuSwitcher == nullptr || CreditsMenuPanel == nullptr 
+		|| CreditsMenu == nullptr)
 	{
 		return;
 	}
 
-	MenuSwitcher->SetActiveWidget(CreditsMenu);
+	MenuSwitcher->SetActiveWidget(CreditsMenuPanel);
 }
 
 void UMainMenuWidget::ExitGame()
 {
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
 	if (PlayerController == nullptr)
 	{
 		return;
