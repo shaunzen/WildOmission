@@ -206,10 +206,7 @@
 		{
 			"Name": "Structures",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"CoreUObject"
-			]
+			"LoadingPhase": "Default"
 		},
 		{
 			"Name": "DedicatedServer",

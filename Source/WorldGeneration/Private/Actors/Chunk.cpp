@@ -356,6 +356,11 @@ void AChunk::ClearAllAttachedActors()
 	
 	for (AActor* AttachedActor : AttachedActors)
 	{
+		if (AttachedActor == nullptr)
+		{
+			continue;
+		}
+
 		AttachedActor->Destroy();
 	}
 }

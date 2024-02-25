@@ -19,16 +19,20 @@ AChunkManager::AChunkManager()
 	bReplicates = true;
 	bAlwaysRelevant = true;
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
-	if (BiomeDataTableBlueprint.Succeeded())
+	// Wooooo hoooooooo, more unreal engine bullshit :O
+	if (GetWorld())
 	{
-		BiomeGenerationDataTable = BiomeDataTableBlueprint.Object;
-	}
+		static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
+		if (BiomeDataTableBlueprint.Succeeded())
+		{
+			BiomeGenerationDataTable = BiomeDataTableBlueprint.Object;
+		}
 
-	static ConstructorHelpers::FClassFinder<AChunk> ChunkBlueprint(TEXT("/Game/WorldGeneration/BP_Chunk"));
-	if (ChunkBlueprint.Succeeded())
-	{
-		ChunkClass = ChunkBlueprint.Class;
+		static ConstructorHelpers::FClassFinder<AChunk> ChunkBlueprint(TEXT("/Game/WorldGeneration/BP_Chunk"));
+		if (ChunkBlueprint.Succeeded())
+		{
+			ChunkClass = ChunkBlueprint.Class;
+		}
 	}
 }
 
