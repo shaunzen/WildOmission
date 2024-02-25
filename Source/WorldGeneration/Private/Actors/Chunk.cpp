@@ -200,7 +200,7 @@ void AChunk::Tick(float DeltaTime)
 void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 {
 	GenerateTerrain(Neighbors);
-	GenerateDecorations();
+	GenerateFeatures();
 }
 
 void AChunk::SetChunkHidden(bool Hidden)
@@ -317,7 +317,7 @@ float AChunk::GetStructureFactorAtLocation(const FVector2D& Location, bool UseRa
 		return 0.0f;
 	}
 
-	const float StructureFactorScale = 0.00005f;
+	const float StructureFactorScale = 0.5f;
 	const float StructureFactorOffset = -20000.0f;
 	const FVector2D TestLocation = Location + StructureFactorOffset;
 	const float RawValue = Noise.octave2D(TestLocation.X * StructureFactorScale, TestLocation.Y * StructureFactorScale, 3);
@@ -611,6 +611,66 @@ void AChunk::GenerateTerrain(const TArray<FChunkData>& Neighbors)
 {
 	GenerateTerrainData(Neighbors);
 	CreateTerrainMesh();
+}
+
+void AChunk::GenerateFeatures()
+{
+	//const FVector2D FlatWorldLocation(this->GetActorLocation().X, this->GetActorLocation().Y);
+	const float StructureFactor = GetStructureFactorAtLocation(FVector2D(static_cast<float>(GetChunkLocation().X), static_cast<float>(GetChunkLocation().Y)), false);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Structure Factor: %f"), StructureFactor);
+	
+	// TODO check if any of our neighbors contain a chunk, or if we are overlapping a structure
+	const bool ChunkOverlapsStructure = false;
+	if (StructureFactor > 0.0f || ChunkOverlapsStructure)
+	{
+		GenerateStructures();
+		return;
+	}
+
+	GenerateDecorations();
+}
+
+void AChunk::GenerateStructures()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Hey we will spawn a structure here."));
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	// TODO this is repeating, we might want to move this to it's own kind of function
+	FBiomeGenerationData* Biome = GetBiomeAtLocation(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));
+	if (Biome == nullptr)
+	{
+		return;
+	}
+
+	const int32 StructureIndex = FMath::RandRange(0, Biome->Structures.Num() - 1);
+	if (!Biome->Structures.IsValidIndex(StructureIndex))
+	{
+		return;
+	}
+	const int32 ChunkHalf = FMath::RoundToInt32(17.0f * 0.5f); 
+	const int32 TerrainDataIndex = (ChunkHalf * (VERTEX_SIZE + 1)) + ChunkHalf;
+	const FVector SpawnLocation(this->GetActorLocation().X, this->GetActorLocation().Y, HeightData[TerrainDataIndex]);
+
+	AActor* SpawnedStructure = World->SpawnActor<AActor>(Biome->Structures[StructureIndex].BlueprintClass, SpawnLocation, FRotator::ZeroRotator);
+	if (SpawnedStructure == nullptr)
+	{
+		return;
+	}
+
+	SpawnedStructure->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+	
+	FVector StructureOrigin;
+	FVector StructureBounds;
+	SpawnedStructure->GetActorBounds(true, StructureOrigin, StructureBounds);
+
+	const int32 StructureChunkSizeX = StructureBounds.X / CHUNK_SIZE_CENTIMETERS;
+	const int32 StructureChunkSizeY = StructureBounds.Y / CHUNK_SIZE_CENTIMETERS;
+	// TODO clear decorations of all neighboring chunks that overlap this structure
 }
 
 void AChunk::GenerateDecorations()

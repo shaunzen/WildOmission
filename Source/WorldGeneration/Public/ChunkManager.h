@@ -27,6 +27,7 @@ public:
 	class AChunk* GetChunkAtLocation(const FVector& ChunkLocation);
 	static void HandleActorRenderDistanceVisibility(UWorld* WorldContextObject, AActor* InActor);
 	static bool IsActorNetRelevent(const AActor* ActorToTest, const AActor* ViewingActor);
+	void ClearDecorationsAroundChunk(const FVector2D& Origin, const FVector2D& Size);
 
 	// Chunk Data	
 	void SetChunkData(const TArray<FChunkData> InChunkData);
@@ -56,6 +57,7 @@ public:
 
 	static void SetChunkManager(AChunkManager* NewInstance);
 	static AChunkManager* GetChunkManager();
+
 
 protected:
 	// Called when the game starts or when spawned

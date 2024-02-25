@@ -345,6 +345,11 @@ bool AChunkManager::IsActorNetRelevent(const AActor* ActorToTest, const AActor* 
 	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
 }
 
+void AChunkManager::ClearDecorationsAroundChunk(const FVector2D& Origin, const FVector2D& Size)
+{
+	// TODO magic stuff here
+}
+
 FVector AChunkManager::GetWorldSpawnPoint()
 {
 	UWorld* World = GetWorld();
