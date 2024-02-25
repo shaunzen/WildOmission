@@ -27,7 +27,7 @@ public:
 	class AChunk* GetChunkAtLocation(const FVector& ChunkLocation);
 	static void HandleActorRenderDistanceVisibility(UWorld* WorldContextObject, AActor* InActor);
 	static bool IsActorNetRelevent(const AActor* ActorToTest, const AActor* ViewingActor);
-	void ClearDecorationsAroundChunk(const FVector2D& Origin, const FVector2D& Size);
+	void ClearDecorationsAroundChunk(const FIntVector2& Origin, const FIntVector2& Size);
 
 	// Chunk Data	
 	void SetChunkData(const TArray<FChunkData> InChunkData);

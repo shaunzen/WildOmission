@@ -345,9 +345,25 @@ bool AChunkManager::IsActorNetRelevent(const AActor* ActorToTest, const AActor* 
 	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
 }
 
-void AChunkManager::ClearDecorationsAroundChunk(const FVector2D& Origin, const FVector2D& Size)
+void AChunkManager::ClearDecorationsAroundChunk(const FIntVector2& Origin, const FIntVector2& Size)
 {
-	// TODO magic stuff here
+	const int32 HalfXSize = Size.X * 0.5f;
+	const int32 HalfYSize = Size.Y * 0.5f;
+
+	for (int32 X = Origin.X - HalfXSize; X < Size.X; ++X)
+	{
+		for (int32 Y = Origin.Y - HalfYSize; Y < Size.Y; ++Y)
+		{
+			FSpawnedChunk SpawnedChunk;
+			SpawnedChunk.GridLocation = FIntVector2(X, Y);
+			const int32 SpawnedChunkIndex = SpawnedChunks.Find(SpawnedChunk);
+			if (SpawnedChunkIndex == -1)
+			{
+				continue;
+			}
+			SpawnedChunks[SpawnedChunkIndex].Chunk->ClearAllAttachedActors();
+		}
+	}
 }
 
 FVector AChunkManager::GetWorldSpawnPoint()

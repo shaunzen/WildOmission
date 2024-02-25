@@ -47,6 +47,8 @@ public:
 	void SetHeightData(const TArray<float>& InHeightData);
 	void SetSurfaceData(const TArray<uint8>& InSurfaceData);
 
+	void ClearAllAttachedActors();
+
 	//***************************************************************************************
 	//	Chunk Getters
 	//***************************************************************************************

@@ -349,6 +349,17 @@ void AChunk::SetSurfaceData(const TArray<uint8>& InSurfaceData)
 	SurfaceData = InSurfaceData;
 }
 
+void AChunk::ClearAllAttachedActors()
+{
+	TArray<AActor*> AttachedActors;
+	this->GetAttachedActors(AttachedActors);
+	
+	for (AActor* AttachedActor : AttachedActors)
+	{
+		AttachedActor->Destroy();
+	}
+}
+
 //***************************************************************************************
 //	Chunk Getters
 //***************************************************************************************
@@ -663,14 +674,21 @@ void AChunk::GenerateStructures()
 	}
 
 	SpawnedStructure->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
 	
 	FVector StructureOrigin;
 	FVector StructureBounds;
 	SpawnedStructure->GetActorBounds(true, StructureOrigin, StructureBounds);
+	
+	const FIntVector2 StructureChunkOrigin(StructureOrigin.X / CHUNK_SIZE_CENTIMETERS, StructureOrigin.Y / CHUNK_SIZE_CENTIMETERS);
+	const FIntVector2 StructureChunkBounds(StructureBounds.X / CHUNK_SIZE_CENTIMETERS, StructureBounds.Y / CHUNK_SIZE_CENTIMETERS);
 
-	const int32 StructureChunkSizeX = StructureBounds.X / CHUNK_SIZE_CENTIMETERS;
-	const int32 StructureChunkSizeY = StructureBounds.Y / CHUNK_SIZE_CENTIMETERS;
-	// TODO clear decorations of all neighboring chunks that overlap this structure
+	ChunkManager->ClearDecorationsAroundChunk(StructureChunkOrigin, StructureChunkBounds);
 }
 
 void AChunk::GenerateDecorations()
