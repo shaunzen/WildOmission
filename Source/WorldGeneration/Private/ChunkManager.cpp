@@ -351,12 +351,9 @@ bool AChunkManager::IsActorNetRelevent(const AActor* ActorToTest, const AActor* 
 
 void AChunkManager::ClearDecorationsAroundChunk(const FIntVector2& Origin, const FIntVector2& Size)
 {
-	const int32 HalfXSize = Size.X * 0.5f;
-	const int32 HalfYSize = Size.Y * 0.5f;
-
-	for (int32 X = Origin.X - HalfXSize; X < Size.X; ++X)
+	for (int32 X = Origin.X - Size.X; X < Origin.X + Size.X; ++X)
 	{
-		for (int32 Y = Origin.Y - HalfYSize; Y < Size.Y; ++Y)
+		for (int32 Y = Origin.Y - Size.Y; Y < Origin.Y + Size.Y; ++Y)
 		{
 			FSpawnedChunk SpawnedChunk;
 			SpawnedChunk.GridLocation = FIntVector2(X, Y);
@@ -365,6 +362,7 @@ void AChunkManager::ClearDecorationsAroundChunk(const FIntVector2& Origin, const
 			{
 				continue;
 			}
+			
 			SpawnedChunks[SpawnedChunkIndex].Chunk->ClearAllAttachedActors();
 		}
 	}

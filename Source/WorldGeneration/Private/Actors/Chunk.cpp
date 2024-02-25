@@ -6,6 +6,7 @@
 #include "Components/ChunkSaveComponent.h"
 #include "ChunkManager.h"
 #include "Components/ChunkInvokerComponent.h"
+#include "Actors/ChunkInvokerActor.h"
 #include "Structs/SpawnQuery.h"
 #include "Curves/CurveFloat.h"
 #include "Noise/PerlinNoise.hpp"
@@ -634,8 +635,6 @@ void AChunk::GenerateFeatures()
 	//const FVector2D FlatWorldLocation(this->GetActorLocation().X, this->GetActorLocation().Y);
 	const float StructureFactor = GetStructureFactorAtLocation(FVector2D(static_cast<float>(GetChunkLocation().X), static_cast<float>(GetChunkLocation().Y)), false);
 	
-	UE_LOG(LogTemp, Warning, TEXT("Structure Factor: %f"), StructureFactor);
-	
 	// TODO check if any of our neighbors contain a chunk, or if we are overlapping a structure
 	const bool ChunkOverlapsStructure = false;
 	if (StructureFactor > 0.0f || ChunkOverlapsStructure)
@@ -672,14 +671,20 @@ void AChunk::GenerateStructures()
 	const int32 TerrainDataIndex = (ChunkHalf * (VERTEX_SIZE + 1)) + ChunkHalf;
 	const FVector SpawnLocation(this->GetActorLocation().X, this->GetActorLocation().Y, HeightData[TerrainDataIndex]);
 
+	AChunkInvokerActor* ChunkInvoker = World->SpawnActor<AChunkInvokerActor>(AChunkInvokerActor::StaticClass(), SpawnLocation, FRotator::ZeroRotator);
+	if (ChunkInvoker == nullptr)
+	{
+		return;
+	}
+	
+	ChunkInvoker->InvokeChunksNow();
+
 	AActor* SpawnedStructure = World->SpawnActor<AActor>(Biome->Structures[StructureIndex].BlueprintClass, SpawnLocation, FRotator::ZeroRotator);
 	if (SpawnedStructure == nullptr)
 	{
 		return;
 	}
-
-	SpawnedStructure->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-
+	
 	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
 	if (ChunkManager == nullptr)
 	{
@@ -690,10 +695,13 @@ void AChunk::GenerateStructures()
 	FVector StructureBounds;
 	SpawnedStructure->GetActorBounds(true, StructureOrigin, StructureBounds);
 	
-	const FIntVector2 StructureChunkOrigin(StructureOrigin.X / CHUNK_SIZE_CENTIMETERS, StructureOrigin.Y / CHUNK_SIZE_CENTIMETERS);
-	const FIntVector2 StructureChunkBounds(StructureBounds.X / CHUNK_SIZE_CENTIMETERS, StructureBounds.Y / CHUNK_SIZE_CENTIMETERS);
+	const FIntVector2 StructureChunkBounds((StructureBounds.X / CHUNK_SIZE_CENTIMETERS) * 4.0f, (StructureBounds.Y / CHUNK_SIZE_CENTIMETERS) * 4.0f);
 
-	ChunkManager->ClearDecorationsAroundChunk(StructureChunkOrigin, StructureChunkBounds);
+	ChunkManager->ClearDecorationsAroundChunk(GetChunkLocation(), StructureChunkBounds);
+
+	ChunkInvoker->Destroy();
+
+	SpawnedStructure->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 }
 
 void AChunk::GenerateDecorations()

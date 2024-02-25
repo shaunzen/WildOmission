@@ -58,6 +58,8 @@ public:
 	static void SetChunkManager(AChunkManager* NewInstance);
 	static AChunkManager* GetChunkManager();
 
+	UFUNCTION()
+	void SpawnChunksAtLocation(const FVector& Location, const uint8& RenderDistance);
 
 protected:
 	// Called when the game starts or when spawned
@@ -82,8 +84,6 @@ private:
 	void RemoveOutOfRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
 	UFUNCTION()
 	void SpawnInRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
-	UFUNCTION()
-	void SpawnChunksAtLocation(const FVector& Location, const uint8& RenderDistance);
 
 	// Generates a chunk at the location pre populated in the struct
 	// sets structs chunk to the chunk spawned if successful
