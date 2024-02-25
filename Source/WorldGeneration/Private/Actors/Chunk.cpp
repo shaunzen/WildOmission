@@ -655,7 +655,6 @@ void AChunk::GenerateStructures()
 		return;
 	}
 
-	// TODO this is repeating, we might want to move this to it's own kind of function
 	FBiomeGenerationData* Biome = GetBiomeAtLocation(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));
 	if (Biome == nullptr)
 	{
@@ -667,6 +666,7 @@ void AChunk::GenerateStructures()
 	{
 		return;
 	}
+	
 	const int32 ChunkHalf = FMath::RoundToInt32(17.0f * 0.5f); 
 	const int32 TerrainDataIndex = (ChunkHalf * (VERTEX_SIZE + 1)) + ChunkHalf;
 	const FVector SpawnLocation(this->GetActorLocation().X, this->GetActorLocation().Y, HeightData[TerrainDataIndex]);
@@ -698,7 +698,8 @@ void AChunk::GenerateStructures()
 	const FIntVector2 StructureChunkBounds((StructureBounds.X / CHUNK_SIZE_CENTIMETERS) * 4.0f, (StructureBounds.Y / CHUNK_SIZE_CENTIMETERS) * 4.0f);
 
 	ChunkManager->ClearDecorationsAroundChunk(GetChunkLocation(), StructureChunkBounds);
-
+	ChunkManager->FlattenTerrainAroundChunk(GetChunkLocation(), StructureChunkBounds, SpawnLocation.Z);
+	
 	ChunkInvoker->Destroy();
 
 	SpawnedStructure->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);

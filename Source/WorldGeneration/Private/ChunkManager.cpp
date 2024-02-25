@@ -368,6 +368,53 @@ void AChunkManager::ClearDecorationsAroundChunk(const FIntVector2& Origin, const
 	}
 }
 
+void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const FIntVector2& Size, float DesiredHeight)
+{
+	const int32 ChunkStartX = Origin.X - Size.X;
+	const int32 ChunkEndX = Origin.X + Size.X;
+	const int32 ChunkStartY = Origin.Y - Size.Y;
+	const int32 ChunkEndY = Origin.Y + Size.Y;
+
+	for (int32 X = ChunkStartX; X < ChunkEndX; ++X)
+	{
+		for (int32 Y = ChunkStartY; Y < ChunkEndY; ++Y)
+		{
+			FSpawnedChunk SpawnedChunk;
+			SpawnedChunk.GridLocation = FIntVector2(X, Y);
+			const int32 SpawnedChunkIndex = SpawnedChunks.Find(SpawnedChunk);
+			if (SpawnedChunkIndex == -1)
+			{
+				continue;
+			}
+
+			TArray<float> ChunkHeightData = SpawnedChunks[SpawnedChunkIndex].Chunk->GetHeightData();
+			for (int32 HeightX = 0; HeightX < AChunk::GetVertexSize(); ++HeightX)
+			{
+				for (int32 HeightY = 0; HeightY < AChunk::GetVertexSize(); ++HeightY)
+				{
+					if ((Y == ChunkStartY && HeightY == 0)
+					|| (Y == ChunkEndX && HeightY == AChunk::GetVertexSize())
+					|| (X == ChunkStartY && HeightX == 0)
+					|| (X == ChunkEndY && HeightX == AChunk::GetVertexSize()))
+					{
+						continue;
+					}
+
+					const int32 HeightDataIndex = (X * (AChunk::GetVertexSize() + 1)) + Y;
+					if (!ChunkHeightData.IsValidIndex(HeightDataIndex))
+					{
+						continue;
+					}
+					
+					ChunkHeightData[HeightDataIndex] = DesiredHeight;
+				}
+			}
+			
+			SpawnedChunks[SpawnedChunkIndex].Chunk->SetHeightData(ChunkHeightData);
+		}
+	}
+}
+
 FVector AChunkManager::GetWorldSpawnPoint()
 {
 	UWorld* World = GetWorld();

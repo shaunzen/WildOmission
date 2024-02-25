@@ -28,6 +28,7 @@ public:
 	static void HandleActorRenderDistanceVisibility(UWorld* WorldContextObject, AActor* InActor);
 	static bool IsActorNetRelevent(const AActor* ActorToTest, const AActor* ViewingActor);
 	void ClearDecorationsAroundChunk(const FIntVector2& Origin, const FIntVector2& Size);
+	void FlattenTerrainAroundChunk(const FIntVector2& Origin, const FIntVector2& Size, float DesiredHeight);
 
 	// Chunk Data	
 	void SetChunkData(const TArray<FChunkData> InChunkData);
