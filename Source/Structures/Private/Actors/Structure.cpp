@@ -6,6 +6,9 @@
 
 AStructure::AStructure()
 {
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	RootComponent = MeshComponent;
+	
 	Identifier = NAME_None;
 }
 

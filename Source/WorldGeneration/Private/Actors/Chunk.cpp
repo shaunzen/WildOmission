@@ -25,6 +25,7 @@ const static float MAX_HEIGHT = 1000000.0f;
 static UCurveFloat* ContinentalnessHeightCurve = nullptr;;
 static UCurveFloat* ErosionHeightCurve = nullptr;
 static UCurveFloat* PeaksAndValleysHeightCurve = nullptr;
+static UCurveFloat* StructureFactorCurve = nullptr;
 
 static UMaterialInterface* ChunkMaterial = nullptr;
 
@@ -84,6 +85,12 @@ AChunk::AChunk()
 	if (PeaksAndValleysHeightCurveBlueprint.Succeeded())
 	{
 		PeaksAndValleysHeightCurve = PeaksAndValleysHeightCurveBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UCurveFloat> StructureFactorCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_StructureFactor"));
+	if (StructureFactorCurveBlueprint.Succeeded())
+	{
+		StructureFactorCurve = StructureFactorCurveBlueprint.Object;
 	}
 }
 
@@ -301,6 +308,20 @@ float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRa
 	const FVector2D TestLocation = Location + PeaksAndValleysOffset;
 	const float RawValue = Noise.octave2D(TestLocation.X * PeaksAndValleysScale, TestLocation.Y * PeaksAndValleysScale, 3);
 	return UseRawValue ? RawValue : PeaksAndValleysHeightCurve->GetFloatValue(RawValue);
+}
+
+float AChunk::GetStructureFactorAtLocation(const FVector2D& Location, bool UseRawValue)
+{
+	if (StructureFactorCurve == nullptr)
+	{
+		return 0.0f;
+	}
+
+	const float StructureFactorScale = 0.00005f;
+	const float StructureFactorOffset = -20000.0f;
+	const FVector2D TestLocation = Location + StructureFactorOffset;
+	const float RawValue = Noise.octave2D(TestLocation.X * StructureFactorScale, TestLocation.Y * StructureFactorScale, 3);
+	return UseRawValue ? RawValue : StructureFactorCurve->GetFloatValue(RawValue);
 }
 
 //***************************************************************************************

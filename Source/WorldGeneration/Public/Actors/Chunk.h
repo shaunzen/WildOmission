@@ -36,6 +36,7 @@ public:
 	static float GetContinentalnessAtLocation(const FVector2D& Location, bool UseRawValue = false);
 	static float GetErosionAtLocation(const FVector2D& Location, bool UseRawValue = false);
 	static float GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRawValue = false);
+	static float GetStructureFactorAtLocation(const FVector2D& Location, bool UseRawValue = false);
 
 	//***************************************************************************************
 	//	Chunk Setters
@@ -110,6 +111,8 @@ private:
 
 	// Generates the decorations (Trees, Rocks, Plants)
 	void GenerateDecorations();
+
+	void GenerateStructures();
 	
 	void GenerateTerrainData(const TArray<FChunkData>& Neighbors);
 	void GenerateTerrainRuntimeData(TArray<FVector>& OutVertices, TArray<int32>& OutTriangles, TArray<FColor>& OutColors, TArray<FVector2D>& OutUV);

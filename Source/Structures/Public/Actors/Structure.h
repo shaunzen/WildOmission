@@ -23,6 +23,9 @@ public:
 	// End ISavableObject Implementation
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* MeshComponent;
+	
 	UPROPERTY(EditDefaultsOnly)
 	FName Identifier;
 
