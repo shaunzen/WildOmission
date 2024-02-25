@@ -409,8 +409,9 @@ void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const F
 					ChunkHeightData[HeightDataIndex] = DesiredHeight;
 				}
 			}
-			
+
 			SpawnedChunks[SpawnedChunkIndex].Chunk->SetHeightData(ChunkHeightData);
+			SpawnedChunks[SpawnedChunkIndex].Chunk->OnLoadedTerrainData();
 		}
 	}
 }

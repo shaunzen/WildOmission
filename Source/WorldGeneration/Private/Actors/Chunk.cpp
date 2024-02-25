@@ -975,6 +975,8 @@ void AChunk::GenerateTerrainRuntimeData(TArray<FVector>& OutVertices, TArray<int
 
 void AChunk::CreateTerrainMesh()
 {
+	MeshComponent->ClearMeshSection(0);
+	
 	TArray<FVector> Vertices;
 	TArray<FColor> VertexColors;
 	TArray<FVector2D> UV0;

@@ -18,11 +18,15 @@ UChunkSaveComponent::UChunkSaveComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	static ConstructorHelpers::FObjectFinder<UDataTable> SavableObjectDefinitionsBlueprint(TEXT("/Game/SaveSystem/DataTables/DT_SavableObjectDefinitions"));
-	if (SavableObjectDefinitionsBlueprint.Succeeded())
+	
+	// Even more unreal engine being mean bullshit *facepalm*
+	if (GetWorld())
 	{
-		DT_SavableObjectDefinitions = SavableObjectDefinitionsBlueprint.Object;
+		static ConstructorHelpers::FObjectFinder<UDataTable> SavableObjectDefinitionsBlueprint(TEXT("/Game/SaveSystem/DataTables/DT_SavableObjectDefinitions"));
+		if (SavableObjectDefinitionsBlueprint.Succeeded())
+		{
+			DT_SavableObjectDefinitions = SavableObjectDefinitionsBlueprint.Object;
+		}
 	}
 }
 
