@@ -351,9 +351,9 @@ bool AChunkManager::IsActorNetRelevent(const AActor* ActorToTest, const AActor* 
 
 void AChunkManager::ClearDecorationsAroundChunk(const FIntVector2& Origin, const FIntVector2& Size)
 {
-	for (int32 X = Origin.X - Size.X; X < Origin.X + Size.X; ++X)
+	for (int32 X = Origin.X - Size.X; X <= Origin.X + Size.X; ++X)
 	{
-		for (int32 Y = Origin.Y - Size.Y; Y < Origin.Y + Size.Y; ++Y)
+		for (int32 Y = Origin.Y - Size.Y; Y <= Origin.Y + Size.Y; ++Y)
 		{
 			FSpawnedChunk SpawnedChunk;
 			SpawnedChunk.GridLocation = FIntVector2(X, Y);
@@ -368,6 +368,7 @@ void AChunkManager::ClearDecorationsAroundChunk(const FIntVector2& Origin, const
 	}
 }
 
+// TODO blending
 void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const FIntVector2& Size, float DesiredHeight)
 {
 	const int32 ChunkStartX = Origin.X - Size.X;
@@ -375,9 +376,9 @@ void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const F
 	const int32 ChunkStartY = Origin.Y - Size.Y;
 	const int32 ChunkEndY = Origin.Y + Size.Y;
 
-	for (int32 X = ChunkStartX; X < ChunkEndX; ++X)
+	for (int32 X = ChunkStartX; X <= ChunkEndX; ++X)
 	{
-		for (int32 Y = ChunkStartY; Y < ChunkEndY; ++Y)
+		for (int32 Y = ChunkStartY; Y <= ChunkEndY; ++Y)
 		{
 			FSpawnedChunk SpawnedChunk;
 			SpawnedChunk.GridLocation = FIntVector2(X, Y);
@@ -388,19 +389,19 @@ void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const F
 			}
 
 			TArray<float> ChunkHeightData = SpawnedChunks[SpawnedChunkIndex].Chunk->GetHeightData();
-			for (int32 HeightX = 0; HeightX < AChunk::GetVertexSize(); ++HeightX)
+			for (int32 HeightX = 0; HeightX <= AChunk::GetVertexSize(); ++HeightX)
 			{
-				for (int32 HeightY = 0; HeightY < AChunk::GetVertexSize(); ++HeightY)
+				for (int32 HeightY = 0; HeightY <= AChunk::GetVertexSize(); ++HeightY)
 				{
 					if ((Y == ChunkStartY && HeightY == 0)
-					|| (Y == ChunkEndX && HeightY == AChunk::GetVertexSize())
-					|| (X == ChunkStartY && HeightX == 0)
-					|| (X == ChunkEndY && HeightX == AChunk::GetVertexSize()))
+					|| (Y == ChunkEndY && HeightY == AChunk::GetVertexSize())
+					|| (X == ChunkStartX && HeightX == 0)
+					|| (X == ChunkEndX && HeightX == AChunk::GetVertexSize()))
 					{
 						continue;
 					}
 
-					const int32 HeightDataIndex = (X * (AChunk::GetVertexSize() + 1)) + Y;
+					const int32 HeightDataIndex = (HeightX * (AChunk::GetVertexSize() + 1)) + HeightY;
 					if (!ChunkHeightData.IsValidIndex(HeightDataIndex))
 					{
 						continue;

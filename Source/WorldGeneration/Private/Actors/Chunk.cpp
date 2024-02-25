@@ -648,7 +648,6 @@ void AChunk::GenerateFeatures()
 
 void AChunk::GenerateStructures()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hey we will spawn a structure here."));
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -677,6 +676,7 @@ void AChunk::GenerateStructures()
 		return;
 	}
 	
+	ChunkInvoker->SetRenderDistance(16);
 	ChunkInvoker->InvokeChunksNow();
 
 	AActor* SpawnedStructure = World->SpawnActor<AActor>(Biome->Structures[StructureIndex].BlueprintClass, SpawnLocation, FRotator::ZeroRotator);
@@ -695,7 +695,7 @@ void AChunk::GenerateStructures()
 	FVector StructureBounds;
 	SpawnedStructure->GetActorBounds(true, StructureOrigin, StructureBounds);
 	
-	const FIntVector2 StructureChunkBounds((StructureBounds.X / CHUNK_SIZE_CENTIMETERS) * 4.0f, (StructureBounds.Y / CHUNK_SIZE_CENTIMETERS) * 4.0f);
+	const FIntVector2 StructureChunkBounds((StructureBounds.X / CHUNK_SIZE_CENTIMETERS) * 1.5f, (StructureBounds.Y / CHUNK_SIZE_CENTIMETERS) * 1.5f);
 
 	ChunkManager->ClearDecorationsAroundChunk(GetChunkLocation(), StructureChunkBounds);
 	ChunkManager->FlattenTerrainAroundChunk(GetChunkLocation(), StructureChunkBounds, SpawnLocation.Z);
