@@ -48,7 +48,8 @@ public:
 	void SetSurfaceData(const TArray<uint8>& InSurfaceData);
 
 	void ClearAllAttachedActors();
-
+	void Redecorate();
+	
 	//***************************************************************************************
 	//	Chunk Getters
 	//***************************************************************************************

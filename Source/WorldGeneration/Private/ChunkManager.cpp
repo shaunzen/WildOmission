@@ -5,10 +5,12 @@
 #include "Actors/Chunk.h"
 #include "Components/ChunkInvokerComponent.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+#include "Curves/CurveFloat.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
 static AChunkManager* Instance = nullptr;
+static UCurveFloat* FlattenHeightCurve = nullptr;
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
 // Sets default values
@@ -20,19 +22,27 @@ AChunkManager::AChunkManager()
 	bAlwaysRelevant = true;
 
 	// Wooooo hoooooooo, more unreal engine bullshit :O
-	if (GetWorld())
+	if (!GetWorld())
 	{
-		static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
-		if (BiomeDataTableBlueprint.Succeeded())
-		{
-			BiomeGenerationDataTable = BiomeDataTableBlueprint.Object;
-		}
+		return;
+	}
 
-		static ConstructorHelpers::FClassFinder<AChunk> ChunkBlueprint(TEXT("/Game/WorldGeneration/BP_Chunk"));
-		if (ChunkBlueprint.Succeeded())
-		{
-			ChunkClass = ChunkBlueprint.Class;
-		}
+	static ConstructorHelpers::FObjectFinder<UCurveFloat> FlattenHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_FlattenCurve"));
+	if (FlattenHeightCurveBlueprint.Succeeded())
+	{
+		FlattenHeightCurve = FlattenHeightCurveBlueprint.Object;
+	}
+	
+	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
+	if (BiomeDataTableBlueprint.Succeeded())
+	{
+		BiomeGenerationDataTable = BiomeDataTableBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FClassFinder<AChunk> ChunkBlueprint(TEXT("/Game/WorldGeneration/BP_Chunk"));
+	if (ChunkBlueprint.Succeeded())
+	{
+		ChunkClass = ChunkBlueprint.Class;
 	}
 }
 
@@ -368,13 +378,19 @@ void AChunkManager::ClearDecorationsAroundChunk(const FIntVector2& Origin, const
 	}
 }
 
-// TODO blending
 void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const FIntVector2& Size, float DesiredHeight)
 {
 	const int32 ChunkStartX = Origin.X - Size.X;
 	const int32 ChunkEndX = Origin.X + Size.X;
 	const int32 ChunkStartY = Origin.Y - Size.Y;
 	const int32 ChunkEndY = Origin.Y + Size.Y;
+
+	const int32  ChunkVertexSize = AChunk::GetVertexSize();
+	const int32 HalfVertexSize = ChunkVertexSize * 0.5f;
+	
+	const FVector2D ChunkOriginVertexSpace(Origin.X * ChunkVertexSize, Origin.Y * ChunkVertexSize);
+	const FVector2D ChunkStartVertexSpace(Origin.X * ChunkVertexSize, ChunkStartY * ChunkVertexSize);
+	const float MaxDistance = FVector2D::Distance(ChunkOriginVertexSpace, ChunkStartVertexSpace);
 
 	for (int32 ChunkX = ChunkStartX; ChunkX <= ChunkEndX; ++ChunkX)
 	{
@@ -387,6 +403,8 @@ void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const F
 			{
 				continue;
 			}
+			
+			const FVector2D ChunkVertexSpace(ChunkX * ChunkVertexSize, ChunkY * ChunkVertexSize);
 
 			TArray<float> ChunkHeightData = SpawnedChunks[SpawnedChunkIndex].Chunk->GetHeightData();
 			for (int32 HeightX = 0; HeightX <= AChunk::GetVertexSize(); ++HeightX)
@@ -399,49 +417,23 @@ void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const F
 						continue;
 					}
 					
-					const int32  ChunkVertexSize = AChunk::GetVertexSize();
-					const int32 HalfVertexSize = ChunkVertexSize * 0.5f;
+					const FVector2D CurrentVertexSpace(HeightX + ChunkVertexSpace.X, HeightY + ChunkVertexSpace.Y);
 					
-					const FIntVector2 ChunkVertexSpace(ChunkX * ChunkVertexSize, ChunkY * ChunkVertexSize);
-					const FIntVector2 ChunkOriginVertexSpace(Origin.X * ChunkVertexSize, Origin.Y * ChunkVertexSize);
-					const FIntVector2 ChunkStartVertexSpace(ChunkEndX * ChunkVertexSize, ChunkEndY * ChunkVertexSize);
-
-					const FIntVector2 CurrentVertexSpace(HeightX + ChunkVertexSpace.X, HeightY + ChunkVertexSpace.Y);
-
-					const FIntVector2 MaxDistanceVertexSpace(
-						ChunkStartVertexSpace.X - ChunkOriginVertexSpace.X,
-						ChunkStartVertexSpace.Y - ChunkOriginVertexSpace.Y
-					);
-					
-					const FIntVector2 MaxDistanceSquared(
-						FMath::Sqrt(static_cast<float>(MaxDistanceVertexSpace.X * MaxDistanceVertexSpace.X)),
-						FMath::Sqrt(static_cast<float>(MaxDistanceVertexSpace.Y * MaxDistanceVertexSpace.Y))
-					);
-
-					const FIntVector2 CurrentDistance(
-						CurrentVertexSpace.X - ChunkOriginVertexSpace.X,
-						CurrentVertexSpace.Y - ChunkOriginVertexSpace.Y
-					);
-
-					const FIntVector2 CurrentDistanceSquared(
-						FMath::Sqrt(static_cast<float>(CurrentDistance.X * CurrentDistance.X)),
-						FMath::Sqrt(static_cast<float>(CurrentDistance.Y * CurrentDistance.Y))
-					);
-
-					const FVector2D CurrentNormalizedDistance(
-						CurrentDistanceSquared.X / MaxDistanceSquared.X,
-						CurrentDistanceSquared.Y / MaxDistanceSquared.Y
-					);
-					//float XDistanceFromOrigin = ((HeightX + (X * AChunk::GetVertexSize())) / (Origin.X * AChunk::GetVertexSize())) - 1.0f;
-					//float YDistanceFromOrigin = 
-					//XMultiplier;
-					UE_LOG(LogTemp, Warning, TEXT("NormalizedDist %f"), CurrentNormalizedDistance.X * CurrentNormalizedDistance.Y);
-					ChunkHeightData[HeightDataIndex] = FMath::Lerp(DesiredHeight, ChunkHeightData[HeightDataIndex], CurrentNormalizedDistance.X * CurrentNormalizedDistance.Y);
+					const float CurrentDistance = FVector2D::Distance(ChunkOriginVertexSpace, CurrentVertexSpace);
+					const float Alpha = FlattenHeightCurve->GetFloatValue(FMath::Clamp((CurrentDistance / MaxDistance), 0.0f, 1.0f));
+					ChunkHeightData[HeightDataIndex] = FMath::Lerp(DesiredHeight, ChunkHeightData[HeightDataIndex], Alpha);
 				}
 			}
 
 			SpawnedChunks[SpawnedChunkIndex].Chunk->SetHeightData(ChunkHeightData);
 			SpawnedChunks[SpawnedChunkIndex].Chunk->OnLoadedTerrainData();
+			if (ChunkX > (Origin.X + (Size.X * 0.5f))
+				|| ChunkX < (Origin.X - (Size.X * 0.5f))
+				|| ChunkY > (Origin.Y + (Size.Y * 0.5f))
+				|| ChunkY < (Origin.Y - (Size.Y *0.5f)))
+			{
+				SpawnedChunks[SpawnedChunkIndex].Chunk->Redecorate();
+			}
 		}
 	}
 }

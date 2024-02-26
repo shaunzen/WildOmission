@@ -366,6 +366,12 @@ void AChunk::ClearAllAttachedActors()
 	}
 }
 
+void AChunk::Redecorate()
+{
+	ClearAllAttachedActors();
+	GenerateDecorations();
+}
+
 //***************************************************************************************
 //	Chunk Getters
 //***************************************************************************************
@@ -698,7 +704,7 @@ void AChunk::GenerateStructures()
 	const FIntVector2 StructureChunkBounds((StructureBounds.X / CHUNK_SIZE_CENTIMETERS) * 1.5f, (StructureBounds.Y / CHUNK_SIZE_CENTIMETERS) * 1.5f);
 
 	ChunkManager->ClearDecorationsAroundChunk(GetChunkLocation(), StructureChunkBounds);
-	ChunkManager->FlattenTerrainAroundChunk(GetChunkLocation(), StructureChunkBounds, SpawnLocation.Z);
+	ChunkManager->FlattenTerrainAroundChunk(GetChunkLocation(), StructureChunkBounds * 2, SpawnLocation.Z);
 	
 	ChunkInvoker->Destroy();
 
