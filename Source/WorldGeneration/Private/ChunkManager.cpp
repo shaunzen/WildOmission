@@ -376,12 +376,12 @@ void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const F
 	const int32 ChunkStartY = Origin.Y - Size.Y;
 	const int32 ChunkEndY = Origin.Y + Size.Y;
 
-	for (int32 X = ChunkStartX; X <= ChunkEndX; ++X)
+	for (int32 ChunkX = ChunkStartX; ChunkX <= ChunkEndX; ++ChunkX)
 	{
-		for (int32 Y = ChunkStartY; Y <= ChunkEndY; ++Y)
+		for (int32 ChunkY = ChunkStartY; ChunkY <= ChunkEndY; ++ChunkY)
 		{
 			FSpawnedChunk SpawnedChunk;
-			SpawnedChunk.GridLocation = FIntVector2(X, Y);
+			SpawnedChunk.GridLocation = FIntVector2(ChunkX, ChunkY);
 			const int32 SpawnedChunkIndex = SpawnedChunks.Find(SpawnedChunk);
 			if (SpawnedChunkIndex == -1)
 			{
@@ -393,21 +393,50 @@ void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const F
 			{
 				for (int32 HeightY = 0; HeightY <= AChunk::GetVertexSize(); ++HeightY)
 				{
-					if ((Y == ChunkStartY && HeightY == 0)
-					|| (Y == ChunkEndY && HeightY == AChunk::GetVertexSize())
-					|| (X == ChunkStartX && HeightX == 0)
-					|| (X == ChunkEndX && HeightX == AChunk::GetVertexSize()))
-					{
-						continue;
-					}
-
 					const int32 HeightDataIndex = (HeightX * (AChunk::GetVertexSize() + 1)) + HeightY;
 					if (!ChunkHeightData.IsValidIndex(HeightDataIndex))
 					{
 						continue;
 					}
 					
-					ChunkHeightData[HeightDataIndex] = DesiredHeight;
+					const int32  ChunkVertexSize = AChunk::GetVertexSize();
+					const int32 HalfVertexSize = ChunkVertexSize * 0.5f;
+					
+					const FIntVector2 ChunkVertexSpace(ChunkX * ChunkVertexSize, ChunkY * ChunkVertexSize);
+					const FIntVector2 ChunkOriginVertexSpace(Origin.X * ChunkVertexSize, Origin.Y * ChunkVertexSize);
+					const FIntVector2 ChunkStartVertexSpace(ChunkEndX * ChunkVertexSize, ChunkEndY * ChunkVertexSize);
+
+					const FIntVector2 CurrentVertexSpace(HeightX + ChunkVertexSpace.X, HeightY + ChunkVertexSpace.Y);
+
+					const FIntVector2 MaxDistanceVertexSpace(
+						ChunkStartVertexSpace.X - ChunkOriginVertexSpace.X,
+						ChunkStartVertexSpace.Y - ChunkOriginVertexSpace.Y
+					);
+					
+					const FIntVector2 MaxDistanceSquared(
+						FMath::Sqrt(static_cast<float>(MaxDistanceVertexSpace.X * MaxDistanceVertexSpace.X)),
+						FMath::Sqrt(static_cast<float>(MaxDistanceVertexSpace.Y * MaxDistanceVertexSpace.Y))
+					);
+
+					const FIntVector2 CurrentDistance(
+						CurrentVertexSpace.X - ChunkOriginVertexSpace.X,
+						CurrentVertexSpace.Y - ChunkOriginVertexSpace.Y
+					);
+
+					const FIntVector2 CurrentDistanceSquared(
+						FMath::Sqrt(static_cast<float>(CurrentDistance.X * CurrentDistance.X)),
+						FMath::Sqrt(static_cast<float>(CurrentDistance.Y * CurrentDistance.Y))
+					);
+
+					const FVector2D CurrentNormalizedDistance(
+						CurrentDistanceSquared.X / MaxDistanceSquared.X,
+						CurrentDistanceSquared.Y / MaxDistanceSquared.Y
+					);
+					//float XDistanceFromOrigin = ((HeightX + (X * AChunk::GetVertexSize())) / (Origin.X * AChunk::GetVertexSize())) - 1.0f;
+					//float YDistanceFromOrigin = 
+					//XMultiplier;
+					UE_LOG(LogTemp, Warning, TEXT("NormalizedDist %f"), CurrentNormalizedDistance.X * CurrentNormalizedDistance.Y);
+					ChunkHeightData[HeightDataIndex] = FMath::Lerp(DesiredHeight, ChunkHeightData[HeightDataIndex], CurrentNormalizedDistance.X * CurrentNormalizedDistance.Y);
 				}
 			}
 
