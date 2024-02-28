@@ -32,13 +32,13 @@ private:
 	float MaxSpawnFrequencySeconds;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<AActor>> LootToSpawn;
+	TArray<TSubclassOf<class ADeployable>> LootToSpawn;
 
 	UPROPERTY(SaveGame)
 	float TimeTillNextSpawnSeconds;
 	
 
 	UPROPERTY()
-	AActor* CurrentLoot;
+	class ADeployable* CurrentLoot;
 
 };

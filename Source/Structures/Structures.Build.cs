@@ -7,7 +7,7 @@ public class Structures : ModuleRules
     public Structures(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
-        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Inventory", "SavableObject", "WorldGeneration" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Deployables", "Inventory", "SavableObject", "WorldGeneration" });
 
         SetupIrisSupport(Target);
     }

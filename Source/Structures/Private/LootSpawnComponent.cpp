@@ -2,6 +2,7 @@
 
 
 #include "LootSpawnComponent.h"
+#include "Deployables/Deployable.h"
 
 // Sets default values for this component's properties
 ULootSpawnComponent::ULootSpawnComponent()
@@ -36,6 +37,7 @@ void ULootSpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	AActor* OwnerActor = GetOwner();
 	if (OwnerActor == nullptr || !OwnerActor->HasAuthority())
 	{
+		UE_LOG(LogTemp, Error, TEXT("Cannot Tick."));
 		return;
 	}
 
@@ -51,16 +53,19 @@ void ULootSpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		CurrentLoot->Destroy();
 	}
 	
-	TimeTillNextSpawnSeconds = 0.0f;
+	TimeTillNextSpawnSeconds = FMath::RandRange(MinSpawnFrequencySeconds, MaxSpawnFrequencySeconds);
 
 	UWorld* World = GetWorld();
 	const int32 LootIndex = FMath::RandRange(0, LootToSpawn.Num() - 1);
 	if (World == nullptr || !LootToSpawn.IsValidIndex(LootIndex) || LootToSpawn[LootIndex] == nullptr)
 	{
+		UE_LOG(LogTemp, Error, TEXT("Loot Spawn Failed."));
 		return;
 	}
-
+	
 	//https://forums.somethingawful.com/showthread.php?threadid=3817946
-	CurrentLoot = World->SpawnActor<AActor>(LootToSpawn[LootIndex]->StaticClass(), this->GetComponentLocation(), this->GetComponentRotation());
+	UE_LOG(LogTemp, Warning, TEXT("Loot Spawned."));
+	CurrentLoot = World->SpawnActor<ADeployable>(LootToSpawn[LootIndex], this->GetComponentLocation(), this->GetComponentRotation());
+	CurrentLoot->OnSpawn();
 }
 
