@@ -32,6 +32,9 @@ private:
 	float MaxSpawnFrequencySeconds;
 
 	UPROPERTY(EditDefaultsOnly)
+	bool UseRandomYawRotation;
+
+	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<class ADeployable>> LootToSpawn;
 
 	UPROPERTY(SaveGame)

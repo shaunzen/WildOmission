@@ -13,6 +13,7 @@ ULootSpawnComponent::ULootSpawnComponent()
 
 	MinSpawnFrequencySeconds = 120.0f;
 	MaxSpawnFrequencySeconds = 600.0f;
+	UseRandomYawRotation = true;
 	TimeTillNextSpawnSeconds = 0.0f;
 
 	CurrentLoot = nullptr;
@@ -37,7 +38,6 @@ void ULootSpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	AActor* OwnerActor = GetOwner();
 	if (OwnerActor == nullptr || !OwnerActor->HasAuthority())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cannot Tick."));
 		return;
 	}
 
@@ -59,13 +59,12 @@ void ULootSpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	const int32 LootIndex = FMath::RandRange(0, LootToSpawn.Num() - 1);
 	if (World == nullptr || !LootToSpawn.IsValidIndex(LootIndex) || LootToSpawn[LootIndex] == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Loot Spawn Failed."));
 		return;
 	}
 	
 	//https://forums.somethingawful.com/showthread.php?threadid=3817946
-	UE_LOG(LogTemp, Warning, TEXT("Loot Spawned."));
-	CurrentLoot = World->SpawnActor<ADeployable>(LootToSpawn[LootIndex], this->GetComponentLocation(), this->GetComponentRotation());
+	const FRotator SpawnRotation = UseRandomYawRotation ? FRotator(0.0, FMath::RandRange(0.0f, 360.0f), 0.0f) : this->GetComponentRotation();
+	CurrentLoot = World->SpawnActor<ADeployable>(LootToSpawn[LootIndex], this->GetComponentLocation(), SpawnRotation);
 	CurrentLoot->OnSpawn();
 }
 
