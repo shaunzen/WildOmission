@@ -6,6 +6,7 @@
 #include "Components/ChunkSaveComponent.h"
 #include "ChunkManager.h"
 #include "Components/ChunkInvokerComponent.h"
+#include "Actors/ChunkInvokerActor.h"
 #include "Structs/SpawnQuery.h"
 #include "Curves/CurveFloat.h"
 #include "Noise/PerlinNoise.hpp"
@@ -25,6 +26,7 @@ const static float MAX_HEIGHT = 1000000.0f;
 static UCurveFloat* ContinentalnessHeightCurve = nullptr;;
 static UCurveFloat* ErosionHeightCurve = nullptr;
 static UCurveFloat* PeaksAndValleysHeightCurve = nullptr;
+static UCurveFloat* StructureFactorCurve = nullptr;
 
 static UMaterialInterface* ChunkMaterial = nullptr;
 
@@ -84,6 +86,12 @@ AChunk::AChunk()
 	if (PeaksAndValleysHeightCurveBlueprint.Succeeded())
 	{
 		PeaksAndValleysHeightCurve = PeaksAndValleysHeightCurveBlueprint.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UCurveFloat> StructureFactorCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_StructureFactor"));
+	if (StructureFactorCurveBlueprint.Succeeded())
+	{
+		StructureFactorCurve = StructureFactorCurveBlueprint.Object;
 	}
 }
 
@@ -193,7 +201,7 @@ void AChunk::Tick(float DeltaTime)
 void AChunk::Generate(const TArray<FChunkData>& Neighbors)
 {
 	GenerateTerrain(Neighbors);
-	GenerateDecorations();
+	GenerateFeatures();
 }
 
 void AChunk::SetChunkHidden(bool Hidden)
@@ -303,6 +311,20 @@ float AChunk::GetPeaksAndValleysAtLocation(const FVector2D& Location, bool UseRa
 	return UseRawValue ? RawValue : PeaksAndValleysHeightCurve->GetFloatValue(RawValue);
 }
 
+float AChunk::GetStructureFactorAtLocation(const FVector2D& Location, bool UseRawValue)
+{
+	if (StructureFactorCurve == nullptr)
+	{
+		return 0.0f;
+	}
+
+	const float StructureFactorScale = 0.5f;
+	const float StructureFactorOffset = -20000.0f;
+	const FVector2D TestLocation = Location + StructureFactorOffset;
+	const float RawValue = Noise.octave2D(TestLocation.X * StructureFactorScale, TestLocation.Y * StructureFactorScale, 3);
+	return UseRawValue ? RawValue : StructureFactorCurve->GetFloatValue(RawValue);
+}
+
 //***************************************************************************************
 //	Chunk Setters
 //***************************************************************************************
@@ -326,6 +348,28 @@ void AChunk::SetHeightData(const TArray<float>& InHeightData)
 void AChunk::SetSurfaceData(const TArray<uint8>& InSurfaceData)
 {
 	SurfaceData = InSurfaceData;
+}
+
+void AChunk::ClearAllAttachedActors()
+{
+	TArray<AActor*> AttachedActors;
+	this->GetAttachedActors(AttachedActors);
+	
+	for (AActor* AttachedActor : AttachedActors)
+	{
+		if (AttachedActor == nullptr)
+		{
+			continue;
+		}
+
+		AttachedActor->Destroy();
+	}
+}
+
+void AChunk::Redecorate()
+{
+	ClearAllAttachedActors();
+	GenerateDecorations();
 }
 
 //***************************************************************************************
@@ -590,6 +634,81 @@ void AChunk::GenerateTerrain(const TArray<FChunkData>& Neighbors)
 {
 	GenerateTerrainData(Neighbors);
 	CreateTerrainMesh();
+}
+
+void AChunk::GenerateFeatures()
+{
+	//const FVector2D FlatWorldLocation(this->GetActorLocation().X, this->GetActorLocation().Y);
+	const float StructureFactor = GetStructureFactorAtLocation(FVector2D(static_cast<float>(GetChunkLocation().X), static_cast<float>(GetChunkLocation().Y)), false);
+	
+	// TODO check if any of our neighbors contain a chunk, or if we are overlapping a structure
+	const bool ChunkOverlapsStructure = false;
+	if (StructureFactor > 0.0f || ChunkOverlapsStructure)
+	{
+		GenerateStructures();
+		return;
+	}
+
+	GenerateDecorations();
+}
+
+void AChunk::GenerateStructures()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	FBiomeGenerationData* Biome = GetBiomeAtLocation(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));
+	if (Biome == nullptr)
+	{
+		return;
+	}
+
+	const int32 StructureIndex = FMath::RandRange(0, Biome->Structures.Num() - 1);
+	if (!Biome->Structures.IsValidIndex(StructureIndex))
+	{
+		return;
+	}
+	
+	const int32 ChunkHalf = FMath::RoundToInt32(17.0f * 0.5f); 
+	const int32 TerrainDataIndex = (ChunkHalf * (VERTEX_SIZE + 1)) + ChunkHalf;
+	const FVector SpawnLocation(this->GetActorLocation().X, this->GetActorLocation().Y, HeightData[TerrainDataIndex]);
+
+	AChunkInvokerActor* ChunkInvoker = World->SpawnActor<AChunkInvokerActor>(AChunkInvokerActor::StaticClass(), SpawnLocation, FRotator::ZeroRotator);
+	if (ChunkInvoker == nullptr)
+	{
+		return;
+	}
+	
+	ChunkInvoker->SetRenderDistance(16);
+	ChunkInvoker->InvokeChunksNow();
+
+	AActor* SpawnedStructure = World->SpawnActor<AActor>(Biome->Structures[StructureIndex].BlueprintClass, SpawnLocation, FRotator::ZeroRotator);
+	if (SpawnedStructure == nullptr)
+	{
+		return;
+	}
+	
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+	
+	FVector StructureOrigin;
+	FVector StructureBounds;
+	SpawnedStructure->GetActorBounds(true, StructureOrigin, StructureBounds);
+	
+	const FIntVector2 StructureChunkBounds((StructureBounds.X / CHUNK_SIZE_CENTIMETERS) * 1.5f, (StructureBounds.Y / CHUNK_SIZE_CENTIMETERS) * 1.5f);
+
+	ChunkManager->ClearDecorationsAroundChunk(GetChunkLocation(), StructureChunkBounds);
+	ChunkManager->FlattenTerrainAroundChunk(GetChunkLocation(), StructureChunkBounds * 2, SpawnLocation.Z);
+	
+	ChunkInvoker->Destroy();
+
+	SpawnedStructure->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 }
 
 void AChunk::GenerateDecorations()
@@ -862,6 +981,8 @@ void AChunk::GenerateTerrainRuntimeData(TArray<FVector>& OutVertices, TArray<int
 
 void AChunk::CreateTerrainMesh()
 {
+	MeshComponent->ClearMeshSection(0);
+	
 	TArray<FVector> Vertices;
 	TArray<FColor> VertexColors;
 	TArray<FVector2D> UV0;

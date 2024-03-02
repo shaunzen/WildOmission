@@ -3,6 +3,7 @@
 
 #include "Actors/ChunkInvokerActor.h"
 #include "Components/ChunkInvokerComponent.h"
+#include "ChunkManager.h"
 
 // Sets default values
 AChunkInvokerActor::AChunkInvokerActor()
@@ -13,6 +14,17 @@ AChunkInvokerActor::AChunkInvokerActor()
 	ChunkInvokerComponent = CreateDefaultSubobject<UChunkInvokerComponent>(TEXT("ChunkInvokerComponent"));
 	ChunkInvokerComponent->SetRenderDistance(4);
 	RootComponent = ChunkInvokerComponent;
+}
+
+void AChunkInvokerActor::InvokeChunksNow()
+{
+	AChunkManager* ChunkManager = AChunkManager::GetChunkManager();
+	if (ChunkManager == nullptr)
+	{
+		return;
+	}
+
+	ChunkManager->SpawnChunksAtLocation(this->GetActorLocation(), ChunkInvokerComponent->GetRenderDistance());
 }
 
 void AChunkInvokerActor::SetRenderDistance(const uint8& InRenderDistance)

@@ -71,8 +71,9 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, bool FromHarvesting, AActor* ActorToSpawnDropedItems, bool ForceClientUpdate)
 {
+	UWorld* World = GetWorld();
 	AActor* OwningActor = GetOwner();
-	if (OwningActor == nullptr)
+	if (World == nullptr || OwningActor == nullptr)
 	{
 		return;
 	}
@@ -83,7 +84,7 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, bool FromHarv
 	if (UseServerState)
 	{
 		FInventoryItemUpdate AdditionItemUpdate;
-		AdditionItemUpdate.Time = GetWorld()->GetRealTimeSeconds();
+		AdditionItemUpdate.Time = World->GetRealTimeSeconds();
 		AdditionItemUpdate.Addition = true;
 		AdditionItemUpdate.Item = ItemToAdd;
 		ServerState.Updates.Add(AdditionItemUpdate);
@@ -115,7 +116,7 @@ void UInventoryComponent::AddItem(const FInventoryItem& ItemToAdd, bool FromHarv
 		DroppedItem.Quantity = Remaining;
 
 		FInventoryItemUpdate DroppedItemUpdate;
-		DroppedItemUpdate.Time = GetWorld()->GetRealTimeSeconds();
+		DroppedItemUpdate.Time = World->GetRealTimeSeconds();
 		DroppedItemUpdate.Addition = false;
 		DroppedItemUpdate.Item = DroppedItem;
 		ServerState.Updates.Add(DroppedItemUpdate);
