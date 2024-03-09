@@ -1,10 +1,10 @@
 // Copyright Telephone Studios. All Rights Reserved.
 
 
-#include "Actors/Structure.h"
+#include "Actors/WorldStructure.h"
 #include "ChunkManager.h"
 
-AStructure::AStructure()
+AWorldStructure::AWorldStructure()
 {
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
@@ -12,14 +12,14 @@ AStructure::AStructure()
 	Identifier = NAME_None;
 }
 
-bool AStructure::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
+bool AWorldStructure::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
 {
 	Super::IsNetRelevantFor(RealViewer, ViewTarget, SrcLocation);
 
 	return AChunkManager::IsActorNetRelevent(this, ViewTarget);
 }
 
-FName AStructure::GetIdentifier() const
+FName AWorldStructure::GetIdentifier() const
 {
 	return Identifier;
 }

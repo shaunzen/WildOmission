@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class Structures : ModuleRules
+public class WorldStructures : ModuleRules
 {
-    public Structures(ReadOnlyTargetRules Target) : base(Target)
+    public WorldStructures(ReadOnlyTargetRules Target) : base(Target)
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Deployables", "Inventory", "SavableObject", "WorldGeneration" });

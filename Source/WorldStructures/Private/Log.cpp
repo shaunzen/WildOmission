@@ -2,4 +2,4 @@
 
 #include "Log.h"
 
-DEFINE_LOG_CATEGORY(LogStructures);
+DEFINE_LOG_CATEGORY(LogWorldStructures);

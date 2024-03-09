@@ -23,8 +23,7 @@ UInventoryComponent::UInventoryComponent()
 
 	SlotCount = 24;
 	LoadedFromSave = false;
-
-	// We have to add this stupid ugly check here, because unreal engine is a buggy broken mess somethimes.
+	
 	if (GetWorld())
 	{
 		static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableBlueprint(TEXT("/Game/Inventory/DataTables/DT_Items"));

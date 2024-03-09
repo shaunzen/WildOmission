@@ -20,25 +20,13 @@ AChunkManager::AChunkManager()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	bAlwaysRelevant = true;
-
-	// Wooooo hoooooooo, more unreal engine bullshit :O
-	if (!GetWorld())
-	{
-		return;
-	}
-
+	
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> FlattenHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_FlattenCurve"));
 	if (FlattenHeightCurveBlueprint.Succeeded())
 	{
 		FlattenHeightCurve = FlattenHeightCurveBlueprint.Object;
 	}
 	
-	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
-	if (BiomeDataTableBlueprint.Succeeded())
-	{
-		BiomeGenerationDataTable = BiomeDataTableBlueprint.Object;
-	}
-
 	static ConstructorHelpers::FClassFinder<AChunk> ChunkBlueprint(TEXT("/Game/WorldGeneration/BP_Chunk"));
 	if (ChunkBlueprint.Succeeded())
 	{
@@ -561,9 +549,9 @@ uint8 AChunkManager::GetSurfaceTypeAtLocation(const FVector& TestLocation) const
 	return SurfaceData[ArrayIndex];
 }
 
-FBiomeGenerationData* AChunkManager::GetBiomeAtLocation(const FVector& TestLocation)
+FName AChunkManager::GetBiomeNameAtLocation(const FVector& TestLocation)
 {
-	return AChunk::GetBiomeAtLocation(FVector2D(TestLocation.X, TestLocation.Y));
+	return AChunk::GetBiomeNameAtLocation(FVector2D(TestLocation.X, TestLocation.Y));
 }
 
 void AChunkManager::SetGenerationSeed(const uint32& Seed)
@@ -672,33 +660,6 @@ void AChunkManager::LoadChunk(const FSpawnedChunk& InSpawnedChunk, const FChunkD
 	}
 
 	InSpawnedChunk.Chunk->Load(InChunkData);
-}
-
-TArray<FBiomeGenerationData*> AChunkManager::GetAllPossibleBiomes()
-{
-	TArray<FBiomeGenerationData*> Biomes;
-	if (BiomeGenerationDataTable == nullptr)
-	{
-		return Biomes;
-	}
-
-	static const FString ContextString(TEXT("All Biomes Data Context"));
-	
-	BiomeGenerationDataTable->GetAllRows<FBiomeGenerationData>(ContextString, Biomes);
-
-	return Biomes;
-}
-
-FBiomeGenerationData* AChunkManager::GetBiomeGenerationData(const FName& BiomeName)
-{
-	if (BiomeGenerationDataTable == nullptr)
-	{
-		return nullptr;
-	}
-
-	static const FString ContextString(TEXT("Biome Generation Data Context"));
-
-	return BiomeGenerationDataTable->FindRow<FBiomeGenerationData>(BiomeName, ContextString, true);
 }
 
 void AChunkManager::SetChunkManager(AChunkManager* NewInstance)

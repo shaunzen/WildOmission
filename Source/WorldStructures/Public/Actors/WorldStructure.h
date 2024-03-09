@@ -5,16 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/SavableObject.h"
-#include "Structure.generated.h"
+#include "WorldStructure.generated.h"
 
 UCLASS()
-class STRUCTURES_API AStructure : public AActor, public ISavableObject
+class WORLDSTRUCTURES_API AWorldStructure : public AActor, public ISavableObject
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AStructure();
+	AWorldStructure();
 	
 	virtual bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
 	

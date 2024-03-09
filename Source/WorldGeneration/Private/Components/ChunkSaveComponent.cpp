@@ -19,14 +19,10 @@ UChunkSaveComponent::UChunkSaveComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	
-	// Even more unreal engine being mean bullshit *facepalm*
-	if (GetWorld())
+	static ConstructorHelpers::FObjectFinder<UDataTable> SavableObjectDefinitionsBlueprint(TEXT("/Game/SaveSystem/DataTables/DT_SavableObjectDefinitions"));
+	if (SavableObjectDefinitionsBlueprint.Succeeded())
 	{
-		static ConstructorHelpers::FObjectFinder<UDataTable> SavableObjectDefinitionsBlueprint(TEXT("/Game/SaveSystem/DataTables/DT_SavableObjectDefinitions"));
-		if (SavableObjectDefinitionsBlueprint.Succeeded())
-		{
-			DT_SavableObjectDefinitions = SavableObjectDefinitionsBlueprint.Object;
-		}
+		DT_SavableObjectDefinitions = SavableObjectDefinitionsBlueprint.Object;
 	}
 }
 

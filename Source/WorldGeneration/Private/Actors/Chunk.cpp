@@ -28,6 +28,8 @@ static UCurveFloat* ErosionHeightCurve = nullptr;
 static UCurveFloat* PeaksAndValleysHeightCurve = nullptr;
 static UCurveFloat* StructureFactorCurve = nullptr;
 
+static UDataTable* BiomeGenerationDataTable = nullptr;
+
 static UMaterialInterface* ChunkMaterial = nullptr;
 
 const static FColor STONE_VERTEX_COLOR = FColor(255, 0, 0);
@@ -63,6 +65,12 @@ AChunk::AChunk()
 	SaveComponent = CreateDefaultSubobject<UChunkSaveComponent>(TEXT("SaveComponent"));
 
 	ChunkHidden = false;
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
+	if (BiomeDataTableBlueprint.Succeeded())
+	{
+		BiomeGenerationDataTable = BiomeDataTableBlueprint.Object;
+	}
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> TerrainMaterial(TEXT("/Game/WorldGeneration/M_Terrain"));
 	if (TerrainMaterial.Succeeded())
@@ -441,7 +449,7 @@ FBiomeGenerationData* AChunk::GetBiomeAtLocation(const FVector2D& Location)
 		return nullptr;
 	}
 
-	return AChunkManager::GetBiomeGenerationData(BiomeName);
+	return GetBiomeGenerationData(BiomeName);
 }
 
 void AChunk::GetTerrainDataAtLocation(const FVector2D& Location, float& OutHeight, uint8& OutSurface)
@@ -627,6 +635,33 @@ bool AChunk::IsWithinThreshold(const TArray<float>& TestValues, float MinThresho
 	return true;
 }
 
+TArray<FBiomeGenerationData*> AChunk::GetAllPossibleBiomes()
+{
+	TArray<FBiomeGenerationData*> Biomes;
+	if (BiomeGenerationDataTable == nullptr)
+	{
+		return Biomes;
+	}
+
+	static const FString ContextString(TEXT("All Biomes Data Context"));
+	
+	BiomeGenerationDataTable->GetAllRows<FBiomeGenerationData>(ContextString, Biomes);
+
+	return Biomes;
+}
+
+FBiomeGenerationData* AChunk::GetBiomeGenerationData(const FName& BiomeName)
+{
+	if (BiomeGenerationDataTable == nullptr)
+	{
+		return nullptr;
+	}
+
+	static const FString ContextString(TEXT("Biome Generation Data Context"));
+
+	return BiomeGenerationDataTable->FindRow<FBiomeGenerationData>(BiomeName, ContextString, true);
+}
+
 //***************************************************************************************
 //	Chunk Generation
 //***************************************************************************************
@@ -666,8 +701,8 @@ void AChunk::GenerateStructures()
 		return;
 	}
 
-	const int32 StructureIndex = FMath::RandRange(0, Biome->Structures.Num() - 1);
-	if (!Biome->Structures.IsValidIndex(StructureIndex))
+	const int32 StructureIndex = FMath::RandRange(0, Biome->SpawnableStructures.Num() - 1);
+	if (!Biome->SpawnableStructures.IsValidIndex(StructureIndex) || Biome->SpawnableStructures[StructureIndex] == nullptr)
 	{
 		return;
 	}
@@ -685,7 +720,7 @@ void AChunk::GenerateStructures()
 	ChunkInvoker->SetRenderDistance(16);
 	ChunkInvoker->InvokeChunksNow();
 
-	AActor* SpawnedStructure = World->SpawnActor<AActor>(Biome->Structures[StructureIndex].BlueprintClass, SpawnLocation, FRotator::ZeroRotator);
+	AActor* SpawnedStructure = World->SpawnActor<AActor>(Biome->SpawnableStructures[StructureIndex], SpawnLocation, FRotator::ZeroRotator);
 	if (SpawnedStructure == nullptr)
 	{
 		return;

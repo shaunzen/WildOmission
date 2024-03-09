@@ -9,7 +9,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class STRUCTURES_API ULootSpawnComponent : public USceneComponent, public ISavableObject
+class WORLDSTRUCTURES_API ULootSpawnComponent : public USceneComponent, public ISavableObject
 {
 	GENERATED_BODY()
 

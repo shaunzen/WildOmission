@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Structs/BiomeGenerationData.h"
 #include "Structs/ChunkData.h"
 #include "Structs/SpawnedChunk.h"
 #include "Structs/PlayerSpawnChunk.h"
@@ -44,9 +43,7 @@ public:
 
 	// Surface/Biome
 	uint8 GetSurfaceTypeAtLocation(const FVector& TestLocation) const;
-	static FBiomeGenerationData* GetBiomeAtLocation(const FVector& TestLocation);
-	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
-	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
+	static FName GetBiomeNameAtLocation(const FVector& TestLocation);
 
 	// Seed
 	static void SetGenerationSeed(const uint32& Seed);

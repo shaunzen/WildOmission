@@ -82,6 +82,9 @@ public:
 	// Returns false if only one element is outside of the given range
 	static bool IsWithinThreshold(const TArray<float>& TestValues, float MinThreshold, float MaxThreshold);
 
+	static TArray<FBiomeGenerationData*> GetAllPossibleBiomes();
+	static FBiomeGenerationData* GetBiomeGenerationData(const FName& BiomeName);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -104,7 +107,7 @@ private:
 	TArray<uint8> SurfaceData;
 
 	bool ChunkHidden;
-	
+
 	//***************************************************************************************
 	//	Chunk Generation
 	//***************************************************************************************

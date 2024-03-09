@@ -4,6 +4,7 @@
 #include "Deployables/Sapling.h"
 #include "ChunkManager.h"
 #include "Actors/Chunk.h"
+#include "Structs/BiomeGenerationData.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASapling::ASapling()
@@ -54,7 +55,7 @@ void ASapling::GrowUp()
 	}
 	
 	// Get Biome
-	const FBiomeGenerationData* Biome = AChunkManager::GetBiomeAtLocation(this->GetActorLocation());
+	const FBiomeGenerationData* Biome = AChunk::GetBiomeAtLocation(FVector2D(this->GetActorLocation().X, this->GetActorLocation().Y));
 	if (Biome == nullptr || Biome->Trees.Spawnables.IsEmpty())
 	{
 		return;
