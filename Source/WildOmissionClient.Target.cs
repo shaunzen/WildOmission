@@ -12,7 +12,6 @@ public class WildOmissionClientTarget : TargetRules
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		
 		bUsesSteam = true;
-		bUseIris = true;
 
 		ExtraModuleNames.AddRange( new string[] { "WildOmissionCore" } );
 

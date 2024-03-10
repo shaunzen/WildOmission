@@ -283,10 +283,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "Iris",
-			"Enabled": true
-		},
-		{
 			"Name": "Volumetrics",
 			"Enabled": true
 		}

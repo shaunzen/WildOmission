@@ -8,7 +8,5 @@ public class EquipableItems : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "GatherableResources", "Inventory" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Niagara", "Durability", "GameSettings", "SurfaceProperties", "Vitals", "WorldGeneration" });
-
-        SetupIrisSupport(Target);
     }
 }

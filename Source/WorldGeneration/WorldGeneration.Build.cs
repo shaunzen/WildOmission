@@ -8,7 +8,5 @@ public class WorldGeneration : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "ProceduralMeshComponent", "SavableObject" });
-
-        SetupIrisSupport(Target);
     }
 }

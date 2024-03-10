@@ -8,7 +8,5 @@ public class Interaction : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "InputCore", "GameSettings" });
-
-        SetupIrisSupport(Target);
     }
 }

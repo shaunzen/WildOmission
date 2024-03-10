@@ -9,7 +9,5 @@ public class Monsters : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "GameplayTasks", "Niagara",
             "EquipableItems", "Inventory", "SaveSystem", "TimeOfDay", "Vitals", "Weapons", "WildOmissionAI" });
-
-        SetupIrisSupport(Target);
     }
 }

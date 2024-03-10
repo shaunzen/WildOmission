@@ -8,7 +8,5 @@ public class TimeOfDay: ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject" });
-
-        SetupIrisSupport(Target);
     }
 }

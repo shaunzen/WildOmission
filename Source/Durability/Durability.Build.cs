@@ -8,7 +8,5 @@ public class Durability : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject" });
-
-        SetupIrisSupport(Target);
     }
 }

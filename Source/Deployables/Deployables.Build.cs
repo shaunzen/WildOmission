@@ -9,7 +9,5 @@ public class Deployables : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "UMG", "EquipableItems", "Inventory", "SavableObject" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "InputCore", "SlateCore", "NavigationSystem",
             "Niagara", "Crafting", "Despawner", "Durability", "GatherableResources", "Interaction", "Locks", "Weather", "WorldGeneration" });
-
-        SetupIrisSupport(Target);
     }
 }

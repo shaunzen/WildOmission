@@ -8,7 +8,5 @@ public class Weather : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine", "SavableObject" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Niagara", "TimeOfDay", "WorldGeneration" });
-
-        SetupIrisSupport(Target);
     }
 }

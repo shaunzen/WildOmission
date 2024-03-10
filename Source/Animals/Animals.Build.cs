@@ -8,7 +8,5 @@ public class Animals : ModuleRules
     {
         PublicDependencyModuleNames.AddRange(new string[] { "Engine" });
         PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "WildOmissionAI" });
-
-        SetupIrisSupport(Target);
     }
 }
