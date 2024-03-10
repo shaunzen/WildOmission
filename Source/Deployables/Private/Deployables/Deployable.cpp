@@ -176,17 +176,12 @@ float ADeployable::TakeDamage(float DamageAmount, const FDamageEvent& DamageEven
 	
 	if (CurrentDurability < KINDA_SMALL_NUMBER)
 	{
-		OnDeployableDestroyed();
+		Multi_PlayDestructionEffects();
 		this->Destroy();
 	}
 
 	FlushNetDormancy();
 	return DamageAmount;
-}
-
-void ADeployable::OnDeployableDestroyed()
-{
-	Multi_PlayDestructionEffects();
 }
 
 void ADeployable::Rotate()

@@ -27,8 +27,6 @@ public:
 	class AChunk* GetChunkAtLocation(const FVector& ChunkLocation);
 	static void HandleActorRenderDistanceVisibility(UWorld* WorldContextObject, AActor* InActor);
 	static bool IsActorNetRelevent(const AActor* ActorToTest, const AActor* ViewingActor);
-	void ClearDecorationsAroundChunk(const FIntVector2& Origin, const FIntVector2& Size);
-	void FlattenTerrainAroundChunk(const FIntVector2& Origin, const FIntVector2& Size, float DesiredHeight);
 
 	// Chunk Data	
 	void SetChunkData(const TArray<FChunkData> InChunkData);
@@ -59,9 +57,6 @@ public:
 	static void SetChunkManager(AChunkManager* NewInstance);
 	static AChunkManager* GetChunkManager();
 
-	UFUNCTION()
-	void SpawnChunksAtLocation(const FVector& Location, const uint8& RenderDistance);
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -85,6 +80,8 @@ private:
 	void RemoveOutOfRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
 	UFUNCTION()
 	void SpawnInRangeChunks(const TArray<class UChunkInvokerComponent*>& ChunkInvokers);
+	UFUNCTION()
+	void SpawnChunksAtLocation(const FVector& Location, const uint8& RenderDistance);
 
 	// Generates a chunk at the location pre populated in the struct
 	// sets structs chunk to the chunk spawned if successful

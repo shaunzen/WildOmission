@@ -63,6 +63,5 @@ void ALootCrateBase::OnContainerClosed()
 		return;
 	}
 
-	OnDeployableDestroyed();
 	Destroy();
 }
