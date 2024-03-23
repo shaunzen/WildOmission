@@ -81,10 +81,10 @@ private:
 	UPROPERTY()
 	TSubclassOf<class UDeathMenuWidget> DeathMenuWidgetClass;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(VisibleAnywhere, Replicated)
 	int32 BedUniqueID;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FVector BedWorldLocation;
 
 	UPROPERTY(Replicated)
