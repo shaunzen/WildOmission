@@ -87,6 +87,7 @@ private:
 	UPROPERTY()
 	float SmeltCounter;
 
+	bool HasFuel() const;
 	bool BurnFuel();
 	void SmeltAllSmeltables();
 	void ProduceByproduct();
