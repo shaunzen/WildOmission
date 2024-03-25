@@ -24,7 +24,7 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("Now with crouching!"),
 	TEXT("Larch was 16 at the start of development."),
 	TEXT("Not possible without you!"),
-	TEXT("Not a day off in over a year"),
+	TEXT("Not a day off in 2023"),
 	TEXT("Played by FloppySword!"),
 	TEXT("wellyesh <3"),
 	TEXT("NELSInfinity <3"),
@@ -42,7 +42,7 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("96.7% C++"),
 	TEXT("1.8% C"),
 	TEXT("1.5% C#"),
-	TEXT("Updated Weekly!"),
+	TEXT("Updated Regularly!"),
 	TEXT("3,000,000+ Lines Of Code."),
 	TEXT("Also play DeadPoly!")
 };
