@@ -102,7 +102,7 @@ void AItemSmelterBase::OnSmelt()
 	FlushNetDormancy();
 }
 
-bool AItemSmelterBase::BurnFuel()
+bool AItemSmelterBase::HasFuel() const
 {
 	UInventoryComponent* SmelterInventoryComponent = GetInventoryComponent();
 	if (SmelterInventoryComponent == nullptr)
@@ -119,7 +119,23 @@ bool AItemSmelterBase::BurnFuel()
 	const int32& AmountOfFuel = InventoryContents->GetItemQuantity(FuelSource.Fuel.Name);
 	if (AmountOfFuel < FuelSource.Fuel.Quantity)
 	{
+		return false;
+	}
+
+	return true;
+}
+
+bool AItemSmelterBase::BurnFuel()
+{
+	if (!HasFuel())
+	{
 		Server_ToggleState(false);
+		return false;
+	}
+	
+	UInventoryComponent* SmelterInventoryComponent = GetInventoryComponent();
+	if (SmelterInventoryComponent == nullptr)
+	{
 		return false;
 	}
 
@@ -203,6 +219,13 @@ void AItemSmelterBase::OnLoadComplete_Implementation()
 
 void AItemSmelterBase::Server_ToggleState_Implementation(bool NewState)
 {
+	if (!HasFuel())
+	{
+		bTurnedOn = false;
+		OnRep_TurnedOn();
+		return;
+	}
+
 	bTurnedOn = NewState;
 
 	OnRep_TurnedOn();

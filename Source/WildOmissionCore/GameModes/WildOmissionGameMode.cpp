@@ -600,7 +600,7 @@ void AWildOmissionGameMode::SpawnHumanAtBed(AController* Controller)
 	
 	const float ChunkSize = AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale();
 	const FVector BedWorldLocation = WOPlayerController->GetBedWorldLocation();
-	const FIntVector2 BedChunkLocation(FMath::RoundToInt32(BedWorldLocation.X / ChunkSize), FMath::RoundToInt32(BedWorldLocation.Y / ChunkSize));
+	const FIntVector2 BedChunkLocation(FMath::FloorToInt32(BedWorldLocation.X / ChunkSize), FMath::FloorToInt32(BedWorldLocation.Y / ChunkSize));
 
 	AChunk* BedChunk = ChunkManager->GetChunkAtLocation(BedChunkLocation);
 	if (BedChunk == nullptr)

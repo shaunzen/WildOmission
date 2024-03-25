@@ -40,7 +40,7 @@ void AHarvestableNode::RefreshNodeStage()
 		return;
 	}
 	
-	if (MeshComponent->GetStaticMesh() != MeshStages[NodeStageIndex])
+	if (HasAuthority() && MeshComponent->GetStaticMesh() != MeshStages[NodeStageIndex])
 	{
 		Multi_PlayDestructionEffects();
 	}
