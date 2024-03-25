@@ -359,7 +359,7 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupLocalComponents();
 	StopSprinting();
 
-	TimeToNextSpookySound = FMath::RandRange(300.0f, 1000.0f);
+	TimeToNextSpookySound = FMath::RandRange(60.0f, 300.0f);
 
 	if (EquipComponent && AimComponent)
 	{
