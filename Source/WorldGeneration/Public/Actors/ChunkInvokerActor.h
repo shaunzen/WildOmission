@@ -15,6 +15,9 @@ public:
 	// Sets default values for this actor's properties
 	AChunkInvokerActor();
 
+	// Force chunks to be invoked RIGHT NOW
+	void InvokeChunksNow();
+
 	void SetRenderDistance(const uint8& InRenderDistance);
 	uint8 GetRenderDistance() const;
 

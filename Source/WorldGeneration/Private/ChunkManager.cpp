@@ -5,10 +5,12 @@
 #include "Actors/Chunk.h"
 #include "Components/ChunkInvokerComponent.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+#include "Curves/CurveFloat.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Log.h"
 
 static AChunkManager* Instance = nullptr;
+static UCurveFloat* FlattenHeightCurve = nullptr;
 static UDataTable* BiomeGenerationDataTable = nullptr;
 
 // Sets default values
@@ -19,6 +21,18 @@ AChunkManager::AChunkManager()
 	bReplicates = true;
 	bAlwaysRelevant = true;
 
+	// Wooooo hoooooooo, more unreal engine bullshit :O
+	if (!GetWorld())
+	{
+		return;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UCurveFloat> FlattenHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_FlattenCurve"));
+	if (FlattenHeightCurveBlueprint.Succeeded())
+	{
+		FlattenHeightCurve = FlattenHeightCurveBlueprint.Object;
+	}
+	
 	static ConstructorHelpers::FObjectFinder<UDataTable> BiomeDataTableBlueprint(TEXT("/Game/WorldGeneration/DataTables/DT_BiomeGenerationData"));
 	if (BiomeDataTableBlueprint.Succeeded())
 	{
@@ -343,6 +357,85 @@ bool AChunkManager::IsActorNetRelevent(const AActor* ActorToTest, const AActor* 
 	const float Distance = FVector::Distance(CorrectedSrcLocation, CorrectedThisLocation);
 
 	return Distance < ChunkInvoker->GetRenderDistanceCentimeters();
+}
+
+void AChunkManager::ClearDecorationsAroundChunk(const FIntVector2& Origin, const FIntVector2& Size)
+{
+	for (int32 X = Origin.X - Size.X; X <= Origin.X + Size.X; ++X)
+	{
+		for (int32 Y = Origin.Y - Size.Y; Y <= Origin.Y + Size.Y; ++Y)
+		{
+			FSpawnedChunk SpawnedChunk;
+			SpawnedChunk.GridLocation = FIntVector2(X, Y);
+			const int32 SpawnedChunkIndex = SpawnedChunks.Find(SpawnedChunk);
+			if (SpawnedChunkIndex == -1)
+			{
+				continue;
+			}
+			
+			SpawnedChunks[SpawnedChunkIndex].Chunk->ClearAllAttachedActors();
+		}
+	}
+}
+
+void AChunkManager::FlattenTerrainAroundChunk(const FIntVector2& Origin, const FIntVector2& Size, float DesiredHeight)
+{
+	const int32 ChunkStartX = Origin.X - Size.X;
+	const int32 ChunkEndX = Origin.X + Size.X;
+	const int32 ChunkStartY = Origin.Y - Size.Y;
+	const int32 ChunkEndY = Origin.Y + Size.Y;
+
+	const int32  ChunkVertexSize = AChunk::GetVertexSize();
+	const int32 HalfVertexSize = ChunkVertexSize * 0.5f;
+	
+	const FVector2D ChunkOriginVertexSpace(Origin.X * ChunkVertexSize, Origin.Y * ChunkVertexSize);
+	const FVector2D ChunkStartVertexSpace(Origin.X * ChunkVertexSize, ChunkStartY * ChunkVertexSize);
+	const float MaxDistance = FVector2D::Distance(ChunkOriginVertexSpace, ChunkStartVertexSpace);
+
+	for (int32 ChunkX = ChunkStartX; ChunkX <= ChunkEndX; ++ChunkX)
+	{
+		for (int32 ChunkY = ChunkStartY; ChunkY <= ChunkEndY; ++ChunkY)
+		{
+			FSpawnedChunk SpawnedChunk;
+			SpawnedChunk.GridLocation = FIntVector2(ChunkX, ChunkY);
+			const int32 SpawnedChunkIndex = SpawnedChunks.Find(SpawnedChunk);
+			if (SpawnedChunkIndex == -1)
+			{
+				continue;
+			}
+			
+			const FVector2D ChunkVertexSpace(ChunkX * ChunkVertexSize, ChunkY * ChunkVertexSize);
+
+			TArray<float> ChunkHeightData = SpawnedChunks[SpawnedChunkIndex].Chunk->GetHeightData();
+			for (int32 HeightX = 0; HeightX <= AChunk::GetVertexSize(); ++HeightX)
+			{
+				for (int32 HeightY = 0; HeightY <= AChunk::GetVertexSize(); ++HeightY)
+				{
+					const int32 HeightDataIndex = (HeightX * (AChunk::GetVertexSize() + 1)) + HeightY;
+					if (!ChunkHeightData.IsValidIndex(HeightDataIndex))
+					{
+						continue;
+					}
+					
+					const FVector2D CurrentVertexSpace(HeightX + ChunkVertexSpace.X, HeightY + ChunkVertexSpace.Y);
+					
+					const float CurrentDistance = FVector2D::Distance(ChunkOriginVertexSpace, CurrentVertexSpace);
+					const float Alpha = FlattenHeightCurve->GetFloatValue(FMath::Clamp((CurrentDistance / MaxDistance), 0.0f, 1.0f));
+					ChunkHeightData[HeightDataIndex] = FMath::Lerp(DesiredHeight, ChunkHeightData[HeightDataIndex], Alpha);
+				}
+			}
+
+			SpawnedChunks[SpawnedChunkIndex].Chunk->SetHeightData(ChunkHeightData);
+			SpawnedChunks[SpawnedChunkIndex].Chunk->OnLoadedTerrainData();
+			if (ChunkX > (Origin.X + (Size.X * 0.5f))
+				|| ChunkX < (Origin.X - (Size.X * 0.5f))
+				|| ChunkY > (Origin.Y + (Size.Y * 0.5f))
+				|| ChunkY < (Origin.Y - (Size.Y *0.5f)))
+			{
+				SpawnedChunks[SpawnedChunkIndex].Chunk->Redecorate();
+			}
+		}
+	}
 }
 
 FVector AChunkManager::GetWorldSpawnPoint()
