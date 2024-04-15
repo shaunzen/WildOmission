@@ -24,6 +24,9 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere)
+	USceneComponent* StructureRootComponent;
+
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComponent;
 	
 	UPROPERTY(EditDefaultsOnly)

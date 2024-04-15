@@ -6,8 +6,11 @@
 
 AStructure::AStructure()
 {
+	StructureRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
+	RootComponent = StructureRootComponent;
+
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	RootComponent = MeshComponent;
+	MeshComponent->SetupAttachment(StructureRootComponent);
 	
 	Identifier = NAME_None;
 }
