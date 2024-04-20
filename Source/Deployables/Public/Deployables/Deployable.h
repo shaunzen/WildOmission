@@ -37,6 +37,8 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, const struct FDamageEvent& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	virtual void OnDeployableDestroyed();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayPlacementEffects();
 

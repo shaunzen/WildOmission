@@ -28,8 +28,6 @@ struct FStructureData
 {
 	GENERATED_BODY()
 
-	FStructureData();
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AActor> BlueprintClass;
 	
