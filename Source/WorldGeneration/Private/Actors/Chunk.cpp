@@ -674,7 +674,8 @@ void AChunk::GenerateStructures()
 	
 	const int32 ChunkHalf = FMath::RoundToInt32(17.0f * 0.5f); 
 	const int32 TerrainDataIndex = (ChunkHalf * (VERTEX_SIZE + 1)) + ChunkHalf;
-	const FVector SpawnLocation(this->GetActorLocation().X, this->GetActorLocation().Y, HeightData[TerrainDataIndex]);
+	const float ChunkHalfSize = CHUNK_SIZE_CENTIMETERS * 0.5f;
+	const FVector SpawnLocation(this->GetActorLocation().X - ChunkHalfSize, this->GetActorLocation().Y - ChunkHalfSize, HeightData[TerrainDataIndex]);
 
 	AChunkInvokerActor* ChunkInvoker = World->SpawnActor<AChunkInvokerActor>(AChunkInvokerActor::StaticClass(), SpawnLocation, FRotator::ZeroRotator);
 	if (ChunkInvoker == nullptr)
