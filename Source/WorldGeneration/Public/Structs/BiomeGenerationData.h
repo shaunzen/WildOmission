@@ -28,8 +28,13 @@ struct FStructureData
 {
 	GENERATED_BODY()
 
+	FStructureData();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AActor> BlueprintClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float SpawnChance = 0.5f;
 
 	// The amount of chunks this structure will occupy
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

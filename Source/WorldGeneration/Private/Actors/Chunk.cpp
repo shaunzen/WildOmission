@@ -667,7 +667,7 @@ void AChunk::GenerateStructures()
 	}
 
 	const int32 StructureIndex = FMath::RandRange(0, Biome->Structures.Num() - 1);
-	if (!Biome->Structures.IsValidIndex(StructureIndex))
+	if (!Biome->Structures.IsValidIndex(StructureIndex) || UKismetMathLibrary::RandomBoolWithWeight(Biome->Structures[StructureIndex].SpawnChance))
 	{
 		return;
 	}
