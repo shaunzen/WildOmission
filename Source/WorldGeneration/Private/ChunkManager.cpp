@@ -21,12 +21,6 @@ AChunkManager::AChunkManager()
 	bReplicates = true;
 	bAlwaysRelevant = true;
 
-	// Wooooo hoooooooo, more unreal engine bullshit :O
-	if (!GetWorld())
-	{
-		return;
-	}
-
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> FlattenHeightCurveBlueprint(TEXT("/Game/WorldGeneration/Curves/Curve_FlattenCurve"));
 	if (FlattenHeightCurveBlueprint.Succeeded())
 	{
