@@ -6,7 +6,7 @@
 
 UMapWidget::UMapWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
-	bIsFocusable = true;
+	SetIsFocusable(true);
 	CloseButton = nullptr;
 }
 
@@ -51,7 +51,7 @@ void UMapWidget::Teardown()
 	PlayerController->SetInputMode(InputData);
 
 	// TODO broadcast this so we can set open widget to null in the map item
-	this->RemoveFromViewport();
+	this->RemoveFromParent();
 }
 
 FReply UMapWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)

@@ -180,6 +180,10 @@ void UMainMenuWidget::RefreshSplashText()
 	{
 		SplashText = TEXT("Happy Birthday Larch!");
 	}
+	else if (TimeNow.GetMonth() == 4 && TimeNow.GetDay() == 1)
+	{
+		SplashText = TEXT("April Fools!");
+	}
 	else if (TimeNow.GetMonth() == 4 && TimeNow.GetDay() == 8)
 	{
 		SplashText = TEXT("Happy Birthday LifeOn30FPS!");

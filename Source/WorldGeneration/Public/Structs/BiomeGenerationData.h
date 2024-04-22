@@ -24,6 +24,22 @@ struct FSpawnableNoiseParameters
 };
 
 USTRUCT(BlueprintType)
+struct FStructureData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<AActor> BlueprintClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float SpawnChance = 0.5f;
+
+	// The amount of chunks this structure will occupy
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FVector2D ChunkSize;
+};
+
+USTRUCT(BlueprintType)
 struct FSpawnableData
 {
 	GENERATED_BODY()
@@ -57,6 +73,9 @@ USTRUCT(BlueprintType)
 struct WORLDGENERATION_API FBiomeGenerationData : public FTableRowBase
 {
 	GENERATED_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<FStructureData> Structures;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FSpawnData Trees;
