@@ -662,7 +662,8 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 	FirstPersonItemComponent->SetVisibility(OwnerPawn->IsLocallyControlled());
 	FirstPersonItemComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
 	FirstPersonItemComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
-
+	FirstPersonItemComponent->SetRelativeScale3D(LocalEquipedItemDefaultClass->GetSocketOffset().GetScale3D());
+	
 	PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipMontage(), LocalEquipedItemDefaultClass->GetEquipItemMontage());
 }
 

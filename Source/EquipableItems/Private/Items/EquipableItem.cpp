@@ -62,6 +62,7 @@ void AEquipableItem::BeginPlay()
 
 	MeshComponent->SetRelativeLocation(SocketOffset.GetLocation());
 	MeshComponent->SetRelativeRotation(SocketOffset.GetRotation());
+	MeshComponent->SetRelativeScale3D(SocketOffset.GetScale3D());
 }
 
 APawn* AEquipableItem::GetOwnerPawn() const
