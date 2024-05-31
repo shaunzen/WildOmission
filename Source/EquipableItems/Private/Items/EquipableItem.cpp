@@ -9,6 +9,8 @@
 #include "Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
 
+//TODO this might have stuff that causes crashes
+
 // Sets default values
 AEquipableItem::AEquipableItem()
 {
