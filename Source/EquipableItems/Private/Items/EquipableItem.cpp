@@ -18,6 +18,9 @@ AEquipableItem::AEquipableItem()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
+
+	// IDK I actually have no idea what I'm going on about below - 05-31-24 - Larch
+	// What hahahahahahah vvvvvvvv - 05-31-24 - Larch
 	// setup item mesh, for some reason we cant modify it from the editor
 	// game seems to be crashing because no mesh is specified and we are trying to use the mesh to create a first person decoy
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
