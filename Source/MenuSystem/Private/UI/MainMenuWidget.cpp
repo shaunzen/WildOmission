@@ -28,7 +28,6 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("Played by FloppySword!"),
 	TEXT("wellyesh <3"),
 	TEXT("NELSInfinity <3"),
-	TEXT("LifeOn30FPS <3"),
 	TEXT("rcjoe69 <3"),
 	TEXT("dmyress <3"),
 	TEXT("Violafame <3"),
@@ -183,10 +182,6 @@ void UMainMenuWidget::RefreshSplashText()
 	else if (TimeNow.GetMonth() == 4 && TimeNow.GetDay() == 1)
 	{
 		SplashText = TEXT("April Fools!");
-	}
-	else if (TimeNow.GetMonth() == 4 && TimeNow.GetDay() == 8)
-	{
-		SplashText = TEXT("Happy Birthday LifeOn30FPS!");
 	}
 	else if (TimeNow.GetMonth() == 5 && TimeNow.GetMonth() == 12)
 	{
