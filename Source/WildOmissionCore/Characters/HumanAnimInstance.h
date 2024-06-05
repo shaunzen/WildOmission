@@ -22,7 +22,9 @@ public:
 	void OnSecondaryAnimationClimax();
 	UFUNCTION(BlueprintCallable)
 	void OnReloadAnimationClimax();
-
+	UFUNCTION(BlueprintCallable)
+	void OnChamberedAnimationClimax();
+	
 	UPROPERTY(BlueprintReadOnly)
 	float HeadAngle;
 

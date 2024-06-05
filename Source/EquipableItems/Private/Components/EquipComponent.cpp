@@ -374,6 +374,16 @@ void UEquipComponent::OnReloadAnimationClimax(bool FirstPerson)
 	EquipedItem->OnReloadAnimationClimax(FirstPerson);
 }
 
+void UEquipComponent::OnChamberedAnimationClimax(bool FirstPerson)
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnChamberedAnimationClimax(FirstPerson);
+}
+
 AEquipableItem* UEquipComponent::GetEquipedItem() const
 {
 	return EquipedItem;

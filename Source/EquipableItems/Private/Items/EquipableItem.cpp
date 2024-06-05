@@ -185,6 +185,11 @@ void AEquipableItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 
 }
 
+void AEquipableItem::OnChamberedAnimationClimax(bool FromFirstPersonInstance)
+{
+	
+}
+
 USkeletalMeshComponent* AEquipableItem::GetMeshComponent() const
 {
 	return MeshComponent;
