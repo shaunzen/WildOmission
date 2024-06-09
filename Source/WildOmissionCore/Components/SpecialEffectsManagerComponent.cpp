@@ -119,11 +119,11 @@ void USpecialEffectsManagerComponent::HandleNightTimeGamma()
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
 	if (UserSettings)
 	{
-		float GammaAddition = FMath::Lerp(0.0f, 0.1f, NightGammaStrength);
+		float GammaAddition = FMath::Lerp(0.0f, 0.3f, NightGammaStrength);
 		float ColorGammaValue = (UserSettings->GetGamma() / 100.0f) + GammaAddition;
 		OwnerCamera->PostProcessSettings.ColorGamma = FVector4(ColorGammaValue, ColorGammaValue, ColorGammaValue, ColorGammaValue);
 	}
-	OwnerCamera->PostProcessSettings.AutoExposureBias = FMath::Lerp(0.5f, -3.0f, NightGammaStrength);
+	OwnerCamera->PostProcessSettings.AutoExposureBias = FMath::Lerp(0.5f, -4.0f, NightGammaStrength);
 }
 
 void USpecialEffectsManagerComponent::HandleLowHealthEffects()
