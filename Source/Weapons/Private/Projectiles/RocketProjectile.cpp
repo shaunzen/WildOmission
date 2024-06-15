@@ -31,9 +31,11 @@ void ARocketProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
         return;
     }
 
+    const float ExplosionRadius = 400.0f;
+
     // whatever overlaps, we will do a damage event, and use our distance to calculate the damage
     TArray<FOverlapResult> Overlaps;
-    FCollisionShape Shape = FCollisionShape::MakeSphere(400);
+    FCollisionShape Shape = FCollisionShape::MakeSphere(ExplosionRadius);
     World->OverlapMultiByChannel(Overlaps, this->GetActorLocation(), this->GetActorRotation().Quaternion(), ECollisionChannel::ECC_Visibility, Shape);
     if (Overlaps.IsEmpty())
     {
@@ -53,9 +55,12 @@ void ARocketProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
             PlayHitmarkerSound(false);
         }
         
-        float DamageAmount = 50.0f;
-        FRadialDamageEvent RadialDamage;
-        OverlapedActor->TakeDamage(DamageAmount, RadialDamage, Cast<AController>(this->GetOwner()), this);
+        const float DistanceFromExplosionOrigin = FVector::Distance(OverlapedActor->GetActorLocation(), Hit.ImpactPoint);
+        const float DamageMultiplier = (ExplosionRadius / DistanceFromExplosionOrigin) - 1.0f;
+        const float DamageAmount = 120.0f * DamageMultiplier;
+
+        FPointDamageEvent DamageEvent;
+        OverlapedActor->TakeDamage(DamageAmount, DamageEvent, Cast<AController>(this->GetOwner()), this);
     }
 
     Multi_PlayExplosionEffects();
