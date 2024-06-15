@@ -4,12 +4,20 @@
 #include "Items/ManualActionFirearmItem.h"
 #include "Components/EquipComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 AManualActionFirearmItem::AManualActionFirearmItem()
 {
     Chambered = false;
     ChamberMontage = nullptr;
     ChamberItemMontage = nullptr;
+}
+
+void AManualActionFirearmItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AManualActionFirearmItem, Chambered, COND_OwnerOnly);
 }
 
 void AManualActionFirearmItem::OnPrimaryPressed()
@@ -35,11 +43,6 @@ void AManualActionFirearmItem::OnPrimaryPressed()
 void AManualActionFirearmItem::OnPrimaryAnimationClimax(bool FromFirstPersonInstance)
 {
     Super::OnPrimaryAnimationClimax(FromFirstPersonInstance);
-
-    if (!HasAuthority())
-    {
-        return;
-    }
 
     Chambered = false;
 

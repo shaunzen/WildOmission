@@ -17,13 +17,15 @@ class WEAPONS_API AManualActionFirearmItem : public AFirearmItem
 public:
 	AManualActionFirearmItem();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void OnPrimaryPressed() override;
 	virtual void OnPrimaryAnimationClimax(bool FromFirstPersonInstance) override;
 
 	virtual void OnChamberedAnimationClimax(bool FromFirstPersonInstance) override;
 
 private:
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	bool Chambered;
 	
 	UPROPERTY(EditDefaultsOnly)
