@@ -37,6 +37,7 @@ AWeaponProjectile::AWeaponProjectile()
 	CollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel10);
 	CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel10, ECollisionResponse::ECR_Ignore);
 	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
 	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Ignore);
 	CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Ignore);
@@ -121,7 +122,7 @@ void AWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 {
 	UWorld* World = GetWorld();
 	AActor* OwnerActor = GetOwner();
-	if (World == nullptr || OwnerActor == nullptr || OtherActor == OwnerActor)
+	if (World == nullptr || OtherActor == nullptr || OtherActor->GetClass() == this->GetClass() || OwnerActor == nullptr || OtherActor == OwnerActor)
 	{
 		return;
 	}

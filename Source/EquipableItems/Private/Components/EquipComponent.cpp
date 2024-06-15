@@ -374,6 +374,16 @@ void UEquipComponent::OnReloadAnimationClimax(bool FirstPerson)
 	EquipedItem->OnReloadAnimationClimax(FirstPerson);
 }
 
+void UEquipComponent::OnChamberedAnimationClimax(bool FirstPerson)
+{
+	if (EquipedItem == nullptr)
+	{
+		return;
+	}
+
+	EquipedItem->OnChamberedAnimationClimax(FirstPerson);
+}
+
 AEquipableItem* UEquipComponent::GetEquipedItem() const
 {
 	return EquipedItem;
@@ -662,7 +672,8 @@ void UEquipComponent::EquipFirstPersonViewModel(TSubclassOf<AEquipableItem> Item
 	FirstPersonItemComponent->SetVisibility(OwnerPawn->IsLocallyControlled());
 	FirstPersonItemComponent->SetRelativeLocation(LocalEquipedItemDefaultClass->GetSocketOffset().GetLocation());
 	FirstPersonItemComponent->SetRelativeRotation(LocalEquipedItemDefaultClass->GetSocketOffset().GetRotation());
-
+	FirstPersonItemComponent->SetRelativeScale3D(LocalEquipedItemDefaultClass->GetSocketOffset().GetScale3D());
+	
 	PlayItemMontage(LocalEquipedItemDefaultClass->GetEquipMontage(), LocalEquipedItemDefaultClass->GetEquipItemMontage());
 }
 

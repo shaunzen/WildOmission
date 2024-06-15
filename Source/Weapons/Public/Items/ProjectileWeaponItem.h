@@ -56,8 +56,9 @@ protected:
 
 	UPlayerInventoryComponent* GetOwningPlayerInventory() const;
 
+	virtual void SpawnProjectile();
+	
 private:
-	void SpawnProjectile();
 	void PlayFireSoundEffect();
 
 };

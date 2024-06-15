@@ -340,7 +340,13 @@ void UInventoryComponent::HandleItemQuickMove(const FInventorySlotInteraction& I
 			const bool FromToolbar = Interaction.SlotIndex < 6;
 			int32 Remaining = 0;
 			const bool AddedAll = AddItemToSlots(MovingItem, Remaining, FromToolbar);
-			
+
+			// This was added so items don't disapear if the inventory is full 6/14/2024 at like 6:43 AM
+			if (AddedAll == false && FromToolbar == true)
+			{
+				MovingItem.Quantity = Remaining;
+				(void*)AddItemToSlots(MovingItem, Remaining);
+			}
 		}
 	}
 	else if (ContainerOpen && !WithinPlayerInventory) // Interaction from within an open container to the player's inventory

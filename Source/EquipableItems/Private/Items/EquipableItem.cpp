@@ -9,6 +9,8 @@
 #include "Components/EquipComponent.h"
 #include "Net/UnrealNetwork.h"
 
+//TODO this might have stuff that causes crashes
+
 // Sets default values
 AEquipableItem::AEquipableItem()
 {
@@ -16,6 +18,9 @@ AEquipableItem::AEquipableItem()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
+
+	// IDK I actually have no idea what I'm going on about below - 05-31-24 - Larch
+	// What hahahahahahah vvvvvvvv - 05-31-24 - Larch
 	// setup item mesh, for some reason we cant modify it from the editor
 	// game seems to be crashing because no mesh is specified and we are trying to use the mesh to create a first person decoy
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
@@ -62,6 +67,7 @@ void AEquipableItem::BeginPlay()
 
 	MeshComponent->SetRelativeLocation(SocketOffset.GetLocation());
 	MeshComponent->SetRelativeRotation(SocketOffset.GetRotation());
+	MeshComponent->SetRelativeScale3D(SocketOffset.GetScale3D());
 }
 
 APawn* AEquipableItem::GetOwnerPawn() const
@@ -177,6 +183,11 @@ void AEquipableItem::OnReloadPressed()
 void AEquipableItem::OnReloadAnimationClimax(bool FromFirstPersonInstance)
 {
 
+}
+
+void AEquipableItem::OnChamberedAnimationClimax(bool FromFirstPersonInstance)
+{
+	
 }
 
 USkeletalMeshComponent* AEquipableItem::GetMeshComponent() const

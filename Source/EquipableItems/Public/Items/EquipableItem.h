@@ -7,9 +7,6 @@
 #include "Actors/InventoryEquipableActor.h"
 #include "EquipableItem.generated.h"
 
-class UEquipComponent;
-struct FInventoryItem;
-
 UCLASS()
 class EQUIPABLEITEMS_API AEquipableItem : public AInventoryEquipableActor
 {
@@ -43,6 +40,9 @@ public:
 	// Reload function of the item. example(Reload the magazine) Note: Called On Both Server and Client!
 	virtual void OnReloadPressed();
 	virtual void OnReloadAnimationClimax(bool FromFirstPersonInstance);
+
+	// For things like bolt action weapons
+	virtual void OnChamberedAnimationClimax(bool FromFirstPersonInstance);
 
 	USkeletalMeshComponent* GetMeshComponent() const;
 	
@@ -113,7 +113,7 @@ protected:
 	bool bSecondaryEnabled;
 
 	APawn* GetOwnerPawn() const;
-	UEquipComponent* GetOwnerEquipComponent() const;
-	FInventoryItem* FindInInventory() const;
+	class UEquipComponent* GetOwnerEquipComponent() const;
+	struct FInventoryItem* FindInInventory() const;
 
 };

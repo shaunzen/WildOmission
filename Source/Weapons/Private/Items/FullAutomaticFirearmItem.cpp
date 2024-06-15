@@ -21,6 +21,8 @@ void AFullAutomaticFirearmItem::OnPrimaryHeld()
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), OutOfAmmoSound, OwnerActor->GetActorLocation());
 		return;
 	}
-	
+
 	OwnerEquipComponent->PlayItemMontage(FireMontage, FireItemMontage);
+
+	CanFire = false;
 }

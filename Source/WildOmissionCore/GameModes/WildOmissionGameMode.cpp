@@ -538,7 +538,8 @@ void AWildOmissionGameMode::ProcessMultiplayerJoinAchievement(AWildOmissionPlaye
 	}
 
 	const FString LarchUniqueId = TEXT("76561198277223961");
-	const FString LifeUniqueId = TEXT("76561198242206838");
+	const FString LifeUniqueId  = TEXT("76561198242206838");
+	const FString TyceUniqueId  = TEXT("76561199063735949");
 
 	const FString NewPlayerUniqueId = NewPlayerState->GetUniqueId().ToString();
 	const FString HostPlayerUniqueId = HostPlayerState->GetUniqueId().ToString();
@@ -547,10 +548,15 @@ void AWildOmissionGameMode::ProcessMultiplayerJoinAchievement(AWildOmissionPlaye
 	{
 		GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_LARCH"));
 	}
-	else if (HostPlayerUniqueId == LifeUniqueId || NewPlayerUniqueId == LifeUniqueId)
+	else if (HostPlayerUniqueId == TyceUniqueId || NewPlayerUniqueId == TyceUniqueId)
 	{
-		GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_LIFE"));
+		GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_TYCE"));
 	}
+
+	//else if (HostPlayerUniqueId == LifeUniqueId || NewPlayerUniqueId == LifeUniqueId)
+	//{
+		//GiveAllPlayersAchievement(TEXT("ACH_IM_THE_REAL_LIFE"));
+	//}
 }
 
 void AWildOmissionGameMode::SpawnHumanAtStartSpot(AController* Controller)

@@ -58,6 +58,8 @@ public:
 	void OnSecondaryAnimationClimax(bool FirstPerson);
 	UFUNCTION(BlueprintCallable)
 	void OnReloadAnimationClimax(bool FirstPerson);
+	UFUNCTION(BlueprintCallable)
+	void OnChamberedAnimationClimax(bool FirstPerson);
 
 	FRefreshEquipedSlotUISignature RefreshEquipedSlotUI;
 	FOnItemEquipedSignature OnItemEquiped;

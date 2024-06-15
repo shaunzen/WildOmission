@@ -81,6 +81,23 @@ void UHumanAnimInstance::OnReloadAnimationClimax()
 	OwnerEquipComponent->OnReloadAnimationClimax(FirstPersonInstance);
 }
 
+void UHumanAnimInstance::OnChamberedAnimationClimax()
+{
+	APawn* PawnOwner = TryGetPawnOwner();
+	if (PawnOwner == nullptr)
+	{
+		return;
+	}
+
+	UEquipComponent* OwnerEquipComponent = PawnOwner->FindComponentByClass<UEquipComponent>();
+	if (OwnerEquipComponent == nullptr)
+	{
+		return;
+	}
+
+	OwnerEquipComponent->OnChamberedAnimationClimax(FirstPersonInstance);
+}
+
 void UHumanAnimInstance::CalculateSpeedAndAngle()
 {
 	Super::CalculateSpeedAndAngle();

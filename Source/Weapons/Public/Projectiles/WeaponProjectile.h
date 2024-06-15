@@ -57,14 +57,14 @@ protected:
 	UFUNCTION()
 	void OnRep_Velocity();
 
+	void PlayHitmarkerSound(bool Headshot);
+
 private:
 	UPROPERTY()
 	USoundBase* HitMarkerSound;
 	
 	UPROPERTY()
 	USoundBase* HitMarkerHeadshotSound;
-
-	void PlayHitmarkerSound(bool Headshot);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_SpawnImpactEffects(const FHitResult& HitResult);
