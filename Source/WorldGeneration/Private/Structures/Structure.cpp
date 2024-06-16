@@ -6,6 +6,8 @@
 
 AStructure::AStructure()
 {
+	bReplicates = true;
+
 	StructureRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	RootComponent = StructureRootComponent;
 
