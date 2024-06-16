@@ -30,6 +30,8 @@ public:
 	virtual FString PromptText() override;
 	// End IInteractable Implementation
 
+	virtual void OnDeployableDestroyed() override;
+
 	UFUNCTION(BlueprintCallable)
 	FString GetContainerName() const;
 	UFUNCTION(BlueprintCallable)
