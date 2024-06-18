@@ -88,9 +88,11 @@ void APookaPooka::HandleDeath()
 {
 	Multi_PlayDeathExplosion();
 
+	const bool DropGold = FMath::RandBool();
+
 	FInventoryItem LootDrop;
-	LootDrop.Name = TEXT("metal.refined");
-	LootDrop.Quantity = FMath::RandRange(1, 3);
+	LootDrop.Name = DropGold ? TEXT("gold") : TEXT("metal.refined");
+	LootDrop.Quantity = FMath::RandRange(1, 2);
 	UInventoryComponent::SpawnWorldItem(GetWorld(), LootDrop, this);
 
 	Super::HandleDeath();
