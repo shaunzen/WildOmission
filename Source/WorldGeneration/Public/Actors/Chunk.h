@@ -104,6 +104,11 @@ private:
 	TArray<uint8> SurfaceData;
 
 	bool ChunkHidden;
+
+
+	//TODO remove this
+	UPROPERTY(VisibleAnywhere)
+	FIntVector2 ChunkLoc;
 	
 	//***************************************************************************************
 	//	Chunk Generation

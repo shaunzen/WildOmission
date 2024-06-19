@@ -205,6 +205,23 @@ FTransform ADeployable::GetMeshTransform() const
 	return MeshComponent->GetRelativeTransform();
 }
 
+AChunk* ADeployable::GetChunk() const
+{
+	AChunk* OwnerChunk = Cast<AChunk>(this->GetAttachParentActor());
+	return OwnerChunk;
+}
+
+FIntVector2 ADeployable::GetChunkLocation() const
+{
+	AChunk* OwnerChunk = GetChunk();
+	if (!IsValid(OwnerChunk))
+	{
+		return FIntVector2();
+	}
+
+	return OwnerChunk->GetChunkLocation();
+}
+
 float ADeployable::GetCurrentDurability()
 {
 	return CurrentDurability;

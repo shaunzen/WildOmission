@@ -41,7 +41,7 @@ void ABed::Interact(AActor* Interactor)
 		return;
 	}
 
-	BedController->SetCurrentBed(this->UniqueID, this->GetActorLocation());
+	BedController->SetCurrentBed(this->UniqueID, this->GetChunkLocation());
 }
 
 FString ABed::PromptText()

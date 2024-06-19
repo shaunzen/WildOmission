@@ -51,6 +51,9 @@ public:
 	UStaticMesh* GetMesh() const;
 	FTransform GetMeshTransform() const;
 
+	class AChunk* GetChunk() const;
+	FIntVector2 GetChunkLocation() const;
+
 	// Begin IDurabilityInterface Implementation
 	virtual float GetCurrentDurability() override;
 	virtual float GetMaxDurability() override;

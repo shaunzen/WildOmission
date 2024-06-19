@@ -599,15 +599,12 @@ void AChunkManager::SpawnChunk(FSpawnedChunk& OutSpawnedChunk) const
 		return;
 	}
 
+	// TODO this could be simplified
 	const FVector SpawnLocation(OutSpawnedChunk.GridLocation.X * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(),
 		OutSpawnedChunk.GridLocation.Y * AChunk::GetVertexSize() * AChunk::GetVertexDistanceScale(), 0.0f);
 	OutSpawnedChunk.Chunk = World->SpawnActor<AChunk>(ChunkClass, SpawnLocation, FRotator::ZeroRotator);
-	if (!IsValid(OutSpawnedChunk.Chunk))
-	{
-		return;
-	}
 
-	OutSpawnedChunk.Chunk->SetChunkLocation(FIntVector2(OutSpawnedChunk.GridLocation.X, OutSpawnedChunk.GridLocation.Y));
+	//OutSpawnedChunk.Chunk->SetChunkLocation(FIntVector2(OutSpawnedChunk.GridLocation.X, OutSpawnedChunk.GridLocation.Y));
 }
 
 void AChunkManager::GenerateChunk(const FSpawnedChunk& InSpawnedChunk) const

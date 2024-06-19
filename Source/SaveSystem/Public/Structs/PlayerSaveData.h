@@ -30,7 +30,7 @@ struct SAVESYSTEM_API FPlayerSaveData
 	int32 BedUniqueID = -1;
 
 	UPROPERTY()
-	FVector BedWorldLocation = FVector::ZeroVector;
+	FIntVector2 BedChunkLocation = FIntVector2();
 
 	UPROPERTY()
 	FVector WorldLocation = FVector::ZeroVector;

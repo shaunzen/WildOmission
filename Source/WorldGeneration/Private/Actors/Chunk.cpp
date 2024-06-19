@@ -115,6 +115,8 @@ void AChunk::BeginPlay()
 	SpawnedChunk.GridLocation = GetChunkLocation();
 	SpawnedChunk.Chunk = this;
 
+	ChunkLoc = GetChunkLocation();
+
 	ChunkManager->AddSpawnedChunk(SpawnedChunk);
 }
 
@@ -540,7 +542,7 @@ float AChunk::GetTerrainHeightAtLocation(const FVector2D& Location)
 FIntVector2 AChunk::GetChunkLocation() const
 {
 	const FVector WorldLocation = GetActorLocation();
-	return FIntVector2(WorldLocation.X / CHUNK_SIZE_CENTIMETERS, WorldLocation.Y / CHUNK_SIZE_CENTIMETERS);
+	return FIntVector2(FMath::RoundToInt32(WorldLocation.X / CHUNK_SIZE_CENTIMETERS), FMath::RoundToInt32(WorldLocation.Y / CHUNK_SIZE_CENTIMETERS));
 }
 
 bool AChunk::IsChunkHidden() const
