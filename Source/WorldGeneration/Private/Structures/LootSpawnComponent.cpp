@@ -51,6 +51,7 @@ void ULootSpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	if (IsValid(CurrentLoot))
 	{
 		CurrentLoot->Destroy();
+		CurrentLoot = nullptr;
 	}
 	
 	TimeTillNextSpawnSeconds = FMath::RandRange(MinSpawnFrequencySeconds, MaxSpawnFrequencySeconds);
@@ -64,6 +65,27 @@ void ULootSpawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	
 	//https://forums.somethingawful.com/showthread.php?threadid=3817946
 	const FRotator SpawnRotation = UseRandomYawRotation ? FRotator(0.0, FMath::RandRange(0.0f, 360.0f), 0.0f) : this->GetComponentRotation();
+
 	CurrentLoot = World->SpawnActor<ADeployable>(LootToSpawn[LootIndex], this->GetComponentLocation(), SpawnRotation);
 	CurrentLoot->OnSpawn();
+
+	TArray<AActor*> OverlappingActors;
+	CurrentLoot->GetOverlappingActors(OverlappingActors);
+	for (AActor* OverlappingActor : OverlappingActors)
+	{
+		if (!IsValid(OverlappingActor))
+		{
+			continue;
+		}
+
+		ADeployable* OverlappingDeployable = Cast<ADeployable>(OverlappingActor);
+		if (!IsValid(OverlappingDeployable))
+		{
+			continue;
+		}
+
+		CurrentLoot->Destroy();
+		CurrentLoot = OverlappingDeployable;
+		break;
+	}
 }

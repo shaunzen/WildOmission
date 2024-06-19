@@ -63,6 +63,30 @@ void AItemContainerBase::Server_UnOccupy_Implementation()
 	SetNetDormancy(ENetDormancy::DORM_DormantAll);
 }
 
+void AItemContainerBase::OnDeployableDestroyed()
+{
+	// Check pointer before using them
+	if (InventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	FInventoryContents* InventoryContents = InventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return;
+	}
+
+	// Dump contents into world so they arent lost
+	for (const FInventoryItem& Item : InventoryComponent->GetContents()->Contents)
+	{
+		UInventoryComponent::SpawnWorldItem(GetWorld(), Item, this);
+	}
+
+
+	Super::OnDeployableDestroyed();
+}
+
 FString AItemContainerBase::GetContainerName() const
 {
 	return ContainerName;

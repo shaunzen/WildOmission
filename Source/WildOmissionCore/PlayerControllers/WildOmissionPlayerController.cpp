@@ -37,7 +37,7 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 	TempChunkInvoker = nullptr;
 
 	BedUniqueID = -1;
-	BedWorldLocation = FVector::ZeroVector;
+	BedChunkLocation = FIntVector2();
 
 	Administrator = false;
 
@@ -79,7 +79,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 
 	PlayerSaveData.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
 	PlayerSaveData.BedUniqueID = BedUniqueID;
-	PlayerSaveData.BedWorldLocation = BedWorldLocation;
+	PlayerSaveData.BedChunkLocation = BedChunkLocation;
 	PlayerSaveData.AchievementStatsData = AchievementsComponent->GetStatsData();
 	PlayerSaveData.NewPlayer = false;
 
@@ -121,7 +121,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSaveData& SaveData)
 {
 	BedUniqueID = SaveData.BedUniqueID;
-	BedWorldLocation = SaveData.BedWorldLocation;
+	BedChunkLocation = SaveData.BedChunkLocation;
 	AchievementsComponent->SetStatsData(SaveData.AchievementStatsData);
 
 	StoredPlayerSaveData = SaveData;
@@ -154,10 +154,10 @@ void AWildOmissionPlayerController::SendMessage(APlayerState* Sender, const FStr
 	Server_SendMessage(Sender, Message);
 }
 
-void AWildOmissionPlayerController::SetCurrentBed(const int32& InBedUniqueID, const FVector& InBedWorldLocation)
+void AWildOmissionPlayerController::SetCurrentBed(const int32& InBedUniqueID, const FIntVector2& InBedChunkLocation)
 {
 	BedUniqueID = InBedUniqueID;
-	BedWorldLocation = InBedWorldLocation;
+	BedChunkLocation = InBedChunkLocation;
 }
 
 int32 AWildOmissionPlayerController::GetBedUniqueID() const
@@ -165,9 +165,9 @@ int32 AWildOmissionPlayerController::GetBedUniqueID() const
 	return BedUniqueID;
 }
 
-FVector AWildOmissionPlayerController::GetBedWorldLocation() const
+FIntVector2 AWildOmissionPlayerController::GetBedChunkLocation() const
 {
-	return BedWorldLocation;
+	return BedChunkLocation;
 }
 
 void AWildOmissionPlayerController::SetAdministrator(bool InAdministrator)
