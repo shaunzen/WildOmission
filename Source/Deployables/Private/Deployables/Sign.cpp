@@ -103,6 +103,11 @@ TArray<FString> ASign::GetText() const
 
 void ASign::OnRep_Text()
 {
+	if (IsRunningDedicatedServer() || TextRenderComponent == nullptr)
+	{
+		return;
+	}
+
 	FString SignString;
 	for (int32 i = 0; i < Text.Num(); ++i)
 	{
