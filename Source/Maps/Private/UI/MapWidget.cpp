@@ -18,6 +18,11 @@ void UMapWidget::NativeConstruct()
 	{
 		CloseButton->OnClicked.AddDynamic(this, &UMapWidget::Teardown);
 	}
+
+	if (SaveCurrentLocationButton)
+	{
+		SaveCurrentLocationButton->OnClicked.AddDynamic(this, &UMapWidget::SaveCurrentLocationButtonOnClicked);
+	}
 }
 
 void UMapWidget::Setup()
@@ -36,6 +41,8 @@ void UMapWidget::Setup()
 	PlayerController->SetInputMode(InputData);
 
 	this->SetFocus();
+
+	// Update the coordinates
 }
 
 void UMapWidget::Teardown()
@@ -64,4 +71,14 @@ FReply UMapWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent&
 	}
 
 	return FReply::Handled();
+}
+
+void UMapWidget::SaveCurrentLocationButtonOnClicked()
+{
+	// TODO add a saved location variable on the player
+	// TODO add a saved location to the player save
+
+	// Update the saved location on the owning player
+	// Update the saved location text block
+
 }

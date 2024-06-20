@@ -6,9 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "MapWidget.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class MAPS_API UMapWidget : public UUserWidget
 {
@@ -31,5 +28,20 @@ protected:
 private:
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* CloseButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UButton* SaveCurrentLocationButton;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* CurrentLocationTextBlock;
+	
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* LastDeathLocationTextBlock;
+	
+	UPROPERTY(Meta = (BindWidget))
+	class UTextBlock* SavedLocationTextBlock;
+
+	UFUNCTION()
+	void SaveCurrentLocationButtonOnClicked();
 
 };
