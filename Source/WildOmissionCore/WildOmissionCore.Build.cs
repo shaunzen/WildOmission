@@ -14,7 +14,7 @@ public class WildOmissionCore : ModuleRules
 			"Niagara", "NavigationSystem", "MetasoundEngine", "Achievements", "Animals", "Animation", "Crafting",
 			"CustomUI", "DedicatedServer", "Deployables", "Despawner", "Durability",
 			"EquipableItems", "GameChat", "GameMusic", "GameSettings", "GatherableResources",
-			"Interaction", "Inventory", "Locks", "MenuSystem", "Monsters", "Notifications", "Ragdoll", "SavableObject",
+			"Interaction", "Inventory", "Locks", "MenuSystem", "Maps", "Monsters", "Notifications", "Ragdoll", "SavableObject",
 			"SaveSystem", "SurfaceProperties", "TimeOfDay", "Vitals", "Weapons", "Weather",
 			"WildOmissionAI", "WorldGeneration"
 		});

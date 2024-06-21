@@ -44,4 +44,9 @@ private:
 	UFUNCTION()
 	void SaveCurrentLocationButtonOnClicked();
 
+	UFUNCTION()
+	void RefreshCoordinates();
+
+	class IMapInterface* GetOwnerAsMapInterface() const;
+
 };

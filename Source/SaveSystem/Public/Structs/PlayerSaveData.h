@@ -36,6 +36,12 @@ struct SAVESYSTEM_API FPlayerSaveData
 	FVector WorldLocation = FVector::ZeroVector;
 
 	UPROPERTY()
+	FVector LastDeathLocation = FVector::ZeroVector;
+
+	UPROPERTY()
+	FVector SavedLocation = FVector::ZeroVector;
+
+	UPROPERTY()
 	FVitalsSaveData Vitals;
 
 	UPROPERTY()

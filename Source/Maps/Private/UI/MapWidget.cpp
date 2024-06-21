@@ -3,6 +3,8 @@
 
 #include "UI/MapWidget.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
+#include "Interfaces/MapInterface.h"
 
 UMapWidget::UMapWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -43,6 +45,7 @@ void UMapWidget::Setup()
 	this->SetFocus();
 
 	// Update the coordinates
+	RefreshCoordinates();
 }
 
 void UMapWidget::Teardown()
@@ -75,10 +78,65 @@ FReply UMapWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent&
 
 void UMapWidget::SaveCurrentLocationButtonOnClicked()
 {
-	// TODO add a saved location variable on the player
-	// TODO add a saved location to the player save
+	// TODO think about multiplayer too
+	
+	// Get the map interface
+	IMapInterface* MapInterface = GetOwnerAsMapInterface();
+	if (MapInterface == nullptr)
+	{
+		return;
+	}
 
 	// Update the saved location on the owning player
-	// Update the saved location text block
+	MapInterface->SetSavedLocationToCurrentLocation();
 
+	RefreshCoordinates();
+}
+
+void UMapWidget::RefreshCoordinates()
+{
+	IMapInterface* MapInterface = GetOwnerAsMapInterface();
+	if (MapInterface == nullptr || CurrentLocationTextBlock == nullptr
+		|| LastDeathLocationTextBlock == nullptr || SavedLocationTextBlock == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to refresh map coordinates, map interface nullptr."));
+		return;
+	}
+
+	const FVector CurrentLocation = MapInterface->GetCurrentCoordinateLocation();
+	const FVector LastDeathLocation = MapInterface->GetLastDeathLocation();
+	const FVector SavedLocation = MapInterface->GetSavedLocation();
+
+	const FString CurrentLocationString =
+		FString::Printf(TEXT("Current Location: X = %i, Y = %i, Z = %i"),
+			FMath::RoundToInt32(CurrentLocation.X),
+			FMath::RoundToInt32(CurrentLocation.Y),
+			FMath::RoundToInt32(CurrentLocation.Z));
+	const FString LastDeathLocationString =
+		FString::Printf(TEXT("Last Death Location: X = %i, Y = %i, Z = %i"),
+			FMath::RoundToInt32(LastDeathLocation.X),
+			FMath::RoundToInt32(LastDeathLocation.Y),
+			FMath::RoundToInt32(LastDeathLocation.Z));
+	const FString SavedLocationString =
+		FString::Printf(TEXT("Saved Location: X = %i, Y = %i, Z = %i"),
+			FMath::RoundToInt32(SavedLocation.X),
+			FMath::RoundToInt32(SavedLocation.Y),
+			FMath::RoundToInt32(SavedLocation.Z));
+
+	CurrentLocationTextBlock->SetText(FText::FromString(CurrentLocationString));
+	LastDeathLocationTextBlock->SetText(FText::FromString(LastDeathLocationString));
+	SavedLocationTextBlock->SetText(FText::FromString(SavedLocationString));
+}
+
+IMapInterface* UMapWidget::GetOwnerAsMapInterface() const
+{
+	// Get the owning player controller
+	APlayerController* OwnerPlayerController = GetOwningPlayer();
+	if (!IsValid(OwnerPlayerController))
+	{
+		return nullptr;
+	}
+
+	IMapInterface* MapInterface = Cast<IMapInterface>(OwnerPlayerController);
+	return MapInterface;
 }

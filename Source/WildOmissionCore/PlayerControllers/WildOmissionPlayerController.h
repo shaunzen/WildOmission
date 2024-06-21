@@ -7,11 +7,13 @@
 #include "Interfaces/SavablePlayer.h"
 #include "Interfaces/PlayerControllerMessageSender.h"
 #include "Interfaces/BedController.h"
+#include "Interfaces/MapInterface.h"
 #include "Interfaces/ServerAdministrator.h"
 #include "WildOmissionPlayerController.generated.h"
 
 UCLASS()
-class WILDOMISSIONCORE_API AWildOmissionPlayerController : public APlayerController, public ISavablePlayer, public IPlayerControllerMessageSender, public IBedController, public IServerAdministrator
+class WILDOMISSIONCORE_API AWildOmissionPlayerController 
+	: public APlayerController, public ISavablePlayer, public IPlayerControllerMessageSender, public IBedController, public IMapInterface, public IServerAdministrator
 {
 	GENERATED_BODY()
 
@@ -67,6 +69,12 @@ public:
 	UFUNCTION(Exec)
 	void LogLocalInventoryContents();
 
+	virtual void SetSavedLocationToCurrentLocation() override;
+	virtual void SetLastDeathLocation(const FVector& DeathLocation) override;
+	virtual FVector GetCurrentCoordinateLocation() override;
+	virtual FVector GetSavedLocation() override;
+	virtual FVector GetLastDeathLocation() override;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* aPawn) override;
@@ -89,6 +97,9 @@ private:
 
 	UPROPERTY(Replicated)
 	FVector LastDeathLocation;
+
+	UPROPERTY(Replicated)
+	FVector SavedLocation;
 
 	UPROPERTY(Replicated)
 	bool Administrator;
@@ -129,5 +140,8 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void Server_KillThisPlayer();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetSavedLocationToCurrentLocation();
 
 };
