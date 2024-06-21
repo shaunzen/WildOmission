@@ -60,7 +60,11 @@ void UMapWidget::Teardown()
 	PlayerController->SetShowMouseCursor(false);
 	PlayerController->SetInputMode(InputData);
 
-	// TODO broadcast this so we can set open widget to null in the map item
+	if (OnTeardown.IsBound())
+	{
+		OnTeardown.Broadcast();
+	}
+	
 	this->RemoveFromParent();
 }
 
@@ -77,9 +81,7 @@ FReply UMapWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent&
 }
 
 void UMapWidget::SaveCurrentLocationButtonOnClicked()
-{
-	// TODO think about multiplayer too
-	
+{	
 	// Get the map interface
 	IMapInterface* MapInterface = GetOwnerAsMapInterface();
 	if (MapInterface == nullptr)

@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "MapWidget.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMapWidgetTeardownSignature);
+
 UCLASS()
 class MAPS_API UMapWidget : public UUserWidget
 {
@@ -21,6 +23,8 @@ public:
 
 	UFUNCTION()
 	void Teardown();
+
+	FOnMapWidgetTeardownSignature OnTeardown;
 
 protected:
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
