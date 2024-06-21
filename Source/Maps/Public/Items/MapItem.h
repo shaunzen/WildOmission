@@ -29,4 +29,7 @@ private:
 
 	void BringUpMap();
 
+	UFUNCTION()
+	void ClearWidget();
+
 };
