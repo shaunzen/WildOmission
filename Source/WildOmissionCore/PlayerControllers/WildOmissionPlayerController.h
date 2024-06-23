@@ -90,6 +90,9 @@ private:
 	TSubclassOf<class UDeathMenuWidget> DeathMenuWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, Replicated)
+	uint8 GameMode;
+
+	UPROPERTY(VisibleAnywhere, Replicated)
 	int32 BedUniqueID;
 
 	UPROPERTY(VisibleAnywhere)

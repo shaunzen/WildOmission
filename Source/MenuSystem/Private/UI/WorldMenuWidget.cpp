@@ -22,6 +22,7 @@ UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) 
 	DeleteButton = nullptr;
 	CancelButton = nullptr;
 	DifficultyMultiOptionBox = nullptr;
+	GameModeMultiOptionBox = nullptr;
 	SeedTextBlock = nullptr;
 	MultiplayerCheckOptionBox = nullptr;
 	FriendsOnlyCheckOptionBox = nullptr;
@@ -40,6 +41,9 @@ void UWorldMenuWidget::NativeConstruct()
 	DifficultyMultiOptionBox->AddOption(TEXT("Easy"));
 	DifficultyMultiOptionBox->AddOption(TEXT("Normal"));
 	DifficultyMultiOptionBox->AddOption(TEXT("Hard"));
+
+	GameModeMultiOptionBox->AddOption(TEXT("Survival"));
+	GameModeMultiOptionBox->AddOption(TEXT("Creative"));
 
 	MaxPlayersSliderOptionBox->SetMaxValue(16);
 	MaxPlayersSliderOptionBox->SetMinValue(2);
