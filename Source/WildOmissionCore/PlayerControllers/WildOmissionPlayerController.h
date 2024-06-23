@@ -46,6 +46,9 @@ public:
 	virtual void KickPlayer(APlayerController* PlayerControllerToKick) override;
 	// End IServerAdministrator Implementation
 
+	void SetGameModeIndex(const uint8 & NewGameModeIndex);
+	uint8 GetGameModeIndex() const;
+
 	void Save();
 
 	UFUNCTION(BlueprintCallable)
@@ -90,7 +93,7 @@ private:
 	TSubclassOf<class UDeathMenuWidget> DeathMenuWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, Replicated)
-	uint8 GameMode;
+	uint8 GameModeIndex;
 
 	UPROPERTY(VisibleAnywhere, Replicated)
 	int32 BedUniqueID;

@@ -27,6 +27,9 @@ struct SAVESYSTEM_API FPlayerSaveData
 	FString UniqueID = TEXT("");
 
 	UPROPERTY()
+	uint8 GameMode = 0;
+
+	UPROPERTY()
 	int32 BedUniqueID = -1;
 
 	UPROPERTY()

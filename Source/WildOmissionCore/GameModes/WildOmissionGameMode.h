@@ -83,6 +83,8 @@ private:
 
 	bool FriendsOnly = true;
 
+	uint8 GameMode = 0;
+
 	UPROPERTY()
 	ASaveManager* SaveManager;
 

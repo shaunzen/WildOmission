@@ -36,6 +36,8 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 
 	TempChunkInvoker = nullptr;
 
+	GameModeIndex = 0;
+
 	BedUniqueID = -1;
 	BedChunkLocation = FIntVector2();
 
@@ -56,7 +58,7 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, GameMode, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, GameModeIndex, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SpawnChunk, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, LastDeathLocation, COND_OwnerOnly);
@@ -80,6 +82,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 	}
 
 	PlayerSaveData.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
+	PlayerSaveData.GameMode = GameModeIndex;
 	PlayerSaveData.BedUniqueID = BedUniqueID;
 	PlayerSaveData.BedChunkLocation = BedChunkLocation;
 	PlayerSaveData.AchievementStatsData = AchievementsComponent->GetStatsData();
@@ -191,6 +194,16 @@ bool AWildOmissionPlayerController::IsAdministrator() const
 void AWildOmissionPlayerController::KickPlayer(APlayerController* PlayerControllerToKick)
 {
 	Server_KickPlayer(PlayerControllerToKick);
+}
+
+void AWildOmissionPlayerController::SetGameModeIndex(const uint8& NewGameModeIndex)
+{
+	GameModeIndex = NewGameModeIndex;
+}
+
+uint8 AWildOmissionPlayerController::GetGameModeIndex() const
+{
+	return GameModeIndex;
 }
 
 void AWildOmissionPlayerController::Save()

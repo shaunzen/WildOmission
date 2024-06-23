@@ -34,7 +34,19 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 
 	FString SaveFile = UGameplayStatics::ParseOption(Options, "SaveGame");
 	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
-	
+	const FString GameModeString = UGameplayStatics::ParseOption(Options, "GameMode");
+		
+	// Survival
+	if (GameModeString == TEXT("0"))
+	{
+		GameMode = 0;
+	}
+	// Creative
+	else if (GameModeString == TEXT("1"))
+	{
+		GameMode = 1;
+	}
+
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
@@ -145,6 +157,8 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		return;
 	}
+
+	NewWildOmissionPlayer->SetGameModeIndex(GameMode);
 
 	ProcessMultiplayerJoinAchievement(NewWildOmissionPlayer);
 
