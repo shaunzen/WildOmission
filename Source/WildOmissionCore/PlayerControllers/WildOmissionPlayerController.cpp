@@ -103,21 +103,21 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 	UVitalsComponent* PlayerVitalsComponent = WildOmissionCharacter->GetVitalsComponent();
 	if (PlayerVitalsComponent)
 	{
-		PlayerSaveData.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
-		PlayerSaveData.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
-		PlayerSaveData.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
+		PlayerSaveData.Vitals.Health = PlayerVitalsComponent->GetHealth();
+		PlayerSaveData.Vitals.Hunger = PlayerVitalsComponent->GetHunger();
+		PlayerSaveData.Vitals.Thirst = PlayerVitalsComponent->GetThirst();
 	}
 
 	UPlayerInventoryComponent* PlayerInventoryComponent = WildOmissionCharacter->GetInventoryComponent();
 	if (PlayerInventoryComponent)
 	{
-		PlayerSaveData.Inventory.ByteData = WildOmissionCharacter->GetInventoryComponent()->Save();
+		PlayerSaveData.Inventory.ByteData = PlayerInventoryComponent->Save();
 	}
 
 	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = WildOmissionCharacter->GetInventoryManipulatorComponent();
 	if (PlayerInventoryManipulatorComponent)
 	{
-		PlayerSaveData.SelectedItemByteData = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItemAsByteData();
+		PlayerSaveData.SelectedItemByteData = PlayerInventoryManipulatorComponent->GetSelectedItemAsByteData();
 	}
 
 	return PlayerSaveData;
