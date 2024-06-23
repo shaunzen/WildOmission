@@ -70,8 +70,9 @@ void UWorldMenuWidget::Open(const FString& InWorldName)
 
 	Title->SetText(FText::FromString(WorldName));
 
-	// Get Save File and select option
+	// Get Save File and select options
 	DifficultyMultiOptionBox->SetSelectedIndex(SaveFile->Difficulty.GetIntValue());
+	GameModeMultiOptionBox->SetSelectedIndex(SaveFile->GameMode);
 
 	// Set the seed text block
 	SeedTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Seed: %i"), SaveFile->Seed)));
