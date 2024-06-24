@@ -11,7 +11,7 @@ public class WildOmissionCore : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] {
 			"Core", "CoreUObject", "Engine",
 			"InputCore", "EnhancedInput", "UMG", 
-			"Niagara", "NavigationSystem", "MetasoundEngine", "Achievements", "Animals", "Animation", "Crafting",
+			"Niagara", "NavigationSystem", "MetasoundEngine", "Achievements", "Animals", "Animation", "Cheats", "Crafting",
 			"CustomUI", "DedicatedServer", "Deployables", "Despawner", "Durability",
 			"EquipableItems", "GameChat", "GameMusic", "GameSettings", "GatherableResources",
 			"Interaction", "Inventory", "Locks", "MenuSystem", "Maps", "Monsters", "Notifications", "Ragdoll", "SavableObject",
