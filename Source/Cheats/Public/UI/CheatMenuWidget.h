@@ -14,4 +14,12 @@ class CHEATS_API UCheatMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UCheatMenuWidget(const FObjectInitializer& ObjectInitializer);
+
+	virtual void NativeConstruct() override;
+
+	void Setup();
+	void Teardown();
+
 };
