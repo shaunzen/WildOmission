@@ -19,10 +19,5 @@ public:
 
 	virtual void NativeConstruct() override;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void Setup();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void Teardown();
 
 };

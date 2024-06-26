@@ -44,7 +44,9 @@ public:
 	UFUNCTION()
 	void HandleDeath();
 
+	UPROPERTY(BlueprintAssignable)
 	FOnPlayerDeathSignature OnPlayerDeath;
+	UPROPERTY(BlueprintAssignable)
 	FOnKilledAnotherPlayerSignature OnKilledAnotherPlayerSignature;
 	
 	UFUNCTION()
@@ -363,6 +365,8 @@ private:
 	
 	void SetupMesh();
 	
+	void SetupGameMode();
+
 	void SetupPlayerHUD();
 
 	void SetupLocalComponents();

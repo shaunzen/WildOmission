@@ -352,6 +352,7 @@ void AWildOmissionCharacter::BeginPlay()
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
+	SetupGameMode();
 	SetupPlayerHUD();
 	ApplyInputSettings();
 	ApplyGameplaySettings();
@@ -428,6 +429,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
+	SetupGameMode();
 	SetupPlayerHUD();
 	ApplyInputSettings();
 	ApplyGameplaySettings();
@@ -548,6 +550,15 @@ void AWildOmissionCharacter::SetupMesh()
 	if (FirstPersonArmsMeshComponent)
 	{
 		FirstPersonArmsMeshComponent->SetVisibility(IsLocallyControlled());
+	}
+}
+
+void AWildOmissionCharacter::SetupGameMode()
+{
+	AWildOmissionPlayerController* OwnerPlayerController = Cast<AWildOmissionPlayerController>(GetController());
+	if (OwnerPlayerController && OwnerPlayerController->IsCreativeMode())
+	{
+		VitalsComponent->SetGodMode(true);
 	}
 }
 

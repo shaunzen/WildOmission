@@ -22,13 +22,7 @@ void UCheatComponent::OpenCheatMenu()
 		return;
 	}
 
-	CheatMenuWidget = CreateWidget<UCheatMenuWidget>(GetOwner(), CheatMenuWidgetClass);
-	if (CheatMenuWidget == nullptr)
-	{
-		return;
-	}
-
-	CheatMenuWidget->Setup();
+	
 }
 
 void UCheatComponent::CloseCheatMenu()
@@ -38,6 +32,6 @@ void UCheatComponent::CloseCheatMenu()
 		return;
 	}
 
-	CheatMenuWidget->Teardown();
+	
 	CheatMenuWidget = nullptr;
 }
