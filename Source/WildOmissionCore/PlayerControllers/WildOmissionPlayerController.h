@@ -46,8 +46,15 @@ public:
 	virtual void KickPlayer(APlayerController* PlayerControllerToKick) override;
 	// End IServerAdministrator Implementation
 
+	UFUNCTION(BlueprintCallable)
 	void SetGameModeIndex(const uint8 & NewGameModeIndex);
+	UFUNCTION(BlueprintCallable)
 	uint8 GetGameModeIndex() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsSurvivalMode() const;
+	UFUNCTION(BlueprintCallable)
+	bool IsCreativeMode() const;
 
 	void Save();
 

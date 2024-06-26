@@ -13,11 +13,3 @@ void UCheatMenuWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 }
-
-void UCheatMenuWidget::Setup()
-{
-}
-
-void UCheatMenuWidget::Teardown()
-{
-}

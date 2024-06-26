@@ -206,6 +206,16 @@ uint8 AWildOmissionPlayerController::GetGameModeIndex() const
 	return GameModeIndex;
 }
 
+bool AWildOmissionPlayerController::IsSurvivalMode() const
+{
+	return GameModeIndex == 0;
+}
+
+bool AWildOmissionPlayerController::IsCreativeMode() const
+{
+	return GameModeIndex == 1;
+}
+
 void AWildOmissionPlayerController::Save()
 {
 	UWorld* World = GetWorld();

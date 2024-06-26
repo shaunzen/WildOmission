@@ -12,34 +12,32 @@ UCheatComponent::UCheatComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	CheatMenuWidget = nullptr;
+	CheatMenuWidgetClass = nullptr;
 }
 
-void UCheatComponent::ToggleMenu()
+void UCheatComponent::OpenCheatMenu()
 {
-	if (CheatMenuWidget != nullptr)
+	if (CheatMenuWidgetClass == nullptr)
 	{
-		CheatMenuWidget->Teardown();
-		CheatMenuWidget = nullptr;
 		return;
 	}
 
+	CheatMenuWidget = CreateWidget<UCheatMenuWidget>(GetOwner(), CheatMenuWidgetClass);
+	if (CheatMenuWidget == nullptr)
+	{
+		return;
+	}
+
+	CheatMenuWidget->Setup();
 }
 
-// Called when the game starts
-void UCheatComponent::BeginPlay()
+void UCheatComponent::CloseCheatMenu()
 {
-	Super::BeginPlay();
+	if (CheatMenuWidget == nullptr)
+	{
+		return;
+	}
 
-	// ...
-	
+	CheatMenuWidget->Teardown();
+	CheatMenuWidget = nullptr;
 }
-
-
-// Called every frame
-void UCheatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
