@@ -14,6 +14,7 @@
 #include "MonsterSpawnManager.h"
 #include "GameChatManager.h"
 #include "WildOmissionCore/WildOmissionGameInstance.h"
+#include "WildOmissionSaveGame.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Interfaces/OnlineFriendsInterface.h" 
@@ -156,6 +157,15 @@ void AWildOmissionGameMode::PostLogin(APlayerController* NewPlayer)
 	if (NewWildOmissionPlayer == nullptr)
 	{
 		return;
+	}
+
+	if (SaveManager)
+	{
+		UWildOmissionSaveGame* SaveGame = SaveManager->GetSaveFile();
+		if (SaveGame)
+		{
+			NewWildOmissionPlayer->SetInCheatedWorld(SaveGame->CheatsEnabled);
+		}
 	}
 
 	NewWildOmissionPlayer->SetGameModeIndex(GameMode);

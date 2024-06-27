@@ -52,6 +52,12 @@ public:
 	uint8 GetGameModeIndex() const;
 
 	UFUNCTION(BlueprintCallable)
+	void SetInCheatedWorld(bool CheatedWorld);
+	UFUNCTION(BlueprintCallable)
+	bool IsInCheatedWorld() const;
+
+
+	UFUNCTION(BlueprintCallable)
 	bool IsSurvivalMode() const;
 	UFUNCTION(BlueprintCallable)
 	bool IsCreativeMode() const;
@@ -101,6 +107,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Replicated)
 	uint8 GameModeIndex;
+
+	UPROPERTY(VisibleAnywhere, Replicated)
+	bool InCheatedWorld;
 
 	UPROPERTY(VisibleAnywhere, Replicated)
 	int32 BedUniqueID;

@@ -12,6 +12,7 @@ UInGameAchievementsComponent::UInGameAchievementsComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+	AchievementsEnabled = true;
 }
 
 // Called when the game starts
@@ -64,6 +65,16 @@ FAchievementStatsData UInGameAchievementsComponent::GetStatsData() const
 void UInGameAchievementsComponent::SetStatsData(const FAchievementStatsData& InStatsData)
 {
 	StatsData = InStatsData;
+}
+
+void UInGameAchievementsComponent::SetAchievementsEnabled(bool Enabled)
+{
+	AchievementsEnabled = Enabled;
+}
+
+bool UInGameAchievementsComponent::AreAchievementsEnabled() const
+{
+	return AchievementsEnabled;
 }
 
 void UInGameAchievementsComponent::Client_UnlockAchievement_Implementation(const FString& AchievementID)

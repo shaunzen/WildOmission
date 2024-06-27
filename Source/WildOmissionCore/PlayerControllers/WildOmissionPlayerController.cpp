@@ -206,6 +206,21 @@ uint8 AWildOmissionPlayerController::GetGameModeIndex() const
 	return GameModeIndex;
 }
 
+void AWildOmissionPlayerController::SetInCheatedWorld(bool CheatedWorld)
+{
+	InCheatedWorld = CheatedWorld;
+
+	if (AchievementsComponent)
+	{
+		AchievementsComponent->SetAchievementsEnabled(InCheatedWorld == false);
+	}
+}
+
+bool AWildOmissionPlayerController::IsInCheatedWorld() const
+{
+	return InCheatedWorld;
+}
+
 bool AWildOmissionPlayerController::IsSurvivalMode() const
 {
 	return GameModeIndex == 0;

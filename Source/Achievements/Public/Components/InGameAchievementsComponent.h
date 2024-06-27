@@ -23,6 +23,9 @@ public:
 	FAchievementStatsData GetStatsData() const;
 	void SetStatsData(const FAchievementStatsData& InStatsData);
 
+	void SetAchievementsEnabled(bool Enabled);
+	bool AreAchievementsEnabled() const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -33,5 +36,8 @@ protected:
 private:
 	UFUNCTION(Client, Reliable)
 	void Client_UnlockAchievement(const FString& AchievementID);
+
+	UPROPERTY()
+	bool AchievementsEnabled;
 
 };
