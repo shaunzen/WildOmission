@@ -352,8 +352,8 @@ void AWildOmissionCharacter::BeginPlay()
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
-	SetupGameMode();
 	SetupPlayerHUD();
+	SetupGameMode();
 	ApplyInputSettings();
 	ApplyGameplaySettings();
 	ApplyPostProcessingSettings();
@@ -429,8 +429,8 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
-	SetupGameMode();
 	SetupPlayerHUD();
+	SetupGameMode();
 	ApplyInputSettings();
 	ApplyGameplaySettings();
 	ApplyPostProcessingSettings();
@@ -556,9 +556,19 @@ void AWildOmissionCharacter::SetupMesh()
 void AWildOmissionCharacter::SetupGameMode()
 {
 	AWildOmissionPlayerController* OwnerPlayerController = Cast<AWildOmissionPlayerController>(GetController());
-	if (OwnerPlayerController && OwnerPlayerController->IsCreativeMode())
+	if (OwnerPlayerController == nullptr || OwnerPlayerController->IsSurvivalMode())
+	{
+		return;
+	}
+
+	if (VitalsComponent)
 	{
 		VitalsComponent->SetGodMode(true);
+	}
+
+	if (PlayerHUDWidget)
+	{
+		PlayerHUDWidget->SetVitalsHidden(true);
 	}
 }
 
