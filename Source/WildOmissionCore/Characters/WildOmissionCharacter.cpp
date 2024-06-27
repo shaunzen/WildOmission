@@ -500,13 +500,14 @@ void AWildOmissionCharacter::HandleFly()
 		return;
 	}
 
-	APlayerState* OurPlayerState = GetPlayerState();
-	if (OurPlayerState == nullptr)
+	//OurPlayerState->GetUniqueId().ToString() != TEXT("76561198277223961"))
+	AWildOmissionPlayerController* OurPlayerController = Cast<AWildOmissionPlayerController>(GetController());
+	if (OurPlayerController == nullptr)
 	{
 		return;
 	}
 
-	if (!World->IsEditorWorld() && OurPlayerState->GetUniqueId().ToString() != TEXT("76561198277223961"))
+	if (!World->IsEditorWorld() && OurPlayerController->IsSurvivalMode())
 	{
 		return;
 	}
@@ -590,7 +591,7 @@ void AWildOmissionCharacter::ApplyInputSettings()
 	DefaultMappingContext->MapKey(SprintAction, UserSettings->GetSprintKey());
 	DefaultMappingContext->MapKey(CrouchAction, UserSettings->GetCrouchKey());
 	DefaultMappingContext->MapKey(JumpAction, UserSettings->GetJumpKey());
-	DefaultMappingContext->MapKey(FlyAction, EKeys::L);
+	DefaultMappingContext->MapKey(FlyAction, UserSettings->GetFlyKey());
 	DefaultMappingContext->MapKey(PrimaryAction, UserSettings->GetPrimaryKey());
 	DefaultMappingContext->MapKey(SecondaryAction, UserSettings->GetSecondaryKey());
 	DefaultMappingContext->MapKey(InteractAction, UserSettings->GetInteractKey());
