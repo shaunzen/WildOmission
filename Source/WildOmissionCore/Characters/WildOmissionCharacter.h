@@ -170,9 +170,6 @@ private:
 	bool bSprintButtonHeld;
 
 	UPROPERTY()
-	bool bFlying;
-
-	UPROPERTY()
 	bool bUnderwater;
 
 	void HandleUnderwater();

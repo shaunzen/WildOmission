@@ -1071,7 +1071,23 @@ void AWildOmissionCharacter::RefreshDesiredMovementSpeed()
 
 bool AWildOmissionCharacter::Server_HandleFly_Validate()
 {
-	// TODO make sure they are in creative, or they are cheating
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return false;
+	}
+
+	AWildOmissionPlayerController* OurPlayerController = Cast<AWildOmissionPlayerController>(GetController());
+	if (OurPlayerController == nullptr)
+	{
+		return false;;
+	}
+
+	if (!World->IsEditorWorld() && OurPlayerController->IsSurvivalMode())
+	{
+		return false;
+	}
+
 	return true;
 }
 
