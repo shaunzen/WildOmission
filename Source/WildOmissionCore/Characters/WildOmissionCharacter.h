@@ -170,6 +170,9 @@ private:
 	bool bSprintButtonHeld;
 
 	UPROPERTY()
+	bool bFlying;
+
+	UPROPERTY()
 	bool bUnderwater;
 
 	void HandleUnderwater();
@@ -312,6 +315,9 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void Server_Sprint(bool bShouldSprint);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_HandleFly();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayFallCrunchSound();

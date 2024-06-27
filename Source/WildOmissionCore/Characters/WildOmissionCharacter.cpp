@@ -518,6 +518,11 @@ void AWildOmissionCharacter::HandleFly()
 		return;
 	}
 
+	if (!HasAuthority())
+	{
+		Server_HandleFly();
+	}
+
 	const bool AlreadyFlying = CharacterMovementComponent->IsFlying();
 	AlreadyFlying ? CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking)
 		: CharacterMovementComponent->SetMovementMode(EMovementMode::MOVE_Flying);
@@ -1062,6 +1067,17 @@ void AWildOmissionCharacter::RefreshDesiredMovementSpeed()
 	}
 
 	OnRep_MovementSpeed();
+}
+
+bool AWildOmissionCharacter::Server_HandleFly_Validate()
+{
+	// TODO make sure they are in creative, or they are cheating
+	return true;
+}
+
+void AWildOmissionCharacter::Server_HandleFly_Implementation()
+{
+	HandleFly();
 }
 
 void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)
