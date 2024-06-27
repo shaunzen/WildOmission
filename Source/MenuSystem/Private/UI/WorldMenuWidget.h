@@ -7,7 +7,7 @@
 #include "Enums/GameDifficulty.h"
 #include "WorldMenuWidget.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FWorldMenuOnPlayButtonClickedSignature, const FString&, WorldName, const FString&, ServerName, const bool, IsMultiplayer, const bool, IsFriendsOnly, const int32&, MaxPlayerCount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FWorldMenuOnPlayButtonClickedSignature, const FString&, WorldName, const FString&, ServerName, const bool, IsMultiplayer, const bool, IsFriendsOnly, const uint8&, GameMode, const int32&, MaxPlayerCount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnRenameButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnDeleteButtonClickedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWorldMenuOnCancelButtonClickedSignature);
@@ -52,6 +52,9 @@ private:
 	class UMultiOptionBox* DifficultyMultiOptionBox;
 
 	UPROPERTY(Meta = (BindWidget))
+	class UMultiOptionBox* GameModeMultiOptionBox;
+
+	UPROPERTY(Meta = (BindWidget))
 	class UTextBlock* SeedTextBlock;
 
 	UPROPERTY(Meta = (BindWidget))
@@ -75,8 +78,8 @@ private:
 	int32 GetWorldVersion() const;
 
 	TEnumAsByte<enum EGameDifficulty> GetWorldDifficulty() const;
-	void SetWorldDifficulty(const TEnumAsByte<enum EGameDifficulty>& NewDifficulty);
-
+	void SetWorldDifficultyAndGameMode(const TEnumAsByte<enum EGameDifficulty>& NewDifficulty, const uint8& NewGameMode);
+	
 	UFUNCTION()
 	void ServerNameOnTextChanged(const FText& Text);
 	

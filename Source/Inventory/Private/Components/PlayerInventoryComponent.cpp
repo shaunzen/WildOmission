@@ -52,6 +52,12 @@ void UPlayerInventoryComponent::BeginPlay()
 		TorchItem.Quantity = 1;
 
 		AddItem(TorchItem);
+
+		FInventoryItem MapItem;
+		MapItem.Name = TEXT("map");
+		MapItem.Quantity = 1;
+
+		AddItem(MapItem);
 	}
 }
 

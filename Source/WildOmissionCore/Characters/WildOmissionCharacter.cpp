@@ -353,6 +353,7 @@ void AWildOmissionCharacter::BeginPlay()
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
+	SetupGameMode();
 	ApplyInputSettings();
 	ApplyGameplaySettings();
 	ApplyPostProcessingSettings();
@@ -429,6 +430,7 @@ void AWildOmissionCharacter::PossessedBy(AController* NewController)
 	SetupEnhancedInputSubsystem();
 	SetupMesh();
 	SetupPlayerHUD();
+	SetupGameMode();
 	ApplyInputSettings();
 	ApplyGameplaySettings();
 	ApplyPostProcessingSettings();
@@ -498,13 +500,14 @@ void AWildOmissionCharacter::HandleFly()
 		return;
 	}
 
-	APlayerState* OurPlayerState = GetPlayerState();
-	if (OurPlayerState == nullptr)
+	//OurPlayerState->GetUniqueId().ToString() != TEXT("76561198277223961"))
+	AWildOmissionPlayerController* OurPlayerController = Cast<AWildOmissionPlayerController>(GetController());
+	if (OurPlayerController == nullptr)
 	{
 		return;
 	}
 
-	if (!World->IsEditorWorld() && OurPlayerState->GetUniqueId().ToString() != TEXT("76561198277223961"))
+	if (!World->IsEditorWorld() && OurPlayerController->IsSurvivalMode())
 	{
 		return;
 	}
@@ -513,6 +516,11 @@ void AWildOmissionCharacter::HandleFly()
 	if (CharacterMovementComponent == nullptr)
 	{
 		return;
+	}
+
+	if (!HasAuthority())
+	{
+		Server_HandleFly();
 	}
 
 	const bool AlreadyFlying = CharacterMovementComponent->IsFlying();
@@ -551,6 +559,25 @@ void AWildOmissionCharacter::SetupMesh()
 	}
 }
 
+void AWildOmissionCharacter::SetupGameMode()
+{
+	AWildOmissionPlayerController* OwnerPlayerController = Cast<AWildOmissionPlayerController>(GetController());
+	if (OwnerPlayerController == nullptr || OwnerPlayerController->IsSurvivalMode())
+	{
+		return;
+	}
+
+	if (VitalsComponent)
+	{
+		VitalsComponent->SetGodMode(true);
+	}
+
+	if (PlayerHUDWidget)
+	{
+		PlayerHUDWidget->SetVitalsHidden(true);
+	}
+}
+
 void AWildOmissionCharacter::ApplyInputSettings()
 {
 	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
@@ -569,7 +596,7 @@ void AWildOmissionCharacter::ApplyInputSettings()
 	DefaultMappingContext->MapKey(SprintAction, UserSettings->GetSprintKey());
 	DefaultMappingContext->MapKey(CrouchAction, UserSettings->GetCrouchKey());
 	DefaultMappingContext->MapKey(JumpAction, UserSettings->GetJumpKey());
-	DefaultMappingContext->MapKey(FlyAction, EKeys::L);
+	DefaultMappingContext->MapKey(FlyAction, UserSettings->GetFlyKey());
 	DefaultMappingContext->MapKey(PrimaryAction, UserSettings->GetPrimaryKey());
 	DefaultMappingContext->MapKey(SecondaryAction, UserSettings->GetSecondaryKey());
 	DefaultMappingContext->MapKey(InteractAction, UserSettings->GetInteractKey());
@@ -1040,6 +1067,33 @@ void AWildOmissionCharacter::RefreshDesiredMovementSpeed()
 	}
 
 	OnRep_MovementSpeed();
+}
+
+bool AWildOmissionCharacter::Server_HandleFly_Validate()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return false;
+	}
+
+	AWildOmissionPlayerController* OurPlayerController = Cast<AWildOmissionPlayerController>(GetController());
+	if (OurPlayerController == nullptr)
+	{
+		return false;;
+	}
+
+	if (!World->IsEditorWorld() && OurPlayerController->IsSurvivalMode())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void AWildOmissionCharacter::Server_HandleFly_Implementation()
+{
+	HandleFly();
 }
 
 void AWildOmissionCharacter::Server_Sprint_Implementation(bool bShouldSprint)

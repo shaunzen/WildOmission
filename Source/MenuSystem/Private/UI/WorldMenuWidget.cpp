@@ -22,6 +22,7 @@ UWorldMenuWidget::UWorldMenuWidget(const FObjectInitializer& ObjectInitializer) 
 	DeleteButton = nullptr;
 	CancelButton = nullptr;
 	DifficultyMultiOptionBox = nullptr;
+	GameModeMultiOptionBox = nullptr;
 	SeedTextBlock = nullptr;
 	MultiplayerCheckOptionBox = nullptr;
 	FriendsOnlyCheckOptionBox = nullptr;
@@ -40,6 +41,9 @@ void UWorldMenuWidget::NativeConstruct()
 	DifficultyMultiOptionBox->AddOption(TEXT("Easy"));
 	DifficultyMultiOptionBox->AddOption(TEXT("Normal"));
 	DifficultyMultiOptionBox->AddOption(TEXT("Hard"));
+
+	GameModeMultiOptionBox->AddOption(TEXT("Survival"));
+	GameModeMultiOptionBox->AddOption(TEXT("Creative"));
 
 	MaxPlayersSliderOptionBox->SetMaxValue(16);
 	MaxPlayersSliderOptionBox->SetMinValue(2);
@@ -66,8 +70,9 @@ void UWorldMenuWidget::Open(const FString& InWorldName)
 
 	Title->SetText(FText::FromString(WorldName));
 
-	// Get Save File and select option
+	// Get Save File and select options
 	DifficultyMultiOptionBox->SetSelectedIndex(SaveFile->Difficulty.GetIntValue());
+	GameModeMultiOptionBox->SetSelectedIndex(SaveFile->GameMode);
 
 	// Set the seed text block
 	SeedTextBlock->SetText(FText::FromString(FString::Printf(TEXT("Seed: %i"), SaveFile->Seed)));
@@ -125,7 +130,7 @@ TEnumAsByte<EGameDifficulty> UWorldMenuWidget::GetWorldDifficulty() const
 	return SaveFile->Difficulty;
 }
 
-void UWorldMenuWidget::SetWorldDifficulty(const TEnumAsByte<EGameDifficulty>& NewDifficulty)
+void UWorldMenuWidget::SetWorldDifficultyAndGameMode(const TEnumAsByte<EGameDifficulty>& NewDifficulty, const uint8& NewGameMode)
 {
 	// Get the save file
 	UWildOmissionSaveGame* SaveFile = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldName, 0));
@@ -136,6 +141,8 @@ void UWorldMenuWidget::SetWorldDifficulty(const TEnumAsByte<EGameDifficulty>& Ne
 
 	// Set the difficulty value to NewDifficulty
 	SaveFile->Difficulty = NewDifficulty;
+	
+	SaveFile->GameMode = NewGameMode;
 
 	// Save the save game
 	UGameplayStatics::SaveGameToSlot(SaveFile, WorldName, 0);
@@ -165,15 +172,17 @@ void UWorldMenuWidget::BroadcastPlayButtonClicked()
 	{
 		return;
 	}
+
+	const uint8 GameMode = GameModeMultiOptionBox->GetSelectedIndex();
 	
 	// Set Difficulty in save file
-	SetWorldDifficulty(TEnumAsByte<EGameDifficulty>(DifficultyMultiOptionBox->GetSelectedIndex()));
+	SetWorldDifficultyAndGameMode(TEnumAsByte<EGameDifficulty>(DifficultyMultiOptionBox->GetSelectedIndex()), GameMode);
 
 	const FString ServerName = ServerNameInputBox->GetText().ToString();
 	const bool IsMultiplayer = MultiplayerCheckOptionBox->IsChecked();
 	const bool IsFriendsOnly = FriendsOnlyCheckOptionBox->IsChecked();
 
-	OnPlayButtonClicked.Broadcast(WorldName, ServerName, IsMultiplayer, IsFriendsOnly, FMath::RoundToInt32(MaxPlayersSliderOptionBox->GetValue()));
+	OnPlayButtonClicked.Broadcast(WorldName, ServerName, IsMultiplayer, IsFriendsOnly, GameMode, FMath::RoundToInt32(MaxPlayersSliderOptionBox->GetValue()));
 }
 
 void UWorldMenuWidget::BroadcastRenameButtonClicked()

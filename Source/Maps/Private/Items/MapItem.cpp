@@ -56,5 +56,11 @@ void AMapItem::BringUpMap()
 		return;
 	}
 
+	OpenWidget->OnTeardown.AddDynamic(this, &AMapItem::ClearWidget);
 	OpenWidget->Setup();
+}
+
+void AMapItem::ClearWidget()
+{
+	OpenWidget = nullptr;
 }

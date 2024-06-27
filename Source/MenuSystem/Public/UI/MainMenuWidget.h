@@ -29,7 +29,7 @@ public:
 	UFUNCTION()
 	void OpenWorldMenuForWorld(const FString& WorldName);
 	UFUNCTION()
-	void HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly, const int32& MaxPlayerCount);
+	void HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly, const uint8& GameMode, const int32& MaxPlayerCount);
 	UFUNCTION()
 	void OpenRenameWorldMenu();
 	UFUNCTION()

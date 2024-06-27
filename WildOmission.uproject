@@ -44,6 +44,15 @@
 			]
 		},
 		{
+			"Name": "Cheats",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"UMG"
+			]
+		},
+		{
 			"Name": "Crafting",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

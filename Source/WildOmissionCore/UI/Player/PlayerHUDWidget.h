@@ -21,6 +21,8 @@ public:
 	void ShowCrosshair(bool Show);
 	void SetHideChatUnlessOpen(bool HideChatUnlessOpen);
 
+	void SetVitalsHidden(bool Hidden);
+
 	// Setters
 	UFUNCTION(BlueprintCallable)
 	void ToggleInventoryMenu(bool ForceOpen = false);
@@ -56,7 +58,10 @@ private:
 	class UWidgetSwitcher* MenuSwitcher;
 
 	UPROPERTY(Meta = (BindWidget))
-	UPanelWidget* InventoryPanel;
+	class UWidget* Vitals;
+
+	UPROPERTY(Meta = (BindWidget))
+	class UPanelWidget* InventoryPanel;
 
 	UPROPERTY(Meta = (BindWidget))
 	class UButton* OpenCraftingButton;

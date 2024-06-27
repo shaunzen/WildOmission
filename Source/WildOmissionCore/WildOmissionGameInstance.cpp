@@ -30,7 +30,7 @@ const static FName GAME_VERSION_SETTINGS_KEY = TEXT("GameVersion");
 const static FName SEARCH_PRESENCE = TEXT("PRESENCESEARCH");
 const static FName SEARCH_DEDICATED_ONLY = TEXT("DEDICATEDONLY");
 
-const static FString GameVersion = TEXT("Alpha 1.5.3");
+const static FString GameVersion = TEXT("Alpha 1.6.0");
 
 static USoundMix* MasterSoundMixModifier = nullptr;
 static USoundClass* MasterSoundClass = nullptr;
@@ -486,7 +486,7 @@ void UWildOmissionGameInstance::ApplyAudioSettings()
 //****************************
 // HOSTING/JOINING
 //****************************
-void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
+void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName, const uint8& GameMode)
 {
 	if (MainMenuWidget == nullptr)
 	{
@@ -505,6 +505,7 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 	SetLoadingSubtitle(TEXT("Loading level."));
 
 	WorldToLoad = WorldName;
+	GameModeIndex = GameMode;
 
 	UWorld* World = GetWorld();
 	UWildOmissionSaveGame* SaveGame = Cast<UWildOmissionSaveGame>(UGameplayStatics::LoadGameFromSlot(WorldToLoad, 0));
@@ -513,13 +514,14 @@ void UWildOmissionGameInstance::StartSingleplayer(const FString& WorldName)
 		return;
 	}
 
-	FString LevelFileString = SaveGame->LevelFile;
-	FString LoadString = FString::Printf(TEXT("/Game/WildOmissionCore/Levels/%s?savegame=%s"), *LevelFileString, *WorldName);
+	const FString LevelFileString = SaveGame->LevelFile;
+	const FString GameModeString = FString::Printf(TEXT("%i"), GameModeIndex);
+	const FString LoadString = FString::Printf(TEXT("/Game/WildOmissionCore/Levels/%s?savegame=%s?gamemode=%s"), *LevelFileString, *WorldName, *GameModeString);
 	// Server travel to the game level
 	World->ServerTravel(LoadString);
 }
 
-void UWildOmissionGameInstance::HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly, const int32& MaxPlayerCount)
+void UWildOmissionGameInstance::HostServer(const FString& ServerName, const FString& WorldName, bool FriendsOnly, const int32& MaxPlayerCount, const uint8& GameMode)
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -530,6 +532,7 @@ void UWildOmissionGameInstance::HostServer(const FString& ServerName, const FStr
 	WorldToLoad = WorldName;
 	FriendsOnlySession = FriendsOnly;
 	DesiredMaxPlayerCount = MaxPlayerCount;
+	GameModeIndex = GameMode;
 
 	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
 	if (ExistingSession != nullptr)
@@ -656,9 +659,11 @@ void UWildOmissionGameInstance::OnCreateSessionComplete(FName SessionName, bool 
 		return;
 	}
 
-	FString FriendsOnlyString = FString::Printf(TEXT("%i"), FriendsOnlySession);
-	FString LevelFileString = SaveGame->LevelFile;
-	FString LoadString = FString::Printf(TEXT("/Game/WildOmissionCore/Levels/%s?listen?savegame=%s?friendsonly="), *LevelFileString, *WorldToLoad, *FriendsOnlyString);
+	const FString FriendsOnlyString = FString::Printf(TEXT("%i"), FriendsOnlySession);
+	const FString LevelFileString = SaveGame->LevelFile;
+	const FString GameModeString = FString::Printf(TEXT("%i"), GameModeIndex);
+	const FString LoadString = FString::Printf(TEXT("/Game/WildOmissionCore/Levels/%s?listen?savegame=%s?friendsonly=%s?gamemode=%s"),
+		*LevelFileString, *WorldToLoad, *FriendsOnlyString, *GameModeString);
 	// Server travel to the game level
 	World->ServerTravel(LoadString);
 }

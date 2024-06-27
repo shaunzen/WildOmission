@@ -36,6 +36,8 @@ AWildOmissionPlayerController::AWildOmissionPlayerController()
 
 	TempChunkInvoker = nullptr;
 
+	GameModeIndex = 0;
+
 	BedUniqueID = -1;
 	BedChunkLocation = FIntVector2();
 
@@ -56,9 +58,12 @@ void AWildOmissionPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, GameModeIndex, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, InCheatedWorld, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, BedUniqueID, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SpawnChunk, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, LastDeathLocation, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, SavedLocation, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(AWildOmissionPlayerController, Administrator, COND_OwnerOnly);
 }
 
@@ -78,6 +83,7 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 	}
 
 	PlayerSaveData.UniqueID = CurrentPlayerState->GetUniqueId().ToString();
+	PlayerSaveData.GameMode = GameModeIndex;
 	PlayerSaveData.BedUniqueID = BedUniqueID;
 	PlayerSaveData.BedChunkLocation = BedChunkLocation;
 	PlayerSaveData.AchievementStatsData = AchievementsComponent->GetStatsData();
@@ -92,27 +98,30 @@ FPlayerSaveData AWildOmissionPlayerController::SavePlayer()
 
 	PlayerSaveData.WorldLocation = WildOmissionCharacter->GetActorLocation();
 
+	PlayerSaveData.LastDeathLocation = LastDeathLocation;
+	PlayerSaveData.SavedLocation = SavedLocation;
+
 	PlayerSaveData.IsAlive = true;
 	PlayerSaveData.IsHost = IsHost();
 
 	UVitalsComponent* PlayerVitalsComponent = WildOmissionCharacter->GetVitalsComponent();
 	if (PlayerVitalsComponent)
 	{
-		PlayerSaveData.Vitals.Health = WildOmissionCharacter->GetVitalsComponent()->GetHealth();
-		PlayerSaveData.Vitals.Hunger = WildOmissionCharacter->GetVitalsComponent()->GetHunger();
-		PlayerSaveData.Vitals.Thirst = WildOmissionCharacter->GetVitalsComponent()->GetThirst();
+		PlayerSaveData.Vitals.Health = PlayerVitalsComponent->GetHealth();
+		PlayerSaveData.Vitals.Hunger = PlayerVitalsComponent->GetHunger();
+		PlayerSaveData.Vitals.Thirst = PlayerVitalsComponent->GetThirst();
 	}
 
 	UPlayerInventoryComponent* PlayerInventoryComponent = WildOmissionCharacter->GetInventoryComponent();
 	if (PlayerInventoryComponent)
 	{
-		PlayerSaveData.Inventory.ByteData = WildOmissionCharacter->GetInventoryComponent()->Save();
+		PlayerSaveData.Inventory.ByteData = PlayerInventoryComponent->Save();
 	}
 
 	UInventoryManipulatorComponent* PlayerInventoryManipulatorComponent = WildOmissionCharacter->GetInventoryManipulatorComponent();
 	if (PlayerInventoryManipulatorComponent)
 	{
-		PlayerSaveData.SelectedItemByteData = WildOmissionCharacter->GetInventoryManipulatorComponent()->GetSelectedItemAsByteData();
+		PlayerSaveData.SelectedItemByteData = PlayerInventoryManipulatorComponent->GetSelectedItemAsByteData();
 	}
 
 	return PlayerSaveData;
@@ -123,6 +132,9 @@ void AWildOmissionPlayerController::LoadPlayerSave(const FPlayerSaveData& SaveDa
 	BedUniqueID = SaveData.BedUniqueID;
 	BedChunkLocation = SaveData.BedChunkLocation;
 	AchievementsComponent->SetStatsData(SaveData.AchievementStatsData);
+
+	LastDeathLocation = SaveData.LastDeathLocation;
+	SavedLocation = SaveData.SavedLocation;
 
 	StoredPlayerSaveData = SaveData;
 }
@@ -183,6 +195,41 @@ bool AWildOmissionPlayerController::IsAdministrator() const
 void AWildOmissionPlayerController::KickPlayer(APlayerController* PlayerControllerToKick)
 {
 	Server_KickPlayer(PlayerControllerToKick);
+}
+
+void AWildOmissionPlayerController::SetGameModeIndex(const uint8& NewGameModeIndex)
+{
+	GameModeIndex = NewGameModeIndex;
+}
+
+uint8 AWildOmissionPlayerController::GetGameModeIndex() const
+{
+	return GameModeIndex;
+}
+
+void AWildOmissionPlayerController::SetInCheatedWorld(bool CheatedWorld)
+{
+	InCheatedWorld = CheatedWorld;
+
+	if (AchievementsComponent)
+	{
+		AchievementsComponent->SetAchievementsEnabled(InCheatedWorld == false);
+	}
+}
+
+bool AWildOmissionPlayerController::IsInCheatedWorld() const
+{
+	return InCheatedWorld;
+}
+
+bool AWildOmissionPlayerController::IsSurvivalMode() const
+{
+	return GameModeIndex == 0;
+}
+
+bool AWildOmissionPlayerController::IsCreativeMode() const
+{
+	return GameModeIndex == 1;
 }
 
 void AWildOmissionPlayerController::Save()
@@ -266,6 +313,8 @@ void AWildOmissionPlayerController::OnPlayerDeath(const FVector& DeathLocation)
 		return;
 	}
 
+	SetLastDeathLocation(DeathLocation);
+
 	TempChunkInvoker = World->SpawnActor<AChunkInvokerActor>(AChunkInvokerActor::StaticClass(), DeathLocation, FRotator::ZeroRotator);
 }
 
@@ -292,6 +341,37 @@ void AWildOmissionPlayerController::LogLocalInventoryContents()
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("Item: %s, Quantity: %i"), *ItemData.Name.ToString(), ItemData.Quantity));
 	}
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Green, FString::Printf(TEXT("Player: %s"), *WildOmissionCharacter->GetActorNameOrLabel()));
+}
+
+void AWildOmissionPlayerController::SetSavedLocationToCurrentLocation()
+{
+	Server_SetSavedLocationToCurrentLocation();
+}
+
+void AWildOmissionPlayerController::SetLastDeathLocation(const FVector& DeathLocation)
+{
+	LastDeathLocation = DeathLocation / AChunk::GetVertexDistanceScale();
+}
+
+FVector AWildOmissionPlayerController::GetCurrentCoordinateLocation()
+{
+	APawn* OurPawn = GetPawn();
+	if (!IsValid(OurPawn))
+	{
+		return FVector::ZeroVector;
+	}
+
+	return OurPawn->GetActorLocation() / AChunk::GetVertexDistanceScale();
+}
+
+FVector AWildOmissionPlayerController::GetSavedLocation()
+{
+	return SavedLocation;
+}
+
+FVector AWildOmissionPlayerController::GetLastDeathLocation()
+{
+	return LastDeathLocation;
 }
 
 void AWildOmissionPlayerController::BeginPlay()
@@ -521,6 +601,18 @@ void AWildOmissionPlayerController::StopLoading()
 	}
 
 	GameInstance->StopLoading();
+}
+
+void AWildOmissionPlayerController::Server_SetSavedLocationToCurrentLocation_Implementation()
+{
+	APawn* OurPawn = GetPawn();
+	if (!IsValid(OurPawn))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to save current location, player controller doesn't have a pawn."));
+		return;
+	}
+
+	SavedLocation = OurPawn->GetActorLocation() / AChunk::GetVertexDistanceScale();
 }
 
 void AWildOmissionPlayerController::Server_SendMessage_Implementation(APlayerState* Sender, const FString& Message)

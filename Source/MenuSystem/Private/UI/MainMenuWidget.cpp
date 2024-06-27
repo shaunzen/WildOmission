@@ -281,14 +281,14 @@ void UMainMenuWidget::OpenWorldMenuForWorld(const FString& WorldName)
 	WorldMenu->Open(WorldName);
 }
 
-void UMainMenuWidget::HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly, const int32& MaxPlayerCount)
+void UMainMenuWidget::HostGame(const FString& WorldName, const FString& ServerName, const bool IsMultiplayer, const bool IsFriendsOnly, const uint8& GameMode, const int32& MaxPlayerCount)
 {
 	if (MenuInterface == nullptr || WorldName.IsEmpty())
 	{
 		return;
 	}
 
-	IsMultiplayer ? MenuInterface->HostServer(ServerName, WorldName, IsFriendsOnly) : MenuInterface->StartSingleplayer(WorldName);
+	IsMultiplayer ? MenuInterface->HostServer(ServerName, WorldName, IsFriendsOnly, GameMode) : MenuInterface->StartSingleplayer(WorldName, GameMode);
 }
 
 void UMainMenuWidget::OpenRenameWorldMenu()

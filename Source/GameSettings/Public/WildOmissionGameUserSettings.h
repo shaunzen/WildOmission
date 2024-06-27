@@ -184,6 +184,12 @@ public:
 	FKey GetJumpKey() const;
 
 	UFUNCTION()
+	void SetFlyKey(const FKey& NewKey);
+
+	UFUNCTION()
+	FKey GetFlyKey() const;
+
+	UFUNCTION()
 	void SetPrimaryKey(const FKey& NewKey);
 
 	UFUNCTION()
@@ -313,6 +319,8 @@ private:
 	FKey CrouchKey;
 	UPROPERTY(Config)
 	FKey JumpKey;
+	UPROPERTY(Config)
+	FKey FlyKey;
 	UPROPERTY(Config)
 	FKey PrimaryKey;
 	UPROPERTY(Config)

@@ -19,14 +19,18 @@ UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) 
 {
 	MenuBackgroundBorder = nullptr;
 	MenuSwitcher = nullptr;
+	Vitals = nullptr;
+	InventoryPanel = nullptr;
 	OpenCraftingButton = nullptr;
 	InventoryMenu = nullptr;
+	CraftingPanel = nullptr;
 	OpenInventoryButton = nullptr;
 	CraftingMenu = nullptr;
 	Chat = nullptr;
 	NotificationPanel = nullptr;
 	BrandingTextBlock = nullptr;
 	CoordinatesTextBlock = nullptr;
+	Crosshair = nullptr;
 }
 
 void UPlayerHUDWidget::NativeConstruct()
@@ -118,6 +122,18 @@ void UPlayerHUDWidget::ShowCrosshair(bool Show)
 void UPlayerHUDWidget::SetHideChatUnlessOpen(bool HideChatUnlessOpen)
 {
 	Chat->SetHideUnlessOpen(HideChatUnlessOpen);
+}
+
+void UPlayerHUDWidget::SetVitalsHidden(bool Hidden)
+{
+	if (Vitals == nullptr)
+	{
+		return;
+	}
+
+	ESlateVisibility NewVitalsVisibility = Hidden ? ESlateVisibility::Hidden : ESlateVisibility::Visible;
+
+	Vitals->SetVisibility(NewVitalsVisibility);
 }
 
 void UPlayerHUDWidget::ToggleInventoryMenu(bool ForceOpen)

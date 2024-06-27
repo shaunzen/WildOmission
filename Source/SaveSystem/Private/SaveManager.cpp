@@ -110,6 +110,13 @@ void ASaveManager::LoadWorld()
 
 	SetLoadingSubtitle(TEXT("Loading level."));
 
+	if (SaveFile->GameMode == 1)
+	{
+		SaveFile->CheatsEnabled = true;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("GameMode is %i"), SaveFile->GameMode);
+
 	ATimeOfDayManager* TimeOfDayManager = ATimeOfDayManager::GetTimeOfDayManager();
 	if (TimeOfDayManager)
 	{

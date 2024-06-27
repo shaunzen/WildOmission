@@ -76,6 +76,9 @@ public:
 	bool CheatsEnabled;
 
 	UPROPERTY()
+	uint8 GameMode;
+
+	UPROPERTY()
 	FPlayerSpawnChunk PlayerSpawnChunk;
 	
 	UPROPERTY()

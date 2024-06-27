@@ -44,7 +44,9 @@ public:
 	UFUNCTION()
 	void HandleDeath();
 
+	UPROPERTY(BlueprintAssignable)
 	FOnPlayerDeathSignature OnPlayerDeath;
+	UPROPERTY(BlueprintAssignable)
 	FOnKilledAnotherPlayerSignature OnKilledAnotherPlayerSignature;
 	
 	UFUNCTION()
@@ -311,6 +313,9 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_Sprint(bool bShouldSprint);
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_HandleFly();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PlayFallCrunchSound();
 
@@ -363,6 +368,8 @@ private:
 	
 	void SetupMesh();
 	
+	void SetupGameMode();
+
 	void SetupPlayerHUD();
 
 	void SetupLocalComponents();

@@ -27,6 +27,9 @@ struct SAVESYSTEM_API FPlayerSaveData
 	FString UniqueID = TEXT("");
 
 	UPROPERTY()
+	uint8 GameMode = 0;
+
+	UPROPERTY()
 	int32 BedUniqueID = -1;
 
 	UPROPERTY()
@@ -34,6 +37,12 @@ struct SAVESYSTEM_API FPlayerSaveData
 
 	UPROPERTY()
 	FVector WorldLocation = FVector::ZeroVector;
+
+	UPROPERTY()
+	FVector LastDeathLocation = FVector::ZeroVector;
+
+	UPROPERTY()
+	FVector SavedLocation = FVector::ZeroVector;
 
 	UPROPERTY()
 	FVitalsSaveData Vitals;
