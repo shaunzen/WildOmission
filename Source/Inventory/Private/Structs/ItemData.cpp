@@ -13,6 +13,7 @@ FItemData::FItemData()
 	Mesh = nullptr;
 	StackSize = 1000;
 	EquipItemClass = nullptr;
+	HiddenInCreativeMode = false;
 }
 
 int32 FItemData::GetStat(const FName& StatName)
