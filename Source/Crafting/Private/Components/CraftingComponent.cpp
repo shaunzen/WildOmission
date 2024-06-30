@@ -37,10 +37,16 @@ void UCraftingComponent::Server_CraftItem_Implementation(const FName& ItemToCraf
 	{
 		return;
 	}
+	
+	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return;
+	}
 
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
-		int32 IngredientAmountInInventory = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
+		const int32 IngredientAmountInInventory = InventoryContents->GetItemQuantity(Ingredient.Name);
 		
 		if (IngredientAmountInInventory < Ingredient.Quantity)
 		{

@@ -500,7 +500,20 @@ void AWildOmissionGameMode::LogPlayerInventoryComponents()
 		{
 			return;
 		}
-		for (const FInventoryItem& ItemData : Character->GetInventoryComponent()->GetContents()->Contents)
+		
+		UInventoryComponent* InventoryComponent = Character->GetInventoryComponent();
+		if (InventoryComponent == nullptr)
+		{
+			return;
+		}
+
+		FInventoryContents* InventoryContents = InventoryComponent->GetContents();
+		if (InventoryContents == nullptr)
+		{
+			return;
+		}
+
+		for (const FInventoryItem& ItemData : InventoryContents->Contents)
 		{
 			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 10.0f, FColor::Orange, FString::Printf(TEXT("%s: %i"), *ItemData.Name.ToString(), ItemData.Quantity));
 		}

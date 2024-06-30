@@ -58,7 +58,14 @@ void ALootCrateBase::OnContainerClosed()
 {
 	Super::OnContainerClosed();
 
-	if (!GetInventoryComponent()->GetContents()->Contents.IsEmpty())
+	UInventoryComponent* InventoryComponent = GetInventoryComponent();
+	if (InventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	FInventoryContents* InventoryContents = InventoryComponent->GetContents();
+	if (InventoryContents == nullptr || !InventoryContents->Contents.IsEmpty())
 	{
 		return;
 	}

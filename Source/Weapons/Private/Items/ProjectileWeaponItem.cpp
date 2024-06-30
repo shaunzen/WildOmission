@@ -181,18 +181,25 @@ void AProjectileWeaponItem::DecreaseAmmoAndDurability()
 
 int32 AProjectileWeaponItem::GetRemainingAmmoInInventory() const
 {
-	if (GetOwner() == nullptr)
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor == nullptr)
 	{
 		return 0;
 	}
 
-	UInventoryComponent* OwnerInventory = GetOwner()->FindComponentByClass<UInventoryComponent>();
-	if (OwnerInventory == nullptr)
+	UInventoryComponent* OwnerInventoryComponent = OwnerActor->FindComponentByClass<UInventoryComponent>();
+	if (OwnerInventoryComponent == nullptr)
 	{
 		return 0;
 	}
 
-	return OwnerInventory->GetContents()->GetItemQuantity(AmmoItemID);
+	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return;
+	}
+
+	return InventoryContents->GetItemQuantity(AmmoItemID);
 }
 
 void AProjectileWeaponItem::RemoveAmmoFromInventory(const int32 AmountToRemove)
