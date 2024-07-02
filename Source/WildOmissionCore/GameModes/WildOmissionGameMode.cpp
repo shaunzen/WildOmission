@@ -37,15 +37,23 @@ void AWildOmissionGameMode::InitGame(const FString& MapName, const FString& Opti
 	FriendsOnly = UGameplayStatics::ParseOption(Options, "FriendsOnly") == TEXT("1");
 	const FString GameModeString = UGameplayStatics::ParseOption(Options, "GameMode");
 		
+	UAchievementsManager* AchievementsManager = UAchievementsManager::GetAchievementsManager();
+	if (AchievementsManager == nullptr)
+	{
+		return;
+	}
+
 	// Survival
 	if (GameModeString == TEXT("0"))
 	{
 		GameMode = 0;
+		AchievementsManager->UnlockAchievement(TEXT("ACH_PLAY_SURVIVAL"));
 	}
 	// Creative
 	else if (GameModeString == TEXT("1"))
 	{
 		GameMode = 1;
+		AchievementsManager->UnlockAchievement(TEXT("ACH_PLAY_CREATIVE"));
 	}
 
 	UWorld* World = GetWorld();
