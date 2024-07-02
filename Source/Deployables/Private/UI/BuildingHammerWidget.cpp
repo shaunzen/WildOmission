@@ -179,9 +179,15 @@ bool UBuildingHammerWidget::CanPlayerAffordUpgrade() const
 		return false;
 	}
 
+	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return false;
+	}
+
 	for (const FInventoryItem& CostItem : UpgradeCost)
 	{
-		if (OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) >= CostItem.Quantity)
+		if (InventoryContents->GetItemQuantity(CostItem.Name) >= CostItem.Quantity)
 		{
 			continue;
 		}
@@ -231,6 +237,12 @@ void UBuildingHammerWidget::SetupUpgradeText()
 		return;
 	}
 
+	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return;
+	}
+
 	FString RequiresString;
 	FString YouHaveString;
 	bool InitialElement = true;
@@ -247,7 +259,7 @@ void UBuildingHammerWidget::SetupUpgradeText()
 		
 		RequiresString.Append(FString::Printf(TEXT("%s %i %s"), *Separator, CostItem.Quantity, *ItemData->DisplayName));
 		YouHaveString.Append(FString::Printf(TEXT("%s %i %s"), *Separator,
-			OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name), *ItemData->DisplayName));
+			InventoryContents->GetItemQuantity(CostItem.Name), *ItemData->DisplayName));
 		InitialElement = false;
 	}
 

@@ -125,7 +125,13 @@ void UWildOmissionAnimInstance::HandleFalling()
 		return;
 	}
 
-	Falling = CharacterOwner->GetCharacterMovement()->IsFalling();
+	UCharacterMovementComponent* CharacterMovementComponent = CharacterOwner->GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	Falling = CharacterMovementComponent->IsFalling();
 }
 
 void UWildOmissionAnimInstance::HandleSwimming()
@@ -136,5 +142,11 @@ void UWildOmissionAnimInstance::HandleSwimming()
 		return;
 	}
 
-	Swimming = CharacterOwner->GetCharacterMovement()->IsSwimming();
+	UCharacterMovementComponent* CharacterMovementComponent = CharacterOwner->GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr)
+	{
+		return;
+	}
+
+	Swimming = CharacterMovementComponent->IsSwimming();
 }

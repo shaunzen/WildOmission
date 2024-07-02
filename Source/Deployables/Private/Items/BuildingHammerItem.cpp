@@ -152,10 +152,15 @@ void ABuildingHammerItem::Server_UpgradeCurrentDeployable_Implementation()
 		return;
 	}
 	
+	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return;
+	}
+
 	for (const FInventoryItem& CostItem : UpgradeCost)
 	{
-		if (OwnerInventoryComponent->GetContents()
-			&& OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
+		if (InventoryContents->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
 		{
 			return;
 		}
@@ -490,10 +495,16 @@ void ABuildingHammerItem::AttemptDeployableRepair(ADeployable* DeployableToRepai
 		return;
 	}
 
+	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return;
+	}
+
 	// Check first if we have enough to repair
 	for (const FInventoryItem& CostItem : RepairCost)
 	{
-		if (OwnerInventoryComponent->GetContents()->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
+		if (InventoryContents->GetItemQuantity(CostItem.Name) < CostItem.Quantity)
 		{
 			return;
 		}

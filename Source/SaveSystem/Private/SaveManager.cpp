@@ -73,7 +73,10 @@ void ASaveManager::SaveWorld()
 		WeatherManager->Save(SaveFile->WeatherData);
 	}
 
-	PlayerSaveManagerComponent->Save(SaveFile->PlayerData);
+	if (PlayerSaveManagerComponent)
+	{
+		PlayerSaveManagerComponent->Save(SaveFile->PlayerData);
+	}
 	
 	SaveFile->Version = UWildOmissionSaveGame::GetCurrentVersion();
 

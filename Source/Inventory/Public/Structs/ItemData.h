@@ -55,6 +55,9 @@ struct INVENTORY_API FItemData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AInventoryEquipableActor> EquipItemClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool HiddenInCreativeMode;
+
 	FItemData();
 
 	int32 GetStat(const FName& StatName);

@@ -60,7 +60,7 @@ void UCraftingMenuWidget::NativeConstruct()
 
 	CraftButton->OnClicked.AddDynamic(this, &UCraftingMenuWidget::Craft);
 
-	SelectedRecipe = FName("");
+	SelectedRecipe = TEXT("");
 }
 
 void UCraftingMenuWidget::Refresh()
@@ -195,9 +195,15 @@ void UCraftingMenuWidget::RefreshIngredientList()
 		return;
 	}
 
+	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return;
+	}
+
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
-		int32 HasAmount = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
+		const int32 HasAmount = InventoryContents->GetItemQuantity(Ingredient.Name);
 		FItemData* IngredientItemData = UInventoryComponent::GetItemData(Ingredient.Name);
 		if (IngredientItemData == nullptr)
 		{
@@ -247,9 +253,15 @@ bool UCraftingMenuWidget::CanCraftRecipe(const FName& RecipeName)
 		return false;
 	}
 
+	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
+	if (InventoryContents == nullptr)
+	{
+		return false;
+	}
+
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)
 	{
-		int32 IngredientHasAmount = OwnerInventoryComponent->GetContents()->GetItemQuantity(Ingredient.Name);
+		const int32 IngredientHasAmount = InventoryContents->GetItemQuantity(Ingredient.Name);
 		
 		if (IngredientHasAmount < Ingredient.Quantity)
 		{

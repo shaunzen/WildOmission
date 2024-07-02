@@ -78,7 +78,7 @@ void AItemContainerBase::OnDeployableDestroyed()
 	}
 
 	// Dump contents into world so they arent lost
-	for (const FInventoryItem& Item : InventoryComponent->GetContents()->Contents)
+	for (const FInventoryItem& Item : InventoryContents->Contents)
 	{
 		UInventoryComponent::SpawnWorldItem(GetWorld(), Item, this);
 	}
