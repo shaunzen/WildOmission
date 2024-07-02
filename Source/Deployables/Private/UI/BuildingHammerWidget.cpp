@@ -182,7 +182,7 @@ bool UBuildingHammerWidget::CanPlayerAffordUpgrade() const
 	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
 	if (InventoryContents == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	for (const FInventoryItem& CostItem : UpgradeCost)

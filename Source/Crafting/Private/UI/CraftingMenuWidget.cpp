@@ -256,7 +256,7 @@ bool UCraftingMenuWidget::CanCraftRecipe(const FName& RecipeName)
 	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
 	if (InventoryContents == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	for (const FInventoryItem& Ingredient : RecipeData->Ingredients)

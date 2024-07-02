@@ -196,7 +196,7 @@ int32 AProjectileWeaponItem::GetRemainingAmmoInInventory() const
 	FInventoryContents* InventoryContents = OwnerInventoryComponent->GetContents();
 	if (InventoryContents == nullptr)
 	{
-		return;
+		return 0;
 	}
 
 	return InventoryContents->GetItemQuantity(AmmoItemID);
