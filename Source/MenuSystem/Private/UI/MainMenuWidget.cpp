@@ -288,7 +288,7 @@ void UMainMenuWidget::HostGame(const FString& WorldName, const FString& ServerNa
 		return;
 	}
 
-	IsMultiplayer ? MenuInterface->HostServer(ServerName, WorldName, IsFriendsOnly, GameMode) : MenuInterface->StartSingleplayer(WorldName, GameMode);
+	IsMultiplayer ? MenuInterface->HostServer(ServerName, WorldName, IsFriendsOnly, MaxPlayerCount, GameMode) : MenuInterface->StartSingleplayer(WorldName, GameMode);
 }
 
 void UMainMenuWidget::OpenRenameWorldMenu()
