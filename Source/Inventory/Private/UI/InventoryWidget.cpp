@@ -106,6 +106,11 @@ UInventoryComponent* UInventoryWidget::GetInventoryComponent() const
 	return InventoryComponent;
 }
 
+UClass* UInventoryWidget::GetSlotWidgetClass() const
+{
+	return SlotWidgetClass;
+}
+
 void UInventoryWidget::Refresh()
 {
 	if (InventoryComponent->GetSlots().Num() == 0)

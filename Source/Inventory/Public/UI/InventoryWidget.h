@@ -38,6 +38,8 @@ public:
 	UInventoryMenuWidget* GetParentMenu() const;
 	UInventoryComponent* GetInventoryComponent() const;
 
+	UClass* GetSlotWidgetClass() const;
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InventoryName;
