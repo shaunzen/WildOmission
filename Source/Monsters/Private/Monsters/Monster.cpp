@@ -52,7 +52,7 @@ void AMonster::BeginPlay()
 	}
 
 	InventoryComponent->AddItem(ItemToEquip);
-	InventoryComponent->SetToolbarSelectionIndex(2);
+	InventoryComponent->SetToolbarSelectionIndex(3);
 }
 
 void AMonster::SetFire()
