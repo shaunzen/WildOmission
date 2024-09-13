@@ -56,15 +56,24 @@ void UInventoryMenuWidget::Close(bool ShouldCloseContainer)
 	PlayerInventoryWidget->Close();
 	HoveredItemNameTagWidget->Hide();
 
-	if (ShouldCloseContainer == true && OpenContainerWidget != nullptr)
+	if (ShouldCloseContainer == false || OpenContainerWidget == nullptr)
 	{
-		if (IItemContainer* OpenedContainer = Cast<IItemContainer>(OpenContainerWidget->GetInventoryComponent()->GetOwner()))
-		{
-			OpenedContainer->UnOccupy();
-		}
-
-		DestroyOpenContainerWidget();
+		return;
+		
 	}
+
+	UInventoryComponent* ContainerInventoryComponent = OpenContainerWidget->GetInventoryComponent();
+	if (ContainerInventoryComponent == nullptr)
+	{
+		return;
+	}
+
+	if (IItemContainer* OpenedContainer = Cast<IItemContainer>(ContainerInventoryComponent->GetOwner()))
+	{
+		OpenedContainer->UnOccupy();
+	}
+
+	DestroyOpenContainerWidget();
 }
 
 bool UInventoryMenuWidget::IsOpen() const
