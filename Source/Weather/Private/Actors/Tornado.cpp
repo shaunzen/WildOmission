@@ -58,6 +58,7 @@ ATornado::ATornado()
 	BoundsRadius = 0.0f;
 	RemainingLifetime = 0.0f;
 	TotalLifetime = 0.0f;
+	Severity = 0.0f;
 }
 
 // Called when the game starts or when spawned
@@ -108,6 +109,7 @@ FTornadoData ATornado::GetTornadoData() const
 	NewData.RemainingLifetime = RemainingLifetime;
 	NewData.RotationSpeed = RotationSpeed;
 	NewData.TargetLocation = TargetLocation;
+	NewData.Severity = Severity;
 
 	return NewData;
 }
@@ -120,6 +122,7 @@ void ATornado::LoadTornadoData(const FTornadoData& InTornadoData)
 	RemainingLifetime = InTornadoData.RemainingLifetime;
 	RotationSpeed = InTornadoData.RotationSpeed;
 	TargetLocation = InTornadoData.TargetLocation;
+	Severity = InTornadoData.Severity;
 }
 
 // Called every frame
@@ -216,7 +219,7 @@ void ATornado::UpdateDamage()
 		}
 
 		const float DistanceFromOrigin = FVector::Distance(Overlap.GetActor()->GetActorLocation(), WindOrigin);
-		const float DamageMultiplier = FMath::Clamp(((DistanceFromOrigin - WindRadius) / WindRadius) * -1, 0.0f, 1.0f);
+		const float DamageMultiplier = FMath::Clamp(((DistanceFromOrigin - WindRadius) / WindRadius) * -1, 0.0f, 1.0f + Severity);
 		DamagedByWindActor->ApplyWindDamage(this, DamageMultiplier);
 	}
 }

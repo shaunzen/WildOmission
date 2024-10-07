@@ -34,4 +34,10 @@ struct WEATHER_API FTornadoData
 	UPROPERTY(VisibleAnywhere, SaveGame)
 	float RemainingLifetime;
 
+	// 0.0f = F0 
+	// 5.0f = F5
+	// >6.0f = Extreme Tornado (Rare)
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	float Severity;
+
 };
