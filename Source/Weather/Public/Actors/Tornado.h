@@ -75,6 +75,8 @@ private:
 
 	FVector GetRandomLocationInBounds() const;
 
+	void OnUpdateSeverity();
+
 	UFUNCTION()
 	void UpdateMovement();
 	UFUNCTION()

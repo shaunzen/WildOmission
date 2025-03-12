@@ -86,7 +86,12 @@ void ATornado::Setup(bool SpawnedFromCommand)
 		TargetLocation = FVector(BoundsRadius * 0.25f, 0.0f, 0.0f);
 	}
 	
+
+	// Assign random lifetime (seconds)
 	TotalLifetime = FMath::RandRange(120.0f, 300.0f);
+	// Assign Severity F1 - F5
+	Severity = FMath::RandRange(int32(1), int32(5));
+	OnUpdateSeverity();
 	RemainingLifetime = TotalLifetime;
 }
 
@@ -123,6 +128,7 @@ void ATornado::LoadTornadoData(const FTornadoData& InTornadoData)
 	RotationSpeed = InTornadoData.RotationSpeed;
 	TargetLocation = InTornadoData.TargetLocation;
 	Severity = InTornadoData.Severity;
+	OnUpdateSeverity();
 }
 
 // Called every frame
@@ -253,6 +259,13 @@ FVector ATornado::GetRandomLocationInBounds() const
 {
 	const float HalfRadius = BoundsRadius * 0.5f;
 	return FVector(FMath::RandRange(-HalfRadius, HalfRadius), FMath::RandRange(-HalfRadius, HalfRadius), 0.0f);
+}
+
+void ATornado::OnUpdateSeverity()
+{
+	UE_LOG(LogTemp, Warning, TEXT("New Severity %f"), Severity);
+
+	this->SetActorRelativeScale3D(FVector(Severity, Severity, 1.0f));
 }
 
 bool ATornado::HasLineOfSightTo(AActor* InActor) const
