@@ -263,8 +263,7 @@ FVector ATornado::GetRandomLocationInBounds() const
 
 void ATornado::OnUpdateSeverity()
 {
-	UE_LOG(LogTemp, Warning, TEXT("New Severity %f"), Severity);
-
+	UE_LOG(LogTemp, Display, TEXT("Tornado '%s' has a Severity of %f"), *this->GetActorNameOrLabel(), Severity);
 	this->SetActorRelativeScale3D(FVector(Severity, Severity, 1.0f));
 }
 
