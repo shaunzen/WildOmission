@@ -70,8 +70,12 @@ private:
 	float RemainingLifetime;
 	UPROPERTY(VisibleAnywhere)
 	float TotalLifetime;
+	UPROPERTY(VisibleAnywhere)
+	float Severity;
 
 	FVector GetRandomLocationInBounds() const;
+
+	void OnUpdateSeverity();
 
 	UFUNCTION()
 	void UpdateMovement();

@@ -50,6 +50,9 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	UHoveredItemNameTag* HoveredItemNameTagWidget;
 
+	UPROPERTY(Meta = (BindWidget))
+	UPanelWidget* ClothingInventoryPanel;
+
 	UFUNCTION()
 	void OnOpenContainerChanged(UInventoryComponent* OpenContainer);
 

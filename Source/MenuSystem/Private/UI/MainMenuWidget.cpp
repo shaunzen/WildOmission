@@ -42,7 +42,10 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("1.5% C#"),
 	TEXT("Updated Regularly!"),
 	TEXT("3,000,000+ Lines Of Code."),
-	TEXT("Also play DeadPoly!")
+	TEXT("Also play DeadPoly!"),
+	TEXT("Now Open Source!")
+	TEXT("Free!")
+
 };
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)

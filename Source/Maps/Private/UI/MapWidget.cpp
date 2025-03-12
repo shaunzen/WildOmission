@@ -46,6 +46,12 @@ void UMapWidget::Setup()
 
 	// Update the coordinates
 	RefreshCoordinates();
+	
+	// Set cursor location to center
+	int32 ViewportSizeX = 0;
+	int32 ViewportSizeY = 0;
+	PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
+	PlayerController->SetMouseLocation(ViewportSizeX / 2, ViewportSizeY / 2);
 }
 
 void UMapWidget::Teardown()

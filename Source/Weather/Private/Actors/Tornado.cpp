@@ -58,6 +58,7 @@ ATornado::ATornado()
 	BoundsRadius = 0.0f;
 	RemainingLifetime = 0.0f;
 	TotalLifetime = 0.0f;
+	Severity = 0.0f;
 }
 
 // Called when the game starts or when spawned
@@ -85,7 +86,12 @@ void ATornado::Setup(bool SpawnedFromCommand)
 		TargetLocation = FVector(BoundsRadius * 0.25f, 0.0f, 0.0f);
 	}
 	
+
+	// Assign random lifetime (seconds)
 	TotalLifetime = FMath::RandRange(120.0f, 300.0f);
+	// Assign Severity F1 - F5
+	Severity = FMath::RandRange(int32(1), int32(5));
+	OnUpdateSeverity();
 	RemainingLifetime = TotalLifetime;
 }
 
@@ -108,6 +114,7 @@ FTornadoData ATornado::GetTornadoData() const
 	NewData.RemainingLifetime = RemainingLifetime;
 	NewData.RotationSpeed = RotationSpeed;
 	NewData.TargetLocation = TargetLocation;
+	NewData.Severity = Severity;
 
 	return NewData;
 }
@@ -120,6 +127,8 @@ void ATornado::LoadTornadoData(const FTornadoData& InTornadoData)
 	RemainingLifetime = InTornadoData.RemainingLifetime;
 	RotationSpeed = InTornadoData.RotationSpeed;
 	TargetLocation = InTornadoData.TargetLocation;
+	Severity = InTornadoData.Severity;
+	OnUpdateSeverity();
 }
 
 // Called every frame
@@ -216,7 +225,7 @@ void ATornado::UpdateDamage()
 		}
 
 		const float DistanceFromOrigin = FVector::Distance(Overlap.GetActor()->GetActorLocation(), WindOrigin);
-		const float DamageMultiplier = FMath::Clamp(((DistanceFromOrigin - WindRadius) / WindRadius) * -1, 0.0f, 1.0f);
+		const float DamageMultiplier = FMath::Clamp(((DistanceFromOrigin - WindRadius) / WindRadius) * -1, 0.0f, 1.0f + Severity);
 		DamagedByWindActor->ApplyWindDamage(this, DamageMultiplier);
 	}
 }
@@ -250,6 +259,12 @@ FVector ATornado::GetRandomLocationInBounds() const
 {
 	const float HalfRadius = BoundsRadius * 0.5f;
 	return FVector(FMath::RandRange(-HalfRadius, HalfRadius), FMath::RandRange(-HalfRadius, HalfRadius), 0.0f);
+}
+
+void ATornado::OnUpdateSeverity()
+{
+	UE_LOG(LogTemp, Display, TEXT("Tornado '%s' has a Severity of %f"), *this->GetActorNameOrLabel(), Severity);
+	this->SetActorRelativeScale3D(FVector(Severity, Severity, 1.0f));
 }
 
 bool ATornado::HasLineOfSightTo(AActor* InActor) const
