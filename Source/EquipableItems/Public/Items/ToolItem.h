@@ -23,12 +23,27 @@ public:
 	bool IsQualityTool() const;
 
 protected:
+	/*
+	Used to determine which harvestables this tool can gather from.
+	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	TEnumAsByte<EToolType> ToolType;
 	
+	/*
+	Used as a decimal the it is multipled by the output of a harvestable resource,
+	and that multiplied amount is given to the player.
+	The base Value varies from harvestable to harvestable but is generally 100.
+	The stone hatchet has a gather multiplier of 0.2, making it give 20 wood from a tree
+	each hit.
+	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	float GatherMultiplier;
 
+	/* 
+	Used by harvestable resources to determine if it should drop extra goodies reserved for the nicer tools 
+	An example would be that metal tools can harvest Refined Metal when hitting metal nodes, because they are a "QualityTool" whereas
+	the Stone Pickaxe cannot
+	*/
 	UPROPERTY(EditDefaultsOnly, Category = "Item")
 	bool QualityTool;
 
