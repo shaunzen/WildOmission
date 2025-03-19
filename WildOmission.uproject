@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{3992B5CB-4AFF-DC9C-4C26-5FB9F5179BA3}",
+	"EngineAssociation": "{19253B85-4A93-F686-AD3E-72999D3091D5}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -60,7 +60,7 @@
 				"Engine",
 				"UMG"
 			]
-		},		
+		},
 		{
 			"Name": "Crafting",
 			"Type": "Runtime",

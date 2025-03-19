@@ -31,6 +31,7 @@ public:
 	// User Interaction
 	//**************************************************************
 
+	// Toolbar slot selection is processed locally, and then sent to the server via an RPC
 	void IncrementToolbarSelection();
 	void DecrementToolbarSelection();
 
@@ -62,6 +63,9 @@ private:
 	void RefreshToolbarSelectionState();
 	
 	bool IsToolbarSlotSelectionValid() const;
+
+	UFUNCTION()
+	bool UseAlphaToolbarScroll() const;
 
 	//**************************************************************
 	// RPC

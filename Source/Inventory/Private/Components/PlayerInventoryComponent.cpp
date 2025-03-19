@@ -3,10 +3,14 @@
 
 #include "Components/PlayerInventoryComponent.h"
 #include "Components/InventoryManipulatorComponent.h"
+#include "WildOmissionGameUserSettings.h"
 #include "WorldItem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Net/UnrealNetwork.h"
+
+
+// Get Settings, store if it's using the alpha scroll
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
 {
@@ -29,7 +33,9 @@ void UPlayerInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	UInventoryManipulatorComponent* OwnerManipulator = GetOwner()->FindComponentByClass<UInventoryManipulatorComponent>();
+
 	
+
 	ToolbarSelectionIndex = -1;
 
 	if (!GetOwner()->HasAuthority())
@@ -74,12 +80,14 @@ void UPlayerInventoryComponent::OnRep_ServerState()
 
 void UPlayerInventoryComponent::IncrementToolbarSelection()
 {
-	SetToolbarSelectionIndex(ToolbarSelectionIndex + 1);
+							// Invert input if Alpha Scroll is enabled
+	SetToolbarSelectionIndex(UseAlphaToolbarScroll() ? ToolbarSelectionIndex - 1 : ToolbarSelectionIndex + 1);
 }
 
 void UPlayerInventoryComponent::DecrementToolbarSelection()
 {
-	SetToolbarSelectionIndex(ToolbarSelectionIndex - 1);
+							// Invert input if Alpha Scroll is enabled
+	SetToolbarSelectionIndex(UseAlphaToolbarScroll() ? ToolbarSelectionIndex + 1 : ToolbarSelectionIndex - 1);
 }
 
 void UPlayerInventoryComponent::SetToolbarSelectionIndex(int8 SelectionIndex)
@@ -145,6 +153,20 @@ void UPlayerInventoryComponent::RefreshToolbarSelectionState()
 bool UPlayerInventoryComponent::IsToolbarSlotSelectionValid() const
 {
 	return ToolbarSelectionIndex > -1 && ToolbarSelectionIndex < 6;
+}
+
+// Unfortionatly this has to be called every time the player scrolls the toolbar,
+// I tried only running this at begin play but it seems the settings context doesn't exist yet
+// or is unreachable
+bool UPlayerInventoryComponent::UseAlphaToolbarScroll() const
+{
+	UWildOmissionGameUserSettings* UserSettings = UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings();
+	if (UserSettings == nullptr)
+	{
+		return false;
+	}
+
+	return UserSettings->GetAlphaToolbarScroll();
 }
 
 //**************************************************************

@@ -22,6 +22,8 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 	class UCheckOptionBox* InvertMouseYCheckOptionBox;
 	UPROPERTY(Meta = (BindWidget))
+	class UCheckOptionBox* AlphaToolbarScrollCheckOptionBox;
+	UPROPERTY(Meta = (BindWidget))
 	class USliderOptionBox* MouseSensitivitySliderOptionBox;
 	UPROPERTY(Meta = (BindWidget))
 	class UKeyOptionBox* MoveForwardKeyOptionBox;

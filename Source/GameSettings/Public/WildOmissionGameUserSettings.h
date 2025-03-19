@@ -238,6 +238,12 @@ public:
 	bool GetInvertedMouseY() const;
 
 	UFUNCTION()
+	void SetAlphaToolbarScroll(bool UseAlpha);
+
+	UFUNCTION()
+	bool GetAlphaToolbarScroll() const;
+
+	UFUNCTION()
 	void SetMouseSensitivity(float Sensitivity);
 
 	UFUNCTION()
@@ -339,9 +345,14 @@ private:
 	UPROPERTY(Config)
 	bool InvertedMouseY;
 	UPROPERTY(Config)
+	bool AlphaToolbarScroll;
+	UPROPERTY(Config)
 	float MouseSensitivity;
 
 	UPROPERTY(Config)
 	bool HasRunAutoConfig;
+
+	UFUNCTION()
+	void SetWOSettingsDefault();
 
 };
