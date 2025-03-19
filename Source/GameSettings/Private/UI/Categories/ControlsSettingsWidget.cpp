@@ -11,6 +11,7 @@
 UControlsSettingsWidget::UControlsSettingsWidget(const FObjectInitializer& ObjectInitializer) : USettingsCategoryWidget(ObjectInitializer)
 {
 	InvertMouseYCheckOptionBox = nullptr;
+	AlphaToolbarScrollCheckOptionBox = nullptr;
 	MouseSensitivitySliderOptionBox = nullptr;
 	MoveForwardKeyOptionBox = nullptr;
 	MoveBackwardKeyOptionBox = nullptr;
@@ -52,6 +53,7 @@ void UControlsSettingsWidget::OnApply()
 
 	UserSettings->SetInvertedMouseY(InvertMouseYCheckOptionBox->IsChecked());
 	UserSettings->SetMouseSensitivity(MouseSensitivity);
+	UserSettings->SetAlphaToolbarScroll(AlphaToolbarScrollCheckOptionBox->IsChecked());
 
 	UserSettings->SetMoveForwardKey(MoveForwardKeyOptionBox->GetSelectedKey());
 	UserSettings->SetMoveBackwardKey(MoveBackwardKeyOptionBox->GetSelectedKey());
@@ -89,7 +91,7 @@ void UControlsSettingsWidget::OnRefresh()
 	
 	InvertMouseYCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
 	MouseSensitivitySliderOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
-
+	AlphaToolbarScrollCheckOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
 	MoveForwardKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
 	MoveBackwardKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
 	MoveLeftKeyOptionBox->OnValueChangedNoParams.RemoveDynamic(this, &UControlsSettingsWidget::OnApply);
@@ -117,6 +119,7 @@ void UControlsSettingsWidget::OnRefresh()
 
 	InvertMouseYCheckOptionBox->SetChecked(UserSettings->GetInvertedMouseY());
 	MouseSensitivitySliderOptionBox->SetValue(MouseSensitivity);
+	AlphaToolbarScrollCheckOptionBox->SetChecked(UserSettings->GetAlphaToolbarScroll());
 
 	MoveForwardKeyOptionBox->SetSelectedKey(UserSettings->GetMoveForwardKey());
 	MoveBackwardKeyOptionBox->SetSelectedKey(UserSettings->GetMoveBackwardKey());
@@ -137,6 +140,7 @@ void UControlsSettingsWidget::OnRefresh()
 
 	InvertMouseYCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
 	MouseSensitivitySliderOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
+	AlphaToolbarScrollCheckOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
 
 	MoveForwardKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);
 	MoveBackwardKeyOptionBox->OnValueChangedNoParams.AddDynamic(this, &UControlsSettingsWidget::OnApply);

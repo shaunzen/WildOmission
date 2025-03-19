@@ -42,61 +42,15 @@ static const FKey DEFAULT_CRAFTING = EKeys::Q;
 static const FKey DEFAULT_CHAT = EKeys::T;
 
 static const bool DEFAULT_INVERTEDMOUSEY = false;
+static const bool DEFAULT_ALPHATOOLBARSCROLL = false;
 static const float DEFAULT_MOUSESENSITIVITY = 1.0f;
 
 UWildOmissionGameUserSettings::UWildOmissionGameUserSettings(const FObjectInitializer& ObjectInitializer) : UGameUserSettings(ObjectInitializer)
 {
     SettingsVersion = -1;
 
-    // Audio
-    SetMasterVolume(DEFAULT_MASTERVOLUME);
-    SetMusicVolume(DEFAULT_VOLUME);
-    SetDeployablesVolume(DEFAULT_VOLUME);
-    SetEnvironmentVolume(DEFAULT_VOLUME);
-    SetFriendlyCreaturesVolume(DEFAULT_VOLUME);
-    SetHostileCreaturesVolume(DEFAULT_VOLUME);
-    SetPlayersVolume(DEFAULT_VOLUME);
-    SetWeatherVolume(DEFAULT_VOLUME);
-
-    // Gameplay
-    SetFieldOfView(DEFAULT_FIELDOFVIEW);
-    SetRenderDistance(DEFAULT_RENDERDISTANCE);
-    SetShowBranding(DEFAULT_SHOWBRANDING);
-    SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
-    SetHideChatUnlessOpen(DEFAULT_HIDECHATUNLESSOPEN);
-    SetHideHUD(DEFAULT_HIDEHUD);
-    SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
+    SetWOSettingsDefault();
     
-    // Post Processing
-    SetGamma(DEFAULT_GAMMA);
-    SetAutoExposureEnabled(DEFAULT_AUTOEXPOSUREENABLED);
-    SetMotionBlurEnabled(DEFAULT_MOTIONBLURENABLED);
-    SetBloomEnabled(DEFAULT_BLOOMENABLED);
-    SetAmbientOcclusionEnabled(DEFAULT_AMBIENTOCCLUSIONENABLED);
-    SetFilmGrainEnabled(DEFAULT_FILMGRAINENABLED);
-
-    // Controls
-    SetMoveForwardKey(DEFAULT_MOVEFORWARD);
-    SetMoveBackwardKey(DEFAULT_MOVEBACKWARD);
-    SetMoveLeftKey(DEFAULT_MOVELEFT);
-    SetMoveRightKey(DEFAULT_MOVERIGHT);
-    SetSprintKey(DEFAULT_SPRINT);
-    SetCrouchKey(DEFAULT_CROUCH);
-    SetJumpKey(DEFAULT_JUMP);
-    SetFlyKey(DEFAULT_FLY);
-
-    SetPrimaryKey(DEFAULT_PRIMARY);
-    SetSecondaryKey(DEFAULT_SECONDARY);
-    SetInteractKey(DEFAULT_INTERACT);
-    SetReloadKey(DEFAULT_RELOAD);
-
-    SetInventoryKey(DEFAULT_INVENTORY);
-    SetCraftingKey(DEFAULT_CRAFTING);
-    SetChatKey(DEFAULT_CHAT);
-
-    SetInvertedMouseY(DEFAULT_INVERTEDMOUSEY);
-    SetMouseSensitivity(DEFAULT_MOUSESENSITIVITY);
-
     SetHasRunAutoConfig(false);
 }
 
@@ -118,54 +72,7 @@ void UWildOmissionGameUserSettings::SetToDefaults()
 
     SettingsVersion = CURRENT_SETTINGS_VERSION;
 
-    // Audio
-    SetMasterVolume(DEFAULT_MASTERVOLUME);
-    SetMusicVolume(DEFAULT_VOLUME);
-    SetDeployablesVolume(DEFAULT_VOLUME);
-    SetEnvironmentVolume(DEFAULT_VOLUME);
-    SetFriendlyCreaturesVolume(DEFAULT_VOLUME);
-    SetHostileCreaturesVolume(DEFAULT_VOLUME);
-    SetPlayersVolume(DEFAULT_VOLUME);
-    SetWeatherVolume(DEFAULT_VOLUME);
-
-    // Gameplay
-    SetFieldOfView(DEFAULT_FIELDOFVIEW);
-    SetRenderDistance(DEFAULT_RENDERDISTANCE);
-    SetShowBranding(DEFAULT_SHOWBRANDING);
-    SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
-    SetHideChatUnlessOpen(DEFAULT_HIDECHATUNLESSOPEN);
-    SetHideHUD(DEFAULT_HIDEHUD);
-    SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
-
-    // Post Processing
-    SetGamma(DEFAULT_GAMMA);
-    SetAutoExposureEnabled(DEFAULT_AUTOEXPOSUREENABLED);
-    SetMotionBlurEnabled(DEFAULT_MOTIONBLURENABLED);
-    SetBloomEnabled(DEFAULT_BLOOMENABLED);
-    SetAmbientOcclusionEnabled(DEFAULT_AMBIENTOCCLUSIONENABLED);
-    SetFilmGrainEnabled(DEFAULT_FILMGRAINENABLED);
-
-    // Controls
-    SetMoveForwardKey(DEFAULT_MOVEFORWARD);
-    SetMoveBackwardKey(DEFAULT_MOVEBACKWARD);
-    SetMoveLeftKey(DEFAULT_MOVELEFT);
-    SetMoveRightKey(DEFAULT_MOVERIGHT);
-    SetSprintKey(DEFAULT_SPRINT);
-    SetCrouchKey(DEFAULT_CROUCH);
-    SetJumpKey(DEFAULT_JUMP);
-    SetFlyKey(DEFAULT_FLY);
-
-    SetPrimaryKey(DEFAULT_PRIMARY);
-    SetSecondaryKey(DEFAULT_SECONDARY);
-    SetInteractKey(DEFAULT_INTERACT);
-    SetReloadKey(DEFAULT_RELOAD);
-
-    SetInventoryKey(DEFAULT_INVENTORY);
-    SetCraftingKey(DEFAULT_CRAFTING);
-    SetChatKey(DEFAULT_CHAT);
-
-    SetInvertedMouseY(DEFAULT_INVERTEDMOUSEY);
-    SetMouseSensitivity(DEFAULT_MOUSESENSITIVITY);
+    SetWOSettingsDefault();
 }
 
 void UWildOmissionGameUserSettings::SetMasterVolume(float Volume)
@@ -539,6 +446,16 @@ bool UWildOmissionGameUserSettings::GetInvertedMouseY() const
     return InvertedMouseY;
 }
 
+void UWildOmissionGameUserSettings::SetAlphaToolbarScroll(bool UseAlpha)
+{
+    AlphaToolbarScroll = UseAlpha;
+}
+
+bool UWildOmissionGameUserSettings::GetAlphaToolbarScroll() const
+{
+    return AlphaToolbarScroll;
+}
+
 void UWildOmissionGameUserSettings::SetMouseSensitivity(float Sensitivity)
 {
     MouseSensitivity = Sensitivity;
@@ -572,4 +489,58 @@ int32 UWildOmissionGameUserSettings::GetResolutionScaleAsInt32() const
 UWildOmissionGameUserSettings* UWildOmissionGameUserSettings::GetWildOmissionGameUserSettings()
 {
     return Cast<UWildOmissionGameUserSettings>(UGameUserSettings::GetGameUserSettings());
+}
+
+void UWildOmissionGameUserSettings::SetWOSettingsDefault()
+{
+    // Audio
+    SetMasterVolume(DEFAULT_MASTERVOLUME);
+    SetMusicVolume(DEFAULT_VOLUME);
+    SetDeployablesVolume(DEFAULT_VOLUME);
+    SetEnvironmentVolume(DEFAULT_VOLUME);
+    SetFriendlyCreaturesVolume(DEFAULT_VOLUME);
+    SetHostileCreaturesVolume(DEFAULT_VOLUME);
+    SetPlayersVolume(DEFAULT_VOLUME);
+    SetWeatherVolume(DEFAULT_VOLUME);
+
+    // Gameplay
+    SetFieldOfView(DEFAULT_FIELDOFVIEW);
+    SetRenderDistance(DEFAULT_RENDERDISTANCE);
+    SetShowBranding(DEFAULT_SHOWBRANDING);
+    SetShowCrosshair(DEFAULT_SHOWCROSSHAIR);
+    SetHideChatUnlessOpen(DEFAULT_HIDECHATUNLESSOPEN);
+    SetHideHUD(DEFAULT_HIDEHUD);
+    SetCameraShakeEnabled(DEFAULT_CAMERASHAKEENABLED);
+
+    // Post Processing
+    SetGamma(DEFAULT_GAMMA);
+    SetAutoExposureEnabled(DEFAULT_AUTOEXPOSUREENABLED);
+    SetMotionBlurEnabled(DEFAULT_MOTIONBLURENABLED);
+    SetBloomEnabled(DEFAULT_BLOOMENABLED);
+    SetAmbientOcclusionEnabled(DEFAULT_AMBIENTOCCLUSIONENABLED);
+    SetFilmGrainEnabled(DEFAULT_FILMGRAINENABLED);
+
+    // Controls
+    SetMoveForwardKey(DEFAULT_MOVEFORWARD);
+    SetMoveBackwardKey(DEFAULT_MOVEBACKWARD);
+    SetMoveLeftKey(DEFAULT_MOVELEFT);
+    SetMoveRightKey(DEFAULT_MOVERIGHT);
+    SetSprintKey(DEFAULT_SPRINT);
+    SetCrouchKey(DEFAULT_CROUCH);
+    SetJumpKey(DEFAULT_JUMP);
+    SetFlyKey(DEFAULT_FLY);
+
+    SetPrimaryKey(DEFAULT_PRIMARY);
+    SetSecondaryKey(DEFAULT_SECONDARY);
+    SetInteractKey(DEFAULT_INTERACT);
+    SetReloadKey(DEFAULT_RELOAD);
+
+    SetInventoryKey(DEFAULT_INVENTORY);
+    SetCraftingKey(DEFAULT_CRAFTING);
+    SetChatKey(DEFAULT_CHAT);
+
+    SetInvertedMouseY(DEFAULT_INVERTEDMOUSEY);
+    SetAlphaToolbarScroll(DEFAULT_ALPHATOOLBARSCROLL);
+    SetMouseSensitivity(DEFAULT_MOUSESENSITIVITY);
+
 }
