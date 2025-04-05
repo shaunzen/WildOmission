@@ -18,7 +18,7 @@
 #include "Log.h"
 
 const static TArray<FString> SPLASH_MESSAGES = {
-	TEXT("Alpha!"),
+	TEXT("Beta!"),
 	TEXT("Aww Cute Poly Piggies <3"),
 	TEXT("A Wild Storm Appears..."),
 	TEXT("Now with crouching!"),
@@ -31,7 +31,7 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("dmyress <3"),
 	TEXT("Violafame <3"),
 	TEXT("TyceMcMac <3"),
-	TEXT("Made entierly on a Model M Keyboard!"),
+	TEXT("Made *mostly* on a Model M Keyboard!"),
 	TEXT("Refined Metal is obtained from zombies, harvesting metal nodes with a metal pickaxe, or by crafting"),
 	TEXT("Made by Larch"),
 	TEXT("Build without limits!"),
@@ -43,7 +43,7 @@ const static TArray<FString> SPLASH_MESSAGES = {
 	TEXT("Updated Regularly!"),
 	TEXT("3,000,000+ Lines Of Code."),
 	TEXT("Also play DeadPoly!"),
-	TEXT("Now Open Source!")
+	TEXT("Now Open Source!"),
 	TEXT("Free!")
 
 };
