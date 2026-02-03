@@ -161,6 +161,7 @@ void UEquipComponent::DestroyEquipedItem()
 		return;
 	}
 
+	EquipedItem->UponDestruction();
 	EquipedItem->Destroy();
 	EquipedItem = nullptr;
 }
