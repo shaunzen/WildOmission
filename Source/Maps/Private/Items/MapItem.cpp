@@ -31,6 +31,19 @@ void AMapItem::OnSecondaryPressed()
 	BringUpMap();
 }
 
+void AMapItem::UponDestruction()
+{
+	Super::UponDestruction();
+
+	if (OpenWidget == nullptr)
+	{
+		return;
+	}
+
+	// Remove the widget from the players screen so it doesn't get stuck
+	OpenWidget->Teardown(false);
+}
+
 void AMapItem::BringUpMap()
 {
 	APawn* OwnerPawn = GetOwnerPawn();

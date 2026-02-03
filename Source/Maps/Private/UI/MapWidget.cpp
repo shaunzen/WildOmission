@@ -18,7 +18,7 @@ void UMapWidget::NativeConstruct()
 
 	if (CloseButton)
 	{
-		CloseButton->OnClicked.AddDynamic(this, &UMapWidget::Teardown);
+		CloseButton->OnClicked.AddDynamic(this, &UMapWidget::OnCloseButtonClicked);
 	}
 
 	if (SaveCurrentLocationButton)
@@ -54,7 +54,7 @@ void UMapWidget::Setup()
 	PlayerController->SetMouseLocation(ViewportSizeX / 2, ViewportSizeY / 2);
 }
 
-void UMapWidget::Teardown()
+void UMapWidget::Teardown(const bool AdjustMouseSettings)
 {
 	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController == nullptr)
@@ -62,9 +62,12 @@ void UMapWidget::Teardown()
 		return;
 	}
 
-	FInputModeGameOnly InputData;
-	PlayerController->SetShowMouseCursor(false);
-	PlayerController->SetInputMode(InputData);
+	if (AdjustMouseSettings)
+	{
+		FInputModeGameOnly InputData;
+		PlayerController->SetShowMouseCursor(false);
+		PlayerController->SetInputMode(InputData);
+	}
 
 	if (OnTeardown.IsBound())
 	{
@@ -147,4 +150,9 @@ IMapInterface* UMapWidget::GetOwnerAsMapInterface() const
 
 	IMapInterface* MapInterface = Cast<IMapInterface>(OwnerPlayerController);
 	return MapInterface;
+}
+
+void UMapWidget::OnCloseButtonClicked()
+{
+	this->Teardown();
 }

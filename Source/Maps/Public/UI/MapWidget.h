@@ -22,7 +22,7 @@ public:
 	void Setup();
 
 	UFUNCTION()
-	void Teardown();
+	void Teardown(const bool AdjustMouseSettings = true);
 
 	FOnMapWidgetTeardownSignature OnTeardown;
 
@@ -50,6 +50,9 @@ private:
 
 	UFUNCTION()
 	void RefreshCoordinates();
+
+	UFUNCTION()
+	void OnCloseButtonClicked();
 
 	class IMapInterface* GetOwnerAsMapInterface() const;
 

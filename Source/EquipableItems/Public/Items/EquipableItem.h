@@ -25,6 +25,9 @@ public:
 	// Called before the item is unequiped. Note: Only Called On Server!
 	virtual void OnUnequip();
 
+	// Called before the item is unequiped and destroyed used mostly on owner player death. Note: Called On Both Server and Client!
+	virtual void UponDestruction();
+
 	// Primary function of the item. example(Eat, Shoot, Heal) Note: Called On Both Server and Client!
 	virtual void OnPrimaryPressed();
 	virtual void OnPrimaryHeld();

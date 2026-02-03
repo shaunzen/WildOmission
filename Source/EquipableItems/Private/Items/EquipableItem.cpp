@@ -135,6 +135,11 @@ void AEquipableItem::OnUnequip()
 
 }
 
+void AEquipableItem::UponDestruction()
+{
+
+}
+
 void AEquipableItem::OnPrimaryPressed()
 {
 

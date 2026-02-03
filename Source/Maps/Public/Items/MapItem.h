@@ -19,6 +19,8 @@ public:
 
 	virtual void OnPrimaryPressed() override;
 	virtual void OnSecondaryPressed() override;
+	
+	virtual void UponDestruction() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly)
