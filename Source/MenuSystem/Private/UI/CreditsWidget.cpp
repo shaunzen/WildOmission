@@ -15,9 +15,9 @@ void UCreditsWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	const FDateTime ZeNNBirthday(1994, 4, 18);
+	const FDateTime LarchBirthday(2006, 1, 13);
 	const FDateTime TimeNow = FDateTime::Now();
-	const FDateTime ZeNNAge(TimeNow.GetTicks() - ZeNNBirthday.GetTicks());
+	const FDateTime LarchAge(TimeNow.GetTicks() - LarchBirthday.GetTicks());
 
 	const FString AboutString = FString::Printf(
 		TEXT("Hi. My name is ZeNN. The game you are playing is called wild omission on steam. The game did go open source with the MIT licence so I downloaded the source code and decided to keep the game updated. If you have any questions please reach out to me."),
