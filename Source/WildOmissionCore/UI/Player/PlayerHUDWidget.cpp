@@ -255,7 +255,7 @@ void UPlayerHUDWidget::UpdateBrandingText()
 		return;
 	}
 
-	FString BrandingString = FString::Printf(TEXT("Wild Omission %s"), *GameInstance->GetVersion());
+	FString BrandingString = FString::Printf(TEXT("EPIC ZOMBIES %s"), *GameInstance->GetVersion());
 	BrandingTextBlock->SetText(FText::FromString(BrandingString));
 }
 
