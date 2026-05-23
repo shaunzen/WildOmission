@@ -20,7 +20,7 @@ void UCreditsWidget::NativeConstruct()
 	const FDateTime LarchAge(TimeNow.GetTicks() - LarchBirthday.GetTicks());
 
 	const FString AboutString = FString::Printf(
-		TEXT("Wild Omission is an open-world multiplayer sandbox survival game with severe weather. Developed by %i year old indie game developer Larch. I (Larch) started working on Wild Omission in December of 2022 (when I was 16), It has been an incredible journey. I never could have imagined where it would take me, but I'm glad I have stuck to it and continued working on it. I am eager to hear your thoughts about the game! If you have any questions or comments I can be reached at telephonestudioscontact@gmail.com."),
+		TEXT("Hi. My name is ZeNN. The game you are playing is called wild omission on steam. The game did go open source with the MIT licence so I downloaded the source code and decided to keep the game updated. If you have any questions please reach out to me."),
 		LarchAge.GetYear() - 1
 	);
 
